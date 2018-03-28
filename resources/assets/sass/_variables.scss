@@ -1,0 +1,44 @@
+// Changing the body background and text
+$body-bg: #f7f9fb;
+
+// Changing the theme colors
+$primary: #3397e1;
+$secondary: #221f1f;
+$success: #00bf9c;
+$info: #17a2b8;
+$warning: #fbbe02;
+$danger: #ed4757;
+$light: #ffffff;
+
+// border radius
+$border-radius: 0.125em;
+
+//link-decoration
+$link-hover-decoration: none;
+
+//pagination
+$pagination-color: $secondary;
+$component-active-bg: $light;
+$pagination-bg: $body-bg;
+$pagination-border-width: 0px;
+
+//tooltip
+$tooltip-bg: white;
+$tooltip-color: $secondary;
+
+//breadcrumbs
+$breadcrumb-active-color: $primary;
+$breadcrumb-divider-color: $primary;
+$breadcrumb-item: $secondary;
+
+//table
+$table-head-bg: #f7f9fb;
+$table-bg: #ffffff;
+$table-hover-bg: #f0f3f6;
+
+////checkbox
+$custom-checkbox-indicator-indeterminate-bg: #788793;
+$custom-checkbox-indicator-indeterminate-color: #ffffff;
+
+//footer
+$footer-text: white;

@@ -1,0 +1,523 @@
+[
+    {
+        "id": "pmui",
+        "description": "Building PMUI library",
+        "steps": [      
+            {
+                "type": "rake",
+                "rake_dir": "vendor/colosa/pmUI",
+                "rake_task": "js"
+            },
+            {
+                "type": "rake",
+                "rake_dir": "vendor/colosa/pmUI",
+                "rake_task": "compileTheme[../MichelangeloFE/themes/mafe]"
+            },
+            {
+                "type": "copy",
+                "src_dir": "vendor/colosa/pmUI",
+                "dest_dir": "workflow/public_html/lib",
+                "files": [
+                    {
+                        "src": "build/js/pmui-0.1.1.js",
+                        "dest_dir": "pmUI/",
+                        "dest_name": "pmui.min.js"
+                    },
+                    {
+                        "src": "img/**",
+                        "dest_dir": "img"
+                    },
+                    {
+                        "src": "libraries/restclient/restclient-min.js",
+                        "dest_dir": "js/",
+                        "dest_name": "restclient.min.js"
+                    }, 
+                    {
+                        "src": "themes/mafe/fonts/**/*",
+                        "dest_dir": "fonts"
+                    }
+                ]
+            },
+            {
+                "type": "copy",
+                "src_dir": "vendor/colosa/MichelangeloFE/themes/mafe/build",
+                "dest_dir": "workflow/public_html/lib",
+                "files": [
+                    {
+                        "src": "pmui-mafe.css",
+                        "dest_dir": "pmUI/",
+                        "dest_name": "pmui.min.css"
+                    }, 
+                    {
+                        "src": "images/*",
+                        "dest_dir": "css/images/"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "pmDynaform",
+        "description": "Building PMDynaform library",
+        "steps": [
+            {
+                "type": "rake",
+                "rake_dir": "vendor/colosa/pmDynaform",
+                "rake_task": "default"
+            },
+            {
+                "type": "dir",
+                "dir": "workflow/public_html/lib/pmdynaform",
+                "operation": "clean"
+            }, 
+            {
+                "type": "copy",
+                "src_dir": "vendor/colosa/pmDynaform/",
+                "dest_dir": "workflow/public_html/lib/pmdynaform/",
+                "files": [
+                    {
+                        "src": "build/**",
+                        "dest_dir": "build/"
+                    },
+                    {
+                        "src": "libs/**",
+                        "dest_dir": "libs/"
+                    }
+                ]
+            },
+            {
+                "type": "read",
+                "src": "vendor/colosa/pmDynaform/config/templates.json",
+                "variable": "FILES"
+            },
+            {
+                "type": "parse",
+                "data": "%FILES%",
+                "parseTo": "json",
+                "path": "0/files",
+                "variable": "FILES"
+            },
+            {
+                "type": "replace_string",
+                "target": "%FILES%",
+                "replacements": [
+                    {
+                        "search": "src/templates",
+                        "replaceBy": "vendor/colosa/pmDynaform/src/templates"
+                    }
+                ],
+                "variable": "FILES"
+            },
+            {
+                "type": "concatenate",
+                "files": "%FILES%",
+                "variable": "CONCATENATED"
+            },
+            {
+                "type": "replaceFileContents",
+                "orig_file": "workflow/engine/templates/cases/pmdynaform.html",
+                "dest_dir": "workflow/public_html/lib/pmdynaform/build",
+                "dest_file": "pmdynaform.html",
+                "replacements": [
+                    {
+                        "search": "###TEMPLATES###",
+                        "replaceBy": "%CONCATENATED%"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "pmDynaformZip",
+        "description": "Building pmDynaform Zip version...",
+        "steps": [
+            {
+                "type": "rake",
+                "rake_dir": "vendor/colosa/pmDynaform",
+                "rake_task": "mobile"
+            },
+            {
+                "type": "copy",
+                "src_dir": "vendor/colosa/pmDynaform/build-prod-zip/",
+                "dest_dir": "workflow/public_html",
+                "file_mode": 777,
+                "files": [
+                    {
+                        "src": "build-prod.zip"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "mafe",
+        "description": "Building PM Michelangelo FE",
+        "steps": [
+            {
+                "type": "rake",
+                "rake_dir": "vendor/colosa/MichelangeloFE",
+                "rake_task": "rmdir"
+            },
+            {
+                "type": "rake",
+                "rake_dir": "vendor/colosa/MichelangeloFE",
+                "rake_task": "dir"
+            },
+            {
+                "type": "rake",
+                "rake_dir": "vendor/colosa/MichelangeloFE",
+                "rake_task": "compass"
+            },
+            {
+                "type": "rake",
+                "rake_dir": "vendor/colosa/MichelangeloFE",
+                "rake_task": "compress_js_files"
+            },
+            {
+                "type": "rake",
+                "rake_dir": "vendor/colosa/MichelangeloFE",
+                "rake_task": "compress_app_files"
+            },
+            {
+                "type": "copy",
+                "src_dir": "vendor/colosa/pmDynaform/build-prod-zip/",
+                "dest_dir": "workflow/public_html",
+                "file_mode": 777,
+                "files": [
+                    {
+                        "src": "build-prod.zip"
+                    }
+                ]
+            }, 
+            {
+                "type": "copy",
+                "src_dir": "vendor/colosa/MichelangeloFE/",
+                "dest_dir": "workflow/public_html/lib/",
+                "files": [
+                    {
+                        "src": "lib/jQueryUI/images/*.png",
+                        "dest_dir": "css/images/"
+                    }, 
+                    {
+                        "src": "build/js/designer.js",
+                        "dest_dir": "mafe/",
+                        "dest_name": "designer.min.js"
+                    },
+                    {
+                        "src": "build/js/mafe.js",
+                        "dest_dir": "mafe/",
+                        "dest_name": "mafe.min.js"
+                    },
+                    {
+                        "src": "build/css/mafe.css",
+                        "dest_dir": "mafe/",
+                        "dest_name": "mafe.min.css"
+                    },
+                    {
+                        "src": "img/*.*",
+                        "dest_dir": "img"
+                    }
+                ]
+            },
+            {
+                "type": "copy",
+                "src_dir": "vendor/colosa/MichelangeloFE/lib",
+                "dest_dir": "workflow/public_html/lib/js/",
+                "files": [
+                    {
+                        "src": "wz_jsgraphics/wz_jsgraphics.js",
+                        "dest_name": "wz_jsgraphics.js"
+                    },
+                    {
+                        "src": "jQuery/jquery-1.10.2.min.js",
+                        "dest_name": "jquery-1.10.2.min.js"
+                    },
+                    {
+                        "src": "underscore/underscore-min.js",
+                        "dest_name": "underscore-min.js"
+                    },
+                    {
+                        "src": "jQueryUI/jquery-ui-1.10.3.custom.min.js",
+                        "dest_name": "jquery-ui-1.10.3.custom.min.js"
+                    },
+                    {
+                        "src": "jQueryLayout/jquery.layout.min.js",
+                        "dest_name": "jquery.layout.min.js"
+                    },
+                    {
+                        "src": "modernizr/modernizr.js",
+                        "dest_name": "modernizr.js"
+                    }
+                ]
+            },
+            {
+                "type": "copy",
+                "src_dir": "vendor/colosa/MichelangeloFE/src/formDesigner/img/",
+                "dest_dir": "workflow/public_html/lib/",
+                "files": [
+                    {
+                        "src": "*",
+                        "dest_dir": "img"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "log",
+        "description": "Creating log, hash, and version files...",
+        "steps": [
+            {
+                "type": "exec",
+                "working_dir": "vendor/colosa/pmUI",
+                "command": "git",
+                "arguments": [
+                    "rev-parse",
+                    "--short",
+                    "HEAD"
+                ],
+                "variable": "PMUI_HASH"
+            },
+            {
+                "type": "exec",
+                "working_dir": "vendor/colosa/MichelangeloFE",
+                "command": "git",
+                "arguments": [
+                    "rev-parse",
+                    "--short",
+                    "HEAD"
+                ],
+                "variable": "MAFE_HASH"
+            },
+            {
+                "type": "exec",
+                "working_dir": "vendor/colosa/pmDynaform",
+                "command": "git",
+                "arguments": [
+                    "rev-parse",
+                    "--short",
+                    "HEAD"
+                ],
+                "variable": "PMDYNAFORM_HASH"
+            }, 
+            {
+                "type": "concatenate",
+                "dest_dir": "workflow/public_html/lib/js",
+                "dest_name": "$[\"mafe-\", \"%PMUI_HASH%\", \"-\", \"%MAFE_HASH%\", \".js\"]$",
+                "files": [
+                    "workflow/public_html/lib/js/wz_jsgraphics.js",
+                    "workflow/public_html/lib/js/jquery-1.10.2.min.js",
+                    "workflow/public_html/lib/js/underscore-min.js",
+                    "workflow/public_html/lib/js/jquery-ui-1.10.3.custom.min.js",
+                    "workflow/public_html/lib/js/jquery.layout.min.js",
+                    "workflow/public_html/lib/js/modernizr.js",
+                    "workflow/public_html/lib/js/restclient.min.js",
+                    "workflow/public_html/lib/pmUI/pmui.min.js",
+                    "workflow/public_html/lib/mafe/mafe.min.js",
+                    "workflow/public_html/lib/mafe/designer.min.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/tiny_mce.js",
+
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/pmGrids/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/pmSimpleUploader/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/pmVariablePicker/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/visualchars/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/xhtmlxtras/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/wordcount/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/table/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/template/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/visualblocks/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/preview/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/print/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/style/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/save/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/tabfocus/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/searchreplace/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/paste/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/media/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/lists/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/insertdatetime/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/example/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/pagebreak/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/example_dependency/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/noneditable/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/fullpage/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/layer/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/legacyoutput/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/fullscreen/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/iespell/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/inlinepopups/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/autoresize/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/contextmenu/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/advlist/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/autolink/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/directionality/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/emotions/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/themes/advanced/editor_template.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/advhr/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/advlink/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/advimage/editor_plugin.js",
+                    "gulliver/js/tinymce/jscripts/tiny_mce/plugins/nonbreaking/editor_plugin.js",
+
+                    "gulliver/js/codemirror/lib/codemirror.js",
+                    "gulliver/js/codemirror/addon/hint/show-hint.js",
+                    "gulliver/js/codemirror/addon/hint/javascript-hint.js",
+                    "gulliver/js/codemirror/addon/hint/sql-hint.js",
+                    "gulliver/js/codemirror/addon/hint/php-hint.js",
+                    "gulliver/js/codemirror/addon/hint/html-hint.js",
+                    "gulliver/js/codemirror/mode/javascript/javascript.js",
+                    "gulliver/js/codemirror/addon/edit/matchbrackets.js",
+                    "gulliver/js/codemirror/mode/htmlmixed/htmlmixed.js",
+                    "gulliver/js/codemirror/mode/xml/xml.js",
+                    "gulliver/js/codemirror/mode/css/css.js",
+                    "gulliver/js/codemirror/mode/clike/clike.js",
+                    "gulliver/js/codemirror/mode/php/php.js",
+                    "gulliver/js/codemirror/mode/sql/sql.js"
+                ]
+            },
+            {
+                "type": "concatenate",
+                "dest_dir": "workflow/public_html/lib/css",
+                "dest_name":  "$[\"mafe-\", \"%PMUI_HASH%\", \"-\", \"%MAFE_HASH%\", \".css\"]$",
+                "files": [
+                    "gulliver/js/codemirror/lib/codemirror.css",
+                    "gulliver/js/codemirror/addon/hint/show-hint.css",
+                    "workflow/public_html/lib/pmUI/pmui.min.css",
+                    "workflow/public_html/lib/mafe/mafe.min.css"
+                ]
+            },
+            {
+                "type": "write",
+                "contents": "$[\"%PMUI_HASH%\", \"-\", \"%MAFE_HASH%\"]$",
+                "dest_dir": "workflow/public_html/lib/",
+                "dest_name": "buildhash" 
+            },
+            {
+                "type": "rake",
+                "rake_dir": "vendor/colosa/pmUI",
+                "rake_task": "version",
+                "variable": "PMUI_VERSION"
+            },
+            {
+                "type": "rake",
+                "rake_dir": "vendor/colosa/MichelangeloFE",
+                "rake_task": "version",
+                "variable": "MAFE_VERSION"
+            },
+            {
+                "type": "rake",
+                "rake_dir": "vendor/colosa/pmDynaform",
+                "rake_task": "version",
+                "variable": "PMDYNAFORM_VERSION"
+            },
+            {
+                "type": "replace_string",
+                "target": "{\"pmui_ver\":\"##PMUI_VERSION##\",\"pmui_hash\":\"##PMUI_HASH##\",\"mafe_ver\":\"##MAFE_VERSION##\",\"mafe_hash\":\"##MAFE_HASH##\",\"pmdynaform_ver\":\"##PMDYNAFORM_VERSION##\",\"pmdynaform_hash\":\"##PMDYNAFORM_HASH##\"}",
+                "replacements": [
+                    {
+                        "search": "##PMUI_VERSION##",
+                        "replaceBy": "%PMUI_VERSION%"
+                    },
+                    {
+                        "search": "##PMUI_HASH##",
+                        "replaceBy": "%PMUI_HASH%"
+                    },
+                    {
+                        "search": "##MAFE_VERSION##",
+                        "replaceBy": "%MAFE_VERSION%"
+                    },
+                    {
+                        "search": "##MAFE_HASH##",
+                        "replaceBy": "%MAFE_HASH%"
+                    },
+                    {
+                        "search": "##PMDYNAFORM_VERSION##",
+                        "replaceBy": "%PMDYNAFORM_VERSION%"
+                    },
+                    {
+                        "search": "##PMDYNAFORM_HASH##",
+                        "replaceBy": "%PMDYNAFORM_HASH%"
+                    }
+                ],
+                "variable": "VERSIONS"
+            },
+            {
+                "type": "write",
+                "contents": "%VERSIONS%",
+                "dest_dir": "workflow/public_html/lib/",
+                "dest_name": "versions" 
+            },
+            {
+                "type": "exec",
+                "working_dir": "vendor/colosa/pmUI",
+                "command": "git",
+                "arguments": [
+                    "log",
+                    "-30",
+                    "--pretty=[%cr] %h %d %s <%an>",
+                    "--no-merges"
+                ],
+                "variable": "PMUI_LOG"
+            },
+            {
+                "type": "exec",
+                "working_dir": "vendor/colosa/MichelangeloFE",
+                "command": "git",
+                "arguments": [
+                    "log",
+                    "-30",
+                    "--pretty=[%cr] %h %d %s <%an>",
+                    "--no-merges"
+                ],
+                "variable": "MAFE_LOG"
+            },
+            {
+                "type": "exec",
+                "working_dir": "vendor/colosa/pmDynaform",
+                "command": "git",
+                "arguments": [
+                    "log",
+                    "-30",
+                    "--pretty=[%cr] %h %d %s <%an>",
+                    "--no-merges"
+                ],
+                "variable": "PMDYNAFORM_LOG"
+            },
+            {
+                "type": "exec",
+                "working_dir": "./",
+                "command": "git",
+                "arguments": [
+                    "log",
+                    "-30",
+                    "--pretty=[%cr] %h %d %s <%an>",
+                    "--no-merges"
+                ],
+                "variable": "PM_LOG"
+            },
+            {
+                "type": "write",
+                "contents": "%PMUI_LOG%",
+                "dest_dir": "workflow/public_html/lib/",
+                "dest_name": "lib-pmui.log"
+            },
+            {
+                "type": "write",
+                "contents": "%MAFE_LOG%",
+                "dest_dir": "workflow/public_html/lib/",
+                "dest_name": "lib-mafe.log"
+            },
+            {
+                "type": "write",
+                "contents": "%PMDYNAFORM_LOG%",
+                "dest_dir": "workflow/public_html/lib/",
+                "dest_name": "lib-pmdynaform.log"
+            },
+            {
+                "type": "write",
+                "contents": "%PM_LOG%",
+                "dest_dir": "workflow/public_html/lib/",
+                "dest_name": "processmaker.log"
+            }
+        ]
+    }
+]

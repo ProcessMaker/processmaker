@@ -1,0 +1,12 @@
+{
+  "name": "Test Theme",
+  "asset-path": "themes/test",
+  "views-path": "test/views",
+  "description": "Theme to test skins",
+  "uri": "https://www.processmaker.com",
+  "author": "Taylor Dondich",
+  "author_uri": "https://www.dondich.com",
+  "version": "1.0",
+  "license": "gplv3",
+  "license_uri": "https://www.gnu.org/licenses/gpl-3.0.en.html"
+}

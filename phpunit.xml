@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit backupGlobals="false"
+         backupStaticAttributes="false"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="false"
+         convertWarningsToExceptions="false"
+         processIsolation="false"
+         stopOnFailure="false"
+         syntaxCheck="true"
+         bootstrap="tests/bootstrap.php"
+>
+    <testsuites>
+      <testsuite name="Features">
+        <directory>tests/Feature</directory>
+        <directory>tests/unit</directory>
+      </testsuite>
+  </testsuites>
+
+  <filter>
+    <whitelist addUncoveredFilesFromWhitelist="true" processUncoveredFilesFromWhitelist="false">
+      <directory suffix=".php">./ProcessMaker</directory>
+    </whitelist>
+  </filter>
+
+    <php>
+      <env name="APP_ENV" value="testing" />
+      <env name="APP_KEY" value="base64:x80I9vQNxwllSuwBkTwfUa5qkgPTRdwqHCPSz7zHi1U=" />
+      <env name="TESTING_VERBOSE" value="false" />
+      <env name="POPULATE_DATABASE" value="true" />
+
+
+      <!-- Workflow Database -->
+      <env name="DB_ADAPTER" value="mysql" />
+      <env name="DB_HOST" value="127.0.0.1" />
+      <env name="DB_PORT" value="3306" />
+      <env name="DB_USERNAME" value="root" />
+      <env name="DB_PASSWORD" value="" />
+      <env name="DB_DATABASE" value="test" />
+
+
+      <!-- MS Sql server -->
+      <env name="RUN_MSSQL_TESTS" value="false" />
+      <env name="MSSQL_HOST" value="172.16.3.1" />
+      <env name="MSSQL_PORT" value="1433" />
+      <env name="MSSQL_DATABASE" value="testexternal" />
+      <env name="MSSQL_USERNAME" value="test" />
+      <env name="MSSQL_PASSWORD" value="test" />
+
+      <env name="KEYS_PATH" value="tests/storage/keys" />
+      <env name="MAILTEMPLATES_PATH" value="tests/storage/mailTemplates" />
+      <env name="SKINS_PATH" value="tests/storage/skins" />
+
+      <env name="THEMES_CACHE" value="false" />
+    </php>
+</phpunit>
