@@ -46,7 +46,6 @@
   <script src="{{ asset('js/manifest.js') }}"></script>
   <script src="{{ asset('js/vendor.js') }}"></script>
   <script src="{{ asset('js/app.js') }}"></script>
-  <script src="{{ asset('js/app-layout.js') }}"></script>
   <!-- Menu Toggle Script -->
   <script>
   $("#menu-toggle").click(function(e) {
