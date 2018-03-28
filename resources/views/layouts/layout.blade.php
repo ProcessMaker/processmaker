@@ -12,9 +12,8 @@
 
     <!-- Styles -->
 
-    <link href="{{ asset('css/base.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/layouts-app.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/font-awesome.css') }}" rel="stylesheet">
 
     <script>
         window.Processmaker = {
