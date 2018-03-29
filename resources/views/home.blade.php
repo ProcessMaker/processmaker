@@ -2,13 +2,13 @@
 
 @section('content')
   <div class="table-responsive">
-  <div class="form-inline justify-content-between m-3">
-    <h4>Completed tasks<small class="font-weight-light">  (100)</small></h4>
+  <div class="form-inline justify-content-between">
+    <strong class="table-header">Completed tasks<small class="font-weight-light">  (100)</small></strong>
     <form>
       <input class="form-control" type="search" placeholder="Search..." aria-label="Search">
     </form>
   </div>
-  <table class="table table-sm table-hover">
+  <table class="table  table-hover">
   <thead>
     <tr>
       <th class="text-dark" scope="col">CASE   <i class="fa fa-sort-desc" aria-hidden="true"></i></i></th>
