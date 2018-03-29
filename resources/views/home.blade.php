@@ -8,7 +8,7 @@
       <input class="form-control" type="search" placeholder="Search..." aria-label="Search">
     </form>
   </div>
-  <table class="table table-sm table-hover" id="dataTable">
+  <table class="table table-hover" id="dataTable">
   <thead>
     <tr>
       <th class="text-dark" scope="col" v-for="col in columns" v-on:click="sortTable(col)"> @{{col}}   <i class="fa fa-sort" aria-hidden="true"></i></th>
@@ -25,7 +25,6 @@
 @section('sidebar')
   @include('sidebars.default')
 @endsection
-
 @section('js')
   <script>
   var dataTable = new Vue({
