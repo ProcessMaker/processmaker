@@ -23,94 +23,94 @@
   </thead>
   <tbody>
     <tr>
-      <th scope="row">1</th>
+      <td>1</td>
       <td>Mark</td>
       <td>Otto</td>
       <td>@mdo</td>
       <td>Mark</td>
       <td>Otto</td>
       <td>@mdo</td>
-      <td><i class="fa fa-table btn" aria-hidden="true"></i></td>
+      <td>icon</td>
     </tr>
     <tr>
-      <th scope="row">2</th>
+      <td>2</td>
       <td>Jacob</td>
       <td>Thornton</td>
       <td>@fat</td>
       <td>Jacob</td>
       <td>Thornton</td>
       <td>@fat</td>
-      <td><i class="fa fa-table btn" aria-hidden="true"></i></td>
+      <td>icon</td>
     </tr>
     <tr>
-      <th scope="row">3</th>
+      <td>3</td>
       <td>Larry</td>
       <td>the Bird</td>
       <td>@twitter</td>
       <td>Larry</td>
       <td>the Bird</td>
       <td>@twitter</td>
-      <td><i class="fa fa-table btn" aria-hidden="true"></i></td>
+      <td>icon</td>
     </tr>
     <tr>
-      <th scope="row">4</th>
+      <td>4</td>
       <td>Mark</td>
       <td>Otto</td>
       <td>@mdo</td>
       <td>Mark</td>
       <td>Otto</td>
       <td>@mdo</td>
-      <td><i class="fa fa-table btn" aria-hidden="true"></i></td>
+      <td>icon</td>
     </tr>
     <tr>
-      <th scope="row">5</th>
+      <td>5</td>
       <td>Jacob</td>
       <td>Thornton</td>
       <td>@fat</td>
       <td>Jacob</td>
       <td>Thornton</td>
       <td>@fat</td>
-      <td><i class="fa fa-table btn" aria-hidden="true"></i></td>
+      <td>icon</td>
     </tr>
     <tr>
-      <th scope="row">6</th>
+      <td>6</td>
       <td>Larry</td>
       <td>the Bird</td>
       <td>@twitter</td>
       <td>Larry</td>
       <td>the Bird</td>
       <td>@twitter</td>
-      <td><i class="fa fa-table btn" aria-hidden="true"></i></td>
+      <td>icon</td>
     </tr>
     <tr>
-      <th scope="row">7</th>
+      <td>7</td>
       <td>Mark</td>
       <td>Otto</td>
       <td>@mdo</td>
       <td>Mark</td>
       <td>Otto</td>
       <td>@mdo</td>
-      <td><i class="fa fa-table btn" aria-hidden="true"></i></td>
+      <td>icon</td>
     </tr>
     <tr>
-      <th scope="row">8</th>
+      <td>8</td>
       <td>Jacob</td>
       <td>Thornton</td>
       <td>@fat</td>
       <td>Jacob</td>
       <td>Thornton</td>
       <td>@fat</td>
-      <td><i class="fa fa-table btn" aria-hidden="true"></i></td>
+      <td>icon</td>
     </tr>
     <tr>
-      <th scope="row">9</th>
+      <td>9</td>
       <td>Larry</td>
       <td>the Bird</td>
       <td>@twitter</td>
       <td>Larry</td>
       <td>the Bird</td>
       <td>@twitter</td>
-      <td><i class="fa fa-table btn" aria-hidden="true"></i></td>
+      <td>icon</td>
     </tr>
   </tbody>
 </table>
@@ -119,4 +119,8 @@
 
 @section('sidebar')
   @include('sidebars.default')
+@endsection
+
+@section('js')
+
 @endsection
