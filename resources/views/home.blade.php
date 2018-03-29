@@ -8,10 +8,10 @@
       <input class="form-control" type="search" placeholder="Search..." aria-label="Search">
     </form>
   </div>
-  <table class="table table-sm table-hover" id="fourthTable">
+  <table class="table table-sm table-hover" id="dataTable">
   <thead>
     <tr>
-      <th class="text-dark" scope="col" v-for="col in columns" v-on:click="sortTable(col)"> @{{col}}   <i class="fa fa-sort-desc" aria-hidden="true"></i></i></th>
+      <th class="text-dark" scope="col" v-for="col in columns" v-on:click="sortTable(col)"> @{{col}}   <i class="fa fa-sort" aria-hidden="true"></i></th>
     </tr>
   </thead>
   <tbody>
@@ -29,8 +29,8 @@
 
 @section('js')
   <script>
-  var fourthTable = new Vue({
-    el: '#fourthTable',
+  var dataTable = new Vue({
+    el: '#dataTable',
     data: {
       ascending: false,
       sortColumn: '',
