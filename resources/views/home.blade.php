@@ -20,6 +20,7 @@
     </tr>
   </tbody>
 </table>
+</div>
 @endsection
 
 @section('sidebar')
