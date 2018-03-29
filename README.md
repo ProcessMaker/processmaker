@@ -1,5 +1,8 @@
 ![ProcessMaker logo](http://www.processmaker.com/themes/processmaker/images/logo.jpg "ProcessMaker")
 
+[![CircleCI](https://circleci.com/gh/ProcessMaker/bpm.svg?style=svg)](https://circleci.com/gh/ProcessMaker/bpm)
+
+
 README
 ======
 
