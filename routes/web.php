@@ -15,7 +15,9 @@ $this->post('password/reset', 'Auth\ResetPasswordController@reset');
 $this->middleware(['auth', 'apitoken'])->group(function() {
     $this->get('/', function() {
         return view('home', ['title' => 'Dashboard']);
-    });
+    })->name('dash');
+    $this->get('/home', function() {
+        return view('home', ['title' => 'Dashboard']);
+    })->name('home');
     $this->get('/manage/users', 'Management\UsersController@index')->name('management-users-index');
 });
-
