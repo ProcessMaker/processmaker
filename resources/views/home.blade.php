@@ -1,126 +1,47 @@
 @extends('layouts.layout')
 
 @section('content')
-  <div class="table-responsive">
-  <div class="form-inline justify-content-between m-3">
+  <div class="row">
+
     <h4>Completed tasks<small class="font-weight-light">  (100)</small></h4>
-    <form>
+    <div class="form-group mx-sm-3 mb-2">
       <input class="form-control" type="search" placeholder="Search..." aria-label="Search">
-    </form>
-  </div>
-  <table class="table table-sm table-hover">
-  <thead>
-    <tr>
-      <th class="text-dark" scope="col">CASE   <i class="fa fa-sort-desc" aria-hidden="true"></i></i></th>
-      <th class="text-muted" scope="col">PROCESS   <i class="fa fa-sort" aria-hidden="true"></i></th>
-      <th class="text-muted" scope="col">TASK   <i class="fa fa-sort" aria-hidden="true"></i></th>
-      <th class="text-muted" scope="col">SENT BY   <i class="fa fa-sort" aria-hidden="true"></i></th>
-      <th class="text-muted" scope="col">DUE   <i class="fa fa-sort" aria-hidden="true"></i></th>
-      <th class="text-muted" scope="col">MODIFIED   <i class="fa fa-sort" aria-hidden="true"></i></th>
-      <th class="text-muted" scope="col">PRIORITY   <i class="fa fa-sort" aria-hidden="true"></i></th>
-      <th class="text-muted" scope="col">INFO   <i class="fa fa-sort" aria-hidden="true"></i></th>
+    </div>
+  <table class="table table-hover" id="firstTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>profession</th>
+        <th>phone</th>
+      </tr>
+    </thead>
+    <tbody>
+    <tr v-for="row in rows">
+      <td>@{{row.name}}</td>
+      <td>@{{row.profession}}</td>
+      <td>@{{row.phone}}</td>
     </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>1</td>
-      <td>Mark</td>
-      <td>Otto</td>
-      <td>@mdo</td>
-      <td>Mark</td>
-      <td>Otto</td>
-      <td>@mdo</td>
-      <td>icon</td>
-    </tr>
-    <tr>
-      <td>2</td>
-      <td>Jacob</td>
-      <td>Thornton</td>
-      <td>@fat</td>
-      <td>Jacob</td>
-      <td>Thornton</td>
-      <td>@fat</td>
-      <td>icon</td>
-    </tr>
-    <tr>
-      <td>3</td>
-      <td>Larry</td>
-      <td>the Bird</td>
-      <td>@twitter</td>
-      <td>Larry</td>
-      <td>the Bird</td>
-      <td>@twitter</td>
-      <td>icon</td>
-    </tr>
-    <tr>
-      <td>4</td>
-      <td>Mark</td>
-      <td>Otto</td>
-      <td>@mdo</td>
-      <td>Mark</td>
-      <td>Otto</td>
-      <td>@mdo</td>
-      <td>icon</td>
-    </tr>
-    <tr>
-      <td>5</td>
-      <td>Jacob</td>
-      <td>Thornton</td>
-      <td>@fat</td>
-      <td>Jacob</td>
-      <td>Thornton</td>
-      <td>@fat</td>
-      <td>icon</td>
-    </tr>
-    <tr>
-      <td>6</td>
-      <td>Larry</td>
-      <td>the Bird</td>
-      <td>@twitter</td>
-      <td>Larry</td>
-      <td>the Bird</td>
-      <td>@twitter</td>
-      <td>icon</td>
-    </tr>
-    <tr>
-      <td>7</td>
-      <td>Mark</td>
-      <td>Otto</td>
-      <td>@mdo</td>
-      <td>Mark</td>
-      <td>Otto</td>
-      <td>@mdo</td>
-      <td>icon</td>
-    </tr>
-    <tr>
-      <td>8</td>
-      <td>Jacob</td>
-      <td>Thornton</td>
-      <td>@fat</td>
-      <td>Jacob</td>
-      <td>Thornton</td>
-      <td>@fat</td>
-      <td>icon</td>
-    </tr>
-    <tr>
-      <td>9</td>
-      <td>Larry</td>
-      <td>the Bird</td>
-      <td>@twitter</td>
-      <td>Larry</td>
-      <td>the Bird</td>
-      <td>@twitter</td>
-      <td>icon</td>
-    </tr>
-  </tbody>
+    </tbody>
 </table>
-</div>
 @endsection
 
 @section('sidebar')
   @include('sidebars.default')
 @endsection
-
 @section('js')
-
+  <script>
+ var firstTable = new Vue({
+   el: '#firstTable',
+   data: {
+     rows: [
+       { id: 1, name: "Chandler Bing", phone: '305-917-1301', profession: 'IT Manager' },
+       { id: 2, name: "Ross Geller", phone: '210-684-8953', profession: 'Paleontologist' },
+       { id: 3, name: "Rachel Green", phone: '765-338-0312', profession: 'Waitress'},
+       { id: 4, name: "Monica Geller", phone: '714-541-3336', profession: 'Head Chef' },
+       { id: 5, name: "Joey Tribbiani", phone: '972-297-6037', profession: 'Actor' },
+       { id: 6, name: "Phoebe Buffay", phone: '760-318-8376', profession: 'Masseuse' }
+     ]
+   }
+ });
+ </script>
 @endsection
