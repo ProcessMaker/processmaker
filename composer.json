@@ -38,12 +38,14 @@
    "classmap": [
       "database/seeds",
       "database/factories"
-    ]
+    ],
+    "psr-4": {
+      "ProcessMaker\\": "ProcessMaker/"
+    }
   },
   "autoload-dev": {
     "psr-4": {
-      "Tests\\": "tests/",
-      "ProcessMaker\\": "ProcessMaker/"
+      "Tests\\": "tests/"
     }
   },
   "extra": {
