@@ -32,6 +32,7 @@
     "pusher-js": "^4.2.2",
     "tooltip.js": "^1.2.0",
     "v-tooltip": "^2.0.0-rc.31",
-    "vue-events": "^3.1.0"
+    "vue-events": "^3.1.0",
+    "vuetable-2": "^1.7.5"
   }
 }
