@@ -1,0 +1,88 @@
+# PHP CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-php/ for more details
+#
+version: 2
+jobs:
+  build:
+    docker:
+      # specify the version you desire here
+      - image: circleci/php:7.2.3-fpm-node-browsers
+
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      - image: circleci/mysql:5.7
+
+      # Add support for Microsoft SQL Server Testing
+      - image: microsoft/mssql-server-linux:2017-GA
+        environment:
+          # Needed for MS SQL Docker install
+          - ACCEPT_EULA: "Y"
+          - SA_PASSWORD: "P4ssW0rd1!"
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      # Install PHP dependencies
+      - run: sudo apt install -y libpng-dev libzip-dev default-libmysqlclient-dev curl apt-transport-https
+      - run: sudo docker-php-ext-install gd zip pdo_mysql mysqli
+
+      # Install MS SQL PDO Extension dependency
+      - run:
+          name: "MS SQL Extension Installation"
+          command: |
+            sudo curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+            sudo sh  -c 'curl https://packages.microsoft.com/config/debian/8/prod.list > /etc/apt/sources.list.d/mssql-release.list'
+            sudo apt-get install -y locales
+            sudo sh -c 'echo "en_US.UTF-8 UTF-8" > /etc/locale.gen'
+            sudo locale-gen
+            sudo apt-get update
+            sudo ACCEPT_EULA=Y apt-get install msodbcsql
+            sudo apt-get install unixodbc-dev
+            sudo pecl install sqlsrv
+            sudo pecl install pdo_sqlsrv
+            sudo docker-php-ext-enable sqlsrv pdo_sqlsrv
+
+      # Install old libssl-1.0.0 due to ODBC13 issue. See: https://github.com/Microsoft/msphpsql/issues/484
+      - run:
+          name: "ODBC13 libssl workaround"
+          command: |
+            echo "deb http://deb.debian.org/debian jessie main" | sudo tee -a /etc/apt/sources.list
+            sudo apt-get update
+            sudo apt-get install libssl1.0.0
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "composer.json" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+
+      - run: composer install -n --prefer-dist
+
+      - save_cache:
+          paths:
+            - ./vendor
+          key: v1-dependencies-{{ checksum "composer.json" }}
+
+      # Enable xdebug to support code coverage
+      - run: sudo docker-php-ext-enable xdebug
+
+      # run tests!
+      - run:
+          name: "PHPUnit"
+          command: "./vendor/bin/phpunit -d memory_limit=-1 --coverage-html coverage"
+          environment:
+            DB_DATABASE: "circle_test"
+            RUN_MSSQL_TESTS: "true"
+            MSSQL_HOST: "127.0.0.1"
+            MSSQL_PORT: "1433"
+            MSSQL_DATABASE: "test"
+            MSSQL_USERNAME: "sa"
+            MSSQL_PASSWORD: "P4ssW0rd1!"
+
+      - store_artifacts:
+          path: coverage
