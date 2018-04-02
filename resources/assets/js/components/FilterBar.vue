@@ -1,13 +1,12 @@
 <template>
     <div class="filter-bar">
-      <form class="form-inline">
-        <div class="form-group">
-          <label>Search for:</label>
-          <input type="text" v-model="filterText" class="form-control" @keyup.enter="doFilter" placeholder="name, nickname, or email">
-          <button class="btn btn-primary" @click.prevent="doFilter">Go</button>
-          <button class="btn" @click.prevent="resetFilter">Reset</button>
-        </div>
-      </form>
+      <div>
+        <form class="form-inline justify-content-between">
+            <label class="table-header">Completed Tasks<small class="font-weight-light">  (100)</small></label>
+            <input type="text" v-model="filterText" class="form-control" @keyup.enter="doFilter" placeholder="search...">
+
+        </form>
+      </div>
     </div>
 </template>
 
