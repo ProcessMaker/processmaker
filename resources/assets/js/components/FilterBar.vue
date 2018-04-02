@@ -2,9 +2,8 @@
     <div class="filter-bar">
       <div>
         <form class="form-inline justify-content-between">
-            <label class="table-header">Completed Tasks<small class="font-weight-light">  (100)</small></label>
+            <label class="table-header"><strong>Completed Tasks<small class="font-weight-light">  (100)</small></strong></label>
             <input type="text" v-model="filterText" class="form-control" @keyup.enter="doFilter" placeholder="search...">
-
         </form>
       </div>
     </div>
