@@ -70,9 +70,9 @@ export default {
       ],
       css: {
         table: {
-          tableClass: 'table table-bordered table-striped table-hover',
-          ascendingIcon: 'glyphicon glyphicon-chevron-up',
-          descendingIcon: 'glyphicon glyphicon-chevron-down'
+          tableClass: 'table table-hover',
+          ascendingIcon: 'fa fa-sort-asc',
+          descendingIcon: 'fa fa-sort-desc'
         },
         pagination: {
           wrapperClass: 'pagination',
