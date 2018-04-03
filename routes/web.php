@@ -16,12 +16,22 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
 
     $this->get('test', 'TestController@index');
 
+    $this->get('/build', function(){
+      return view('build',['title' => 'Dashboard']);
+    })->name('build');
+
+    $this->get('/manage', function(){
+      return view('manage',['title' => 'Dashboard']);
+    })->name('manage');
+
     $this->get('/', function() {
         return view('home', ['title' => 'Dashboard']);
     })->name('dash');
+
     $this->get('/home', function() {
         return view('home', ['title' => 'Dashboard']);
     })->name('home');
+
     $this->get('/json', function() {
         return array(
           "total" => 200,
