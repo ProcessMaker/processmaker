@@ -2,11 +2,18 @@
 namespace ProcessMaker\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use League\Fractal\Manager;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use League\Fractal\Pagination\PaginatorInterface;
+use League\Fractal\Resource\Collection;
+use League\Fractal\TransformerAbstract;
+use League\Fractal\Resource\Item;
 use ProcessMaker\Managers\DatabaseManager;
 use ProcessMaker\Managers\ProcessCategoryManager;
 use ProcessMaker\Managers\ProcessFileManager;
 use ProcessMaker\Managers\ReportTableManager;
 use ProcessMaker\Managers\SchemaManager;
+use ProcessMaker\Transformers\ProcessMakerSerializer;
 
 /**
  * Provide our ProcessMaker specific services
@@ -23,6 +30,43 @@ class ProcessMakerServiceProvider extends ServiceProvider
     public function boot()
     {
         parent::boot();
+
+        $fractal = new Manager();
+        $fractal->setSerializer(new ProcessMakerSerializer());
+
+        response()->macro('item', function ($item, TransformerAbstract $transformer, $status = 200, array $headers = []) use ($fractal) {
+            $resource = new Item($item, $transformer);
+
+            return response()->json(
+                $fractal->createData($resource)->toArray(),
+                $status,
+                $headers
+            );
+        });
+
+        response()->macro('collection', function ($item, TransformerAbstract $transformer, $status = 200, array $headers = []) use ($fractal) {
+            $resource = new Collection($item, $transformer);
+
+            return response()->json(
+                $fractal->createData($resource)->toArray(),
+                $status,
+                $headers
+            );
+        });
+
+        response()->macro('paged', function ($item, TransformerAbstract $transformer, $status = 200, array $headers = []) use ($fractal) {
+            $fractal->setSerializer(new ProcessMakerSerializer(true));
+
+            $resource = new Collection($item, $transformer);
+
+            $resource->setPaginator(new IlluminatePaginatorAdapter($item));
+
+            return response()->json(
+                $fractal->createData($resource)->toArray(),
+                $status,
+                $headers
+            );
+        });
     }
 
     /**
