@@ -2,6 +2,7 @@
 namespace ProcessMaker\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use ProcessMaker\Managers\CalendarManager;
 use ProcessMaker\Managers\DatabaseManager;
 use ProcessMaker\Managers\ProcessCategoryManager;
 use ProcessMaker\Managers\ProcessFileManager;
@@ -48,6 +49,10 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         $this->app->singleton('report_table.manager', function ($app) {
             return new ReportTableManager();
+        });
+
+        $this->app->singleton('calendar.manager', function ($app) {
+            return new CalendarManager();
         });
     }
 }
