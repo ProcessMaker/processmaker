@@ -3,7 +3,7 @@
 @section('content')
 <div class="row">
     <div class="col">
-      <img src="../img/building.png" class="img-fluid">
+      <img src="../img/building.png" class="img-fluid mb-4">
     </div>
     <div class="container col">
         <div class="col-md-8">
@@ -17,7 +17,7 @@
                         <div class="form-group">
                             <label for="username">{{ __('Username') }}</label>
                             <div class="col-md-6">
-                                <input id="username" type="text" class="form-control{{ $errors->has('username') ? ' is-invalid' : '' }}" name="username" value="{{ old('username') }}" required autofocus>
+                                <input id="username" type="text" class="form-control{{ $errors->has('username') ? ' is-invalid' : '' }}" name="username" value="{{ old('username') }}" required>
 
                                 @if ($errors->has('username'))
                                     <span class="invalid-feedback">
