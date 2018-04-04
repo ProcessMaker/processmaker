@@ -11,8 +11,8 @@
 
     </div>
 
-    <div class="col align-self-center">
-        <div class="container">
+    <div class="col align-self-center p-5">
+        <div class="container p-5">
             <div>
                 <div>
                   <h3 class="text-center p-3">{{ __('Login') }}</h3>
@@ -31,7 +31,6 @@
                                 @endif
                             </div>
                         </div>
-
                         <div class="form-group">
                             <label class="text-muted" for="password">{{ __('Password') }}</label>
                             <div class="">
@@ -44,7 +43,14 @@
                                 @endif
                             </div>
                         </div>
-
+                        <div class="form-group">
+                          <select class="form-control">
+                            <option>English</option>
+                            <option>Spanish</option>
+                            <option>Portugese</option>
+                            <option>Japanese</option>
+                          </select>
+                        </div>
                         <button type="submit" class="btn btn-primary btn-block">
                             {{ __('Login') }}
                         </button>
