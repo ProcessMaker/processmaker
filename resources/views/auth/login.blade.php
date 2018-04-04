@@ -69,5 +69,10 @@
     body{
       height:100%
     }
+    .login_background{
+      background-image: url("/img/building.png");
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
+    }
 </style>
 @endsection
