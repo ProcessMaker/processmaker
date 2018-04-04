@@ -3,7 +3,7 @@
 @section('content')
 <div class="row h-100">
     <div class="login_background col">
-      <img class="mx-auto img-fluid login_logo" src="/img/processmaker_logo_white.jpg" />
+      <img class="mx-auto img-fluid login_logo" src="/img/building.png" />
       <h1 class="text-light text-center">Leader in Enterprise</h1>
       <p class="text-light text-center">ProcessMaker has helped us improve the efficiency of our employees. Instead of running around to get approvals, we now have a software based process management.</p>
       <h3 class="text-light text-center">available on</h3>
