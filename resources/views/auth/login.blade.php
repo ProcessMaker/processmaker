@@ -56,11 +56,6 @@
                         </button>
 
                         <div class="form-inline float-right">
-                          <div class="checkbox">
-                              <label class="text-muted">
-                                  <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}> {{ __('Remember Me') }}
-                              </label>
-                          </div>
                           <a class="btn btn-link" href="{{ route('password.request') }}">
                                 {{ __('Forgot Your Password?') }}
                           </a>
