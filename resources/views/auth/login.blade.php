@@ -8,7 +8,7 @@
     <div class="container col">
         <div class="col-md-8">
             <div class="container">
-                <div class="col-sm-4 col-form-label text-md-right">{{ __('Login') }}</div>
+                <div class="h1 col-sm-4 col-form-label text-md-right">{{ __('Login') }}</div>
 
                 <div>
                     <form method="POST" action="{{ route('login') }}">
