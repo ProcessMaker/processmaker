@@ -17,10 +17,30 @@ class GenerateMenus
      */
     public function handle(Request $request, Closure $next)
     {
+          //set’s application’s locale
+        app()->setLocale('en');
+
+
         // Build the menu
         Menu::make('main', function ($menu) {
             $execute = $menu;
-            $tasks = $execute->add('Tasks',['class' => 'sidebar-header'])
+            $tasks = $execute->add(__('menus.execute.tasks'),['class' => 'sidebar-header'])
+            ->prepend('<i class="fa fa-list-ul"></i> ');
+            $tasks->add(__('menus.execute.pending'),['route'  => 'home', 'id' => 'home']);
+            $tasks->add(__('menus.execute.unclaimed'),['route'  => 'home', 'id' => 'home']);
+            $tasks->add(__('menus.execute.completed'),['route'  => 'home', 'id' => 'home']);
+
+            $cases = $execute->add(__('menus.execute.cases'),['class' => 'sidebar-header'])
+            ->prepend('<i class="fa fa-briefcase"></i> ');
+            $cases->add(__('menus.execute.new'));
+            $cases->add(__('menus.execute.draft'));
+            $cases->add(__('menus.execute.mine'));
+            $cases->add(__('menus.execute.find'));
+        });
+
+        Menu::make('execute', function ($menu) {
+            $execute = $menu;
+            $tasks = $execute->add('Execute',['class' => 'sidebar-header'])
             ->prepend('<i class="fa fa-list-ul"></i> ');
             $tasks->add('Pending',['route'  => 'home', 'id' => 'home']);
             $tasks->add('Unclaimed',['route'  => 'home', 'id' => 'home']);
@@ -32,30 +52,38 @@ class GenerateMenus
             $cases->add('Drafts');
             $cases->add('Mine');
             $cases->add('Find');
-            //
-            // $build = $menu->raw('Build',['class' => 'sidebar-header'])
-            // ->prepend('<i class="fa fa-wrench"></i> ');
-            // $app = $build->add('Application');
-            // $app->add('Processes');
-            // $app->add('Tables');
-            // $app->add('Forms');
-            // $app->add('Scripts');
-            //
-            // $manage = $menu->raw('Manage',['class' => 'sidebar-header'])
-            // ->prepend('<i class="fa fa-list-ul"></i> ');
-            // $org = $manage->add('Organization',['class' => 'sidebar-header']);
-            // $org->add('Users', ['route' => 'management-users-index']);
-            // $org->add('Groups');
-            // $org->add('Roles');
-            //
-            // $appearance = $manage->add('Appearance');
-            // $appearance->add('Themes');
-            // $appearance->add('Logo Management');
-            //
-            // $manage->add('Localization and Internationalization');
-            // $manage->add('Notifications');
-            // $manage->add('Plugin Manager');
-            // $manage->add('Logs & Audit');
+        });
+
+        Menu::make('manage', function ($menu) {
+            $execute = $menu;
+            $tasks = $execute->add('Manage',['class' => 'sidebar-header'])
+            ->prepend('<i class="fa fa-list-ul"></i> ');
+            $tasks->add('Pending',['route'  => 'home', 'id' => 'home']);
+            $tasks->add('Unclaimed',['route'  => 'home', 'id' => 'home']);
+            $tasks->add('Completed',['route'  => 'home', 'id' => 'home']);
+
+            $cases = $execute->add('Cases',['class' => 'sidebar-header'])
+            ->prepend('<i class="fa fa-briefcase"></i> ');
+            $cases->add('New');
+            $cases->add('Drafts');
+            $cases->add('Mine');
+            $cases->add('Find');
+        });
+
+        Menu::make('build', function ($menu) {
+            $execute = $menu;
+            $tasks = $execute->add('Build',['class' => 'sidebar-header'])
+            ->prepend('<i class="fa fa-list-ul"></i> ');
+            $tasks->add('Pending',['route'  => 'home', 'id' => 'home']);
+            $tasks->add('Unclaimed',['route'  => 'home', 'id' => 'home']);
+            $tasks->add('Completed',['route'  => 'home', 'id' => 'home']);
+
+            $cases = $execute->add('Cases',['class' => 'sidebar-header'])
+            ->prepend('<i class="fa fa-briefcase"></i> ');
+            $cases->add('New');
+            $cases->add('Drafts');
+            $cases->add('Mine');
+            $cases->add('Find');
         });
 
         return $next($request);
