@@ -3,19 +3,25 @@
 @section('content')
 <div class="row h-100">
     <div class="login_background col">
-      <div></div>
+      <img class="img-fluid" src="/img/processmaker_logo_white.jpg" />
+      <h1 class="text-light text-center">Leader in Enterprise</h1>
+      <p class="text-light text-center">ProcessMaker has helped us improve the efficiency of our employees. Instead of running around to get approvals, we now have a software based process management.</p>
+      <h3 class="text-light text-center">available on</h3>
+      <div class="layer"></div>
+
     </div>
-    <div class="col">
-        <div class="col-md-8">
+
+    <div class="col align-self-center">
+        <div class="container">
             <div>
                 <div>
-                  <div class="h1 col-sm-4 col-form-label text-md-right">{{ __('Login') }}</div>
+                  <h3 class="text-center p-3">{{ __('Login') }}</h3>
                     <form method="POST" action="{{ route('login') }}">
                       {{ csrf_field() }}
 
                         <div class="form-group">
                             <label class="text-muted" for="username">{{ __('Username') }}</label>
-                            <div class="col-md-6">
+                            <div class="">
                                 <input id="username" type="text" class="form-control{{ $errors->has('username') ? ' is-invalid' : '' }}" name="username" value="{{ old('username') }}" required>
 
                                 @if ($errors->has('username'))
@@ -28,7 +34,7 @@
 
                         <div class="form-group">
                             <label class="text-muted" for="password">{{ __('Password') }}</label>
-                            <div class="col-md-6">
+                            <div class="">
                                 <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" required>
 
                                 @if ($errors->has('password'))
@@ -43,7 +49,7 @@
                             {{ __('Login') }}
                         </button>
 
-                        <div class="form-inline">
+                        <div class="form-inline float-right">
                           <div class="checkbox">
                               <label class="text-muted">
                                   <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}> {{ __('Remember Me') }}
@@ -73,6 +79,15 @@
       background-image: url("/img/building.png");
       background-repeat: no-repeat;
       background-size: 100% 100%;
+      position: relative;
+    }
+    .layer{
+      background-color: #3397e1BF;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
     }
 </style>
 @endsection
