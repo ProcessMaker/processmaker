@@ -24,13 +24,13 @@ class TestController extends Controller
 
         $field = $sort[0];
 
-        if(isset($sort[1])){
+        if(isset($sort[1]) && $sort[1] == 'desc'){
 
-          $order = $sort[1];
+          $order = 'desc';
 
         }
       }
-      
+
       return $tmp->orderBy($field,$order)
       ->where('USR_FIRSTNAME','LIKE','%'.$request->filter.'%')
       ->orWhere('USR_LASTNAME','LIKE','%'.$request->filter.'%')
