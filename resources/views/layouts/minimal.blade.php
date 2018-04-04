@@ -11,10 +11,12 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Styles -->
+    @yield('css')
     <link href="{{ asset('css/base.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/layouts-app.css') }}" rel="stylesheet">
 </head>
 <body>
-    <div id="app">
+    <div class="container-fluid h-100" id="app">
         @yield('content')
     </div>
 
