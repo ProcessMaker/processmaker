@@ -27,4 +27,5 @@ mix.js([
   ])
     .sass('resources/assets/sass/base.scss', 'public/css')
     .sass('resources/assets/sass/layouts-app.scss', 'public/css')
-    .copy('node_modules/font-awesome/css/font-awesome.css', 'public/css');
+    .copy('node_modules/font-awesome/css/font-awesome.css', 'public/css')
+    .copy('resources/assets/img', 'public/img');
