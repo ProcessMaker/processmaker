@@ -1,21 +1,20 @@
 @extends('layouts.minimal')
 
 @section('content')
-<div class="row">
-    <div class="col">
-      <img src="../img/building.png" class="img-fluid mb-4">
+<div class="row h-100">
+    <div class="login_background col">
+      <div></div>
     </div>
-    <div class="container col">
+    <div class="col">
         <div class="col-md-8">
-            <div class="container">
-                <div class="h1 col-sm-4 col-form-label text-md-right">{{ __('Login') }}</div>
-
+            <div>
                 <div>
+                  <div class="h1 col-sm-4 col-form-label text-md-right">{{ __('Login') }}</div>
                     <form method="POST" action="{{ route('login') }}">
                       {{ csrf_field() }}
 
                         <div class="form-group">
-                            <label for="username">{{ __('Username') }}</label>
+                            <label class="text-muted" for="username">{{ __('Username') }}</label>
                             <div class="col-md-6">
                                 <input id="username" type="text" class="form-control{{ $errors->has('username') ? ' is-invalid' : '' }}" name="username" value="{{ old('username') }}" required>
 
@@ -28,7 +27,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="password">{{ __('Password') }}</label>
+                            <label class="text-muted" for="password">{{ __('Password') }}</label>
                             <div class="col-md-6">
                                 <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" required>
 
@@ -46,7 +45,7 @@
 
                         <div class="form-inline">
                           <div class="checkbox">
-                              <label>
+                              <label class="text-muted">
                                   <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}> {{ __('Remember Me') }}
                               </label>
                           </div>
@@ -60,4 +59,15 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('css')
+  <style>
+    html {
+      height:100%;
+    }
+    body{
+      height:100%
+    }
+</style>
 @endsection
