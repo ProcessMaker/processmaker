@@ -3,6 +3,7 @@
 namespace ProcessMaker\Model;
 
 use Illuminate\Database\Eloquent\Model;
+use Watson\Validating\ValidatingTrait;
 
 /**
  * Represents a business Calendar Definition.
@@ -21,6 +22,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class CalendarDefinition extends Model
 {
+    use ValidatingTrait;
+
     protected $table = 'CALENDAR_DEFINITION';
     protected $primaryKey = 'CALENDAR_ID';
 
