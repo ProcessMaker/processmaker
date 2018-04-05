@@ -16,8 +16,6 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
 
   // All the routes in this group and below are for testing purposes only
 
-    $this->get('test', 'TestController@index');
-
     $this->get('/build', function(){
       return view('build',['title' => 'Dashboard']);
     })->name('build');
@@ -102,6 +100,6 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
       )
       );
     })->name('home');
-    
+
     $this->get('/manage/users', 'Management\UsersController@index')->name('management-users-index');
 });
