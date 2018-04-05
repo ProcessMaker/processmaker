@@ -35,7 +35,6 @@ class TestController extends Controller
       ->where('USR_FIRSTNAME','LIKE','%'.$request->filter.'%')
       ->orWhere('USR_LASTNAME','LIKE','%'.$request->filter.'%')
       ->orWhere('USR_EMAIL','LIKE','%'.$request->filter.'%')
-      // ->get();
       ->paginate();
 
     }
