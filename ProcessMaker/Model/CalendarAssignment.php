@@ -75,8 +75,7 @@ class CalendarAssignment extends Model
      */
     public function definition()
     {
-        return $this->belongsTo('CalendarDefinition');
-
+        return $this->belongsTo(CalendarDefinition::class,'CALENDAR_ID', 'CALENDAR_ID');
     }
 
 }

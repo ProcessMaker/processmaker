@@ -13,9 +13,9 @@ use Watson\Validating\ValidatingTrait;
  * @property integer CALENDAR_HOLIDAYS_ID
  * @property integer CALENDAR_ID
  * @property string CALENDAR_UID
- * @property string CALENDAR_BUSINESS_DAY
- * @property string CALENDAR_BUSINESS_START
- * @property string CALENDAR_BUSINESS_END
+ * @property string CALENDAR_HOLIDAY_NAME
+ * @property string CALENDAR_HOLIDAY_START
+ * @property string CALENDAR_HOLIDAY_END
  *
  */
 class CalendarHolidays extends Model
@@ -48,9 +48,9 @@ class CalendarHolidays extends Model
     protected $attributes = [
         'CALENDAR_ID' => '',
         'CALENDAR_UID' => '',
-        'CALENDAR_BUSINESS_DAY' => '',
-        'CALENDAR_BUSINESS_START' => '',
-        'CALENDAR_BUSINESS_END' => ''
+        'CALENDAR_HOLIDAY_NAME' => '',
+        'CALENDAR_HOLIDAY_START' => '',
+        'CALENDAR_HOLIDAY_END' => ''
     ];
 
     /**
@@ -61,9 +61,21 @@ class CalendarHolidays extends Model
     protected $casts = [
         'CALENDAR_UID' => 'string',
         'CALENDAR_ID' => 'integer',
-        'CALENDAR_BUSINESS_DAY' => 'string',
-        'CALENDAR_BUSINESS_START' => 'string',
-        'CALENDAR_BUSINESS_END' => 'string'
+        'CALENDAR_HOLIDAY_NAME' => 'string',
+        'CALENDAR_HOLIDAY_START' => 'string',
+        'CALENDAR_HOLIDAY_END' => 'string'
+    ];
+
+    /**
+     * Validation rules.
+     *
+     * @var array $rules
+     */
+    protected $rules = [
+        'CALENDAR_UID' => 'required|max:32',
+        'CALENDAR_HOLIDAY_NAME' => 'required|max:100',
+        'CALENDAR_HOLIDAY_START' => 'required',
+        'CALENDAR_HOLIDAY_END' => 'required'
     ];
 
     /**
@@ -73,8 +85,7 @@ class CalendarHolidays extends Model
      */
     public function definition()
     {
-        return $this->belongsTo('CalendarDefinition');
-        
+        return $this->belongsTo(CalendarDefinition::class, 'CALENDAR_ID', 'CALENDAR_ID');
     }
 
 }

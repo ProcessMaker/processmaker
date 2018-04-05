@@ -30,6 +30,8 @@ class CalendarDefinition extends Model
     const CREATED_AT = 'CALENDAR_CREATE_DATE';
     const UPDATED_AT = 'CALENDAR_UPDATE_DATE';
 
+    public $timestamps = true;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -40,8 +42,6 @@ class CalendarDefinition extends Model
         'CALENDAR_WORK_DAYS',
         'CALENDAR_NAME',
         'CALENDAR_DESCRIPTION',
-        'CALENDAR_CREATE_DATE',
-        'CALENDAR_UPDATE_DATE',
         'CALENDAR_STATUS'
     ];
 
@@ -55,8 +55,6 @@ class CalendarDefinition extends Model
         'CALENDAR_WORK_DAYS' => '',
         'CALENDAR_NAME' => '',
         'CALENDAR_DESCRIPTION' => '',
-        'CALENDAR_CREATE_DATE' => null,
-        'CALENDAR_UPDATE_DATE' => null,
         'CALENDAR_STATUS' => ''
     ];
 
@@ -84,8 +82,6 @@ class CalendarDefinition extends Model
         'CALENDAR_UID' => 'required|max:32',
         'CALENDAR_WORK_DAYS' => 'required|max:100',
         'CALENDAR_NAME' => 'required|max:32',
-        'CALENDAR_CREATE_DATE' => 'required',
-        'CALENDAR_UPDATE_DATE' => 'required',
         'CALENDAR_STATUS' => 'required|max:8'
     ];
 
@@ -96,7 +92,7 @@ class CalendarDefinition extends Model
      */
     public function holidays()
     {
-        return $this->hasMany('CalendarHolidays','' , 'CALENDAR_ID', 'CALENDAR_ID');
+        return $this->hasMany(CalendarHolidays::class,'CALENDAR_ID', 'CALENDAR_ID');
     }
 
     /**
@@ -104,9 +100,9 @@ class CalendarDefinition extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function businessHorus()
+    public function businessHours()
     {
-        return $this->hasMany('CalendarBusinessHorus', '', 'CALENDAR_ID', 'CALENDAR_ID');
+        return $this->hasMany(CalendarBusinessHours::class,'CALENDAR_ID', 'CALENDAR_ID');
     }
 
     /**
@@ -116,7 +112,7 @@ class CalendarDefinition extends Model
      */
     public function assignment()
     {
-        return $this->hasMany('CalendarAssignment', '', 'CALENDAR_ID', 'CALENDAR_ID');
+        return $this->hasMany(CalendarAssignment::class,'CALENDAR_ID', 'CALENDAR_ID');
     }
 
 }

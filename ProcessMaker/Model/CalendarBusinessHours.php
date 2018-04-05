@@ -18,7 +18,7 @@ use Watson\Validating\ValidatingTrait;
  * @property string CALENDAR_BUSINESS_END
  *
  */
-class CalendarBusinessHorus extends Model
+class CalendarBusinessHours extends Model
 {
     use ValidatingTrait;
 
@@ -85,8 +85,7 @@ class CalendarBusinessHorus extends Model
      */
     public function definition()
     {
-        return $this->belongsTo('CalendarDefinition');
-
+        return $this->belongsTo(CalendarDefinition::class,'CALENDAR_ID', 'CALENDAR_ID');
     }
 
 }
