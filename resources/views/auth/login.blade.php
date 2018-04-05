@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="row h-100">
-    <div class="login_background col">
+    <div class="login_background col p-5">
       <img class="mx-auto img-fluid login_logo" src="/img/processmaker_logo_white.jpg"/>
       <h1 class="text-light text-center">Leader in Enterprise</h1>
       <p class="text-light text-center">ProcessMaker has helped us improve the efficiency of our employees. Instead of running around to get approvals, we now have a software based process management.</p>
@@ -77,18 +77,10 @@
       height:100%
     }
     .login_background{
-      background-image: url("/img/building.png");
+      background-image: url("/img/building.jpg");
       background-repeat: no-repeat;
       background-size: 100% 100%;
       position: absolute;
-    }
-    .layer{
-      background-color: #3397e1BF;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
     }
 </style>
 @endsection
