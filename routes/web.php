@@ -13,9 +13,24 @@ $this->get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm
 $this->post('password/reset', 'Auth\ResetPasswordController@reset');
 
 $this->middleware(['auth', 'apitoken'])->group(function() {
+
+  // All the routes in this group and below are for testing purposes only
+
+    $this->get('/build', function(){
+      return view('build',['title' => 'Dashboard']);
+    })->name('build');
+
+    $this->get('/manage', function(){
+      return view('manage',['title' => 'Dashboard']);
+    })->name('manage');
+
     $this->get('/', function() {
         return view('home', ['title' => 'Dashboard']);
-    });
+    })->name('dash');
+
+    $this->get('/home', function() {
+        return view('home', ['title' => 'Dashboard']);
+    })->name('home');
+
     $this->get('/manage/users', 'Management\UsersController@index')->name('management-users-index');
 });
-
