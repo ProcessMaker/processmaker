@@ -27,6 +27,8 @@ window.Vue = require('vue');
 
 window.Vue.use(BootstrapVue);
 
+Vue.component('my-vuetable', require('./components/MyVuetable.vue'));
+
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
  * to our Laravel back-end. This library automatically handles sending the

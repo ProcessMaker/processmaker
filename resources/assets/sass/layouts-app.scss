@@ -40,7 +40,7 @@ body {
   height: 100%;
   margin-left: -250px;
   overflow-y: auto;
-  background: $light;
+  background: #fcfdfe;
   -webkit-transition: all 0.5s ease;
   -moz-transition: all 0.5s ease;
   -o-transition: all 0.5s ease;
@@ -60,6 +60,10 @@ body {
 #wrapper.toggled #page-content-wrapper {
   position: absolute;
   margin-right: -250px;
+}
+
+#wrapper ul {
+  margin-left: -25px;
 }
 /* Sidebar Styles */
 .sidebar-nav {
@@ -114,10 +118,38 @@ body {
 
 .sidebar-header {
   font-size: 14px !important;
+  list-style: none;
   font-weight: 600;
-  color: $primary;
+  color: $gray-500;
   margin-left: 21px !important;
+  margin-top:12px;
 }
+
+.sidebar-header ul {
+  list-style: none;
+  color: $gray-500;
+  line-height: 1.9;
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: -22px !important;
+}
+
+.sidebar-header li a {
+  display: block;
+  text-decoration: none;
+  color: $gray-500;
+}
+
+.sidebar-header li a:hover {
+  display: block;
+  text-decoration: none;
+  color: $primary;
+}
+
+.sidebar-header .active a {
+  color: $primary;
+}
+
 
 .menu-toggle {
   padding: 20px;
@@ -149,4 +181,20 @@ body {
     position: relative;
     margin-right: 0;
   }
+}
+
+.table thead th {
+    border: 0;
+    background-color: $body-bg;
+    font-size: 12px;
+}
+.table td {
+  font-size: 12px;
+}
+.table-header{
+  font-size: 18px;
+}
+.vuetable-pagination{
+   color: #788793;
+   font-size: 12px;
 }

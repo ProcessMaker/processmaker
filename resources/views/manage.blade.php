@@ -2,7 +2,7 @@
 
 @section('content')
 
-<h1>Execute</h1>
+<h1>Manage</h1>
 <div class="container">
                 <my-vuetable
                   api-url="/test"></my-vuetable>
@@ -10,7 +10,7 @@
 @endsection
 
 @section('sidebar')
-  @include('sidebars.default')
+  @include('sidebars.manage')
 @endsection
 @section('js')
   <script>
