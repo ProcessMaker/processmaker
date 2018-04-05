@@ -9,13 +9,13 @@
   <div class="mr-auto collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
     <ul class="navbar-nav">
       <li class="nav-item active">
-        <a class="nav-link" href="#">Execute <span class="sr-only">(current)</span></a>
+        <a class="nav-link" href="/">Execute <span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#">Build</a>
+        <a class="nav-link" href="/build">Build</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#">Manage</a>
+        <a class="nav-link" href="/manage">Manage</a>
       </li>
       <li style="border-left:1px solid #ccc; margin:10px 30px"></li>
       </ul>
