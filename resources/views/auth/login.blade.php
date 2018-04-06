@@ -7,8 +7,6 @@
       <h3 class="text-light text-center p-3">Leader in Enterprise Workflow & BPM</h3>
       <p class="text-light text-center  p-3">ProcessMaker has helped us improve the efficiency of our employees. Instead of running around to get approvals, we now have a software based process management.</p>
       <div class="text-light text-center text-uppercase  p-3">available on</div>
-      <div class="layer"></div>
-
     </div>
 
     <div class="col align-self-center p-5">
@@ -21,7 +19,7 @@
 
                         <div class="form-group">
                             <label class="text-muted" for="username">{{ __('Username') }}</label>
-                            <div class="">
+                            <div>
                                 <input id="username" type="text" class="form-control{{ $errors->has('username') ? ' is-invalid' : '' }}" name="username" value="{{ old('username') }}" required>
 
                                 @if ($errors->has('username'))
@@ -79,7 +77,6 @@
     .login_background{
       background-image: url("/img/building.jpg");
       background-repeat: no-repeat;
-      background-size: 100% 100%;
       position: absolute;
     }
 </style>
