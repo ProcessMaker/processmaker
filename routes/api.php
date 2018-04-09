@@ -73,5 +73,16 @@ Router::group([
         Router::delete('project/{process}/report-table/{reportTable}', 'Project\ReportTableController@remove')->middleware('can:delete,reportTable');
         Router::get('project/{process}/report-table/{reportTable}/populate', 'Project\ReportTableController@populate')->middleware('can:write,reportTable');
         Router::get('project/{process}/report-table/{reportTable}/data', 'Project\ReportTableController@getAllDataRows')->middleware('can:read,reportTable');
+
+        //Assignee endpoints
+        Router::get('project/{process}/activity/{activity}/assignee', 'Designer\AssigneeController@index')->middleware('can:read');
+        Router::get('project/{process}/activity/{activity}/assignee/paged', 'Designer\AssigneeController@index')->middleware('can:read');
+        Router::get('project/{process}/activity/{activity}/available-assignee', 'Designer\AssigneeController@index')->middleware('can:read');
+        Router::get('project/{process}/activity/{activity}/available-assignee/paged', 'Designer\AssigneeController@index')->middleware('can:read');
+        Router::get('project/{process}/activity/{activity}/assignee/{aas_uid}', 'Designer\AssigneeController@index')->middleware('can:read');
+        Router::get('project/{process}/activity/{activity}/assignee/all', 'Designer\AssigneeController@index')->middleware('can:read');
+        Router::post('project/{process}/activity/{activity}/assignee', 'Designer\AssigneeController@index')->middleware('can:read');
+        Router::delete('project/{process}/activity/{activity}/assignee/{aas_uid}', 'Designer\AssigneeController@index')->middleware('can:read');
+
     });
 });
