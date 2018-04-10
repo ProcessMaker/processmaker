@@ -7,22 +7,28 @@
     "watch-poll": "npm run watch -- --watch-poll",
     "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
     "prod": "npm run production",
-    "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
+    "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "test": "cross-env NODE_ENV=test jest",
+    "test-watch": "npm run test -- --watch --notify"
   },
   "devDependencies": {
+    "@vue/test-utils": "^1.0.0-beta.13",
     "accounting": "^0.4.1",
     "axios": "^0.15.3",
+    "babel-jest": "^22.4.3",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
     "cross-env": "^3.2.3",
     "font-awesome": "^4.7.0",
+    "jest": "^22.4.3",
     "jquery": "^3.1.1",
     "laravel-mix": "0.*",
     "lodash": "^4.17.5",
     "moment": "^2.21.0",
     "vue": "^2.5.16",
     "vue-events": "^3.1.0",
+    "vue-jest": "^2.4.1",
     "vuetable-2": "^1.7.5"
   },
   "dependencies": {
@@ -40,5 +46,22 @@
     "v-tooltip": "^2.0.0-rc.31",
     "vue-events": "^3.1.0",
     "vuetable-2": "^1.7.5"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "vue"
+    ],
+    "transform": {
+      "^.+\\.js$": "<rootDir>/node_modules/babel-jest",
+      ".*\\.(vue)$": "<rootDir>/node_modules/vue-jest"
+    },
+    "roots": [
+      "<rootDir>/resources/assets/js/",
+      "<rootDir>/tests/js/"
+    ],
+    "collectCoverage": true,
+    "coverageDirectory": "<rootDir>/tests/js/coverage"
   }
 }
