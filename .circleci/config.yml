@@ -99,5 +99,5 @@ jobs:
           path: coverage
 
       - store_artifacts:
-          path: test/js/coverage
+          path: tests/js/coverage
 
