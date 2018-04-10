@@ -19,9 +19,11 @@ $factory->define(\ProcessMaker\Model\Application::class, function (Faker $faker)
 
     $pin = $faker->regexify("[A-Z0-9]{4}");
 
+    static $maxNumber = 1;
+
     // Get the next auto increment id for app_number
     // @todo This should be replaced with an ID field
-    $maxNumber = \ProcessMaker\Model\Application::max('APP_NUMBER') + 1;
+    $maxNumber += \ProcessMaker\Model\Application::max('APP_NUMBER');
 
     return [
         'APP_UID' => str_replace('-', '', Uuid::uuid4()),
