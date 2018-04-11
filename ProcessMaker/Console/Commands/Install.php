@@ -6,11 +6,18 @@ use Illuminate\Filesystem\Filesystem;
 use Exception;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Encryption\Encrypter;
 
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Helper\TableCell;
 
+/**
+ * Install command handles installing a fresh copy of ProcessMaker BPM.
+ * If a .env file is found in the base_path(), then we will refuse to install.
+ * Note: This is destructive to your database if you point to an existing database with tables.
+ */
 class Install extends Command
 {
     /**
@@ -27,8 +34,11 @@ class Install extends Command
      */
     protected $description = 'Install and configure ProcessMaker BPM';
 
-    private $files;
-
+    /**
+     * The values for our .env to populate
+     * 
+     * $var array
+     */
     private $env;
 
     /**
@@ -36,16 +46,25 @@ class Install extends Command
      *
      * @return void
      */
-    public function __construct(Filesystem $files)
+    public function __construct()
     {
         parent::__construct();
-        $this->files = $files;
+
+        // Our initial .env values
+        $this->env = [
+            'APP_DEBUG' => 'FALSE',
+            'APP_NAME' => 'ProcessMaker',
+            'APP_ENV' => 'production',
+            'APP_KEY' => 'base64:'.base64_encode(Encrypter::generateKey($this->laravel['config']['app.cipher'])),
+            'BROADCAST_DRIVER' => 'null'
+        ];
+
     }
 
     /**
-     * Execute the console command.
+     * Installs a fresh copy of ProcessMaker BPM
      *
-     * @return mixed
+     * @return mixed If the command succeeds, true
      */
     public function handle()
     {
@@ -68,6 +87,51 @@ class Install extends Command
         // Create database
         // Now install migrations
         $this->call('migrate:fresh', ['--seed']);
+
+        // Ask for URL
+        $invalid = false;
+        do {
+            if($invalid) {
+                $this->error(__("The url you provided was invalid. Please provide the scheme, host and path."));
+            }
+            $this->env['APP_URL'] = $this->ask(__('What is the url of this ProcessMaker Installation? (Ex: https://pm.example.com/)'));
+            $invalid = true;
+        } while(!filter_var($this->env['APP_URL'], FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED | FILTER_FLAG_PATH_REQUIRED));
+
+        // Now generate the .env file
+        // Configure the filesystem to be local
+        config(['filesystems.disks.install' => [
+            'driver' => 'local',
+            'root' => base_path()
+        ]]);
+
+        // Generate the required oauth private/public keys
+        $privateKey = openssl_pkey_new();
+        // Generate a CSR then sign it so we have a cert to extract public from
+        $csr = openssl_csr_new([], $privateKey);
+        $cert = openssl_csr_sign($csr, null, $privateKey, 365);
+        openssl_x509_export($cert, $signedCert);
+        $publicKey = openssl_pkey_get_public($signedCert);
+
+        openssl_pkey_export($privateKey, $privateKeyString);
+        $publicKeyData = openssl_pkey_get_details($publicKey);
+        $publicKeyString = $publicKeyData['key'];
+
+        // Now write the keys out to our key filesystem
+        Storage::disk('keys')->put('private.key', $privateKeyString);
+        Storage::disk('keys')->put('public.key', $publicKeyString);
+        $this->info(__("Finished creating public/private oauth2 ssl keys"));
+
+        $contents = '';
+        // Build out the file contents for our .env file
+        foreach($this->env as $key => $value) {
+            $contents .= $key . "=" . $value . "\n";
+        }
+        // Now store it
+        Storage::disk('install')->put('.env', $contents);
+
+        $this->info(__("ProcessMaker installation is complete. Please visit the url in your browser to continue."));
+        return true;
     }
 
 
@@ -97,9 +161,9 @@ class Install extends Command
 
     private function fetchDatabaseCredentials()
     {
-        $this->env['DB_HOSTNAME'] = $this->ask(__("Enter your MySQL host (Default 'localhost')"));
-        $this->env['DB_PORT'] = $this->anticipate(__("Enter your MySQL port (Default '3306')"), [3306]);
-        $this->env['DB_DATABASE'] = $this->ask(__("Enter your MySQL Database name (Default 'workflow')"));
+        $this->env['DB_HOSTNAME'] = $this->ask(__("Enter your MySQL host"));
+        $this->env['DB_PORT'] = $this->anticipate(__("Enter your MySQL port (Usually 3306)"), [3306]);
+        $this->env['DB_DATABASE'] = $this->ask(__("Enter your MySQL Database name"));
         $this->env['DB_USERNAME'] = $this->ask(__("Enter your MySQL Username"));
         $this->env['DB_PASSWORD'] = $this->secret(__("Enter your MySQL Password (Input hidden)"));
     }
@@ -115,13 +179,11 @@ class Install extends Command
             'username' => $this->env['DB_USERNAME'],
             'password' => $this->env['DB_PASSWORD']
         ]]);
-        //DB::connection('workflow')->reconnect();
         // Attempt to connect
         try {
             $pdo = DB::connection('workflow')->getPdo();
         } catch(Exception $e) {
-            $this->error(__("Failed to connect to MySQL database. Check your credentails and try again."));
-            $this->error($e);
+            $this->error(__("Failed to connect to MySQL database. Check your credentials and try again. Note, the database must also exist."));
             return false;
         }
         return true;
