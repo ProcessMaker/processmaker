@@ -7,6 +7,7 @@ use ProcessMaker\Managers\ProcessCategoryManager;
 use ProcessMaker\Managers\ProcessFileManager;
 use ProcessMaker\Managers\ReportTableManager;
 use ProcessMaker\Managers\SchemaManager;
+use ProcessMaker\Managers\TaskManager;
 
 /**
  * Provide our ProcessMaker specific services
@@ -48,6 +49,10 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         $this->app->singleton('report_table.manager', function ($app) {
             return new ReportTableManager();
+        });
+
+        $this->app->singleton('task.manager', function ($app) {
+            return new TaskManager();
         });
     }
 }

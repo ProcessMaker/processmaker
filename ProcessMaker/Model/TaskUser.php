@@ -2,7 +2,9 @@
 
 namespace ProcessMaker\Model;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Watson\Validating\ValidatingTrait;
 
 /**
@@ -59,7 +61,7 @@ class TaskUser extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function user()
+    public function user(): HasOne
     {
         return $this->hasOne(User::class, 'USR_UID', 'USR_UID');
     }
@@ -69,9 +71,48 @@ class TaskUser extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function group()
+    public function group(): HasOne
     {
         return $this->hasOne(Group::class, 'GRP_UID', 'USR_UID');
     }
+
+    /**
+     * Query only include Users
+     *
+     * @param Builder $query
+     * @return Builder
+     */
+    public function scopeOnlyUsers(Builder $query): Builder
+    {
+        return $query->where('TU_RELATION', '=', 1);
+    }
+
+    /**
+     * Query only include Groups
+     *
+     * @param Builder $query
+     *
+     * @return Builder
+     */
+    public function scopeOnlyGroups(Builder $query): Builder
+    {
+        return $query->where('TU_RELATION', '=', 2);
+    }
+
+    /**
+     * Query only include of the type
+     *
+     * @param Builder $query
+     * @param int $type
+     *
+     * @return Builder
+     */
+    public function scopeType(Builder $query, $type): Builder
+    {
+        return $query->where('TU_TYPE', '=', $type);
+    }
+
+
+
 
 }
