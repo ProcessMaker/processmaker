@@ -7,11 +7,14 @@ use Exception;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Encryption\Encrypter;
 
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Helper\TableCell;
+
+use ProcessMaker\Model\User;
 
 /**
  * Install command handles installing a fresh copy of ProcessMaker BPM.
@@ -55,8 +58,7 @@ class Install extends Command
             'APP_DEBUG' => 'FALSE',
             'APP_NAME' => 'ProcessMaker',
             'APP_ENV' => 'production',
-            'APP_KEY' => 'base64:'.base64_encode(Encrypter::generateKey($this->laravel['config']['app.cipher'])),
-            'BROADCAST_DRIVER' => 'null'
+            'APP_KEY' => 'base64:'.base64_encode(Encrypter::generateKey($this->laravel['config']['app.cipher']))
         ];
 
     }
@@ -68,11 +70,18 @@ class Install extends Command
      */
     public function handle()
     {
+        // Configure the filesystem to be local
+        config(['filesystems.disks.install' => [
+            'driver' => 'local',
+            'root' => base_path()
+        ]]);
+
         $this->info("<fg=cyan;bold>" . __("ProcessMaker Installer") . "</>");
+
         // Determine if .env file exists or not
         // if exists, bail out with an error
         // If file does not exist, begin to generate it
-        if($this->files->exists('.env')) {
+        if(Storage::disk('install')->exists('.env')) {
             $this->error(__("A .env file already exists"));
             $this->error(__("Remove the .env file to perform a new installation"));
             return 255;
@@ -95,16 +104,9 @@ class Install extends Command
                 $this->error(__("The url you provided was invalid. Please provide the scheme, host and path."));
             }
             $this->env['APP_URL'] = $this->ask(__('What is the url of this ProcessMaker Installation? (Ex: https://pm.example.com/)'));
-            $invalid = true;
-        } while(!filter_var($this->env['APP_URL'], FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED | FILTER_FLAG_PATH_REQUIRED));
+        } while($invalid = !filter_var($this->env['APP_URL'], FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED | FILTER_FLAG_PATH_REQUIRED));
 
         // Now generate the .env file
-        // Configure the filesystem to be local
-        config(['filesystems.disks.install' => [
-            'driver' => 'local',
-            'root' => base_path()
-        ]]);
-
         // Generate the required oauth private/public keys
         $privateKey = openssl_pkey_new();
         // Generate a CSR then sign it so we have a cert to extract public from
@@ -129,6 +131,35 @@ class Install extends Command
         }
         // Now store it
         Storage::disk('install')->put('.env', $contents);
+
+        // Create the required ui oauth client
+
+        // Now create the admin user
+        $admin = factory(User::class)->create([
+            'USR_USERNAME' => 'admin',
+            'USR_PASSWORD' => Hash::make('admin'),
+            'USR_FIRSTNAME' => '',
+            'USR_LASTNAME' => '',
+            'USR_TIME_ZONE' => 'UTC'
+        ]);
+
+        // Setup our initial oauth client for our web client
+        DB::table('OAUTH_CLIENTS')->insert([
+            'CLIENT_ID' => 'x-pm-local-client',
+            'CLIENT_SECRET' => '179ad45c6ce2cb97cf1029e212046e81',
+            'CLIENT_NAME' => 'PM Web Designer',
+            'CLIENT_DESCRIPTION' => 'ProcessMaker Web App',
+            'CLIENT_WEBSITE' => 'www.processmaker.com',
+            'REDIRECT_URI' => config('app.url') . 'oauth2/grant',
+            'USR_UID' => '00000000000000000000000000000001'
+        ]);
+        DB::table('OAUTH_ACCESS_TOKENS')->insert([
+            'ACCESS_TOKEN' => '39704d17049f5aef45e884e7b769989269502f83',
+            'CLIENT_ID' => 'x-pm-local-client',
+            'USER_ID' => '00000000000000000000000000000001',
+            'EXPIRES' => '2017-06-15 17:55:19',
+            'SCOPE' => 'view_processes edit_processes *'
+        ]);
 
         $this->info(__("ProcessMaker installation is complete. Please visit the url in your browser to continue."));
         return true;

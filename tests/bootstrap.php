@@ -9,6 +9,7 @@ require_once __DIR__ . '/../bootstrap/app.php';
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Artisan;
 
 // Bootstrap laravel
 app()->make(Kernel::class)->bootstrap();
@@ -80,39 +81,16 @@ if (env('RUN_MSSQL_TESTS')) {
 
 // THIS IS FOR STANDARD PROCESSMAKER TABLES
 if (env('POPULATE_DATABASE')) {
-    // Now, drop all test tables and repopulate with schema
-    DB::unprepared('SET FOREIGN_KEY_CHECKS = 0');
-    $colname = 'Tables_in_' . env('DB_DATABASE');
-    $tables = DB::select('SHOW TABLES');
-    $drop = [];
-    foreach ($tables as $table) {
-        $drop[] = $table->$colname;
-    }
-    if (count($drop)) {
-        $drop = implode(',', $drop);
-        DB::statement("DROP TABLE $drop");
-        DB::unprepared('SET FOREIGN_KEY_CHECKS = 1');
-    }
+    Artisan::call('migrate:fresh', ['--seed' => '']);
 
-    // Repopulate with schema and standard inserts
-    DB::unprepared(file_get_contents('database/sql/workflow/schema.sql'));
-    DB::unprepared(file_get_contents('database/sql/rbac/schema.sql'));
-    DB::unprepared(file_get_contents('database/sql/workflow/insert.sql'));
-    DB::unprepared(file_get_contents('database/sql/rbac/insert.sql'));
-
-    // Set our APP_SEQUENCE val
-    DB::table('APP_SEQUENCE')->insert([
-        'ID' => 1
-    ]);
-
-    // Setup our initial oauth client for our web designer
+    // Setup our initial oauth client for our web client
     DB::table('OAUTH_CLIENTS')->insert([
         'CLIENT_ID' => 'x-pm-local-client',
         'CLIENT_SECRET' => '179ad45c6ce2cb97cf1029e212046e81',
         'CLIENT_NAME' => 'PM Web Designer',
-        'CLIENT_DESCRIPTION' => 'ProcessMaker Web Designer App',
+        'CLIENT_DESCRIPTION' => 'ProcessMaker Web App',
         'CLIENT_WEBSITE' => 'www.processmaker.com',
-        'REDIRECT_URI' => config('app.url') . '/sys' . config('system.workspace').'/en/neoclassic/oauth2/grant',
+        'REDIRECT_URI' => config('app.url') . 'oauth2/grant',
         'USR_UID' => '00000000000000000000000000000001'
     ]);
     DB::table('OAUTH_ACCESS_TOKENS')->insert([
@@ -122,5 +100,7 @@ if (env('POPULATE_DATABASE')) {
         'EXPIRES' => '2017-06-15 17:55:19',
         'SCOPE' => 'view_processes edit_processes *'
     ]);
+
+
 }
 

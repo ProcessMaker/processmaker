@@ -88,7 +88,7 @@ class GenerateApiToken
                 'grant_type' => 'authorization_code',
                 'client_id' => $oauthClient->CLIENT_ID,
                 'client_secret' => $oauthClient->CLIENT_SECRET,
-                'redirect_uri' => config('app.url') . '/sys' . config('system.workspace').'/en/neoclassic/oauth2/grant',
+                'redirect_uri' => config('app.url') . 'oauth2/grant',
                 'code' => $grant
             ]);
             // Process the request
