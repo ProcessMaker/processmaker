@@ -32,6 +32,9 @@ class CalendarDefinition extends Model
 
     public $timestamps = true;
 
+    //valid status types
+    const STATUS = 'ACTIVE,INACTIVE';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -82,7 +85,7 @@ class CalendarDefinition extends Model
         'CALENDAR_UID' => 'required|max:32',
         'CALENDAR_WORK_DAYS' => 'required|max:100',
         'CALENDAR_NAME' => 'required|max:32',
-        'CALENDAR_STATUS' => 'required|max:8'
+        'CALENDAR_STATUS' => 'required|max:8|in:' . self::STATUS
     ];
 
     /**

@@ -2,8 +2,8 @@
 
 namespace Tests\unit\ProcessMaker\Managers;
 
+use Carbon\Carbon;
 use Faker\Factory as Faker;
-use ProcessMaker\Exception\CalendarInformationException;
 use ProcessMaker\Managers\CalendarManager;
 use ProcessMaker\Model\CalendarDefinition;
 use ProcessMaker\Model\Process;
@@ -17,6 +17,9 @@ class CalendarManagerTest extends TestCase
      * @var CalendarManager
      */
     private $calendar;
+
+    const CALENDAR_UID_DEFAULT = '00000000000000000000000000000001';
+    const CALENDAR_STATUS = [ 'ACTIVE', 'INACTIVE'];
 
     /**
      * CalendarManagerTest constructor.
@@ -35,7 +38,7 @@ class CalendarManagerTest extends TestCase
      */
     public function testGetCalendarDefault()
     {
-        $calendar = CalendarDefinition::where('CALENDAR_UID', '00000000000000000000000000000001')->first();
+        $calendar = CalendarDefinition::where('CALENDAR_UID', self::CALENDAR_UID_DEFAULT)->first();
         if ($calendar) {
             $calendar->delete();
         }
@@ -50,7 +53,7 @@ class CalendarManagerTest extends TestCase
      */
     public function testGetCalendarDefinition()
     {
-        $calendar = new CalendarDefinition(['CALENDAR_UID' => '00000000000000000000000000000001']);
+        $calendar = new CalendarDefinition(['CALENDAR_UID' => self::CALENDAR_UID_DEFAULT]);
         $default = $this->calendar->getCalendarDefinition($calendar, true)->toArray();
 
         //Verify structure
@@ -81,7 +84,7 @@ class CalendarManagerTest extends TestCase
         $calendar = [
             'CALENDAR_NAME' => $faker->sentence(2, true),
             'CALENDAR_DESCRIPTION' => $faker->sentence(5, true),
-            'CALENDAR_STATUS' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
+            'CALENDAR_STATUS' => $faker->randomElement(self::CALENDAR_STATUS),
             'CALENDAR_WORK_DAYS' => $faker->randomElement(['1|2|3|4|5', '1|3|5', '2|4|6']),
             'BUSINESS_DAY' => [
                 [
@@ -115,8 +118,8 @@ class CalendarManagerTest extends TestCase
         $this->assertEquals($data['BUSINESS_DAY'][0]['CALENDAR_BUSINESS_END'], $calendar['BUSINESS_DAY'][0]['CALENDAR_BUSINESS_END']);
 
         $this->assertEquals($data['HOLIDAY'][0]['CALENDAR_HOLIDAY_NAME'], $calendar['HOLIDAY'][0]['CALENDAR_HOLIDAY_NAME']);
-        $this->assertEquals(date('Y-m-d', strtotime($data['HOLIDAY'][0]['CALENDAR_HOLIDAY_START'])), $calendar['HOLIDAY'][0]['CALENDAR_HOLIDAY_START']);
-        $this->assertEquals(date('Y-m-d', strtotime($data['HOLIDAY'][0]['CALENDAR_HOLIDAY_END'])), $calendar['HOLIDAY'][0]['CALENDAR_HOLIDAY_END']);
+        $this->assertEquals(Carbon::createFromTimeString($data['HOLIDAY'][0]['CALENDAR_HOLIDAY_START'])->format('Y-m-d'), $calendar['HOLIDAY'][0]['CALENDAR_HOLIDAY_START']);
+        $this->assertEquals(Carbon::createFromTimeString($data['HOLIDAY'][0]['CALENDAR_HOLIDAY_END'])->format('Y-m-d'), $calendar['HOLIDAY'][0]['CALENDAR_HOLIDAY_END']);
 
         return $response;
     }
@@ -126,11 +129,12 @@ class CalendarManagerTest extends TestCase
      */
     public function testGetAssignmentDefault()
     {
-        $result = $this->calendar->getCalendarAssignment(new User(), new Process(), new Task())->toArray();
+        $result = $this->calendar->getCalendarAssignment(factory(User::class)->make(), factory(Process::class)->make(), factory(Task::class)->make())->toArray();
 
         $this->verifyStructure($result, true, true);
         //verify calendar owner
         $this->assertArrayHasKey('OWNER', $result);
+        //verify calendar assignment default
         $this->assertEquals($result['OWNER'], 'DEFAULT');
     }
 
@@ -151,14 +155,13 @@ class CalendarManagerTest extends TestCase
             'CALENDAR_ID' => $calendar->CALENDAR_ID,
         ]);
 
-        $result = $this->calendar->getCalendarAssignment($user, new Process(), new Task())->toArray();
+        $result = $this->calendar->getCalendarAssignment($user, factory(Process::class)->make(), factory(Task::class)->make())->toArray();
 
         $this->verifyStructure($result, true, true);
         //verify calendar owner
         $this->assertArrayHasKey('OWNER', $result);
+        //verify calendar assignment by user
         $this->assertEquals($result['OWNER'], 'USER');
-
-        //$this->assertEquals($result['CALENDAR_UID'], $calendar->CALENDAR_UID);
     }
 
     /**
@@ -177,14 +180,13 @@ class CalendarManagerTest extends TestCase
             'CALENDAR_UID' => $calendar->CALENDAR_UID,
             'CALENDAR_ID' => $calendar->CALENDAR_ID,
         ]);
-        $user = new User();
-        $user->USR_UID = '';
 
-        $result = $this->calendar->getCalendarAssignment($user, $process, new Task())->toArray();
+        $result = $this->calendar->getCalendarAssignment(factory(User::class)->make(), $process, factory(Task::class)->make())->toArray();
 
         $this->verifyStructure($result, true, true);
         //verify calendar owner
         $this->assertArrayHasKey('OWNER', $result);
+        //verify calendar assignment by process
         $this->assertEquals($result['OWNER'], 'PROCESS');
     }
 
@@ -204,14 +206,13 @@ class CalendarManagerTest extends TestCase
             'CALENDAR_UID' => $calendar->CALENDAR_UID,
             'CALENDAR_ID' => $calendar->CALENDAR_ID,
         ]);
-        $user = new User();
-        $user->USR_UID = '';
 
-        $result = $this->calendar->getCalendarAssignment($user, new Process(), $task)->toArray();
+        $result = $this->calendar->getCalendarAssignment(factory(User::class)->make(), factory(Process::class)->make(), $task)->toArray();
 
         $this->verifyStructure($result, true, true);
         //verify calendar owner
         $this->assertArrayHasKey('OWNER', $result);
+        //verify calendar assignment by task
         $this->assertEquals($result['OWNER'], 'TASK');
     }
 
@@ -224,8 +225,8 @@ class CalendarManagerTest extends TestCase
         $calendar = [
             'CALENDAR_WORK_DAYS' => $faker->randomElement(['1|2', '1|3', '2'])
         ];
-        $result = $this->calendar->validateCalendarInformation($calendar);
-        $this->assertEquals($result['CALENDAR_UID'], '00000000000000000000000000000001');
+        $result = $this->calendar->verifyDataOrLoadCalendarDefault($calendar);
+        $this->assertEquals($result['CALENDAR_UID'], self::CALENDAR_UID_DEFAULT);
     }
 
     /**
@@ -238,8 +239,8 @@ class CalendarManagerTest extends TestCase
             'CALENDAR_WORK_DAYS' => $faker->randomElement(['1|2|3|4|5', '1|3|5', '2|4|6']),
             'BUSINESS_DAY' => []
         ];
-        $result = $this->calendar->validateCalendarInformation($calendar);
-        $this->assertEquals($result['CALENDAR_UID'], '00000000000000000000000000000001');
+        $result = $this->calendar->verifyDataOrLoadCalendarDefault($calendar);
+        $this->assertEquals($result['CALENDAR_UID'], self::CALENDAR_UID_DEFAULT);
     }
 
     /**

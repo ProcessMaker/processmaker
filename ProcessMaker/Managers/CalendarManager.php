@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Managers;
 
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\Exception\CalendarInformationException;
 use ProcessMaker\Model\CalendarAssignment;
 use ProcessMaker\Model\CalendarBusinessHours;
@@ -11,18 +12,20 @@ use ProcessMaker\Model\Process;
 use ProcessMaker\Model\Task;
 use ProcessMaker\Model\User;
 use Ramsey\Uuid\Uuid;
-use stdClass;
+use Throwable;
 
 class CalendarManager
 {
     const CALENDAR_UID_DEFAULT = '00000000000000000000000000000001';
+    const CALENDAR_STATUS_ACTIVE = 'ACTIVE';
+    const CALENDAR_STATUS_INACTIVE = 'INACTIVE';
 
     /**
      * Load calendar of default
      *
      * @return CalendarDefinition
      */
-    public function getCalendarDefault()
+    public function getCalendarDefault(): CalendarDefinition
     {
         $calendarDefault = new CalendarDefinition(['CALENDAR_UID' => self::CALENDAR_UID_DEFAULT]);
         $definition = $this->getCalendarDefinition($calendarDefault, false);
@@ -30,10 +33,8 @@ class CalendarManager
             $this->saveCalendarInformation([
                 'CALENDAR_UID' => '00000000000000000000000000000001',
                 'CALENDAR_NAME' => __('ID_DEFAULT_CALENDAR'),
-                'CALENDAR_CREATE_DATE' => date('Y-m-d'),
-                'CALENDAR_UPDATE_DATE' => date('Y-m-d'),
-                'CALENDAR_DESCRIPTION' => __('ID_DEFAULT_CALENDAR'),
-                'CALENDAR_STATUS' => 'ACTIVE',
+                'CALENDAR_DESCRIPTION' => __('Default Calendar'),
+                'CALENDAR_STATUS' => self::CALENDAR_STATUS_ACTIVE,
                 'CALENDAR_WORK_DAYS' => '1|2|3|4|5',
                 'BUSINESS_DAY' => [
                     [
@@ -55,9 +56,9 @@ class CalendarManager
      * @param CalendarDefinition $calendar
      * @param bool $default If the calendar does not exist, return to the default calendar.
      *
-     * @return CalendarDefinition
+     * @return CalendarDefinition|null
      */
-    public function getCalendarDefinition(CalendarDefinition $calendar, $default = false)
+    public function getCalendarDefinition(CalendarDefinition $calendar, $default = false): ?CalendarDefinition
     {
         $definition = CalendarDefinition::where('CALENDAR_UID', $calendar->CALENDAR_UID)->first();
         if ($default && (empty($definition) || empty($definition->toArray()))) {
@@ -74,24 +75,25 @@ class CalendarManager
      *
      * @return CalendarDefinition
      */
-    public function getCalendarInformation(CalendarDefinition $calendar, $validate = false)
+    public function getCalendarInformation(CalendarDefinition $calendar, $validate = false): CalendarDefinition
     {
         $definition = $this->getCalendarDefinition($calendar, true);
         $definition->BUSINESS_DAY = $definition->businessHours()->get()->toArray();
         $definition->HOLIDAY = $definition->holidays()->get()->toArray();
         if ($validate) {
-            $definition = $this->validateCalendarInformation($definition->toArray());
+            $definition = $this->verifyDataOrLoadCalendarDefault($definition->toArray());
         }
         return $definition;
     }
 
     /**
-     * Validate information of calendar
+     * Check if the calendar information is correct otherwise load the calendar information by default.
      *
      * @param array $data
-     * @return stdClass
+     *
+     * @return CalendarDefinition
      */
-    public function validateCalendarInformation($data)
+    public function verifyDataOrLoadCalendarDefault($data): ?CalendarDefinition
     {
         try {
             $calendar = new CalendarDefinition();
@@ -99,11 +101,15 @@ class CalendarManager
             //Validate if Working days are Correct, by default minimum 3
             $workingDays = explode('|', $data['CALENDAR_WORK_DAYS']);
             if (count($workingDays) < 3) {
-                throw new CalendarInformationException('You must define at least 3 Working Days!');
+                $message = __('You must define at least 3 Working Days!');
+                Log::warning($message);
+                throw new CalendarInformationException($message);
             }
             //Validate that all Working Days have Business Hours
             if (count($data['BUSINESS_DAY']) < 1) {
-                throw new CalendarInformationException('You must define at least one Business Day for all days');
+                $message = __('You must define at least one Business Day for all days');
+                Log::warning($message);
+                throw new CalendarInformationException($message);
             }
             $workingDaysOK = [];
             foreach ($workingDays as $day) {
@@ -123,7 +129,9 @@ class CalendarManager
                 $sw_days = $sw_days && $sw_day;
             }
             if (!($sw_all || $sw_days)) {
-                throw new CalendarInformationException('Not all working days have their correspondent business day');
+                $message = __('Not all working days have their correspondent business day');
+                Log::warning($message);
+                throw new CalendarInformationException($message);
             }
 
             $calendar->fill($data);
@@ -144,9 +152,9 @@ class CalendarManager
      * @param Task $task
      * @param bool $validate If information validation is required
      *
-     * @return stdClass
+     * @return CalendarDefinition
      */
-    public function getCalendarAssignment(User $user, Process $process, Task $task, $validate = true)
+    public function getCalendarAssignment(User $user, Process $process, Task $task, $validate = true): CalendarDefinition
     {
         $assignment = CalendarAssignment::whereIn('OBJECT_UID', [$user->USR_UID, $process->PRO_UID, $task->TAS_UID])->get()->toArray();
         $calendarDefinition = new CalendarDefinition();
@@ -180,9 +188,9 @@ class CalendarManager
      * @param $information
      *
      * @return CalendarDefinition
-     * @throws \Throwable
+     * @throws Throwable
      */
-    public function saveCalendarInformation($information)
+    public function saveCalendarInformation($information): CalendarDefinition
     {
         $definition = $this->saveCalendarDefinition($information);
         if (isset($information['BUSINESS_DAY']) && is_array($information['BUSINESS_DAY'])) {
@@ -208,7 +216,7 @@ class CalendarManager
      * @param array $data
      *
      * @return CalendarDefinition
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function saveCalendarDefinition($data): CalendarDefinition
     {
@@ -227,9 +235,9 @@ class CalendarManager
      * @param array $data
      *
      * @return CalendarBusinessHours
-     * @throws \Throwable
+     * @throws Throwable
      */
-    public function saveCalendarBusinessHours($data)
+    public function saveCalendarBusinessHours($data): CalendarBusinessHours
     {
         $businessHours = new CalendarBusinessHours();
         $businessHours->fill($data);
@@ -244,9 +252,9 @@ class CalendarManager
      * @param array $data
      *
      * @return CalendarHolidays
-     * @throws \Throwable
+     * @throws Throwable
      */
-    public function saveCalendarHolidays($data)
+    public function saveCalendarHolidays($data): CalendarHolidays
     {
         $holidays = new CalendarHolidays();
         $holidays->fill($data);
@@ -260,9 +268,9 @@ class CalendarManager
      * @param array $data
      *
      * @return CalendarAssignment
-     * @throws \Throwable
+     * @throws Throwable
      */
-    public function saveCalendarAssignment($data)
+    public function saveCalendarAssignment($data): CalendarAssignment
     {
         $assignment = new CalendarAssignment();
         $assignment->fill($data);
