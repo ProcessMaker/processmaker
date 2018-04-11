@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers\Api\Designer;
 
 use Illuminate\Http\Request;
+use ProcessMaker\Exception\TaskAssignedException;
 use ProcessMaker\Facades\TaskManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Model\Activity;
@@ -46,13 +47,16 @@ class AssigneeController extends Controller
      */
     public function store(Process $process, Task $task, Request$request)
     {
-        $options = [
-            'aas_uid' => $request->input('aas_uid', ''),
-            'aas_type' => $request->input('aas_type', ''),
-        ];
-
-        return TaskManager::saveAssignee($process, $task, $options);
-
+        try
+        {
+            $options = [
+                'aas_uid' => $request->input('aas_uid', ''),
+                'aas_type' => $request->input('aas_type', ''),
+            ];
+            return TaskManager::saveAssignee($process, $task, $options);
+        } catch (TaskAssignedException $exception) {
+            return response($exception->getMessage(), 400);
+        }
     }
 
 }
