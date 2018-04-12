@@ -20,7 +20,7 @@ Router::group([
     'namespace' => 'ProcessMaker\Http\Controllers\Api',
 ], function() {
     Router::group([
-        'middleware' => []
+        'middleware' => ['auth:api', 'bindings']
     ], function() {
         Router::get('cases/{application}/variables', 'Cases\VariableController@get')->middleware('can:read,application');
         //File manager endpoints.
@@ -76,7 +76,7 @@ Router::group([
 
         //Assignee endpoints
         Router::get('project/{process}/activity/{activity}/assignee', 'Designer\AssigneeController@getActivityAssignees')->middleware('can:read');
-        Router::post('project/{process}/activity/{activity}/assignee', 'Designer\AssigneeController@store');
+        Router::post('project/{process}/activity/{activity}/assignee', 'Designer\AssigneeController@store');//->middleware('can:read,ProcessMaker\Model\TaskUser');
         /*Router::get('project/{process}/activity/{activity}/assignee/paged', 'Designer\AssigneeController@getActivityAssigneesPaged')->middleware('can:read');
         Router::get('project/{process}/activity/{activity}/available-assignee', 'Designer\AssigneeController@getActivityAvailableAssignees')->middleware('can:read');
         Router::get('project/{process}/activity/{activity}/available-assignee/paged', 'Designer\AssigneeController@getActivityAvailableAssigneesPaged')->middleware('can:read');

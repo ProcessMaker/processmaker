@@ -2,7 +2,10 @@
 
 namespace Tests\Feature\Api\Designer;
 
+use Faker\Factory as Faker;
+use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Hash;
+use ProcessMaker\Model\Group;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\Role;
 use ProcessMaker\Model\Task;
@@ -12,6 +15,7 @@ use Tests\Feature\Api\ApiTestCase;
 class TaskManagerTest extends ApiTestCase
 {
     const API_ROUTE = '/api/1.0/project/';
+    const DEFAULT_PASS = 'password';
 
     /**
      * Create process
@@ -34,12 +38,12 @@ class TaskManagerTest extends ApiTestCase
      */
     public function testCreateTask(Process $process)
     {
-        $task = factory(Task::class)->create([
+        $activity = factory(Task::class)->create([
             'PRO_UID' => $process->PRO_UID
         ]);
-        $this->assertNotNull($task);
-        $this->assertNotNull($task->TAS_UID);
-        return $task;
+        $this->assertNotNull($activity);
+        $this->assertNotNull($activity->TAS_UID);
+        return $activity;
     }
 
     /**
@@ -49,7 +53,7 @@ class TaskManagerTest extends ApiTestCase
     public function testCreateUser()
     {
         $user = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make('password'),
+            'USR_PASSWORD' => Hash::make(self::DEFAULT_PASS),
             'USR_ROLE' => Role::PROCESSMAKER_ADMIN
         ]);
         $this->assertNotNull($user);
@@ -58,24 +62,33 @@ class TaskManagerTest extends ApiTestCase
     }
 
     /**
+     * create a group and assign users in it.
+     * @return Group
+     */
+    public function testCreateGroup(): Group
+    {
+        return factory(Group::class)->create();
+    }
+
+    /**
      * @param Process $process
-     * @param Task $task
+     * @param Task $activity
      * @package User $user
      *
      * @depends testCreateProcess
      * @depends testCreateTask
      * @depends testCreateUser
      */
-    public function testStore(Process $process, Task $task, User $user)
+    public function testStore(Process $process, Task $activity, User $user)
     {
         $this->auth($user->USR_USERNAME, 'password');
 
         $data = [
             'aas_type' => 'user',
-            'ass_uid' => '123'
+            'aas_uid' => '123'
         ];
         //validate non-existent user
-        $url = self::API_ROUTE . $process->PRO_UID . '/activity/' . $task->TAS_UID . '/assignee';
+        $url = self::API_ROUTE . $process->PRO_UID . '/activity/' . $activity->TAS_UID . '/assignee';
         $response = $this->api('POST', $url, $data);
         $response->assertStatus(400);
 
@@ -84,11 +97,15 @@ class TaskManagerTest extends ApiTestCase
         $response = $this->api('POST', $url, $data);
         $response->assertStatus(400);
 
-        //validate user
+        //correctly insert assignment user
         $data['aas_type'] = 'user';
         $data['aas_uid'] = $user->getIdentifier();
         $response = $this->api('POST', $url, $data);
         $response->assertStatus(200);
+
+        //user exist
+        $response = $this->api('POST', $url, $data);
+        $response->assertStatus(400);
 
 
     }

@@ -135,4 +135,14 @@ class User extends Authenticatable implements UserEntityInterface
     {
         return $this->belongsTo(Role::class, 'USR_ROLE', 'ROL_CODE');
     }
+
+    /**
+     * Get all users assigned to task
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function assignedTask()
+    {
+        return $this->morphMany(TaskUser::class, 'assigned', 'assigned_type', 'USR_ID', 'USR_ID');
+    }
 }
