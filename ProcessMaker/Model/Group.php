@@ -25,4 +25,14 @@ class Group extends Model
     {
         return $this->belongsToMany(User::class, 'GROUP_USER', 'GRP_UID', 'USR_UID');
     }
+
+    /**
+     * Get all groups assigned to task
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function assignedTask()
+    {
+        return $this->morphMany(TaskUser::class, 'assigned', 'assigned_type', 'GRP_ID', 'USR_ID');
+    }
 }

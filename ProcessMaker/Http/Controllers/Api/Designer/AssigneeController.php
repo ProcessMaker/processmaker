@@ -40,12 +40,12 @@ class AssigneeController extends Controller
      * Assign a user or group to a task.
      *
      * @param Process $process
-     * @param Task $task
+     * @param Task $activity
      * @param Request $request
      *
      * @return array
      */
-    public function store(Process $process, Task $task, Request$request)
+    public function store(Process $process, Task $activity, Request$request)
     {
         try
         {
@@ -53,7 +53,7 @@ class AssigneeController extends Controller
                 'aas_uid' => $request->input('aas_uid', ''),
                 'aas_type' => $request->input('aas_type', ''),
             ];
-            return TaskManager::saveAssignee($process, $task, $options);
+            return TaskManager::saveAssignee($process, $activity, $options);
         } catch (TaskAssignedException $exception) {
             return response($exception->getMessage(), 400);
         }

@@ -17,6 +17,7 @@ app()->make(Kernel::class)->bootstrap();
 config(['database.connections.testexternal' => [
     'driver' => 'mysql',
     'host' => env('DB_HOST', '127.0.0.1'),
+    'port' => env('DB_PORT', '3306'),
     // We set database to null to ensure we can create the testexternal database
     'database' => null,
     'username' => env('DB_USERNAME', 'root'),
@@ -122,5 +123,6 @@ if (env('POPULATE_DATABASE')) {
         'EXPIRES' => '2017-06-15 17:55:19',
         'SCOPE' => 'view_processes edit_processes *'
     ]);
+    Artisan::call('migrate');
 }
 

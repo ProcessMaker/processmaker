@@ -57,62 +57,13 @@ class TaskUser extends Model
     ];
 
     /**
-     * Get information user
+     * Get all of the assigned models.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
      */
-    public function user(): HasOne
+    public function assigned()
     {
-        return $this->hasOne(User::class, 'USR_UID', 'USR_UID');
+        return $this->morphTo();
     }
-
-    /**
-     * Get information user
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
-    public function group(): HasOne
-    {
-        return $this->hasOne(Group::class, 'GRP_UID', 'USR_UID');
-    }
-
-    /**
-     * Query only include Users
-     *
-     * @param Builder $query
-     * @return Builder
-     */
-    public function scopeOnlyUsers(Builder $query): Builder
-    {
-        return $query->where('TU_RELATION', '=', 1);
-    }
-
-    /**
-     * Query only include Groups
-     *
-     * @param Builder $query
-     *
-     * @return Builder
-     */
-    public function scopeOnlyGroups(Builder $query): Builder
-    {
-        return $query->where('TU_RELATION', '=', 2);
-    }
-
-    /**
-     * Query only include of the type
-     *
-     * @param Builder $query
-     * @param int $type
-     *
-     * @return Builder
-     */
-    public function scopeType(Builder $query, $type): Builder
-    {
-        return $query->where('TU_TYPE', '=', $type);
-    }
-
-
-
 
 }
