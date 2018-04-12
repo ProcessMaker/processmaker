@@ -93,20 +93,29 @@ class Install extends Command
         do {
         $this->fetchDatabaseCredentials();
         } while(!$this->testDatabaseConnection());
-        // Create database
-        // Now install migrations
-        $this->call('migrate:fresh', ['--seed']);
-
-        // Ask for URL
+        // Ask for URL and validate
         $invalid = false;
         do {
             if($invalid) {
-                $this->error(__("The url you provided was invalid. Please provide the scheme, host and path."));
+                $this->error(__("The url you provided was invalid. Please provide the scheme, host and path and have no trailing slashes."));
             }
-            $this->env['APP_URL'] = $this->ask(__('What is the url of this ProcessMaker Installation? (Ex: https://pm.example.com/)'));
-        } while($invalid = !filter_var($this->env['APP_URL'], FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED | FILTER_FLAG_PATH_REQUIRED));
+            $this->env['APP_URL'] = $this->ask(__('What is the url of this ProcessMaker Installation? (Ex: https://pm.example.com, no trailing slash)'));
+        } while($invalid = (!filter_var($this->env['APP_URL'], 
+                                        FILTER_VALIDATE_URL, 
+                                        FILTER_FLAG_SCHEME_REQUIRED | 
+                                        FILTER_FLAG_HOST_REQUIRED) 
+                    || ($this->env['APP_URL'][strlen($this->env['APP_URL']) - 1] == '/'))
+        );
 
-        // Now generate the .env file
+        // Set it as our url in our config
+        config(['app.url' => $this->env['APP_URL']]);
+
+        $this->info(__("Installing ProcessMaker Database, OAuth SSL Keys and configuration file"));
+
+        // Create database
+        // Now install migrations
+        $this->call('migrate:fresh', ['--seed' => true]);
+
         // Generate the required oauth private/public keys
         $privateKey = openssl_pkey_new();
         // Generate a CSR then sign it so we have a cert to extract public from
@@ -124,6 +133,7 @@ class Install extends Command
         Storage::disk('keys')->put('public.key', $publicKeyString);
         $this->info(__("Finished creating public/private oauth2 ssl keys"));
 
+        // Now generate the .env file
         $contents = '';
         // Build out the file contents for our .env file
         foreach($this->env as $key => $value) {
@@ -131,35 +141,6 @@ class Install extends Command
         }
         // Now store it
         Storage::disk('install')->put('.env', $contents);
-
-        // Create the required ui oauth client
-
-        // Now create the admin user
-        $admin = factory(User::class)->create([
-            'USR_USERNAME' => 'admin',
-            'USR_PASSWORD' => Hash::make('admin'),
-            'USR_FIRSTNAME' => '',
-            'USR_LASTNAME' => '',
-            'USR_TIME_ZONE' => 'UTC'
-        ]);
-
-        // Setup our initial oauth client for our web client
-        DB::table('OAUTH_CLIENTS')->insert([
-            'CLIENT_ID' => 'x-pm-local-client',
-            'CLIENT_SECRET' => '179ad45c6ce2cb97cf1029e212046e81',
-            'CLIENT_NAME' => 'PM Web Designer',
-            'CLIENT_DESCRIPTION' => 'ProcessMaker Web App',
-            'CLIENT_WEBSITE' => 'www.processmaker.com',
-            'REDIRECT_URI' => config('app.url') . 'oauth2/grant',
-            'USR_UID' => '00000000000000000000000000000001'
-        ]);
-        DB::table('OAUTH_ACCESS_TOKENS')->insert([
-            'ACCESS_TOKEN' => '39704d17049f5aef45e884e7b769989269502f83',
-            'CLIENT_ID' => 'x-pm-local-client',
-            'USER_ID' => '00000000000000000000000000000001',
-            'EXPIRES' => '2017-06-15 17:55:19',
-            'SCOPE' => 'view_processes edit_processes *'
-        ]);
 
         $this->info(__("ProcessMaker installation is complete. Please visit the url in your browser to continue."));
         return true;
@@ -192,9 +173,9 @@ class Install extends Command
 
     private function fetchDatabaseCredentials()
     {
-        $this->env['DB_HOSTNAME'] = $this->ask(__("Enter your MySQL host"));
+        $this->env['DB_HOSTNAME'] = $this->anticipate(__("Enter your MySQL host"), ['localhost']);
         $this->env['DB_PORT'] = $this->anticipate(__("Enter your MySQL port (Usually 3306)"), [3306]);
-        $this->env['DB_DATABASE'] = $this->ask(__("Enter your MySQL Database name"));
+        $this->env['DB_DATABASE'] = $this->anticipate(__("Enter your MySQL Database name"), ['workflow']);
         $this->env['DB_USERNAME'] = $this->ask(__("Enter your MySQL Username"));
         $this->env['DB_PASSWORD'] = $this->secret(__("Enter your MySQL Password (Input hidden)"));
     }
