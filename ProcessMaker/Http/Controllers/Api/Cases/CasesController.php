@@ -65,13 +65,13 @@ class CasesController extends Controller
     $paginator = Application::orderBy($expected['sort'],$expected['sort_order']);
 
     if ($request->has('filter')) {
-        $paginator->where('APP_TITLE', 'LIKE', '%' . $request->get('filter') . '%');
-        $paginator->where('APP_DESCRIPTION', 'LIKE', '%' . $request->get('filter') . '%');
-        $paginator->where('APP_NUMBER', 'LIKE', '%' . $request->get('filter') . '%');
+        $paginator = $paginator->where('APP_TITLE', 'LIKE', '%' . $request->get('filter') . '%');
+        $paginator = $paginator->where('APP_DESCRIPTION', 'LIKE', '%' . $request->get('filter') . '%');
+        $paginator = $paginator->where('APP_NUMBER', 'LIKE', '%' . $request->get('filter') . '%');
     }
 
     if ($request->has('status')) {
-        $paginator->where('APP_STATUS', $request->get('status'));
+        $paginator = $paginator->where('APP_STATUS', $request->get('status'));
     }
 
     if ($request->has('per_page')) {
@@ -80,8 +80,16 @@ class CasesController extends Controller
 
     }
 
-    $paginator->paginate($expected['per_page']);
+    // Note, you need to re-assign the return of paginate.  It's a chaining method, so you
+    // have to re-assign the results to itself
+    $paginator = $paginator->paginate($expected['per_page']);
 
+    return fractal($paginator, new ApplicationTransformer())->toArray();
+
+    /**
+     *  You don't need any of the below.
+     */
+    /*
     $accounts = new Collection($paginator->items(), new ApplicationTransformer($paginator));
 
     $paginator->setPaginator(new IlluminatePaginatorAdapter($paginator));
@@ -89,6 +97,7 @@ class CasesController extends Controller
     $accounts = $this->fractal->createData($accounts); // Transform data
 
     return $accounts->toArray();
+    */
 
   }
 
