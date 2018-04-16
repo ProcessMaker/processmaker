@@ -2,9 +2,9 @@
 namespace ProcessMaker\Model;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Notifications\Notifiable;
 use League\OAuth2\Server\Entities\UserEntityInterface;
-use ProcessMaker\Core\System;
 
 /**
  * Represents an Eloquent model of a User
@@ -19,6 +19,8 @@ class User extends Authenticatable implements UserEntityInterface
     // Specify our table and our primary key
     protected $table = 'USERS';
     protected $primaryKey = 'USR_ID';
+
+    const TYPE = 'USER';
 
     // Set our updated/created at
     const UPDATED_AT = 'USR_UPDATE_DATE';
@@ -129,7 +131,7 @@ class User extends Authenticatable implements UserEntityInterface
     /**
      * Role of the user.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function role()
     {
@@ -139,10 +141,10 @@ class User extends Authenticatable implements UserEntityInterface
     /**
      * Get all users assigned to task
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     * @return MorphToMany
      */
-    public function assignedTask()
+    public function assignedTask(): MorphToMany
     {
-        return $this->morphMany(TaskUser::class, 'assigned', 'assigned_type', 'USR_ID', 'USR_ID');
+        return $this->morphToMany(Task::class, TaskUser::class, 'TASK_USER', 'TU_RELATION', 'USR_ID');
     }
 }

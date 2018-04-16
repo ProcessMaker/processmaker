@@ -43,6 +43,7 @@ class TaskManagerTest extends ApiTestCase
         ]);
         $this->assertNotNull($activity);
         $this->assertNotNull($activity->TAS_UID);
+        $this->assertNotNull($activity->TAS_ID);
         return $activity;
     }
 
@@ -58,6 +59,7 @@ class TaskManagerTest extends ApiTestCase
         ]);
         $this->assertNotNull($user);
         $this->assertNotNull($user->USR_UID);
+        $this->assertNotNull($user->USR_ID);
         return $user;
     }
 
@@ -67,7 +69,19 @@ class TaskManagerTest extends ApiTestCase
      */
     public function testCreateGroup(): Group
     {
-        return factory(Group::class)->create();
+        $group = factory(Group::class)->create([
+            'GRP_STATUS' => 'ACTIVE',
+            'GRP_LDAP_DN' => '',
+            'GRP_UX' => 'NORMAL'
+        ]);
+        $this->assertNotNull($group);
+        $this->assertNotNull($group->GRP_UID);
+        $this->assertNotNull($group->GRP_ID);
+        /*$group->users()->create(factory(User::class)->create([
+            'USR_PASSWORD' => Hash::make(self::DEFAULT_PASS),
+            'USR_ROLE' => Role::PROCESSMAKER_ADMIN
+        ])->toArray());*/
+        return $group;
     }
 
     /**
@@ -78,8 +92,9 @@ class TaskManagerTest extends ApiTestCase
      * @depends testCreateProcess
      * @depends testCreateTask
      * @depends testCreateUser
+     * @depends testCreateGroup
      */
-    public function testStore(Process $process, Task $activity, User $user)
+    public function testStore(Process $process, Task $activity, User $user, Group $group)
     {
         $this->auth($user->USR_USERNAME, 'password');
 
@@ -103,7 +118,17 @@ class TaskManagerTest extends ApiTestCase
         $response = $this->api('POST', $url, $data);
         $response->assertStatus(200);
 
-        //user exist
+        //reassigned user exist
+        $response = $this->api('POST', $url, $data);
+        $response->assertStatus(400);
+
+        //correctly insert assignment user
+        $data['aas_type'] = 'group';
+        $data['aas_uid'] = $group->GRP_UID;
+        $response = $this->api('POST', $url, $data);
+        $response->assertStatus(200);
+
+        //Reassigned group exist
         $response = $this->api('POST', $url, $data);
         $response->assertStatus(400);
 

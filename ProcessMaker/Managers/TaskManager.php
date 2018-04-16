@@ -53,16 +53,18 @@ class TaskManager
     {
         //todo validate Process and task
         $query= TaskUser::where('TAS_UID', $activity->TAS_UID)->type(1);
-        $type = 1;
+        $type = User::TYPE;
         switch (strtoupper($options['aas_type'])) {
             case 'USER':
                 $check = User::where('USR_UID', $options['aas_uid'])->get()->toArray();
+                $field = 'USR_ID';
                 $query->onlyUsers();
                 break;
             case 'GROUP':
                 $check = Group::where('GRP_UID', $options['aas_uid'])->get()->toArray();
+                $field = 'GRP_ID';
                 $query->onlyGroups();
-                $type = 2;
+                $type = Group::TYPE;
                 break;
             default:
                 $check = [];
@@ -79,10 +81,12 @@ class TaskManager
         $assigned->TAS_UID = $activity->TAS_UID;
         $assigned->TAS_ID = $activity->TAS_ID;
         $assigned->USR_UID = $options['aas_uid'];
+        $assigned->USR_ID = $check[0][$field];
         $assigned->TU_RELATION = $type;
         $assigned->TU_TYPE = 1;
         $assigned->saveOrFail();
 
+        return $assigned->toArray();
     }
 
 }
