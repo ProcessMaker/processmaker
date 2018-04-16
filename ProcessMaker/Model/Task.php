@@ -3,7 +3,11 @@
 namespace ProcessMaker\Model;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Notifications\Notifiable;
+use ProcessMaker\Relations\MorphToManyCustom;
+use ProcessMaker\Traits\HasCustomRelations;
 use Watson\Validating\ValidatingTrait;
 
 /**
@@ -80,13 +84,14 @@ use Watson\Validating\ValidatingTrait;
 class Task extends Model
 {
 
-    use Notifiable, ValidatingTrait;
+    use Notifiable, ValidatingTrait, HasCustomRelations;
     /**
      * The table associated with the model.
      * @var string $table
      */
     protected $table = 'TASK';
     protected $primaryKey = 'TAS_ID';
+
 
     /**
      * The name of the "created at" column.
@@ -203,4 +208,26 @@ class Task extends Model
     {
         return 'TAS_UID';
     }
+
+    /**
+     * List of users assigned to task
+     *
+     * @return MorphToManyCustom
+     */
+    public function usersAssigned(): MorphToManyCustom
+    {
+        return $this->morphedByManyCustom(User::class, 'assignee', 'TASK_USER', 'TAS_ID', 'USR_ID', '', '', 'TU_RELATION');
+    }
+
+    /**
+     * List of groups assigned to task
+     *
+     * @return MorphToManyCustom
+     */
+    public function groupsAssigned():MorphToManyCustom
+    {
+        return $this->morphedByManyCustom(Group::class, 'assignee', 'TASK_USER', 'TAS_ID', 'USR_ID', null, null, 'TU_RELATION');
+    }
+
+
 }

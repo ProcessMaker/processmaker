@@ -1,6 +1,7 @@
 <?php
 namespace ProcessMaker\Providers;
 
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use ProcessMaker\Managers\DatabaseManager;
 use ProcessMaker\Managers\ProcessCategoryManager;
@@ -8,6 +9,8 @@ use ProcessMaker\Managers\ProcessFileManager;
 use ProcessMaker\Managers\ReportTableManager;
 use ProcessMaker\Managers\SchemaManager;
 use ProcessMaker\Managers\TaskManager;
+use ProcessMaker\Model\Group;
+use ProcessMaker\Model\User;
 
 /**
  * Provide our ProcessMaker specific services
@@ -54,5 +57,10 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->app->singleton('task.manager', function ($app) {
             return new TaskManager();
         });
+
+        Relation::morphMap([
+            User::TYPE => User::class,
+            Group::TYPE => Group::class,
+        ]);
     }
 }
