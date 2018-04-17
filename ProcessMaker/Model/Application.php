@@ -64,9 +64,18 @@ class Application extends Model
      * Returns the relationship of the Delegation this case belongs to
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function delegation()
+    public function delegations()
     {
         return $this->hasMany(Delegation::class, 'APP_UID', 'APP_UID');
+    }
+
+    /**
+     * Returns the relationship of the Delegation this case belongs to
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function threads()
+    {
+        return $this->hasMany(Thread::class, 'APP_UID', 'APP_UID');
     }
 
     /**
