@@ -76,6 +76,8 @@ Router::group([
 
         //Assignee endpoints
         Router::get('project/{process}/activity/{activity}/assignee', 'Designer\AssigneeController@getActivityAssignees')->middleware('can:read');
+        Router::get('project/{process}/activity/{activity}/assignee/{assignee}', 'Designer\AssigneeController@getActivityAssignee');
+        Router::get('project/{process}/activity/{activity}/assignee/all', 'Designer\AssigneeController@getActivityAssigneesAll');
         Router::post('project/{process}/activity/{activity}/assignee', 'Designer\AssigneeController@store');//->middleware('can:read,ProcessMaker\Model\TaskUser');
         Router::delete('project/{process}/activity/{activity}/assignee/{assignee}', 'Designer\AssigneeController@remove');
         /*Router::get('project/{process}/activity/{activity}/assignee/paged', 'Designer\AssigneeController@getActivityAssigneesPaged')->middleware('can:read');

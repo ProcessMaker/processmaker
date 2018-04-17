@@ -31,10 +31,10 @@ trait HasCustomRelations
      * @param  string $relatedKey
      * @param  string $type
      *
-     * @return MorphToMany
+     * @return MorphToManyCustom
      */
     public function morphedByManyCustom($related, $name = null, $table = null, $foreignPivotKey = null,
-                                        $relatedPivotKey = null, $parentKey = null, $relatedKey = null, $type = null): MorphToMany
+                                        $relatedPivotKey = null, $parentKey = null, $relatedKey = null, $type = null): MorphToManyCustom
     {
         $this->type = $type;
 
@@ -64,11 +64,11 @@ trait HasCustomRelations
      * @param  string  $parentKey
      * @param  string  $relatedKey
      * @param  bool  $inverse
-     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany
+     * @return MorphToManyCustom
      */
     public function morphToManyCustom($related, $name, $table = null, $foreignPivotKey = null,
                                 $relatedPivotKey = null, $parentKey = null,
-                                $relatedKey = null, $inverse = false): MorphToMany
+                                $relatedKey = null, $inverse = false): MorphToManyCustom
     {
         $caller = $this->guessBelongsToManyRelation();
 

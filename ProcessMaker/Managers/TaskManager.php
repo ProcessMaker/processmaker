@@ -120,4 +120,47 @@ class TaskManager
         }
     }
 
+    /**
+     * Get a single user or group assigned to a task.
+     *
+     * @param Process $process
+     * @param Task $activity
+     * @param string $assignee
+     *
+     * @return TaskUser
+     * @throws TaskAssignedException
+     */
+    public function getInformationAssignee(Process $process, Task $activity, $assignee): TaskUser
+    {
+        $assigned = new TaskUser();
+        $user = new User();
+        $information = $activity->usersAssigned()->where($user->getTable() . '.USR_UID', $assignee)->get();
+        if ($information->toArray()) {
+            $information = $information[0];
+            $assigned->aas_uid = $information->USR_UID;
+            $assigned->aas_name = $information->USR_FIRSTNAME;
+            $assigned->aas_lastname = $information->USR_LASTNAME;
+            $assigned->aas_username = $information->USR_USERNAME;
+            $assigned->aas_type = strtolower($user::TYPE);
+            return $assigned;
+        }
+        $group = new Group();
+        $information = $activity->groupsAssigned()->where($group->getTable() . '.GRP_UID', $assignee)->get();
+        if ($information->toArray()) {
+            $information = $information[0];
+            $name = $information->GRP_TITLE . ' ' . $group::STATUS_INACTIVE;
+            if ($information->GRP_STATUS !== $group::STATUS_INACTIVE) {
+                $name = $information->GRP_TITLE . ' (' . ') ';
+            }
+            $assigned->aas_uid = $information->GRP_UID;
+            $assigned->aas_name = $name;
+            $assigned->aas_lastname = '';
+            $assigned->aas_username = '';
+            $assigned->aas_type = strtolower($group::TYPE);
+            return $assigned;
+        }
+
+        Throw new TaskAssignedException(__('Record not found for id: :assignee', ['assignee' => $assignee]));
+    }
+
 }
