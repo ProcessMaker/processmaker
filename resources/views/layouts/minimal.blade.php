@@ -12,7 +12,7 @@
 
     <!-- Styles -->
     @yield('css')
-    <link href="{{ asset('css/base.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/layouts-app.css') }}" rel="stylesheet">
 </head>
 <body>
