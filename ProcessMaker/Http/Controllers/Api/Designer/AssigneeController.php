@@ -84,4 +84,31 @@ class AssigneeController extends Controller
 
     }
 
+    /**
+     * Get a single user or group assigned to a task.
+     *
+     * @param Process $process
+     * @param Task $activity
+     * @param $assignee
+     *
+     * @return TaskUser
+     */
+    /**
+     * @param Process $process
+     * @param Task $activity
+     * @param $assignee
+     *
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function getActivityAssignee(Process $process, Task $activity, $assignee)
+    {
+        try
+        {
+            $response = TaskManager::getInformationAssignee($process, $activity, $assignee);
+            return response($response, 200);
+        } catch (TaskAssignedException $exception) {
+            return response($exception->getMessage(), 400);
+        }
+    }
+
 }
