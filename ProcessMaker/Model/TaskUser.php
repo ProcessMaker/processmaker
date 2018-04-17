@@ -24,7 +24,7 @@ class TaskUser extends Model
     use ValidatingTrait;
 
     protected $table = 'TASK_USER';
-    //protected $primaryKey = 'TAS_USER_ID';
+    protected $primaryKey = 'TASK_USER_ID';
 
     public $timestamps = false;
 

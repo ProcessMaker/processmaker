@@ -9,6 +9,7 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Model\Activity;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\Task;
+use ProcessMaker\Model\TaskUser;
 
 class AssigneeController extends Controller
 {
@@ -16,19 +17,20 @@ class AssigneeController extends Controller
      * List users and groups assigned to Task
      *
      * @param Process $process
-     * @param Activity $activity
+     * @param Task $activity
      * @param Request $request
      *
      * @return array
      */
-    public function getActivityAssignees(Process $process, Activity $activity, Request $request)
+    public function getActivityAssignees(Process $process, Task $activity, Request $request)
     {
+        //todo validate process and task
         $options = [
             'filter' => $request->input('filter', ''),
             'start' => $request->input('start', 0),
             'limit' => $request->input('limit', 20),
         ];
-        return TaskManager::loadAssignees(new Task(['TAS_UID' => $activity->ACT_UID]), $options);
+        return TaskManager::loadAssignees($activity, $options);
     }
 
     public function getActivityAssigneesPaged(Process $process, Activity $activity, Request $request)
@@ -43,7 +45,7 @@ class AssigneeController extends Controller
      * @param Task $activity
      * @param Request $request
      *
-     * @return array
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
     public function store(Process $process, Task $activity, Request$request)
     {
@@ -53,10 +55,33 @@ class AssigneeController extends Controller
                 'aas_uid' => $request->input('aas_uid', ''),
                 'aas_type' => $request->input('aas_type', ''),
             ];
-            return TaskManager::saveAssignee($process, $activity, $options);
+            $response = TaskManager::saveAssignee($process, $activity, $options);
+            return response('', 201);
         } catch (TaskAssignedException $exception) {
             return response($exception->getMessage(), 400);
         }
+    }
+
+    /**
+     * Remove Assignee to Activity
+     *
+     * @param Process $process
+     * @param Task $activity
+     * @param string $assignee
+     *
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function remove(Process $process, Task $activity, $assignee)
+    {
+        //todo Validate process, task
+        try
+        {
+            $response = TaskManager::removeAssignee($process, $activity, $assignee);
+            return response('', 200);
+        } catch (TaskAssignedException $exception) {
+            return response($exception->getMessage(), 400);
+        }
+
     }
 
 }
