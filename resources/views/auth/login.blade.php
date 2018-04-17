@@ -54,11 +54,11 @@
           </label>
       </div>
 
-      <button type="submit" class="btn btn-primary btn-block mb-2 text-light">
+      <button type="submit" class="btn btn-primary btn-block mb-2 text-light text-uppercase">
         {{ __('Login') }}
       </button>
 
-        <a class="btn btn-link pl-0" href="{{ route('password.request') }}">
+        <a class="btn btn-link text-info pl-0" href="{{ route('password.request') }}">
           {{ __('Forgot Password?') }}
         </a>
       </form>
