@@ -50,6 +50,15 @@ class Application extends Model
     {
         return $this->belongsTo(Process::class, 'PRO_UID', 'PRO_UID');
     }
+    
+    /**
+     * Returns the relationship of the Delegation this case belongs to
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function delegation()
+    {
+        return $this->belongsTo(Delegation::class, 'APP_UID', 'APP_UID');
+    }
 
     /**
      * Returns the unserialized data model for this application
