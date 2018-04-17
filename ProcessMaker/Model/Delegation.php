@@ -12,7 +12,7 @@ class Delegation extends Model
 
     // Specify our table and our primary key
     protected $table = 'APP_DELEGATION';
-    protected $primaryKey = 'DEL_INDEX';
+    protected $primaryKey = 'DELEGATION_ID';
 
     // We do not store timestamps for these tables
     public $timestamps = false;
