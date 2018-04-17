@@ -16,8 +16,6 @@ class Application extends IlluminateApplication
     // Our ProcessMaker Version
     const VERSION = '4.0.0';
 
-    protected $namespace = 'ProcessMaker';
-
     /**
      * Sets the timezone for the application and for php with the specified timezone
      * @param $tz string The timezone to set to
@@ -64,4 +62,18 @@ class Application extends IlluminateApplication
 
         return $sysCon;
     }
+
+    /**
+     * Get the path to the application "app" directory.
+     *
+     * @note This extends the base Application to specify ProcessMaker instead of app as the main directory
+     * @param  string  $path Optionally, a path to append to the app path
+     * @return string
+     */
+    public function path($path = '')
+    {
+        return $this->basePath.DIRECTORY_SEPARATOR.'ProcessMaker'.($path ? DIRECTORY_SEPARATOR.$path : $path);
+    }
+
+
 }

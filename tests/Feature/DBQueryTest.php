@@ -16,14 +16,6 @@ class DBQueryTest extends TestCase
 {
     use DatabaseTransactions;
 
-    public function testDBFacadeQuery()
-    {
-        $record = DB::table('USERS')->where([
-            'USR_UID' => '00000000000000000000000000000001'
-        ])->first();
-        $this->assertEquals('admin', $record->USR_USERNAME);
-    }
-
     public function testDBFacadeQueryWithExternalMySQLDatabase()
     {
         // Our test external database is created in our tests/bootstrap.php file
