@@ -2,10 +2,10 @@
 
 @section('content')
   <div class="container p-5 text-center">
-    <img class="p-5" src="/img/Logo@2x.png">
+    <img class="p-5" src="/img/Logo1.png">
   </div>
 
-  <div class= "container bg-light p-5 w-50">
+  <div class= "container bg-light p-5 w-25">
     <div>
       <form method="POST" action="{{ route('login') }}">
         {{ csrf_field() }}
@@ -54,7 +54,7 @@
           </label>
       </div>
 
-      <button type="submit" class="btn btn-primary btn-block mb-2">
+      <button type="submit" class="btn btn-primary btn-block mb-2 text-light">
         {{ __('Login') }}
       </button>
 
