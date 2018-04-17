@@ -34,7 +34,7 @@ trait HasCustomRelations
      * @return MorphToMany
      */
     public function morphedByManyCustom($related, $name = null, $table = null, $foreignPivotKey = null,
-                                        $relatedPivotKey = null, $parentKey = null, $relatedKey = null, $type = null)
+                                        $relatedPivotKey = null, $parentKey = null, $relatedKey = null, $type = null): MorphToMany
     {
         $this->type = $type;
 
@@ -68,7 +68,7 @@ trait HasCustomRelations
      */
     public function morphToManyCustom($related, $name, $table = null, $foreignPivotKey = null,
                                 $relatedPivotKey = null, $parentKey = null,
-                                $relatedKey = null, $inverse = false)
+                                $relatedKey = null, $inverse = false): MorphToMany
     {
         $caller = $this->guessBelongsToManyRelation();
 
@@ -112,7 +112,7 @@ trait HasCustomRelations
      */
     protected function newMorphToManyCustom(Builder $query, Model $parent, $name, $table, $foreignPivotKey,
                                       $relatedPivotKey, $parentKey, $relatedKey,
-                                      $relationName = null, $inverse = false)
+                                      $relationName = null, $inverse = false): MorphToManyCustom
     {
         return new MorphToManyCustom($query, $parent, $name, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey,
             $relationName, $inverse, $this->type);

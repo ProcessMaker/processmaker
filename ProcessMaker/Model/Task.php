@@ -216,7 +216,7 @@ class Task extends Model
      */
     public function usersAssigned(): MorphToManyCustom
     {
-        return $this->morphedByManyCustom(User::class, 'assignee', 'TASK_USER', 'TAS_ID', 'USR_ID', '', '', 'TU_RELATION');
+        return $this->morphedByManyCustom(User::class, 'assignee', 'TASK_USER', 'TAS_ID', 'USR_ID', null, null, 'TU_RELATION');
     }
 
     /**

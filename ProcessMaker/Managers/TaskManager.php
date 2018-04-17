@@ -11,6 +11,8 @@ use ProcessMaker\Model\User;
 
 class TaskManager
 {
+    const ASSIGNEE_NORMAL = 1;
+    const ASSIGNEE_ADHOC = 2;
     /**
      * List the users and groups assigned to a task.
      *
@@ -21,7 +23,11 @@ class TaskManager
      */
     public function loadAssignees(Task $activity, array $options)
     {
-        $userAssignees = TaskUser::where('TAS_UID', $activity->TAS_UID)->onlyUsers()->with('user')->get();
+        $assignee = Task::where('TAS_UID', $activity->TAS_UID)->first();
+        $response = [];
+        if ($assignee) {
+            $users = $assignee->usersAssigned()->get()->paginate($options['limit']);
+        }
         $groupAssignees = TaskUser::where('TAS_UID', $activity->TAS_UID)->onlyGroups()->with('group')->get();
         return [];
     }
@@ -47,12 +53,15 @@ class TaskManager
      * @param Task $activity
      * @param array $options
      *
+     * @return array
+     *
      * @throws TaskAssignedException
+     * @throws \Throwable
      */
-    public function saveAssignee(Process $process, Task $activity, array $options)
+    public function saveAssignee(Process $process, Task $activity, array $options): array
     {
         //todo validate Process and task
-        $query= TaskUser::where('TAS_UID', $activity->TAS_UID)->type(1);
+        $query = TaskUser::where('TAS_UID', $activity->TAS_UID)->type(self::ASSIGNEE_NORMAL);
         $type = User::TYPE;
         switch (strtoupper($options['aas_type'])) {
             case 'USER':
@@ -87,6 +96,28 @@ class TaskManager
         $assigned->saveOrFail();
 
         return $assigned->toArray();
+    }
+
+    /**
+     * Remove user or group assigned to Activity
+     *
+     * @param Process $process
+     * @param Task $activity
+     * @param string $assignee
+     *
+     * @return void
+     * @throws TaskAssignedException
+     */
+    public function removeAssignee(Process $process, Task $activity, $assignee): void
+    {
+        $response = TaskUser::where('TAS_UID', $activity->TAS_UID)
+            ->where('USR_UID', $assignee)
+            ->type(self::ASSIGNEE_NORMAL)
+            ->delete();
+
+        if (!$response) {
+            Throw new TaskAssignedException(__('This row does not exist!'));
+        }
     }
 
 }
