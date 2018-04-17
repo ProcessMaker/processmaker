@@ -43,6 +43,15 @@ class Application extends Model
     }
 
     /**
+     * Returns the relationship of the User this case belongs to
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'APP_CUR_USER', 'USR_UID');
+    }
+
+    /**
      * Returns the relationship of the Process this case belongs to
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
