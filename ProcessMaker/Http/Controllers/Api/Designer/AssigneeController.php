@@ -24,7 +24,6 @@ class AssigneeController extends Controller
      */
     public function getActivityAssignees(Process $process, Task $activity, Request $request)
     {
-        //todo validate process and task
         $options = [
             'filter' => $request->input('filter', ''),
             'start' => $request->input('start', 0),
@@ -73,7 +72,6 @@ class AssigneeController extends Controller
      */
     public function remove(Process $process, Task $activity, $assignee)
     {
-        //todo Validate process, task
         try
         {
             $response = TaskManager::removeAssignee($process, $activity, $assignee);
@@ -89,14 +87,7 @@ class AssigneeController extends Controller
      *
      * @param Process $process
      * @param Task $activity
-     * @param $assignee
-     *
-     * @return TaskUser
-     */
-    /**
-     * @param Process $process
-     * @param Task $activity
-     * @param $assignee
+     * @param string $assignee
      *
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
@@ -108,6 +99,33 @@ class AssigneeController extends Controller
             return response($response, 200);
         } catch (TaskAssignedException $exception) {
             return response($exception->getMessage(), 400);
+        }
+    }
+
+    /**
+     * Return a list of assignees of an activity
+     *
+     * @param Process $process
+     * @param Task $activity
+     * @param Request $request
+     *
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function getActivityAssigneesAll(Process $process, Task $activity, Request $request)
+    {
+        try
+        {
+            $options = [
+                'filter' => $request->input('filter', ''),
+                'start' => $request->input('start', 0),
+                'limit' => $request->input('limit', 20),
+                'type' => $request->input('type', 'All'),
+            ];
+
+            $response = TaskManager::getInformationAllAssignee($process, $activity, $options);
+            return response($response, 200);
+        } catch (TaskAssignedException $exception) {
+            return response($exception->getMessage(), $exception->getCode() ?: 400);
         }
     }
 
