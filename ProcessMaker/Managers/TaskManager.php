@@ -2,6 +2,8 @@
 
 namespace ProcessMaker\Managers;
 
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use ProcessMaker\Exception\TaskAssignedException;
 use ProcessMaker\Model\Group;
 use ProcessMaker\Model\Process;
@@ -13,6 +15,7 @@ class TaskManager
 {
     const ASSIGNEE_NORMAL = 1;
     const ASSIGNEE_ADHOC = 2;
+
     /**
      * List the users and groups assigned to a task.
      *
@@ -132,35 +135,102 @@ class TaskManager
      */
     public function getInformationAssignee(Process $process, Task $activity, $assignee): TaskUser
     {
-        $assigned = new TaskUser();
         $user = new User();
         $information = $activity->usersAssigned()->where($user->getTable() . '.USR_UID', $assignee)->get();
-        if ($information->toArray()) {
-            $information = $information[0];
-            $assigned->aas_uid = $information->USR_UID;
-            $assigned->aas_name = $information->USR_FIRSTNAME;
-            $assigned->aas_lastname = $information->USR_LASTNAME;
-            $assigned->aas_username = $information->USR_USERNAME;
-            $assigned->aas_type = strtolower($user::TYPE);
-            return $assigned;
+        if (!$information->isEmpty()) {
+            return $this->formatDataAssignee($information->first()->toArray(), $user::TYPE);
         }
         $group = new Group();
         $information = $activity->groupsAssigned()->where($group->getTable() . '.GRP_UID', $assignee)->get();
-        if ($information->toArray()) {
-            $information = $information[0];
+        if (!$information->isEmpty()) {
+            $information = $information->first();
             $name = $information->GRP_TITLE . ' ' . $group::STATUS_INACTIVE;
             if ($information->GRP_STATUS !== $group::STATUS_INACTIVE) {
-                $name = $information->GRP_TITLE . ' (' . ') ';
+                $name = $information->GRP_TITLE . ' (' . $information->users()->count() . ') ';
             }
-            $assigned->aas_uid = $information->GRP_UID;
-            $assigned->aas_name = $name;
-            $assigned->aas_lastname = '';
-            $assigned->aas_username = '';
-            $assigned->aas_type = strtolower($group::TYPE);
-            return $assigned;
+            $information->GRP_TITLE = $name;
+            return $this->formatDataAssignee($information->first()->toArray(), $group::TYPE);
         }
 
         Throw new TaskAssignedException(__('Record not found for id: :assignee', ['assignee' => $assignee]));
     }
+
+    /**
+     *  Return a list of assignees of an activity
+     *
+     * @param Process $process
+     * @param Task $activity
+     * @param array $options
+     *
+     * @return LengthAwarePaginator
+     */
+    public function getInformationAllAssignee(Process $process, Task $activity, $options): LengthAwarePaginator
+    {
+        $query = $activity->usersAssigned();
+        if (!empty($options['filter'])) {
+            $user = new User();
+            $query->where($user->getTable() . '.USR_FIRSTNAME', 'like', '%' . $options['filter'] . '%')
+                ->orWhere($user->getTable() . '.USR_LASTNAME', 'like', '%' . $options['filter'] . '%');
+        }
+        $users = $query->get();
+        $information = [];
+        foreach ($users as $user) {
+            $information[] = $this->formatDataAssignee($user->toArray(), User::TYPE)->toArray();
+        }
+
+        $query = $activity->groupsAssigned();
+        if (!empty($options['filter'])) {
+            $group = new Group();
+            $query->where($group->getTable() . '.GRP_TITLE', 'like', '%' . $options['filter'] . '%');
+        }
+        $groups = $query->get();
+        foreach ($groups as $group) {
+            $name = $group->GRP_TITLE . ' ' . $group::STATUS_INACTIVE;
+            if ($group->GRP_STATUS !== $group::STATUS_INACTIVE) {
+                $name = $group->GRP_TITLE . ' (' . $group->users()->count() . ') ';
+            }
+            $group->GRP_TITLE = $name;
+            $information[] = $this->formatDataAssignee($group->toArray(), Group::TYPE)->toArray();
+        }
+
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        $collection = new Collection($information);
+        $currentPageResults = $collection->slice(($currentPage - 1) * $options['limit'], $options['limit'])->all();
+        return new LengthAwarePaginator($currentPageResults, count($collection), $options['limit']);
+    }
+
+    /**
+     * Format data response
+     *
+     * @param array $data
+     * @param string $type
+     *
+     * @return TaskUser
+     */
+    private function formatDataAssignee($data, $type): TaskUser
+    {
+        $assigned = new TaskUser();
+        $assigned->aas_uid = '';
+        $assigned->aas_name = '';
+        $assigned->aas_lastname = '';
+        $assigned->aas_username = '';
+        switch ($type) {
+            case User::TYPE:
+                $assigned->aas_uid = $data['USR_UID'];
+                $assigned->aas_name = $data['USR_FIRSTNAME'];
+                $assigned->aas_lastname = $data['USR_LASTNAME'];
+                $assigned->aas_username = $data['USR_USERNAME'];
+                break;
+            case Group::TYPE:
+                $assigned->aas_uid = $data['GRP_UID'];
+                $assigned->aas_name = $data['GRP_TITLE'];
+                $assigned->aas_username = $data['GRP_TITLE'];
+                break;
+        }
+        $assigned->aas_type = strtolower($type);
+
+        return $assigned;
+    }
+
 
 }

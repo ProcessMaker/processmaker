@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Represents an Eloquent model of a Group
@@ -68,7 +69,7 @@ class Group extends Model
      */
     public function users()
     {
-        return $this->belongsToMany(User::class, 'GROUP_USER', 'GRP_UID', 'USR_UID');
+        return $this->belongsToMany(User::class, 'GROUP_USER', 'GRP_ID', 'USR_ID');
     }
 
     /**
@@ -80,4 +81,5 @@ class Group extends Model
     {
         return $this->morphMany(TaskUser::class, 'assignee', 'TU_RELATION', 'USR_ID');
     }
+
 }
