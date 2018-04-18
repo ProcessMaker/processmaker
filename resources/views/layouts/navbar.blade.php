@@ -6,10 +6,10 @@
     <span class="navbar-toggler-icon"></span>
   </button>
 
-  <div class="mr-auto collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
-    <ul class="navbar-nav">
-      <li class="nav-item active">
-        <a class="nav-link" href="/">Execute <span class="sr-only">(current)</span></a>
+  <div class="mr-auto collapse navbar-collapse " id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="/">Run</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="/build">Build</a>
@@ -17,11 +17,9 @@
       <li class="nav-item">
         <a class="nav-link" href="/manage">Manage</a>
       </li>
-      <li style="border-left:1px solid #ccc; margin:10px 30px"></li>
-      </ul>
+    </ul>
 
       <ul class="navbar-nav">
-        <li><img src="/img/avatar.png" style="max-width:40px"></li>
         <li class="nav-item dropdown" style="white-space:nowrap">
         <a class="nav-link dropdown-toggle admin-menu" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <span style="font-size:14px; font-weight:600; margin-bottom:0;">
@@ -34,6 +32,10 @@
           <div class="dropdown-divider"></div>
            <a class="dropdown-item" href="{{route('logout')}}">Logout</a>
         </div>
+        <li><img src="/img/avatar.png" style="max-width:40px"></li>
+        <li style="border-left:1px solid #ccc; margin:10px 30px"></li>
+        <button class="btn"><i class="fa fa-envelope" aria-hidden="true"></i></button>
+        <button class="btn"><i class="fa fa-bell" aria-hidden="true"></i></button>
       </li>
     </ul>
   </div>

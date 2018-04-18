@@ -7,15 +7,17 @@ body {
   font-style: normal;
   overflow-x: hidden;
 }
-
+.fa {
+  color: gray;
+}
 .nav-link {
   font-size: 14px;
   font-weight: 600;
+  color: black;
 }
 
 .nav-link:hover {
   color: $primary !important;
-  border-bottom: 2px solid $primary;
   padding-bottom: 20px;
   margin-bottom: -20px;
 }
