@@ -2,39 +2,59 @@
 
 namespace ProcessMaker\Http\Controllers\Api\Designer;
 
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use ProcessMaker\Exception\TaskAssignedException;
 use ProcessMaker\Facades\TaskManager;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Model\Activity;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\Task;
-use ProcessMaker\Model\TaskUser;
+use Symfony\Component\HttpFoundation\Response;
 
 class AssigneeController extends Controller
 {
     /**
-     * List users and groups assigned to Task
+     * List the users and groups assigned to a task.
      *
      * @param Process $process
      * @param Task $activity
      * @param Request $request
      *
-     * @return array
+     * @return ResponseFactory|Response
      */
     public function getActivityAssignees(Process $process, Task $activity, Request $request)
     {
-        $options = [
-            'filter' => $request->input('filter', ''),
-            'start' => $request->input('start', 0),
-            'limit' => $request->input('limit', 20),
-        ];
-        return TaskManager::loadAssignees($activity, $options);
+        try
+        {
+            $options = $this->verifyOptions($request);
+
+            $response = TaskManager::loadAssignees($activity, $options);
+            return response($response, 200);
+        } catch (TaskAssignedException $exception) {
+            return response($exception->getMessage(), $exception->getCode() ?: 400);
+        }
     }
 
-    public function getActivityAssigneesPaged(Process $process, Activity $activity, Request $request)
+    /**
+     * List the users and groups assigned to a task paged
+     *
+     * @param Process $process
+     * @param Task $activity
+     * @param Request $request
+     *
+     * @return ResponseFactory|Response
+     */
+    public function getActivityAssigneesPaged(Process $process, Task $activity, Request $request)
     {
+        try
+        {
+            $options = $this->verifyOptions($request);
 
+            $response = TaskManager::loadAssignees($activity, $options, true);
+            return response($response, 200);
+        } catch (TaskAssignedException $exception) {
+            return response($exception->getMessage(), $exception->getCode() ?: 400);
+        }
     }
 
     /**
@@ -44,7 +64,7 @@ class AssigneeController extends Controller
      * @param Task $activity
      * @param Request $request
      *
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * @return ResponseFactory|Response
      */
     public function store(Process $process, Task $activity, Request$request)
     {
@@ -57,7 +77,7 @@ class AssigneeController extends Controller
             $response = TaskManager::saveAssignee($process, $activity, $options);
             return response('', 201);
         } catch (TaskAssignedException $exception) {
-            return response($exception->getMessage(), 400);
+            return response($exception->getMessage(), $exception->getCode() ?: 400);
         }
     }
 
@@ -79,7 +99,6 @@ class AssigneeController extends Controller
         } catch (TaskAssignedException $exception) {
             return response($exception->getMessage(), 400);
         }
-
     }
 
     /**
@@ -115,12 +134,7 @@ class AssigneeController extends Controller
     {
         try
         {
-            $options = [
-                'filter' => $request->input('filter', ''),
-                'start' => $request->input('start', 0),
-                'limit' => $request->input('limit', 20),
-                'type' => $request->input('type', 'All'),
-            ];
+            $options = $this->verifyOptions($request);
 
             $response = TaskManager::getInformationAllAssignee($process, $activity, $options);
             return response($response, 200);
@@ -129,4 +143,21 @@ class AssigneeController extends Controller
         }
     }
 
+    /**
+     * Verify parameters in request
+     *
+     * @param Request $request
+     * @return array
+     */
+    private function verifyOptions(Request $request): array
+    {
+        return [
+            'filter' => $request->input('filter', ''),
+            'start' => $request->input('start', 0),
+            'limit' => $request->input('limit', 20),
+            'type' => $request->input('type', 'All')
+        ];
+    }
+
 }
+

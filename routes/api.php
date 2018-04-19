@@ -75,7 +75,8 @@ Router::group([
         Router::get('project/{process}/report-table/{reportTable}/data', 'Project\ReportTableController@getAllDataRows')->middleware('can:read,reportTable');
 
         //Assignee endpoints
-        Router::get('project/{process}/activity/{activity}/assignee', 'Designer\AssigneeController@getActivityAssignees')->middleware('can:read');
+        Router::get('project/{process}/activity/{activity}/assignee', 'Designer\AssigneeController@getActivityAssignees');
+        Router::get('project/{process}/activity/{activity}/assignee/paged', 'Designer\AssigneeController@getActivityAssigneesPaged');
 
         Router::get('project/{process}/activity/{activity}/assignee/all', 'Designer\AssigneeController@getActivityAssigneesAll');
         Router::get('project/{process}/activity/{activity}/assignee/{assignee}', 'Designer\AssigneeController@getActivityAssignee');

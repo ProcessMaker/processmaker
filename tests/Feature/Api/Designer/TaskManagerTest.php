@@ -141,6 +141,149 @@ class TaskManagerTest extends ApiTestCase
     }
 
     /**
+     * List the users and groups assigned to a task.
+     *
+     * @param Process $process
+     * @param Task $activity
+     * @param User $user
+     * @param Group $group
+     *
+     * @depends testCreateProcess
+     * @depends testCreateTask
+     * @depends testCreateUser
+     * @depends testCreateGroup
+     * @depends testStore
+     */
+    public function testAssigneeToTask(Process $process, Task $activity, User $user, Group $group): void
+    {
+        $this->auth($user->USR_USERNAME, self::DEFAULT_PASS);
+        $structurePaginate = [
+            'current_page',
+            'data',
+            'first_page_url',
+            'from',
+            'next_page_url',
+            'path',
+            'per_page',
+            'prev_page_url',
+            'to',
+        ];
+
+        //List users and groups
+        $url = self::API_ROUTE . $process->PRO_UID . '/activity/' . $activity->TAS_UID . '/assignee';
+        $response = $this->api('GET', $url);
+        $response->assertStatus(200);
+        //verify structure paginate
+        $response->assertJsonstructure($structurePaginate);
+        //verify the user and group assigned
+        $this->assertEquals(count($response->json()['data']), 2);
+        $this->assertEquals($response->json()['data'][0]['aas_uid'], $user->USR_UID);
+        $this->assertEquals($response->json()['data'][1]['aas_uid'], $group->GRP_UID);
+
+        //Filter user
+        $url = self::API_ROUTE . $process->PRO_UID . '/activity/' . $activity->TAS_UID . '/assignee?filter='. $user->USR_FIRSTNAME;
+        $response = $this->api('GET', $url);
+        $response->assertStatus(200);
+        //verify structure paginate
+        $response->assertJsonstructure($structurePaginate);
+        //verify the user and group assigned
+        $this->assertEquals(count($response->json()['data']), 1);
+        $this->assertEquals($response->json()['data'][0]['aas_uid'], $user->USR_UID);
+
+        //Filter group
+        $url = self::API_ROUTE . $process->PRO_UID . '/activity/' . $activity->TAS_UID . '/assignee?filter='. $group->GRP_TITLE;
+        $response = $this->api('GET', $url);
+        $response->assertStatus(200);
+        //verify structure paginate
+        $response->assertJsonstructure($structurePaginate);
+        //verify the user and group assigned
+        $this->assertEquals(count($response->json()['data']), 1);
+        $this->assertEquals($response->json()['data'][0]['aas_uid'], $group->GRP_UID);
+
+        //Filter not exist results
+        $url = self::API_ROUTE . $process->PRO_UID . '/activity/' . $activity->TAS_UID . '/assignee?filter='. 'THERE_ARE_NO_RESULTS';
+        $response = $this->api('GET', $url);
+        $response->assertStatus(200);
+        //verify structure paginate
+        $response->assertJsonstructure($structurePaginate);
+        //verify result
+        $this->assertEquals(count($response->json()['data']), 0);
+    }
+
+    /**
+     * List the users and groups assigned to a task.
+     *
+     * @param Process $process
+     * @param Task $activity
+     * @param User $user
+     * @param Group $group
+     *
+     * @depends testCreateProcess
+     * @depends testCreateTask
+     * @depends testCreateUser
+     * @depends testCreateGroup
+     * @depends testStore
+     */
+    public function testAssigneeToTaskPaged(Process $process, Task $activity, User $user, Group $group): void
+    {
+        $this->auth($user->USR_USERNAME, self::DEFAULT_PASS);
+        $structurePaginate = [
+            'current_page',
+            'data',
+            'first_page_url',
+            'from',
+            'last_page',
+            'last_page_url',
+            'next_page_url',
+            'path',
+            'per_page',
+            'prev_page_url',
+            'to',
+            'total'
+        ];
+
+        //List users and groups
+        $url = self::API_ROUTE . $process->PRO_UID . '/activity/' . $activity->TAS_UID . '/assignee/paged';
+        $response = $this->api('GET', $url);
+        $response->assertStatus(200);
+        //verify structure paginate
+        $response->assertJsonstructure($structurePaginate);
+        //verify the user and group assigned
+        $this->assertEquals($response->json()['total'], 2);
+        $this->assertEquals($response->json()['data'][0]['aas_uid'], $user->USR_UID);
+        $this->assertEquals($response->json()['data'][1]['aas_uid'], $group->GRP_UID);
+
+        //Filter user
+        $url = self::API_ROUTE . $process->PRO_UID . '/activity/' . $activity->TAS_UID . '/assignee/paged?filter='. $user->USR_FIRSTNAME;
+        $response = $this->api('GET', $url);
+        $response->assertStatus(200);
+        //verify structure paginate
+        $response->assertJsonstructure($structurePaginate);
+        //verify the user and group assigned
+        $this->assertEquals($response->json()['total'], 1);
+        $this->assertEquals($response->json()['data'][0]['aas_uid'], $user->USR_UID);
+
+        //Filter group
+        $url = self::API_ROUTE . $process->PRO_UID . '/activity/' . $activity->TAS_UID . '/assignee/paged?filter='. $group->GRP_TITLE;
+        $response = $this->api('GET', $url);
+        $response->assertStatus(200);
+        //verify structure paginate
+        $response->assertJsonstructure($structurePaginate);
+        //verify the user and group assigned
+        $this->assertEquals($response->json()['total'], 1);
+        $this->assertEquals($response->json()['data'][0]['aas_uid'], $group->GRP_UID);
+
+        //Filter not exist results
+        $url = self::API_ROUTE . $process->PRO_UID . '/activity/' . $activity->TAS_UID . '/assignee/paged?filter='. 'THERE_ARE_NO_RESULTS';
+        $response = $this->api('GET', $url);
+        $response->assertStatus(200);
+        //verify structure paginate
+        $response->assertJsonstructure($structurePaginate);
+        //verify result
+        $this->assertEquals($response->json()['total'], 0);
+    }
+
+    /**
      * Get single information of user or group assignee to activity
      *
      * @param Process $process

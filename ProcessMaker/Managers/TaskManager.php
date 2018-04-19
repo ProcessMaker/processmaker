@@ -3,6 +3,7 @@
 namespace ProcessMaker\Managers;
 
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use ProcessMaker\Exception\TaskAssignedException;
 use ProcessMaker\Model\Group;
@@ -20,19 +21,26 @@ class TaskManager
      * List the users and groups assigned to a task.
      *
      * @param Task $activity
-     * @param array $options
+     * @param array $options start|limit|filter
+     * @param boolean $paged
      *
-     * @return array
+     * @return Paginator | LengthAwarePaginator
      */
-    public function loadAssignees(Task $activity, array $options)
+    public function loadAssignees(Task $activity, array $options, $paged = false)
     {
-        $assignee = Task::where('TAS_UID', $activity->TAS_UID)->first();
-        $response = [];
-        if ($assignee) {
-            $users = $assignee->usersAssigned()->get()->paginate($options['limit']);
+        $users = $this->getUsers($activity, $options['filter']);
+        $information = [];
+        foreach ($users as $user) {
+            $information[] = $this->formatDataAssignee($user->toArray(), User::TYPE)->toArray();
         }
-        $groupAssignees = TaskUser::where('TAS_UID', $activity->TAS_UID)->onlyGroups()->with('group')->get();
-        return [];
+
+        $groups = $this->getGroups($activity, $options['filter']);
+        foreach ($groups as $group) {
+            $group->GRP_TITLE = $this->labelGroup($group);
+            $information[] = $this->formatDataAssignee($group->toArray(), Group::TYPE)->toArray();
+        }
+
+        return $this->paginate($information, $options, !$paged);
     }
 
     /**
@@ -135,21 +143,15 @@ class TaskManager
      */
     public function getInformationAssignee(Process $process, Task $activity, $assignee): TaskUser
     {
-        $user = new User();
-        $information = $activity->usersAssigned()->where($user->getTable() . '.USR_UID', $assignee)->get();
+        $information = $this->getUsers($activity, '', $assignee);
         if (!$information->isEmpty()) {
-            return $this->formatDataAssignee($information->first()->toArray(), $user::TYPE);
+            return $this->formatDataAssignee($information->first()->toArray(), User::TYPE);
         }
-        $group = new Group();
-        $information = $activity->groupsAssigned()->where($group->getTable() . '.GRP_UID', $assignee)->get();
+        $information = $this->getGroups($activity, '', $assignee);
         if (!$information->isEmpty()) {
-            $information = $information->first();
-            $name = $information->GRP_TITLE . ' ' . $group::STATUS_INACTIVE;
-            if ($information->GRP_STATUS !== $group::STATUS_INACTIVE) {
-                $name = $information->GRP_TITLE . ' (' . $information->users()->count() . ') ';
-            }
-            $information->GRP_TITLE = $name;
-            return $this->formatDataAssignee($information->first()->toArray(), $group::TYPE);
+            $group = $information->first();
+            $group->GRP_TITLE = $this->labelGroup($group);
+            return $this->formatDataAssignee($group->first()->toArray(), Group::TYPE);
         }
 
         Throw new TaskAssignedException(__('Record not found for id: :assignee', ['assignee' => $assignee]));
@@ -166,37 +168,108 @@ class TaskManager
      */
     public function getInformationAllAssignee(Process $process, Task $activity, $options): LengthAwarePaginator
     {
-        $query = $activity->usersAssigned();
-        if (!empty($options['filter'])) {
-            $user = new User();
-            $query->where($user->getTable() . '.USR_FIRSTNAME', 'like', '%' . $options['filter'] . '%')
-                ->orWhere($user->getTable() . '.USR_LASTNAME', 'like', '%' . $options['filter'] . '%');
-        }
-        $users = $query->get();
+        $users = $this->getUsers($activity, $options['filter']);
         $information = [];
         foreach ($users as $user) {
             $information[] = $this->formatDataAssignee($user->toArray(), User::TYPE)->toArray();
         }
 
-        $query = $activity->groupsAssigned();
-        if (!empty($options['filter'])) {
-            $group = new Group();
-            $query->where($group->getTable() . '.GRP_TITLE', 'like', '%' . $options['filter'] . '%');
-        }
-        $groups = $query->get();
+        $groups = $this->getGroups($activity, $options['filter']);
         foreach ($groups as $group) {
-            $name = $group->GRP_TITLE . ' ' . $group::STATUS_INACTIVE;
-            if ($group->GRP_STATUS !== $group::STATUS_INACTIVE) {
-                $name = $group->GRP_TITLE . ' (' . $group->users()->count() . ') ';
-            }
-            $group->GRP_TITLE = $name;
+            $group->GRP_TITLE = $this->labelGroup($group);
             $information[] = $this->formatDataAssignee($group->toArray(), Group::TYPE)->toArray();
         }
 
-        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        return $this->paginate($information, $options, false);
+    }
+
+    /**
+     * Get collection users assigned to task
+     *
+     * @param Task $activity
+     * @param string $filter
+     * @param string $uid
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    private function getUsers(Task $activity, $filter = '', $uid = '')
+    {
+        $query = $activity->usersAssigned();
+        $user = new User();
+        if (!empty($filter)) {
+            $query->where($user->getTable() . '.USR_FIRSTNAME', 'like', '%' . $filter. '%')
+                ->orWhere($user->getTable() . '.USR_LASTNAME', 'like', '%' . $filter . '%');
+        }
+        if (!empty($uid)) {
+            $query->where($user->getTable() . '.USR_UID', $uid);
+        }
+        return $query->get();
+    }
+
+    /**
+     * Get collection groups assigned to task
+     *
+     * @param Task $activity
+     * @param string $filter
+     * @param string $uid
+     * @param bool $withUsers
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    private function getGroups(Task $activity, $filter = '', $uid = '', $withUsers = false)
+    {
+        $query = $activity->groupsAssigned();
+        $group = new Group();
+        if ($withUsers && !empty($filter)) {
+            $query->with(['users' => function($query) use ($filter) {
+                $query->where('USR_FIRSTNAME', 'like', '%' . $filter . '%')
+                    ->orWhere('USR_LASTNAME', 'like', '%' . $filter . '%');
+            }]);
+        }
+        if (!$withUsers && !empty($filter)) {
+            $query->where($group->getTable() . '.GRP_TITLE', 'like', '%' . $filter . '%');
+        }
+        if (!empty($uid)) {
+            $query->where($group->getTable() . '.GRP_UID', $uid);
+        }
+        return $query->get();
+    }
+
+    /**
+     * Change label group
+     *
+     * @param Group $group
+     *
+     * @return string
+     */
+    private function labelGroup(Group $group)
+    {
+        $name = $group->GRP_TITLE . ' ' . $group::STATUS_INACTIVE;
+        if ($group->GRP_STATUS !== $group::STATUS_INACTIVE) {
+            $name = $group->GRP_TITLE . ' (' . $group->users()->count() . ') ';
+        }
+        return $name;
+    }
+
+    /**
+     * Creating a Paginator manually
+     *
+     * @param array $information
+     * @param array $options
+     * @param bool $simplePaginator
+     *
+     * @return LengthAwarePaginator|Paginator
+     */
+    private function paginate($information, $options, $simplePaginator = true)
+    {
+        $limit = isset($options['limit']) ? $options['limit'] : 20;
+        $currentPage = $simplePaginator ? Paginator::resolveCurrentPage() : LengthAwarePaginator::resolveCurrentPage();
         $collection = new Collection($information);
-        $currentPageResults = $collection->slice(($currentPage - 1) * $options['limit'], $options['limit'])->all();
-        return new LengthAwarePaginator($currentPageResults, count($collection), $options['limit']);
+        $currentPageResults = $collection->slice(($currentPage - 1) * $limit, $limit)->all();
+        if ($simplePaginator) {
+            return new Paginator($currentPageResults, count($collection), $limit);
+        }
+        return new LengthAwarePaginator($currentPageResults, count($collection), $limit);
     }
 
     /**
