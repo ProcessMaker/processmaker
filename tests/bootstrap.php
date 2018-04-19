@@ -5,12 +5,15 @@
 // Bring in our standard bootstrap
 include_once(__DIR__ . '/../bootstrap/autoload.php');
 require_once __DIR__ . '/../bootstrap/app.php';
+
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Artisan;
+
 // Bootstrap laravel
 app()->make(Kernel::class)->bootstrap();
+
 // Setup our testexternal database
 config(['database.connections.testexternal' => [
     'driver' => 'mysql',
@@ -27,13 +30,17 @@ config(['database.connections.testexternal' => [
     'strict' => true,
     'engine' => null,
 ]]);
+
 // First create the test external mysql database as well as our test database
 DB::connection('testexternal')->unprepared('CREATE DATABASE IF NOT EXISTS testexternal');
+
 // Now set the database name properly
 config(['database.connections.testexternal.database' => env('DB_TESTEXTERNAL_DB', 'testexternal')]);
 DB::connection('testexternal')->reconnect();
+
 // Now, drop all test tables and repopulate with schema
 Schema::connection('testexternal')->dropIfExists('test');
+
 Schema::connection('testexternal')->create('test', function ($table) {
     $table->increments('id');
     $table->string('value');
@@ -41,6 +48,7 @@ Schema::connection('testexternal')->create('test', function ($table) {
 DB::connection('testexternal')->table('test')->insert([
     'value' => 'testvalue'
 ]);
+
 // Only do if we are supporting MSSql tests
 if (env('RUN_MSSQL_TESTS')) {
     config(['database.connections.mssql' => [
@@ -50,12 +58,17 @@ if (env('RUN_MSSQL_TESTS')) {
         'username' => env('MSSQL_USERNAME', 'root'),
         'password' => env('MSSQL_PASSWORD', ''),
     ]]);
+
     $mssqlDBName = env('MSSQL_DATABASE', 'testexternal');
+
     // First create the test external mysql database as well as our test database
     DB::connection('mssql')->unprepared("if db_id('" . $mssqlDBName . "') is null\nCREATE DATABASE " . $mssqlDBName);
+
     // Now set the database name properly
     config(['database.connections.mssql.database' => $mssqlDBName]);
+
     DB::connection('mssql')->reconnect();
+
     Schema::connection('mssql')->dropIfExists('test');
     Schema::connection('mssql')->create('test', function ($table) {
         $table->increments('id');
@@ -65,6 +78,8 @@ if (env('RUN_MSSQL_TESTS')) {
         'value' => 'testvalue'
     ]);
 }
+
+
 // THIS IS FOR STANDARD PROCESSMAKER TABLES
 if (env('POPULATE_DATABASE')) {
     Artisan::call('migrate:fresh', ['--seed' => true]);
