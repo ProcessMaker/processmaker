@@ -46,15 +46,47 @@ class TaskManager
     /**
      * List the users and groups available to a task.
      *
-     * @param Process $process
      * @param Task $activity
      * @param array $options
+     * @param boolean $paged
      *
-     * @return array
+     * @return Paginator | LengthAwarePaginator
      */
-    public function loadAvailable(Process $process, Task $activity, array $options)
+    public function loadAvailable(Task $activity, array $options, $paged =false)
     {
-        return [];
+        $users = $this->getUsers($activity, $options['filter']);
+        $assigned = [];
+        foreach ($users as $user) {
+            $assigned[] = $user->USR_ID;
+        }
+        $query = User::whereNotIn('USR_ID', $assigned);
+        if (!empty($options['filter'])) {
+            $user = new User();
+            $query->where($user->getTable() . '.USR_FIRSTNAME', 'like', '%' . $options['filter']. '%')
+                ->orWhere($user->getTable() . '.USR_LASTNAME', 'like', '%' . $options['filter'] . '%');
+        }
+        $information = [];
+        foreach ($query->get() as $user) {
+            $information[] = $this->formatDataAssignee($user->toArray(), User::TYPE)->toArray();
+        }
+
+        $groups = $this->getGroups($activity, $options['filter']);
+        $assigned = [];
+        foreach ($groups as $group) {
+            $assigned[] = $group->GRP_ID;
+        }
+
+        $query = Group::whereNotIn('GRP_ID', $assigned);
+        if (!empty($options['filter'])) {
+            $group = new Group();
+            $query->where($group->getTable() . '.GRP_TITLE', 'like', '%' . $options['filter'] . '%');
+        }
+        foreach ($query->get() as $group) {
+            $group->GRP_TITLE = $this->labelGroup($group);
+            $information[] = $this->formatDataAssignee($group->toArray(), Group::TYPE)->toArray();
+        }
+
+        return $this->paginate($information, $options, !$paged);
     }
 
     /**
@@ -158,7 +190,7 @@ class TaskManager
     }
 
     /**
-     *  Return a list of assignees of an activity
+     *  Get a list all the users who are assigned to a task (including users that are within groups).
      *
      * @param Process $process
      * @param Task $activity
@@ -174,10 +206,11 @@ class TaskManager
             $information[] = $this->formatDataAssignee($user->toArray(), User::TYPE)->toArray();
         }
 
-        $groups = $this->getGroups($activity, $options['filter']);
+        $groups = $this->getGroups($activity, $options['filter'], '', true);
         foreach ($groups as $group) {
-            $group->GRP_TITLE = $this->labelGroup($group);
-            $information[] = $this->formatDataAssignee($group->toArray(), Group::TYPE)->toArray();
+            foreach ($group->users as $user) {
+                $information[] = $this->formatDataAssignee($user->toArray(), User::TYPE)->toArray();
+            }
         }
 
         return $this->paginate($information, $options, false);

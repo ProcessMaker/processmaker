@@ -79,6 +79,11 @@ class TaskManagerTest extends ApiTestCase
         $this->assertNotNull($group->GRP_UID);
         $this->assertNotNull($group->GRP_ID);
 
+        //Assign users to group
+        $users = User::all('USR_ID')->toArray();
+        $faker = Faker::create();
+        $group->users()->attach($faker->randomElements($users, $faker->randomDigitNotNull));
+
         return $group;
     }
 
@@ -188,7 +193,11 @@ class TaskManagerTest extends ApiTestCase
         $response->assertJsonstructure($structurePaginate);
         //verify the user and group assigned
         $this->assertEquals(count($response->json()['data']), 1);
-        $this->assertEquals($response->json()['data'][0]['aas_uid'], $user->USR_UID);
+        $data = [];
+        foreach ($response->json()['data'] as $info) {
+            $data[] = $info['aas_uid'];
+        }
+        $this->assertContains( $user->USR_UID, $data);
 
         //Filter group
         $url = self::API_ROUTE . $process->PRO_UID . '/activity/' . $activity->TAS_UID . '/assignee?filter='. $group->GRP_TITLE;
@@ -197,8 +206,12 @@ class TaskManagerTest extends ApiTestCase
         //verify structure paginate
         $response->assertJsonstructure($structurePaginate);
         //verify the user and group assigned
-        $this->assertEquals(count($response->json()['data']), 1);
-        $this->assertEquals($response->json()['data'][0]['aas_uid'], $group->GRP_UID);
+        $this->assertLessThanOrEqual(count($response->json()['data']), 1);
+        $data = [];
+        foreach ($response->json()['data'] as $info) {
+            $data[] = $info['aas_uid'];
+        }
+        $this->assertContains( $group->GRP_UID, $data);
 
         //Filter not exist results
         $url = self::API_ROUTE . $process->PRO_UID . '/activity/' . $activity->TAS_UID . '/assignee?filter='. 'THERE_ARE_NO_RESULTS';
@@ -260,8 +273,12 @@ class TaskManagerTest extends ApiTestCase
         //verify structure paginate
         $response->assertJsonstructure($structurePaginate);
         //verify the user and group assigned
-        $this->assertEquals($response->json()['total'], 1);
-        $this->assertEquals($response->json()['data'][0]['aas_uid'], $user->USR_UID);
+        $this->assertLessThanOrEqual($response->json()['total'], 1);
+        $data = [];
+        foreach ($response->json()['data'] as $info) {
+            $data[] = $info['aas_uid'];
+        }
+        $this->assertContains($user->USR_UID, $data);
 
         //Filter group
         $url = self::API_ROUTE . $process->PRO_UID . '/activity/' . $activity->TAS_UID . '/assignee/paged?filter='. $group->GRP_TITLE;
@@ -270,8 +287,12 @@ class TaskManagerTest extends ApiTestCase
         //verify structure paginate
         $response->assertJsonstructure($structurePaginate);
         //verify the user and group assigned
-        $this->assertEquals($response->json()['total'], 1);
-        $this->assertEquals($response->json()['data'][0]['aas_uid'], $group->GRP_UID);
+        $this->assertLessThanOrEqual($response->json()['total'], 1);
+        $data = [];
+        foreach ($response->json()['data'] as $info) {
+            $data[] = $info['aas_uid'];
+        }
+        $this->assertContains( $group->GRP_UID, $data);
 
         //Filter not exist results
         $url = self::API_ROUTE . $process->PRO_UID . '/activity/' . $activity->TAS_UID . '/assignee/paged?filter='. 'THERE_ARE_NO_RESULTS';
@@ -383,9 +404,7 @@ class TaskManagerTest extends ApiTestCase
         //verify structure paginate
         $response->assertJsonstructure($structurePaginate);
         //verify the user and group assigned
-        $this->assertEquals($response->json()['total'], 2);
-        $this->assertEquals($response->json()['data'][0]['aas_uid'], $user->USR_UID);
-        $this->assertEquals($response->json()['data'][1]['aas_uid'], $group->GRP_UID);
+        $this->assertLessThanOrEqual($response->json()['total'], 2);
 
         //Filter user
         $url = self::API_ROUTE . $process->PRO_UID . '/activity/' . $activity->TAS_UID . '/assignee/all?filter='. $user->USR_FIRSTNAME;
@@ -394,18 +413,12 @@ class TaskManagerTest extends ApiTestCase
         //verify structure paginate
         $response->assertJsonstructure($structurePaginate);
         //verify the user and group assigned
-        $this->assertEquals($response->json()['total'], 1);
-        $this->assertEquals($response->json()['data'][0]['aas_uid'], $user->USR_UID);
-
-        //Filter group
-        $url = self::API_ROUTE . $process->PRO_UID . '/activity/' . $activity->TAS_UID . '/assignee/all?filter='. $group->GRP_TITLE;
-        $response = $this->api('GET', $url);
-        $response->assertStatus(200);
-        //verify structure paginate
-        $response->assertJsonstructure($structurePaginate);
-        //verify the user and group assigned
-        $this->assertEquals($response->json()['total'], 1);
-        $this->assertEquals($response->json()['data'][0]['aas_uid'], $group->GRP_UID);
+        $this->assertLessThanOrEqual($response->json()['total'], 1);
+        $data = [];
+        foreach ($response->json()['data'] as $info) {
+            $data[] = $info['aas_uid'];
+        }
+        $this->assertContains( $user->USR_UID, $data);
 
         //Filter not exist results
         $url = self::API_ROUTE . $process->PRO_UID . '/activity/' . $activity->TAS_UID . '/assignee/all?filter='. 'THERE_ARE_NO_RESULTS';
@@ -415,6 +428,155 @@ class TaskManagerTest extends ApiTestCase
         $response->assertJsonstructure($structurePaginate);
         //verify result
         $this->assertEquals($response->json()['total'], 0);
+    }
+
+    /**
+     * List the users and groups available to a task.
+     *
+     * @param Process $process
+     * @param Task $activity
+     * @param User $user
+     * @param Group $group
+     *
+     * @depends testCreateProcess
+     * @depends testCreateTask
+     * @depends testCreateUser
+     * @depends testCreateGroup
+     * @depends testStore
+     */
+    public function testGetAvailable(Process $process, Task $activity, User $user, Group $group): void
+    {
+        $this->auth($user->USR_USERNAME, self::DEFAULT_PASS);
+        $structurePaginate = [
+            'current_page',
+            'data',
+            'first_page_url',
+            'from',
+            'next_page_url',
+            'path',
+            'per_page',
+            'prev_page_url',
+            'to',
+        ];
+
+        //List All
+        $url = self::API_ROUTE . $process->PRO_UID . '/activity/' . $activity->TAS_UID . '/available-assignee';
+        $response = $this->api('GET', $url);
+        $response->assertStatus(200);
+        //verify structure paginate
+        $response->assertJsonstructure($structurePaginate);
+        //verify the user and group assigned
+        foreach ($response->json()['data'] as $available) {
+            $this->assertNotEquals($available['aas_uid'], $user->USR_UID);
+            $this->assertNotEquals($available['aas_uid'], $group->GRP_UID);
+        }
+
+        //Filter user
+        $url = self::API_ROUTE . $process->PRO_UID . '/activity/' . $activity->TAS_UID . '/available-assignee?filter='. $user->USR_FIRSTNAME;
+        $response = $this->api('GET', $url);
+        $response->assertStatus(200);
+        //verify structure paginate
+        $response->assertJsonstructure($structurePaginate);
+        //verify the user and group assigned
+        foreach ($response->json()['data'] as $available) {
+            $this->assertNotEquals($available['aas_uid'], $user->USR_UID);
+        }
+
+        //Filter group
+        $url = self::API_ROUTE . $process->PRO_UID . '/activity/' . $activity->TAS_UID . '/available-assignee?filter='. $group->GRP_TITLE;
+        $response = $this->api('GET', $url);
+        $response->assertStatus(200);
+        //verify structure paginate
+        $response->assertJsonstructure($structurePaginate);
+        //verify the user and group assigned
+        foreach ($response->json()['data'] as $available) {
+            $this->assertNotEquals($available['aas_uid'], $group->GRP_UID);
+        }
+
+        //Filter not exist results
+        $url = self::API_ROUTE . $process->PRO_UID . '/activity/' . $activity->TAS_UID . '/available-assignee?filter='. 'THERE_ARE_NO_RESULTS';
+        $response = $this->api('GET', $url);
+        $response->assertStatus(200);
+        //verify structure paginate
+        $response->assertJsonstructure($structurePaginate);
+        //verify result
+        $this->assertEquals(count($response->json()['data']), 0);
+    }
+
+    /**
+     * LGet a page of the available users and groups which may be assigned to a task.
+     *
+     * @param Process $process
+     * @param Task $activity
+     * @param User $user
+     * @param Group $group
+     *
+     * @depends testCreateProcess
+     * @depends testCreateTask
+     * @depends testCreateUser
+     * @depends testCreateGroup
+     * @depends testStore
+     */
+    public function testGetAvailablePaged(Process $process, Task $activity, User $user, Group $group): void
+    {
+        $this->auth($user->USR_USERNAME, self::DEFAULT_PASS);
+        $structurePaginate = [
+            'current_page',
+            'data',
+            'first_page_url',
+            'from',
+            'last_page',
+            'last_page_url',
+            'next_page_url',
+            'path',
+            'per_page',
+            'prev_page_url',
+            'to',
+            'total'
+        ];
+
+        //List All
+        $url = self::API_ROUTE . $process->PRO_UID . '/activity/' . $activity->TAS_UID . '/available-assignee/paged';
+        $response = $this->api('GET', $url);
+        $response->assertStatus(200);
+        //verify structure paginate
+        $response->assertJsonstructure($structurePaginate);
+        //verify the user and group assigned
+        foreach ($response->json()['data'] as $available) {
+            $this->assertNotEquals($available['aas_uid'], $user->USR_UID);
+            $this->assertNotEquals($available['aas_uid'], $group->GRP_UID);
+        }
+
+        //Filter user
+        $url = self::API_ROUTE . $process->PRO_UID . '/activity/' . $activity->TAS_UID . '/available-assignee/paged?filter='. $user->USR_FIRSTNAME;
+        $response = $this->api('GET', $url);
+        $response->assertStatus(200);
+        //verify structure paginate
+        $response->assertJsonstructure($structurePaginate);
+        //verify the user and group assigned
+        foreach ($response->json()['data'] as $available) {
+            $this->assertNotEquals($available['aas_uid'], $user->USR_UID);
+        }
+
+        //Filter group
+        $url = self::API_ROUTE . $process->PRO_UID . '/activity/' . $activity->TAS_UID . '/available-assignee/paged?filter='. $group->GRP_TITLE;
+        $response = $this->api('GET', $url);
+        $response->assertStatus(200);
+        //verify structure paginate
+        $response->assertJsonstructure($structurePaginate);
+        //verify the user and group assigned
+        foreach ($response->json()['data'] as $available) {
+            $this->assertNotEquals($available['aas_uid'], $group->GRP_UID);
+        }
+
+        //Filter not exist results
+        $url = self::API_ROUTE . $process->PRO_UID . '/activity/' . $activity->TAS_UID . '/available-assignee/paged?filter='. 'THERE_ARE_NO_RESULTS';
+        $response = $this->api('GET', $url);
+        $response->assertStatus(200);
+        //verify structure paginate
+        $response->assertJsonstructure($structurePaginate);
+        //verify result
+        $this->assertEquals(count($response->json()['data']), 0);
     }
 
     /**

@@ -122,7 +122,7 @@ class AssigneeController extends Controller
     }
 
     /**
-     * Return a list of assignees of an activity
+     * Get a list all the users who are assigned to a task (including users that are within groups).
      *
      * @param Process $process
      * @param Task $activity
@@ -157,6 +157,50 @@ class AssigneeController extends Controller
             'limit' => $request->input('limit', 20),
             'type' => $request->input('type', 'All')
         ];
+    }
+
+    /**
+     * Get a list of available users and groups which may be assigned to a task.
+     *
+     * @param Process $process
+     * @param Task $activity
+     * @param Request $request
+     *
+     * @return ResponseFactory|Response
+     */
+    public function getActivityAvailable(Process $process, Task $activity, Request $request)
+    {
+        try
+        {
+            $options = $this->verifyOptions($request);
+
+            $response = TaskManager::loadAvailable($activity, $options);
+            return response($response, 200);
+        } catch (TaskAssignedException $exception) {
+            return response($exception->getMessage(), $exception->getCode() ?: 400);
+        }
+    }
+
+    /**
+     * Get a page of the available users and groups which may be assigned to a task.
+     *
+     * @param Process $process
+     * @param Task $activity
+     * @param Request $request
+     *
+     * @return ResponseFactory|Response
+     */
+    public function getActivityAvailablePaged(Process $process, Task $activity, Request $request)
+    {
+        try
+        {
+            $options = $this->verifyOptions($request);
+
+            $response = TaskManager::loadAvailable($activity, $options, true);
+            return response($response, 200);
+        } catch (TaskAssignedException $exception) {
+            return response($exception->getMessage(), $exception->getCode() ?: 400);
+        }
     }
 
 }
