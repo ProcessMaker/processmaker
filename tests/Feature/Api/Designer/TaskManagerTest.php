@@ -192,7 +192,7 @@ class TaskManagerTest extends ApiTestCase
         //verify structure paginate
         $response->assertJsonstructure($structurePaginate);
         //verify the user and group assigned
-        $this->assertEquals(count($response->json()['data']), 1);
+        $this->assertLessThanOrEqual(count($response->json()['data']), 1);
         $data = [];
         foreach ($response->json()['data'] as $info) {
             $data[] = $info['aas_uid'];

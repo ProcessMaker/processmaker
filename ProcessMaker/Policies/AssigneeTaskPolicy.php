@@ -22,7 +22,7 @@ class AssigneeTaskPolicy
      */
     public function read(User $user): bool
     {
-        return $user->can('has-permission', Permission::PM_FACTORY);
+        return $user->can('has-permission', [Permission::PM_FACTORY, Permission::PM_CASES]);
     }
 
     /**
