@@ -125,6 +125,5 @@ if (env('POPULATE_DATABASE')) {
         'EXPIRES' => '2017-06-15 17:55:19',
         'SCOPE' => 'view_processes edit_processes *'
     ]);
-    Artisan::call('migrate');
 }
 
