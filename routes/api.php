@@ -91,7 +91,7 @@ Router::group([
         Router::delete('project/{process}/dynaform/{dynaform}', 'Designer\DynaformController@remove')->middleware('can:delete,ProcessMaker\Model\Dynaform');
 
         //Cases endpoints
-
         Router::get('cases/{application}/variables', 'Cases\VariableController@get')->middleware('can:read,application');
+
     });
 });
