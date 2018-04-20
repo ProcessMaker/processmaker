@@ -17,6 +17,7 @@ use ProcessMaker\Model\Trigger;
  * @method static Trigger save(Process $process, array $data)
  * @method static array update(Process $process, Trigger $trigger, array $data)
  * @method static boolean|null remove(Trigger $trigger)
+ * @method static array getTriggers(Process $process)
  *
  */
 class TriggerManager extends Facade
