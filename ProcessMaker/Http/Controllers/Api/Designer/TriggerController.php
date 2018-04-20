@@ -8,8 +8,9 @@ use ProcessMaker\Facades\TriggerManager;
 use ProcessMaker\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use ProcessMaker\Model\Process;
-use ProcessMaker\Model\Triggers;
+use ProcessMaker\Model\Trigger;
 use Symfony\Component\HttpFoundation\Response;
+use Watson\Validating\ValidationException;
 
 class TriggerController extends Controller
 {
@@ -35,11 +36,11 @@ class TriggerController extends Controller
      * Get a single trigger in a project.
      *
      * @param Process $process
-     * @param Triggers $trigger
+     * @param Trigger $trigger
      *
      * @return ResponseFactory|Response
      */
-    public function show(Process $process, Triggers $trigger)
+    public function show(Process $process, Trigger $trigger)
     {
         try
         {
@@ -80,16 +81,30 @@ class TriggerController extends Controller
      * Update a trigger in a project.
      *
      * @param Process $process
-     * @param Triggers $trigger
+     * @param Trigger $trigger
      * @param Request $request
      *
      * @return ResponseFactory|Response
      */
-    public function update(Process $process, Triggers $trigger, Request $request)
+    public function update(Process $process, Trigger $trigger, Request $request)
     {
         try
         {
-            $response = TriggerManager::getTriggers($process);
+            $data = [];
+            if ($request->has('TRI_TITLE')) {
+                $data['TRI_TITLE'] = $request->input('tri_title');
+            }
+            if ($request->has('TRI_DESCRIPTION')) {
+                $data['TRI_DESCRIPTION'] = $request->input('tri_description');
+            }
+            if ($request->has('TRI_WEBBOT')) {
+                $data['TRI_WEBBOT'] = $request->input('tri_webbot');
+            }
+            if ($request->has('TRI_PARAM')) {
+                $data['TRI_PARAM'] = $request->input('tri_param');
+            }
+
+            TriggerManager::update($process, $trigger, $data);
             return response([], 200);
         } catch (TriggerException $exception) {
             return response($exception->getMessage(), $exception->getCode() ?: 400);
@@ -100,11 +115,11 @@ class TriggerController extends Controller
      * Delete a trigger in a project.
      *
      * @param Process $process
-     * @param Triggers $trigger
+     * @param Trigger $trigger
      *
      * @return ResponseFactory|Response
      */
-    public function remove(Process $process, Triggers $trigger)
+    public function remove(Process $process, Trigger $trigger)
     {
         try
         {

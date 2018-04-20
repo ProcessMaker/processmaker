@@ -4,7 +4,7 @@ namespace ProcessMaker\Managers;
 
 use ProcessMaker\Exception\TriggerException;
 use ProcessMaker\Model\Process;
-use ProcessMaker\Model\Triggers;
+use ProcessMaker\Model\Trigger;
 use Ramsey\Uuid\Uuid;
 
 class TriggerManager
@@ -25,25 +25,41 @@ class TriggerManager
      * Create a new trigger in a project.
      *
      * @param Process $process
+     * @param array $data
      *
-     * @param $data
-     *
-     * @throws TriggerException
+     * @return Trigger
+     * @throws \Throwable
      */
-    public function save(Process $process, $data)
+    public function save(Process $process, $data): Trigger
     {
-        if (empty($data['TRI_TITLE'])) {
-            throw new TriggerException(__('This filed :field is required', ['field' => 'TRI_TITLE']));
-        }
-
         $data['TRI_UID'] = str_replace('-', '', Uuid::uuid4());
         $data['PRO_UID'] = $process->PRO_UID;
         $data['PRO_ID'] = $process->PRO_ID;
 
-        $trigger = new Triggers();
+        $trigger = new Trigger();
         $trigger->fill($data);
         $trigger->saveOrFail();
 
+        return $trigger;
+    }
+
+    /**
+     * Update trigger in a project.
+     *
+     * @param Process $process
+     * @param Trigger $trigger
+     * @param array $data
+     *
+     * @return Trigger
+     * @throws \Throwable
+     */
+    public function update(Process $process, Trigger $trigger, $data): Trigger
+    {
+        $data['PRO_UID'] = $process->PRO_UID;
+        $data['PRO_ID'] = $process->PRO_ID;
+
+        $trigger->fill($data);
+        $trigger->saveOrFail();
         return $trigger;
     }
 

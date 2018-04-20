@@ -4,6 +4,7 @@ namespace ProcessMaker\Facades;
 
 use Illuminate\Support\Facades\Facade;
 use ProcessMaker\Model\Process;
+use ProcessMaker\Model\Trigger;
 
 /**
  * Facade for our Task Manager
@@ -12,6 +13,8 @@ use ProcessMaker\Model\Process;
  * @see \ProcessMaker\Managers\TriggerManager
  *
  * @method static array getTriggers(Process $process)
+ * @method static array save(Process $process, array $data)
+ * @method static array update(Process $process, Trigger $trigger, array $data)
  *
  */
 class TriggerManager extends Facade
