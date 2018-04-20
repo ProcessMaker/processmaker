@@ -67,11 +67,10 @@ class Triggers extends Model
 
     protected $rules = [
         'TRI_UID' => 'required|max:32',
-        'TRI_TITLE' => 'required',
+        'TRI_TITLE' => 'required|unique:TRIGGERS,TRI_TITLE',
         'PRO_ID' => 'required',
         'PRO_UID' => 'required|max:32',
-        'TRI_TYPE' => 'required|in:' . self::TRIGGER_TYPE,
-        'TRI_WEBBOT' => 'required',
+        'TRI_TYPE' => 'required|in:' . self::TRIGGER_TYPE
     ];
 
     /**

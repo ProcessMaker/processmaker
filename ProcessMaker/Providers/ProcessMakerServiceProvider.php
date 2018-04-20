@@ -17,6 +17,7 @@ use ProcessMaker\Managers\ProcessFileManager;
 use ProcessMaker\Managers\ProcessManager;
 use ProcessMaker\Managers\ReportTableManager;
 use ProcessMaker\Managers\SchemaManager;
+use ProcessMaker\Managers\TriggerManager;
 use ProcessMaker\Model\Activity;
 use ProcessMaker\Model\Artifact;
 use ProcessMaker\Model\Diagram;
@@ -148,5 +149,10 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->app->singleton('dynaform.manager', function ($app) {
             return new DynaformManager();
         });
+
+       $this->app->singleton('trigger.manager', function ($app) {
+            return new TriggerManager();
+        });
+
     }
 }
