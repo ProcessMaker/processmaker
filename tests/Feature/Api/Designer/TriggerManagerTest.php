@@ -93,8 +93,7 @@ class TriggerManagerTest extends ApiTestCase
         $response = $this->api('POST', $url, $data);
         //validating the answer is correct.
         $response->assertStatus(422);
-        $trigger = Trigger::where('TRI_ID', $triggerId)->get()->first();
-        return $trigger;
+        return Trigger::where('TRI_ID', $triggerId)->get()->first();
     }
 
     /**

@@ -78,8 +78,17 @@ class Trigger extends Model
     ];
 
     /**
-     * Get the process we belong to.
+     * Get the route key for the model.
      *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uid';
+    }
+
+    /**
+     * Get the process we belong to.
      */
     public function process()
     {
