@@ -15,3 +15,4 @@ yarn-error.log
 .env
 /public
 tests/js/coverage
+.DS_Store
