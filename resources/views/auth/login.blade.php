@@ -1,13 +1,18 @@
 @extends('layouts.minimal')
 
 @section('content')
-  <div class="container p-5 text-center">
-    <img class="p-5" src="/img/processmaker-login-logo.png">
-  </div>
+<div class="container mt-5">
+  <div class="row">
 
-  <div class= "container bg-light p-5 w-25">
-    <div>
-      <form method="POST" action="{{ route('login') }}">
+    <div class="col">
+    </div>
+
+    <div class="col-6">
+      <div align="center">
+        <img class="p-5" src="/img/processmaker-login-logo.png">
+      </div>
+
+      <form method="POST" action="{{ route('login') }}" class="bg-light p-5">
         {{ csrf_field() }}
 
       <div class="form-group">
@@ -63,10 +68,14 @@
         </a>
       </form>
     </div>
-  </div>
 
+    <div class="col">
+    </div>
+
+  </div>
 @endsection
 
 @section('css')
-
+<style>
+</style>
 @endsection
