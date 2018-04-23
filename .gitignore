@@ -14,4 +14,3 @@ npm-debug.log
 yarn-error.log
 .env
 /public
-tests/js/coverage

@@ -43,12 +43,39 @@ class Application extends Model
     }
 
     /**
+     * Returns the relationship of the User this case belongs to
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'APP_CUR_USER', 'USR_UID');
+    }
+
+    /**
      * Returns the relationship of the Process this case belongs to
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function process()
     {
         return $this->belongsTo(Process::class, 'PRO_UID', 'PRO_UID');
+    }
+
+    /**
+     * Returns the relationship of the Delegation this case belongs to
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function delegations()
+    {
+        return $this->hasMany(Delegation::class, 'APP_UID', 'APP_UID');
+    }
+
+    /**
+     * Returns the relationship of the Delegation this case belongs to
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function threads()
+    {
+        return $this->hasMany(Thread::class, 'APP_UID', 'APP_UID');
     }
 
     /**
