@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Watson\Validating\ValidatingTrait;
 
 /**
- * Represents an Eloquent model of a Triggers
+ * Represents an Eloquent model of a Trigger
  *
  * @package ProcessMaker\Model
  *

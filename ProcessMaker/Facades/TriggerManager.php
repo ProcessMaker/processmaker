@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Facades;
 
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Facade;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\Trigger;
@@ -12,9 +13,10 @@ use ProcessMaker\Model\Trigger;
  * @package ProcessMaker\Facades
  * @see \ProcessMaker\Managers\TriggerManager
  *
- * @method static array getTriggers(Process $process)
- * @method static array save(Process $process, array $data)
+ * @method static Paginator index(Process $process)
+ * @method static Trigger save(Process $process, array $data)
  * @method static array update(Process $process, Trigger $trigger, array $data)
+ * @method static void remove(Process $process, Trigger $trigger)
  *
  */
 class TriggerManager extends Facade

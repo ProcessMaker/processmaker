@@ -84,7 +84,7 @@ class TriggerManagerTest extends ApiTestCase
         $response = $this->api('POST', $url, $data);
         //validating the answer is correct.
         $response->assertStatus(201);
-        $trigger = $response->json();
+        $triggerId = $response->json('TRI_ID');
         //Check structure of response.
         $response->assertJsonStructure($structure);
 
@@ -93,8 +93,79 @@ class TriggerManagerTest extends ApiTestCase
         $response = $this->api('POST', $url, $data);
         //validating the answer is correct.
         $response->assertStatus(422);
-
+        $trigger = Trigger::where('TRI_ID', $triggerId)->get()->first();
         return $trigger;
+    }
+
+    /**
+     * Get a list of triggers in a project.
+     *
+     * @param Process $process
+     * @param User $user
+     *
+     * @depends testCreateProcess
+     * @depends testCreateUser
+     * @depends testCreateTrigger
+     */
+    public function testListTriggers(Process $process, User $user): void
+    {
+        $this->auth($user->USR_USERNAME, self::DEFAULT_PASS);
+        $structurePaginate = [
+            'current_page',
+            'data',
+            'first_page_url',
+            'from',
+            'next_page_url',
+            'path',
+            'per_page',
+            'prev_page_url',
+            'to',
+        ];
+
+        //List triggers
+        $url = self::API_ROUTE . $process->PRO_UID . '/triggers';
+        $response = $this->api('GET', $url);
+        //Validate the answer is correct
+        $response->assertStatus(200);
+
+        //verify structure paginate
+        $response->assertJsonstructure($structurePaginate);
+
+    }
+
+    /**
+     * Get a trigger of a project.
+     *
+     * @param Process $process
+     * @param User $user
+     * @param Trigger $trigger
+     *
+     * @depends testCreateProcess
+     * @depends testCreateUser
+     * @depends testCreateTrigger
+     */
+    public function testGetTrigger(Process $process, User $user, Trigger $trigger): void
+    {
+        $this->auth($user->USR_USERNAME, self::DEFAULT_PASS);
+        $structurePaginate = [
+            'TRI_UID',
+            'TRI_TITLE',
+            'TRI_DESCRIPTION',
+            'PRO_ID',
+            'PRO_UID',
+            'TRI_TYPE',
+            'TRI_WEBBOT',
+            'TRI_PARAM'
+        ];
+        //List triggers
+        $url = self::API_ROUTE . $process->PRO_UID . '/trigger/' . $trigger->TRI_UID;
+        $response = $this->api('GET', $url);
+        //Validate the answer is correct
+        $response->assertStatus(200);
+
+        //verify structure paginate
+        $response->assertJsonstructure($structurePaginate);
+
     }
 
     /**
@@ -108,29 +179,44 @@ class TriggerManagerTest extends ApiTestCase
      * @depends testCreateUser
      * @depends testCreateTrigger
      */
-    public function testUpdateTrigger(Process $process, User $user, Trigger $trigger)
+    public function testUpdateTrigger(Process $process, User $user, Trigger $trigger): void
     {
         $this->auth($user->USR_USERNAME, self::DEFAULT_PASS);
 
-        $structure = [
-            'TRI_ID',
-            'TRI_UID',
-            'TRI_TITLE',
-            'TRI_DESCRIPTION',
-            'PRO_ID',
-            'PRO_UID',
-            'TRI_TYPE',
-            'TRI_WEBBOT',
-            'TRI_PARAM'
-        ];
-
-        $data = [];
+        $data = ['tri_title' => 'other title trigger'];
         //Post should have the parameter tri_title
         $url = self::API_ROUTE . $process->PRO_UID . '/trigger/' . $trigger->TRI_UID;
         $response = $this->api('PUT', $url, $data);
-        //validating the answer is an error
-        $response->assertStatus(422);
+        //Validate the answer is correct
+        $response->assertStatus(200);
+    }
 
+    /**
+     * Delete trigger in process
+     *
+     * @param Process $process
+     * @param User $user
+     * @param Trigger $trigger
+     *
+     * @depends testCreateProcess
+     * @depends testCreateUser
+     * @depends testCreateTrigger
+     */
+    public function testDeleteTrigger(Process $process, User $user, Trigger $trigger): void
+    {
+        $this->auth($user->USR_USERNAME, self::DEFAULT_PASS);
+
+        //Remove trigger
+        $url = self::API_ROUTE . $process->PRO_UID . '/trigger/' . $trigger->TRI_UID;
+        $response = $this->api('DELETE', $url);
+        //Validate the answer is correct
+        $response->assertStatus(200);
+
+        //trigger not exist
+        $url = self::API_ROUTE . $process->PRO_UID . '/trigger/' . $trigger->TRI_UID;
+        $response = $this->api('DELETE', $url);
+        //Validate the answer is correct
+        $response->assertStatus(404);
     }
 
 }

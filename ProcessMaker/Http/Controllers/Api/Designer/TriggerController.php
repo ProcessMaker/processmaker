@@ -25,7 +25,7 @@ class TriggerController extends Controller
     {
         try
         {
-            $response = TriggerManager::getTriggers($process);
+            $response = TriggerManager::index($process);
             return response($response, 200);
         } catch (TriggerException $exception) {
             return response($exception->getMessage(), $exception->getCode() ?: 400);
@@ -44,8 +44,7 @@ class TriggerController extends Controller
     {
         try
         {
-            $response = TriggerManager::getTriggers($process);
-            return response($response, 200);
+            return response($trigger->toArray(), 200);
         } catch (TriggerException $exception) {
             return response($exception->getMessage(), $exception->getCode() ?: 400);
         }
@@ -91,16 +90,16 @@ class TriggerController extends Controller
         try
         {
             $data = [];
-            if ($request->has('TRI_TITLE')) {
+            if ($request->has('tri_title')) {
                 $data['TRI_TITLE'] = $request->input('tri_title');
             }
-            if ($request->has('TRI_DESCRIPTION')) {
+            if ($request->has('tri_description')) {
                 $data['TRI_DESCRIPTION'] = $request->input('tri_description');
             }
-            if ($request->has('TRI_WEBBOT')) {
+            if ($request->has('tri_webbot')) {
                 $data['TRI_WEBBOT'] = $request->input('tri_webbot');
             }
-            if ($request->has('TRI_PARAM')) {
+            if ($request->has('tri_param')) {
                 $data['TRI_PARAM'] = $request->input('tri_param');
             }
 
@@ -123,7 +122,7 @@ class TriggerController extends Controller
     {
         try
         {
-            $response = TriggerManager::getTriggers($process);
+            $response = TriggerManager::remove($process, $trigger);
             return response($response, 200);
         } catch (TriggerException $exception) {
             return response($exception->getMessage(), $exception->getCode() ?: 400);
