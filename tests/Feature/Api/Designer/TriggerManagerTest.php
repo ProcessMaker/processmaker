@@ -78,7 +78,11 @@ class TriggerManagerTest extends ApiTestCase
         $response->assertStatus(422);
 
         $faker = Faker::create();
-        $data = ['tri_title' => $faker->sentence(3)];
+        $data = [
+            'tri_title' => $faker->sentence(3),
+            'tri_description' => $faker->sentence(6),
+            'tri_param' => $faker->words($faker->randomDigitNotNull)
+        ];
         //Post saved correctly
         $url = self::API_ROUTE . $process->PRO_UID . '/trigger';
         $response = $this->api('POST', $url, $data);
@@ -120,12 +124,21 @@ class TriggerManagerTest extends ApiTestCase
             'prev_page_url',
             'to',
         ];
+        //add triggers to process
+        $faker = Faker::create();
+        factory(Trigger::class, 10)->create([
+            'PRO_UID' => $process->PRO_UID,
+            'PRO_ID' => $process->PRO_ID,
+            'TRI_PARAM' => $faker->words($faker->randomDigitNotNull)
+        ]);
 
         //List triggers
         $url = self::API_ROUTE . $process->PRO_UID . '/triggers';
         $response = $this->api('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
+        //verify count of data
+        $response->assertJsonCount(11, 'data');
 
         //verify structure paginate
         $response->assertJsonstructure($structurePaginate);
@@ -156,7 +169,7 @@ class TriggerManagerTest extends ApiTestCase
             'TRI_WEBBOT',
             'TRI_PARAM'
         ];
-        //List triggers
+        //load trigger
         $url = self::API_ROUTE . $process->PRO_UID . '/trigger/' . $trigger->TRI_UID;
         $response = $this->api('GET', $url);
         //Validate the answer is correct
@@ -164,6 +177,13 @@ class TriggerManagerTest extends ApiTestCase
 
         //verify structure paginate
         $response->assertJsonstructure($structurePaginate);
+
+        //trigger not belong to process.
+        $trigger = factory(Trigger::class)->create();
+        $url = self::API_ROUTE . $process->PRO_UID . '/trigger/' . $trigger->TRI_UID;
+        $response = $this->api('GET', $url);
+        //Validate the answer is incorrect
+        $response->assertStatus(404);
 
     }
 
@@ -182,8 +202,21 @@ class TriggerManagerTest extends ApiTestCase
     {
         $this->auth($user->USR_USERNAME, self::DEFAULT_PASS);
 
-        $data = ['tri_title' => 'other title trigger'];
+        $faker = Faker::create();
+        $data = [
+            'tri_title' => '',
+            'tri_description' => $faker->sentence(6),
+            'tri_webbot' => $faker->sentence(2),
+            'tri_param' => $faker->words(3),
+        ];
         //Post should have the parameter tri_title
+        $url = self::API_ROUTE . $process->PRO_UID . '/trigger/' . $trigger->TRI_UID;
+        $response = $this->api('PUT', $url, $data);
+        //Validate the answer is incorrect
+        $response->assertStatus(422);
+
+        //Post saved success
+        $data['tri_title'] = $faker->sentence(2);
         $url = self::API_ROUTE . $process->PRO_UID . '/trigger/' . $trigger->TRI_UID;
         $response = $this->api('PUT', $url, $data);
         //Validate the answer is correct
@@ -210,6 +243,8 @@ class TriggerManagerTest extends ApiTestCase
         $response = $this->api('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
+
+        $trigger = factory(Trigger::class)->make();
 
         //trigger not exist
         $url = self::API_ROUTE . $process->PRO_UID . '/trigger/' . $trigger->TRI_UID;

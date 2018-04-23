@@ -3,14 +3,15 @@
 namespace ProcessMaker\Http\Controllers\Api\Designer;
 
 use Illuminate\Contracts\Routing\ResponseFactory;
-use ProcessMaker\Exception\TriggerException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use ProcessMaker\Exception\DoesNotBelongToProcessException;
 use ProcessMaker\Facades\TriggerManager;
 use ProcessMaker\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\Trigger;
+use ProcessMaker\Rules\TriggerBelongProcess;
 use Symfony\Component\HttpFoundation\Response;
-use Watson\Validating\ValidationException;
 
 class TriggerController extends Controller
 {
@@ -23,13 +24,8 @@ class TriggerController extends Controller
      */
     public function index(Process $process)
     {
-        try
-        {
-            $response = TriggerManager::index($process);
-            return response($response, 200);
-        } catch (TriggerException $exception) {
-            return response($exception->getMessage(), $exception->getCode() ?: 400);
-        }
+        $response = TriggerManager::index($process);
+        return response($response, 200);
     }
 
     /**
@@ -39,15 +35,12 @@ class TriggerController extends Controller
      * @param Trigger $trigger
      *
      * @return ResponseFactory|Response
+     * @throws DoesNotBelongToProcessException
      */
     public function show(Process $process, Trigger $trigger)
     {
-        try
-        {
-            return response($trigger->toArray(), 200);
-        } catch (TriggerException $exception) {
-            return response($exception->getMessage(), $exception->getCode() ?: 400);
-        }
+        $this->belongsToProcess($process, $trigger);
+        return response($trigger->toArray(), 200);
     }
 
     /**
@@ -60,20 +53,15 @@ class TriggerController extends Controller
      */
     public function store(Process $process, Request $request)
     {
-        try
-        {
-            $data = [
-                'TRI_TITLE' =>  $request->input('tri_title', ''),
-                'TRI_DESCRIPTION' =>  $request->input('tri_description', ''),
-                'TRI_WEBBOT' =>  $request->input('tri_webbot', ''),
-                'TRI_PARAM' =>  $request->input('tri_param', '')
-            ];
+        $data = [
+            'TRI_TITLE' =>  $request->input('tri_title', ''),
+            'TRI_DESCRIPTION' =>  $request->input('tri_description', ''),
+            'TRI_WEBBOT' =>  $request->input('tri_webbot', ''),
+            'TRI_PARAM' =>  $request->input('tri_param', '')
+        ];
 
-            $response = TriggerManager::save($process, $data);
-            return response($response, 201);
-        } catch (TriggerException $exception) {
-            return response($exception->getMessage(), $exception->getCode() ?: 400);
-        }
+        $response = TriggerManager::save($process, $data);
+        return response($response, 201);
     }
 
     /**
@@ -84,30 +72,28 @@ class TriggerController extends Controller
      * @param Request $request
      *
      * @return ResponseFactory|Response
+     * @throws DoesNotBelongToProcessException
      */
     public function update(Process $process, Trigger $trigger, Request $request)
     {
-        try
-        {
-            $data = [];
-            if ($request->has('tri_title')) {
-                $data['TRI_TITLE'] = $request->input('tri_title');
-            }
-            if ($request->has('tri_description')) {
-                $data['TRI_DESCRIPTION'] = $request->input('tri_description');
-            }
-            if ($request->has('tri_webbot')) {
-                $data['TRI_WEBBOT'] = $request->input('tri_webbot');
-            }
-            if ($request->has('tri_param')) {
-                $data['TRI_PARAM'] = $request->input('tri_param');
-            }
-
-            TriggerManager::update($process, $trigger, $data);
-            return response([], 200);
-        } catch (TriggerException $exception) {
-            return response($exception->getMessage(), $exception->getCode() ?: 400);
+        $this->belongsToProcess($process, $trigger);
+        $data = [];
+        if ($request->has('tri_title')) {
+            $data['TRI_TITLE'] = $request->input('tri_title');
         }
+        if ($request->has('tri_description')) {
+            $data['TRI_DESCRIPTION'] = $request->input('tri_description');
+        }
+        if ($request->has('tri_webbot')) {
+            $data['TRI_WEBBOT'] = $request->input('tri_webbot');
+        }
+        if ($request->has('tri_param')) {
+            $data['TRI_PARAM'] = $request->input('tri_param');
+        }
+        if($data) {
+            TriggerManager::update($process, $trigger, $data);
+        }
+        return response([], 200);
     }
 
     /**
@@ -117,15 +103,27 @@ class TriggerController extends Controller
      * @param Trigger $trigger
      *
      * @return ResponseFactory|Response
+     * @throws DoesNotBelongToProcessException
      */
     public function remove(Process $process, Trigger $trigger)
     {
-        try
-        {
-            $response = TriggerManager::remove($process, $trigger);
-            return response($response, 200);
-        } catch (TriggerException $exception) {
-            return response($exception->getMessage(), $exception->getCode() ?: 400);
+        $this->belongsToProcess($process, $trigger);
+        TriggerManager::remove($trigger);
+        return response([], 200);
+    }
+
+    /**
+     * Validate if trigger belong to process.
+     *
+     * @param Process $process
+     * @param Trigger $trigger
+     *
+     * @throws DoesNotBelongToProcessException|void
+     */
+    private function belongsToProcess(Process $process, Trigger $trigger): void
+    {
+        if($process->PRO_ID !== $trigger->PRO_ID) {
+            Throw new DoesNotBelongToProcessException(__('The trigger does not belong to this process.'));
         }
     }
 

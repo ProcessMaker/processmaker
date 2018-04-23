@@ -16,7 +16,7 @@ use ProcessMaker\Model\Trigger;
  * @method static Paginator index(Process $process)
  * @method static Trigger save(Process $process, array $data)
  * @method static array update(Process $process, Trigger $trigger, array $data)
- * @method static void remove(Process $process, Trigger $trigger)
+ * @method static boolean|null remove(Trigger $trigger)
  *
  */
 class TriggerManager extends Facade

@@ -3,7 +3,6 @@
 namespace ProcessMaker\Managers;
 
 use Illuminate\Pagination\Paginator;
-use ProcessMaker\Exception\TriggerException;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\Trigger;
 use Ramsey\Uuid\Uuid;
@@ -58,11 +57,7 @@ class TriggerManager
     {
         $data['PRO_UID'] = $process->PRO_UID;
         $data['PRO_ID'] = $process->PRO_ID;
-        $trigger->TRI_TITLE = isset($data['TRI_TITLE']) ? $data['TRI_TITLE'] : $trigger->TRI_TITLE;
-        $trigger->TRI_TITLE = $trigger->TRI_TITLE . ',TRI_ID,' . $trigger->TRI_ID;
-        $trigger->TRI_DESCRIPTION = isset($data['TRI_DESCRIPTION']) ? $data['TRI_DESCRIPTION'] : $trigger->TRI_DESCRIPTION;
-        $trigger->TRI_WEBBOT = isset($data['TRI_WEBBOT']) ? $data['TRI_WEBBOT'] : $trigger->TRI_WEBBOT;
-        $trigger->TRI_PARAM = isset($data['TRI_PARAM']) ? $data['TRI_PARAM'] : $trigger->TRI_PARAM;
+        $trigger->fill($data);
 
         $trigger->saveOrFail();
         return $trigger;
@@ -71,18 +66,14 @@ class TriggerManager
     /**
      * Remove trigger in a project.
      *
-     * @param Process $process
      * @param Trigger $trigger
      *
-     * @throws TriggerException
+     * @return bool|null
+     * @throws \Exception
      */
-    public function remove(Process $process, Trigger $trigger): void
+    public function remove(Trigger $trigger): ?bool
     {
-        $response = $trigger->delete();
-
-        if (!$response) {
-            Throw new TriggerException(__('This row does not exist!'));
-        }
+        return $trigger->delete();
     }
 
 }

@@ -19,7 +19,7 @@ use Watson\Validating\ValidatingTrait;
  * @property string PRO_UID
  * @property string TRI_TYPE
  * @property text TRI_WEBBOT
- * @property text TRI_PARAM
+ * @property array TRI_PARAM
  *
  */
 class Trigger extends Model
@@ -93,6 +93,30 @@ class Trigger extends Model
     public function process()
     {
         return $this->belongsTo(Process::class);
+    }
+
+    /**
+     * Accessor tri_param to json
+     *
+     * @param $value
+     *
+     * @return array|null
+     */
+    public function getTriParamAttribute($value): ?array
+    {
+        return json_decode($value);
+    }
+
+    /**
+     * Mutator tri_param json decode
+     *
+     * @param $value
+     *
+     * @return void
+     */
+    public function setTriParamAttribute($value): void
+    {
+        $this->attributes['TRI_PARAM'] = empty($value) ? null : json_encode($value);
     }
 
 }
