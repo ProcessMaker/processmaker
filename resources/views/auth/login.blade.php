@@ -2,7 +2,7 @@
 
 @section('content')
   <div class="container p-5 text-center">
-    <img class="p-5" src="/img/Logo1.png">
+    <img class="p-5" src="/img/processmaker-login-logo.png">
   </div>
 
   <div class= "container bg-light p-5 w-25">
