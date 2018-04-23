@@ -10,6 +10,7 @@ use League\OAuth2\Server\ResourceServer;
 use ProcessMaker\Guards\OAuth2Guard;
 use ProcessMaker\Model\Application;
 use ProcessMaker\Model\Dynaform;
+use ProcessMaker\Model\InputDocument;
 use ProcessMaker\Model\PmTable;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\ProcessCategory;
@@ -22,6 +23,7 @@ use ProcessMaker\OAuth2\ClientRepository;
 use ProcessMaker\Policies\ApplicationPolicy;
 use ProcessMaker\Policies\AssigneeTaskPolicy;
 use ProcessMaker\Policies\DynaformPolicy;
+use ProcessMaker\Policies\InputDocumentPolicy;
 use ProcessMaker\Policies\PmTablePolicy;
 use ProcessMaker\Policies\ProcessCategoryPolicy;
 use ProcessMaker\Policies\ProcessPolicy;
@@ -49,6 +51,7 @@ class AuthServiceProvider extends ServiceProvider
         ReportTable::class => ReportTablePolicy::class,
         Dynaform::class => DynaformPolicy::class,
         TaskUser::class => AssigneeTaskPolicy::class,
+        InputDocument::class => InputDocumentPolicy::class,
     ];
 
     /**

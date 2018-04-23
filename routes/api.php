@@ -103,5 +103,12 @@ Router::group([
         //Cases endpoints
         Router::get('cases/{application}/variables', 'Cases\VariableController@get')->middleware('can:read,application');
 
+        //Input Document endpoints
+        Router::get('project/{process}/input-documents', 'Designer\InputDocumentController@index')->middleware('can:read,ProcessMaker\Model\InputDocument');
+        Router::get('project/{process}/input-document/{inputDocument}', 'Designer\InputDocumentController@index')->middleware('can:read,ProcessMaker\Model\InputDocument');
+        Router::post('project/{process}/input-document', 'Designer\InputDocumentController@index')->middleware('can:read,ProcessMaker\Model\InputDocument');
+        Router::put('project/{process}/input-document/{inputDocument}', 'Designer\InputDocumentController@index')->middleware('can:read,ProcessMaker\Model\InputDocument');
+        Router::delete('project/{process}/input-document/{inputDocument}', 'Designer\InputDocumentController@index')->middleware('can:read,ProcessMaker\Model\InputDocument');
+
     });
 });

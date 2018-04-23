@@ -34,7 +34,6 @@ class InputDocument extends Model
     protected $primaryKey = 'INP_DOC_UID';
 
     public $timestamps = false;
-    //'INP_DOC_UID', 'PRO_ID', 'PRO_UID', 'INP_DOC_TITLE', 'INP_DOC_DESCRIPTION', 'INP_DOC_FORM_NEEDED', 'INP_DOC_ORIGINAL', 'INP_DOC_PUBLISHED', 'INP_DOC_VERSIONING', 'INP_DOC_DESTINATION_PATH', 'INP_DOC_TAGS', 'INP_DOC_TYPE_FILE', 'INP_DOC_MAX_FILESIZE', 'INP_DOC_MAX_FILESIZE_UNIT'
 
     protected $fillable = [
         'INP_DOC_UID',
