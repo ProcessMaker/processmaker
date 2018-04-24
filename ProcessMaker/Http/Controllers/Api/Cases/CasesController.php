@@ -7,10 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Ramsey\Uuid\Uuid;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Model\Application;
-use ProcessMaker\Transformers\ApplicationTransformer;
-use League\Fractal\Serializer\JsonApiSerializer;
-// use Illuminate\Contracts\Pagination\IlluminatePaginatorAdapter;
+use Illuminate\Pagination\Paginator;
 
 /**
  * API endpoint for VueJS data front end
@@ -18,87 +15,227 @@ use League\Fractal\Serializer\JsonApiSerializer;
 class CasesController extends Controller
 {
 
-  public function index(Request $request)
-  {
-
-    /*
-    "total": 6,	Total number of cases found.
-"start": 1,	Number where the list of cases begins. The default is 1.
-"limit": 25,	Maximum number of cases returned. The default is 25.
-"sort": "app_cache_view.app_number",	The field in the wf_<WORKSPACE>.APP_CACHE_VIEW table which is used to sort the cases. The default is "app_cache_view.app_number".
-"dir": "desc",	The sort order of the cases, which can be "asc" (ascending) or "desc" (descending, which is the default).
-"cat_uid": "",	The unique ID of a process category. Only cases whose processes are in the given category will be returned.
-"pro_uid": "",	The unique ID of a process. Only cases in the given process will be returned.
-"search": "",
-*/
-
-    $expected = [
-      'per_page' => 15,
-      'page' => 1,
-      'sort' => 'APP_NUMBER',
-      'sort_order' => 'asc',
-      'per_page' => 15,
-      'APP_STATUS' => 1
-    ];
-
-
-    if ($request->has('sort')) {
-
-      $sort = explode('|',$request->sort);
-
-      $possible_values = ['APP_TITLE','APP_DESCRIPTION','APP_NUMBER'];
-
-      if(in_array($sort[0],$possible_values)){
-
-        $expected['sort'] = $sort[0];
-
-      }
-
-      if(isset($sort[1]) && $sort[1] == 'desc'){
-
-        $expected['sort_order'] = 'desc';
-
-      }
-
-    }
-
-    $paginator = Application::orderBy($expected['sort'],$expected['sort_order']);
-
-    if ($request->has('filter')) {
-        $paginator = $paginator->where('APP_TITLE', 'LIKE', '%' . $request->get('filter') . '%');
-        $paginator = $paginator->where('APP_DESCRIPTION', 'LIKE', '%' . $request->get('filter') . '%');
-        $paginator = $paginator->where('APP_NUMBER', 'LIKE', '%' . $request->get('filter') . '%');
-    }
-
-    if ($request->has('status')) {
-        $paginator = $paginator->where('APP_STATUS', $request->get('status'));
-    }
-
-    if ($request->has('per_page')) {
-
-      $expected['per_page'] = (int) $request->get('per_page');
-
-    }
-
-    // Note, you need to re-assign the return of paginate.  It's a chaining method, so you
-    // have to re-assign the results to itself
-    $paginator = $paginator->paginate($expected['per_page']);
-
-    return fractal($paginator, new ApplicationTransformer())->toArray();
 
     /**
-     *  You don't need any of the below.
+     * This function return information by searching cases
+     *
+     * The query is related to advanced search with diferents filters
+     * We can search by process, status of case, category of process, users, delegate date from and to
+     *
+     * @param string $userUid
+     * @param integer $start for the pagination
+     * @param integer $limit for the pagination
+     * @param string $request ->search
+     * @param integer $process the pro_UID
+     * @param integer $status of the case
+     * @param string $dir if the order is DESC or ASC
+     * @param string $sort name of column by sort
+     * @param string $category uid for the process
+     * @param date $dateFrom
+     * @param date $dateTo
+     * @param string $request ->columnSearch name of column for a specific search
+     * @return array $result result of the query
      */
-    /*
-    $accounts = new Collection($paginator->items(), new ApplicationTransformer($paginator));
 
-    $paginator->setPaginator(new IlluminatePaginatorAdapter($paginator));
+    public function index(Request $request)
+    {
 
-    $accounts = $this->fractal->createData($accounts); // Transform data
+      foreach($request->toArray() as $req_key => $req){
 
-    return $accounts->toArray();
-    */
+        $request->$req_key = filter_var($req,FILTER_SANITIZE_STRING);
 
-  }
+      }
+
+        $limit = 25;
+
+        if ($request->has('limit') && $request->limit > 0) {
+
+            $limit = (int)$request->limit;
+
+        }
+
+        $sqlData = 'SELECT
+             STRAIGHT_JOIN APPLICATION.APP_NUMBER,
+             APPLICATION.APP_UID,
+             APPLICATION.APP_STATUS,
+             APPLICATION.APP_STATUS AS APP_STATUS_LABEL,
+             APPLICATION.PRO_UID,
+             APPLICATION.APP_CREATE_DATE,
+             APPLICATION.APP_FINISH_DATE,
+             APPLICATION.APP_UPDATE_DATE,
+             APPLICATION.APP_TITLE,
+             APP_DELEGATION.USR_UID,
+             APP_DELEGATION.TAS_UID,
+             APP_DELEGATION.DEL_INDEX,
+             APP_DELEGATION.DEL_LAST_INDEX,
+             APP_DELEGATION.DEL_DELEGATE_DATE,
+             APP_DELEGATION.DEL_INIT_DATE,
+             APP_DELEGATION.DEL_FINISH_DATE,
+             APP_DELEGATION.DEL_TASK_DUE_DATE,
+             APP_DELEGATION.DEL_RISK_DATE,
+             APP_DELEGATION.DEL_THREAD_STATUS,
+             APP_DELEGATION.DEL_PRIORITY,
+             APP_DELEGATION.DEL_DURATION,
+             APP_DELEGATION.DEL_QUEUE_DURATION,
+             APP_DELEGATION.DEL_STARTED,
+             APP_DELEGATION.DEL_DELAY_DURATION,
+             APP_DELEGATION.DEL_FINISHED,
+             APP_DELEGATION.DEL_DELAYED,
+             APP_DELEGATION.DEL_DELAY_DURATION,
+             TASK.TAS_TITLE AS APP_TAS_TITLE,
+             TASK.TAS_TYPE AS APP_TAS_TYPE,
+             USERS.USR_LASTNAME,
+             USERS.USR_FIRSTNAME,
+             USERS.USR_USERNAME,
+             PROCESS.PRO_TITLE AS APP_PRO_TITLE
+          FROM APP_DELEGATION
+          LEFT JOIN APPLICATION ON (APP_DELEGATION.APP_UID = APPLICATION.APP_UID)
+          LEFT JOIN TASK ON (APP_DELEGATION.TAS_UID = TASK.TAS_UID)
+          LEFT JOIN USERS ON (APP_DELEGATION.USR_UID = USERS.USR_UID)
+          LEFT JOIN PROCESS ON (APP_DELEGATION.PRO_UID = PROCESS.PRO_UID)
+          WHERE TASK.TAS_TYPE NOT IN ("WEBENTRYEVENT","END-MESSAGE-EVENT","START-MESSAGE-EVENT","INTERMEDIATE-THROW-MESSAGE-EVENT","INTERMEDIATE-CATCH-MESSAGE-EVENT")';
+
+        $status = [
+            1 => " AND APP_DELEGATION.DEL_THREAD_STATUS='OPEN' AND APPLICATION.APP_STATUS_ID = 1",
+            2 => " AND APP_DELEGATION.DEL_THREAD_STATUS='OPEN' AND APPLICATION.APP_STATUS_ID = 2",
+            3 => " AND APPLICATION.APP_STATUS_ID = 3 AND APP_DELEGATION.DEL_LAST_INDEX = 1",
+            4 => " AND APPLICATION.APP_STATUS_ID = 4 AND APP_DELEGATION.DEL_LAST_INDEX = 1",
+        ];
+
+        if ($request->has('status') && array_key_exists($request->status, $status)) {
+
+            $sqlData .= $status[$request->status];
+
+        } else {
+
+            $sqlData .= " AND (APP_DELEGATION.DEL_THREAD_STATUS = 'OPEN' OR (APP_DELEGATION.DEL_THREAD_STATUS = 'CLOSED' AND APP_DELEGATION.DEL_LAST_INDEX = 1 AND APPLICATION.APP_STATUS_ID = 3)) ";
+
+        }
+
+        if ($request->has('userUid') && $request->userUid <> '') {
+            $sqlData .= " AND APP_DELEGATION.USR_UID = " . $request->userUid;
+        }
+
+        if ($request->has('process') && $request->process <> '') {
+            $sqlData .= " AND APP_DELEGATION.PRO_UID = " . $request->process;
+        }
+
+        if ($request->has('category') && $request->category <> '') {
+            // $category = mysqli_real_escape_string($con->getResource(), $category);
+            $sqlData .= " AND PROCESS.PRO_CATEGORY = '{$request->category}'";
+        }
+
+        if ($request->has('search') && $request->search <> '') {
+
+            //If the filter is related to the APPLICATION table: APP_NUMBER or APP_TITLE
+            if ($request->has('columnSearch') && in_array($request->columnSearch, ['APP_TITLE', 'APP_NUMBER'])) {
+
+                $sqlSearch = "SELECT APPLICATION.APP_NUMBER FROM APPLICATION WHERE APPLICATION.{$request->columnSearch} LIKE '%{$request->search}%'";
+
+                if ($request->columnSearch == 'APP_NUMBER') {
+
+                    //Cast the search criteria to string
+                    if (!is_string($request->search)) {
+                        $request->search = (string)$request->search;
+                    }
+                    //Only if is integer we will to add to greater equal in the query
+                    if (substr($request->search, 0, 1) != '0' && ctype_digit($request->search)) {
+                        $sqlSearch .= " AND APPLICATION.{$request->columnSearch} >= {$request->search}";
+                    }
+
+                }
+
+                if ($request->has('start') && $request->start <> '') {
+                    $sqlSearch .= " LIMIT $request->start, " . $limit;
+                } else {
+                    $sqlSearch .= " LIMIT " . $limit;
+                }
+
+                $appNumbers = \DB::select($sqlSearch);
+
+                if (count($appNumbers) > 0) {
+
+                    $sqlData .= " AND APP_DELEGATION.APP_NUMBER IN (" . implode(",", $appNumbers) . ")";
+
+                }
+
+            }
+
+            if ($request->has('columnSearch') && $request->columnSearch === 'TAS_TITLE') {
+
+                $sqlData .= " AND TASK.TAS_TITLE LIKE '%{$request->search}%' ";
+
+            }
+
+        }
+
+        if ($request->has('dateFrom') && $request->dateFrom <> '') {
+            $sqlData .= " AND APP_DELEGATION.DEL_DELEGATE_DATE >= '" . date('Y-m-d', strtotime($request->dateFrom)) . "'";
+        }
+
+        if ($request->has('dateTo') && $request->dateTo <> '') {
+            $sqlData .= " AND APP_DELEGATION.DEL_DELEGATE_DATE <= '" . date('Y-m-d', strtotime($request->dateTo)) . " 23:59:59'";
+        }
+
+        //Sorts the records in descending order by default
+        if ($request->has('sort') && $request->has('search')) {
+
+            $sort = 'APP_DELEGATION.APP_NUMBER';
+
+            if ($request->sort == 'APP_CURRENT_USER') {
+
+                $sort = 'USR_LASTNAME, USR_FIRSTNAME';
+
+            }
+
+            $dir = "asc";
+
+            if ($request->dir == 'desc') {
+
+                $dir = "desc";
+
+            }
+
+            $sqlData .= " ORDER BY $sort $dir";
+
+        }
+
+        // echo $sqlData."\n";
+
+        // return \DB::select($sqlData);
+
+
+        // if ($request->has('start') && $request->start <> '') {
+        //
+        //     $sqlData .= " LIMIT $request->start, " . $limit;
+        //
+        // } else {
+        //
+        //     $sqlData .= " LIMIT " . $limit;
+        //
+        // }
+
+        // \Log::debug($sqlData);
+
+
+        // dd($sqlData);
+
+        // echo \DB::connection()->getDatabaseName();
+
+        // $tmp = \DB::select('SELECT COUNT(*) FROM APPLICATION');
+        //
+        // dd($tmp);
+        //
+        //
+        $records = new Paginator(\DB::select($sqlData),$limit);
+        //
+        // dd($records);
+
+        return $records;
+
+        // die($sqlData);
+
+
+    }
 
 }
