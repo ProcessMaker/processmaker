@@ -14,10 +14,10 @@ class CreateAPPLICATIONTable extends Migration {
 	{
 		Schema::create('APPLICATION', function(Blueprint $table)
 		{
-			$table->string('APP_UID', 32)->default('')->primary();
+			$table->string('APP_UID', 32)->default('');
 			$table->text('APP_TITLE', 16777215);
 			$table->text('APP_DESCRIPTION', 16777215)->nullable();
-			$table->integer('APP_NUMBER')->default(0)->index('indexAppNumber');
+			$table->increments('APP_NUMBER')->index('indexAppNumber');
 			$table->string('APP_PARENT', 32)->default('0');
 			$table->string('APP_STATUS', 100)->default('')->index('indexAppStatus');
 			$table->boolean('APP_STATUS_ID')->default(0);
