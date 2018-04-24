@@ -20,16 +20,6 @@ $factory->define(\ProcessMaker\Model\Application::class, function (Faker $faker)
     $statusId = array_search($status, $statuses);
     $pin = $faker->regexify("[A-Z0-9]{4}");
 
-    $lastId = \ProcessMaker\Model\Application::orderBy('APP_NUMBER','desc')->first();
-
-    if($lastId){
-
-      $auto_inc = intval($lastId->APP_NUMBER) +1;
-
-    } else {
-      $auto_inc = 1;
-    }
-
     return [
         'APP_UID' => str_replace('-', '', Uuid::uuid4()),
         'APP_TITLE' => $faker->word,
