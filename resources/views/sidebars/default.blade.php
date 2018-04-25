@@ -1,15 +1,13 @@
 <div class="sidebarHidden bg-light fixed-top mpt-0" id="root" v-on:mouseover="sidebarShown" v-on:mouseout="sidebarHidden">
-  <a href="#">
-    <ul style="height:100%;" class="l-0 p-4 list-unstyled position-fixed bg-primary text-light " id="sidebarMenu">
+    <ul style="height:100%;" class="l-0 p-3 list-unstyled position-fixed bg-primary text-light " id="sidebarMenu">
         <img v-if="isSeen" v-bind:src="logo"><img v-else v-bind:src="icon">
           @foreach($main->whereParent(null) as $section)
-        <li class="text-muted font-weight-light" v-show="isSeen">{{$section->title}}</li>
+        <li class="mt-3 text-uppercase text-muted font-weight-light" v-show="isSeen"><small>{{$section->title}}</small></li>
           @foreach($main->whereParent($section->id) as $child)
-          <li><i class="fas {{$child->attr('icon')}}"></i> <span class="pt-5" v-show="isSeen">{{$child->title}}</span></li>
+          <li><i class="fas {{$child->attr('icon')}}"></i> <span class="p-1 text-capitalize" v-show="isSeen">{{$child->title}}</span></li>
         @endforeach
       @endforeach
     </ul>
-  </a>
 </div>
 
 

@@ -16,17 +16,12 @@
 
       <ul class="navbar-nav">
         <li class="nav-item dropdown" style="white-space:nowrap">
-        <a class="nav-link dropdown-toggle admin-menu" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <span style="font-size:14px; font-weight:600; margin-bottom:0;">
+        <a class="nav-link admin-menu" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <span style="font-size:18px; font-weight:600; margin-bottom:0;">
             John Bunton
           </span>
         </a>
-        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="#">Action</a>
-          <a class="dropdown-item" href="#">Another action</a>
-          <div class="dropdown-divider"></div>
-           <a class="dropdown-item" href="{{route('logout')}}">Logout</a>
-        </div>
+
         <li><img src="/img/avatar.png" style="max-width:40px"></li>
         <li style="border-left:1px solid #ccc; margin:10px 30px"></li>
         <button class="nav_icon btn"><i class="fa fa-envelope" aria-hidden="true"></i></button>
