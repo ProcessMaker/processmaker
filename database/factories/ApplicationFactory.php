@@ -2,7 +2,7 @@
 use Ramsey\Uuid\Uuid;
 use Faker\Generator as Faker;
 use Illuminate\Support\Facades\Crypt;
-
+use Carbon\Carbon;
 /**
  * Model factory for an external Database
  */
@@ -42,7 +42,7 @@ $factory->define(\ProcessMaker\Model\Application::class, function (Faker $faker)
         'APP_CUR_USER' => function () {
             return factory(\ProcessMaker\Model\User::class)->create()->USR_UID;
         },
-        'APP_INIT_DATE' => date('Y-m-d H:i:s'),
+        'APP_INIT_DATE' => Carbon::now(),
         'APP_PIN' => Crypt::encryptString($pin),
         'APP_DATA' => '[]' ];
 });
