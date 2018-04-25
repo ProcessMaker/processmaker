@@ -1,9 +1,8 @@
 <div class="bg-light fixed-top mpt-0" id="root" v-on:mouseover="sidebarShown" v-on:mouseout="sidebarHidden">
-  <!-- <img v-if="isSeen" v-bind:src="logo"><img v-else v-bind:src="icon"> -->
-  <div class="row p-2">
     <ul style="height:100%;" class="l-0 p-4 list-unstyled position-fixed bg-primary text-light " id="sidebarMenu">
+        <img v-if="isSeen" v-bind:src="logo"><img v-else v-bind:src="icon">
       @foreach($main->whereParent(null) as $section)
-        <li class="h5 font-weight-light" v-show="isSeen">{{$section->title}}</li>
+        <li class="h5 text-muted font-weight-light" v-show="isSeen">{{$section->title}}</li>
         @foreach($main->whereParent($section->id) as $child)
           <li><i class="fa icon {{$child->attr('icon')}}"></i> <span v-show="isSeen">{{$child->title}}</span></li>
         @endforeach
@@ -32,8 +31,8 @@
     el: '#root',
     data:{
       isSeen:true,
-      icon:'img/logo.png',
-      logo:'img/processmaker_logo_white.jpg'
+      icon:'img/processmaker-icon-white-sm.png',
+      logo:'img/processmaker-logo-white-sm.png'
     },
     methods:{
       sidebarShown: function(){

@@ -29,8 +29,8 @@
         </div>
         <li><img src="/img/avatar.png" style="max-width:40px"></li>
         <li style="border-left:1px solid #ccc; margin:10px 30px"></li>
-        <button class="btn"><i class="fa fa-envelope" aria-hidden="true"></i></button>
-        <button class="btn"><i class="fa fa-bell" aria-hidden="true"></i></button>
+        <button class="nav_icon btn"><i class="fa fa-envelope" aria-hidden="true"></i></button>
+        <button class="nav_icon btn"><i class="fa fa-bell" aria-hidden="true"></i></button>
       </li>
     </ul>
   </div>
