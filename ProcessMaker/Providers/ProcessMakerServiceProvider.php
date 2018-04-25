@@ -12,6 +12,7 @@ use League\Fractal\Serializer\SerializerAbstract;
 use League\Fractal\TransformerAbstract;
 use ProcessMaker\Managers\DatabaseManager;
 use ProcessMaker\Managers\DynaformManager;
+use ProcessMaker\Managers\InputDocumentManager;
 use ProcessMaker\Managers\ProcessCategoryManager;
 use ProcessMaker\Managers\ProcessFileManager;
 use ProcessMaker\Managers\ProcessManager;
@@ -81,6 +82,10 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         $this->app->singleton('task.manager', function ($app) {
             return new TaskManager();
+        });
+
+        $this->app->singleton('input_document.manager', function ($app) {
+            return new InputDocumentManager();
         });
     }
 }
