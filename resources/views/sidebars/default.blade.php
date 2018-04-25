@@ -1,15 +1,17 @@
-<div class="bg-light fixed-top mpt-0" id="root" v-on:mouseover="sidebarShown" v-on:mouseout="sidebarHidden">
+<div class="sidebarHidden bg-light fixed-top mpt-0" id="root" v-on:mouseover="sidebarShown" v-on:mouseout="sidebarHidden">
+  <a href="#">
     <ul style="height:100%;" class="l-0 p-4 list-unstyled position-fixed bg-primary text-light " id="sidebarMenu">
         <img v-if="isSeen" v-bind:src="logo"><img v-else v-bind:src="icon">
-      @foreach($main->whereParent(null) as $section)
-        <li class="h5 text-muted font-weight-light" v-show="isSeen">{{$section->title}}</li>
-        @foreach($main->whereParent($section->id) as $child)
-          <li><i class="fa icon {{$child->attr('icon')}}"></i> <span v-show="isSeen">{{$child->title}}</span></li>
+          @foreach($main->whereParent(null) as $section)
+        <li class="text-muted font-weight-light" v-show="isSeen">{{$section->title}}</li>
+          @foreach($main->whereParent($section->id) as $child)
+          <li><i class="fas {{$child->attr('icon')}}"></i> <span class="pt-5" v-show="isSeen">{{$child->title}}</span></li>
         @endforeach
       @endforeach
     </ul>
-  </div>
+  </a>
 </div>
+
 
 
 @section('css')
@@ -30,7 +32,7 @@
   new Vue({
     el: '#root',
     data:{
-      isSeen:true,
+      isSeen:false,
       icon:'img/processmaker-icon-white-sm.png',
       logo:'img/processmaker-logo-white-sm.png'
     },
