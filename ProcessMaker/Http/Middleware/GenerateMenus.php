@@ -50,7 +50,7 @@ class GenerateMenus
 
 
             foreach ($task_items as $item) {
-              $tasks->add($item['label'],['route'  => $item['route'], 'id' => $item['id'], 'icon' => $item['icon']]);
+              $tasks->add($item['label'],['route' => $item['route'], 'id' => $item['id'], 'icon' => $item['icon']]);
             }
 
             $task_items = [

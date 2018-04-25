@@ -8,7 +8,7 @@ body {
   overflow-x: hidden;
 }
 .nav_icon {
-  color: gray;
+  color: #7e8ba1;
 }
 .nav-link {
   font-size: 18px;
@@ -21,6 +21,44 @@ body {
   padding-bottom: 20px;
   margin-bottom: -20px;
 }
+
+.sidebarmenu {
+  font-size: 14px !important
+}
+
+.sidebarmenu i {
+  font-size: 19px !important;
+  margin-right: 5px;
+}
+
+.sidebarmenu a {
+  color: $light
+}
+ .sidebarmenu li{
+   padding: 6px 16px;
+   line-height: 1;
+
+ }
+
+ .sidebarmenu li:hover{
+   background-color: $text-muted;
+ }
+
+ .sidebarmenu img {
+   padding:15px
+ }
+
+.sidebarmenuicons li{
+  padding: 16px 20px;
+}
+
+.sidebarheader, .sidebarheader:hover {
+    background-color: $primary !important;
+    color: $text-muted !important;
+    font-weight: 300 !important;
+    text-transform: uppercase !important;
+    margin-top: .5rem !important;
+ }
 
 #wrapper {
   padding-left: 0;

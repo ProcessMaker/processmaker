@@ -1,30 +1,18 @@
-<div class="sidebarHidden bg-light fixed-top mpt-0" id="root" v-on:mouseover="sidebarShown" v-on:mouseout="sidebarHidden">
-    <ul style="height:100%;" class="l-0 p-3 list-unstyled position-fixed bg-primary text-light " id="sidebarMenu">
+<div class="sidebarmenu bg-light fixed-top mpt-0" id="root" v-on:mouseover="sidebarShown" v-on:mouseout="sidebarHidden">
+    <ul style="height:100%;" class="sidebarmenuicons l-0 list-unstyled position-fixed bg-primary text-light " id="sidebarMenu">
         <img v-if="isSeen" v-bind:src="logo"><img v-else v-bind:src="icon">
           @foreach($main->whereParent(null) as $section)
-        <li class="mt-3 text-uppercase text-muted font-weight-light" v-show="isSeen"><small>{{$section->title}}</small></li>
+        <li class="sidebarheader" v-show="isSeen"><small>{{$section->title}}</small></li>
           @foreach($main->whereParent($section->id) as $child)
-          <li><i class="fas {{$child->attr('icon')}}"></i> <span class="p-1 text-capitalize" v-show="isSeen">{{$child->title}}</span></li>
+          <li>
+            <a href="{{ url($child->link->path['route']) }}">
+            <i class="fas {{$child->attr('icon')}}"></i> <span v-show="isSeen">{{$child->title}}</span>
+            </a>
+          </li>
         @endforeach
       @endforeach
     </ul>
 </div>
-
-
-
-@section('css')
-<style>
- .sidebarmenu li{
-   height: 36px;
-   margin:10px 0;
- }
- .sidebarmenuicons li{
-   height: 36px;
-   margin:25px 0;
- }
-</style>
-@endsection
-
 @section('js')
 <script>
   new Vue({
@@ -37,11 +25,11 @@
     methods:{
       sidebarShown: function(){
         this.isSeen = true
-          $("#sidebarMenu").removeClass('sidebarmenuicons').addClass('sidebarmenu')
+          $("#sidebarMenu").removeClass('sidebarmenuicons')
       },
       sidebarHidden: function(){
         this.isSeen = false
-          $("#sidebarMenu").removeClass('sidebarmenu').addClass('sidebarmenuicons')
+          $("#sidebarMenu").addClass('sidebarmenuicons')
       }
     }
   })
