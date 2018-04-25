@@ -40,16 +40,14 @@ class CasesController extends Controller
     public function index(Request $request)
     {
 
-      foreach($request->toArray() as $req_key => $req){
+        foreach ($request->toArray() as $req_key => $req) {
+            $request->$req_key = filter_var($req, FILTER_SANITIZE_STRING);
 
-        $request->$req_key = filter_var($req,FILTER_SANITIZE_STRING);
-
-      }
+        }
 
         $limit = 25;
 
         if ($request->has('limit') && $request->limit > 0) {
-
             $limit = (int)$request->limit;
 
         }
@@ -103,7 +101,6 @@ class CasesController extends Controller
         ];
 
         if ($request->has('status') && array_key_exists($request->status, $status)) {
-
             $sqlData .= $status[$request->status];
 
         } else {
@@ -121,7 +118,6 @@ class CasesController extends Controller
         }
 
         if ($request->has('category') && $request->category <> '') {
-            // $category = mysqli_real_escape_string($con->getResource(), $category);
             $sqlData .= " AND PROCESS.PRO_CATEGORY = '{$request->category}'";
         }
 
@@ -129,11 +125,9 @@ class CasesController extends Controller
 
             //If the filter is related to the APPLICATION table: APP_NUMBER or APP_TITLE
             if ($request->has('columnSearch') && in_array($request->columnSearch, ['APP_TITLE', 'APP_NUMBER'])) {
-
                 $sqlSearch = "SELECT APPLICATION.APP_NUMBER FROM APPLICATION WHERE APPLICATION.{$request->columnSearch} LIKE '%{$request->search}%'";
 
                 if ($request->columnSearch == 'APP_NUMBER') {
-
                     //Cast the search criteria to string
                     if (!is_string($request->search)) {
                         $request->search = (string)$request->search;
@@ -154,7 +148,6 @@ class CasesController extends Controller
                 $appNumbers = \DB::select($sqlSearch);
 
                 if (count($appNumbers) > 0) {
-
                     $sqlData .= " AND APP_DELEGATION.APP_NUMBER IN (" . implode(",", $appNumbers) . ")";
 
                 }
@@ -162,7 +155,6 @@ class CasesController extends Controller
             }
 
             if ($request->has('columnSearch') && $request->columnSearch === 'TAS_TITLE') {
-
                 $sqlData .= " AND TASK.TAS_TITLE LIKE '%{$request->search}%' ";
 
             }
@@ -179,11 +171,9 @@ class CasesController extends Controller
 
         //Sorts the records in descending order by default
         if ($request->has('sort') && $request->has('search')) {
-
             $sort = 'APP_DELEGATION.APP_NUMBER';
 
             if ($request->sort == 'APP_CURRENT_USER') {
-
                 $sort = 'USR_LASTNAME, USR_FIRSTNAME';
 
             }
@@ -191,7 +181,6 @@ class CasesController extends Controller
             $dir = "asc";
 
             if ($request->dir == 'desc') {
-
                 $dir = "desc";
 
             }
@@ -199,42 +188,9 @@ class CasesController extends Controller
             $sqlData .= " ORDER BY $sort $dir";
 
         }
-
-        // echo $sqlData."\n";
-
-        // return \DB::select($sqlData);
-
-
-        // if ($request->has('start') && $request->start <> '') {
-        //
-        //     $sqlData .= " LIMIT $request->start, " . $limit;
-        //
-        // } else {
-        //
-        //     $sqlData .= " LIMIT " . $limit;
-        //
-        // }
-
-        // \Log::debug($sqlData);
-
-
-        // dd($sqlData);
-
-        // echo \DB::connection()->getDatabaseName();
-
-        // $tmp = \DB::select('SELECT COUNT(*) FROM APPLICATION');
-        //
-        // dd($tmp);
-        //
-        //
-        $records = new Paginator(\DB::select($sqlData),$limit);
-        //
-        // dd($records);
+        $records = new Paginator(\DB::select($sqlData), $limit);
 
         return $records;
-
-        // die($sqlData);
-
 
     }
 
