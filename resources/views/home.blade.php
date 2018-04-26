@@ -6,23 +6,23 @@
 <div class="p-5 container bg-light">
   <div class="h-25">
     <img class="avatar rounded-circle" src="img/avatar.png">
-    <a class="centered text-light font-weight-bold" href="#"><i class="fas fa-camera"></i>Change Profile Photo</a>
+    <a class="centered text-light font-weight-bold text-center" href="#"><i class="fas fa-camera"></i>Change Profile Photo</a>
   </div>
   <form class="p-5">
     <div class="row">
       <div class="col">
-      <label class="pt-2 text-muted" class="pt-2">Example select</label>
-        <input type="text" class="form-control" placeholder="First name">
-      <label class="pt-2 text-muted" class="pt-2">Example select</label>
-        <input type="text" class="form-control" placeholder="First name">
-      <label class="pt-2 text-muted">Example select</label>
-        <input type="text" class="form-control" placeholder="First name">
-      <label class="pt-2 text-muted">Example select</label>
-        <input type="text" class="form-control" placeholder="First name">
-      <label class="pt-2 text-muted">Example select</label>
-        <input type="text" class="form-control" placeholder="First name">
-      <label class="pt-2 text-muted">Example select</label>
-        <input type="text" class="form-control" placeholder="First name">
+      <label class="pt-2 text-muted" class="pt-2">First Name</label>
+        <input type="text" class="form-control" >
+      <label class="pt-2 text-muted" class="pt-2">Last Name</label>
+        <input type="text" class="form-control" >
+      <label class="pt-2 text-muted">Username</label>
+        <input type="text" class="form-control" >
+      <label class="pt-2 text-muted">Email</label>
+        <input type="text" class="form-control" >
+      <label class="pt-2 text-muted">Expiraion Date</label>
+        <input type="text" class="form-control" >
+      <label class="pt-2 text-muted">Password</label>
+        <input type="text" class="form-control" >
       </div>
     <div class="col form-group">
       <label class="pt-2 text-muted">Example select</label>
@@ -100,6 +100,7 @@
     top: 20%;
     left: 50%;
     transform: translate(-50%, -50%);
+    width: 88px;
   }
   </style>
 @endsection
