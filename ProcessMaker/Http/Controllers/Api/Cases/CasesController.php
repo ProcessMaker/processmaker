@@ -8,6 +8,8 @@ use Illuminate\Support\Collection;
 use Ramsey\Uuid\Uuid;
 use ProcessMaker\Http\Controllers\Controller;
 use Illuminate\Pagination\Paginator;
+use ProcessMaker\Model\Delegation;
+use ProcessMaker\Model\Application;
 
 /**
  * API endpoint for returning Cases
@@ -39,159 +41,144 @@ class CasesController extends Controller
 
     public function index(Request $request)
     {
-
-        foreach ($request->toArray() as $req_key => $req) {
-            $request->$req_key = filter_var($req, FILTER_SANITIZE_STRING);
-
-        }
-
-        $limit = 25;
-
-        if ($request->has('limit') && $request->limit > 0) {
-            $limit = (int)$request->limit;
-
-        }
-
-        $sqlData = 'SELECT
-             STRAIGHT_JOIN APPLICATION.APP_NUMBER,
-             APPLICATION.APP_UID,
-             APPLICATION.APP_STATUS,
-             APPLICATION.APP_STATUS AS APP_STATUS_LABEL,
-             APPLICATION.PRO_UID,
-             APPLICATION.APP_CREATE_DATE,
-             APPLICATION.APP_FINISH_DATE,
-             APPLICATION.APP_UPDATE_DATE,
-             APPLICATION.APP_TITLE,
-             APP_DELEGATION.USR_UID,
-             APP_DELEGATION.TAS_UID,
-             APP_DELEGATION.DEL_INDEX,
-             APP_DELEGATION.DEL_LAST_INDEX,
-             APP_DELEGATION.DEL_DELEGATE_DATE,
-             APP_DELEGATION.DEL_INIT_DATE,
-             APP_DELEGATION.DEL_FINISH_DATE,
-             APP_DELEGATION.DEL_TASK_DUE_DATE,
-             APP_DELEGATION.DEL_RISK_DATE,
-             APP_DELEGATION.DEL_THREAD_STATUS,
-             APP_DELEGATION.DEL_PRIORITY,
-             APP_DELEGATION.DEL_DURATION,
-             APP_DELEGATION.DEL_QUEUE_DURATION,
-             APP_DELEGATION.DEL_STARTED,
-             APP_DELEGATION.DEL_DELAY_DURATION,
-             APP_DELEGATION.DEL_FINISHED,
-             APP_DELEGATION.DEL_DELAYED,
-             APP_DELEGATION.DEL_DELAY_DURATION,
-             TASK.TAS_TITLE AS APP_TAS_TITLE,
-             TASK.TAS_TYPE AS APP_TAS_TYPE,
-             USERS.USR_LASTNAME,
-             USERS.USR_FIRSTNAME,
-             USERS.USR_USERNAME,
-             PROCESS.PRO_TITLE AS APP_PRO_TITLE
-          FROM APP_DELEGATION
-          LEFT JOIN APPLICATION ON (APP_DELEGATION.APP_UID = APPLICATION.APP_UID)
-          LEFT JOIN TASK ON (APP_DELEGATION.TAS_UID = TASK.TAS_UID)
-          LEFT JOIN USERS ON (APP_DELEGATION.USR_UID = USERS.USR_UID)
-          LEFT JOIN PROCESS ON (APP_DELEGATION.PRO_UID = PROCESS.PRO_UID)
-          WHERE TASK.TAS_TYPE NOT IN ("WEBENTRYEVENT","END-MESSAGE-EVENT","START-MESSAGE-EVENT","INTERMEDIATE-THROW-MESSAGE-EVENT","INTERMEDIATE-CATCH-MESSAGE-EVENT")';
-
-        $status = [
-            1 => " AND APP_DELEGATION.DEL_THREAD_STATUS='OPEN' AND APPLICATION.APP_STATUS_ID = 1",
-            2 => " AND APP_DELEGATION.DEL_THREAD_STATUS='OPEN' AND APPLICATION.APP_STATUS_ID = 2",
-            3 => " AND APPLICATION.APP_STATUS_ID = 3 AND APP_DELEGATION.DEL_LAST_INDEX = 1",
-            4 => " AND APPLICATION.APP_STATUS_ID = 4 AND APP_DELEGATION.DEL_LAST_INDEX = 1",
-        ];
-
-        if ($request->has('status') && array_key_exists($request->status, $status)) {
-            $sqlData .= $status[$request->status];
-
-        } else {
-
-            $sqlData .= " AND (APP_DELEGATION.DEL_THREAD_STATUS = 'OPEN' OR (APP_DELEGATION.DEL_THREAD_STATUS = 'CLOSED' AND APP_DELEGATION.DEL_LAST_INDEX = 1 AND APPLICATION.APP_STATUS_ID = 3)) ";
+        $cases = Delegation::select(
+            'APPLICATION.APP_NUMBER',
+            'APPLICATION.APP_UID',
+            'APPLICATION.APP_STATUS',
+            'APPLICATION.APP_STATUS AS APP_STATUS_LABEL',
+            'APPLICATION.PRO_UID',
+            'APPLICATION.APP_CREATE_DATE',
+            'APPLICATION.APP_FINISH_DATE',
+            'APPLICATION.APP_UPDATE_DATE',
+            'APPLICATION.APP_TITLE',
+            'APP_DELEGATION.USR_UID',
+            'APP_DELEGATION.TAS_UID',
+            'APP_DELEGATION.DEL_INDEX',
+            'APP_DELEGATION.DEL_LAST_INDEX',
+            'APP_DELEGATION.DEL_DELEGATE_DATE',
+            'APP_DELEGATION.DEL_INIT_DATE',
+            'APP_DELEGATION.DEL_FINISH_DATE',
+            'APP_DELEGATION.DEL_TASK_DUE_DATE',
+            'APP_DELEGATION.DEL_RISK_DATE',
+            'APP_DELEGATION.DEL_THREAD_STATUS',
+            'APP_DELEGATION.DEL_PRIORITY',
+            'APP_DELEGATION.DEL_DURATION',
+            'APP_DELEGATION.DEL_QUEUE_DURATION',
+            'APP_DELEGATION.DEL_STARTED',
+            'APP_DELEGATION.DEL_DELAY_DURATION',
+            'APP_DELEGATION.DEL_FINISHED',
+            'APP_DELEGATION.DEL_DELAYED',
+            'APP_DELEGATION.DEL_DELAY_DURATION',
+            'TASK.TAS_TITLE AS APP_TAS_TITLE',
+            'TASK.TAS_TYPE AS APP_TAS_TYPE',
+            'USERS.USR_LASTNAME',
+            'USERS.USR_FIRSTNAME',
+            'USERS.USR_USERNAME',
+            'PROCESS.PRO_TITLE AS APP_PRO_TITLE'
+        )
+        ->join('APPLICATION', 'APP_DELEGATION.APP_UID', '=', 'APPLICATION.APP_UID')
+        ->join('TASK', 'APP_DELEGATION.TAS_UID', '=', 'TASK.TAS_UID')
+        ->join('USERS', 'APP_DELEGATION.USR_UID', '=', 'USERS.USR_UID')
+        ->join('PROCESS', 'APP_DELEGATION.PRO_UID', '=', 'PROCESS.PRO_UID')
+        ->whereNotIn('TASK.TAS_TYPE', [
+            "WEBENTRYEVENT",
+            "END-MESSAGE-EVENT",
+            "START-MESSAGE-EVENT",
+            "INTERMEDIATE-THROW-MESSAGE-EVENT",
+            "INTERMEDIATE-CATCH-MESSAGE-EVENT"
+            ]);
+    
+        switch ($request->status) {
+            case 1:
+                $cases
+                    ->where('APP_DELEGATION.DEL_THREAD_STATUS', 'OPEN')
+                    ->where('APPLICATION.APP_STATUS_ID', '1');
+                break;
+            case 2:
+                $cases
+                    ->where('APP_DELEGATION.DEL_THREAD_STATUS', 'OPEN')
+                    ->where('APPLICATION.APP_STATUS_ID', '2');
+                break;
+            case 3:
+                $cases
+                    ->where('APP_DELEGATION.DEL_LAST_INDEX', '1')
+                    ->where('APPLICATION.APP_STATUS_ID', '3');
+                break;
+            case 4:
+                $cases
+                    ->where('APP_DELEGATION.DEL_LAST_INDEX', '1')
+                    ->where('APPLICATION.APP_STATUS_ID', '4');
+                break;
+            default:
+                $cases
+                    ->where('APP_DELEGATION.DEL_THREAD_STATUS', 'OPEN')
+                    ->orWhere('APP_DELEGATION.DEL_THREAD_STATUS', 'CLOSED')
+                    ->where('APP_DELEGATION.DEL_LAST_INDEX', '1')
+                    ->where('APPLICATION.APP_STATUS_ID', '3');
+                break;
 
         }
 
         if ($request->has('userUid') && $request->userUid <> '') {
-            $sqlData .= " AND APP_DELEGATION.USR_UID = " . $request->userUid;
+            $cases->where('APP_DELEGATION.USR_UID', $request->userUid);
         }
 
         if ($request->has('process') && $request->process <> '') {
-            $sqlData .= " AND APP_DELEGATION.PRO_UID = " . $request->process;
+            $cases->where('APP_DELEGATION.PRO_UID', $request->process);
         }
 
         if ($request->has('category') && $request->category <> '') {
-            $sqlData .= " AND PROCESS.PRO_CATEGORY = '{$request->category}'";
+            $cases->where('PROCESS.PRO_CATEGORY', $request->category);
         }
 
         if ($request->has('search') && $request->search <> '') {
-
-            //If the filter is related to the APPLICATION table: APP_NUMBER or APP_TITLE
             if ($request->has('columnSearch') && in_array($request->columnSearch, ['APP_TITLE', 'APP_NUMBER'])) {
-                $sqlSearch = "SELECT APPLICATION.APP_NUMBER FROM APPLICATION WHERE APPLICATION.{$request->columnSearch} LIKE '%{$request->search}%'";
-
+                $application = Application::where($request->columnSearch, 'LIKE', "%{$request->search}%");
+                
                 if ($request->columnSearch == 'APP_NUMBER') {
-                    //Cast the search criteria to string
-                    if (!is_string($request->search)) {
-                        $request->search = (string)$request->search;
-                    }
-                    //Only if is integer we will to add to greater equal in the query
                     if (substr($request->search, 0, 1) != '0' && ctype_digit($request->search)) {
-                        $sqlSearch .= " AND APPLICATION.{$request->columnSearch} >= {$request->search}";
+                        $application->where($request->columnSearch, '>=', $request->search);
                     }
-
                 }
 
-                if ($request->has('start') && $request->start <> '') {
-                    $sqlSearch .= " LIMIT $request->start, " . $limit;
-                } else {
-                    $sqlSearch .= " LIMIT " . $limit;
+                if ($application->count() > 0) {
+                    $cases->whereIn('APP_DELEGATION.APP_NUMBER', $application->pluck('APP_NUMBER', 'APP_NUMBER'));
                 }
-
-                $appNumbers = \DB::select($sqlSearch);
-
-                if (count($appNumbers) > 0) {
-                    $sqlData .= " AND APP_DELEGATION.APP_NUMBER IN (" . implode(",", $appNumbers) . ")";
-
-                }
-
+            } elseif ($request->has('columnSearch') && $request->columnSearch === 'TAS_TITLE') {
+                $cases->where('TASK.TAS_TITLE', 'LIKE', "%{$request->search}%");
             }
-
-            if ($request->has('columnSearch') && $request->columnSearch === 'TAS_TITLE') {
-                $sqlData .= " AND TASK.TAS_TITLE LIKE '%{$request->search}%' ";
-
-            }
-
         }
 
         if ($request->has('dateFrom') && $request->dateFrom <> '') {
-            $sqlData .= " AND APP_DELEGATION.DEL_DELEGATE_DATE >= '" . date('Y-m-d', strtotime($request->dateFrom)) . "'";
+            $cases->where('APP_DELEGATION.DEL_DELEGATE_DATE', '>=', Carbon\Carbon::createFromFormat('Y-m-d', $request->dateFrom));
         }
 
         if ($request->has('dateTo') && $request->dateTo <> '') {
-            $sqlData .= " AND APP_DELEGATION.DEL_DELEGATE_DATE <= '" . date('Y-m-d', strtotime($request->dateTo)) . " 23:59:59'";
+            $cases->where('APP_DELEGATION.DEL_DELEGATE_DATE', '>=', Carbon\Carbon::createFromFormat('Y-m-d 23:59:59', $request->dateTo));
         }
 
-        //Sorts the records in descending order by default
-        if ($request->has('sort') && $request->has('search')) {
+        if ($request->has('sort')) {
             $sort = 'APP_DELEGATION.APP_NUMBER';
 
             if ($request->sort == 'APP_CURRENT_USER') {
                 $sort = 'USR_LASTNAME, USR_FIRSTNAME';
-
             }
 
             $dir = "asc";
 
             if ($request->dir == 'desc') {
                 $dir = "desc";
-
             }
 
-            $sqlData .= " ORDER BY $sort $dir";
-
+            $cases->orderBy($sort, $dir);
         }
-        $records = new Paginator(\DB::select($sqlData), $limit);
 
-        return $records;
+        $limit = 25;
 
+        if ($request->has('limit') && $request->limit > 0) {
+            $limit = (int)$request->limit;
+        }
+
+        return $cases->paginate($limit);
     }
-
 }
