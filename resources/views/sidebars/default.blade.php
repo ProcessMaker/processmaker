@@ -1,6 +1,6 @@
 <div class="sidebarmenu bg-light fixed-top mpt-0" id="root" v-on:mouseover="sidebarShown" v-on:mouseout="sidebarHidden">
     <ul style="height:100%;" class="sidebarmenuicons l-0 list-unstyled position-fixed bg-primary text-light " id="sidebarMenu">
-      <li class="sidebarimage"><img class="navbarlogo"v-if="isSeen" v-bind:src="logo"><img v-else v-bind:src="icon"></li>
+      <li class="sidebarimage"><img class="navbarlogo"v-if="isSeen" v-bind:src="logo"><img class="navbaricon"v-else v-bind:src="icon"></li>
           @foreach($main->whereParent(null) as $section)
         <li class="sidebarheader" v-show="isSeen"><small>{{$section->title}}</small></li>
           @foreach($main->whereParent($section->id) as $child)
