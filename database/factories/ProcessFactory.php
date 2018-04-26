@@ -1,18 +1,21 @@
 <?php
-use Ramsey\Uuid\Uuid;
+
 use Faker\Generator as Faker;
+use ProcessMaker\Model\Process;
+use ProcessMaker\Model\User;
+use Ramsey\Uuid\Uuid;
 
 /**
  * Model factory for a process
  */
-$factory->define(\ProcessMaker\Model\Process::class, function (Faker $faker) {
+$factory->define(Process::class, function (Faker $faker) {
 
-    /**
-     * @todo Determine if we need more base columns populated
-     */
     return [
         'PRO_UID' => str_replace('-', '', Uuid::uuid4()),
-        'PRO_TITLE' => $faker->sentence(3),
-        'PRO_DESCRIPTION' => $faker->paragraph(3)
+        'PRO_NAME' => $faker->sentence(3),
+        'PRO_DESCRIPTION' => $faker->paragraph(3),
+        'PRO_CREATE_USER' => function () {
+            return factory(User::class)->create();
+        }
     ];
 });
