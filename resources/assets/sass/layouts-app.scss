@@ -13,12 +13,6 @@ body {
 .nav_icon {
   color: #7e8ba1;
 }
-.navbarlogo{
-  padding: 9px 0;
-}
-.navbaricon{
-  padding: 1px;
-}
 .nav-link {
   font-size: 18px;
   font-weight: 600;
@@ -30,40 +24,50 @@ body {
   margin-bottom: -20px;
 }
 .sidebarmenu {
-  font-size: 14px !important
+  font-size: 14px !important;
+  height: 100%;
+  width: 208px;
+}
+.sidebarmenu ul{
+  overflow: auto;
+  width: 208px;
+  height: 100%;
+  padding-bottom: 75px;
 }
 .sidebarmenu i {
   font-size: 19px !important;
   margin-right: 5px;
 }
-
 .sidebarmenu a {
   color: $light
 }
-
 .sidebarmenu li{
- padding: 6px 16px;
- line-height: 1;
-
+  padding: 6px 16px;
+  line-height: 1;
+  white-space: nowrap;
 }
-
 .sidebarmenu li:hover{
  background-color: $text-muted;
 }
-
+.sidebarlogo{
+  padding: 15px;
+}
+.sidebaricon{
+  padding: 15px;
+}
 .sidebarimage{
   height: 60px;
   width: 58px;
 }
-
 .sidebarimage:hover{
  background-color: $primary !important;
 }
-
-.sidebarmenuicons li{
-  padding: 16px 20px;
+.sidebarmenuicons{
+  width:58px !important;
 }
-
+.sidebarmenuicons li{
+  padding-bottom: 16px;
+}
 .sidebarheader, .sidebarheader:hover {
   background-color: $primary !important;
   color: $text-muted !important;
