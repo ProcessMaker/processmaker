@@ -10,7 +10,7 @@ use ProcessMaker\Http\Controllers\Controller;
 use Illuminate\Pagination\Paginator;
 
 /**
- * API endpoint for VueJS data front end
+ * API endpoint for returning Cases
  */
 class CasesController extends Controller
 {
