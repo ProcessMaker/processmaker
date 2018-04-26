@@ -3,7 +3,6 @@
 namespace ProcessMaker\Model;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Watson\Validating\ValidatingTrait;
 
 /**
@@ -31,9 +30,42 @@ class InputDocument extends Model
     use ValidatingTrait;
 
     protected $table = 'INPUT_DOCUMENT';
-    protected $primaryKey = 'INP_DOC_UID';
+    protected $primaryKey = 'INP_DOC_ID';
 
     public $timestamps = false;
+
+    /**
+     * Values for INP_DOC_FORM_NEEDED
+     */
+    const FORM_NEEDED_TYPE = [
+        'VIRTUAL' => 'Digital',
+        'REAL' => 'Printed',
+        'VREAL' => 'Digital/Printed'
+    ];
+
+    /**
+     * Values for INP_DOC_ORIGINAL
+     */
+    const DOC_ORIGINAL_TYPE = [
+        'ORIGINAL',
+        'COPY',
+        'COPYLEGAL'
+    ];
+
+    /**
+     * Values for INP_DOC_PUBLISHED
+     */
+    const DOC_PUBLISHED_TYPE = [
+        'PRIVATE',
+        'PUBLIC'
+    ];
+
+    /**
+     * Values for INP_DOC_TAGS
+     */
+    const DOC_TAGS_TYPE = [
+        'INPUT'
+    ];
 
     protected $fillable = [
         'INP_DOC_UID',
@@ -71,7 +103,7 @@ class InputDocument extends Model
 
     protected $casts = [
         'INP_DOC_UID' => 'string',
-        'PRO_ID' => 'string',
+        'PRO_ID' => 'int',
         'PRO_UID' => 'string',
         'INP_DOC_TITLE' => 'string',
         'INP_DOC_DESCRIPTION' => 'string',
@@ -90,11 +122,12 @@ class InputDocument extends Model
         'INP_DOC_UID' => 'required|max:32',
         'INP_DOC_TITLE' => 'required|unique:INPUT_DOCUMENT,INP_DOC_TITLE',
         'PRO_ID' => 'required',
-        'PRO_UID' => 'required|max:32'
+        'PRO_UID' => 'required|max:32',
+        'INP_DOC_VERSIONING' => 'required|boolean'
     ];
 
     protected $validationMessages = [
-        'INP_DOC_TITLE.unique' => 'A trigger with the same name already exists in this process.'
+        'INP_DOC_TITLE.unique' => 'A Input Document with the same name already exists in this process.'
     ];
 
     /**
@@ -108,13 +141,14 @@ class InputDocument extends Model
     }
 
     /**
-     * Get information Process
+     * Get the translation of Type form needed
      *
-     * @return BelongsTo
+     * @param string $value
+     *
+     * @return string
      */
-    public function process(): BelongsTo
+    public function getInpDocFormNeededAttribute($value): ?string
     {
-        return $this->belongsTo(Process::Class, 'PRO_ID');
+        return __(self::FORM_NEEDED_TYPE[$value]);
     }
-
 }
