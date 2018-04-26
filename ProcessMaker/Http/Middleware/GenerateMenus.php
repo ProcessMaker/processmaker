@@ -61,7 +61,7 @@ class GenerateMenus
                 'id' => 'homeid'
               ],
               [
-                'label' => 'Authetication',
+                'label' => 'Authentication',
                 'route' => 'home',
                 'icon' => 'fa-user-secret',
                 'id' => 'homeid'
@@ -82,7 +82,7 @@ class GenerateMenus
                 'id' => 'homeid'
               ],
               [
-                'label' => 'Email configuration',
+                'label' => 'Email Configuration',
                 'route' => 'home',
                 'icon' => 'fa-envelope',
                 'id' => 'homeid'
@@ -124,7 +124,7 @@ class GenerateMenus
 
             $task_items = [
               [
-                'label' => 'Software requirements',
+                'label' => 'Software Requirements',
                 'route' => 'home',
                 'icon' => 'fa-laptop',
                 'id' => 'homeid'

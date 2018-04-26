@@ -1,8 +1,7 @@
-
-<nav class="navbar navbar-expand-lg navbar-light bg-light mt-0">
+<nav class="navbar navbar-expand-lg navbar-light bg-light p-0">
   <a class="navbar-brand" href="#"><img src="/img/logo.png" style="max-width:40px"></a>
   <div class="mr-auto collapse navbar-collapse " id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
+    <ul class="navbar-nav mr-auto p-3">
       <li class="nav-item">
         <a class="nav-link" href="/">Run</a>
       </li>

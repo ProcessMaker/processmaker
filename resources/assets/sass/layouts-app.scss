@@ -7,25 +7,31 @@ body {
   font-style: normal;
   overflow-x: hidden;
 }
+.navbar{
+  height:60px;
+}
 .nav_icon {
   color: #7e8ba1;
+}
+.navbarlogo{
+  padding: 9px 0;
+}
+.navbaricon{
+  padding: 1px;
 }
 .nav-link {
   font-size: 18px;
   font-weight: 600;
   color: #333333 !important;
 }
-
 .nav-link:hover {
   color: $primary !important;
   padding-bottom: 20px;
   margin-bottom: -20px;
 }
-
 .sidebarmenu {
   font-size: 14px !important
 }
-
 .sidebarmenu i {
   font-size: 19px !important;
   margin-right: 5px;
@@ -34,30 +40,36 @@ body {
 .sidebarmenu a {
   color: $light
 }
- .sidebarmenu li{
-   padding: 6px 16px;
-   line-height: 1;
 
- }
+.sidebarmenu li{
+ padding: 6px 16px;
+ line-height: 1;
 
- .sidebarmenu li:hover{
-   background-color: $text-muted;
- }
+}
 
- .sidebarmenu img {
-   padding:15px
- }
+.sidebarmenu li:hover{
+ background-color: $text-muted;
+}
+
+.sidebarimage{
+  height: 60px;
+  width: 58px;
+}
+
+.sidebarimage:hover{
+ background-color: $primary !important;
+}
 
 .sidebarmenuicons li{
   padding: 16px 20px;
 }
 
 .sidebarheader, .sidebarheader:hover {
-    background-color: $primary !important;
-    color: $text-muted !important;
-    font-weight: 300 !important;
-    text-transform: uppercase !important;
-    margin-top: .5rem !important;
+  background-color: $primary !important;
+  color: $text-muted !important;
+  font-weight: 300 !important;
+  text-transform: uppercase !important;
+  margin-top: .5rem !important;
  }
 
 #wrapper {
