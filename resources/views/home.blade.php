@@ -4,7 +4,10 @@
 
 <h4>User Profile</h4>
 <div class="p-5 container bg-light">
-  <img class="avatar align-items-center" src="img/avatar.png">
+  <div class="h-25">
+    <img class="avatar rounded-circle" src="img/avatar.png">
+    <a class="centered text-light font-weight-bold" href="#"><i class="fas fa-camera"></i>Change Profile Photo</a>
+  </div>
   <form class="p-5">
     <div class="row">
       <div class="col">
@@ -72,7 +75,7 @@
         </select>
       </div>
     </div>
-    <button type="submit" class="btn btn-secondary m-2 float-right">Save</button>
+    <button type="submit" class="btn btn-secondary text-light m-2 float-right">Save</button>
     <button type="submit" class="btn btn-outline-secondary m-2 float-right"> Cancel</button>
   </form>
 </div>
@@ -87,7 +90,17 @@
     .avatar{
       height:104px;
       width: 104px;
+      display: block;
+      margin: auto;
+      filter: brightness(50%);
     }
+    .centered {
+    font-size: 12px;
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
   </style>
 @endsection
 
