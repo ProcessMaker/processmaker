@@ -125,7 +125,7 @@ class OAuth2GrantTest extends TestCase
             'grant_type' => 'authorization_code',
             'client_id' => $this->clientId,
             'client_secret' => $this->clientSecret,
-            'redirect_uri' => 'http://localhost/sys/en/neoclassic/oauth2/grant',
+            'redirect_uri' => 'http://localhost/oauth2/grant',
             'code' => urldecode($data['code'])
         ]);
         $response->assertJsonStructure([

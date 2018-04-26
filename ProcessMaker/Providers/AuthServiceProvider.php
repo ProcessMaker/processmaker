@@ -74,7 +74,6 @@ class AuthServiceProvider extends ServiceProvider
                 ->whereIn('PER_CODE', $permissions)
                 ->count();
 
-
             if ($validPermissionCount != count($permissions)) {
                 // Then the number of permissions for the role that matched do not match the count of permissions
                 // requested

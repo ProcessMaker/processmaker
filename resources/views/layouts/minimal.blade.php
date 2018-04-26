@@ -8,13 +8,15 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name') }}</title>
 
     <!-- Styles -->
-    <link href="{{ asset('css/base.css') }}" rel="stylesheet">
+    @yield('css')
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/layouts-app.css') }}" rel="stylesheet">
 </head>
 <body>
-    <div id="app">
+    <div class="container-fluid h-100" id="app">
         @yield('content')
     </div>
 

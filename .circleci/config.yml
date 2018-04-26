@@ -61,7 +61,15 @@ jobs:
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
+      - restore_cache:
+          keys:
+          - v1-npm-dependencies-{{ checksum "package.json" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-npm-dependencies-
+
       - run: composer install -n --prefer-dist
+      
+      - run: npm install
 
       - save_cache:
           paths:
@@ -83,6 +91,13 @@ jobs:
             MSSQL_DATABASE: "test"
             MSSQL_USERNAME: "sa"
             MSSQL_PASSWORD: "P4ssW0rd1!"
+      - run:
+          name: "Jest"
+          command: "npm run test"
 
       - store_artifacts:
           path: coverage
+
+      - store_artifacts:
+          path: tests/js/coverage
+

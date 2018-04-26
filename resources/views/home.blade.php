@@ -1,21 +1,19 @@
 @extends('layouts.layout')
 
 @section('content')
-<div class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4" id="main">
-  <div class="panel-heading">Dashboard</div>
 
-  <div class="panel-body">
-    @if (session('status'))
-      <div class="alert alert-success">
-        {{ session('status') }}
-      </div>
-    @endif
-
-    You are logged in!
-  </div>
-</div>
+<h1>Execute</h1>
+<div class="container">
+                <my-vuetable
+                  api-url="/test"></my-vuetable>
+            </div>
 @endsection
 
 @section('sidebar')
   @include('sidebars.default')
+@endsection
+@section('js')
+  <script>
+
+</script>
 @endsection

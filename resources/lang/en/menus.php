@@ -1,0 +1,45 @@
+<?php
+
+return[
+  'execute' => [
+    'tasks' => 'Tasks',
+    'pending' => 'Pending',
+    'unclaimed' => 'Unclaimed',
+    'completed' => 'Completed',
+    'cases' => 'Cases',
+    'new' => 'New',
+    'draft' => 'Draft',
+    'mine' => 'Mine',
+    'find' => 'Find',
+  ],
+  'build' => [
+    'applications' => 'Applications',
+    'processes' => 'Processes',
+    'tables' => 'Tables',
+    'forms' => 'Forms',
+    'scripts' => 'Scripts',
+  ],
+  'manage' => [
+    'organization' => 'organization',
+    'users' => 'Users',
+    'groups' => 'Groups',
+    'roles' => 'Roles',
+    'security' => 'Security',
+    'login' => 'Login',
+    'authentication' => 'Authentication',
+    'system_preferences' => 'System Preferences',
+    'localization' => 'Localization',
+    'email_configuration' => 'Email Configuration',
+    'notifications' => 'Notifications',
+    'apperance' => 'Apperance',
+    'customize' => 'Customize',
+    'themes' => 'Themes ',
+    'system_information' => 'System Information',
+    'software_requirements' => 'Software Requirements',
+    'integrations' => 'Integrations',
+    'tools' => 'Tools',
+    'manage_cache' => 'Manage Cache ',
+    'audit_log' => 'Audit Log',
+    'schedule_jobs' => 'Schedule Jobs',
+  ]
+];
