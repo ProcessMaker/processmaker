@@ -18,7 +18,7 @@ class Thread extends Model
     public $timestamps = false;
 
     /**
-     * Returns the relationship of application that belong to this group
+     * Returns the relationship of applications that the thread belongs to
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function application()
@@ -27,7 +27,7 @@ class Thread extends Model
     }
 
     /**
-     * Returns the relationship of delegation that belong to this group
+     * Returns the relationship of delegation that the thread belongs to
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function delegation()

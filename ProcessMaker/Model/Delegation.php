@@ -18,7 +18,7 @@ class Delegation extends Model
     public $timestamps = false;
 
     /**
-     * Returns the relationship of application that belong to this group
+     * Returns the relationship of the parent application
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function application()
@@ -27,7 +27,7 @@ class Delegation extends Model
     }
 
     /**
-     * Returns the relationship of user that belong to this group
+     * Returns the relationship of the parent user
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user()
@@ -36,7 +36,7 @@ class Delegation extends Model
     }
 
     /**
-     * Returns the relationship of task that belong to this group
+     * Returns the relationship of the parent task
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function task()
