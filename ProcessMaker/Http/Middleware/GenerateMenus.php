@@ -116,7 +116,7 @@ class GenerateMenus
               ],
             ];
 
-            $tasks = $execute->add('Apperence',['class' => 'h5 text-muted font-weight-light']);
+            $tasks = $execute->add('Appearance',['class' => 'h5 text-muted font-weight-light']);
 
             foreach ($task_items as $item) {
               $tasks->add($item['label'],['route'  => $item['route'], 'id' => $item['id'], 'icon' => $item['icon']]);

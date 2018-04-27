@@ -1,5 +1,5 @@
 <div class="sidebarmenu fixed-top sidebarmenuicons bg-primary" id="sidebarMenu" v-on:mouseover="sidebarShown" v-on:mouseout="sidebarHidden">
-        <img class="sidebarlogo" v-if="isSeen" v-bind:src="logo"><img class="sidebaricon" v-else v-bind:src="icon">
+  <img class="sidebarlogo" v-if="isSeen" v-bind:src="logo"><img class="sidebaricon" v-else v-bind:src="icon">
     <ul class="l-0 list-unstyled position-fixed text-light" id="sidebarscroll">
           @foreach($main->whereParent(null) as $section)
         <li class="sidebarheader" v-show="isSeen"><small>{{$section->title}}</small></li>
