@@ -180,5 +180,6 @@ class CasesController extends Controller
         }
 
         return $cases->paginate($limit);
+ 
     }
 }

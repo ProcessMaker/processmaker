@@ -6,31 +6,35 @@ use ProcessMaker\Model\Application;
 use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
 use Tests\Feature\Api\ApiTestCase;
-// use Illuminate\Foundation\Testing\DatabaseMigrations;
-// use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class CasesTest extends ApiTestCase
 {
-    private $clientId = 'x-pm-local-client';
-    private $clientSecret = '179ad45c6ce2cb97cf1029e212046e81';
-    private $user;
-    // use DatabaseTransactions;
+    use DatabaseTransactions;
 
-    protected function setUp()
-    {
-        parent::setUp();
-    }
+    /**
+     * Test to check that the route is protected     
+     */
 
     public function test_route_token_missing()
     {
         $this->assertFalse(isset($this->token));
     }
 
+    /**
+     * Test to check that the route is protected     
+     */    
+
     public function test_api_result_failed()
     {
         $response = $this->api('GET', '/api/1.0/cases');
         $response->assertStatus(401);
     }
+
+    /**
+     * Test to check that the route returns the correct response    
+     */    
 
     public function test_api_access()
     {
@@ -45,9 +49,18 @@ class CasesTest extends ApiTestCase
         $response->assertStatus(200);
 
         $response->assertJsonStructure([
-          'current_page',
-          'per_page',
-          'data'
+            'total',
+            'per_page',
+            'current_page',
+            'last_page',
+            'first_page_url',
+            'last_page_url',
+            'next_page_url',
+            'prev_page_url',
+            'path',
+            'from',
+            'to',
+            'data'
       ]);
 
         $data = json_decode($response->getContent());
@@ -55,33 +68,46 @@ class CasesTest extends ApiTestCase
         $this->assertTrue(count($data->data) > 0);
 
     }
+
+    /**
+     * Test to check that the route returns the correct response when paging    
+     */    
+
     public function test_api_paging()
     {
         $this->login();
 
-        factory(\ProcessMaker\Model\Application::class, 32)->create();
+        factory(\ProcessMaker\Model\Application::class, 75)->create();
 
         $response = $this->api('GET', '/api/1.0/cases/?page=2');
 
         $response->assertStatus(200);
 
         $response->assertJsonStructure([
-          'per_page',
-          'current_page',
-          'first_page_url',
-          'next_page_url',
-          'prev_page_url',
-          'path',
-          'from',
-          'to',
-          'data'
+            'total',
+            'per_page',
+            'current_page',
+            'last_page',
+            'first_page_url',
+            'last_page_url',
+            'next_page_url',
+            'prev_page_url',
+            'path',
+            'from',
+            'to',
+            'data'
       ]);
 
         $data = json_decode($response->getContent());
+
         $this->assertEquals($data->current_page, 2);
-        $this->assertTrue(count($data->data) > 0);
     }
-    //
+    
+    /**
+     * Test to check that the route returns the correct response when the number of 
+     * requested records is correct. 
+     */    
+
     public function test_api_per_page()
     {
         $this->login();
@@ -93,24 +119,30 @@ class CasesTest extends ApiTestCase
         $response->assertStatus(200);
 
         $response->assertJsonStructure([
-          'per_page',
-          'current_page',
-          'first_page_url',
-          'next_page_url',
-          'prev_page_url',
-          'path',
-          'from',
-          'to',
-          'data'
+            'total',
+            'per_page',
+            'current_page',
+            'last_page',
+            'first_page_url',
+            'last_page_url',
+            'next_page_url',
+            'prev_page_url',
+            'path',
+            'from',
+            'to',
+            'data'
       ]);
 
         $data = json_decode($response->getContent());
 
         $this->assertEquals($data->per_page, 21);
-        $this->assertTrue(count($data->data) > 0);
 
     }
-    //
+
+    /**
+     * Test to check that the route returns the correct response when adding a filter
+     */        
+    
     public function test_api_filtering()
     {
         $this->login();
@@ -122,54 +154,26 @@ class CasesTest extends ApiTestCase
         $response->assertStatus(200);
 
         $response->assertJsonStructure([
-          'per_page',
-          'current_page',
-          'first_page_url',
-          'next_page_url',
-          'prev_page_url',
-          'path',
-          'from',
-          'to',
-          'data'
+            'total',
+            'per_page',
+            'current_page',
+            'last_page',
+            'first_page_url',
+            'last_page_url',
+            'next_page_url',
+            'prev_page_url',
+            'path',
+            'from',
+            'to',
+            'data'
       ]);
 
         $data = json_decode($response->getContent());
 
-        $this->assertTrue(count($data->data) > 0);
-        // $this->assertNotEquals($data->total, 0);
+        $this->assertTrue(is_array($data->data));
+        
     }
-    //
-    // public function test_api_sorting()
-    // {
-    //     $this->login();
-    //
-    //     factory(\ProcessMaker\Model\Application::class, 10)->create();
-    //
-    //     $response = $this->api('GET', '/api/1.0/cases/?sort=APP_TITLE|desc');
-    //
-    //     $response->assertStatus(200);
-    //
-    //     $response->assertJsonStructure([
-    //       'total',
-    //       'per_page',
-    //       'current_page',
-    //       'last_page',
-    //       'first_page_url',
-    //       'last_page_url',
-    //       'next_page_url',
-    //       'prev_page_url',
-    //       'path',
-    //       'from',
-    //       'to',
-    //       'data'
-    //   ]);
-    //
-    //     $data = json_decode($response->getContent());
-    //
-    //     $this->assertTrue(count($data->data) > 0);
-    //     $this->assertNotEquals($data->total, 0);
-    // }
-
+    
     private function login()
     {
         $this->user = factory(User::class)->create([
