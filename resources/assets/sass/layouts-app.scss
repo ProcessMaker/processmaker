@@ -7,18 +7,74 @@ body {
   font-style: normal;
   overflow-x: hidden;
 }
-
-.nav-link {
-  font-size: 14px;
-  font-weight: 600;
+.navbar{
+  height:60px;
 }
-
+.nav_icon {
+  color: #7e8ba1;
+}
+.nav-link {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333333 !important;
+}
 .nav-link:hover {
   color: $primary !important;
-  border-bottom: 2px solid $primary;
   padding-bottom: 20px;
   margin-bottom: -20px;
 }
+.sidebarmenu {
+  font-size: 14px !important;
+  height: 100%;
+  width: 208px;
+}
+.sidebarmenu ul{
+  overflow: auto;
+  width: 208px;
+  height: 100%;
+  padding-bottom: 75px;
+}
+.sidebarmenu i {
+  font-size: 19px !important;
+  margin-right: 5px;
+}
+.sidebarmenu a {
+  color: $light
+}
+.sidebarmenu li{
+  padding: 6px 16px;
+  line-height: 1;
+  white-space: nowrap;
+}
+.sidebarmenu li:hover{
+ background-color: rgb(70, 156, 225);
+}
+.sidebarlogo{
+  padding: 15px;
+}
+.sidebaricon{
+  padding: 15px;
+}
+.sidebarimage{
+  height: 60px;
+  width: 58px;
+}
+.sidebarimage:hover{
+ background-color: $primary !important;
+}
+.sidebarmenuicons{
+  width:58px !important;
+}
+.sidebarmenuicons li{
+  padding-bottom: 16px;
+}
+.sidebarheader, .sidebarheader:hover {
+  background-color: $primary !important;
+  color: $text-muted !important;
+  font-weight: 300 !important;
+  text-transform: uppercase !important;
+  margin-top: .5rem !important;
+ }
 
 #wrapper {
   padding-left: 0;

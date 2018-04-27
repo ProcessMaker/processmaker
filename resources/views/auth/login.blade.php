@@ -55,7 +55,7 @@
 
       <div class="checkbox mb-2">
           <label class="text-muted">
-              <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}> {{ __('Remember Me') }}
+              <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}> {{ __('Remember me') }}
           </label>
       </div>
 
