@@ -91,7 +91,11 @@ Router::group([
         Router::delete('project/{process}/dynaform/{dynaform}', 'Designer\DynaformController@remove')->middleware('can:delete,ProcessMaker\Model\Dynaform');
 
         //Cases endpoints
+        Router::get('project/{process}/output-documents', 'Designer\OutPutDocumentController@index')->middleware('can:read,ProcessMaker\Model\OutPutDocument');
+        Router::get('project/{process}/output-document/{outPutDocument}', 'Designer\OutPutDocumentController@show')->middleware('can:read,ProcessMaker\Model\OutPutDocument');
+        Router::post('project/{process}/output-document', 'Designer\OutPutDocumentController@store')->middleware('can:write,ProcessMaker\Model\OutPutDocument');
+        Router::put('project/{process}/output-document/{outPutDocument}', 'Designer\OutPutDocumentController@update')->middleware('can:write,ProcessMaker\Model\OutPutDocument');
+        Router::delete('project/{process}/output-document/{outPutDocument}', 'Designer\OutPutDocumentController@remove')->middleware('can:delete,ProcessMaker\Model\OutPutDocument');
 
-        Router::get('cases/{application}/variables', 'Cases\VariableController@get')->middleware('can:read,application');
     });
 });
