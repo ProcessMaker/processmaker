@@ -16,16 +16,16 @@ class PermissionSeeder extends Seeder
     public function run()
     {
         factory(Permission::class)->create([
-            'PER_CODE' => 'PM_FACTORY'
+            'code' => 'PM_FACTORY'
         ]);
         factory(Permission::class)->create([
-            'PER_CODE' => 'PM_CASES'
+            'code' => 'PM_CASES'
         ]);
         factory(Permission::class)->create([
-            'PER_CODE' => 'PM_SETUP_PROCESS_CATEGORIES'
+            'code' => 'PM_SETUP_PROCESS_CATEGORIES'
         ]);
         factory(Permission::class)->create([
-            'PER_CODE' => 'PM_SETUP_PM_TABLES'
+            'code' => 'PM_SETUP_PM_TABLES'
         ]);
     }
 }

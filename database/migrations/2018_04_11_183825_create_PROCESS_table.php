@@ -31,8 +31,8 @@ class CreatePROCESSTable extends Migration {
 			$table->integer('deleted_trigger_id')->nullable();
 			$table->integer('canceled_trigger_id')->nullable();
 			$table->integer('paused_trigger_id')->nullable();
-			$table->integer('reassigned_trigger_id')->nullable('');
-			$table->integer('unpaused_trigger_id')->nullable('');
+			$table->integer('reassigned_trigger_id')->nullable();
+			$table->integer('unpaused_trigger_id')->nullable();
 			$table->enum('visibility', ['PUBLIC', 'PRIVATE'])->default('PUBLIC');
 			$table->boolean('show_delegate')->default(true);
 			$table->boolean('show_dynaform')->default(0);

@@ -16,7 +16,7 @@ class CreateDBSOURCETable extends Migration {
 		{
 			$table->increments('id');
 			$table->uuid('uid')->unique();
-			$table->uuid('process_id')->nullable()->index('indexDBSource');
+			$table->unsignedInteger('process_id')->nullable()->index('indexDBSource');
 			$table->string('type', 8)->default('mysql');
 			$table->string('server')->nullable();
 			$table->string('description')->nullable();
