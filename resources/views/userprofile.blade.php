@@ -11,21 +11,21 @@
   <form class="p-5">
     <div class="row">
       <div class="col">
-      <label class="pt-2 text-muted" class="pt-2">First Name</label>
+      <label class="pt-2 text-gray" class="pt-2">First Name</label>
         <input type="text" class="form-control" >
-      <label class="pt-2 text-muted" class="pt-2">Last Name</label>
+      <label class="pt-2 text-gray" class="pt-2">Last Name</label>
         <input type="text" class="form-control" >
-      <label class="pt-2 text-muted">Username</label>
+      <label class="pt-2 text-gray">Username</label>
         <input type="text" class="form-control" >
-      <label class="pt-2 text-muted">Email</label>
+      <label class="pt-2 text-gray">Email</label>
         <input type="text" class="form-control" >
-      <label class="pt-2 text-muted">Expiraion Date</label>
+      <label class="pt-2 text-gray">Expiraion Date</label>
         <input type="text" class="form-control" >
-      <label class="pt-2 text-muted">Password</label>
+      <label class="pt-2 text-gray">Password</label>
         <input type="text" class="form-control" >
       </div>
     <div class="col form-group">
-      <label class="pt-2 text-muted">Example select</label>
+      <label class="pt-2 text-gray">Example select</label>
         <select class="form-control" id="exampleFormControlSelect1">
           <option>1</option>
           <option>2</option>
@@ -33,7 +33,7 @@
           <option>4</option>
           <option>5</option>
         </select>
-      <label class="pt-2 text-muted">Example select</label>
+      <label class="pt-2 text-gray">Example select</label>
         <select class="form-control" id="exampleFormControlSelect1">
           <option>1</option>
           <option>2</option>
@@ -41,7 +41,7 @@
           <option>4</option>
           <option>5</option>
         </select>
-      <label class="pt-2 text-muted">Example select</label>
+      <label class="pt-2 text-gray">Example select</label>
         <select class="form-control" id="exampleFormControlSelect1">
           <option>1</option>
           <option>2</option>
@@ -49,7 +49,7 @@
           <option>4</option>
           <option>5</option>
         </select>
-      <label class="pt-2 text-muted">Example select</label>
+      <label class="pt-2 text-gray">Example select</label>
         <select class="form-control" id="exampleFormControlSelect1">
           <option>1</option>
           <option>2</option>
@@ -57,7 +57,7 @@
           <option>4</option>
           <option>5</option>
         </select>
-      <label class="pt-2 text-muted">Example select</label>
+      <label class="pt-2 text-gray">Example select</label>
         <select class="form-control" id="exampleFormControlSelect1">
           <option>1</option>
           <option>2</option>
@@ -65,7 +65,7 @@
           <option>4</option>
           <option>5</option>
         </select>
-      <label class="pt-2 text-muted">Example select</label>
+      <label class="pt-2 text-gray">Example select</label>
         <select class="form-control" id="exampleFormControlSelect1">
           <option>1</option>
           <option>2</option>
@@ -89,6 +89,9 @@
   <style>
     label{
        font-size: 14px;
+    }
+    .text-gray{
+      color: #7e8ba1;
     }
     .avatarlink{
       font-size: 12px;
