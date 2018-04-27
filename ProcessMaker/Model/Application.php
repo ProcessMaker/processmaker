@@ -3,6 +3,7 @@ namespace ProcessMaker\Model;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use ProcessMaker\Model\Traits\Uuid;
 
 /**
  * Represents an Eloquent model of an Case which is an instance of a Process. It's called Application because of the
@@ -11,13 +12,10 @@ use Illuminate\Support\Facades\DB;
  */
 class Application extends Model
 {
+    use Uuid;
 
     // Specify our table and our primary key
     protected $table = 'APPLICATION';
-    protected $primaryKey = 'APP_UID';
-
-    // Our primary key is not incrementing
-    public $incrementing = false;
 
     // Set our updated/created at
     const UPDATED_AT = 'APP_UPDATE_DATE';

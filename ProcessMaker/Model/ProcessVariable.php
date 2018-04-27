@@ -14,7 +14,7 @@ class ProcessVariable extends Model
 {
     use ValidatingTrait;
 
-    const DEFAULT_DB_SOURCE_NAME = 'PM Database';
+    const DEFAULT_DB_SOURCE_NAME = 'workflow';
 
     const VARIABLE_TYPES = ['string', 'integer', 'float', 'boolean', 'datetime',
     'grid', 'array', 'file', 'multiplefile', 'object'];
@@ -47,10 +47,10 @@ class ProcessVariable extends Model
     public function getVarDbconnectionLabelAttribute()
     {
         $result = ($this->dbSource !== null)
-            ? '[' . $this->dbSource->DBS_SERVER . ':' .
-            $this->dbSource->DBS_PORT . '] ' .
-            $this->dbSource->DBS_TYPE . ': ' .
-            $this->dbSource->DBS_DATABASE_NAME
+            ? '[' . $this->dbSource->server . ':' .
+            $this->dbSource->port . '] ' .
+            $this->dbSource->type . ': ' .
+            $this->dbSource->database_name
             : ProcessVariable::DEFAULT_DB_SOURCE_NAME;
         return $result;
     }
@@ -82,6 +82,6 @@ class ProcessVariable extends Model
      */
     public function dbSource()
     {
-        return $this->hasOne(DbSource::class, 'DBS_UID', 'VAR_DBCONNECTION');
+        return $this->hasOne(DbSource::class, 'uid', 'VAR_DBCONNECTION');
     }
 }

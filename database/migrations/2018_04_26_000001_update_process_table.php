@@ -252,18 +252,6 @@ class UpdateProcessTable extends Migration
             $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
         });
 
-        //REPORT TABLES (TABLE DEFINITION MAINTAINED FROM v1.x)
-        Schema::table('REPORT_TABLE', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
-        });
-
-        //REPORT VARIABLE DEFINITION (TABLE DEFINITION MAINTAINED FROM v1.x)
-        Schema::table('REPORT_VAR', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
-        });
-
         //ROUTES
         Schema::table('ROUTE', function(Blueprint $table) {
             $table->unsignedInteger('process_id')->nullable();
@@ -338,13 +326,6 @@ class UpdateProcessTable extends Migration
 
         //WEB ENTRY EVENTS
         Schema::table('WEB_ENTRY_EVENT', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
-        });
-
-        //RESTRICT THE PROCESS DELETION IF IT IS USED IN CASES EXECUTION
-        //CASES
-        Schema::table('APPLICATION', function(Blueprint $table) {
             $table->unsignedInteger('process_id')->nullable();
             $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
         });

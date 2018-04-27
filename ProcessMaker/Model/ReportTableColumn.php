@@ -2,11 +2,11 @@
 namespace ProcessMaker\Model;
 
 use Illuminate\Database\Eloquent\Model;
+use ProcessMaker\Model\Traits\Uuid;
 
-class ReportTableVariable extends Model
+class ReportTableColumn extends Model
 {
+    use Uuid;
     public $timestamps = false;
-    public $incrementing = false;
 
-    protected $table = 'FIELDS';
 }

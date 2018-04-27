@@ -4,6 +4,7 @@ namespace ProcessMaker\Model;
 
 use Illuminate\Database\Eloquent\Model;
 use ProcessMaker\Facades\SchemaManager;
+use ProcessMaker\Model\Traits\Uuid;
 use Watson\Validating\ValidatingTrait;
 
 /**
@@ -13,22 +14,12 @@ use Watson\Validating\ValidatingTrait;
 class ReportTable extends Model
 {
     use ValidatingTrait;
+    use Uuid;
 
     // all tables will have this prefix
     const TABLE_PREFIX = 'PMT_';
-    public static $attributesList = [
-        'uid',
-        'name',
-        'description',
-        'db_source_id',
-        'process_id',
-        'type',
-        'grid',
-        'tags'
-    ];
 
     public $timestamps = false;
-    public $incrementing = false;
 
     protected $table = 'additional_tables';
 
@@ -36,7 +27,6 @@ class ReportTable extends Model
     protected $rules = [
         'name' => 'required',
         'description' => 'required',
-        'db_source_id' => 'required',
         'type' => 'required'
     ];
 
@@ -52,7 +42,7 @@ class ReportTable extends Model
      */
     public function physicalTableName()
     {
-        return ReportTable::TABLE_PREFIX . strtoupper($this->ADD_TAB_NAME);
+        return ReportTable::TABLE_PREFIX . strtoupper($this->name);
     }
 
     /**
@@ -96,11 +86,11 @@ class ReportTable extends Model
     {
         return $this->belongsToMany(
             ProcessVariable::class,
-            'FIELDS',
-            'additional_table_id',
-            'VAR_ID'
+            'report_table_columns',
+            'report_table_id',
+            'process_variable_id'
         )
-            ->withPivot('FLD_NAME');
+            ->withPivot('name');
     }
 
     /**

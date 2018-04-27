@@ -19,20 +19,16 @@ $factory->define(\ProcessMaker\Model\Application::class, function (Faker $faker)
 
     $pin = $faker->regexify("[A-Z0-9]{4}");
 
-    // Get the next auto increment id for app_number
-    // @todo This should be replaced with an ID field
-    $maxNumber = \ProcessMaker\Model\Application::max('APP_NUMBER') + 1;
+    $maxNumber = \ProcessMaker\Model\Application::max('id') + 1;
 
     return [
-        'APP_UID' => str_replace('-', '', Uuid::uuid4()),
         'APP_TITLE' => '#' . $maxNumber,
         'APP_DESCRIPTION' => '',
-        'APP_NUMBER' => $maxNumber,
         'APP_PARENT' => 0,  // 0 signifies no parent
         'APP_STATUS' => $status,
         'APP_STATUS_ID' => $statusId,
-        'PRO_UID' => function () {
-            return factory(\ProcessMaker\Model\Process::class)->create()->PRO_UID;
+        'process_id' => function () {
+            return factory(\ProcessMaker\Model\Process::class)->create()->id;
         },
         'APP_PROC_STATUS' => '',
         /**
@@ -40,11 +36,11 @@ $factory->define(\ProcessMaker\Model\Application::class, function (Faker $faker)
          */
         'APP_PROC_CODE' => '',
         'APP_PARALLEL' => 'N',
-        'APP_INIT_USER' => function () {
-            return factory(\ProcessMaker\Model\User::class)->create()->USR_UID;
+        'creator_user_id' => function () {
+            return factory(\ProcessMaker\Model\User::class)->create()->id;
         },
-        'APP_CUR_USER' => function () {
-            return factory(\ProcessMaker\Model\User::class)->create()->USR_UID;
+        'current_user_id' => function () {
+            return factory(\ProcessMaker\Model\User::class)->create()->id;
         },
         'APP_INIT_DATE' => $now,
         'APP_PIN' => Crypt::encryptString($pin),
