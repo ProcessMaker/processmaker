@@ -24,7 +24,9 @@ class AccessTokenRepository implements AccessTokenRepositoryInterface
      */
     public function getNewToken(ClientEntityInterface $clientEntity, array $scopes, $userIdentifier = null)
     {
-        return new OAuthAccessToken();
+        $token = new OAuthAccessToken();
+        $token->user_id = $userIdentifier;
+        return new $token;
     }
 
     /**
@@ -34,7 +36,7 @@ class AccessTokenRepository implements AccessTokenRepositoryInterface
      */
     public function isAccessTokenRevoked($tokenId)
     {
-        $token = OAuthAccessToken::where('ACCESS_TOKEN', $tokenId)->first();
+        $token = OAuthAccessToken::where('access_token', $tokenId)->first();
         if (!$token) {
             return true;
         }
@@ -58,6 +60,6 @@ class AccessTokenRepository implements AccessTokenRepositoryInterface
      */
     public function revokeAccessToken($tokenId)
     {
-        OAuthAccessToken::where('ACCESS_TOKEN', $tokenId)->delete();
+        OAuthAccessToken::where('access_token', $tokenId)->delete();
     }
 }

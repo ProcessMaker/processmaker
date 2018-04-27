@@ -171,7 +171,7 @@ class Process extends Model
         'reassigned_trigger_id' => 'nullable|max:32',
         'unpaused_trigger_id' => 'nullable|max:32',
         'category' => 'max:32',
-        'creator_user_id' => 'exists:users',
+        'creator_user_id' => 'exists:users,id',
     ];
 
     /**

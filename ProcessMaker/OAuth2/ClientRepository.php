@@ -23,12 +23,12 @@ class ClientRepository implements ClientRepositoryInterface
      */
     public function getClientEntity($clientIdentifier, $grantType = null, $clientSecret = null, $mustValidateSecret = true)
     {
-        $client = OAuthClient::where('CLIENT_ID', $clientIdentifier)->first();
+        $client = OAuthClient::where('id', $clientIdentifier)->first();
         if (!$client) {
             return null;
         }
         if ($mustValidateSecret) {
-            if ($client->CLIENT_SECRET == $clientSecret) {
+            if ($client->secret == $clientSecret) {
                 return $client;
             }
         } else {

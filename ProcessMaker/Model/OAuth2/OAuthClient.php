@@ -10,14 +10,11 @@ use League\OAuth2\Server\Entities\ClientEntityInterface;
  */
 class OAuthClient extends Model implements ClientEntityInterface
 {
-    // Specify our table name
-    protected $table = 'OAUTH_CLIENTS';
+    // Our table name
+    protected $table = 'oauth_clients';
 
     // Our primary key is not an autoincrementing key
     public $incrementing = false;
-
-    // Our primary key is not ID but CLIENT_ID
-    protected $primaryKey = 'CLIENT_ID';
 
     // We do not sure create/update timestamps in this table
     public $timestamps = false;
@@ -29,7 +26,7 @@ class OAuthClient extends Model implements ClientEntityInterface
      */
     public function getName()
     {
-        return $this->CLIENT_NAME;
+        return $this->name;
     }
 
     /**
@@ -39,7 +36,7 @@ class OAuthClient extends Model implements ClientEntityInterface
      */
     public function getIdentifier()
     {
-        return $this->CLIENT_ID;
+        return $this->id;
     }
 
     /**
@@ -49,6 +46,6 @@ class OAuthClient extends Model implements ClientEntityInterface
      */
     public function getRedirectUri()
     {
-        return $this->REDIRECT_URI;
+        return $this->redirect_uri;
     }
 }

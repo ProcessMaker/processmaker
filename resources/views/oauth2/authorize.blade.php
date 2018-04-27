@@ -25,10 +25,10 @@
             <div class="pure-control-group labels">
                 <p>
                 <p>{{$user->getFullName()}}</p>
-                The application <b>{{$client->NAME}}</b> is requesting access to your account.
+                The application <b>{{$client->name}}</b> is requesting access to your account.
 
                 <h4>{{$client->NAME}}</h4>
-                <small><i>{{$client->CLIENT_DESCRIPTION}}</i></small>
+                <small><i>{{$client->description}}</i></small>
                 </p>
 
                 <p>Do you approve?</p>

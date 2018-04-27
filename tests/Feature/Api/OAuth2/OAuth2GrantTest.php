@@ -36,14 +36,14 @@ class OAuth2GrantTest extends TestCase
     public function testSuccessfulPasswordGrant()
     {
         $user = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make('password')
+            'password' => Hash::make('password')
         ]);
         $response = $this->json('POST','/oauth2/token', [
             'grant_type' => 'password',
             'scope' => '*',
             'client_id' => $this->clientId,
             'client_secret' => $this->clientSecret,
-            'username' => $user->USR_USERNAME,
+            'username' => $user->username,
             'password' => 'password'
         ]);
         $response->assertStatus(200);
@@ -62,7 +62,7 @@ class OAuth2GrantTest extends TestCase
     public function testSuccessfulClientCredentialsGrant()
     {
          $user = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make('password')
+            'password' => Hash::make('password')
         ]);
         $response = $this->json('POST','/oauth2/token', [
             'grant_type' => 'client_credentials',
@@ -87,7 +87,7 @@ class OAuth2GrantTest extends TestCase
     public function testSuccessfulAuthorizationCodeGrant()
     {
         $user = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make('password')
+            'password' => Hash::make('password')
         ]);
         $response = $this->call('GET', '/oauth2/authorize', [
             'response_type' => 'code',
@@ -142,7 +142,7 @@ class OAuth2GrantTest extends TestCase
     public function testSuccessfulImplicitGrant()
     {
         $user = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make('password')
+            'password' => Hash::make('password')
         ]);
         $response = $this->call('GET', '/oauth2/authorize', [
             'response_type' => 'code',
@@ -188,13 +188,13 @@ class OAuth2GrantTest extends TestCase
     {
         // First, let's get a valid oauth token
         $user = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make('password')
+            'password' => Hash::make('password')
         ]);
         $response = $this->json('POST','/oauth2/token', [
             'grant_type' => 'password',
             'client_id' => $this->clientId,
             'client_secret' => $this->clientSecret,
-            'username' => $user->USR_USERNAME,
+            'username' => $user->username,
             'password' => 'password'
         ]);
         $tokenData = json_decode($response->getContent(), true);

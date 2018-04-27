@@ -11,14 +11,14 @@ use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
  */
 class OAuthRefreshToken extends Model implements RefreshTokenEntityInterface
 {
-    // Specify our table name
-    protected $table = 'OAUTH_REFRESH_TOKENS';
+    // Our table name
+    protected $table = 'oauth_refresh_tokens';
 
     // Our primary key is not an autoincrementing key
     public $incrementing = false;
 
     // Our primary key is not ID but REFRESH_TOKEN
-    protected $primaryKey = 'REFRESH_TOKEN';
+    protected $primaryKey = 'refresh_token';
 
     // We do not sure create/update timestamps in this table
     public $timestamps = false;
@@ -30,7 +30,7 @@ class OAuthRefreshToken extends Model implements RefreshTokenEntityInterface
      */
     public function getIdentifier()
     {
-        return $this->REFRESH_TOKEN;
+        return $this->refresh_token;
     }
 
     /**
@@ -40,7 +40,7 @@ class OAuthRefreshToken extends Model implements RefreshTokenEntityInterface
      */
     public function setIdentifier($identifier)
     {
-        $this->REFRESH_TOKEN = $identifier;
+        $this->refresh_token = $identifier;
     }
 
     /**
@@ -49,7 +49,7 @@ class OAuthRefreshToken extends Model implements RefreshTokenEntityInterface
      */
     public function accessToken()
     {
-        return $this->belongsTo(OAuthAccessToken::class, "ACCESS_TOKEN", "ACCESS_TOKEN");
+        return $this->belongsTo(OAuthAccessToken::class, "access_token", "access_token");
     }
 
     /**
@@ -60,7 +60,7 @@ class OAuthRefreshToken extends Model implements RefreshTokenEntityInterface
      */
     public function getExpiryDateTime()
     {
-        return $this->EXPIRES;
+        return $this->expires;
     }
 
     /**
@@ -69,7 +69,7 @@ class OAuthRefreshToken extends Model implements RefreshTokenEntityInterface
      */
     public function setExpiryDateTime(\DateTime $dateTime)
     {
-        $this->EXPIRES = $dateTime;
+        $this->expires = $dateTime;
     }
 
     /**

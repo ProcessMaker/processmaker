@@ -12,15 +12,15 @@ class CreateOAUTHCLIENTSTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('OAUTH_CLIENTS', function(Blueprint $table)
+		Schema::create('oauth_clients', function(Blueprint $table)
 		{
-			$table->string('CLIENT_ID', 80)->primary();
-			$table->string('CLIENT_SECRET', 80);
-			$table->string('CLIENT_NAME', 256);
-			$table->string('CLIENT_DESCRIPTION', 1024);
-			$table->string('CLIENT_WEBSITE', 1024);
-			$table->string('REDIRECT_URI', 2000);
-			$table->string('USR_UID', 32);
+			$table->string('id')->primary();
+			$table->string('secret');
+			$table->string('name');
+			$table->string('description');
+			$table->string('website');
+			$table->string('redirect_uri');
+			$table->unsignedInteger('creator_user_id');
 		});
 	}
 
@@ -32,7 +32,7 @@ class CreateOAUTHCLIENTSTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('OAUTH_CLIENTS');
+		Schema::drop('oauth_clients');
 	}
 
 }

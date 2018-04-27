@@ -24,13 +24,13 @@ class UserRepository implements UserRepositoryInterface
      */
     public function getUserEntityByUserCredentials($username, $password, $grantType, ClientEntityInterface $clientEntity)
     {
-        $user = User::where('USR_USERNAME', $username)->first();
+        $user = User::where('username', $username)->first();
         if (!$user) {
             return null;
         }
         // validate the password
         if (Auth::attempt([
-            'username' => $user->USR_USERNAME,
+            'username' => $user->username,
             'password' => $password
         ])) {
             return $user;
