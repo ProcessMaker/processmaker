@@ -12,19 +12,25 @@ class CreateADDITIONALTABLESTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('ADDITIONAL_TABLES', function(Blueprint $table)
+		Schema::create('additional_tables', function(Blueprint $table)
 		{
-			$table->string('ADD_TAB_UID', 32)->default('');
-			$table->integer('ADD_TAB_ID', true);
-			$table->string('ADD_TAB_NAME', 60)->default('');
-			$table->text('ADD_TAB_DESCRIPTION', 16777215)->nullable();
-			$table->string('ADD_TAB_PLG_UID', 32)->nullable()->default('');
-			$table->string('DBS_UID', 32)->nullable()->default('');
-			$table->string('PRO_UID', 32)->nullable()->default('')->index('indexAdditionalProcess');
-			$table->integer('PRO_ID')->nullable();
-			$table->string('ADD_TAB_TYPE', 32)->nullable()->default('');
-			$table->string('ADD_TAB_GRID', 256)->nullable()->default('');
-			$table->string('ADD_TAB_TAG', 256)->nullable()->default('');
+			$table->increments('id');
+			$table->uuid('uid')->unique();
+			$table->string('name');
+			$table->text('description')->nullable();
+			$table->enum('type', ['NORMAL', 'GRID'])->default('NORMAL');
+			$table->string('grid')->nullable();
+			$table->string('tags')->nullable();
+
+			$table->uuid('db_source_id')->nullable();
+			$table->uuid('process_id')->nullable()->index('indexAdditionalProcess');
+
+			/**
+			 * @todo Move this additional tables to AFTER db sources and process tables are added
+			 */
+			//$table->foreign('db_source_id')->references('id')->on('db_sources');
+			//$table->foreign('process_id')->references('id')->on('processes');
+
 		});
 	}
 

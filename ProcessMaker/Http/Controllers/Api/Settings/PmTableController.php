@@ -22,8 +22,8 @@ class PmTableController extends Controller
     public function index()
     {
         // an empty string in the field PRO_UID is a marker for a PmTable, otherwise is a ReportTable
-        return PmTable::where('PRO_UID', '')
-            ->orWhereNull('PRO_UID')
+        // Using a type of PMTABLE will fetch PMTables
+        return PmTable::where('type', 'PMTABLE')
             ->get()
             ->each(function (PmTable $pmTable) {
                 $pmTable->fields = SchemaManager::getMetadataFromSchema($pmTable)->columns;
@@ -55,22 +55,18 @@ class PmTableController extends Controller
     {
         $pmTable = new PmTable();
         $this->mapRequestToPmTable($request, $pmTable);
-        $pmTable->ADD_TAB_UID = str_replace('-', '', Uuid::uuid4());
+        $pmTable->uid = Uuid::uuid4();
 
         // try to save as pmTable
         $pmTable->saveOrFail();
-
-        // we get the saved table, so we have its id
-        $lastTable = PmTable::find($pmTable->ADD_TAB_UID);
-        $pmTable->ADD_TAB_ID = $lastTable->ADD_TAB_ID;
 
         // add the fields passed in the request to the PmTable
         foreach ($request->fields as $field) {
             $pmTableField = $this->mapRequestFieldToPmTableField($field);
 
             $pmTableField['FLD_UID'] =  str_replace('-', '', Uuid::uuid4());
-            $pmTableField['ADD_TAB_UID'] = $pmTable->ADD_TAB_UID;
-            $pmTableField['ADD_TAB_ID'] = $pmTable->ADD_TAB_ID;
+            $pmTableField['ADD_TAB_UID'] = $pmTable->uid;
+            $pmTableField['ADD_TAB_ID'] = $pmTable->id;
             SchemaManager::updateOrCreateColumn($pmTable, $pmTableField);
         }
 
@@ -99,8 +95,8 @@ class PmTableController extends Controller
                 $pmTableField = $this->mapRequestFieldToPmTableField($field);
 
                 $pmTableField['FLD_UID'] = str_replace('-', '', Uuid::uuid4());
-                $pmTableField['ADD_TAB_UID'] = $pmTable->ADD_TAB_UID;
-                $pmTableField['ADD_TAB_ID'] = $pmTable->ADD_TAB_ID;
+                $pmTableField['ADD_TAB_UID'] = $pmTable->uid;
+                $pmTableField['ADD_TAB_ID'] = $pmTable->id;
                 SchemaManager::updateOrCreateColumn($pmTable, $pmTableField);
             }
         }

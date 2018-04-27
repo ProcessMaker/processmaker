@@ -117,9 +117,8 @@ class PmTableTest extends TestCase
     private function createTestPmTable()
     {
         // we create a new pmTable
-        $factoryTable = factory(PmTable::class)
+        $pmTable = factory(PmTable::class)
             ->create();
-        $pmTable = PmTable::where('ADD_TAB_UID', $factoryTable->ADD_TAB_UID)->get()[0];
 
         $field1 = [
             'FLD_UID' => str_replace('-', '', Uuid::uuid4()),

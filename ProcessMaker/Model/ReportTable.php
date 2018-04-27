@@ -17,29 +17,27 @@ class ReportTable extends Model
     // all tables will have this prefix
     const TABLE_PREFIX = 'PMT_';
     public static $attributesList = [
-        'ADD_TAB_UID',
-        'ADD_TAB_NAME',
-        'ADD_TAB_DESCRIPTION',
-        'ADD_TAB_PLG_UID',
-        'DBS_UID',
-        'PRO_UID',
-        'ADD_TAB_TYPE',
-        'ADD_TAB_GRID',
-        'ADD_TAB_TAG'
+        'uid',
+        'name',
+        'description',
+        'db_source_id',
+        'process_id',
+        'type',
+        'grid',
+        'tags'
     ];
 
     public $timestamps = false;
     public $incrementing = false;
 
-    protected $table = 'ADDITIONAL_TABLES';
-    protected $primaryKey = 'ADD_TAB_UID';
+    protected $table = 'additional_tables';
 
     // validation rules
     protected $rules = [
-        'ADD_TAB_NAME' => 'required',
-        'ADD_TAB_DESCRIPTION' => 'required',
-        'DBS_UID' => 'required',
-        'ADD_TAB_TYPE' => 'required'
+        'name' => 'required',
+        'description' => 'required',
+        'db_source_id' => 'required',
+        'type' => 'required'
     ];
 
     // validation rules
@@ -74,7 +72,7 @@ class ReportTable extends Model
      */
     public function getFieldsAttribute()
     {
-        $pmTable = PmTable::where('ADD_TAB_ID', $this->ADD_TAB_ID)->first();
+        $pmTable = PmTable::where('id', $this->id)->first();
         $fieldsMeta = SchemaManager::getMetadataFromSchema($pmTable)->columns;
         return $fieldsMeta;
     }
@@ -86,7 +84,7 @@ class ReportTable extends Model
      */
     public function process()
     {
-        return $this->belongsTo(Process::class, 'PRO_UID', 'PRO_UID');
+        return $this->belongsTo(Process::class);
     }
 
     /**
@@ -99,7 +97,7 @@ class ReportTable extends Model
         return $this->belongsToMany(
             ProcessVariable::class,
             'FIELDS',
-            'ADD_TAB_UID',
+            'additional_table_id',
             'VAR_ID'
         )
             ->withPivot('FLD_NAME');
@@ -112,6 +110,6 @@ class ReportTable extends Model
      */
     public function getAssociatedPmTable()
     {
-        return PmTable::whereAddTabUid($this->ADD_TAB_UID)->first();
+        return PmTable::where('id', $this->id)->first();
     }
 }

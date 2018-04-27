@@ -53,11 +53,9 @@ class ReportTableTest extends TestCase
         SchemaManager::dropPhysicalTable('PMT_REPORT_TEST');
 
         // we create a report table
-        $report = factory(ReportTable::class)->create();
+        $newReport = factory(ReportTable::class)->create();
 
-        $newReport = ReportTable::whereAddTabUid($report->ADD_TAB_UID)->first();
-
-        $pmTable = $report->getAssociatedPmTable();
+        $pmTable = $newReport->getAssociatedPmTable();
 
         // we add some variables to the report table
         $varsParams = [];

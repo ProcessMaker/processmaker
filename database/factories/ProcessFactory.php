@@ -11,11 +11,10 @@ use Ramsey\Uuid\Uuid;
 $factory->define(Process::class, function (Faker $faker) {
 
     return [
-        'PRO_UID' => str_replace('-', '', Uuid::uuid4()),
-        'PRO_NAME' => $faker->sentence(3),
-        'PRO_DESCRIPTION' => $faker->paragraph(3),
-        'PRO_CREATE_USER' => function () {
-            return factory(User::class)->create();
+        'name' => $faker->sentence(3),
+        'description' => $faker->paragraph(3),
+        'creator_user_id' => function () {
+            return factory(User::class)->create()->id;
         }
     ];
 });

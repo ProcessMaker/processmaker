@@ -38,12 +38,12 @@ class PmTableControllerTest extends ApiTestCase
         $pmTable = $this->createTestPmTable();
 
         // we retrieve the pmTable with the endpoint
-        $url = "/api/1.0/pmtable/" . $pmTable->ADD_TAB_UID;
+        $url = "/api/1.0/pmtable/" . $pmTable->uid;
         $response = $this->api('GET', $url);
         $response->assertStatus(200);
         $returnedModel = json_decode($response->getContent());
 
-        $this->assertEquals($returnedModel->add_tab_uid, $pmTable->ADD_TAB_UID,
+        $this->assertEquals($returnedModel->add_tab_uid, $pmTable->uid,
             'The created test pmTable should be returned by the endpoint');
 
         $this->assertGreaterThanOrEqual(1, count($returnedModel->fields),
@@ -79,7 +79,7 @@ class PmTableControllerTest extends ApiTestCase
         $description = 'Changed Description';
 
         // we update the pmTable
-        $url = "/api/1.0/pmtable/" . $pmTable->ADD_TAB_UID;
+        $url = "/api/1.0/pmtable/" . $pmTable->uid;
         $response = $this->api('PUT', $url, ['add_tab_description' => $description]);
         $response->assertStatus(200);
         $returnedObject = json_decode($response->getContent());
@@ -279,9 +279,7 @@ class PmTableControllerTest extends ApiTestCase
     private function createTestPmTable()
     {
         // we create a new pmTable
-        $factoryTable = factory(PmTable::class)->create();
-
-        $pmTable = PmTable::where('ADD_TAB_UID', $factoryTable->ADD_TAB_UID)->get()[0];
+        $pmTable = factory(PmTable::class)->create();
 
         $field1 = [
             'FLD_UID' => str_replace('-', '', Uuid::uuid4()),
