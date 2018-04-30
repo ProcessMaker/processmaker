@@ -11,7 +11,7 @@ $factory->define(PmTable::class, function (Faker $faker) {
     return [
         'name' => "TestPMTable",
         'description' =>$faker->sentence(3),
-        'type' => 'NORMAL',
+        'type' => 'PMTABLE',
         'db_source_id' => function() {
             return factory(DbSource::class)->create()->id;
         }

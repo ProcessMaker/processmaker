@@ -41,11 +41,21 @@ class PmTable extends Model
     //validation rules
     protected $rules = [
         'name' => 'required',
-        'db_source_id' => 'required',
+        'db_source_id' => 'exists:db_sources,id',
     ];
 
     //stores the metadata of the columns and keys of the physical table
     private $tableMetadata = null;
+
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uid';
+    }
 
     /**
      * Returns the name of the physical table
