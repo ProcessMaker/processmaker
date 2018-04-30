@@ -53,11 +53,11 @@ class DbSource extends Model
      *
      * @return string
      */
-    public function getDbsDatabaseDescriptionAttribute()
+    public function getDescriptionAttribute($value)
     {
         return $this->isTns()
-            ? '[' . $this->tns . ']' . $this->description
-            : $this->description;
+            ? '[' . $this->tns . ']' . $value
+            : $value;
     }
 
     /**
@@ -67,7 +67,7 @@ class DbSource extends Model
      *
      * @return string
      */
-    public function getDbsServerAttribute($value)
+    public function getServerAttribute($value)
     {
         $server = $this->isTns()
             ? '[' . $this->tns . ']'
@@ -82,7 +82,7 @@ class DbSource extends Model
      *
      * @return string
      */
-    public function getDbsDatabaseNameAttribute($value)
+    public function getDatabaseNameAttribute($value)
     {
         $server = $this->isTns()
             ? '[' . $this->tns . ']'

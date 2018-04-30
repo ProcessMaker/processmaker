@@ -30,7 +30,7 @@ class ProcessVariable extends Model
         'VAR_FIELD_TYPE' => 'required|in:string,integer,float,boolean,datetime,grid,array,file,multiplefile,object',
         'VAR_FIELD_SIZE' => 'integer',
         'VAR_LABEL' => 'required|string',
-        'VAR_DBCONNECTION' => 'string|nullable',
+        'VAR_DBCONNECTION' => 'nullable|exists:db_sources,uid',
         'VAR_SQL' => 'string|nullable',
         'VAR_NULL' => 'boolean|nullable'
     ];
@@ -72,7 +72,7 @@ class ProcessVariable extends Model
      */
     public function process()
     {
-        return $this->belongsTo(Process::class, 'PRO_ID', 'PRO_ID');
+        return $this->belongsTo(Process::class, 'PRO_ID', 'id');
     }
 
     /**
