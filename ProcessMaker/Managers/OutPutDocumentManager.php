@@ -99,10 +99,20 @@ class OutPutDocumentManager
             [
                 'OUT_DOC_REPORT_GENERATOR' => 'required|in:' . implode(',', OutPutDocument::DOC_REPORT_GENERATOR_TYPE),
                 'OUT_DOC_GENERATE' => 'required|in:' . implode(',', OutPutDocument::DOC_GENERATE_TYPE),
-                'OUT_DOC_TYPE' => 'required|in:' . implode(',', OutPutDocument::DOC_TYPE),
-                'OUT_DOC_PDF_SECURITY_PERMISSION' => 'in:' . implode(',', OutPutDocument::PDF_SECURITY_PERMISSIONS_TYPE)
+                'OUT_DOC_TYPE' => 'required|in:' . implode(',', OutPutDocument::DOC_TYPE)
             ]
         );
+
+        if (!empty($data['OUT_DOC_PDF_SECURITY_PERMISSIONS'])) {
+            $validator->sometimes('OUT_DOC_PDF_SECURITY_PERMISSIONS', 'array', function($value) {
+                foreach ($value->getAttributes()['OUT_DOC_PDF_SECURITY_PERMISSIONS'] as $val) {
+                    if (!in_array($val, OutPutDocument::PDF_SECURITY_PERMISSIONS_TYPE, true)) {
+                        return false;
+                    }
+                }
+                return true;
+            });
+        }
 
         if ($validator->fails()) {
             throw new ValidationException($validator);
