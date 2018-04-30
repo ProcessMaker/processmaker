@@ -273,7 +273,7 @@ class OutPutDocumentManagerTest extends ApiTestCase
         $data['out_doc_title'] = $faker->sentence(2);
         $data['out_doc_description'] = $faker->sentence(2);
         $data['out_doc_filename'] = $faker->sentence(2);
-        $data['out_doc_pdf_security_permissions'] =  $faker->randomElements(OutPutDocument::PDF_SECURITY_PERMISSIONS_TYPE, 2, false);
+        $data['out_doc_pdf_security_permissions'] =  '';
         $url = self::API_ROUTE . $process->PRO_UID . '/output-document/' . $outPutDocument->OUT_DOC_UID;
         $response = $this->api('PUT', $url, $data);
         //Validate the answer is correct

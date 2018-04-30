@@ -63,15 +63,9 @@ class OutPutDocumentController
             'OUT_DOC_PDF_SECURITY_ENABLED' => $request->input('out_doc_pdf_security_enabled', 0)
         ];
 
-        $fields = ['out_doc_title', 'out_doc_description', 'out_doc_filename', 'out_doc_template',
+        $data = array_merge($data, $this->formatData($request, ['out_doc_title', 'out_doc_description', 'out_doc_filename', 'out_doc_template',
             'out_doc_media', 'out_doc_destination_path', 'out_doc_tags', 'out_doc_pdf_security_open_password',
-            'out_doc_pdf_security_owner_password', 'out_doc_pdf_security_permission'];
-
-        foreach ($fields as $field) {
-            if ($request->has($field)) {
-                $data[strtoupper($field)] = $request->input($field);
-            }
-        }
+            'out_doc_pdf_security_owner_password']));
 
         $response = OutPutDocumentManager::save($process, $data);
         return response($response, 201);
@@ -90,18 +84,10 @@ class OutPutDocumentController
     public function update(Process $process, OutPutDocument $outPutDocument, Request $request)
     {
         $this->belongsToProcess($process, $outPutDocument);
-        $data = [];
-        $fields = ['out_doc_title', 'out_doc_description', 'out_doc_filename', 'out_doc_template', 'out_doc_report_generator', 'out_doc_landscape', 'out_doc_media',
-            'out_doc_left_margin', 'out_doc_right_margin', 'out_doc_top_margin', 'out_doc_bottom_margin',
-            'out_doc_generate', 'out_doc_type', 'out_doc_versioning', 'out_doc_destination_path', 'out_doc_tags',
-            'out_doc_pdf_security_enabled', 'out_doc_pdf_security_open_password', 'out_doc_pdf_security_owner_password',
-            'out_doc_pdf_security_permission'];
-
-        foreach ($fields as $field) {
-            if ($request->has($field)) {
-                $data[strtoupper($field)] = $request->input($field);
-            }
-        }
+        $data = $this->formatData($request, ['out_doc_title', 'out_doc_description', 'out_doc_filename', 'out_doc_template', 'out_doc_report_generator',
+            'out_doc_landscape', 'out_doc_media', 'out_doc_left_margin', 'out_doc_right_margin', 'out_doc_top_margin',
+            'out_doc_bottom_margin', 'out_doc_generate', 'out_doc_type', 'out_doc_versioning', 'out_doc_destination_path',
+            'out_doc_tags', 'out_doc_pdf_security_enabled', 'out_doc_pdf_security_open_password', 'out_doc_pdf_security_owner_password']);
 
         if ($data) {
             OutPutDocumentManager::update($process, $outPutDocument, $data);
@@ -138,6 +124,29 @@ class OutPutDocumentController
         if ($process->PRO_ID !== $outPutDocument->PRO_ID) {
             Throw new DoesNotBelongToProcessException(__('The OutPut Document does not belong to this process.'));
         }
+    }
+
+    /**
+     * Format in capital letters to send information.
+     *
+     * @param Request $request
+     * @param array $fields
+     *
+     * @return array
+     */
+    private function formatData(Request $request, array $fields)
+    {
+        $data = [];
+        foreach ($fields as $field) {
+            if ($request->has($field)) {
+                $data[strtoupper($field)] = $request->input($field);
+            }
+        }
+        if ($request->has('out_doc_pdf_security_permissions')) {
+            $permissions = $request->input('out_doc_pdf_security_permissions');
+            $data[strtoupper('OUT_DOC_PDF_SECURITY_PERMISSIONS')] = is_array($permissions) ? $permissions : explode('|' , $permissions);
+        }
+        return $data;
     }
 
 }
