@@ -18,7 +18,7 @@ class CreateADDITIONALTABLESTable extends Migration {
 			$table->uuid('uid')->unique();
 			$table->string('name');
 			$table->text('description')->nullable();
-			$table->enum('type', ['PMTABLE', 'GRID'])->default('PMTABLE');
+			$table->enum('type', ['PMTABLE', 'NORMAL', 'GRID'])->default('PMTABLE');
 			$table->string('grid')->nullable();
 			$table->string('tags')->nullable();
 

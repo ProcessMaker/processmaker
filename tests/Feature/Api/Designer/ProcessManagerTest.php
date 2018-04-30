@@ -33,10 +33,10 @@ class ProcessManagerTest extends ApiTestCase
     {
         //Login with an PROCESSMAKER_OPERATOR user.
         $user = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make('password'),
-            'USR_ROLE'     => Role::PROCESSMAKER_OPERATOR,
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_OPERATOR)->first()->id
         ]);
-        $this->auth($user->USR_USERNAME, 'password');
+        $this->auth($user->username, 'password');
         $process = factory(Process::class)->create([
             'PRO_CREATE_USER' => $user->USR_UID
         ]);
@@ -577,10 +577,10 @@ class ProcessManagerTest extends ApiTestCase
     private function authenticateAsAdmin()
     {
         $admin = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make('password'),
-            'USR_ROLE'     => Role::PROCESSMAKER_ADMIN
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
-        $this->auth($admin->USR_USERNAME, 'password');
+        $this->auth($admin->username, 'password');
         return $admin;
     }
 }

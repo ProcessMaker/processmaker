@@ -264,11 +264,11 @@ class DatabaseConnectionControllerTest extends ApiTestCase
 
         // we need an user and authenticate hime
         $user = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make('password'),
-            'USR_ROLE' => Role::PROCESSMAKER_ADMIN
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
 
-        $this->auth($user->USR_USERNAME, 'password');
+        $this->auth($user->username, 'password');
 
         // we fill the default connection data to be used in the tests
         $this->defaultConnectionData = [

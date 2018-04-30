@@ -17,12 +17,12 @@ class VariablesTest extends ApiTestCase
     public function testVariablesGet()
     {
         $user = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make('password')
+            'password' => Hash::make('password')
         ]);
         // We need an application
         $application = factory(Application::class)->create();
 
-        $this->auth($user->USR_USERNAME, 'password');
+        $this->auth($user->username, 'password');
 
         $response = $this->api('GET', '/api/1.0/cases/' . $application->APP_UID . '/variables');
 

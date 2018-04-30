@@ -121,33 +121,30 @@ class PmTableTest extends TestCase
             ->create();
 
         $field1 = [
-            'FLD_UID' => str_replace('-', '', Uuid::uuid4()),
-            'ADD_TAB_UID' => $pmTable->ADD_TAB_UID,
-            'FLD_NAME' => 'StringField',
-            'FLD_DESCRIPTION' => 'String Field',
-            'FLD_TYPE' => 'VARCHAR',
-            'FLD_SIZE' => 250,
-            'FLD_NULL' => 1
+            'additional_table_id' => $pmTable->id,
+            'name' => 'StringField',
+            'description' => 'String Field',
+            'type' => 'VARCHAR',
+            'size' => 250,
+            'null' => 1
         ];
 
         $field2 = [
-            'FLD_UID' => str_replace('-', '', Uuid::uuid4()),
-            'ADD_TAB_UID' => $pmTable->ADD_TAB_UID,
-            'FLD_NAME' => 'IntegerField',
-            'FLD_DESCRIPTION' => 'Integer Field',
-            'FLD_TYPE' => 'INTEGER',
-            'FLD_NULL' => 0,
-            'FLD_KEY' => 1,
-            'FLD_AUTO_INCREMENT' => 1
+            'additional_table_id' => $pmTable->id,
+            'name' => 'IntegerField',
+            'description' => 'Integer Field',
+            'type' => 'INTEGER',
+            'null' => 0,
+            'key' => 1,
+            'auto_increment' => 1
         ];
 
         $field3 = [
-            'FLD_UID' => str_replace('-', '', Uuid::uuid4()),
-            'ADD_TAB_UID' => $pmTable->ADD_TAB_UID,
-            'FLD_NAME' => 'TextField',
-            'FLD_DESCRIPTION' => 'Text Field',
-            'FLD_TYPE' => 'TEXT',
-            'FLD_NULL' => 1
+            'additional_table_id' => $pmTable->id,
+            'name' => 'TextField',
+            'description' => 'Text Field',
+            'type' => 'TEXT',
+            'null' => 1
         ];
 
         SchemaManager::dropPhysicalTable('PMT_TESTPMTABLE');

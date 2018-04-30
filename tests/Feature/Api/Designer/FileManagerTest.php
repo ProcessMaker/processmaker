@@ -25,10 +25,10 @@ class FileManagerTest extends ApiTestCase
     public function testAccessControl()
     {
         $user = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make('password'),
-            'USR_ROLE'     => Role::PROCESSMAKER_OPERATOR,
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_OPERATOR)->first()->id
         ]);
-        $this->auth($user->USR_USERNAME, 'password');
+        $this->auth($user->username, 'password');
 
         // We need a project
         $process = factory(Process::class)->create();
@@ -71,14 +71,14 @@ class FileManagerTest extends ApiTestCase
     public function testGetPublic()
     {
         $admin = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make('password'),
-            'USR_ROLE'     => Role::PROCESSMAKER_ADMIN
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
 
         // We need a project
         $process = factory(Process::class)->create();
 
-        $this->auth($admin->USR_USERNAME, 'password');
+        $this->auth($admin->username, 'password');
 
         //Check root path contains default folders
         $response = $this->api('GET', self::API_TEST_PROJECT . $process->PRO_UID . '/file-manager?path=');
@@ -153,12 +153,12 @@ class FileManagerTest extends ApiTestCase
     public function testCreateFile()
     {
         $admin = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make('password'),
-            'USR_ROLE'     => Role::PROCESSMAKER_ADMIN
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
         $process = factory(Process::class)->create();
         //
-        $this->auth($admin->USR_USERNAME, 'password');
+        $this->auth($admin->username, 'password');
 
         //Assert store into a folder
         Storage::fake('public');
@@ -177,7 +177,7 @@ class FileManagerTest extends ApiTestCase
         //Check if file was stored
         Storage::disk('public')->assertExists($process->PRO_UID . '/folder/file.html');
         //Check owner user
-        $this->assertEquals($admin->USR_USERNAME, $processFile->user->USR_USERNAME);
+        $this->assertEquals($admin->username, $processFile->user->username);
         //Folder with a final slash
         $data = [
             'prf_filename' => 'file1.html',
@@ -261,12 +261,12 @@ class FileManagerTest extends ApiTestCase
     public function testUpdateFile()
     {
         $admin = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make('password'),
-            'USR_ROLE'     => Role::PROCESSMAKER_ADMIN
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
         $process = factory(Process::class)->create();
 
-        $this->auth($admin->USR_USERNAME, 'password');
+        $this->auth($admin->username, 'password');
 
         //Upload a public test file
         Storage::fake('public');
@@ -298,12 +298,12 @@ class FileManagerTest extends ApiTestCase
     public function testDeleteFile()
     {
         $admin = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make('password'),
-            'USR_ROLE'     => Role::PROCESSMAKER_ADMIN
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
         $process = factory(Process::class)->create();
 
-        $this->auth($admin->USR_USERNAME, 'password');
+        $this->auth($admin->username, 'password');
 
         //Upload a public test file
         Storage::fake('public');
@@ -378,12 +378,12 @@ class FileManagerTest extends ApiTestCase
     public function testDeleteFolder()
     {
         $admin = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make('password'),
-            'USR_ROLE'     => Role::PROCESSMAKER_ADMIN
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
         $process = factory(Process::class)->create();
 
-        $this->auth($admin->USR_USERNAME, 'password');
+        $this->auth($admin->username, 'password');
 
         //Upload a public test file
         Storage::fake('public');
@@ -415,11 +415,11 @@ class FileManagerTest extends ApiTestCase
     public function testUploadDocument()
     {
         $admin = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make('password'),
-            'USR_ROLE'     => Role::PROCESSMAKER_ADMIN
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
         $process = factory(Process::class)->create();
-        $this->auth($admin->USR_USERNAME, 'password');
+        $this->auth($admin->username, 'password');
 
         Storage::fake('public');
 
@@ -448,11 +448,11 @@ class FileManagerTest extends ApiTestCase
     public function testShowProcessFile()
     {
         $admin = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make('password'),
-            'USR_ROLE'     => Role::PROCESSMAKER_ADMIN
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
         $process = factory(Process::class)->create();
-        $this->auth($admin->USR_USERNAME, 'password');
+        $this->auth($admin->username, 'password');
 
         Storage::fake('public');
 
@@ -472,11 +472,11 @@ class FileManagerTest extends ApiTestCase
     public function testDownload()
     {
         $admin = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make('password'),
-            'USR_ROLE'     => Role::PROCESSMAKER_ADMIN
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
         $process = factory(Process::class)->create();
-        $this->auth($admin->USR_USERNAME, 'password');
+        $this->auth($admin->username, 'password');
 
         Storage::fake('public');
 
