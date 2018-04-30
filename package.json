@@ -9,7 +9,8 @@
     "prod": "npm run production",
     "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
     "test": "cross-env NODE_ENV=test jest",
-    "test-watch": "npm run test -- --watch --notify"
+    "test-watch": "npm run test -- --watch --notify",
+    "lint": "eslint --fix --ignore-path .eslintignore resources/**"
   },
   "devDependencies": {
     "@vue/test-utils": "^1.0.0-beta.13",
@@ -20,6 +21,16 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
     "cross-env": "^3.2.4",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-plugin-flowtype": "^2.46.3",
+    "eslint-plugin-import": "^2.11.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-node": "^6.0.1",
+    "eslint-plugin-promise": "^3.7.0",
+    "eslint-plugin-react": "^7.7.0",
+    "eslint-plugin-standard": "^3.1.0",
+    "eslint-plugin-vue": "^4.5.0",
     "font-awesome": "^4.7.0",
     "jest": "^22.4.3",
     "jquery": "^3.1.1",
@@ -36,7 +47,9 @@
     "@fortawesome/fontawesome-free-solid": "^5.0.8",
     "bootstrap": "^4.0.0",
     "bootstrap-vue": "^2.0.0-rc.2",
+    "bpmn-moddle": "^5.1.3",
     "fontawesome": "^4.7.2",
+    "imports-loader": "^0.8.0",
     "laravel-echo": "^1.3.5",
     "laravel-echo-server": "^1.3.6",
     "npm-font-open-sans": "^1.1.0",
@@ -45,9 +58,13 @@
     "tooltip.js": "^1.2.0",
     "v-tooltip": "^2.0.0-rc.31",
     "vue-events": "^3.1.0",
+    "vue-resource": "^1.5.0",
     "vuetable-2": "^1.7.5"
   },
   "jest": {
+    "setupFiles": [
+      "<rootDir>/jest/globals.js"
+    ],
     "moduleFileExtensions": [
       "js",
       "json",

@@ -1,4 +1,4 @@
-var app = new Vue({
+/*var app = new Vue({
     el: '#app',
     data: {
         sidebarCollapsed: false,
@@ -12,4 +12,4 @@ var app = new Vue({
             this.notifications.push({id: len, html: notification.html});
         });
       }
-})
+})*/
