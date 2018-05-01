@@ -24,7 +24,7 @@ class VariablesTest extends ApiTestCase
 
         $this->auth($user->username, 'password');
 
-        $response = $this->api('GET', '/api/1.0/cases/' . $application->APP_UID . '/variables');
+        $response = $this->api('GET', '/api/1.0/cases/' . $application->uid . '/variables');
 
         // We will first get a 403, because we are not a process supervisor and we haven't participated
         $response->assertStatus(403);
@@ -33,7 +33,7 @@ class VariablesTest extends ApiTestCase
         $application->process->addUserSupervisor($user);
 
         // Now, let's fetch.  If we're a supervisor, we should be good to go
-        $response = $this->api('GET', '/api/1.0/cases/' . $application->APP_UID . '/variables');
+        $response = $this->api('GET', '/api/1.0/cases/' . $application->uid . '/variables');
         // Now make sure we pass policy and that we get the app data
         $response->assertStatus(200);
     }

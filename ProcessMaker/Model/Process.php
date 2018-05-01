@@ -180,17 +180,17 @@ class Process extends Model
     public function isSupervisor(User $user)
     {
         // First determine if we're a direct supervisor
-        if (DB::table('process_users')->where('process_id', $this->id)
-            ->where('user_id', $user->id)
-            ->where('type', 'SUPERVISOR')
+        if (DB::table('PROCESS_USER')->where('PRO_UID', $this->uid)
+            ->where('USR_UID', $user->uid)
+            ->where('PU_TYPE', 'SUPERVISOR')
             ->exists()) {
             return true;
         }
 
         // If not found, let's determine if we're in any of the supervisor groups
-        return DB::table('process_users')->where('process_id', $this->id)
-            ->whereIn('group_id', $user->groups()->pluck('groupwf.id'))
-            ->where('type', 'GROUP_SUPERVISOR')
+        return DB::table('PROCESS_USER')->where('PRO_UID', $this->id)
+            ->whereIn('USR_UID', $user->groups()->pluck('GROUPWF.GRP_UID'))
+            ->where('PU_TYPE', 'GROUP_SUPERVISOR')
             ->exists();
     }
 
@@ -201,10 +201,10 @@ class Process extends Model
     public function addUserSupervisor(User $user)
     {
         if (!$this->isSupervisor($user)) {
-            DB::table('process_users')->insert([
-                'process_id' => $this->id,
-                'user_id' => $user->id,
-                'type' => 'SUPERVISOR'
+            DB::table('PROCESS_USER')->insert([
+                'PRO_UID' => $this->uid,
+                'USR_UID' => $user->uid,
+                'PU_TYPE' => 'SUPERVISOR'
             ]);
         }
     }
@@ -215,13 +215,13 @@ class Process extends Model
      */
     public function addGroupSupervisor(Group $group)
     {
-        if (DB::table('process_users')->where('process_id', $this->id)
-            ->where('group_id', $group->id)
+        if (!DB::table('PROCESS_USER')->where('process_id', $this->id)
+            ->where('USR_UID', $group->uid)
             ->where('type', 'GROUP_SUPERVISOR')
             ->exists()) {
             DB::table('process_users')->insert([
-                'process_id' => $this->id,
-                'group_id' => $group->id,
+                'PR_UID' => $this->uid,
+                'USR_UID' => $group->uid,
                 'type' => 'SUPERVISOR'
             ]);
         }

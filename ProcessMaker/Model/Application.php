@@ -31,13 +31,23 @@ class Application extends Model
     const STATUS_COMPLETED = 3;
     const STATUS_CANCELLED = 4;
 
+    /*
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uid';
+    }
+
     /**
      * Returns relationship of the User who created this case
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function creator()
     {
-        return $this->belongsTo(User::class, 'APP_INIT_USER', 'USR_UID');
+        return $this->belongsTo(User::class, 'creator_user_id', 'id');
     }
 
     /**
@@ -46,7 +56,7 @@ class Application extends Model
      */
     public function process()
     {
-        return $this->belongsTo(Process::class, 'PRO_UID', 'PRO_UID');
+        return $this->belongsTo(Process::class, 'process_id', 'id');
     }
 
     /**
@@ -66,8 +76,8 @@ class Application extends Model
      */
     public function hasUserParticipated(User $user)
     {
-        return DB::table('LIST_PARTICIPATED_LAST')->where('APP_UID', $this->APP_UID)
-            ->where('USR_UID', $user->USR_UID)
+        return DB::table('LIST_PARTICIPATED_LAST')->where('APP_UID', $this->uid)
+            ->where('USR_UID', $user->uid)
             ->exists();
     }
 }

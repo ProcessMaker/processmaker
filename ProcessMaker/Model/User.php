@@ -36,7 +36,7 @@ class User extends Authenticatable implements UserEntityInterface
      */
     public function groups()
     {
-        return $this->belongsToMany(Group::class);
+        return $this->belongsToMany(Group::class, 'GROUP_USER', 'USR_UID', 'GRP_UID', 'GRP_UID', 'GRP_UID');
     }
 
     /**
