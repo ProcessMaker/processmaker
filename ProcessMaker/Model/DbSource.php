@@ -20,14 +20,6 @@ class DbSource extends Model
     // We do not store timestamps
     public $timestamps = false;
 
-    protected $appends = [
-        'description',
-        //this attr. is rewritten
-        'server',
-        //this attr. is rewritten
-        'database_name'
-    ];
-
     protected $rules = [
         'type' => 'required',
         'encode' => 'required'
@@ -92,10 +84,10 @@ class DbSource extends Model
      */
     public function getDatabaseNameAttribute($value)
     {
-        $server = $this->isTns()
+        $databaseName = $this->isTns()
             ? '[' . $this->tns . ']'
             : $value;
-        return $server;
+        return $databaseName;
     }
 
     /**

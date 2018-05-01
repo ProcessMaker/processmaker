@@ -96,13 +96,14 @@ class DbSourceTest extends TestCase
     public function testGetDbsServerAttribute()
     {
         $dbSource = new DbSource();
-        $this->assertEquals($dbSource->getDbsServerAttribute('FakeServer'), 'FakeServer');
+        $dbSource->server = 'FakeServer';
+        $this->assertEquals($dbSource->server, 'FakeServer');
 
         $dbSource->type = 'oracle';
         $dbSource->tns = 'test:tns';
         $dbSource->connection_type = 'TNS';
-        $this->assertEquals($dbSource->getDbsServerAttribute('FakeServer'), '[test:tns]');
-        $this->assertEquals($dbSource->getDbsDatabaseNameAttribute('FakeServer'), '[test:tns]');
+        $this->assertEquals($dbSource->server, '[test:tns]');
+        $this->assertEquals($dbSource->databaseName, '[test:tns]');
     }
 
     /**
@@ -113,11 +114,11 @@ class DbSourceTest extends TestCase
         $dbSource = new DbSource();
         $aDescription = 'Test Description';
         $dbSource->description = $aDescription;
-        $this->assertEquals($dbSource->getDbsDatabaseDescriptionAttribute(), $aDescription);
+        $this->assertEquals($dbSource->description, $aDescription);
 
         $dbSource->type = 'oracle';
         $dbSource->tns = 'test:tns';
         $dbSource->connection_type = 'TNS';
-        $this->assertEquals($dbSource->getDbsDatabaseDescriptionAttribute(), '[test:tns]'.$aDescription);
+        $this->assertEquals($dbSource->description, '[test:tns]'.$aDescription);
     }
 }
