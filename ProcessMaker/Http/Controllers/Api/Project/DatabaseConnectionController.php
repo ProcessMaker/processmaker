@@ -57,8 +57,7 @@ class DatabaseConnectionController extends Controller
     {
         $dbSource = new DbSource();
         $this->mapRequestToDbSource($request, $dbSource);
-        $dbSource->DBS_UID = str_replace('-', '', Uuid::uuid4());
-        $dbSource->PRO_UID = $process->PRO_UID;
+        $dbSource->process_id = $process->id;
 
         //the connection should be active and working
         $connectionParams = $this->getConnectionParamsFromRequest($request);
@@ -157,18 +156,24 @@ class DatabaseConnectionController extends Controller
      */
     private function mapRequestToDbSource(Request $request, DbSource $dbSource)
     {
-        $dbSource->DBS_UID = str_replace('-', '', Uuid::uuid4());
-        $dbSource->PRO_UID = $request->pro_uid;
-        $dbSource->DBS_TYPE = $request->dbs_type;
-        $dbSource->DBS_TNS = $request->dbs_tns;
-        $dbSource->DBS_CONNECTION_TYPE = $request->dbs_connection_type;
-        $dbSource->DBS_SERVER = isset($request->dbs_server) ? $request->dbs_server : '';
-        $dbSource->DBS_DATABASE_NAME = isset($request->dbs_database_name) ? $request->dbs_database_name : '';
-        $dbSource->DBS_USERNAME = $request->dbs_username;
-        $dbSource->DBS_PASSWORD = encrypt($request->dbs_password);
-        $dbSource->DBS_PORT = isset($request->dbs_port) ? $request->dbs_port : '';
-        $dbSource->DBS_ENCODE = $request->dbs_encode;
-        $dbSource->DBS_DESCRIPTION = $request->dbs_description;
+        // Check to see if process exists
+        if($request->has('process_uid')) {
+            $process = Process::where('uid', $request->process_uid)->first();
+            if(!$process) {
+                throw new \Exception(__("Process not found"));
+            }
+            $dbSource->process_id = $process->id;
+        }
+        $dbSource->type = $request->type;
+        $dbSource->tns = $request->tns;
+        $dbSource->connection_type = $request->connection_type;
+        $dbSource->server = $request->get('server', '');
+        $dbSource->database_name = $request->get('database_name', '');
+        $dbSource->username = $request->username;
+        $dbSource->password = encrypt($request->password);
+        $dbSource->port = $request->get('port', '');
+        $dbSource->encode = $request->encode;
+        $dbSource->description = $request->description;
     }
 
     /**

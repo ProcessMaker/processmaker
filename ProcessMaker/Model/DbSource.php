@@ -41,10 +41,18 @@ class DbSource extends Model
         'oracle' => ['id' => 'oracle', 'name' => 'Oracle', 'defaultPort' => 1521]
     ];
 
-    public function __construct(array $attributes = [])
+
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
     {
-        parent::__construct($attributes);
+        return 'uid';
     }
+
+
 
     /**
      * This attribute is returned in the json of the API
