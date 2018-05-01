@@ -10,7 +10,7 @@ use Watson\Validating\ValidatingTrait;
  * by the system or a human user.
  *
  * @property string $ACT_UID
- * @property int $PRO_ID
+ * @property int $process_id
  * @property string $ACT_NAME
  * @property string $ACT_TYPE
  * @property int $ACT_IS_FOR_COMPENSATION
@@ -66,7 +66,7 @@ class Activity extends Model implements FlowNodeInterface
      */
     protected $fillable = [
         'ACT_UID',
-        'PRO_ID',
+        'process_id',
         'ACT_NAME',
         'ACT_TYPE',
         'ACT_IS_FOR_COMPENSATION',
@@ -103,7 +103,7 @@ class Activity extends Model implements FlowNodeInterface
      */
     protected $attributes = [
         'ACT_UID'                        => '',
-        'PRO_ID'                         => null,
+        'process_id'                         => null,
         'ACT_NAME'                       => null,
         'ACT_TYPE'                       => self::TYPE_TASK,
         'ACT_IS_FOR_COMPENSATION'        => false,
@@ -140,7 +140,7 @@ class Activity extends Model implements FlowNodeInterface
      */
     protected $casts = [
         'ACT_UID'                        => 'string',
-        'PRO_ID'                         => 'int',
+        'process_id'                         => 'int',
         'ACT_NAME'                       => 'string',
         'ACT_TYPE'                       => 'string',
         'ACT_IS_FOR_COMPENSATION'        => 'bool',

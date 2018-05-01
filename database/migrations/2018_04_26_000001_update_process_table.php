@@ -234,12 +234,6 @@ class UpdateProcessTable extends Migration
             $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
         });
 
-        //PROCESS FILES
-        Schema::table('PROCESS_FILES', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
-        });
-
         //PROCESS USERS (like SUPERVISORS)
         Schema::table('PROCESS_USER', function(Blueprint $table) {
             $table->unsignedInteger('process_id')->nullable();

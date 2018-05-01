@@ -19,8 +19,8 @@ $factory->define(Flow::class, function (Faker $faker) {
         'FLO_X2' => $faker->numberBetween(0, 1024),
         'FLO_Y2' => $faker->numberBetween(0, 800),
         'FLO_POSITION' => 1,
-        'PRO_ID' => function () {
-            return factory(Process::class)->create()->PRO_ID;
+        'process_id' => function () {
+            return factory(Process::class)->create()->id;
         },
     ];
 });

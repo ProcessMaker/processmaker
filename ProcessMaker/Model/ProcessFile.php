@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Storage;
  *
  * @property int $PRF_ID
  * @property string $PRF_UID
- * @property string $PRO_UID
+ * @property integer $process_id
  * @property string $USR_UID
  * @property string $PRF_UPDATE_USR_UID
  * @property string $PRF_PATH
@@ -62,7 +62,7 @@ class ProcessFile extends Model
      */
     protected $fillable = [
         'PRF_UID',
-        'PRO_UID',
+        'process_id',
         'USR_UID',
         'PRF_UPDATE_USR_UID',
         'PRF_PATH',
@@ -81,7 +81,7 @@ class ProcessFile extends Model
      */
     protected $attributes = [
         'PRF_UID' => null,
-        'PRO_UID' => null,
+        'process_id' => null,
         'USR_UID' => null,
         'PRF_UPDATE_USR_UID' => null,
         'PRF_PATH' => '',
@@ -100,7 +100,7 @@ class ProcessFile extends Model
      */
     protected $casts = [
         'PRF_UID' => 'string',
-        'PRO_UID' => 'string',
+        'process_id' => 'int',
         'USR_UID' => 'string',
         'PRF_UPDATE_USR_UID' => 'string',
         'PRF_PATH' => 'string',
@@ -182,7 +182,7 @@ class ProcessFile extends Model
      */
     public function getPathInDisk()
     {
-        return $this->PRO_UID . '/' . ltrim($this->PRF_PATH_FOR_CLIENT, '/');
+        return $this->process->uid . '/' . ltrim($this->PRF_PATH_FOR_CLIENT, '/');
     }
 
     /**
@@ -234,11 +234,7 @@ class ProcessFile extends Model
      */
     public function process()
     {
-        return $this->belongsTo(
-            Process::class,
-            "PRO_UID",
-            "PRO_UID"
-        );
+        return $this->belongsTo(Process::class);
     }
 
     /**
@@ -248,11 +244,7 @@ class ProcessFile extends Model
      */
     public function user()
     {
-        return $this->belongsTo(
-            User::class,
-            "USR_UID",
-            "USR_UID"
-        );
+        return $this->belongsTo( User::class, "USR_UID", "uid");
     }
 
     /**
@@ -284,7 +276,7 @@ class ProcessFile extends Model
     public function scopeWithPath($query, $pathInDisk)
     {
         list($processUid, $pathForClient) = explode('/', ltrim($pathInDisk, '/'), 2);
-        return $query->where('PRO_UID', $processUid)
+        return $query->where('process_id', Process::where('uid', $processUid)->first()->id)
             ->where('PRF_PATH_FOR_CLIENT', 'like', '%' . $pathForClient . '%');
     }
 

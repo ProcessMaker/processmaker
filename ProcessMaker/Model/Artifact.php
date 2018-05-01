@@ -10,7 +10,7 @@ use Watson\Validating\ValidatingTrait;
  * related to the flow.
  *
  * @property string $ART_UID
- * @property int $PRO_ID
+ * @property int $process_id
  * @property string $ART_TYPE
  * @property string $ART_NAME
  * @property string $ART_CATEGORY_REF
@@ -40,7 +40,7 @@ class Artifact extends Model implements ElementInterface
      */
     protected $fillable = [
         'ART_UID',
-        'PRO_ID',
+        'process_id',
         'ART_TYPE',
         'ART_NAME',
         'ART_CATEGORY_REF'
@@ -53,7 +53,7 @@ class Artifact extends Model implements ElementInterface
      */
     protected $attributes = [
         'ART_UID'          => '',
-        'PRO_ID'           => null,
+        'process_id'           => null,
         'ART_TYPE'         => null,
         'ART_NAME'         => null,
         'ART_CATEGORY_REF' => null
@@ -66,7 +66,7 @@ class Artifact extends Model implements ElementInterface
      */
     protected $casts = [
         'ART_UID'          => 'string',
-        'PRO_ID'           => 'string',
+        'process_id'           => 'string',
         'ART_TYPE'         => 'string',
         'ART_NAME'         => 'string',
         'ART_CATEGORY_REF' => 'string'

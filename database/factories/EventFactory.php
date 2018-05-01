@@ -17,8 +17,8 @@ $factory->define(Event::class, function (Faker $faker) {
         'EVN_TYPE'     => $faker->randomElement([Event::TYPE_START, Event::TYPE_INTERMEDIATE, Event::TYPE_END]),
         'EVN_MARKER'   => $faker->randomElement([Event::MARKER_EMPTY, Event::MARKER_MESSAGETHROW, Event::MARKER_EMAIL, Event::MARKER_MESSAGECATCH]),
         'EVN_BEHAVIOR' => $faker->randomElement([Event::BEHAVIOR_THROW, Event::BEHAVIOR_CATCH]),
-        'PRO_ID'       => function () {
-            return factory(Process::class)->create()->PRO_ID;
+        'process_id'       => function () {
+            return factory(Process::class)->create()->id;
         },
     ];
 });

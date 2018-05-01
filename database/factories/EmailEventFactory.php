@@ -12,8 +12,8 @@ use Ramsey\Uuid\Uuid;
 $factory->define(EmailEvent::class, function (Faker $faker) {
     return [
         'EMAIL_EVENT_UID'     => str_replace('-', '', Uuid::uuid4()),
-        'PRO_ID'              => function () {
-            return factory(Process::class)->create()->PRO_ID;
+        'process_id'              => function () {
+            return factory(Process::class)->create()->id;
         },
         //@todo create Event model
         'EVN_UID'             => str_replace('-', '', Uuid::uuid4()),

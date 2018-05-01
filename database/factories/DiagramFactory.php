@@ -15,8 +15,8 @@ $factory->define(Diagram::class, function (Faker $faker) {
         'DIA_UID'         => str_replace('-', '', Uuid::uuid4()),
         'DIA_NAME'        => $faker->sentence(3),
         'DIA_IS_CLOSABLE' => $faker->boolean(),
-        'PRO_ID'          => function () {
-            return factory(Process::class)->create()->PRO_ID;
+        'process_id'          => function () {
+            return factory(Process::class)->create()->id;
         }
     ];
 });
