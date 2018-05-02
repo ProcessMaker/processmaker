@@ -35,6 +35,18 @@ class ReportTable extends Model
         'fields'
     ];
 
+    /*
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uid';
+    }
+
+
+
     /**
      * Returns the name of the physical table
      *

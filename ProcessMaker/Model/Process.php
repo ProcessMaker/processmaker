@@ -364,7 +364,7 @@ class Process extends Model
      */
     public function variables()
     {
-        return $this->hasMany( ProcessVariable::class);
+        return $this->hasMany( ProcessVariable::class, 'PRO_ID', 'id');
     }
 
 }

@@ -41,7 +41,7 @@ class PmTable extends Model
     //validation rules
     protected $rules = [
         'name' => 'required',
-        'db_source_id' => 'exists:db_sources,id',
+        'db_source_id' => 'nullable|exists:db_sources,id',
     ];
 
     //stores the metadata of the columns and keys of the physical table

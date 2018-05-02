@@ -69,8 +69,6 @@ class DatabaseConnectionControllerTest extends ApiTestCase
         $response = $this->api('POST', '/api/1.0/project/' . $process->uid . '/database-connection', $dbConnectionInputData);
         $numSourcesAfter = DbSource::count();
         $returnedDbSource = json_decode($response->getContent());
-        print("HEEEEEEY");
-        dd($response->getContent());
         $response->assertStatus(200);
         $this->assertEquals($numSourcesBefore + 1, $numSourcesAfter);
         $this->assertTrue($returnedDbSource->description === $dbConnectionInputData['description'],

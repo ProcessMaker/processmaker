@@ -16,8 +16,8 @@ class ReportTableTransformer extends TransformerAbstract
         return [
             'uid' => $report->uid,
             'name' => $report->name,
+            'connection' => $report->db_source_id ? DbSource::where('id', $report->db_source_id)->first()->uid : 'workflow',
             'description' => $report->description,
-            'connection' => $report->dbSource->uid,
             'process' => $report->process->uid,
             'type' => $report->type,
             'grid' => $report->grid,
