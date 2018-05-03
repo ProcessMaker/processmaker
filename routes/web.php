@@ -31,6 +31,10 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
     $this->get('/home', function() {
         return view('home', ['title' => 'Dashboard']);
     })->name('home');
+    
+    $this->get('/userprofile', function() {
+        return view('userprofile', ['title' => 'Dashboard']);
+    })->name('userprofile');
 
     $this->get('/manage/users', 'Management\UsersController@index')->name('management-users-index');
 });
