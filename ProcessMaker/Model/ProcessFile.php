@@ -157,7 +157,7 @@ class ProcessFile extends Model
     public function getIsUsedAsRoutingScreenAttribute()
     {
         $filename = basename($this->PRF_PATH);
-        return $this->process->PRO_DERIVATION_SCREEN_TPL === $filename
+        return $this->process->derivation_screen_template === $filename
             || $this->process->tasks()
                 ->where('TAS_DERIVATION_SCREEN_TPL', $filename)
                 ->count() > 0;

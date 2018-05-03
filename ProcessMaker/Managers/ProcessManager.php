@@ -36,7 +36,7 @@ class ProcessManager
             ]
         );
         $query = Process::select();
-        $filter === null ?: $query->where('PRO_NAME', 'like', "%$filter%");
+        $filter === null ?: $query->where('name', 'like', "%$filter%");
         $start === null ? : $query->offset($start);
         $limit === null ? : $query->limit($limit);
         return $query->get();
@@ -66,13 +66,12 @@ class ProcessManager
     {
         //@todo Implement the management (create) for the rest of models.
         return Process::create([
-            'PRO_UID' => str_replace('-', '', Uuid::uuid4()),
-            'PRO_NAME' => $data['prj_name'],
-            'PRO_DESCRIPTION' => $data['prj_description'],
-            'PRO_CATEGORY' => $data['prj_category'],
-            'PRO_TYPE' => $data['prj_type'],
-            'PRO_CREATE_DATE' => $data['prj_create_date'],
-            'PRO_UPDATE_DATE' => $data['prj_update_date'],
+            'name' => $data['prj_name'],
+            'description' => $data['prj_description'],
+            'category' => $data['prj_category'],
+            'type' => $data['prj_type'],
+            'created_at' => $data['prj_create_date'],
+            'updated_at' => $data['prj_update_date'],
         ]);
     }
 

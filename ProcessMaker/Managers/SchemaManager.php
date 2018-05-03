@@ -211,14 +211,14 @@ class SchemaManager
     private function changePhysicalColumn(PmTable $pmTable, array $field)
     {
         $tableName = $pmTable->physicalTableName();
-        $columnType = $this->schemaType($field['FLD_TYPE']);
-        if (empty($field['FLD_SIZE']) || !$this->typeHasSizeAsParameter($field['FLD_TYPE'])) {
+        $columnType = $this->schemaType($field['type']);
+        if (empty($field['size']) || !$this->typeHasSizeAsParameter($field['type'])) {
             Schema::table($tableName, function ($table) use ($columnType, $field) {
-                $table->{$columnType}($field['FLD_NAME'])->change();
+                $table->{$columnType}($field['name'])->change();
             });
         } else {
             Schema::table($tableName, function ($table) use ($columnType, $field) {
-                $table->{$columnType}($field['FLD_NAME'], $field['FLD_SIZE'])->change();
+                $table->{$columnType}($field['name'], $field['size'])->change();
             });
         }
     }

@@ -157,7 +157,7 @@ class Process extends Model
      * @var array $rules
      */
     protected $rules = [
-        'uid' => 'max:32',
+        'uid' => 'max:36',
         'name' => 'required',
         'process_parent_id' => 'exists:processes',
         'status' => 'in:' . self::STATUS_ACTIVE . ',' . self::STATUS_INACTIVE,

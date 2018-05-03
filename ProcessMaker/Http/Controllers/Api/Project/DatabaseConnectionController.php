@@ -41,7 +41,7 @@ class DatabaseConnectionController extends Controller
      */
     public function show(Process $process, DbSource $dbSource)
     {
-        $dbSource = $process->dbSources()->where('DBS_UID', $dbSource->DBS_UID)->firstOrFail();
+        $dbSource = $process->dbSources()->where('id', $dbSource->id)->firstOrFail();
         return $this->lowerCaseModelAttributes($dbSource);
     }
 
@@ -57,6 +57,7 @@ class DatabaseConnectionController extends Controller
     {
         $dbSource = new DbSource();
         $this->mapRequestToDbSource($request, $dbSource);
+
         $dbSource->process_id = $process->id;
 
         //the connection should be active and working
@@ -89,7 +90,7 @@ class DatabaseConnectionController extends Controller
     public function update(Request $request, Process $process, DbSource $dbSource)
     {
         $this->mapRequestToDbSource($request, $dbSource);
-        $dbSource->PRO_UID = $process->PRO_UID;
+        $dbSource->process_id = $process->id;
 
         //the connection should be active and working
         $connectionParams = $this->getConnectionParamsFromRequest($request);
@@ -131,12 +132,12 @@ class DatabaseConnectionController extends Controller
     public function testConnection(Request $request, Process $process)
     {
         $connectionParams = [];
-        $connectionParams['driver'] = $request->dbs_type;
-        $connectionParams['host'] = $request->dbs_server;
-        $connectionParams['database'] = $request->dbs_database_name;
-        $connectionParams['username'] = $request->dbs_username;
-        $connectionParams['password'] = $request->dbs_password;
-        $connectionParams['port'] = $request->dbs_port;
+        $connectionParams['driver'] = $request->get('type');
+        $connectionParams['host'] = $request->get('server');
+        $connectionParams['database'] = $request->get('database_name');
+        $connectionParams['username'] = $request->get('username');
+        $connectionParams['password'] = $request->get('password');
+        $connectionParams['port'] = $request->get('port');
 
         try {
             DatabaseManager::testConnection($connectionParams);
@@ -164,16 +165,16 @@ class DatabaseConnectionController extends Controller
             }
             $dbSource->process_id = $process->id;
         }
-        $dbSource->type = $request->type;
-        $dbSource->tns = $request->tns;
-        $dbSource->connection_type = $request->connection_type;
+        $dbSource->type = $request->get('type');
+        $dbSource->tns = $request->get('tns', null);
+        $dbSource->connection_type = $request->get('connection_type', 'NORMAL');
         $dbSource->server = $request->get('server', '');
         $dbSource->database_name = $request->get('database_name', '');
-        $dbSource->username = $request->username;
-        $dbSource->password = encrypt($request->password);
+        $dbSource->username = $request->get('username');
+        $dbSource->password = encrypt($request->get('password'));
         $dbSource->port = $request->get('port', '');
-        $dbSource->encode = $request->encode;
-        $dbSource->description = $request->description;
+        $dbSource->encode = $request->get('encode', 'utf8');
+        $dbSource->description = $request->get('description');
     }
 
     /**
@@ -186,12 +187,12 @@ class DatabaseConnectionController extends Controller
     private function getConnectionParamsFromRequest(Request $request)
     {
         $connectionParams = [];
-        $connectionParams['driver'] = $request->dbs_type;
-        $connectionParams['host'] = $request->dbs_server;
-        $connectionParams['port'] = $request->port;
-        $connectionParams['database'] = $request->dbs_database_name;
-        $connectionParams['username'] = $request->dbs_username;
-        $connectionParams['password'] = $request->dbs_password;
+        $connectionParams['driver'] = $request->get('type');
+        $connectionParams['host'] = $request->get('server');
+        $connectionParams['port'] = $request->get('port');
+        $connectionParams['database'] = $request->get('database_name');
+        $connectionParams['username'] = $request->get('username');
+        $connectionParams['password'] = $request->get('password');
         return $connectionParams;
     }
 

@@ -333,7 +333,7 @@ class FileManagerTest extends ApiTestCase
         $response = ProcessFileManager::store($process, $admin, $data);
         $path = $response['prf_path'].$response['prf_filename'];
         $prfUid = $response['prf_uid'];
-        $process->PRO_DERIVATION_SCREEN_TPL = 'routing_template.html';
+        $process->derivation_screen_template = 'routing_template.html';
         $process->save();
         $response = $this->api('DELETE', self::API_TEST_PROJECT . $process->uid . '/file-manager/' . $prfUid);
         $response->assertStatus(422);
@@ -357,7 +357,7 @@ class FileManagerTest extends ApiTestCase
         /* @var $processFile ProcessFile */
         $processFile = ProcessFile::where('PRF_UID', $response['prf_uid'])->firstOrFail();
         $emailEvent = factory(EmailEvent::class)->create([
-            'PRO_ID' => $process->PRO_ID,
+            'process_id' => $process->id,
             'PRF_UID' => $prfUid,
         ]);
         $process->save();

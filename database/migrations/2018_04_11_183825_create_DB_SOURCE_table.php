@@ -25,7 +25,7 @@ class CreateDBSOURCETable extends Migration {
 			$table->string('password');
 			$table->integer('port')->nullable();
 			$table->string('encode')->default('utf8');
-			$table->enum('connection_type', ['NORMAL', 'TNS']);
+			$table->enum('connection_type', ['NORMAL', 'TNS'])->default('NORMAL');
 			$table->string('tns')->nullable();
 			$table->unique(['id','process_id']);
 		});

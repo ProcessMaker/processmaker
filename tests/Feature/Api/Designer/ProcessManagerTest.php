@@ -82,7 +82,7 @@ class ProcessManagerTest extends ApiTestCase
                 "prj_uid"         => $process->uid,
                 "prj_name"        => $process->name,
                 "prj_description" => $process->description,
-                "prj_category"    => $process->category_id,
+                "prj_category"    => null,
                 "prj_type"        => $process->type,
                 "prj_create_date" => $process->created_at->toIso8601String(),
                 "prj_update_date" => $process->updated_at->toIso8601String(),
@@ -98,7 +98,7 @@ class ProcessManagerTest extends ApiTestCase
                 "prj_uid"         => $process->uid,
                 "prj_name"        => $process->name,
                 "prj_description" => $process->description,
-                "prj_category"    => $process->category_id,
+                "prj_category"    => null,
                 "prj_type"        => $process->type,
                 "prj_create_date" => $process->created_at->toIso8601String(),
                 "prj_update_date" => $process->updated_at->toIso8601String(),
@@ -127,7 +127,7 @@ class ProcessManagerTest extends ApiTestCase
 
         //Test filter start and limit
         $response = $this->api('GET',
-                               self::API_TEST_PROJECT . '?filter=' . urlencode($process->PRO_NAME) . '&start=0&limit=1');
+                               self::API_TEST_PROJECT . '?filter=' . urlencode($process->name) . '&start=0&limit=1');
         $response->assertStatus(200);
         $response->assertJsonStructure();
         $response->assertJsonFragment([

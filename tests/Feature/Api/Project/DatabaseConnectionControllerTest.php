@@ -24,7 +24,7 @@ class DatabaseConnectionControllerTest extends ApiTestCase
         $response->assertStatus(422);
 
         $dbConnectionInputData = $this->defaultConnectionData;
-        $dbConnectionInputData['process_uid'] = $process->uid;
+        $dbConnectionInputData['process_uid'] = $process->uid->toString();
 
         //a wrong db type should return 422
         $dbConnectionInputData['type'] = 'XYZWrongType';
@@ -95,7 +95,7 @@ class DatabaseConnectionControllerTest extends ApiTestCase
         $response->assertStatus(422);
 
         $dbConnectionInputData = $this->defaultConnectionData;
-        $dbConnectionInputData['process_uid'] = $process->uid;
+        $dbConnectionInputData['process_uid'] = $process->uid->toString();
 
         //An update with a wrong server should return 422 error
         $url = "/api/1.0/project/$process->uid/database-connection/$dbSource->uid";
@@ -145,14 +145,14 @@ class DatabaseConnectionControllerTest extends ApiTestCase
         // we need a dbSource (the factory creates a process too)
         $dbSource = factory(DbSource::class)->create();
 
-        $url = "/api/1.0/project/$dbSource->uid/database-connections";
+        $url = "/api/1.0/project/{$dbSource->process->uid}/database-connections";
         $response = $this->api('GET', $url);
         $response->assertStatus(200);
         $returnedList = json_decode($response->getContent());
         $this->assertTrue(count($returnedList) === 1, 'The process has just one associated dbsource');
 
         // the returned list must be equal to the dbSource added and in lower case
-        $this->assertTrue($returnedList[0]->uid === $dbSource->uid);
+        $this->assertTrue($returnedList[0]->uid === $dbSource->uid->toString());
 
         // a wrong process id should return 404
         $url = "/api/1.0/project/WRONGPROCESSID/database-connections";
@@ -169,11 +169,11 @@ class DatabaseConnectionControllerTest extends ApiTestCase
         $dbSource = factory(DbSource::class)->create();
 
         // test if the created dbSource is the returned
-        $url = "/api/1.0/project/$dbSource->uid/database-connection/$dbSource->uid";
+        $url = "/api/1.0/project/{$dbSource->process->uid}/database-connection/$dbSource->uid";
         $response = $this->api('GET', $url);
         $response->assertStatus(200);
         $returnedDbSource = json_decode($response->getContent());
-        $this->assertTrue($returnedDbSource->uid === $dbSource->uid,
+        $this->assertTrue($returnedDbSource->uid === $dbSource->uid->toString(),
                     'The returned dbsource should have the same data of the one added in the test and in lowercase');
 
         $this->assertTrue($returnedDbSource->description !== null,
@@ -184,7 +184,7 @@ class DatabaseConnectionControllerTest extends ApiTestCase
         $dbSource2 = factory(DbSource::class)->create();
 
         // as the $dbSource2 do not pertains to the process created in $dbSource, a 404 error should be returned
-        $url = "/api/1.0/project/$dbSource->uid/database-connection/$dbSource2->uid";
+        $url = "/api/1.0/project/{$dbSource->process->uid}/database-connection/$dbSource2->uid";
         $response = $this->api('GET', $url);
         $response->assertStatus(404);
     }
@@ -203,7 +203,7 @@ class DatabaseConnectionControllerTest extends ApiTestCase
 
 
         // get the created dbsource and assert if the fields server and database_name have the correct format
-        $url = "/api/1.0/project/$dbSource->uid/database-connection/$dbSource->uid";
+        $url = "/api/1.0/project/{$dbSource->process->uid}/database-connection/$dbSource->uid";
         $response = $this->api('GET', $url);
         $response->assertStatus(200);
         $returnedDbSource = json_decode($response->getContent());
@@ -215,7 +215,7 @@ class DatabaseConnectionControllerTest extends ApiTestCase
                                 'The database name must be closed in brackets [] in a Tns connection');
 
         // get all connections of a process and verify if the fields server and database_name have the correct format
-        $url = "/api/1.0/project/$dbSource->uid/database-connections";
+        $url = "/api/1.0/project/{$dbSource->process->uid}/database-connections";
         $response = $this->api('GET', $url);
         $response->assertStatus(200);
         $returnedDbSource = json_decode($response->getContent());
@@ -236,20 +236,20 @@ class DatabaseConnectionControllerTest extends ApiTestCase
         $process = factory(Process::class)->create();
 
         $dbConnectionInputData = $this->defaultConnectionData;
-        $dbConnectionInputData['process_uid'] = $process->uid;
+        $dbConnectionInputData['process_uid'] = $process->uid->toString();
 
         // a correct connection should return 200
         $response = $this->api('POST', '/api/1.0/project/' . $process->uid . '/database-connection/test', $dbConnectionInputData);
         $response->assertStatus(200);
 
         // a wrong type connection should return 422 error
-        $dbConnectionInputData['dbs_type'] = 'WrongType';
+        $dbConnectionInputData['type'] = 'WrongType';
         $response = $this->api('POST', '/api/1.0/project/' . $process->uid . '/database-connection/test', $dbConnectionInputData);
         $response->assertStatus(422);
-        $dbConnectionInputData['dbs_type'] = 'mysql';
+        $dbConnectionInputData['type'] = 'mysql';
 
         // a  connection with a wrong server should return 422 error
-        $dbConnectionInputData['dbs_server'] = 'WrongServer';
+        $dbConnectionInputData['server'] = 'WrongServer';
         $response = $this->api('POST', '/api/1.0/project/' . $process->uid . '/database-connection/test', $dbConnectionInputData);
         $response->assertStatus(422);
     }

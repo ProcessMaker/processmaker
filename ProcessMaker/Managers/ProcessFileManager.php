@@ -61,7 +61,7 @@ class ProcessFileManager
         );
         if ($path != '') {
             $arrayData = $this->listContentsOfPath(
-                $process->uid,
+                $process,
                 $path,
                 $getContents
             );
@@ -267,9 +267,9 @@ class ProcessFileManager
      *
      * @return array
      */
-    private function listContentsOfPath($processUid, $path, $includeFileContent = true)
+    private function listContentsOfPath($process, $path, $includeFileContent = true)
     {
-        $this->initializeFromPath($path, $processUid);
+        $this->initializeFromPath($path, $process->uid);
         $list = [];
         $directories = $this->disk->directories($this->relativePath);
         foreach ($directories as $dir) {

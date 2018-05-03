@@ -22,6 +22,8 @@ class DbSource extends Model
 
     protected $rules = [
         'type' => 'required',
+        'database_name' => 'required',
+        'port' => 'required',
         'encode' => 'required'
     ];
 
@@ -159,4 +161,15 @@ class DbSource extends Model
         return $this->type === 'oracle'
             && $this->connection_type === 'TNS';
     }
+
+    /**
+     * Eloquent relation that return the associated process of the report table
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function process()
+    {
+        return $this->belongsTo(Process::class);
+    }
+
 }
