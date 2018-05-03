@@ -4,7 +4,7 @@ import _ from "lodash";
  * @param actionMap
  * @returns {{}}
  */
-export default function actionsCreator(actionMap) {
+export default function actionsCreator (actionMap) {
     let actionNeo = {};
     _.map(actionMap, (value, key, object) => {
         mappingValues(value, key, object, actionNeo, key);
@@ -20,7 +20,7 @@ export default function actionsCreator(actionMap) {
  * @param nObject
  * @param pwd
  */
-function mappingValues(value, key, object, nObject, pwd) {
+function mappingValues (value, key, object, nObject, pwd) {
     if (_.isFunction(value)) {
         creationObject(pwd, value, nObject);
     } else {
@@ -37,7 +37,7 @@ function mappingValues(value, key, object, nObject, pwd) {
  * @param nObject
  * @returns {*}
  */
-function creationObject(pwd, value, nObject) {
+function creationObject (pwd, value, nObject) {
     let nObjectF = nObject;
     let root = _.split(pwd, "/");
     let first;

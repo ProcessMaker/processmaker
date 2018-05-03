@@ -2,7 +2,7 @@
     <div class="pmdesigner-toolbar">
         <ul class="side-menu">
             <li class="bpmn-item-menu">
-                <img id="bpmn:StartEvent" src="images/start-event.svg" height="25"
+                <img id="bpmn:StartEvent" name="StartEvent" src="images/start-event.svg" height="25"
                      draggable="true" @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
                 <img id="bpmn:IntermediateThrowEvent" src="images/intermediate-email-event.svg" height="25"
@@ -59,8 +59,7 @@
         methods: {
             createElement (value) {
                 let action = actions.designer.drag.end(value)
-                debugger;
-                this.$parent.emitter.$emit(action.type, action.payload)
+                Dispatcher.$emit(action.type, action.payload)
             }
         }
     };

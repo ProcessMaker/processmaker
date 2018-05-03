@@ -1,5 +1,8 @@
-export class StartEvent {
-    constructor(options, shape) {
+import {EventShape} from "./eventShape";
+
+export class StartEvent extends EventShape {
+    constructor (options, svg) {
+        super(svg);
         this.type = options.type;
         this.name = options.name || "";
         this.options = options;
@@ -9,15 +12,6 @@ export class StartEvent {
             strokeWidth: 2
         };
         options.marker = "EMPTY";
-        this.shape = shape;
-        this.shape.config(options);
-    }
-
-    render() {
-        this.shape.render();
-    }
-
-    getShape() {
-        return this.shape;
+        this.config(options);
     }
 }
