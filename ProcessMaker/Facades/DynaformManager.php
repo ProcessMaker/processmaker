@@ -14,7 +14,7 @@ use ProcessMaker\Model\Process;
  * @see \ProcessMaker\Managers\DynaformManager
  *
  * @method static Paginator index(Process $process)
- * @method static Dynaform save(Process $process, array $data)
+ * @method static Paginator gridDefinitions(Process $process, Dynaform $dynaform, string $gridName)
  * @method static Dynaform copyImport(Process $process, array $data)
  * @method static Dynaform createBasedPmTable(Process $process, array $data)
  * @method static array update(Process $process, Dynaform $dynaform, array $data)

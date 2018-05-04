@@ -81,12 +81,12 @@ Router::group([
 
         //DynaForm endpoints
         Router::get('project/{process}/dynaforms', 'Designer\DynaformController@index')->middleware('can:read,ProcessMaker\Model\Dynaform');
-        Router::get('project/{process}/dynaform/{dynaform}', 'Designer\DynaformController@index')->middleware('can:read,ProcessMaker\Model\Dynaform');
-        Router::get('project/{process}/dynaform/{dynaform}/grid/{grd_name}/field-definitions', 'Designer\DynaformController@index')->middleware('can:read,ProcessMaker\Model\Dynaform');
-        Router::get('project/{process}/dynaform/{dynaform}/grid/{grd_name}/field-definition/{fld_id}', 'Designer\DynaformController@index')->middleware('can:read,ProcessMaker\Model\Dynaform');
+        Router::get('project/{process}/dynaform/{dynaform}', 'Designer\DynaformController@show')->middleware('can:read,ProcessMaker\Model\Dynaform');
+        Router::get('project/{process}/dynaform/{dynaform}/grid/{gridName}/field-definitions', 'Designer\DynaformController@index')->middleware('can:read,ProcessMaker\Model\Dynaform');
+        Router::get('project/{process}/dynaform/{dynaform}/grid/{gridName}/field-definition/{fld_id}', 'Designer\DynaformController@index')->middleware('can:read,ProcessMaker\Model\Dynaform');
         Router::post('project/{process}/dynaform', 'Designer\DynaformController@store')->middleware('can:write,ProcessMaker\Model\Dynaform');
-        Router::put('project/{process}/dynaform/{dynaform}', 'Designer\DynaformController@index')->middleware('can:write,ProcessMaker\Model\Dynaform');
-        Router::delete('project/{process}/dynaform/{dynaform}', 'Designer\DynaformController@index')->middleware('can:delete,ProcessMaker\Model\Dynaform');
+        Router::put('project/{process}/dynaform/{dynaform}', 'Designer\DynaformController@update')->middleware('can:write,ProcessMaker\Model\Dynaform');
+        Router::delete('project/{process}/dynaform/{dynaform}', 'Designer\DynaformController@remove')->middleware('can:delete,ProcessMaker\Model\Dynaform');
 
     });
 });

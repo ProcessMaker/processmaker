@@ -106,6 +106,9 @@ class DynaformManager
         $data['PRO_ID'] = $process->PRO_ID;
         $dynaform->fill($data);
         $this->validate($dynaform->toArray());
+        if (empty($dynaform->DYN_CONTENT)) {
+            $dynaform->DYN_CONTENT = $this->generateContent($dynaform->DYN_UID, $dynaform->DYN_TITLE, $dynaform->DYN_DESCRIPTION);
+        }
         $dynaform->saveOrFail();
         return $dynaform;
     }
@@ -132,27 +135,22 @@ class DynaformManager
      */
     private function validate($data): void
     {
+
+        if (!isset($data['COPY_IMPORT'])) {
+            return;
+        }
+
         /**
          * @var $validator \Illuminate\Validation\Validator
          */
         $validator = Validator::make(
             $data,
             [
-                'DYN_TYPE' => 'required|in:' . implode(',', Dynaform::TYPE)
+                'COPY_IMPORT' => 'required|array',
+                'COPY_IMPORT.pro_uid' => 'required|string|max:32',
+                'COPY_IMPORT.dyn_uid' => 'required|string|max:32'
             ]
         );
-        if (isset($data['COPY_IMPORT'])) {
-            $validator = Validator::make(
-                $data,
-                [
-                    'COPY_IMPORT' => 'required|array',
-                    'COPY_IMPORT.pro_uid' => 'required|string|max:32',
-                    'COPY_IMPORT.dyn_uid' => 'required|string|max:32'
-                ]
-            );
-
-        }
-
         if ($validator->fails()) {
             throw new ValidationException($validator);
         }

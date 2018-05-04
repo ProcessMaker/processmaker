@@ -15,7 +15,6 @@ $factory->define(Dynaform::class, function (Faker $faker) {
         'PRO_ID' => $pro->PRO_ID,
         'PRO_UID' => $pro->PRO_UID,
         'DYN_TITLE' => $faker->sentence(3),
-        'DYN_DESCRIPTION' => $faker->sentence(5),
-        'DYN_TYPE' => $faker->randomElement(Dynaform::TYPE)
+        'DYN_DESCRIPTION' => $faker->sentence(5)
     ];
 });

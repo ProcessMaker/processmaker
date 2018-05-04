@@ -16,7 +16,6 @@ use Watson\Validating\ValidatingTrait;
  * @property string PRO_UID
  * @property string DYN_TITLE
  * @property string DYN_DESCRIPTION
- * @property string DYN_TYPE
  * @property array DYN_CONTENT
  * @property string DYN_LABEL
  * @property Carbon DYN_UPDATE_DATE
@@ -36,22 +35,12 @@ class Dynaform extends Model
      */
     const UPDATED_AT = 'DYN_UPDATE_DATE';
 
-
-    /**
-     * Values for DYN_TYPE
-     */
-    const TYPE = [
-        'FORM',
-        'GRID'
-    ];
-
     protected $fillable = [
         'DYN_UID',
         'PRO_ID',
         'PRO_UID',
         'DYN_TITLE',
         'DYN_DESCRIPTION',
-        'DYN_TYPE',
         'DYN_CONTENT',
         'DYN_LABEL',
         'DYN_UPDATE_DATE'
@@ -63,7 +52,6 @@ class Dynaform extends Model
         'PRO_UID' => null,
         'DYN_TITLE' => null,
         'DYN_DESCRIPTION' => null,
-        'DYN_TYPE' => 'FORM',
         'DYN_CONTENT' => null,
         'DYN_LABEL' => null,
         'DYN_UPDATE_DATE' => null,
@@ -75,7 +63,6 @@ class Dynaform extends Model
         'PRO_UID' => 'string',
         'DYN_TITLE' => 'string',
         'DYN_DESCRIPTION' => 'string',
-        'DYN_TYPE' => 'string',
         'DYN_CONTENT' => 'array',
         'DYN_LABEL' => 'string',
         'DYN_UPDATE_DATE' => 'string',
@@ -86,7 +73,6 @@ class Dynaform extends Model
         'PRO_ID' => 'required',
         'PRO_UID' => 'required|max:32',
         'DYN_TITLE' => 'required|unique:DYNAFORM,DYN_TITLE',
-        'DYN_TYPE' => 'required'
     ];
 
     protected $validationMessages = [

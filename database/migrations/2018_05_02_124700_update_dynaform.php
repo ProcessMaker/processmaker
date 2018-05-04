@@ -19,6 +19,7 @@ class UpdateDynaform extends Migration
             $table->primary('DYN_ID');
             $table->dropColumn('DYN_VERSION');
             $table->dropColumn('DYN_FILENAME');
+            $table->dropColumn('DYN_TYPE');
         });
         DB::statement('ALTER TABLE DYNAFORM MODIFY DYN_ID INTEGER NOT NULL AUTO_INCREMENT');
     }
@@ -35,6 +36,7 @@ class UpdateDynaform extends Migration
             $table->primary('DYN_UID');
             $table->integer('DYN_VERSION');
             $table->string('DYN_FILENAME', 100);
+            $table->string('DYN_TYPE', 20);
         });
     }
 }

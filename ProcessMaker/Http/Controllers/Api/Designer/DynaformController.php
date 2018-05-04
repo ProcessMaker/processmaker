@@ -52,18 +52,13 @@ class DynaformController
     {
         $data = [
             'DYN_TITLE' => $request->input('dyn_title', ''),
-            'DYN_DESCRIPTION' => $request->input('dyn_description', ''),
-            'DYN_TYPE' => $request->input('dyn_type', 'FORM')
+            'DYN_DESCRIPTION' => $request->input('dyn_description', '')
         ];
         $data = array_merge($data, $this->formatData($request, ['dyn_content']));
 
         if ($request->has('copy_import')) {
             $data['COPY_IMPORT'] = $request->input('copy_import');
             return response(DynaformManager::copyImport($process, $data), 201);
-        }
-        if ($request->has('pmtable')) {
-            $data['PM_TABLE'] = $request->input('pmtable');
-            return response(DynaformManager::createBasedPmTable($process, $data), 201);
         }
         $response = DynaformManager::save($process, $data);
         return response($response, 201);
@@ -82,10 +77,7 @@ class DynaformController
     public function update(Process $process, Dynaform $dynaform, Request $request)
     {
         $this->belongsToProcess($process, $dynaform);
-        $data = $this->formatData($request, ['out_doc_title', 'out_doc_description', 'out_doc_filename', 'out_doc_template', 'out_doc_report_generator',
-            'out_doc_landscape', 'out_doc_media', 'out_doc_left_margin', 'out_doc_right_margin', 'out_doc_top_margin',
-            'out_doc_bottom_margin', 'out_doc_generate', 'out_doc_type', 'out_doc_versioning', 'out_doc_destination_path',
-            'out_doc_tags', 'out_doc_pdf_security_enabled', 'out_doc_pdf_security_open_password', 'out_doc_pdf_security_owner_password']);
+        $data = $this->formatData($request, ['dyn_title', 'dyn_description', 'dyn_content']);
 
         if ($data) {
             DynaformManager::update($process, $dynaform, $data);
@@ -139,10 +131,6 @@ class DynaformController
             if ($request->has($field)) {
                 $data[strtoupper($field)] = $request->input($field);
             }
-        }
-        if ($request->has('out_doc_pdf_security_permissions')) {
-            $permissions = $request->input('out_doc_pdf_security_permissions');
-            $data[strtoupper('OUT_DOC_PDF_SECURITY_PERMISSIONS')] = is_array($permissions) ? $permissions : explode('|', $permissions);
         }
         return $data;
     }
