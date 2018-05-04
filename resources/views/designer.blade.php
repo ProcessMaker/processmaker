@@ -7,10 +7,10 @@
     </div>
 @endsection
 
-@push('scripts')
-<script src="{{ asset('js/snap.svg.js') }}"></script>
-<script src="{{ asset('js/AppDesigner.js') }}"></script>
-@endpush
+@section('js')
+    <script src="{{ asset('js/snap.svg.js') }}"></script>
+    <script src="{{ asset('js/AppDesigner.js') }}"></script>
+@endsection
 
 @section('sidebar')
     @include('sidebars.default')

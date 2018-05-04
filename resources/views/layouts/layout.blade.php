@@ -53,6 +53,5 @@
 </script>
 <!--javascript!-->
 @yield('js')
-@stack('scripts')
 </body>
 </html>
