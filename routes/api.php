@@ -65,6 +65,11 @@ Router::group([
         Router::put('project/{process}/process-variables/{variable}', 'Project\ProcessVariableController@update')->middleware('can:write,variable');
         Router::delete('project/{process}/process-variables/{variable}', 'Project\ProcessVariableController@remove')->middleware('can:delete,variable');
 
+        //Process Manager endpoints.
+        Router::get('project', 'Designer\ProcessManagerController@index')->middleware('can:read,ProcessMaker\Model\Process');
+        Router::get('project/{process}', 'Designer\ProcessManagerController@show')->middleware('can:read,process');
+        Router::delete('project/{process}', 'Designer\ProcessManagerController@remove')->middleware('can:read,process');
+
         //Report Tables endpoints
         Router::get('project/{process}/report-tables', 'Project\ReportTableController@index')->middleware('can:read,ProcessMaker\Model\ReportTable');
         Router::get('project/{process}/report-table/{reportTable}', 'Project\ReportTableController@show')->middleware('can:read,reportTable');

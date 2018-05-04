@@ -32,4 +32,8 @@ mix.js([
 mix.js('resources/assets/js/app.js', 'public/js')
    .extract(['vue','jquery','bootstrap-vue','axios','popper.js','lodash','bootstrap'])
    .sass('resources/assets/sass/layouts-app.scss', 'public/css')
-   .sass('resources/assets/sass/app.scss', 'public/css');
+   .sass('resources/assets/sass/app.scss', 'public/css')
+   .copy('resources/assets/img/processmaker-icon-white-sm.png', 'public/img')
+   .copy('resources/assets/img/processmaker-logo-white-sm.png', 'public/img')
+   .copy('resources/assets/img/processmaker_icon_logo-md.png', 'public/img')
+   .copy('resources/assets/img/processmaker_fulllogo_white-md.png', 'public/img')
