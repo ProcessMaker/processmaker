@@ -6,10 +6,20 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
 use ProcessMaker\Managers\DatabaseManager;
 use ProcessMaker\Managers\ProcessCategoryManager;
 use ProcessMaker\Managers\ProcessFileManager;
+use ProcessMaker\Managers\ProcessManager;
 use ProcessMaker\Managers\ReportTableManager;
 use ProcessMaker\Managers\SchemaManager;
 use ProcessMaker\Managers\TaskManager;
+use ProcessMaker\Model\Activity;
+use ProcessMaker\Model\Artifact;
+use ProcessMaker\Model\Diagram;
+use ProcessMaker\Model\Event;
+use ProcessMaker\Model\Gateway;
 use ProcessMaker\Model\Group;
+use ProcessMaker\Model\Lane;
+use ProcessMaker\Model\Laneset;
+use ProcessMaker\Model\Participant;
+use ProcessMaker\Model\Pool;
 use ProcessMaker\Model\User;
 
 /**
@@ -50,6 +60,28 @@ class ProcessMakerServiceProvider extends ServiceProvider
             return new SchemaManager();
         });
 
+        $this->app->singleton('process.manager', function ($app) {
+            return new ProcessManager();
+        });
+        /**
+         * Mapping of shape and elements used in BPMN_BOUND.BOU_ELEMENT_TYPE
+         *
+         */
+        Relation::morphMap([
+            Activity::TYPE    => Activity::class,
+            Artifact::TYPE    => Artifact::class,
+            'bpmnData'        => Activity::class,
+            Diagram::TYPE     => Diagram::class,
+            Event::TYPE       => Event::class,
+            Gateway::TYPE     => Gateway::class,
+            Lane::TYPE        => Lane::class,
+            Laneset::TYPE     => Laneset::class,
+            'bpmnParticipant' => Participant::class,
+            'bpmnPool'        => Pool::class,
+            User::TYPE        => User::class,
+            Group::TYPE       => Group::class,
+        ]);
+
         $this->app->singleton('report_table.manager', function ($app) {
             return new ReportTableManager();
         });
@@ -57,10 +89,5 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->app->singleton('task.manager', function ($app) {
             return new TaskManager();
         });
-
-        Relation::morphMap([
-            User::TYPE => User::class,
-            Group::TYPE => Group::class,
-        ]);
     }
 }

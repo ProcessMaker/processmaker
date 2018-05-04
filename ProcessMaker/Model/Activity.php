@@ -10,7 +10,7 @@ use Watson\Validating\ValidatingTrait;
  * by the system or a human user.
  *
  * @property string $ACT_UID
- * @property string $PRO_ID
+ * @property int $PRO_ID
  * @property string $ACT_NAME
  * @property string $ACT_TYPE
  * @property int $ACT_IS_FOR_COMPENSATION
@@ -56,6 +56,8 @@ class Activity extends Model implements FlowNodeInterface
     const TYPE_TASK = 'TASK';
     const TASK_TYPE_EMPTY = 'EMPTY';
     const LOOP_TYPE_NONE = 'NONE';
+    const LOOP_BEHAVIOR_NONE = 'NONE';
+    const ACT_ORDERING_PARALLEL = 'PARALLEL';
 
     /**
      * The attributes that are mass assignable.
@@ -100,35 +102,35 @@ class Activity extends Model implements FlowNodeInterface
      * @var array $attributes
      */
     protected $attributes = [
-        'ACT_UID' => '',
-        'PRO_ID' => NULL,
-        'ACT_NAME' => NULL,
-        'ACT_TYPE' => self::TYPE_TASK,
-        'ACT_IS_FOR_COMPENSATION' => '0',
-        'ACT_START_QUANTITY' => '1',
-        'ACT_COMPLETION_QUANTITY' => '1',
-        'ACT_TASK_TYPE' => self::TASK_TYPE_EMPTY,
-        'ACT_IMPLEMENTATION' => NULL,
-        'ACT_INSTANTIATE' => '0',
-        'ACT_SCRIPT_TYPE' => NULL,
-        'ACT_SCRIPT' => NULL,
-        'ACT_LOOP_TYPE' => self::LOOP_TYPE_NONE,
-        'ACT_TEST_BEFORE' => '0',
-        'ACT_LOOP_MAXIMUM' => '0',
-        'ACT_LOOP_CONDITION' => NULL,
-        'ACT_LOOP_CARDINALITY' => '0',
-        'ACT_LOOP_BEHAVIOR' => 'NONE',
-        'ACT_IS_ADHOC' => '0',
-        'ACT_IS_COLLAPSED' => '1',
-        'ACT_COMPLETION_CONDITION' => NULL,
-        'ACT_ORDERING' => 'PARALLEL',
-        'ACT_CANCEL_REMAINING_INSTANCES' => '1',
-        'ACT_PROTOCOL' => NULL,
-        'ACT_METHOD' => NULL,
-        'ACT_IS_GLOBAL' => '0',
-        'ACT_REFERER' => '',
-        'ACT_DEFAULT_FLOW' => '',
-        'ACT_MASTER_DIAGRAM' => ''
+        'ACT_UID'                        => '',
+        'PRO_ID'                         => null,
+        'ACT_NAME'                       => null,
+        'ACT_TYPE'                       => self::TYPE_TASK,
+        'ACT_IS_FOR_COMPENSATION'        => false,
+        'ACT_START_QUANTITY'             => 1,
+        'ACT_COMPLETION_QUANTITY'        => 1,
+        'ACT_TASK_TYPE'                  => self::TASK_TYPE_EMPTY,
+        'ACT_IMPLEMENTATION'             => null,
+        'ACT_INSTANTIATE'                => 0,
+        'ACT_SCRIPT_TYPE'                => null,
+        'ACT_SCRIPT'                     => null,
+        'ACT_LOOP_TYPE'                  => self::LOOP_TYPE_NONE,
+        'ACT_TEST_BEFORE'                => false,
+        'ACT_LOOP_MAXIMUM'               => 0,
+        'ACT_LOOP_CONDITION'             => null,
+        'ACT_LOOP_CARDINALITY'           => 0,
+        'ACT_LOOP_BEHAVIOR'              => self::LOOP_BEHAVIOR_NONE,
+        'ACT_IS_ADHOC'                   => false,
+        'ACT_IS_COLLAPSED'               => true,
+        'ACT_COMPLETION_CONDITION'       => null,
+        'ACT_ORDERING'                   => self::ACT_ORDERING_PARALLEL,
+        'ACT_CANCEL_REMAINING_INSTANCES' => true,
+        'ACT_PROTOCOL'                   => null,
+        'ACT_METHOD'                     => null,
+        'ACT_IS_GLOBAL'                  => false,
+        'ACT_REFERER'                    => '',
+        'ACT_DEFAULT_FLOW'               => '',
+        'ACT_MASTER_DIAGRAM'             => ''
     ];
 
     /**
@@ -137,35 +139,35 @@ class Activity extends Model implements FlowNodeInterface
      * @var array $casts
      */
     protected $casts = [
-        'ACT_UID' => 'string',
-        'PRO_ID' => 'int',
-        'ACT_NAME' => 'string',
-        'ACT_TYPE' => 'string',
-        'ACT_IS_FOR_COMPENSATION' => 'int',
-        'ACT_START_QUANTITY' => 'int',
-        'ACT_COMPLETION_QUANTITY' => 'int',
-        'ACT_TASK_TYPE' => 'string',
-        'ACT_IMPLEMENTATION' => 'string',
-        'ACT_INSTANTIATE' => 'int',
-        'ACT_SCRIPT_TYPE' => 'string',
-        'ACT_SCRIPT' => 'string',
-        'ACT_LOOP_TYPE' => 'string',
-        'ACT_TEST_BEFORE' => 'int',
-        'ACT_LOOP_MAXIMUM' => 'int',
-        'ACT_LOOP_CONDITION' => 'string',
-        'ACT_LOOP_CARDINALITY' => 'int',
-        'ACT_LOOP_BEHAVIOR' => 'string',
-        'ACT_IS_ADHOC' => 'int',
-        'ACT_IS_COLLAPSED' => 'int',
-        'ACT_COMPLETION_CONDITION' => 'string',
-        'ACT_ORDERING' => 'string',
-        'ACT_CANCEL_REMAINING_INSTANCES' => 'int',
-        'ACT_PROTOCOL' => 'string',
-        'ACT_METHOD' => 'string',
-        'ACT_IS_GLOBAL' => 'int',
-        'ACT_REFERER' => 'string',
-        'ACT_DEFAULT_FLOW' => 'string',
-        'ACT_MASTER_DIAGRAM' => 'string'
+        'ACT_UID'                        => 'string',
+        'PRO_ID'                         => 'int',
+        'ACT_NAME'                       => 'string',
+        'ACT_TYPE'                       => 'string',
+        'ACT_IS_FOR_COMPENSATION'        => 'bool',
+        'ACT_START_QUANTITY'             => 'int',
+        'ACT_COMPLETION_QUANTITY'        => 'int',
+        'ACT_TASK_TYPE'                  => 'string',
+        'ACT_IMPLEMENTATION'             => 'string',
+        'ACT_INSTANTIATE'                => 'int',
+        'ACT_SCRIPT_TYPE'                => 'string',
+        'ACT_SCRIPT'                     => 'string',
+        'ACT_LOOP_TYPE'                  => 'string',
+        'ACT_TEST_BEFORE'                => 'bool',
+        'ACT_LOOP_MAXIMUM'               => 'int',
+        'ACT_LOOP_CONDITION'             => 'string',
+        'ACT_LOOP_CARDINALITY'           => 'int',
+        'ACT_LOOP_BEHAVIOR'              => 'string',
+        'ACT_IS_ADHOC'                   => 'bool',
+        'ACT_IS_COLLAPSED'               => 'bool',
+        'ACT_COMPLETION_CONDITION'       => 'string',
+        'ACT_ORDERING'                   => 'string',
+        'ACT_CANCEL_REMAINING_INSTANCES' => 'bool',
+        'ACT_PROTOCOL'                   => 'string',
+        'ACT_METHOD'                     => 'string',
+        'ACT_IS_GLOBAL'                  => 'bool',
+        'ACT_REFERER'                    => 'string',
+        'ACT_DEFAULT_FLOW'               => 'string',
+        'ACT_MASTER_DIAGRAM'             => 'string'
     ];
 
     /**
@@ -174,25 +176,25 @@ class Activity extends Model implements FlowNodeInterface
      * @var array $rules
      */
     protected $rules = [
-        'ACT_UID' => 'required|max:32',
-        'ACT_NAME' => 'required|max:255',
-        'ACT_TYPE' => 'required|max:30',
-        'ACT_START_QUANTITY' => 'nullable|max:11',
-        'ACT_COMPLETION_QUANTITY' => 'nullable|max:11',
-        'ACT_TASK_TYPE' => 'required|max:20',
-        'ACT_SCRIPT_TYPE' => 'nullable|max:255',
-        'ACT_LOOP_TYPE' => 'required|max:20',
-        'ACT_LOOP_MAXIMUM' => 'nullable|max:11',
-        'ACT_LOOP_CONDITION' => 'nullable|max:100',
-        'ACT_LOOP_CARDINALITY' => 'nullable|max:11',
-        'ACT_LOOP_BEHAVIOR' => 'nullable|max:20',
+        'ACT_UID'                  => 'required|max:32',
+        'ACT_NAME'                 => 'required|max:255',
+        'ACT_TYPE'                 => 'required|max:30',
+        'ACT_START_QUANTITY'       => 'nullable|max:11',
+        'ACT_COMPLETION_QUANTITY'  => 'nullable|max:11',
+        'ACT_TASK_TYPE'            => 'required|max:20',
+        'ACT_SCRIPT_TYPE'          => 'nullable|max:255',
+        'ACT_LOOP_TYPE'            => 'required|max:20',
+        'ACT_LOOP_MAXIMUM'         => 'nullable|max:11',
+        'ACT_LOOP_CONDITION'       => 'nullable|max:100',
+        'ACT_LOOP_CARDINALITY'     => 'nullable|max:11',
+        'ACT_LOOP_BEHAVIOR'        => 'nullable|max:20',
         'ACT_COMPLETION_CONDITION' => 'nullable|max:255',
-        'ACT_ORDERING' => 'nullable|max:20',
-        'ACT_PROTOCOL' => 'nullable|max:255',
-        'ACT_METHOD' => 'nullable|max:255',
-        'ACT_REFERER' => 'nullable|max:32',
-        'ACT_DEFAULT_FLOW' => 'nullable|max:32',
-        'ACT_MASTER_DIAGRAM' => 'nullable|max:32',
+        'ACT_ORDERING'             => 'nullable|max:20',
+        'ACT_PROTOCOL'             => 'nullable|max:255',
+        'ACT_METHOD'               => 'nullable|max:255',
+        'ACT_REFERER'              => 'nullable|max:32',
+        'ACT_DEFAULT_FLOW'         => 'nullable|max:32',
+        'ACT_MASTER_DIAGRAM'       => 'nullable|max:32',
     ];
 
     /**
