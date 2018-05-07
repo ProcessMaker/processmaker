@@ -33,27 +33,25 @@
 </head>
 <body>
 <div id="app">
-  @include('layouts.navbar')
-  @yield('sidebar')
+    @include('layouts.navbar')
+    @yield('sidebar')
 
-<div id="page-content-wrapper">
-  <div class="container">
-    @yield('content')
-  </div>
+    <div id="page-content-wrapper">
+        @yield('content')
+    </div>
 </div>
-</div>
-  <!-- Scripts -->
-  <script src="{{ asset('js/manifest.js') }}"></script>
-  <script src="{{ asset('js/vendor.js') }}"></script>
-  <script src="{{ asset('js/app.js') }}"></script>
-  <!-- Menu Toggle Script -->
-  <script>
-  $("#menu-toggle").click(function(e) {
-      e.preventDefault();
-      $("#wrapper").toggleClass("toggled");
-  });
-  </script>
+<!-- Scripts -->
+<script src="{{ asset('js/manifest.js') }}"></script>
+<script src="{{ asset('js/vendor.js') }}"></script>
+<script src="{{ asset('js/app.js') }}"></script>
+<!-- Menu Toggle Script -->
+<script>
+    $("#menu-toggle").click(function (e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+    });
+</script>
 <!--javascript!-->
-  @yield('js')
+@yield('js')
 </body>
 </html>

@@ -38,3 +38,8 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
 
     $this->get('/manage/users', 'Management\UsersController@index')->name('management-users-index');
 });
+
+
+$this->get('/designer', function() {
+    return view('designer', ['title' => 'Designer']);
+})->name('designer');
