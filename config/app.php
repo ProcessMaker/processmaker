@@ -39,7 +39,11 @@ return [
 
     'disable_php_upload_execution' => env('DISABLE_PHP_UPLOAD_EXECUTION', 0),
 
-  
+    //Option Fractal, Serializer
+    'serialize_fractal' => env('SERIALIZE_FRACTAL', \ProcessMaker\Transformers\ProcessMakerSerializer::class),
+
+    //Option Fractal, paginator
+    'paginate_fractal' => env('PAGINATE_FRACTAL', \League\Fractal\Pagination\IlluminatePaginatorAdapter::class),
 
     // The processmaker identifier of the web client application
     'web_client_application_id' => env('PM_CLIENT_ID', 'x-pm-local-client'),
