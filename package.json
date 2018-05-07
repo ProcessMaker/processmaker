@@ -64,9 +64,9 @@
       "<rootDir>/jest/globals.js"
     ],
     "moduleFileExtensions": [
-      "js",
+      "vue",
       "json",
-      "vue"
+      "js"
     ],
     "transform": {
       "^.+\\.js$": "<rootDir>/node_modules/babel-jest",
