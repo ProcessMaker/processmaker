@@ -8,7 +8,6 @@
 @endsection
 
 @section('js')
-    <script src="{{ asset('js/snap.svg.js') }}"></script>
     <script src="{{ asset('js/AppDesigner.js') }}"></script>
 @endsection
 
