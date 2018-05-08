@@ -292,12 +292,6 @@ class UpdateVariousTables extends Migration
             $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
         });
 
-        //TASKS
-        Schema::table('TASK', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
-        });
-
         //TIMER EVENTS
         Schema::table('TIMER_EVENT', function(Blueprint $table) {
             $table->unsignedInteger('process_id')->nullable();
