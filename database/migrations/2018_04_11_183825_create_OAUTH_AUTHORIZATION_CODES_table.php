@@ -12,14 +12,14 @@ class CreateOAUTHAUTHORIZATIONCODESTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('OAUTH_AUTHORIZATION_CODES', function(Blueprint $table)
+		Schema::create('oauth_authorization_codes', function(Blueprint $table)
 		{
-			$table->string('AUTHORIZATION_CODE')->primary();
-			$table->string('CLIENT_ID', 80);
-			$table->string('USER_ID', 32)->nullable();
-			$table->string('REDIRECT_URI', 2000)->nullable();
-			$table->dateTime('EXPIRES');
-			$table->string('SCOPE', 2000)->nullable();
+			$table->string('authorization_code')->primary();
+			$table->string('client_id');
+			$table->unsignedInteger('user_id');
+			$table->string('redirect_uri')->nullable();
+			$table->dateTime('expires');
+			$table->string('scope')->nullable();
 		});
 	}
 
@@ -31,7 +31,7 @@ class CreateOAUTHAUTHORIZATIONCODESTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('OAUTH_AUTHORIZATION_CODES');
+		Schema::drop('oauth_authorization_codes');
 	}
 
 }

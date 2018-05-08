@@ -19,7 +19,7 @@ class ProcessVariableControllerTest extends ApiTestCase
     {
         $variable = factory(ProcessVariable::class)->create();
 
-        $url = "/api/1.0/project/".$variable->process->PRO_UID."/process-variables";
+        $url = "/api/1.0/project/".$variable->process->uid."/process-variables";
         $response = $this->api('GET', $url);
         $response->assertStatus(200);
         $returnedList = json_decode($response->getContent());
@@ -35,14 +35,14 @@ class ProcessVariableControllerTest extends ApiTestCase
         $process = factory(Process::class)->create();
 
         // we create a db source for the variable
-        $dbSource = factory(DbSource::class)->create(['PRO_UID' => $process->PRO_UID]);
+        $dbSource = factory(DbSource::class)->create(['process_id' => $process->id]);
 
         $acceptedValues = '[{"id" : 1, "name" : "niño"}, {"id" : 2, "name":"堂吉诃德是"}]';
 
         $variable = factory(ProcessVariable::class)
                     ->create([
-                        'PRO_ID' => $process->PRO_ID,
-                        'VAR_DBCONNECTION' => $dbSource->DBS_UID,
+                        'PRO_ID' => $process->id,
+                        'VAR_DBCONNECTION' => $dbSource->uid,
                         'VAR_ACCEPTED_VALUES' => $acceptedValues
                     ]);
 
@@ -50,19 +50,19 @@ class ProcessVariableControllerTest extends ApiTestCase
         $randomProcess = factory(Process::class)->create();
 
         // test the validation that the process must own the variable
-        $url = "/api/1.0/project/" . $randomProcess->PRO_UID ."/process-variables/".$variable->VAR_UID;
+        $url = "/api/1.0/project/" . $randomProcess->uid ."/process-variables/".$variable->VAR_UID;
         $response = $this->api('GET', $url);
         $response->assertStatus(422);
 
         // we retrieve the process variable using the endpoint
-        $url = "/api/1.0/project/".$variable->process->PRO_UID."/process-variables/".$variable->VAR_UID;
+        $url = "/api/1.0/project/".$variable->process->uid."/process-variables/".$variable->VAR_UID;
         $response = $this->api('GET', $url);
         $response->assertStatus(200);
         $returnedModel = json_decode($response->getContent());
-        $this->assertTrue($returnedModel->var_uid == $variable->VAR_UID);
-        $this->assertContains('niño', $returnedModel->var_accepted_values);
-        $this->assertContains('堂吉诃德是', $returnedModel->var_accepted_values);
-        $this->assertContains($dbSource->DBS_SERVER, $returnedModel->var_dbconnection_label);
+        $this->assertTrue($returnedModel->VAR_UID == $variable->VAR_UID);
+        $this->assertContains('niño', $returnedModel->VAR_ACCEPTED_VALUES);
+        $this->assertContains('堂吉诃德是', $returnedModel->VAR_ACCEPTED_VALUES);
+        $this->assertContains($dbSource->server, $returnedModel->VAR_DBCONNECTION_LABEL);
     }
 
     /**
@@ -75,7 +75,6 @@ class ProcessVariableControllerTest extends ApiTestCase
             'var_field_type' => 'wrongType',
             'var_field_size' => 0,
             'var_label' => 'string',
-            'var_dbconnection' => 'workflow',
             'var_sql' => '',
             'var_default' => 'MX',
             'inp_doc_uid' => '',
@@ -84,7 +83,7 @@ class ProcessVariableControllerTest extends ApiTestCase
 
         // a wrong field must return an validation error
         $process = factory(Process::class)->create();
-        $url = "/api/1.0/project/".$process->PRO_UID."/process-variables";
+        $url = "/api/1.0/project/".$process->uid."/process-variables";
         $response = $this->api('POST', $url, $newVarData);
         $response->assertStatus(422);
 
@@ -92,8 +91,8 @@ class ProcessVariableControllerTest extends ApiTestCase
         $response = $this->api('POST', $url, $newVarData);
         $response->assertStatus(201);
         $returnedModel = json_decode($response->getContent());
-        $this->assertEquals($returnedModel->var_name, $newVarData['var_name']);
-        $this->assertEquals($returnedModel->pro_id, $process->PRO_ID, 'The variable should be owned by the process');
+        $this->assertEquals($returnedModel->VAR_NAME, $newVarData['var_name']);
+        $this->assertEquals($returnedModel->PRO_ID, $process->id, 'The variable should be owned by the process');
 
         // a duplicated variable (with the same name) should return an error should return an error
         $response = $this->api('POST', $url, $newVarData);
@@ -118,15 +117,15 @@ class ProcessVariableControllerTest extends ApiTestCase
         ];
 
         //test the validation that the process must own the variable
-        $url = "/api/1.0/project/" . $process->PRO_UID ."/process-variables/".$variable->VAR_UID;
+        $url = "/api/1.0/project/" . $process->uid ."/process-variables/".$variable->VAR_UID;
         $response = $this->api('PUT', $url, $newVarData);
         $response->assertStatus(422);
 
-        $url = "/api/1.0/project/".$variable->process->PRO_UID."/process-variables/".$variable->VAR_UID;
+        $url = "/api/1.0/project/".$variable->process->uid."/process-variables/".$variable->VAR_UID;
         $response = $this->api('PUT', $url, $newVarData);
         $response->assertStatus(200);
         $returnedModel = json_decode($response->getContent());
-        $this->assertEquals($returnedModel->var_name, $newVarData['var_name'],
+        $this->assertEquals($returnedModel->VAR_NAME, $newVarData['var_name'],
             'The variable name should have been updated');
     }
 
@@ -142,12 +141,12 @@ class ProcessVariableControllerTest extends ApiTestCase
         $process = factory(Process::class)->create();
 
         //test the validation that the process must own the variable
-        $url = "/api/1.0/project/" . $process->PRO_UID ."/process-variables/".$variable->VAR_UID;
+        $url = "/api/1.0/project/" . $process->uid ."/process-variables/".$variable->VAR_UID;
         $response = $this->api('DELETE', $url);
         $response->assertStatus(422);
 
         $countBefore = ProcessVariable::count();
-        $url = "/api/1.0/project/".$variable->process->PRO_UID."/process-variables/".$variable->VAR_UID;
+        $url = "/api/1.0/project/".$variable->process->uid."/process-variables/".$variable->VAR_UID;
         $response = $this->api('DELETE', $url);
         $response->assertStatus(204);
         $countAfter = ProcessVariable::count();
@@ -163,11 +162,11 @@ class ProcessVariableControllerTest extends ApiTestCase
 
         // we need an user and authenticate him
         $user = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make('password'),
-            'USR_ROLE' => Role::PROCESSMAKER_ADMIN
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
 
-        $this->auth($user->USR_USERNAME, 'password');
+        $this->auth($user->username, 'password');
     }
 
 }

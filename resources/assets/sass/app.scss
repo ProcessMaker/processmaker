@@ -6,7 +6,12 @@
 @import "~bootstrap/scss/bootstrap";
 
 // Font Awesome
-@import '../../../node_modules/@fortawesome/fontawesome/styles.css';
+@import '~@fortawesome/fontawesome/styles.css';
+
+@import '~@fortawesome/fontawesome-free-webfonts/scss/fa-brands';
+@import '~@fortawesome/fontawesome-free-webfonts/scss/fa-regular';
+@import '~@fortawesome/fontawesome-free-webfonts/scss/fa-solid';
+@import '~@fortawesome/fontawesome-free-webfonts/scss/fontawesome';
 
 //Font Open sans
-@import '../../../node_modules/npm-font-open-sans/open-sans';
+@import '~npm-font-open-sans/open-sans';

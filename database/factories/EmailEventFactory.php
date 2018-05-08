@@ -1,15 +1,19 @@
 <?php
-use Ramsey\Uuid\Uuid;
+
 use Faker\Generator as Faker;
+use ProcessMaker\Model\EmailEvent;
+use ProcessMaker\Model\Process;
+use ProcessMaker\Model\ProcessFile;
+use Ramsey\Uuid\Uuid;
 
 /**
  * Model factory for a email event.
  */
-$factory->define(\ProcessMaker\Model\EmailEvent::class, function (Faker $faker) {
+$factory->define(EmailEvent::class, function (Faker $faker) {
     return [
         'EMAIL_EVENT_UID'     => str_replace('-', '', Uuid::uuid4()),
-        'PRJ_UID'             => function () {
-            return factory(\ProcessMaker\Model\Project::class)->create()->PRJ_UID;
+        'process_id'              => function () {
+            return factory(Process::class)->create()->id;
         },
         //@todo create Event model
         'EVN_UID'             => str_replace('-', '', Uuid::uuid4()),
@@ -17,7 +21,7 @@ $factory->define(\ProcessMaker\Model\EmailEvent::class, function (Faker $faker) 
         'EMAIL_EVENT_TO'      => $faker->email(),
         'EMAIL_EVENT_SUBJECT' => $faker->sentence(),
         'PRF_UID'             => function () {
-            return factory(\ProcessMaker\Model\ProcessFile::class)->create()->PRF_UID;
+            return factory(ProcessFile::class)->create()->PRF_UID;
         },
         'EMAIL_SERVER_UID'    => null,
     ];

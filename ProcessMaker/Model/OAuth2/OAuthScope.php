@@ -10,14 +10,14 @@ use League\OAuth2\Server\Entities\ScopeEntityInterface;
  */
 class OAuthScope extends Model implements ScopeEntityInterface
 {
-    // Specify our table name
-    protected $table = 'OAUTH_SCOPES';
+    // Our table name
+    protected $table = 'oauth_scopes';
 
     // Our primary key is not an autoincrementing key
     public $incrementing = false;
 
     // Our primary key is not ID but TYPE
-    protected $primaryKey = 'TYPE';
+    protected $primaryKey = 'type';
 
     // We do not sure create/update timestamps in this table
     public $timestamps = false;
@@ -29,6 +29,6 @@ class OAuthScope extends Model implements ScopeEntityInterface
      */
     public function getIdentifier()
     {
-        return $this->TYPE;
+        return $this->type;
     }
 }

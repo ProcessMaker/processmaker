@@ -14,15 +14,14 @@ class ReportTableTransformer extends TransformerAbstract
     public function transform(ReportTable $report)
     {
         return [
-            'rep_tab_uid' => $report->ADD_TAB_UID,
-            'rep_tab_name' => $report->ADD_TAB_NAME,
-            'rep_tab_description' => $report->ADD_TAB_DESCRIPTION,
-            'rep_tab_plg_uid' => $report->ADD_TAB_PLG_UID,
-            'rep_tab_connection' => $report->DBS_UID,
-            'pro_uid' => $report->PRO_UID,
-            'rep_tab_type' => $report->ADD_TAB_TYPE,
-            'rep_tab_grid' => $report->ADD_TAB_GRID,
-            'rep_tab_tag' => $report->ADD_TAB_TAG
+            'uid' => $report->uid,
+            'name' => $report->name,
+            'connection' => $report->db_source_id ? DbSource::where('id', $report->db_source_id)->first()->uid : 'workflow',
+            'description' => $report->description,
+            'process' => $report->process->uid,
+            'type' => $report->type,
+            'grid' => $report->grid,
+            'tag' => $report->tag
         ];
     }
 

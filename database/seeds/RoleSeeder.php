@@ -16,11 +16,11 @@ class RoleSeeder extends Seeder
     {
         // Generate the appropriate initial roles for ProcessMaker
         $role = factory(Role::class)->create([
-            'ROL_CODE' => 'PROCESSMAKER_ADMIN'
+            'code' => 'PROCESSMAKER_ADMIN'
         ]);
         // Assign permissions
         $role->permissions()->attach(
-            Permission::whereIn('PER_CODE', [
+            Permission::whereIn('code', [
                 Permission::PM_SETUP_PROCESS_CATEGORIES,
                 Permission::PM_FACTORY,
                 Permission::PM_SETUP_PM_TABLES,
@@ -30,14 +30,14 @@ class RoleSeeder extends Seeder
 
 
         $role = factory(Role::class)->create([
-            'ROL_CODE' => 'PROCESSMAKER_OPERATOR'
+            'code' => 'PROCESSMAKER_OPERATOR'
         ]);
 
         factory(Role::class)->create([
-            'ROL_CODE' => 'PROCESSMAKER_MANAGER'
+            'code' => 'PROCESSMAKER_MANAGER'
         ]);
         factory(Role::class)->create([
-            'ROL_CODE' => 'PROCESSMAKER_GUEST'
+            'code' => 'PROCESSMAKER_GUEST'
         ]);
     }
 }

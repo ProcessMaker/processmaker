@@ -9,9 +9,9 @@ $factory->define(\ProcessMaker\Model\ProcessFile::class, function (Faker $faker)
     $filepath = $faker->file('/tmp','tests/shared/public');
     return [
         'PRF_UID'            => str_replace('-', '', Uuid::uuid4()),
-        'PRO_UID'            => function () {
+        'process_id'            => function () {
             $pro = factory(\ProcessMaker\Model\Process::class)->create();
-            return $pro->PRO_UID;
+            return $pro->id;
         },
         'USR_UID'            => str_replace('-', '', Uuid::uuid4()),
         'PRF_UPDATE_USR_UID' => str_replace('-', '', Uuid::uuid4()),

@@ -60,7 +60,7 @@ class OAuth2Guard
 
             // Grab the user that has our specified oauth user id
 
-            $user = User::where('USR_UID', $psr->getAttribute('oauth_user_id'))->first();
+            $user = User::where('id', $psr->getAttribute('oauth_user_id'))->first();
             if (! $user) {
                 return;
             }

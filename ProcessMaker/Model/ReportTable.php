@@ -4,6 +4,7 @@ namespace ProcessMaker\Model;
 
 use Illuminate\Database\Eloquent\Model;
 use ProcessMaker\Facades\SchemaManager;
+use ProcessMaker\Model\Traits\Uuid;
 use Watson\Validating\ValidatingTrait;
 
 /**
@@ -13,39 +14,38 @@ use Watson\Validating\ValidatingTrait;
 class ReportTable extends Model
 {
     use ValidatingTrait;
+    use Uuid;
 
     // all tables will have this prefix
     const TABLE_PREFIX = 'PMT_';
-    public static $attributesList = [
-        'ADD_TAB_UID',
-        'ADD_TAB_NAME',
-        'ADD_TAB_DESCRIPTION',
-        'ADD_TAB_PLG_UID',
-        'DBS_UID',
-        'PRO_UID',
-        'ADD_TAB_TYPE',
-        'ADD_TAB_GRID',
-        'ADD_TAB_TAG'
-    ];
 
     public $timestamps = false;
-    public $incrementing = false;
 
-    protected $table = 'ADDITIONAL_TABLES';
-    protected $primaryKey = 'ADD_TAB_UID';
+    protected $table = 'additional_tables';
 
     // validation rules
     protected $rules = [
-        'ADD_TAB_NAME' => 'required',
-        'ADD_TAB_DESCRIPTION' => 'required',
-        'DBS_UID' => 'required',
-        'ADD_TAB_TYPE' => 'required'
+        'name' => 'required',
+        'description' => 'required',
+        'type' => 'required'
     ];
 
     // validation rules
     protected $appends = [
         'fields'
     ];
+
+    /*
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uid';
+    }
+
+
 
     /**
      * Returns the name of the physical table
@@ -54,7 +54,7 @@ class ReportTable extends Model
      */
     public function physicalTableName()
     {
-        return ReportTable::TABLE_PREFIX . strtoupper($this->ADD_TAB_NAME);
+        return ReportTable::TABLE_PREFIX . strtoupper($this->name);
     }
 
     /**
@@ -74,7 +74,7 @@ class ReportTable extends Model
      */
     public function getFieldsAttribute()
     {
-        $pmTable = PmTable::where('ADD_TAB_ID', $this->ADD_TAB_ID)->first();
+        $pmTable = PmTable::where('id', $this->id)->first();
         $fieldsMeta = SchemaManager::getMetadataFromSchema($pmTable)->columns;
         return $fieldsMeta;
     }
@@ -86,7 +86,7 @@ class ReportTable extends Model
      */
     public function process()
     {
-        return $this->belongsTo(Process::class, 'PRO_UID', 'PRO_UID');
+        return $this->belongsTo(Process::class);
     }
 
     /**
@@ -98,11 +98,11 @@ class ReportTable extends Model
     {
         return $this->belongsToMany(
             ProcessVariable::class,
-            'FIELDS',
-            'ADD_TAB_UID',
-            'VAR_ID'
+            'report_table_columns',
+            'report_table_id',
+            'process_variable_id'
         )
-            ->withPivot('FLD_NAME');
+            ->withPivot('name');
     }
 
     /**
@@ -112,6 +112,6 @@ class ReportTable extends Model
      */
     public function getAssociatedPmTable()
     {
-        return PmTable::whereAddTabUid($this->ADD_TAB_UID)->first();
+        return PmTable::where('id', $this->id)->first();
     }
 }

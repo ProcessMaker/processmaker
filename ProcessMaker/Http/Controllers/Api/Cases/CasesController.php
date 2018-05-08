@@ -42,17 +42,16 @@ class CasesController extends Controller
     public function index(Request $request)
     {
         $cases = Delegation::select(
-            'APPLICATION.APP_NUMBER',
-            'APPLICATION.APP_UID',
+            'APPLICATION.uid',
             'APPLICATION.APP_STATUS',
             'APPLICATION.APP_STATUS AS APP_STATUS_LABEL',
-            'APPLICATION.PRO_UID',
+            'processes.uid AS PRO_UID',
             'APPLICATION.APP_CREATE_DATE',
             'APPLICATION.APP_FINISH_DATE',
             'APPLICATION.APP_UPDATE_DATE',
             'APPLICATION.APP_TITLE',
-            'APP_DELEGATION.USR_UID',
-            'APP_DELEGATION.TAS_UID',
+            'users.uid AS USR_UID',
+            'TASK.uid as TAS_UID',
             'APP_DELEGATION.DEL_INDEX',
             'APP_DELEGATION.DEL_LAST_INDEX',
             'APP_DELEGATION.DEL_DELEGATE_DATE',
@@ -71,15 +70,15 @@ class CasesController extends Controller
             'APP_DELEGATION.DEL_DELAY_DURATION',
             'TASK.TAS_TITLE AS APP_TAS_TITLE',
             'TASK.TAS_TYPE AS APP_TAS_TYPE',
-            'USERS.USR_LASTNAME',
-            'USERS.USR_FIRSTNAME',
-            'USERS.USR_USERNAME',
-            'PROCESS.PRO_TITLE AS APP_PRO_TITLE'
+            'users.lastname',
+            'users.firstname',
+            'users.username',
+            'processes.name AS APP_PRO_TITLE'
         )
-        ->join('APPLICATION', 'APP_DELEGATION.APP_UID', '=', 'APPLICATION.APP_UID')
-        ->join('TASK', 'APP_DELEGATION.TAS_UID', '=', 'TASK.TAS_UID')
-        ->join('USERS', 'APP_DELEGATION.USR_UID', '=', 'USERS.USR_UID')
-        ->join('PROCESS', 'APP_DELEGATION.PRO_UID', '=', 'PROCESS.PRO_UID')
+        ->join('APPLICATION', 'APP_DELEGATION.application_id', '=', 'APPLICATION.id')
+        ->join('TASK', 'APP_DELEGATION.task_id', '=', 'TASK.id')
+        ->join('users', 'APP_DELEGATION.user_id', '=', 'users.id')
+        ->join('processes', 'APPLICATION.process_id', '=', 'processes.id')
         ->whereNotIn('TASK.TAS_TYPE', [
             "WEBENTRYEVENT",
             "END-MESSAGE-EVENT",
@@ -87,34 +86,34 @@ class CasesController extends Controller
             "INTERMEDIATE-THROW-MESSAGE-EVENT",
             "INTERMEDIATE-CATCH-MESSAGE-EVENT"
             ]);
-    
+
         switch ($request->status) {
             case 1:
                 $cases
                     ->where('APP_DELEGATION.DEL_THREAD_STATUS', 'OPEN')
-                    ->where('APPLICATION.APP_STATUS_ID', '1');
+                    ->where('APPLICATION.APP_STATUS_ID', Application::STATUS_DRAFT);
                 break;
             case 2:
                 $cases
                     ->where('APP_DELEGATION.DEL_THREAD_STATUS', 'OPEN')
-                    ->where('APPLICATION.APP_STATUS_ID', '2');
+                    ->where('APPLICATION.APP_STATUS_ID', Application::STATUS_TO_DO);
                 break;
             case 3:
                 $cases
                     ->where('APP_DELEGATION.DEL_LAST_INDEX', '1')
-                    ->where('APPLICATION.APP_STATUS_ID', '3');
+                    ->where('APPLICATION.APP_STATUS_ID', Application::STATUS_COMPLETED);
                 break;
             case 4:
                 $cases
                     ->where('APP_DELEGATION.DEL_LAST_INDEX', '1')
-                    ->where('APPLICATION.APP_STATUS_ID', '4');
+                    ->where('APPLICATION.APP_STATUS_ID', Application::STATUS_CANCELLED);
                 break;
             default:
                 $cases
                     ->where('APP_DELEGATION.DEL_THREAD_STATUS', 'OPEN')
                     ->orWhere('APP_DELEGATION.DEL_THREAD_STATUS', 'CLOSED')
                     ->where('APP_DELEGATION.DEL_LAST_INDEX', '1')
-                    ->where('APPLICATION.APP_STATUS_ID', '3');
+                    ->where('APPLICATION.APP_STATUS_ID', Application::STATUS_COMPLETED);
                 break;
 
         }

@@ -23,16 +23,16 @@ class DBQueryTest extends TestCase
         $process = factory(Process::class)->create();
         // Let's create an external DB to ourselves
         $externalDB = factory(DbSource::class)->create([
-            'DBS_SERVER' => env('DB_HOST'),
-            'DBS_PORT' => env('DB_PORT'),
-            'DBS_USERNAME' => env('DB_USERNAME'),
+            'server' => env('DB_HOST'),
+            'port' => env('DB_PORT'),
+            'username' => env('DB_USERNAME'),
             // Remember, we have to do some encryption here @see DbSourceFactory.php
-            'DBS_PASSWORD' => Crypt::encryptString( env('DB_PASSWORD', 'testexternal') ),
-            'DBS_DATABASE_NAME' => 'testexternal',
-            'PRO_UID' => $process->PRO_UID
+            'password' => Crypt::encryptString( env('DB_PASSWORD', 'testexternal') ),
+            'database_name' => 'testexternal',
+            'process_id' => $process->id
         ]);
         DatabaseManager::registerDatabaseConnectionsForProcess($process);
-        $results = DB::connection($externalDB->DBS_UID)->table('test')->get();
+        $results = DB::connection($externalDB->id)->table('test')->get();
         $this->assertCount(1, $results);
     }
 
@@ -46,17 +46,17 @@ class DBQueryTest extends TestCase
         $process = factory(Process::class)->create();
         // Let's create an external DB to ourselves
         $externalDB = factory(DbSource::class)->create([
-            'DBS_SERVER' => env('MSSQL_HOST'),
-            'DBS_PORT' => env('MSSQL_PORT'),
-            'DBS_TYPE' => 'sqlsrv',
-            'DBS_USERNAME' => env('MSSQL_USERNAME', 'sa'),
+            'server' => env('MSSQL_HOST'),
+            'port' => env('MSSQL_PORT'),
+            'type' => 'sqlsrv',
+            'username' => env('MSSQL_USERNAME', 'sa'),
             // Remember, we have to do some encryption here @see DbSourceFactory.php
-            'DBS_PASSWORD' => Crypt::encryptString( env('MSSQL_PASSWORD', 'testexternal') ),
-            'DBS_DATABASE_NAME' => env('MSSQL_DATABASE', 'testexternal'),
-            'PRO_UID' => $process->PRO_UID
+            'password' => Crypt::encryptString( env('MSSQL_PASSWORD', 'testexternal') ),
+            'database_name' => env('MSSQL_DATABASE', 'testexternal'),
+            'process_id' => $process->id
         ]);
         DatabaseManager::registerDatabaseConnectionsForProcess($process);
-        $results = DB::connection($externalDB->DBS_UID)->table('test')->get();
+        $results = DB::connection($externalDB->id)->table('test')->get();
         $this->assertCount(1, $results);
     }
 }

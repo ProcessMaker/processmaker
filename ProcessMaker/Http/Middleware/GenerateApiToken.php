@@ -53,7 +53,7 @@ class GenerateApiToken
             $user = Auth::user();
 
             // Grab our x-pm-local-client which represents our local web app
-            $oauthClient = OAuthClient::where('CLIENT_ID', config('app.web_client_application_id'))->first();
+            $oauthClient = OAuthClient::where('id', config('app.web_client_application_id'))->first();
 
             if (!$oauthClient) {
                 throw new OAuthServerException('Unable to find internal OAuth Client', 500, 'invalid_client');
@@ -63,7 +63,7 @@ class GenerateApiToken
             // First create a PSR-7 Request
             $authRequest = $request->duplicate([
                 'response_type' => 'code',
-                'client_id' => $oauthClient->CLIENT_ID,
+                'client_id' => $oauthClient->id,
                 'scope' => '*'
             ]);
             $authRequest->server->set('REQUEST_METHOD', 'GET');
@@ -86,8 +86,8 @@ class GenerateApiToken
             // Now create the request to generate the access token from the auth code
             $authRequest = $request->duplicate(null, [
                 'grant_type' => 'authorization_code',
-                'client_id' => $oauthClient->CLIENT_ID,
-                'client_secret' => $oauthClient->CLIENT_SECRET,
+                'client_id' => $oauthClient->id,
+                'client_secret' => $oauthClient->secret,
                 'redirect_uri' => config('app.url') . '/oauth2/grant',
                 'code' => $grant
             ]);
@@ -103,8 +103,8 @@ class GenerateApiToken
                 'token_type' => $tokenInfo['token_type'],
                 'scope' => '*',
                 'refresh_token' => $tokenInfo['refresh_token'],
-                'client_id' => $oauthClient->CLIENT_ID,
-                'client_secret' => $oauthClient->CLIENT_SECRET
+                'client_id' => $oauthClient->client,
+                'client_secret' => $oauthClient->secret
             ]);
         }
 

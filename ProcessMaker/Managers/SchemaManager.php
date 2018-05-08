@@ -50,9 +50,9 @@ class SchemaManager
     public function updateOrCreateColumn(PmTable $pmTable, array $field)
     {
         $tableName = $pmTable->physicalTableName();
-        $columnType = $this->schemaType($field['FLD_TYPE']);
+        $columnType = $this->schemaType($field['type']);
 
-        $existsColumn = Schema::hasColumn($tableName, $field['FLD_NAME']);
+        $existsColumn = Schema::hasColumn($tableName, $field['name']);
         $existsTable = Schema::hasTable($tableName);
 
         if ($existsTable && $existsColumn) {
@@ -68,34 +68,34 @@ class SchemaManager
         }
 
         // we add the nullable column property
-        $canBeNull = isset($field['FLD_NULL']) && $field['FLD_NULL'] === 1;
+        $canBeNull = isset($field['null']) && $field['null'] === 1;
 
-        if (empty($field['FLD_SIZE']) || !$this->typeHasSizeAsParameter($field['FLD_TYPE'])) {
+        if (empty($field['size']) || !$this->typeHasSizeAsParameter($field['type'])) {
             Schema::table($tableName, function ($table) use ($columnType, $field, $canBeNull) {
-                $table->{$columnType}($field['FLD_NAME'])
+                $table->{$columnType}($field['name'])
                     ->nullable($canBeNull)
                     ->change();
             });
         } else {
             Schema::table($tableName, function ($table) use ($columnType, $field, $canBeNull) {
-                $table->{$columnType}($field['FLD_NAME'], $field['FLD_SIZE'])
+                $table->{$columnType}($field['name'], $field['size'])
                     ->nullable($canBeNull)
                     ->change();
             });
         }
 
         // we set the field as primary key
-        if (isset($field['FLD_KEY']) && $field['FLD_KEY'] === 1) {
+        if (isset($field['key']) && $field['key'] === 1) {
             Schema::table($tableName, function ($table) use ($tableName, $field) {
                 if ($this->existsPrimaryKey($tableName)) {
                     $table->dropPrimary();
                 }
-                $table->primary($field['FLD_NAME']);
+                $table->primary($field['name']);
             });
         }
 
         // we add the autoincrement property
-        if (isset($field['FLD_AUTO_INCREMENT']) && $field['FLD_AUTO_INCREMENT'] === 1) {
+        if (isset($field['auto_increment']) && $field['auto_increment'] === 1) {
             Schema::table($tableName, function ($table) use ($tableName, $field) {
                 if ($this->existsPrimaryKey($tableName)) {
                     $table->dropPrimary();
@@ -103,11 +103,11 @@ class SchemaManager
             });
 
             Schema::table($tableName, function ($table) use ($field) {
-                $table->dropColumn($field['FLD_NAME']);
+                $table->dropColumn($field['name']);
             });
 
             Schema::table($tableName, function ($table) use ($field) {
-                $table->increments($field['FLD_NAME']);
+                $table->increments($field['name']);
             });
         }
     }
@@ -146,17 +146,17 @@ class SchemaManager
     {
         $result = $field;
 
-        if (!array_key_exists('FLD_TYPE', $result)) {
-            $result['FLD_TYPE'] = $this->variableType2Mysql($variable->VAR_FIELD_TYPE);
+        if (!array_key_exists('type', $result)) {
+            $result['type'] = $this->variableType2Mysql($variable->VAR_FIELD_TYPE);
         }
 
-        if (!array_key_exists('FLD_SIZE', $result)) {
-            $result['FLD_SIZE'] = $this->variableSize($variable->VAR_FIELD_TYPE);
+        if (!array_key_exists('size', $result)) {
+            $result['size'] = $this->variableSize($variable->VAR_FIELD_TYPE);
         }
 
         //by default report tables allows nulls
-        if (!array_key_exists('FLD_NULL', $result)) {
-            $result['FLD_NULL'] = 1;
+        if (!array_key_exists('null', $result)) {
+            $result['null'] = 1;
         }
 
         return $result;
@@ -211,14 +211,14 @@ class SchemaManager
     private function changePhysicalColumn(PmTable $pmTable, array $field)
     {
         $tableName = $pmTable->physicalTableName();
-        $columnType = $this->schemaType($field['FLD_TYPE']);
-        if (empty($field['FLD_SIZE']) || !$this->typeHasSizeAsParameter($field['FLD_TYPE'])) {
+        $columnType = $this->schemaType($field['type']);
+        if (empty($field['size']) || !$this->typeHasSizeAsParameter($field['type'])) {
             Schema::table($tableName, function ($table) use ($columnType, $field) {
-                $table->{$columnType}($field['FLD_NAME'])->change();
+                $table->{$columnType}($field['name'])->change();
             });
         } else {
             Schema::table($tableName, function ($table) use ($columnType, $field) {
-                $table->{$columnType}($field['FLD_NAME'], $field['FLD_SIZE'])->change();
+                $table->{$columnType}($field['name'], $field['size'])->change();
             });
         }
     }
@@ -232,14 +232,14 @@ class SchemaManager
     private function createPhysicalColumn(PmTable $pmTable, array $field)
     {
         $tableName = $pmTable->physicalTableName();
-        $columnType = $this->schemaType($field['FLD_TYPE']);
-        if (empty($field['FLD_SIZE']) || !$this->typeHasSizeAsParameter($field['FLD_TYPE'])) {
+        $columnType = $this->schemaType($field['type']);
+        if (empty($field['size']) || !$this->typeHasSizeAsParameter($field['type'])) {
             Schema::table($tableName, function ($table) use ($columnType, $field) {
-                $table->{$columnType}($field['FLD_NAME']);
+                $table->{$columnType}($field['name']);
             });
         } else {
             Schema::table($tableName, function ($table) use ($columnType, $field) {
-                $table->{$columnType}($field['FLD_NAME'], $field['FLD_SIZE']);
+                $table->{$columnType}($field['name'], $field['size']);
             });
         }
     }
@@ -253,13 +253,13 @@ class SchemaManager
     private function createPhysicalTableAndColumn(PmTable $pmTable, array $field)
     {
         $tableName = $pmTable->physicalTableName();
-        $columnType = $this->schemaType($field['FLD_TYPE']);
+        $columnType = $this->schemaType($field['type']);
 
         Schema::create($tableName, function ($table) use ($tableName, $columnType, $field) {
-            if (empty($field['FLD_SIZE']) || !$this->typeHasSizeAsParameter($field['FLD_TYPE'])) {
-                $table->{$columnType}($field['FLD_NAME']);
+            if (empty($field['size']) || !$this->typeHasSizeAsParameter($field['type'])) {
+                $table->{$columnType}($field['name']);
             } else {
-                $table->{$columnType}($field['FLD_NAME'], $field['FLD_SIZE']);
+                $table->{$columnType}($field['name'], $field['size']);
             }
         });
     }
@@ -286,16 +286,16 @@ class SchemaManager
         // we get the metadata for each column of the table and map their values to PM formats
         foreach ($columns as $column) {
             $columnMeta = new stdClass();
-            $columnMeta->FLD_NAME = $column->getName();
-            $columnMeta->FLD_DESCRIPTION = $column->getComment();
-            $columnMeta->FLD_TYPE = $column->getType()->getName();
-            $columnMeta->FLD_SIZE = $column->getLength();
-            $columnMeta->FLD_NULL = $column->getNotnull() ? 0 : 1;
-            $columnMeta->FLD_AUTO_INCREMENT = $column->getAutoincrement() ? 1 : 0;
-            $columnMeta->FLD_TABLE_INDEX = $this->columnHasIndex($column->getName(), $tableDetail->getIndexes()) ? 1 : 0;
-            $columnMeta->FLD_KEY = false;
+            $columnMeta->name = $column->getName();
+            $columnMeta->description = $column->getComment();
+            $columnMeta->type = $column->getType()->getName();
+            $columnMeta->size = $column->getLength();
+            $columnMeta->null = $column->getNotnull() ? 0 : 1;
+            $columnMeta->auto_increment = $column->getAutoincrement() ? 1 : 0;
+            $columnMeta->table_index = $this->columnHasIndex($column->getName(), $tableDetail->getIndexes()) ? 1 : 0;
+            $columnMeta->key = false;
             if ($tableDetail->hasPrimaryKey()) {
-                $columnMeta->FLD_KEY = in_array($column->getName(), $tableDetail->getPrimaryKeyColumns());
+                $columnMeta->key = in_array($column->getName(), $tableDetail->getPrimaryKeyColumns());
             }
             $tableMetadata->columns[] = $columnMeta;
 

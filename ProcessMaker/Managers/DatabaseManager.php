@@ -65,13 +65,13 @@ class DatabaseManager
         // Iterate through the db sources for the specified process
         // It's okay if we overwrite existing configurations
         foreach ($process->dbSources as $dbSource) {
-            config(['database.connections.' . $dbSource->DBS_UID => [
-                'driver' => $dbSource->DBS_TYPE,
-                'host' => $dbSource->DBS_SERVER,
-                'port' => $dbSource->DBS_PORT,
-                'database' => $dbSource->DBS_DATABASE_NAME,
-                'username' => $dbSource->DBS_USERNAME,
-                'password' => Crypt::decryptString($dbSource->DBS_PASSWORD),
+            config(['database.connections.' . $dbSource->id => [
+                'driver' => $dbSource->type,
+                'host' => $dbSource->server,
+                'port' => $dbSource->port,
+                'database' => $dbSource->database_name,
+                'username' => $dbSource->username,
+                'password' => Crypt::decryptString($dbSource->password),
                 'charset' => 'utf8mb4',
                 'collation' => 'utf8mb4_unicode_ci'
             ]]);

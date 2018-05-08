@@ -21,9 +21,8 @@ class PmTableController extends Controller
      */
     public function index()
     {
-        // an empty string in the field PRO_UID is a marker for a PmTable, otherwise is a ReportTable
-        return PmTable::where('PRO_UID', '')
-            ->orWhereNull('PRO_UID')
+        // Using a type of PMTABLE will fetch PMTables
+        return PmTable::where('type', 'PMTABLE')
             ->get()
             ->each(function (PmTable $pmTable) {
                 $pmTable->fields = SchemaManager::getMetadataFromSchema($pmTable)->columns;
@@ -55,22 +54,16 @@ class PmTableController extends Controller
     {
         $pmTable = new PmTable();
         $this->mapRequestToPmTable($request, $pmTable);
-        $pmTable->ADD_TAB_UID = str_replace('-', '', Uuid::uuid4());
+        $pmTable->uid = Uuid::uuid4();
 
         // try to save as pmTable
         $pmTable->saveOrFail();
-
-        // we get the saved table, so we have its id
-        $lastTable = PmTable::find($pmTable->ADD_TAB_UID);
-        $pmTable->ADD_TAB_ID = $lastTable->ADD_TAB_ID;
 
         // add the fields passed in the request to the PmTable
         foreach ($request->fields as $field) {
             $pmTableField = $this->mapRequestFieldToPmTableField($field);
 
-            $pmTableField['FLD_UID'] =  str_replace('-', '', Uuid::uuid4());
-            $pmTableField['ADD_TAB_UID'] = $pmTable->ADD_TAB_UID;
-            $pmTableField['ADD_TAB_ID'] = $pmTable->ADD_TAB_ID;
+            $pmTableField['additional_table_id'] = $pmTable->id;
             SchemaManager::updateOrCreateColumn($pmTable, $pmTableField);
         }
 
@@ -98,9 +91,7 @@ class PmTableController extends Controller
             foreach ($request->fields as $field) {
                 $pmTableField = $this->mapRequestFieldToPmTableField($field);
 
-                $pmTableField['FLD_UID'] = str_replace('-', '', Uuid::uuid4());
-                $pmTableField['ADD_TAB_UID'] = $pmTable->ADD_TAB_UID;
-                $pmTableField['ADD_TAB_ID'] = $pmTable->ADD_TAB_ID;
+                $pmTableField['additional_table_id'] = $pmTable->id;
                 SchemaManager::updateOrCreateColumn($pmTable, $pmTableField);
             }
         }
@@ -214,15 +205,12 @@ class PmTableController extends Controller
     private function mapRequestToPmTable(Request $request, PmTable $pmTable)
     {
         $attributesList = [
-            'ADD_TAB_UID',
-            'ADD_TAB_NAME',
-            'ADD_TAB_DESCRIPTION',
-            'ADD_TAB_PLG_UID',
-            'DBS_UID',
-            'PRO_UID',
-            'ADD_TAB_TYPE',
-            'ADD_TAB_GRID',
-            'ADD_TAB_TAG'
+            'uid',
+            'name',
+            'description',
+            'type',
+            'grid',
+            'tags'
         ];
 
         foreach ($attributesList as $attribute) {
@@ -230,6 +218,29 @@ class PmTableController extends Controller
             if ($request->has($attributeLowerCase)) {
                 $pmTable->$attribute = $request->$attributeLowerCase;
             }
+        }
+
+        // Add support for inserting with db_source_uid
+        if($request->has('db_source_uid')) {
+            // Fetch matching db source
+            $dbs = DbSource::where('uid', $request->get('db_source_uid'))->first();
+            if($dbs) {
+                $pmTable->db_source_id = $dbs->id;
+                return;
+            }
+            // Throw exception
+            throw new Exception(__("DB Source Not Found"));
+        }
+        // Add support for inserting with process_uid
+        if($request->has('process_uid')) {
+            // fetch matching process
+            $process = Process::where('uid', $request->get('process_uid'))->first();
+            if($process) {
+                $pmTable->process_id = $process->id;
+                return;
+            }
+            // Throw exception
+            throw new Exception(__("Process Not Found"));
         }
     }
 
@@ -244,21 +255,20 @@ class PmTableController extends Controller
     {
         $pmTableField = [];
         $attributesList = [
-            'FLD_UID',
-            'FLD_ID',
-            'ADD_TAB_UID',
-            'ADD_TAB_ID',
-            'FLD_NAME',
-            'FLD_DESCRIPTION',
-            'FLD_TYPE',
-            'FLD_SIZE',
-            'FLD_NULL',
-            'FLD_AUTO_INCREMENT',
-            'FLD_KEY',
-            'FLD_TABLE_INDEX',
-            'FLD_DYN_NAME',
-            'FLD_DYN_UID',
-            'FLD_FILTER'
+            'uid',
+            'id',
+            'additional_table_id',
+            'additional_table_uid',
+            'name',
+            'description',
+            'type',
+            'size',
+            'null',
+            'auto_increment',
+            'key',
+            'table_index',
+            'dynaform_name',
+            'filter'
         ];
 
         foreach ($attributesList as $attribute) {
@@ -267,6 +277,19 @@ class PmTableController extends Controller
                 ? $field[$attributeLowerCase]
                 : null;
         }
+
+        // Handle Dynaform UID reference
+        if(array_key_exists('dynaform_uid', $field)) {
+            // Fetch matching dynaform
+            $dynaform = Dynaform::where('uid', $field['dynaform_uid'])->first();
+            if($dynaform) {
+                $pmTableField['dynaform_id'] = $dynaform->id;
+                return;
+            }
+            // Throw exception
+            throw new Exception(__("Dynaform Not Found"));
+        }
+ 
 
         return $pmTableField;
     }

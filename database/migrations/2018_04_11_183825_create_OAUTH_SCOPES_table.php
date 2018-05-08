@@ -12,11 +12,11 @@ class CreateOAUTHSCOPESTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('OAUTH_SCOPES', function(Blueprint $table)
+		Schema::create('oauth_scopes', function(Blueprint $table)
 		{
-			$table->string('TYPE', 40);
-			$table->string('SCOPE', 2000)->nullable();
-			$table->string('CLIENT_ID', 80)->nullable();
+			$table->string('type');
+			$table->string('scope')->nullable();
+			$table->string('client_id')->nullable();
 		});
 	}
 
@@ -28,7 +28,7 @@ class CreateOAUTHSCOPESTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('OAUTH_SCOPES');
+		Schema::drop('oauth_scopes');
 	}
 
 }

@@ -42,8 +42,6 @@ class CasesTest extends ApiTestCase
 
         factory(\ProcessMaker\Model\Delegation::class, 51)->create();
 
-        $this->assertTrue(isset($this->token));
-
         $response = $this->api('GET', '/api/1.0/cases');
 
         $response->assertStatus(200);
@@ -62,7 +60,7 @@ class CasesTest extends ApiTestCase
             'to',
             'data'
       ]);
-
+      
         $data = json_decode($response->getContent());
         $this->assertEquals($data->current_page, 1);
         $this->assertTrue(count($data->data) > 0);
@@ -177,10 +175,10 @@ class CasesTest extends ApiTestCase
     private function login()
     {
         $this->user = factory(User::class)->create([
-        'USR_PASSWORD' => Hash::make('password'),
-        'USR_ROLE' => Role::PROCESSMAKER_ADMIN
+        'password' => Hash::make('password'),
+        'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
     ]);
 
-        $this->auth($this->user->USR_USERNAME, 'password');
+        $this->auth($this->user->username, 'password');
     }
 }

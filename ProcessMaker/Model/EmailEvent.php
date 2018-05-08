@@ -35,7 +35,7 @@ class EmailEvent extends Model
 
     protected $fillable = [
         'EMAIL_EVENT_UID',
-        'PRJ_UID',
+        'process_id',
         'EVN_UID',
         'EMAIL_EVENT_FROM',
         'EMAIL_EVENT_TO',
@@ -47,7 +47,6 @@ class EmailEvent extends Model
     ];
     protected $attributes = [
         'EMAIL_EVENT_UID'     => null,
-        'PRJ_UID'             => '',
         'EVN_UID'             => null,
         'EMAIL_EVENT_FROM'    => '',
         'EMAIL_EVENT_TO'      => null,
@@ -59,7 +58,6 @@ class EmailEvent extends Model
     ];
     protected $casts = [
         'EMAIL_EVENT_UID'     => 'string',
-        'PRJ_UID'             => 'string',
         'EVN_UID'             => 'string',
         'EMAIL_EVENT_FROM'    => 'string',
         'EMAIL_EVENT_TO'      => 'text',

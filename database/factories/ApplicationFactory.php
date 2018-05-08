@@ -20,28 +20,23 @@ $factory->define(\ProcessMaker\Model\Application::class, function (Faker $faker)
     $statusId = array_search($status, $statuses);
     $pin = $faker->regexify("[A-Z0-9]{4}");
 
+    $maxNumber = \ProcessMaker\Model\Application::max('id') + 1;
+
     return [
-        'APP_UID' => str_replace('-', '', Uuid::uuid4()),
-        'APP_TITLE' => $faker->word,
+        'APP_TITLE' => '#' . $faker->word,
         'APP_DESCRIPTION' => '',
         'APP_PARENT' => 0,  // 0 signifies no parent
         'APP_STATUS' => $status,
         'APP_STATUS_ID' => $statusId,
-        'PRO_UID' => function () {
-            return factory(\ProcessMaker\Model\Process::class)->create()->PRO_UID;
-        },
+        'process_id' => factory(\ProcessMaker\Model\Process::class)->create()->id,
         'APP_PROC_STATUS' => '',
         /**
          * @todo Determine if we need to put any other values in here
          */
         'APP_PROC_CODE' => '',
         'APP_PARALLEL' => 'N',
-        'APP_INIT_USER' => function () {
-            return factory(\ProcessMaker\Model\User::class)->create()->USR_UID;
-        },
-        'APP_CUR_USER' => function () {
-            return factory(\ProcessMaker\Model\User::class)->create()->USR_UID;
-        },
+        'creator_user_id' => factory(\ProcessMaker\Model\User::class)->create()->id,
+        'current_user_id' => factory(\ProcessMaker\Model\User::class)->create()->id,
         'APP_INIT_DATE' => Carbon::now(),
         'APP_PIN' => Crypt::encryptString($pin),
         'APP_DATA' => '[]' ];
