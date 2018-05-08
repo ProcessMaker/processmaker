@@ -20,7 +20,7 @@ mockGroup.mockReturnValue(svg)
 mockRect.mockReturnValue(svg)
 mockAttr.mockReturnValue(svg)
 
-describe('Task', () => {
+describe('Task ', () => {
     let task
 
     beforeEach(() => {
@@ -35,7 +35,7 @@ describe('Task', () => {
         );
     })
 
-    it('config', () => {
+    it('config() - verify the merge of options', () => {
         expect(task.options).toEqual({
             id: 't1',
             x: null,
@@ -50,7 +50,7 @@ describe('Task', () => {
         });
     })
 
-    it('render', () => {
+    it('render() - Verify if use the library snap svg', () => {
         task.render()
     })
 })
