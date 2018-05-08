@@ -1,0 +1,112 @@
+{
+  "env": {
+    "es6": true,
+    "node": true,
+    "browser": true
+  },
+  "globals": {
+    "Vue": true,
+    "BpmnMoodle": true,
+    "Snap": true,
+    "Dispatcher": true
+  },
+  "extends": [
+    "plugin:vue/base",
+    "plugin:react/recommended",
+    "plugin:flowtype/recommended",
+    "airbnb",
+    "standard"
+  ],
+  "parserOptions": {
+    "parser": "babel-eslint",
+    "ecmaVersion": 2017,
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true
+    },
+    "sourceType": "module"
+  },
+  "plugins": [
+    "flowtype",
+    "standard"
+  ],
+  "rules": {
+    "indent": [
+      1,
+      4,
+      {
+        "SwitchCase": 1
+      }
+    ],
+    "linebreak-style": [
+      "error",
+      "unix"
+    ],
+    "quotes": [
+      1,
+      "double"
+    ],
+    "semi": [
+      1,
+      "always"
+    ],
+    "max-len": [
+      1,
+      {
+        "code": 120,
+        "comments": 80,
+        "ignoreTrailingComments": true,
+        "ignoreUrls": true,
+        "ignoreTemplateLiterals": false,
+        "ignoreRegExpLiterals": true
+      }
+    ],
+    "one-var": [
+      1,
+      "consecutive"
+    ],
+    "prefer-const": [
+      0
+    ],
+    "prefer-destructuring": 1,
+    "object-curly-spacing": [
+      1,
+      "never"
+    ],
+    "no-underscore-dangle": [
+      1,
+      {
+        "allowAfterThis": true
+      }
+    ],
+    "no-use-before-define": [
+      1,
+      {
+        "functions": true,
+        "classes": true
+      }
+    ],
+    "no-param-reassign": 0,
+    "no-cond-assign": [
+      "error",
+      "always"
+    ],
+    "no-multi-assign": [
+      "error"
+    ],
+    "no-useless-return": 0,
+    "class-methods-use-this": 0,
+    "generator-star-spacing": [
+      "error",
+      {
+        "before": false,
+        "after": true
+      }
+    ],
+    "array-callback-return": [
+      "error",
+      {
+        "allowImplicit": true
+      }
+    ]
+  }
+}
