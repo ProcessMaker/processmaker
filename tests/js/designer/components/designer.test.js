@@ -1,8 +1,6 @@
 import {mount, shallow} from '@vue/test-utils'
 import designer from '../../../../resources/assets/designer/components/designer.vue'
-//let Snap = global.Snap;
 
-//let Dispatcher = global.Dispatcher;
 
 Snap = () => {
     return {
