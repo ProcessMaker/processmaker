@@ -1,46 +1,24 @@
 import {mount, shallow} from '@vue/test-utils'
 import {Elements} from '../../../../resources/assets/designer/diagram/elements'
 
-let svg = {
-    node: {
-        getBoundingClientRect: function () {
-            return {
-                left: "left",
-                top: "top"
-            }
-        }
-    },
-    group: function () {
-        return this
-    },
-    circle: function () {
-        return {
-            attr: function () {
-                expect(true).toEqual(true)
-            }
-        }
-    },
-    path: function () {
-        return this
-    },
-    transform: function () {
-        return this
-    },
-    attr: function () {
-        expect(true).toEqual(true)
-    },
-    add: function () {
-        expect(true).toEqual(true)
-        return this;
-    },
-    drag: function () {
-        expect(true).toEqual(true)
-    },
-    rect: function () {
-        expect(true).toEqual(true)
-        return this
-    }
+let svg
+const mockGroup = jest.fn(() => svg);
+const mockAdd = jest.fn(() => svg);
+const mockDrag = jest.fn(() => svg);
+const mockRect = jest.fn(() => svg);
+const mockAttr = jest.fn(() => svg);
+
+svg = {
+    group: mockGroup,
+    add: mockAdd,
+    drag: mockDrag,
+    rect: mockRect,
+    attr: mockAttr
 }
+mockAdd.mockReturnValue(svg)
+mockGroup.mockReturnValue(svg)
+mockRect.mockReturnValue(svg)
+mockAttr.mockReturnValue(svg)
 
 describe('Task', () => {
     let task

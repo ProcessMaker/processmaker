@@ -23,7 +23,7 @@ export class TaskShape {
 
     config(options) {
         this.options = Object.assign({}, this.options, options)
-        return this
+        return this;
     }
 
     render() {
