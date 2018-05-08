@@ -38,6 +38,7 @@ class CreateAPPLICATIONTable extends Migration {
 			$table->string('APP_DRIVE_FOLDER_UID', 32)->nullable()->default('');
 			$table->text('APP_ROUTING_DATA', 16777215)->nullable();
 			$table->index(['process_id','APP_STATUS'], 'processStatusIdx');
+
 		});
 	}
 

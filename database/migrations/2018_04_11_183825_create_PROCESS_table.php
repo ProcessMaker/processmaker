@@ -19,7 +19,7 @@ class CreatePROCESSTable extends Migration {
 			$table->string('name');
 			$table->text('description', 16777215)->nullable();
 			// Null value means no parent
-			$table->integer('parent_process_id')->nullable();
+			$table->unsignedInteger('parent_process_id')->nullable();
 			$table->float('time', 10, 0)->default(1);
 			$table->enum('timeunits', ['DAYS', 'HOURS', 'MINUTES'])->default('DAYS');
 			$table->enum('status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
@@ -38,7 +38,7 @@ class CreatePROCESSTable extends Migration {
 			$table->boolean('show_dynaform')->default(0);
 			$table->integer('category_id')->nullable();
 			$table->timestamps();
-			$table->integer('creator_user_id');
+			$table->unsignedInteger('creator_user_id');
 			$table->integer('height')->default(5000);
 			$table->integer('width')->default(10000);
 			$table->integer('title_x')->default(0);

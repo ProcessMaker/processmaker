@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Schema;
  * Migration to update the process design tables to version 4.0.0.
  *
  */
-class UpdateProcessTable extends Migration
+class UpdateVariousTables extends Migration
 {
 
     /**
@@ -59,7 +59,11 @@ class UpdateProcessTable extends Migration
             $table->dropColumn('PRJ_UID');
         });
 
-        //DELETE THE PROCESS DEFINITION WHEN THE PROCESS IS DELETED
+        // Update Application table to have a foreign key on process_id
+        // APPLICATION
+        Schema::table('APPLICATION', function(Blueprint $table) {
+            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
+        });
 
         //BPMN ACTIVITIES
         Schema::table('BPMN_ACTIVITY', function(Blueprint $table) {
@@ -409,5 +413,22 @@ class UpdateProcessTable extends Migration
             $table->unsignedInteger('process_id')->nullable();
             $table->foreign('process_id')->references('id')->on('processes')->onDelete('RESTRICT');
         });
+
+        // Update Permission Roles to have foreign keys
+        Schema::table('permission_role', function(Blueprint $table) {
+            $table->foreign('role_id')->references('id')->on('roles')->onDelete('CASCADE');
+            $table->foreign('permission_id')->references('id')->on('permissions')->onDelete('CASCADE');
+        });
+
+        // Update process table to have foregin keys
+        Schema::table('processes', function(Blueprint $table) {
+             $table->foreign('parent_process_id')->references('id')->on('processes')->onDelete('CASCADE');
+             // @todo Update to have triggers id foreign keys once triggers table schema is updated
+             // @todo Update to have category id foreign keys once process category table schema is updated
+              $table->foreign('creator_user_id')->references('id')->on('users')->onDelete('CASCADE');
+        });
+
+
+
     }
 }

@@ -22,6 +22,9 @@ class CreateREPORTTABLECOLUMNSTable extends Migration {
 			$table->unsignedInteger('dynaform_id')->nullable();
 			$table->boolean('filter')->default(false);
 			$table->unsignedInteger('process_variable_id')->nullable();
+			$table->foreign('report_table_id')->references('id')->on('additional_tables')->onDelete('CASCADE');
+			// @todo Add foreign key constraints for dynaform id when dynaform table schema is updated
+			// @todo Add foreign key constraints for process variable id when table schema is updated
 		});
 	}
 

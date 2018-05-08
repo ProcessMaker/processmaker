@@ -21,7 +21,6 @@ class PmTableController extends Controller
      */
     public function index()
     {
-        // an empty string in the field PRO_UID is a marker for a PmTable, otherwise is a ReportTable
         // Using a type of PMTABLE will fetch PMTables
         return PmTable::where('type', 'PMTABLE')
             ->get()
