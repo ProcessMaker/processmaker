@@ -45,15 +45,15 @@ class OAuthAuthenticationTest extends ApiTestCase
     {
         // First, let's fetch a proper access token
         $user = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make('password')
+            'password' => Hash::make('password')
         ]);
 
         // Use our ApiTestCase to login and store our access token
-        $this->auth($user->USR_USERNAME, 'password');
+        $this->auth($user->username, 'password');
 
         // Setup our test route, ensuring we use the auth middleware with api guard
         Route::get('/_tests/api/test', function() {
-            return Auth::user()->USR_UID;
+            return Auth::user()->id;
         })->middleware('auth:api');
 
         // Call using our ApiTestCase api method, which will pass in the required Authentication Bearer header
@@ -61,6 +61,6 @@ class OAuthAuthenticationTest extends ApiTestCase
 
         $response->assertStatus(200);
         // The USR_UID that is in the content is the logged in user, which will be the authenticated user
-        $response->assertSeeText($user->USR_UID);
+        $response->assertSeeText($user->id);
     }
 }

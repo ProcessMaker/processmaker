@@ -12,21 +12,22 @@ class CreateDBSOURCETable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('DB_SOURCE', function(Blueprint $table)
+		Schema::create('db_sources', function(Blueprint $table)
 		{
-			$table->string('DBS_UID', 32)->default('');
-			$table->string('PRO_UID', 32)->default('0')->index('indexDBSource');
-			$table->string('DBS_TYPE', 8)->default('0');
-			$table->string('DBS_SERVER', 100)->default('0');
-			$table->string('DBS_DATABASE_NAME', 100)->default('0');
-			$table->string('DBS_USERNAME', 32)->default('0');
-			$table->string('DBS_PASSWORD', 256)->nullable()->default('');
-			$table->integer('DBS_PORT')->nullable()->default(0);
-			$table->string('DBS_ENCODE', 32)->nullable()->default('');
-			$table->string('DBS_CONNECTION_TYPE', 32)->nullable()->default('NORMAL');
-			$table->string('DBS_TNS', 256)->nullable()->default('');
-			$table->text('DBS_DESCRIPTION', 16777215)->nullable();
-			$table->primary(['DBS_UID','PRO_UID']);
+			$table->increments('id');
+			$table->uuid('uid')->unique();
+			$table->unsignedInteger('process_id')->nullable()->index('indexDBSource');
+			$table->string('type', 8)->default('mysql');
+			$table->string('server')->nullable();
+			$table->string('description')->nullable();
+			$table->string('database_name');
+			$table->string('username');
+			$table->string('password');
+			$table->integer('port')->nullable();
+			$table->string('encode')->default('utf8');
+			$table->enum('connection_type', ['NORMAL', 'TNS'])->default('NORMAL');
+			$table->string('tns')->nullable();
+			$table->unique(['id','process_id']);
 		});
 	}
 
@@ -38,7 +39,7 @@ class CreateDBSOURCETable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('DB_SOURCE');
+		Schema::drop('db_sources');
 	}
 
 }

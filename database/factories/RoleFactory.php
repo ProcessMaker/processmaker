@@ -9,8 +9,7 @@ use Faker\Generator as Faker;
 $factory->define(\ProcessMaker\Model\Role::class, function (Faker $faker) {
 
     return [
-        'ROL_UID' => str_replace('-', '', Uuid::uuid4()),
-        'ROL_CODE' => $faker->word,
-        'ROL_STATUS' => \ProcessMaker\Model\Role::STATUS_ACTIVE
+        'code' => $faker->word,
+        'status' => \ProcessMaker\Model\Role::STATUS_ACTIVE
     ];
 });

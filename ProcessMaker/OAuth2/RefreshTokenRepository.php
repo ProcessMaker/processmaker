@@ -19,7 +19,7 @@ class RefreshTokenRepository implements RefreshTokenRepositoryInterface
      */
     public function revokeRefreshToken($tokenId)
     {
-        OAuthRefreshToken::where('REFRESH_TOKEN', $tokenId)->delete();
+        OAuthRefreshToken::where('refresh_token', $tokenId)->delete();
     }
 
     /**
@@ -29,7 +29,7 @@ class RefreshTokenRepository implements RefreshTokenRepositoryInterface
      */
     public function isRefreshTokenRevoked($tokenId)
     {
-        $token = OAuthRefreshToken::where('REFRESH_TOKEN', $tokenId)->first();
+        $token = OAuthRefreshToken::where('refresh_token', $tokenId)->first();
         if (!$token) {
             return true;
         }

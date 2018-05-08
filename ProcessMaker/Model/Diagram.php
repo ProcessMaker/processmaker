@@ -10,7 +10,7 @@ use Watson\Validating\ValidatingTrait;
  * @property string $DIA_UID
  * @property string $DIA_NAME
  * @property int $DIA_IS_CLOSABLE
- * @property int $PRO_ID
+ * @property int $process_id
  */
 class Diagram extends Model
 {
@@ -36,7 +36,7 @@ class Diagram extends Model
         'DIA_UID',
         'DIA_NAME',
         'DIA_IS_CLOSABLE',
-        'PRO_ID'
+        'process_id'
     ];
 
     /**
@@ -48,7 +48,7 @@ class Diagram extends Model
         'DIA_UID'         => '',
         'DIA_NAME'        => null,
         'DIA_IS_CLOSABLE' => false,
-        'PRO_ID'          => null
+        'process_id'          => null
     ];
 
     /**
@@ -60,7 +60,7 @@ class Diagram extends Model
         'DIA_UID'         => 'string',
         'DIA_NAME'        => 'string',
         'DIA_IS_CLOSABLE' => 'bool',
-        'PRO_ID'          => 'int'
+        'process_id'          => 'int'
     ];
 
     /**
@@ -71,7 +71,7 @@ class Diagram extends Model
     protected $rules = [
         'DIA_UID'  => 'required|max:32',
         'DIA_NAME' => 'nullable|max:255',
-        'PRO_ID'   => 'required'
+        'process_id'   => 'required'
     ];
 
     /**
@@ -91,7 +91,7 @@ class Diagram extends Model
      */
     public function process()
     {
-        return $this->belongsTo(Process::class, 'PRO_ID', 'PRO_ID');
+        return $this->belongsTo(Process::class);
     }
 
     /**
@@ -190,7 +190,7 @@ class Diagram extends Model
     public function createShape(ElementInterface $element, array $options = [])
     {
         $shape = $this->shapes()->make($options);
-        $shape->PRO_ID = $this->PRO_ID;
+        $shape->process_id = $this->process_id;
         $shape->element = $element;
         $shape->container = $this;
         $shape->save();

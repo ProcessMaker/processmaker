@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Model;
 
+use ProcessMaker\Model\Process;
 use Tests\TestCase;
 
 class DbSourceTest extends TestCase
@@ -13,51 +14,51 @@ class DbSourceTest extends TestCase
     {
         // we need a DbSource
         $dbSource = new DbSource();
-        $dbSource->PRO_UID = "AnyProcessID";
-        $dbSource->DBS_TYPE = env('DB_ADAPTER');
-        $dbSource->DBS_SERVER = env('DB_HOST');
-        $dbSource->DBS_DATABASE_NAME = env('DB_DATABASE');
-        $dbSource->DBS_USERNAME = env('DB_USERNAME');
-        $dbSource->DBS_PASSWORD = env('DB_PASSWORD');
-        $dbSource->DBS_PORT = env('DB_PORT');
-        $dbSource->DBS_ENCODE = 'utf8';
-        $dbSource->DBS_DESCRIPTION = 'Connection for testing purposes';
+        $dbSource->process_id = factory(Process::class)->create()->uid;
+        $dbSource->type = env('DB_ADAPTER');
+        $dbSource->server = env('DB_HOST');
+        $dbSource->database_name = env('DB_DATABASE');
+        $dbSource->username = env('DB_USERNAME');
+        $dbSource->password = env('DB_PASSWORD');
+        $dbSource->port = env('DB_PORT');
+        $dbSource->encode = 'utf8';
+        $dbSource->description = 'Connection for testing purposes';
 
-        $dbSource->DBS_TYPE = null;
+        $dbSource->type = null;
         $this->assertFalse($dbSource->isValid());
-        $dbSource->DBS_TYPE = env('DB_ADAPTER');
+        $dbSource->type = env('DB_ADAPTER');
 
         // wrong type should be invalid
-        $dbSource->DBS_TYPE = 'XYZWrongType';
+        $dbSource->type = 'XYZWrongType';
         $this->assertFalse($dbSource->isValid());
-        $dbSource->DBS_TYPE = env('DB_ADAPTER');
+        $dbSource->type = env('DB_ADAPTER');
 
         // an empty db server should be invalid
-        $dbSource->DBS_SERVER = '';
+        $dbSource->server = '';
         $this->assertFalse($dbSource->isValid());
-        $dbSource->DBS_SERVER = env('DB_HOST');
+        $dbSource->server = env('DB_HOST');
 
         // an empty db name should be invalid
-        $dbSource->DBS_DATABASE_NAME = '';
+        $dbSource->database_name = '';
         $this->assertFalse($dbSource->isValid());
-        $dbSource->DBS_DATABASE_NAME = env('DB_DATABASE');
+        $dbSource->database_name = env('DB_DATABASE');
 
         // an empty db name should be invalid
-        $dbSource->DBS_PORT = '';
+        $dbSource->port = '';
         $this->assertFalse($dbSource->isValid());
-        $dbSource->DBS_PORT = env('DB_PORT');
+        $dbSource->port = env('DB_PORT');
 
         // an oracle connection with empty tns should be invalid
-        $dbSource->DBS_TYPE = 'oracle';
-        $dbSource->DBS_TNS = '';
-        $dbSource->DBS_CONNECTION_TYPE = 'TNS';
+        $dbSource->type = 'oracle';
+        $dbSource->tns = '';
+        $dbSource->connection_type = 'TNS';
         $this->assertFalse($dbSource->isValid());
-        $dbSource->DBS_TYPE = env('DB_ADAPTER');
+        $dbSource->type = env('DB_ADAPTER');
 
         // a wrong dbs_encode should be invalid
-        $dbSource->DBS_ENCODE = 'WrongEncode';
+        $dbSource->encode = 'WrongEncode';
         $this->assertFalse($dbSource->isValid());
-        $dbSource->DBS_ENCODE = 'utf8';
+        $dbSource->encode = 'utf8';
 
         // using correct arguments should return valid
         $this->assertTrue($dbSource->isValid());
@@ -70,22 +71,22 @@ class DbSourceTest extends TestCase
     {
         // we need a DbSource
         $dbSource = new DbSource();
-        $dbSource->PRO_UID = "AnyProcessID";
-        $dbSource->DBS_TYPE = env('DB_ADAPTER');
-        $dbSource->DBS_SERVER = env('DB_HOST');
-        $dbSource->DBS_DATABASE_NAME = env('DB_DATABASE');
-        $dbSource->DBS_USERNAME = env('DB_USERNAME');
-        $dbSource->DBS_PASSWORD = env('DB_PASSWORD');
-        $dbSource->DBS_PORT = 3306;
-        $dbSource->DBS_ENCODE = 'utf8';
-        $dbSource->DBS_DESCRIPTION = 'Connection for testing purposes';
+        $dbSource->process_id = factory(Process::class)->create()->uid;
+        $dbSource->type = env('DB_ADAPTER');
+        $dbSource->server = env('DB_HOST');
+        $dbSource->database_name = env('DB_DATABASE');
+        $dbSource->username = env('DB_USERNAME');
+        $dbSource->password = env('DB_PASSWORD');
+        $dbSource->port = 3306;
+        $dbSource->encode = 'utf8';
+        $dbSource->description = 'Connection for testing purposes';
 
         //the original DbSource isn't an Oracle tns
         $this->assertFalse($dbSource->isTns());
 
         //we change parameter so the connection is an Oracle tns
-        $dbSource->DBS_TYPE = 'oracle';
-        $dbSource->DBS_CONNECTION_TYPE = 'TNS';
+        $dbSource->type = 'oracle';
+        $dbSource->connection_type = 'TNS';
         $this->assertTrue($dbSource->isTns());
     }
 
@@ -95,13 +96,14 @@ class DbSourceTest extends TestCase
     public function testGetDbsServerAttribute()
     {
         $dbSource = new DbSource();
-        $this->assertEquals($dbSource->getDbsServerAttribute('FakeServer'), 'FakeServer');
+        $dbSource->server = 'FakeServer';
+        $this->assertEquals($dbSource->server, 'FakeServer');
 
-        $dbSource->DBS_TYPE = 'oracle';
-        $dbSource->DBS_TNS = 'test:tns';
-        $dbSource->DBS_CONNECTION_TYPE = 'TNS';
-        $this->assertEquals($dbSource->getDbsServerAttribute('FakeServer'), '[test:tns]');
-        $this->assertEquals($dbSource->getDbsDatabaseNameAttribute('FakeServer'), '[test:tns]');
+        $dbSource->type = 'oracle';
+        $dbSource->tns = 'test:tns';
+        $dbSource->connection_type = 'TNS';
+        $this->assertEquals($dbSource->server, '[test:tns]');
+        $this->assertEquals($dbSource->databaseName, '[test:tns]');
     }
 
     /**
@@ -111,12 +113,12 @@ class DbSourceTest extends TestCase
     {
         $dbSource = new DbSource();
         $aDescription = 'Test Description';
-        $dbSource->DBS_DESCRIPTION = $aDescription;
-        $this->assertEquals($dbSource->getDbsDatabaseDescriptionAttribute(), $aDescription);
+        $dbSource->description = $aDescription;
+        $this->assertEquals($dbSource->description, $aDescription);
 
-        $dbSource->DBS_TYPE = 'oracle';
-        $dbSource->DBS_TNS = 'test:tns';
-        $dbSource->DBS_CONNECTION_TYPE = 'TNS';
-        $this->assertEquals($dbSource->getDbsDatabaseDescriptionAttribute(), '[test:tns]'.$aDescription);
+        $dbSource->type = 'oracle';
+        $dbSource->tns = 'test:tns';
+        $dbSource->connection_type = 'TNS';
+        $this->assertEquals($dbSource->description, '[test:tns]'.$aDescription);
     }
 }

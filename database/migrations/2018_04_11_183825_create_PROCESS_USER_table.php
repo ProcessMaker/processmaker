@@ -14,10 +14,10 @@ class CreatePROCESSUSERTable extends Migration {
 	{
 		Schema::create('PROCESS_USER', function(Blueprint $table)
 		{
-			$table->string('PU_UID', 32)->default('')->primary();
-			$table->string('PRO_UID', 32)->default('');
-			$table->string('USR_UID', 32)->default('');
-			$table->string('PU_TYPE', 20)->default('');
+			$table->uuid('PU_UID')->default('')->primary();
+			$table->uuid('PRO_UID');
+			$table->uuid('USR_UID');
+			$table->string('PU_TYPE', 20);
 		});
 	}
 

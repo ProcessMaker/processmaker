@@ -16,7 +16,7 @@ trait BaseElementTrait
      */
     public function process()
     {
-        return $this->belongsTo(Process::class, 'PRO_ID', 'PRO_ID');
+        return $this->belongsTo(Process::class, 'process_id', 'id');
     }
 
     /**

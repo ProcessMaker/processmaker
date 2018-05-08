@@ -14,8 +14,8 @@ $factory->define(Lane::class, function (Faker $faker) {
 
     return [
         'LAN_UID'  => str_replace('-', '', Uuid::uuid4()),
-        'PRO_ID'   => function () {
-            return factory(Process::class)->create()->PRO_ID;
+        'process_id'   => function () {
+            return factory(Process::class)->create()->id;
         },
         'LNS_UID'  => function () {
             return factory(Laneset::class)->create()->LNS_UID;

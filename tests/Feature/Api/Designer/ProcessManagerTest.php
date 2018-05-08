@@ -33,20 +33,20 @@ class ProcessManagerTest extends ApiTestCase
     {
         //Login with an PROCESSMAKER_OPERATOR user.
         $user = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make('password'),
-            'USR_ROLE'     => Role::PROCESSMAKER_OPERATOR,
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_OPERATOR)->first()->id
         ]);
-        $this->auth($user->USR_USERNAME, 'password');
+        $this->auth($user->username, 'password');
         $process = factory(Process::class)->create([
-            'PRO_CREATE_USER' => $user->USR_UID
+            'creator_user_id' => $user->id
         ]);
 
         //Create a test process using factories
         $process = factory(Process::class)->create([
-            'PRO_CREATE_USER' => $user->USR_UID
+            'creator_user_id' => $user->id
         ]);
         $diagram = factory(Diagram::class)->create([
-            'PRO_ID' => $process->PRO_ID,
+            'process_id' => $process->id,
         ]);
 
         //Validate does not have access to list of processes.
@@ -54,11 +54,11 @@ class ProcessManagerTest extends ApiTestCase
         $response->assertStatus(403);
 
         //Validate does not have access to get a process definition.
-        $response = $this->api('GET', self::API_TEST_PROJECT . '/' . $process->PRO_UID);
+        $response = $this->api('GET', self::API_TEST_PROJECT . '/' . $process->uid);
         $response->assertStatus(403);
 
         //Validate does not have access to delete a process.
-        $response = $this->api('DELETE', self::API_TEST_PROJECT . '/' . $process->PRO_UID);
+        $response = $this->api('DELETE', self::API_TEST_PROJECT . '/' . $process->uid);
         $response->assertStatus(403);
     }
 
@@ -73,20 +73,20 @@ class ProcessManagerTest extends ApiTestCase
 
         //Create a test process using factories
         $process = factory(Process::class)->create([
-            'PRO_CREATE_USER' => $admin->USR_UID
+            'creator_user_id' => $admin->id
         ]);
         $response = $this->api('GET', self::API_TEST_PROJECT);
         $response->assertStatus(200);
         $response->assertJsonFragment([
             [
-                "prj_uid"         => $process->PRO_UID,
-                "prj_name"        => $process->PRO_NAME,
-                "prj_description" => $process->PRO_DESCRIPTION,
-                "prj_category"    => $process->PRO_CATEGORY,
-                "prj_type"        => $process->PRO_TYPE,
-                "prj_create_date" => $process->PRO_CREATE_DATE->toIso8601String(),
-                "prj_update_date" => $process->PRO_UPDATE_DATE->toIso8601String(),
-                "prj_status"      => $process->PRO_STATUS,
+                "prj_uid"         => $process->uid,
+                "prj_name"        => $process->name,
+                "prj_description" => $process->description,
+                "prj_category"    => null,
+                "prj_type"        => $process->type,
+                "prj_create_date" => $process->created_at->toIso8601String(),
+                "prj_update_date" => $process->updated_at->toIso8601String(),
+                "prj_status"      => $process->status,
             ]
         ]);
 
@@ -95,14 +95,14 @@ class ProcessManagerTest extends ApiTestCase
         $response->assertStatus(200);
         $response->assertJsonFragment([
             [
-                "prj_uid"         => $process->PRO_UID,
-                "prj_name"        => $process->PRO_NAME,
-                "prj_description" => $process->PRO_DESCRIPTION,
-                "prj_category"    => $process->PRO_CATEGORY,
-                "prj_type"        => $process->PRO_TYPE,
-                "prj_create_date" => $process->PRO_CREATE_DATE->toIso8601String(),
-                "prj_update_date" => $process->PRO_UPDATE_DATE->toIso8601String(),
-                "prj_status"      => $process->PRO_STATUS,
+                "prj_uid"         => $process->uid,
+                "prj_name"        => $process->name,
+                "prj_description" => $process->description,
+                "prj_category"    => null,
+                "prj_type"        => $process->type,
+                "prj_create_date" => $process->created_at->toIso8601String(),
+                "prj_update_date" => $process->updated_at->toIso8601String(),
+                "prj_status"      => $process->status,
             ]
         ]);
 
@@ -127,19 +127,19 @@ class ProcessManagerTest extends ApiTestCase
 
         //Test filter start and limit
         $response = $this->api('GET',
-                               self::API_TEST_PROJECT . '?filter=' . urlencode($process->PRO_NAME) . '&start=0&limit=1');
+                               self::API_TEST_PROJECT . '?filter=' . urlencode($process->name) . '&start=0&limit=1');
         $response->assertStatus(200);
         $response->assertJsonStructure();
         $response->assertJsonFragment([
             [
-                "prj_uid"         => $process->PRO_UID,
-                "prj_name"        => $process->PRO_NAME,
-                "prj_description" => $process->PRO_DESCRIPTION,
-                "prj_category"    => $process->PRO_CATEGORY,
-                "prj_type"        => $process->PRO_TYPE,
-                "prj_create_date" => $process->PRO_CREATE_DATE->toIso8601String(),
-                "prj_update_date" => $process->PRO_UPDATE_DATE->toIso8601String(),
-                "prj_status"      => $process->PRO_STATUS,
+                "prj_uid"         => $process->uid,
+                "prj_name"        => $process->name,
+                "prj_description" => $process->description,
+                "prj_category"    => $process->category_id,
+                "prj_type"        => $process->type,
+                "prj_create_date" => $process->created_at->toIso8601String(),
+                "prj_update_date" => $process->updated_at->toIso8601String(),
+                "prj_status"      => $process->status,
             ]
         ]);
     }
@@ -162,37 +162,37 @@ class ProcessManagerTest extends ApiTestCase
          *         +------------------+
          */
         $process = factory(Process::class)->create([
-            'PRO_CREATE_USER' => $admin->USR_UID
+            'creator_user_id' => $admin->id
         ]);
         $diagram = factory(Diagram::class)->create([
-            'PRO_ID' => $process->PRO_ID,
+            'process_id' => $process->id,
         ]);
         $activities = factory(Activity::class, 3)->create([
-                'PRO_ID'  => $process->PRO_ID
+                'process_id'  => $process->id
             ])->each(function (Activity $activity) use ($diagram) {
             $activity->createShape($diagram);
         });
         $events = factory(Event::class, 2)->create([
-                'PRO_ID' => $process->PRO_ID
+                'process_id' => $process->id
             ])->each(function (Event $event) use ($diagram) {
             $event->createShape($diagram);
         });
         $gateway = factory(Gateway::class)->create([
-            'PRO_ID' => $process->PRO_ID
+            'process_id' => $process->id
         ]);
         $gateway->createShape($diagram);
         factory(Artifact::class, 3)->create([
-                'PRO_ID' => $process->PRO_ID
+                'process_id' => $process->id
             ])->each(function (Artifact $artifact) use ($diagram) {
             $artifact->createShape($diagram);
         });
         factory(Laneset::class, 3)->create([
-                'PRO_ID' => $process->PRO_ID
+                'process_id' => $process->id
             ])->each(function (Laneset $laneset) use ($diagram) {
             $laneset->createShape($diagram);
         });
         factory(Lane::class, 3)->create([
-                'PRO_ID' => $process->PRO_ID,
+                'process_id' => $process->id,
             ])->each(function (Lane $lane) use ($diagram) {
             $lane->createShape($diagram);
         });
@@ -235,7 +235,7 @@ class ProcessManagerTest extends ApiTestCase
             ]);
 
         //Get the json from the end point
-        $response = $this->api('GET', self::API_TEST_PROJECT . '/' . $process->PRO_UID);
+        $response = $this->api('GET', self::API_TEST_PROJECT . '/' . $process->uid);
         $response->assertStatus(200);
         $expected = $process->toArray();
         $result = $response->json();
@@ -444,37 +444,37 @@ class ProcessManagerTest extends ApiTestCase
         $admin = $this->authenticateAsAdmin();
         // We need a process
         $process = factory(Process::class)->create([
-            'PRO_CREATE_USER' => $admin->USR_UID
+            'creator_user_id' => $admin->id
         ]);
         $diagram = factory(Diagram::class)->create([
-            'PRO_ID' => $process->PRO_ID,
+            'process_id' => $process->id,
         ]);
         $activities = factory(Activity::class, 3)->create([
-                'PRO_ID'  => $process->PRO_ID
+                'process_id'  => $process->id
             ])->each(function (Activity $activity) use ($diagram) {
             $activity->createShape($diagram);
         });
         $events = factory(Event::class, 2)->create([
-                'PRO_ID' => $process->PRO_ID
+                'process_id' => $process->id
             ])->each(function (Event $event) use ($diagram) {
             $event->createShape($diagram);
         });
         $gateway = factory(Gateway::class)->create([
-            'PRO_ID' => $process->PRO_ID
+            'process_id' => $process->id
         ]);
         $gateway->createShape($diagram);
         $artifacts = factory(Artifact::class, 3)->create([
-                'PRO_ID' => $process->PRO_ID
+                'process_id' => $process->id
             ])->each(function (Artifact $artifact) use ($diagram) {
             $artifact->createShape($diagram);
         });
         $lanesets = factory(Laneset::class, 3)->create([
-                'PRO_ID' => $process->PRO_ID
+                'process_id' => $process->id
             ])->each(function (Laneset $laneset) use ($diagram) {
             $laneset->createShape($diagram);
         });
         $lanes = factory(Lane::class, 3)->create([
-                'PRO_ID' => $process->PRO_ID,
+                'process_id' => $process->id,
             ])->each(function (Lane $lane) use ($diagram) {
             $lane->createShape($diagram);
         });
@@ -517,10 +517,10 @@ class ProcessManagerTest extends ApiTestCase
             ]);
 
         //Delete process
-        $response = $this->api('DELETE', self::API_TEST_PROJECT . '/' . $process->PRO_UID);
+        $response = $this->api('DELETE', self::API_TEST_PROJECT . '/' . $process->uid);
         $response->assertStatus(204);
         $this->assertDatabaseMissing($process->getTable(), [
-            'PRO_UID' => $process->PRO_UID
+            'id' => $process->id
         ]);
 
         //Verify that the components where deleted (activities, gateway, events, flows,...)
@@ -554,18 +554,17 @@ class ProcessManagerTest extends ApiTestCase
 
         //Test to delete a process with cases
         $process = factory(Process::class)->create([
-            'PRO_CREATE_USER' => $admin->USR_UID
+            'creator_user_id' => $admin->id
         ]);
         $application = factory(Application::class)->create([
-            'PRO_ID'  => $process->PRO_ID,
-            'PRO_UID' => $process->PRO_UID,
+            'process_id'  => $process->id,
         ]);
-        $response = $this->api('DELETE', self::API_TEST_PROJECT . '/' . $process->PRO_UID);
+        $response = $this->api('DELETE', self::API_TEST_PROJECT . '/' . $process->uid);
         $response->assertStatus(422);
 
         //Verify that process was not deleted
         $this->assertDatabaseHas($process->getTable(), [
-            'PRO_UID' => $process->PRO_UID
+            'id' => $process->id
         ]);
     }
 
@@ -577,10 +576,10 @@ class ProcessManagerTest extends ApiTestCase
     private function authenticateAsAdmin()
     {
         $admin = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make('password'),
-            'USR_ROLE'     => Role::PROCESSMAKER_ADMIN
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
-        $this->auth($admin->USR_USERNAME, 'password');
+        $this->auth($admin->username, 'password');
         return $admin;
     }
 }

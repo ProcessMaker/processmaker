@@ -8,8 +8,7 @@ use Faker\Generator as Faker;
 $factory->define(\ProcessMaker\Model\Permission::class, function (Faker $faker) {
 
     return [
-        'PER_UID' => str_replace('-', '', Uuid::uuid4()),
-        'PER_CODE' => $faker->word,
-        'PER_STATUS' => \ProcessMaker\Model\Permission::STATUS_ACTIVE
+        'code' => $faker->word,
+        'status' => \ProcessMaker\Model\Permission::STATUS_ACTIVE
     ];
 });

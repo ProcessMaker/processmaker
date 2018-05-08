@@ -16,21 +16,21 @@ class OAuthAccessToken extends Model implements AccessTokenEntityInterface
 {
     use AccessTokenTrait;
 
-    // Specify our table name
-    protected $table = 'OAUTH_ACCESS_TOKENS';
+    // Our table name
+    protected $table = 'oauth_access_tokens';
 
     // Our primary key is not an autoincrementing key
     public $incrementing = false;
 
     // Our primary key is not ID but ACCESS_TOKEN
-    protected $primaryKey = 'ACCESS_TOKEN';
+    protected $primaryKey = 'access_token';
 
     // We do not sure create/update timestamps in this table
     public $timestamps = false;
 
     // Our dates which will auto translate to Carbon instances
     protected $dates = [
-        'EXPIRES'
+        'expires'
     ];
 
     /**
@@ -39,7 +39,7 @@ class OAuthAccessToken extends Model implements AccessTokenEntityInterface
      */
     public function client()
     {
-        return $this->belongsTo(OAuthClient::class, "CLIENT_ID", "CLIENT_ID");
+        return $this->belongsTo(OAuthClient::class, "client_id");
     }
 
     /**
@@ -49,7 +49,7 @@ class OAuthAccessToken extends Model implements AccessTokenEntityInterface
      */
     public function user()
     {
-        return $this->belongsTo(User::class, 'USER_ID', 'USR_UID');
+        return $this->belongsTo(User::class);
     }
 
     /**
@@ -59,7 +59,7 @@ class OAuthAccessToken extends Model implements AccessTokenEntityInterface
      */
     public function setUserIdentifier($identifier)
     {
-        $this->USER_ID = $identifier;
+        $this->user_id = $identifier;
     }
 
     /**
@@ -69,7 +69,7 @@ class OAuthAccessToken extends Model implements AccessTokenEntityInterface
      */
     public function getUserIdentifier()
     {
-        return $this->USER_ID;
+        return $this->user_id;
     }
 
     /**
@@ -89,9 +89,9 @@ class OAuthAccessToken extends Model implements AccessTokenEntityInterface
      */
     public function addScope(ScopeEntityInterface $scope)
     {
-        $scopes = explode(" ", $this->SCOPE);
+        $scopes = explode(" ", $this->scope);
         $scopes[] = $scope->getIdentifier();
-        $this->SCOPE = implode(' ', $scopes);
+        $this->scope = implode(' ', $scopes);
     }
 
     /**
@@ -101,8 +101,8 @@ class OAuthAccessToken extends Model implements AccessTokenEntityInterface
      */
     public function getScopes()
     {
-        $types = explode(" ", $this->SCOPE);
-        return OAuthScope::whereIn('TYPE', $types)->get();
+        $types = explode(" ", $this->scope);
+        return OAuthScope::whereIn('type', $types)->get();
     }
 
     /**
@@ -113,7 +113,7 @@ class OAuthAccessToken extends Model implements AccessTokenEntityInterface
      */
     public function getExpiryDateTime()
     {
-        return $this->EXPIRES;
+        return $this->expires;
     }
 
     /**
@@ -122,7 +122,7 @@ class OAuthAccessToken extends Model implements AccessTokenEntityInterface
      */
     public function setExpiryDateTime(\DateTime $dateTime)
     {
-        $this->EXPIRES = $dateTime;
+        $this->expires = $dateTime;
     }
 
     /**
@@ -132,7 +132,7 @@ class OAuthAccessToken extends Model implements AccessTokenEntityInterface
      */
     public function getIdentifier()
     {
-        return $this->ACCESS_TOKEN;
+        return $this->access_token;
     }
 
     /**
@@ -142,7 +142,7 @@ class OAuthAccessToken extends Model implements AccessTokenEntityInterface
      */
     public function setIdentifier($identifier)
     {
-        $this->ACCESS_TOKEN = $identifier;
+        $this->access_token = $identifier;
     }
 
     /**

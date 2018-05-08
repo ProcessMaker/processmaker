@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class CreateOAUTHREFRESHTOKENSTable extends Migration {
+class CreatePERMISSIONROLETable extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -12,11 +12,11 @@ class CreateOAUTHREFRESHTOKENSTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('oauth_refresh_tokens', function(Blueprint $table)
+		Schema::create('permission_role', function(Blueprint $table)
 		{
-			$table->string('refresh_token')->primary();
-			$table->string('access_token');
-			$table->dateTime('expires');
+			$table->unsignedInteger('role_id');
+			$table->unsignedInteger('permission_id');
+			$table->primary(['role_id','permission_id']);
 		});
 	}
 
@@ -28,7 +28,7 @@ class CreateOAUTHREFRESHTOKENSTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('oauth_refresh_tokens');
+		Schema::drop('permission_role');
 	}
 
 }

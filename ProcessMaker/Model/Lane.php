@@ -10,7 +10,7 @@ use Watson\Validating\ValidatingTrait;
  * Class to organize and categorize the activities.
  *
  * @property string $LAN_UID
- * @property int $PRO_ID
+ * @property int $process_id
  * @property string $LNS_UID
  * @property string $LAN_NAME
  * @property string $LAN_CHILD_LANESET
@@ -44,7 +44,7 @@ class Lane extends Model implements ElementInterface
      */
     protected $fillable = [
         'LAN_UID',
-        'PRO_ID',
+        'process_id',
         'LNS_UID',
         'LAN_NAME',
         'LAN_CHILD_LANESET',
@@ -58,7 +58,7 @@ class Lane extends Model implements ElementInterface
      */
     protected $attributes = [
         'LAN_UID'           => '',
-        'PRO_ID'            => null,
+        'process_id'            => null,
         'LNS_UID'           => null,
         'LAN_NAME'          => null,
         'LAN_CHILD_LANESET' => null,
@@ -72,7 +72,7 @@ class Lane extends Model implements ElementInterface
      */
     protected $casts = [
         'LAN_UID'           => 'string',
-        'PRO_ID'            => 'int',
+        'process_id'            => 'int',
         'LNS_UID'           => 'string',
         'LAN_NAME'          => 'string',
         'LAN_CHILD_LANESET' => 'string',
@@ -108,7 +108,7 @@ class Lane extends Model implements ElementInterface
      */
     public function process()
     {
-        return $this->belongsTo(Process::class, 'PRO_ID', 'PRO_ID');
+        return $this->belongsTo(Process::class);
     }
 
     /**

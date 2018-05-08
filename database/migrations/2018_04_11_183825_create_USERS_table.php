@@ -12,42 +12,33 @@ class CreateUSERSTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('USERS', function(Blueprint $table)
+		Schema::create('users', function(Blueprint $table)
 		{
-			$table->string('USR_UID', 32)->default('')->index('indexUsrUid');
-			$table->integer('USR_ID', true);
-			$table->string('USR_USERNAME', 100)->default('');
-			$table->string('USR_PASSWORD', 128)->default('');
-			$table->string('USR_FIRSTNAME', 50)->default('');
-			$table->string('USR_LASTNAME', 50)->default('');
-			$table->string('USR_EMAIL', 100)->default('');
-			$table->date('USR_DUE_DATE');
-			$table->dateTime('USR_CREATE_DATE');
-			$table->dateTime('USR_UPDATE_DATE');
-			$table->string('USR_STATUS', 32)->default('ACTIVE');
-			$table->string('USR_COUNTRY', 3)->default('');
-			$table->string('USR_CITY', 3)->default('');
-			$table->string('USR_LOCATION', 3)->default('');
-			$table->string('USR_ADDRESS')->default('');
-			$table->string('USR_PHONE', 24)->default('');
-			$table->string('USR_FAX', 24)->default('');
-			$table->string('USR_CELLULAR', 24)->default('');
-			$table->string('USR_ZIP_CODE', 16)->default('');
-			$table->string('DEP_UID', 32)->default('');
-			$table->string('USR_POSITION', 100)->default('');
-			$table->string('USR_RESUME', 100)->default('');
-			$table->date('USR_BIRTHDAY')->nullable();
-			$table->string('USR_ROLE', 32)->nullable()->default('PROCESSMAKER_ADMIN');
-			$table->string('USR_REPORTS_TO', 32)->nullable()->default('');
-			$table->string('USR_REPLACED_BY', 32)->nullable()->default('');
-			$table->string('USR_UX', 128)->nullable()->default('NORMAL');
-			$table->decimal('USR_COST_BY_HOUR', 7)->nullable()->default(0.00);
-			$table->string('USR_UNIT_COST', 50)->nullable()->default('');
-			$table->string('USR_PMDRIVE_FOLDER_UID', 32)->nullable()->default('');
-			$table->text('USR_BOOKMARK_START_CASES', 16777215)->nullable();
-			$table->string('USR_TIME_ZONE', 100)->nullable()->default('');
-			$table->string('USR_DEFAULT_LANG', 10)->nullable()->default('');
-			$table->dateTime('USR_LAST_LOGIN')->nullable();
+			$table->increments('id');
+			$table->uuid('uid', 32)->unique();
+			$table->string('username', 100);
+			$table->string('password', 128);
+			$table->string('firstname', 50)->nullable();
+			$table->string('lastname', 50)->nullable();
+			$table->string('email', 100)->nullable();
+			$table->date('expires_at')->nullable();
+			$table->timestamps();
+			$table->enum('status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
+			$table->string('country')->nullable();
+			$table->string('city')->nullable();
+			$table->string('location')->nullable();
+			$table->string('address')->nullable();
+			$table->string('phone')->nullable();
+			$table->string('fax')->nullable();
+			$table->string('cell')->nullable();
+			$table->string('postal')->nullable();
+			$table->unsignedInteger('department_id')->nullable();
+			$table->string('title')->nullable();
+			$table->date('birthdate')->nullable();
+			$table->unsignedInteger('role_id')->nullable();
+			$table->string('time_zone')->nullable();
+			$table->string('lang')->nullable();
+			$table->dateTime('last_login')->nullable();
 		});
 	}
 
@@ -59,7 +50,7 @@ class CreateUSERSTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('USERS');
+		Schema::drop('users');
 	}
 
 }

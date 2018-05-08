@@ -17,27 +17,23 @@ class SchemaManagerTest extends TestCase
     {
         SchemaManager::dropPhysicalTable('PMT_TESTPMTABLE');
 
-        $factoryTable = factory(PmTable::class)->create();
-
-        $pmTable = PmTable::where('ADD_TAB_UID', $factoryTable->ADD_TAB_UID)->get()[0];
+        $pmTable = factory(PmTable::class)->create();
 
         $field1 = [
-            'FLD_UID' => str_replace('-', '', Uuid::uuid4()),
-            'ADD_TAB_UID' => $pmTable->ADD_TAB_UID,
-            'FLD_NAME' => 'StringField',
-            'FLD_DESCRIPTION' => 'String Field',
-            'FLD_TYPE' => 'VARCHAR',
-            'FLD_SIZE' => 100,
-            'FLD_NULL' => 1
+            'additional_table_id' => $pmTable->id,
+            'name' => 'StringField',
+            'description' => 'String Field',
+            'type' => 'VARCHAR',
+            'size' => 100,
+            'null' => 1
         ];
 
         $field2 = [
-            'FLD_UID' => str_replace('-', '', Uuid::uuid4()),
-            'ADD_TAB_UID' => $pmTable->ADD_TAB_UID,
-            'FLD_NAME' => 'IntegerField',
-            'FLD_DESCRIPTION' => 'Integer Field',
-            'FLD_TYPE' => 'INTEGER',
-            'FLD_KEY' => 1
+            'additional_table_id' => $pmTable->id,
+            'name' => 'IntegerField',
+            'description' => 'Integer Field',
+            'type' => 'INTEGER',
+            'key' => 1
         ];
 
         SchemaManager::updateOrCreateColumn($pmTable, $field1);
@@ -47,34 +43,33 @@ class SchemaManagerTest extends TestCase
 
 
         // now we change the column size
-        $field1['FLD_TYPE'] = 'VARCHAR';
-        $field1['FLD_SIZE'] = 500;
+        $field1['type'] = 'VARCHAR';
+        $field1['size'] = 500;
         SchemaManager::updateOrCreateColumn($pmTable, $field1);
         $metadata = $pmTable->getTableMetadata();
-        $this->assertEquals($metadata->columns[0]->FLD_SIZE, 500, 'Now the first column is a varchar of 500 characters');
+        $this->assertEquals($metadata->columns[0]->size, 500, 'Now the first column is a varchar of 500 characters');
 
         // now we change the column type
-        $field1['FLD_TYPE'] = 'MEDIUMTEXT';
+        $field1['type'] = 'MEDIUMTEXT';
         SchemaManager::updateOrCreateColumn($pmTable, $field1);
         $metadata = $pmTable->getTableMetadata();
-        $this->assertEquals($metadata->columns[0]->FLD_TYPE, 'text', 'The first column now must be returned as text');
+        $this->assertEquals($metadata->columns[0]->type, 'text', 'The first column now must be returned as text');
 
 
         // now we add a new column and change the key to the new table
         $field3 = [
-            'FLD_UID' => str_replace('-', '', Uuid::uuid4()),
-            'ADD_TAB_UID' => $pmTable->ADD_TAB_UID,
-            'FLD_NAME' => 'IntegerField2',
-            'FLD_DESCRIPTION' => 'Integer Field2',
-            'FLD_TYPE' => 'INTEGER',
-            'FLD_KEY' => 1
+            'additional_table_id' => $pmTable->id,
+            'name' => 'IntegerField2',
+            'description' => 'Integer Field2',
+            'type' => 'INTEGER',
+            'key' => 1
         ];
 
         SchemaManager::updateOrCreateColumn($pmTable, $field3);
         $metadata = $pmTable->getTableMetadata();
         $this->assertCount(1, $metadata->primaryKeyColumns, 'Just one column is primary key in the test table');
-        $this->assertArraySubset([$field3['FLD_NAME']], $metadata->primaryKeyColumns,
-            'Now the key is the new added column:'. $field3['FLD_NAME']);
+        $this->assertArraySubset([$field3['name']], $metadata->primaryKeyColumns,
+            'Now the key is the new added column:'. $field3['name']);
     }
 
     /**
@@ -84,17 +79,14 @@ class SchemaManagerTest extends TestCase
     {
         SchemaManager::dropPhysicalTable('PMT_TESTPMTABLE');
 
-        $factoryTable = factory(PmTable::class)->create();
-
-        $pmTable = PmTable::where('ADD_TAB_UID', $factoryTable->ADD_TAB_UID)->get()[0];
+        $pmTable = factory(PmTable::class)->create();
 
         $field1 = [
-            'FLD_UID' => str_replace('-', '', Uuid::uuid4()),
-            'ADD_TAB_UID' => $pmTable->ADD_TAB_UID,
-            'FLD_NAME' => 'IntegerField',
-            'FLD_DESCRIPTION' => 'Integer Field',
-            'FLD_TYPE' => 'INTEGER',
-            'FLD_NULL' => 1
+            'additional_table_id' => $pmTable->id,
+            'name' => 'IntegerField',
+            'description' => 'Integer Field',
+            'type' => 'INTEGER',
+            'null' => 1
         ];
 
         SchemaManager::updateOrCreateColumn($pmTable, $field1);
@@ -110,34 +102,30 @@ class SchemaManagerTest extends TestCase
     {
         SchemaManager::dropPhysicalTable('PMT_TESTPMTABLE');
 
-        $factoryTable = factory(PmTable::class)->create();
-
-        $pmTable = PmTable::where('ADD_TAB_UID', $factoryTable->ADD_TAB_UID)->get()[0];
+        $pmTable = factory(PmTable::class)->create();
 
         $field1 = [
-            'FLD_UID' => str_replace('-', '', Uuid::uuid4()),
-            'ADD_TAB_UID' => $pmTable->ADD_TAB_UID,
-            'FLD_NAME' => 'StringField',
-            'FLD_DESCRIPTION' => 'String Field',
-            'FLD_TYPE' => 'VARCHAR',
-            'FLD_SIZE' => 250,
-            'FLD_NULL' => 1
+            'additional_table_id' => $pmTable->id,
+            'name' => 'StringField',
+            'description' => 'String Field',
+            'type' => 'VARCHAR',
+            'size' => 250,
+            'null' => 1
         ];
 
         $field2 = [
-            'FLD_UID' => str_replace('-', '', Uuid::uuid4()),
-            'ADD_TAB_UID' => $pmTable->ADD_TAB_UID,
-            'FLD_NAME' => 'StringField2',
-            'FLD_DESCRIPTION' => 'String Field 2',
-            'FLD_TYPE' => 'VARCHAR',
-            'FLD_SIZE' => 250,
-            'FLD_NULL' => 1
+            'additional_table_id' => $pmTable->id,
+            'name' => 'StringField2',
+            'description' => 'String Field 2',
+            'type' => 'VARCHAR',
+            'size' => 250,
+            'null' => 1
         ];
 
         SchemaManager::updateOrCreateColumn($pmTable, $field1);
         SchemaManager::updateOrCreateColumn($pmTable, $field2);
 
-        SchemaManager::dropColumn($pmTable, $field1['FLD_NAME']);
+        SchemaManager::dropColumn($pmTable, $field1['name']);
         $columns = SchemaManager::getMetadataFromSchema($pmTable)->columns;
         $this->assertCount(1, $columns, 'After the column delete, on column must remain');
     }
@@ -148,18 +136,15 @@ class SchemaManagerTest extends TestCase
     public function testDropTable()
     {
 
-        $factoryTable = factory(PmTable::class)->create();
-
-        $pmTable = PmTable::where('ADD_TAB_UID', $factoryTable->ADD_TAB_UID)->get()[0];
+        $pmTable = factory(PmTable::class)->create();
 
         $field1 = [
-            'FLD_UID' => str_replace('-', '', Uuid::uuid4()),
-            'ADD_TAB_UID' => $pmTable->ADD_TAB_UID,
-            'FLD_NAME' => 'StringField',
-            'FLD_DESCRIPTION' => 'String Field',
-            'FLD_TYPE' => 'VARCHAR',
-            'FLD_SIZE' => 250,
-            'FLD_NULL' => 1
+            'additional_table_id' => $pmTable->id,
+            'name' => 'StringField',
+            'description' => 'String Field',
+            'type' => 'VARCHAR',
+            'size' => 250,
+            'null' => 1
         ];
 
         SchemaManager::updateOrCreateColumn($pmTable, $field1);

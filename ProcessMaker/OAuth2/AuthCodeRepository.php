@@ -39,7 +39,7 @@ class AuthCodeRepository implements AuthCodeRepositoryInterface
      */
     public function revokeAuthCode($codeId)
     {
-        OAuthAuthorizationCode::where('AUTHORIZATION_CODE', $codeId)->delete();
+        OAuthAuthorizationCode::where('authorization_code', $codeId)->delete();
     }
 
     /**
@@ -49,7 +49,7 @@ class AuthCodeRepository implements AuthCodeRepositoryInterface
      */
     public function isAuthCodeRevoked($codeId)
     {
-        $token = OAuthAuthorizationCode::where('AUTHORIZATION_CODE', $codeId)->first();
+        $token = OAuthAuthorizationCode::where('authorization_code', $codeId)->first();
         if (!$token) {
             return true;
         }

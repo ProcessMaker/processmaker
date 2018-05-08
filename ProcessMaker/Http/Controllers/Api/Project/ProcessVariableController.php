@@ -22,7 +22,7 @@ class ProcessVariableController
      */
     public function index(Process $process)
     {
-        return ProcessVariable::where('PRO_ID', $process->PRO_ID)
+        return ProcessVariable::where('PRO_ID', $process->id)
             ->get()
             ->toArray();
     }
@@ -36,11 +36,10 @@ class ProcessVariableController
      */
     public function show(Process $process, ProcessVariable $variable)
     {
-        if ($process->PRO_ID !== $variable->process->PRO_ID) {
+        if ($process->id !== $variable->process->id) {
             $variable->throwValidationException();
         }
-        $result = $this->lowerCaseModelAttributes($variable);
-        return $result;
+        return $variable;
     }
 
     /**
@@ -54,7 +53,7 @@ class ProcessVariableController
     {
         $variable = new ProcessVariable();
         $variable->VAR_UID = str_replace('-', '', Uuid::uuid4());
-        $variable->PRO_ID = $process->PRO_ID;
+        $variable->PRO_ID = $process->id;
         $this->mapRequestToVariable($request, $variable);
 
         try {
@@ -67,7 +66,7 @@ class ProcessVariableController
         $lastEntity = ProcessVariable::whereVarUid($variable->VAR_UID)
             ->first();
 
-        return response($this->lowerCaseModelAttributes($lastEntity), 201);
+        return response($lastEntity, 201);
     }
 
     /**
@@ -80,7 +79,7 @@ class ProcessVariableController
      */
     public function update(Request $request, Process $process, ProcessVariable $variable)
     {
-        if ($process->PRO_ID !== $variable->process->PRO_ID) {
+        if ($process->id !== $variable->process->id) {
             $variable->throwValidationException();
         }
 
@@ -92,7 +91,7 @@ class ProcessVariableController
         $lastEntity = ProcessVariable::whereVarUid($variable->VAR_UID)
             ->first();
 
-        return response($this->lowerCaseModelAttributes($lastEntity), 200);
+        return response($lastEntity, 200);
     }
 
     /**
@@ -104,29 +103,12 @@ class ProcessVariableController
      */
     public function remove(Process $process, ProcessVariable $variable)
     {
-        if ($process->PRO_ID !== $variable->process->PRO_ID) {
+        if ($process->id !== $variable->process->id) {
             $variable->throwValidationException();
         }
 
         $variable->delete();
         return response(null, 204);
-    }
-
-    /**
-     * Returns an array from a model where all the keys are in lower case
-     *
-     * @param Model $model
-     * @return array
-     */
-    private function lowerCaseModelAttributes(Model $model)
-    {
-        // with a null model an empty array is returned
-        if ($model === null) {
-            return [];
-        }
-
-        $attributeArray = $model->toArray();
-        return array_change_key_case($attributeArray, CASE_LOWER);
     }
 
     /**
