@@ -9,7 +9,7 @@ use ProcessMaker\Facades\SchemaManager;
 use ProcessMaker\Model\Application;
 use ProcessMaker\Model\ProcessVariable;
 use ProcessMaker\Model\ReportTable;
-use ProcessMaker\Model\ReportTableVariable;
+use ProcessMaker\Model\ReportTableColumn;
 use Tests\TestCase;
 
 /**
@@ -38,7 +38,7 @@ class ReportTableTest extends TestCase
     {
         $report = $this->createDefaultReportTable();
         $pmTable = $report->getAssociatedPmTable();
-        $this->assertEquals($report->ADD_TAB_UID, $pmTable->ADD_TAB_UID);
+        $this->assertEquals($report->uid, $pmTable->uid);
     }
 
     /**
@@ -53,15 +53,13 @@ class ReportTableTest extends TestCase
         SchemaManager::dropPhysicalTable('PMT_REPORT_TEST');
 
         // we create a report table
-        $report = factory(ReportTable::class)->create();
+        $newReport = factory(ReportTable::class)->create();
 
-        $newReport = ReportTable::whereAddTabUid($report->ADD_TAB_UID)->first();
-
-        $pmTable = $report->getAssociatedPmTable();
+        $pmTable = $newReport->getAssociatedPmTable();
 
         // we add some variables to the report table
         $varsParams = [];
-        $varsParams ['PRO_ID'] = $newReport->process->PRO_ID;
+        $varsParams ['PRO_ID'] = $newReport->process->id;
         if ($forceVariableTypesTo !== null) {
             $varsParams['VAR_FIELD_TYPE'] = $forceVariableTypesTo;
         }
@@ -72,38 +70,35 @@ class ReportTableTest extends TestCase
         $v2 = factory(ProcessVariable::class)->create($varsParams);
         $var2 = ProcessVariable::where('VAR_UID', $v2->VAR_UID)->first();
 
-        $field1 = factory(ReportTableVariable::class)
+        $field1 = factory(ReportTableColumn::class)
             ->create([
-                'ADD_TAB_UID' => $newReport->ADD_TAB_UID,
-                'ADD_TAB_ID' => $newReport->ADD_TAB_ID,
-                'FLD_DYN_UID' => $var1->VAR_UID,
-                'FLD_DYN_NAME' => $var1->VAR_NAME,
-                'VAR_ID' => $var1->VAR_ID
+                'report_table_id' => $newReport->id,
+                'dynaform_id' => $var1->VAR_ID,
+                'dynaform_name' => $var1->VAR_NAME,
+                'process_variable_id' => $var1->VAR_ID
             ]);
 
-        $field2 = factory(ReportTableVariable::class)
+        $field2 = factory(ReportTableColumn::class)
             ->create([
-                'ADD_TAB_UID' => $newReport->ADD_TAB_UID,
-                'ADD_TAB_ID' => $newReport->ADD_TAB_ID,
-                'FLD_DYN_UID' => $var2->VAR_UID,
-                'FLD_DYN_NAME' => $var2->VAR_NAME,
-                'VAR_ID' => $var2->VAR_ID
+                'report_table_id' => $newReport->id,
+                'dynaform_id' => $var2->VAR_ID,
+                'dynaform_name' => $var2->VAR_NAME,
+                'process_variable_id' => $var2->VAR_ID
             ]);
 
         $column1 = SchemaManager::setDefaultsForReportTablesFields($field1->toArray(), $var1);
         $column2 = SchemaManager::setDefaultsForReportTablesFields($field2->toArray(), $var2);
 
         $columnAppUid = [
-            'FLD_UID' => str_replace('-', '', Uuid::uuid4()),
-            'ADD_TAB_UID' => $pmTable->ADD_TAB_UID,
-            'FLD_NAME' => 'APP_UID',
-            'FLD_DESCRIPTION' => 'String Field',
-            'FLD_TYPE' => 'VARCHAR',
-            'FLD_SIZE' => 32,
-            'FLD_NULL' => 0
+            'additional_table_id' => $pmTable->id,
+            'name' => 'APP_UID',
+            'description' => 'String Field',
+            'type' => 'char',
+            'size' => 36,
+            'null' => 0
         ];
 
-        SchemaManager::dropPhysicalTable($newReport->ADD_TAB_NAME);
+        SchemaManager::dropPhysicalTable($newReport->name);
         SchemaManager::updateOrCreateColumn($pmTable, $columnAppUid);
         SchemaManager::updateOrCreateColumn($pmTable, $column1);
         SchemaManager::updateOrCreateColumn($pmTable, $column2);
@@ -122,11 +117,11 @@ class ReportTableTest extends TestCase
         $report = $this->createDefaultReportTable('string');
 
         // we add 2 variables to the rerport table
-        $var1 = ProcessVariable::where('PRO_ID', $report->PRO_ID)
+        $var1 = ProcessVariable::where('PRO_ID', $report->process_id)
                 ->orderBy('VAR_ID', 'ASC')
                 ->first();
 
-        $var2 = ProcessVariable::where('PRO_ID', $report->PRO_ID)
+        $var2 = ProcessVariable::where('PRO_ID', $report->process_id)
                 ->orderBy('VAR_ID', 'DESC')
                 ->first();
 
@@ -137,13 +132,13 @@ class ReportTableTest extends TestCase
         // create 2 instances with the data that was initialized above
         factory(Application::class)
             ->create([
-                'PRO_UID' => $report->PRO_UID,
+                'process_id' => $report->process->id,
                 'APP_DATA' => $dataInstance1
             ]);
 
         factory(Application::class)
             ->create([
-                'PRO_UID' => $report->PRO_UID,
+                'process_id' => $report->process->id,
                 'APP_DATA' => $dataInstance2
             ]);
 

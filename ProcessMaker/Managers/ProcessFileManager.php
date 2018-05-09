@@ -61,7 +61,7 @@ class ProcessFileManager
         );
         if ($path != '') {
             $arrayData = $this->listContentsOfPath(
-                $process->PRO_UID,
+                $process,
                 $path,
                 $getContents
             );
@@ -100,13 +100,13 @@ class ProcessFileManager
                 'isImport' => $isImport
             ]
         );
-        $processUid = $process->PRO_UID;
-        $userUid = $user->USR_UID;
+        $processUid = $process->uid;
+        $userUid = $user->uid;
         $this->initializeFromPath($data['prf_path'], $processUid);
         if (!ProcessFile::withPath($this->relativePath)->exists()) {
             ProcessFile::create([
                 'PRF_UID'             => str_replace('-', '', Uuid::uuid4()),
-                'PRO_UID'             => $processUid,
+                'process_id'             => $process->id,
                 'USR_UID'             => $userUid,
                 'PRF_UPDATE_USR_UID'  => '',
                 'PRF_PATH'            => $this->disk->path($this->relativePath) . '/',
@@ -119,7 +119,7 @@ class ProcessFileManager
         $filename = $this->relativePath . '/' . $data['prf_filename'];
         $processFile = ProcessFile::create([
                 'PRF_UID'             => str_replace('-', '', Uuid::uuid4()),
-                'PRO_UID'             => $processUid,
+                'process_id'             => $process->id,
                 'USR_UID'             => $userUid,
                 'PRF_UPDATE_USR_UID'  => '',
                 'PRF_PATH'            => $this->disk->path($filename),
@@ -151,7 +151,7 @@ class ProcessFileManager
                 'processFile' => 'filemanager.file_is_editable'
             ]
         );
-        $processFile->PRF_UPDATE_USR_UID = $user->USR_UID;
+        $processFile->PRF_UPDATE_USR_UID = $user->uid;
         $processFile->setContent($data['prf_content']);
         $processFile->save();
         return $this->format($processFile, true, false);
@@ -192,7 +192,7 @@ class ProcessFileManager
      */
     public function removeFolder($path, Process $process)
     {
-        $processUid = $process->PRO_UID;
+        $processUid = $process->uid;
         $pathParts = explode('/', trim($path, '/'), 2);
         $drivePath = $processUid . '/' .
             (isset($pathParts[1]) ? $pathParts[1] : '');
@@ -267,9 +267,9 @@ class ProcessFileManager
      *
      * @return array
      */
-    private function listContentsOfPath($processUid, $path, $includeFileContent = true)
+    private function listContentsOfPath($process, $path, $includeFileContent = true)
     {
-        $this->initializeFromPath($path, $processUid);
+        $this->initializeFromPath($path, $process->uid);
         $list = [];
         $directories = $this->disk->directories($this->relativePath);
         foreach ($directories as $dir) {
@@ -285,7 +285,7 @@ class ProcessFileManager
                 [],
                 [
                     'PRF_UID' => '',
-                    'PRO_UID' => $processUid,
+                    'process_id' => $process->id,
                     'USR_UID' => '',
                     'PRF_UPDATE_USR_UID' => '',
                     'PRF_PATH' => $this->disk->path($filepath),

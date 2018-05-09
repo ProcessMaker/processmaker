@@ -44,22 +44,22 @@ class ProcessTransformer extends TransformerAbstract
     public function transform(Process $process)
     {
         return $this->transformWithFieldFilter([
-            "prj_uid"                => $process->PRO_UID,
-            "prj_name"               => $process->PRO_NAME,
-            "prj_description"        => $process->PRO_DESCRIPTION,
-            "prj_target_namespace"   => $process->PRO_TARGET_NAMESPACE,
-            "prj_expresion_language" => $process->PRO_EXPRESION_LANGUAGE,
-            "prj_type_language"      => $process->PRO_TYPE_LANGUAGE,
-            "prj_exporter"           => $process->PRO_EXPORTER,
-            "prj_exporter_version"   => $process->PRO_EXPORTER_VERSION,
-            "prj_create_date"        => $process->PRO_CREATE_DATE->toIso8601String(),
-            "prj_update_date"        => $process->PRO_UPDATE_DATE->toIso8601String(),
-            "prj_author"             => $process->PRO_AUTHOR,
-            "prj_author_version"     => $process->PRO_AUTHOR_VERSION,
-            "prj_original_source"    => $process->PRO_ORIGINAL_SOURCE,
-            'prj_category'           => $process->PRO_CATEGORY,
-            'prj_type'               => $process->PRO_TYPE,
-            'prj_status'             => $process->PRO_STATUS,
+            "prj_uid"                => $process->uid,
+            "prj_name"               => $process->name,
+            "prj_description"        => $process->description,
+            "prj_target_namespace"   => $process->target_namespace,
+            "prj_expresion_language" => $process->expresion_language,
+            "prj_type_language"      => $process->type_language,
+            "prj_exporter"           => $process->exporter,
+            "prj_exporter_version"   => $process->exporter_version,
+            "prj_create_date"        => $process->created_at->toIso8601String(),
+            "prj_update_date"        => $process->updated_at->toIso8601String(),
+            "prj_author"             => $process->author,
+            "prj_author_version"     => $process->author_version,
+            "prj_original_source"    => $process->original_source,
+            'prj_category'           => $process->category ? $process->category->name : null,
+            'prj_type'               => $process->type,
+            'prj_status'             => $process->status,
         ]);
     }
 

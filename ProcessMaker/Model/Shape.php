@@ -20,7 +20,7 @@ use Watson\Validating\ValidatingTrait;
  * @property int $BOU_REL_POSITION
  * @property int $BOU_SIZE_IDENTICAL
  * @property string $BOU_CONTAINER
- * @property int $PRO_ID
+ * @property int $process_id
  * @property Diagram $diagram
  */
 class Shape extends Model
@@ -54,7 +54,7 @@ class Shape extends Model
         'BOU_REL_POSITION',
         'BOU_SIZE_IDENTICAL',
         'BOU_CONTAINER',
-        'PRO_ID'
+        'process_id'
     ];
 
     /**
@@ -75,7 +75,7 @@ class Shape extends Model
         'BOU_REL_POSITION'   => 0,
         'BOU_SIZE_IDENTICAL' => 0,
         'BOU_CONTAINER'      => '',
-        'PRO_ID'             => NULL
+        'process_id'             => NULL
     ];
 
     /**
@@ -96,7 +96,7 @@ class Shape extends Model
         'BOU_REL_POSITION'   => 'int',
         'BOU_SIZE_IDENTICAL' => 'int',
         'BOU_CONTAINER'      => 'string',
-        'PRO_ID'             => 'int'
+        'process_id'             => 'int'
     ];
 
     /**
@@ -117,7 +117,7 @@ class Shape extends Model
         'BOU_REL_POSITION'   => 'numeric',
         'BOU_SIZE_IDENTICAL' => 'numeric',
         'BOU_CONTAINER'      => 'nullable|max:30',
-        'PRO_ID'             => 'required'
+        'process_id'             => 'required'
     ];
 
     /**

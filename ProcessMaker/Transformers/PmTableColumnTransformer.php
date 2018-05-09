@@ -16,13 +16,13 @@ class PmTableColumnTransformer extends TransformerAbstract
     public function transform($field)
     {
         return [
-            'fld_name' => $field->FLD_NAME,
-            'fld_description' => $field->FLD_DESCRIPTION,
-            'fld_type' => $field->FLD_TYPE,
-            'fld_size' => $field->FLD_SIZE,
-            'fld_null' => $field->FLD_NULL,
-            'fld_auto_increment' => $field->FLD_AUTO_INCREMENT,
-            'fld_key' => $field->FLD_KEY
+            'name' => $field->name,
+            'description' => $field->description,
+            'type' => $field->type,
+            'size' => $field->size,
+            'null' => $field->null,
+            'auto_increment' => $field->auto_increment,
+            'key' => $field->key
         ];
     }
 }

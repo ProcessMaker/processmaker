@@ -12,13 +12,14 @@ class CreateOAUTHACCESSTOKENSTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('OAUTH_ACCESS_TOKENS', function(Blueprint $table)
+		Schema::create('oauth_access_tokens', function(Blueprint $table)
 		{
-			$table->string('ACCESS_TOKEN')->primary();
-			$table->string('CLIENT_ID', 80);
-			$table->string('USER_ID', 32)->nullable();
-			$table->dateTime('EXPIRES');
-			$table->string('SCOPE', 2000)->nullable();
+			$table->string('access_token')->primary();
+			$table->string('client_id');
+			// If user_id is null, then this is client authentication
+			$table->unsignedInteger('user_id')->nullable();
+			$table->dateTime('expires');
+			$table->string('scope')->nullable();
 		});
 	}
 
@@ -30,7 +31,7 @@ class CreateOAUTHACCESSTOKENSTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('OAUTH_ACCESS_TOKENS');
+		Schema::drop('oauth_access_tokens');
 	}
 
 }

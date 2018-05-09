@@ -15,12 +15,12 @@ class UserSeeder extends Seeder
     public function run()
     {
         factory(User::class)->create([
-            'USR_USERNAME' => 'admin',
-            'USR_PASSWORD' => Hash::make('admin'),
-            'USR_FIRSTNAME' => 'admin',
-            'USR_LASTNAME' => 'admin',
-            'USR_TIME_ZONE' => 'UTC',
-            'USR_ROLE' => 'PROCESSMAKER_ADMIN'
+            'username' => 'admin',
+            'password' => Hash::make('admin'),
+            'firstname' => 'admin',
+            'lastname' => 'admin',
+            'time_zone' => 'UTC',
+            'role_id' => Role::where('code','PROCESSMAKER_ADMIN')->first()->id
         ]);
 
     }

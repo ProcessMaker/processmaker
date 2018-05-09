@@ -14,6 +14,8 @@ Router::group(['namespace' => 'ProcessMaker\Http\Controllers\OAuth2'], function(
     Router::post('/oauth2/authorize', 'OAuth2Controller@postAuthorization')->middleware(['session']);
 });
 
+Router::get('api/1.0/cases','ProcessMaker\Http\Controllers\Api\Cases\CasesController@index')->middleware('auth');
+
 // Our standard API calls
 Router::group([
     'prefix' => 'api/1.0',
@@ -22,7 +24,7 @@ Router::group([
     Router::group([
         'middleware' => ['auth:api', 'bindings']
     ], function() {
-        Router::get('cases/{application}/variables', 'Cases\VariableController@get')->middleware('can:read,application');
+
         //File manager endpoints.
         Router::get('project/{process}/file-manager', 'Designer\FileManagerController@index')->middleware('can:readProcessFiles,process');
         Router::get('project/{process}/file-manager/{processFile}', 'Designer\FileManagerController@show')->middleware('can:readProcessFiles,process');
@@ -78,5 +80,9 @@ Router::group([
         Router::delete('project/{process}/report-table/{reportTable}', 'Project\ReportTableController@remove')->middleware('can:delete,reportTable');
         Router::get('project/{process}/report-table/{reportTable}/populate', 'Project\ReportTableController@populate')->middleware('can:write,reportTable');
         Router::get('project/{process}/report-table/{reportTable}/data', 'Project\ReportTableController@getAllDataRows')->middleware('can:read,reportTable');
+
+        //Cases endpoints
+
+        Router::get('cases/{application}/variables', 'Cases\VariableController@get')->middleware('can:read,application');
     });
 });

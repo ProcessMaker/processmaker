@@ -33,8 +33,8 @@ class GenerateApiTokenMiddlewareTest extends TestCase
         $response->assertStatus(200);
         $response->assertSessionHas('apiToken');
         // Check for access token in tables
-        $this->assertDatabaseHas('OAUTH_ACCESS_TOKENS', [
-            'USER_ID' => $user->USR_UID
+        $this->assertDatabaseHas('oauth_access_tokens', [
+            'user_id' => $user->id
         ]);
         $response->assertSee('completed');
     }

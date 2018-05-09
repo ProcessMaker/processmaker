@@ -14,9 +14,9 @@ class CreateTASKTable extends Migration {
 	{
 		Schema::create('TASK', function(Blueprint $table)
 		{
-			$table->string('PRO_UID', 32)->default('');
-			$table->string('TAS_UID', 32)->default('')->index('indexTasUid');
-			$table->integer('TAS_ID', true);
+			$table->increments('id');
+			$table->unsignedInteger('process_id');
+			$table->uuid('uid')->index('indexTasUid');
 			$table->text('TAS_TITLE', 16777215);
 			$table->text('TAS_DESCRIPTION', 16777215)->nullable();
 			$table->text('TAS_DEF_TITLE', 16777215)->nullable();
@@ -80,6 +80,7 @@ class CreateTASKTable extends Migration {
 			$table->string('TAS_RECEIVE_MESSAGE_TEMPLATE', 100)->default('alert_message.html');
 			$table->text('TAS_RECEIVE_SUBJECT_MESSAGE', 16777215)->nullable();
 			$table->text('TAS_RECEIVE_MESSAGE', 16777215)->nullable();
+            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
 		});
 	}
 

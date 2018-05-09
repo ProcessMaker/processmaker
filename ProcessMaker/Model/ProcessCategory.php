@@ -94,6 +94,6 @@ class ProcessCategory extends Model
      */
     public function processes()
     {
-        return $this->hasMany(Process::class, 'PRO_CATEGORY', 'CATEGORY_UID');
+        return $this->hasMany(Process::class, 'category_id', 'CATEGORY_ID');
     }
 }

@@ -3,6 +3,7 @@ namespace ProcessMaker\Model;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use ProcessMaker\Model\Traits\Uuid;
 
 /**
  * Represents an Eloquent model of an Case which is an instance of a Process. It's called Application because of the
@@ -11,13 +12,10 @@ use Illuminate\Support\Facades\DB;
  */
 class Application extends Model
 {
+    use Uuid;
 
     // Specify our table and our primary key
     protected $table = 'APPLICATION';
-    protected $primaryKey = 'APP_UID';
-
-    // Our primary key is not incrementing
-    public $incrementing = false;
 
     // Set our updated/created at
     const UPDATED_AT = 'APP_UPDATE_DATE';
@@ -33,13 +31,32 @@ class Application extends Model
     const STATUS_COMPLETED = 3;
     const STATUS_CANCELLED = 4;
 
+    /*
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uid';
+    }
+
     /**
      * Returns relationship of the User who created this case
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function creator()
     {
-        return $this->belongsTo(User::class, 'APP_INIT_USER', 'USR_UID');
+        return $this->belongsTo(User::class, 'creator_user_id', 'id');
+    }
+
+    /**
+     * Returns the relationship of the User this case belongs to
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'APP_CUR_USER', 'USR_UID');
     }
 
     /**
@@ -48,7 +65,25 @@ class Application extends Model
      */
     public function process()
     {
-        return $this->belongsTo(Process::class, 'PRO_UID', 'PRO_UID');
+        return $this->belongsTo(Process::class, 'process_id', 'id');
+    }
+
+    /**
+     * Returns the relationship of the Delegation this case belongs to
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function delegations()
+    {
+        return $this->hasMany(Delegation::class, 'APP_UID', 'APP_UID');
+    }
+
+    /**
+     * Returns the relationship of the Delegation this case belongs to
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function threads()
+    {
+        return $this->hasMany(Thread::class, 'APP_UID', 'APP_UID');
     }
 
     /**
@@ -68,8 +103,8 @@ class Application extends Model
      */
     public function hasUserParticipated(User $user)
     {
-        return DB::table('LIST_PARTICIPATED_LAST')->where('APP_UID', $this->APP_UID)
-            ->where('USR_UID', $user->USR_UID)
+        return DB::table('LIST_PARTICIPATED_LAST')->where('APP_UID', $this->uid)
+            ->where('USR_UID', $user->uid)
             ->exists();
     }
 }

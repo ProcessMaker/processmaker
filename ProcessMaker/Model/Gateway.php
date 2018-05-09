@@ -129,7 +129,7 @@ class Gateway extends Model implements FlowNodeInterface
      */
     public function process()
     {
-        return $this->belongsTo(Process::class, 'PRO_ID', 'PRO_ID');
+        return $this->belongsTo(Process::class);
     }
 
     /**

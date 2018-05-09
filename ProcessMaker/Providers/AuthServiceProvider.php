@@ -65,13 +65,13 @@ class AuthServiceProvider extends ServiceProvider
             $role = $user->role;
 
             // Check for existence of role or if role is disabled
-            if (!$role || $role->ROL_STATUS != Role::STATUS_ACTIVE) {
+            if (!$role || $role->status != Role::STATUS_ACTIVE) {
                 return false;
             }
 
             // Get all permissions for this role that is requested
             $validPermissionCount = $role->permissions()
-                ->whereIn('PER_CODE', $permissions)
+                ->whereIn('code', $permissions)
                 ->count();
 
             if ($validPermissionCount != count($permissions)) {

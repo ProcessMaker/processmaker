@@ -53,6 +53,6 @@ class UserProvider extends EloquentUserProvider
      */
     public function retrieveByCredentials(array $credentials)
     {
-        return User::where('USR_USERNAME', $credentials['username'])->first();
+        return User::where('username', $credentials['username'])->first();
     }
 }

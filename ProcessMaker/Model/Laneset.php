@@ -10,7 +10,7 @@ use Watson\Validating\ValidatingTrait;
  * Container for one or more lanes.
  *
  * @property string $LNS_UID
- * @property int $PRO_ID
+ * @property int $process_id
  * @property string $LNS_NAME
  * @property string $LNS_PARENT_LANE
  * @property bool $LNS_IS_HORIZONTAL
@@ -43,7 +43,7 @@ class Laneset extends Model implements ElementInterface
      */
     protected $fillable = [
         'LNS_UID',
-        'PRO_ID',
+        'process_id',
         'LNS_NAME',
         'LNS_PARENT_LANE',
         'LNS_IS_HORIZONTAL',
@@ -57,7 +57,7 @@ class Laneset extends Model implements ElementInterface
      */
     protected $attributes = [
         'LNS_UID'           => '',
-        'PRO_ID'            => null,
+        'process_id'            => null,
         'LNS_NAME'          => null,
         'LNS_PARENT_LANE'   => null,
         'LNS_IS_HORIZONTAL' => true,
@@ -70,7 +70,7 @@ class Laneset extends Model implements ElementInterface
      */
     protected $casts = [
         'LNS_UID'           => 'string',
-        'PRO_ID'            => 'int',
+        'process_id'            => 'int',
         'LNS_NAME'          => 'string',
         'LNS_PARENT_LANE'   => 'string',
         'LNS_IS_HORIZONTAL' => 'bool',
@@ -104,6 +104,6 @@ class Laneset extends Model implements ElementInterface
      */
     public function process()
     {
-        return $this->belongsTo(Process::class, 'PRO_ID', 'PRO_ID');
+        return $this->belongsTo(Process::class);
     }
 }

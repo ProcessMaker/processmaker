@@ -16,8 +16,8 @@ $factory->define(Activity::class, function (Faker $faker) {
         'ACT_TYPE'      => Activity::TYPE_TASK,
         'ACT_TASK_TYPE' => Activity::TASK_TYPE_EMPTY,
         'ACT_LOOP_TYPE' => Activity::LOOP_TYPE_NONE,
-        'PRO_ID'        => function () {
-            return factory(Process::class)->create()->PRO_ID;
+        'process_id'        => function () {
+            return factory(Process::class)->create()->id;
         }
     ];
 });
