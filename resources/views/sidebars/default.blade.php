@@ -14,7 +14,8 @@
     </ul>
 </div>
 @section('js')
-<script>
+@parent
+  <script>
   new Vue({
     el: '#sidebarMenu',
     data:{

@@ -2,8 +2,8 @@
  * Task Shape class
  */
 export class TaskShape {
-    constructor(svg) {
-        this.id = null
+    constructor (svg) {
+        this.id = null;
         this.options = {
             id: null,
             x: null,
@@ -16,17 +16,25 @@ export class TaskShape {
                 stroke: "#000",
                 strokeWidth: 2
             }
-        }
-        this.svg = svg
-        this.shape = this.svg.group()
+        };
+        this.svg = svg;
+        this.shape = this.svg.group();
     }
 
-    config(options) {
-        this.options = Object.assign({}, this.options, options)
+    /**
+     * Merge options default with options from arguments
+     * @param options
+     * @returns {TaskShape}
+     */
+    config (options) {
+        this.options = Object.assign({}, this.options, options);
         return this;
     }
 
-    render() {
+    /**
+     * Render the activity Based in options config
+     */
+    render () {
         this.shape.add(this.svg.rect(
             this.options.x,
             this.options.y,
