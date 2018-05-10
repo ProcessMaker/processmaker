@@ -18,7 +18,7 @@
     <script>
         window.Processmaker = {
             csrfToken: "{{csrf_token()}}",
-            userId: "{{Auth::user()->USR_ID}}",
+            userId: "{{Auth::id()}}",
             broadcasting: {
                 broadcaster: "{{config('broadcasting.broadcaster')}}",
                 host: "{{config('broadcasting.host')}}",
