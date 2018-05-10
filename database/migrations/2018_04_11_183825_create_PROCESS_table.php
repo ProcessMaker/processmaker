@@ -52,7 +52,6 @@ class CreatePROCESSTable extends Migration {
 			$table->text('action_done')->nullable();
 
             //Columns merged from BPMN_PROCESS
-            $table->integer('diagram_id')->nullable();
             $table->boolean('executable')->default(false);
             $table->boolean('closed')->default(false);
 
@@ -64,7 +63,10 @@ class CreatePROCESSTable extends Migration {
             $table->mediumText('exporter_version')->nullable()->default(null);
             $table->mediumText('author')->nullable()->default(null);
             $table->mediumText('author_version')->nullable()->default(null);
-            $table->mediumText('original_source')->nullable()->default(null);
+			$table->mediumText('original_source')->nullable()->default(null);
+			
+			// Represents the BPMN file that represents this process, if one is available
+			$table->longText('bpmn')->nullable();
  
 		});
 	}
