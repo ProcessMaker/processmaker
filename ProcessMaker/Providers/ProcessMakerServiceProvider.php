@@ -4,7 +4,11 @@ namespace ProcessMaker\Providers;
 
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use League\Fractal\Manager;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use League\Fractal\Resource\Collection;
+use League\Fractal\Resource\Item;
+use League\Fractal\Serializer\SerializerAbstract;
 use League\Fractal\TransformerAbstract;
 use ProcessMaker\Managers\DatabaseManager;
 use ProcessMaker\Managers\ProcessCategoryManager;
@@ -21,7 +25,6 @@ use ProcessMaker\Model\Lane;
 use ProcessMaker\Model\Laneset;
 use ProcessMaker\Model\Participant;
 use ProcessMaker\Model\Pool;
-use Spatie\Fractalistic\Fractal;
 
 /**
  * Provide our ProcessMaker specific services
@@ -37,23 +40,26 @@ class ProcessMakerServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+
         parent::boot();
 
         /**
          * Prepare the response of an item using fractal
          */
-        response()->macro('item', function ($item, TransformerAbstract $transformer, $status = 200, array $headers = [], $serializer = '') {
-            if (empty($serializer)) {
+        response()->macro('item', function ($item, TransformerAbstract $transformer, $status = 200, array $headers = [], SerializerAbstract $serializer = null) {
+            /**
+             * @var Manager $fractal
+             */
+            $fractal = new Manager();
+            if (!$serializer) {
                 $serialize = config('app.serialize_fractal');
                 $serializer = new $serialize();
             }
+            $resource = new Item($item, $transformer);
+            $fractal->setSerializer($serializer);
 
             return response()->json(
-                Fractal::create()
-                    ->item($item)
-                    ->serializeWith($serializer)
-                    ->transformWith($transformer)
-                    ->toArray(),
+                $fractal->createData($resource)->toArray(),
                 $status,
                 $headers
             );
@@ -62,18 +68,20 @@ class ProcessMakerServiceProvider extends ServiceProvider
         /**
          * Prepare the response of collection using fractal
          */
-        response()->macro('collection', function ($item, TransformerAbstract $transformer, $status = 200, array $headers = [], $serializer = null) {
-            if (empty($serializer)) {
+        response()->macro('collection', function ($item, TransformerAbstract $transformer, $status = 200, array $headers = [], SerializerAbstract $serializer = null) {
+            /**
+             * @var Manager $fractal
+             */
+            $fractal = new Manager();
+            if (!$serializer) {
                 $serialize = config('app.serialize_fractal');
                 $serializer = new $serialize();
             }
+            $resource = new Collection($item, $transformer);
+            $fractal->setSerializer($serializer);
 
             return response()->json(
-                Fractal::create()
-                    ->collection($item)
-                    ->transformWith($transformer)
-                    ->serializeWith($serializer)
-                    ->toArray(),
+                $fractal->createData($resource)->toArray(),
                 $status,
                 $headers
             );
@@ -82,27 +90,26 @@ class ProcessMakerServiceProvider extends ServiceProvider
         /**
          * Prepare the response of the paginate collection using fractal, for compatibility.
          */
-        response()->macro('paged', function ($item, TransformerAbstract $transformer, $status = 200, array $headers = [], $serializer = null, $paginator = null) {
-            if (empty($serializer)) {
+        response()->macro('paged', function ($item, TransformerAbstract $transformer, $status = 200, array $headers = [], SerializerAbstract $serializer = null, IlluminatePaginatorAdapter $paginator = null) {
+            /**
+             * @var Manager $fractal
+             */
+            $fractal = new Manager();
+            if (!$serializer) {
                 $serialize = config('app.serialize_fractal');
                 $serializer = new $serialize(true);
             }
+            $fractal->setSerializer($serializer);
+            $resource = new Collection($item, $transformer);
 
-            if (empty($paginator)) {
+            if (!$paginator) {
                 $paginate = config('app.paginate_fractal');
-                /**
-                 * @var IlluminatePaginatorAdapter $paginator
-                 */
                 $paginator = new $paginate($item);
             }
+            $resource->setPaginator($paginator);
 
             return response()->json(
-                Fractal::create()
-                    ->collection($item)
-                    ->transformWith($transformer)
-                    ->serializeWith($serializer)
-                    ->paginateWith($paginator)
-                    ->toArray(),
+                $fractal->createData($resource)->toArray(),
                 $status,
                 $headers
             );
