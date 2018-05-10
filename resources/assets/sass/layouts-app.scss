@@ -30,7 +30,7 @@ body {
 }
 .sidebarmenu ul{
   overflow: auto;
-  width: 208px;
+  width: auto;
   height: 100%;
   padding-bottom: 75px;
 }
@@ -42,7 +42,7 @@ body {
   color: $light
 }
 .sidebarmenu li{
-  padding: 6px 16px;
+  padding: 6px 14px;
   line-height: 1;
   white-space: nowrap;
 }
