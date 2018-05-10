@@ -50,7 +50,7 @@ class ResponseFractalTest extends TestCase
      */
     public function testResponseCollection() :void
     {
-        $reportTable = ReportTable::where('ADD_TAB_TYPE', 'NORMAL')->get();
+        $reportTable = ReportTable::where('type', 'NORMAL')->get();
 
         $response = response()->collection($reportTable, new ReportTableTransformer());
         $data = json_decode($response->getContent(), true);
@@ -85,7 +85,7 @@ class ResponseFractalTest extends TestCase
      */
     public function testResponsePaged() :void
     {
-        $reportTable = ReportTable::where('ADD_TAB_TYPE', 'NORMAL')->paginate(4);
+        $reportTable = ReportTable::where('type', 'NORMAL')->paginate(4);
 
         $response = response()->paged($reportTable, new ReportTableTransformer());
         $data = json_decode($response->getContent(), true);
@@ -139,15 +139,13 @@ class ResponseFractalTest extends TestCase
     private function verifyStructure($data) :void
     {
         //verify if the fields exist in the data response
-        $this->assertArrayHasKey('rep_tab_uid', $data);
-        $this->assertArrayHasKey('rep_tab_name', $data);
-        $this->assertArrayHasKey('rep_tab_description', $data);
-        $this->assertArrayHasKey('rep_tab_plg_uid', $data);
-        $this->assertArrayHasKey('rep_tab_connection', $data);
-        $this->assertArrayHasKey('pro_uid', $data);
-        $this->assertArrayHasKey('rep_tab_type', $data);
-        $this->assertArrayHasKey('rep_tab_grid', $data);
-        $this->assertArrayHasKey('rep_tab_tag', $data);
+        $this->assertArrayHasKey('uid', $data);
+        $this->assertArrayHasKey('name', $data);
+        $this->assertArrayHasKey('description', $data);
+        $this->assertArrayHasKey('process', $data);
+        $this->assertArrayHasKey('type', $data);
+        $this->assertArrayHasKey('grid', $data);
+        $this->assertArrayHasKey('tag', $data);
 
         $this->assertInternalType('array', $data['fields']);
     }
