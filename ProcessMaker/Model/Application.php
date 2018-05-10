@@ -103,8 +103,10 @@ class Application extends Model
      */
     public function hasUserParticipated(User $user)
     {
-        return DB::table('LIST_PARTICIPATED_LAST')->where('APP_UID', $this->uid)
-            ->where('USR_UID', $user->uid)
+        // Check if there is a delegation that was / is assigned for this
+        return DB::table('APP_DELEGATION')
+            ->where('application_id', $this->id)
+            ->where('user_id', $user->id)
             ->exists();
-    }
+   }
 }
