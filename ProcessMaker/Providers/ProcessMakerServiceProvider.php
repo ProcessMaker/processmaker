@@ -61,23 +61,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->app->singleton('process.manager', function ($app) {
             return new ProcessManager();
         });
-        /**
-         * Mapping of shape and elements used in BPMN_BOUND.BOU_ELEMENT_TYPE
-         *
-         */
-        Relation::morphMap([
-            Activity::TYPE    => Activity::class,
-            Artifact::TYPE    => Artifact::class,
-            'bpmnData'        => Activity::class,
-            Diagram::TYPE     => Diagram::class,
-            Event::TYPE       => Event::class,
-            Gateway::TYPE     => Gateway::class,
-            Lane::TYPE        => Lane::class,
-            Laneset::TYPE     => Laneset::class,
-            'bpmnParticipant' => Participant::class,
-            'bpmnPool'        => Pool::class,
-        ]);
-
         $this->app->singleton('report_table.manager', function ($app) {
             return new ReportTableManager();
         });

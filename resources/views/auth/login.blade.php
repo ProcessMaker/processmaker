@@ -45,7 +45,7 @@
 
       <div class="form-group">
         <label class="text-muted" for="password">{{ __('Language') }}</label>
-        <select class="form-control fas fa-sort-down">
+        <select class="form-control">
           <option>English</option>
           <option>Spanish</option>
           <option>Portugese</option>

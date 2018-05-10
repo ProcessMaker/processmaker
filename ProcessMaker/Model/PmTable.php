@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use PDOException;
 use ProcessMaker\Facades\SchemaManager;
+use ProcessMaker\Model\Traits\Uuid;
 use Watson\Validating\ValidatingTrait;
 
 /**
@@ -15,36 +16,46 @@ use Watson\Validating\ValidatingTrait;
 class PmTable extends Model
 {
     use ValidatingTrait;
+    use Uuid;
+
+
 
     // all tables will have this prefix
     const TABLE_PREFIX = 'PMT_';
 
     public static $attributesList = [
-        'ADD_TAB_UID',
-        'ADD_TAB_NAME',
-        'ADD_TAB_DESCRIPTION',
-        'ADD_TAB_PLG_UID',
-        'DBS_UID',
-        'PRO_UID',
-        'ADD_TAB_TYPE',
-        'ADD_TAB_GRID',
-        'ADD_TAB_TAG'
+        'uid',
+        'name',
+        'description',
+        'db_source_id',
+        'process_id',
+        'type',
+        'grid',
+        'tags'
     ];
 
     public $timestamps = false;
-    public $incrementing = false;
 
-    protected $table = 'ADDITIONAL_TABLES';
-    protected $primaryKey = 'ADD_TAB_UID';
+    protected $table = 'additional_tables';
 
     //validation rules
     protected $rules = [
-        'ADD_TAB_NAME' => 'required',
-        'DBS_UID' => 'required',
+        'name' => 'required',
+        'db_source_id' => 'nullable|exists:db_sources,id',
     ];
 
     //stores the metadata of the columns and keys of the physical table
     private $tableMetadata = null;
+
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uid';
+    }
 
     /**
      * Returns the name of the physical table
@@ -53,7 +64,7 @@ class PmTable extends Model
      */
     public function physicalTableName()
     {
-        return PmTable::TABLE_PREFIX . strtoupper($this->ADD_TAB_NAME);
+        return PmTable::TABLE_PREFIX . strtoupper($this->name);
     }
 
     /**

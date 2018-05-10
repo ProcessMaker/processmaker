@@ -27,7 +27,7 @@ class ReportTableManager
         $reportTableName = $pmTable->physicalTableName();
 
         $qry = "insert into $reportTableName (APP_UID, $insertString)
-                  select APP_UID, $selectString  from APPLICATION";
+                  select uid, $selectString  from APPLICATION";
 
         DB::statement($qry);
     }
@@ -43,10 +43,10 @@ class ReportTableManager
     {
         $colsInReportTable = $reportTable->variables->map(function ($var) {
             return collect($var->pivot)
-                ->only('FLD_NAME')
+                ->only('name')
                 ->all();
         })
-            ->pluck('FLD_NAME')
+            ->pluck('name')
             ->toArray();
 
         return implode(', ', $colsInReportTable);

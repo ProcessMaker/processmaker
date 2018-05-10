@@ -38,12 +38,12 @@ class PmTableControllerTest extends ApiTestCase
         $pmTable = $this->createTestPmTable();
 
         // we retrieve the pmTable with the endpoint
-        $url = "/api/1.0/pmtable/" . $pmTable->ADD_TAB_UID;
+        $url = "/api/1.0/pmtable/" . $pmTable->uid;
         $response = $this->api('GET', $url);
         $response->assertStatus(200);
         $returnedModel = json_decode($response->getContent());
 
-        $this->assertEquals($returnedModel->add_tab_uid, $pmTable->ADD_TAB_UID,
+        $this->assertEquals($returnedModel->uid, $pmTable->uid,
             'The created test pmTable should be returned by the endpoint');
 
         $this->assertGreaterThanOrEqual(1, count($returnedModel->fields),
@@ -63,7 +63,7 @@ class PmTableControllerTest extends ApiTestCase
         $response->assertStatus(201);
 
         $returnedObject = json_decode($response->getContent());
-        $this->assertTrue($returnedObject->add_tab_name === $pmInputData['add_tab_name'],
+        $this->assertTrue($returnedObject->name === $pmInputData['name'],
             'The added pmTable has not the passed name');
 
         $this->assertGreaterThanOrEqual(0, count($returnedObject->fields),
@@ -79,36 +79,36 @@ class PmTableControllerTest extends ApiTestCase
         $description = 'Changed Description';
 
         // we update the pmTable
-        $url = "/api/1.0/pmtable/" . $pmTable->ADD_TAB_UID;
-        $response = $this->api('PUT', $url, ['add_tab_description' => $description]);
+        $url = "/api/1.0/pmtable/" . $pmTable->uid;
+        $response = $this->api('PUT', $url, ['description' => $description]);
         $response->assertStatus(200);
         $returnedObject = json_decode($response->getContent());
-        $this->assertEquals($returnedObject->add_tab_description, $description);
+        $this->assertEquals($returnedObject->description, $description);
 
-        $url = "/api/1.0/pmtable/" . $pmTable->ADD_TAB_UID;
+        $url = "/api/1.0/pmtable/" . $pmTable->uid;
         $response = $this->api('PUT', $url, [
-            'add_tab_description' => $description,
+            'description' => $description,
             'fields' => [
                 [
-                    'fld_name' => 'NewField',
-                    'fld_description' => 'Field2 description',
-                    'fld_type' => 'VARCHAR',
-                    'fld_size' => '100',
-                    'fld_null' => 1,
-                    'fld_key' => 0,
-                    'fld_auto_increment' => 0,
+                    'name' => 'NewField',
+                    'description' => 'Field2 description',
+                    'type' => 'VARCHAR',
+                    'size' => '100',
+                    'null' => 1,
+                    'key' => 0,
+                    'auto_increment' => 0,
                 ]
             ]]);
         $response->assertStatus(200);
         $response->assertJsonStructure([
-            'add_tab_name',
-            'add_tab_grid',
-            'dbs_uid',
-            'fields' => ['*' => ['FLD_NAME', 'FLD_TYPE']]
+            'name',
+            'grid',
+            'db_source_id',
+            'fields' => ['*' => ['name', 'type']]
         ]);
 
         $returnedObject = json_decode($response->getContent());
-        $this->assertEquals($returnedObject->add_tab_description, $description);
+        $this->assertEquals($returnedObject->description, $description);
     }
 
     /**
@@ -119,7 +119,7 @@ class PmTableControllerTest extends ApiTestCase
         $pmTable = $this->createTestPmTable();
 
         $numSourcesBefore = PmTable::count();
-        $url = "/api/1.0/pmtable/" . $pmTable->ADD_TAB_UID;
+        $url = "/api/1.0/pmtable/" . $pmTable->uid;
         $response = $this->api('DELETE', $url);
         $numSourcesAfter = PmTable::count();
         $response->assertStatus(204);
@@ -133,7 +133,7 @@ class PmTableControllerTest extends ApiTestCase
     {
         $pmTable = $this->createTestPmTable();
 
-        $url = "/api/1.0/pmtable/" . $pmTable->ADD_TAB_UID . "/data";
+        $url = "/api/1.0/pmtable/" . $pmTable->uid . "/data";
         $response = $this->api('GET', $url);
         $response->assertStatus(200);
     }
@@ -150,7 +150,7 @@ class PmTableControllerTest extends ApiTestCase
             'TextField' => 'a text'
         ];
 
-        $url = "/api/1.0/pmtable/" . $pmTable->ADD_TAB_UID . "/data";
+        $url = "/api/1.0/pmtable/" . $pmTable->uid . "/data";
         $response = $this->api('POST', $url, $dataRow);
         $response->assertStatus(201);
     }
@@ -167,7 +167,7 @@ class PmTableControllerTest extends ApiTestCase
             'TextField' => 'Text field changed'
         ];
 
-        $url = "/api/1.0/pmtable/" . $pmTable->ADD_TAB_UID . "/data";
+        $url = "/api/1.0/pmtable/" . $pmTable->uid . "/data";
         $response = $this->api('POST', $url, $dataRow);
         $response->assertStatus(201);
 
@@ -179,7 +179,7 @@ class PmTableControllerTest extends ApiTestCase
             'TextField' => 'text field updated'
         ];
 
-        $url = "/api/1.0/pmtable/" . $pmTable->ADD_TAB_UID . "/data";
+        $url = "/api/1.0/pmtable/" . $pmTable->uid . "/data";
         $response = $this->api('PUT', $url, $updateData);
         $response->assertStatus(200);
     }
@@ -197,7 +197,7 @@ class PmTableControllerTest extends ApiTestCase
         ];
 
         // Add data to the PmTable
-        $url = "/api/1.0/pmtable/" . $pmTable->ADD_TAB_UID . "/data";
+        $url = "/api/1.0/pmtable/" . $pmTable->uid . "/data";
         $response = $this->api('POST', $url, $dataRow);
         $response->assertStatus(201);
 
@@ -212,7 +212,7 @@ class PmTableControllerTest extends ApiTestCase
         $response->assertStatus(405);
 
         $numberRowsBefore = count($pmTable->allDataRows());
-        $url = "/api/1.0/pmtable/" . $pmTable->ADD_TAB_UID . "/data/StringField/String1/TextField/Text1/IntegerField/" . $lastId;
+        $url = "/api/1.0/pmtable/" . $pmTable->uid . "/data/StringField/String1/TextField/Text1/IntegerField/" . $lastId;
         $response = $this->api('DELETE', $url);
         $numberRowsAfter = count($pmTable->allDataRows());
         $response->assertStatus(204);
@@ -228,11 +228,11 @@ class PmTableControllerTest extends ApiTestCase
 
         // we need an user and authenticate him
         $user = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make('password'),
-            'USR_ROLE' => Role::PROCESSMAKER_ADMIN
+            'password' => Hash::make('password'),
+            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
 
-        $this->auth($user->USR_USERNAME, 'password');
+        $this->auth($user->username, 'password');
     }
 
     /**
@@ -243,29 +243,28 @@ class PmTableControllerTest extends ApiTestCase
     private function pmInputDefaultData()
     {
         return [
-            'add_tab_name' => 'TestPmTable',
-            'add_tab_description' => 'Table Description',
-            'dbs_uid' => env('DB_DATABASE'),
-            'add_tab_type' => 'NORMAL',
+            'name' => 'TestPmTable',
+            'description' => 'Table Description',
+            'type' => 'PMTABLE',
             'fields' => [
                 [
-                    'fld_name' => 'Field1',
-                    'fld_description' => 'Field1 description',
-                    'fld_type' => 'INTEGER',
-                    'fld_null' => 1,
-                    'fld_table_index' => 1,
-                    'fld_auto_increment' => 0,
-                    'fld_key' => 0,
+                    'name' => 'Field1',
+                    'description' => 'Field1 description',
+                    'type' => 'INTEGER',
+                    'null' => 1,
+                    'table_index' => 1,
+                    'auto_increment' => 0,
+                    'key' => 0,
                 ],
                 [
-                    'fld_name' => 'Field2',
-                    'fld_description' => 'Field2 description',
-                    'fld_type' => 'VARCHAR',
-                    'fld_size' => '100',
-                    'fld_null' => 1,
-                    'fld_key' => 0,
-                    'fld_table_index' => 2,
-                    'fld_auto_increment' => 0,
+                    'name' => 'Field2',
+                    'description' => 'Field2 description',
+                    'type' => 'VARCHAR',
+                    'size' => '100',
+                    'null' => 1,
+                    'key' => 0,
+                    'table_index' => 2,
+                    'auto_increment' => 0,
                 ]
             ]
         ];
@@ -279,38 +278,30 @@ class PmTableControllerTest extends ApiTestCase
     private function createTestPmTable()
     {
         // we create a new pmTable
-        $factoryTable = factory(PmTable::class)->create();
-
-        $pmTable = PmTable::where('ADD_TAB_UID', $factoryTable->ADD_TAB_UID)->get()[0];
+        $pmTable = factory(PmTable::class)->create();
 
         $field1 = [
-            'FLD_UID' => str_replace('-', '', Uuid::uuid4()),
-            'ADD_TAB_UID' => $pmTable->ADD_TAB_UID,
-            'FLD_NAME' => 'StringField',
-            'FLD_DESCRIPTION' => 'String Field',
-            'FLD_TYPE' => 'VARCHAR',
-            'FLD_SIZE' => 250,
-            'FLD_NULL' => 1
+            'name' => 'StringField',
+            'description' => 'String Field',
+            'type' => 'VARCHAR',
+            'size' => 250,
+            'null' => 1
         ];
 
         $field2 = [
-            'FLD_UID' => str_replace('-', '', Uuid::uuid4()),
-            'ADD_TAB_UID' => $pmTable->ADD_TAB_UID,
-            'FLD_NAME' => 'IntegerField',
-            'FLD_DESCRIPTION' => 'Integer Field',
-            'FLD_TYPE' => 'INTEGER',
-            'FLD_NULL' => 0,
-            'FLD_KEY' => 1,
-            'FLD_AUTO_INCREMENT' => 1
+            'name' => 'IntegerField',
+            'description' => 'Integer Field',
+            'type' => 'INTEGER',
+            'null' => 0,
+            'key' => 1,
+            'auto_increment' => 1
         ];
 
         $field3 = [
-            'FLD_UID' => str_replace('-', '', Uuid::uuid4()),
-            'ADD_TAB_UID' => $pmTable->ADD_TAB_UID,
-            'FLD_NAME' => 'TextField',
-            'FLD_DESCRIPTION' => 'Text Field',
-            'FLD_TYPE' => 'TEXT',
-            'FLD_NULL' => 1
+            'name' => 'TextField',
+            'description' => 'Text Field',
+            'type' => 'TEXT',
+            'null' => 1
         ];
 
         SchemaManager::dropPhysicalTable('PMT_TESTPMTABLE');

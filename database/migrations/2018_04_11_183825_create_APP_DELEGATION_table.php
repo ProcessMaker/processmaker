@@ -14,15 +14,12 @@ class CreateAPPDELEGATIONTable extends Migration {
 	{
 		Schema::create('APP_DELEGATION', function(Blueprint $table)
 		{
-			$table->string('APP_UID', 32)->default('');
+			$table->increments('id');
+			$table->unsignedInteger('application_id');
 			$table->integer('DEL_INDEX')->default(0);
-			$table->integer('DELEGATION_ID', true);
-			$table->integer('APP_NUMBER')->nullable()->default(0)->index('INDEX_APP_NUMBER');
 			$table->integer('DEL_PREVIOUS')->default(0);
 			$table->integer('DEL_LAST_INDEX')->default(0);
-			$table->string('PRO_UID', 32)->default('');
-			$table->string('TAS_UID', 32)->default('');
-			$table->string('USR_UID', 32)->default('')->index('INDEX_USR_UID');
+			$table->unsignedInteger('task_id');
 			$table->string('DEL_TYPE', 32)->default('NORMAL');
 			$table->integer('DEL_THREAD')->default(0);
 			$table->string('DEL_THREAD_STATUS', 32)->default('OPEN');
@@ -40,11 +37,8 @@ class CreateAPPDELEGATIONTable extends Migration {
 			$table->boolean('DEL_DELAYED')->nullable()->default(0);
 			$table->text('DEL_DATA', 16777215);
 			$table->float('APP_OVERDUE_PERCENTAGE', 10, 0)->default(0);
-			$table->integer('USR_ID')->nullable()->default(0)->index('INDEX_USR_ID');
-			$table->integer('PRO_ID')->nullable()->default(0)->index('INDEX_PRO_ID');
-			$table->integer('TAS_ID')->nullable()->default(0)->index('INDEX_TAS_ID');
-			$table->index(['APP_UID','DEL_INDEX']);
-			$table->index(['DEL_THREAD_STATUS','APP_NUMBER'], 'INDEX_THREAD_STATUS_APP_NUMBER');
+			$table->unsignedInteger('user_id')->nullable()->default(null)->index('userIdIdx');
+			$table->index(['application_id','DEL_INDEX']);
 		});
 	}
 

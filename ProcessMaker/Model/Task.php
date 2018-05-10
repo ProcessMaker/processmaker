@@ -4,6 +4,7 @@ namespace ProcessMaker\Model;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
+use ProcessMaker\Model\Traits\Uuid;
 
 /**
  *
@@ -19,12 +20,13 @@ class Task extends Model
 {
 
     use Notifiable;
+    use Uuid;
+
     /**
      * The table associated with the model.
      * @var string $table
      */
     protected $table = 'TASK';
-    protected $primaryKey = 'TAS_ID';
 
     /**
      * The name of the "created at" column.
@@ -37,27 +39,21 @@ class Task extends Model
     const UPDATED_AT = null;
 
     protected $fillable = [
-        'PRO_UID',
-        'TAS_UID',
-        'TAS_ID',
+        'process_id',
+        'task_id',
+        'user_id',
         'TAS_TITLE',
         'TAS_DESCRIPTION',
         'TAS_TYPE',
         'TAS_DURATION',
     ];
     protected $attributes = [
-        'PRO_UID'                           => '',
-        'TAS_UID'                           => '',
-        'TAS_ID'                            => null,
         'TAS_TITLE'                         => '',
         'TAS_DESCRIPTION'                   => '',
         'TAS_TYPE'                          => 'NORMAL',
         'TAS_DURATION'                      => 0,
     ];
     protected $casts = [
-        'PRO_UID'                           => 'string',
-        'TAS_UID'                           => 'string',
-        'TAS_ID'                            => 'int',
         'TAS_TITLE'                         => 'string',
         'TAS_DESCRIPTION'                   => 'string',
         'TAS_TYPE'                          => 'string',
@@ -71,6 +67,6 @@ class Task extends Model
      */
     public function getRouteKeyName()
     {
-        return 'TAS_UID';
+        return 'uid';
     }
 }

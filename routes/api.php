@@ -14,6 +14,8 @@ Router::group(['namespace' => 'ProcessMaker\Http\Controllers\OAuth2'], function(
     Router::post('/oauth2/authorize', 'OAuth2Controller@postAuthorization')->middleware(['session']);
 });
 
+Router::get('api/1.0/cases','ProcessMaker\Http\Controllers\Api\Cases\CasesController@index')->middleware('auth');
+
 // Our standard API calls
 Router::group([
     'prefix' => 'api/1.0',
@@ -22,7 +24,7 @@ Router::group([
     Router::group([
         'middleware' => ['auth:api', 'bindings']
     ], function() {
-        Router::get('cases/{application}/variables', 'Cases\VariableController@get')->middleware('can:read,application');
+
         //File manager endpoints.
         Router::get('project/{process}/file-manager', 'Designer\FileManagerController@index')->middleware('can:readProcessFiles,process');
         Router::get('project/{process}/file-manager/{processFile}', 'Designer\FileManagerController@show')->middleware('can:readProcessFiles,process');
@@ -88,5 +90,8 @@ Router::group([
         Router::put('project/{process}/dynaform/{dynaform}', 'Designer\DynaformController@update')->middleware('can:write,ProcessMaker\Model\Dynaform');
         Router::delete('project/{process}/dynaform/{dynaform}', 'Designer\DynaformController@remove')->middleware('can:delete,ProcessMaker\Model\Dynaform');
 
+        //Cases endpoints
+
+        Router::get('cases/{application}/variables', 'Cases\VariableController@get')->middleware('can:read,application');
     });
 });

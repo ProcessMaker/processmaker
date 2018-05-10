@@ -8,7 +8,7 @@ use ProcessMaker\Facades\SchemaManager;
 use ProcessMaker\Model\Application;
 use ProcessMaker\Model\ProcessVariable;
 use ProcessMaker\Model\ReportTable;
-use ProcessMaker\Model\ReportTableVariable;
+use ProcessMaker\Model\ReportTableColumn;
 use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
 use Tests\Feature\Api\ApiTestCase;
@@ -22,12 +22,12 @@ class ReportTableControllerTest extends ApiTestCase
     public function testGetAllReportTables()
     {
         $report = $this->createDefaultReportTable();
-        $url = "/api/1.0/project/" . $report->PRO_UID . "/report-tables";
+        $url = "/api/1.0/project/" . $report->process->uid . "/report-tables";
 
         $response = $this->api('GET', $url);
         $response->assertStatus(200);
         $response->assertJsonStructure(
-            [['rep_tab_name', 'rep_tab_grid', 'rep_tab_connection', 'fields']]
+            [['name', 'grid', 'connection', 'fields']]
         );
 
         $returnedList = json_decode($response->getContent());
@@ -43,11 +43,11 @@ class ReportTableControllerTest extends ApiTestCase
     public function testGetOneReportTable()
     {
         $report = $this->createDefaultReportTable();
-        $url = "/api/1.0/project/" . $report->PRO_UID . "/report-table/" . $report->ADD_TAB_UID;
+        $url = "/api/1.0/project/" . $report->process->uid . "/report-table/" . $report->uid;
 
         $response = $this->api('GET', $url);
         $response->assertStatus(200);
-        $response->assertJsonStructure(['rep_tab_name', 'rep_tab_grid', 'rep_tab_connection', 'fields']);
+        $response->assertJsonStructure(['name', 'grid', 'connection', 'fields']);
     }
 
     /**
@@ -59,18 +59,18 @@ class ReportTableControllerTest extends ApiTestCase
         $process = $report->process;
         $reportJsonApi = $this->newReportTableData($report->process);
 
-        $url = '/api/1.0/project/' . $process->PRO_UID . '/report-table';
+        $url = '/api/1.0/project/' . $process->uid . '/report-table';
         $response = $this->api('POST', $url, $reportJsonApi);
         $response->assertStatus(201);
         $returnedObject = json_decode($response->getContent());
         $response->assertJsonStructure([
-            'rep_tab_name',
-            'rep_tab_grid',
-            'rep_tab_connection',
-            'fields' => ['*' => ['fld_name', 'fld_type']]
+            'name',
+            'connection',
+            'grid',
+            'fields' => ['*' => ['name', 'type']]
         ]);
 
-        $this->assertTrue($returnedObject->rep_tab_name === $reportJsonApi['rep_tab_name'],
+        $this->assertTrue($returnedObject->name === $reportJsonApi['name'],
             'The added ReportTable has not the passed name');
 
         $this->assertGreaterThanOrEqual(0, count($returnedObject->fields),
@@ -87,32 +87,31 @@ class ReportTableControllerTest extends ApiTestCase
         $description = 'Changed Description';
 
         // we update the pmTable
-        $url = "/api/1.0/project/" . $report->PRO_UID . "/report-table/" . $report->ADD_TAB_UID;
+        $url = "/api/1.0/project/" . $report->process->uid . "/report-table/" . $report->uid;
         $response = $this->api('PUT', $url, [
-            'rep_tab_description' => $description,
+            'description' => $description,
             'fields' => [
                 [
-                    'fld_name' => 'NewField',
-                    'fld_description' => 'Field2 description',
-                    'fld_type' => 'VARCHAR',
-                    'fld_size' => '100',
-                    'fld_null' => 1,
-                    'fld_key' => 0,
-                    'fld_auto_increment' => 0,
+                    'name' => 'NewField',
+                    'description' => 'Field2 description',
+                    'type' => 'VARCHAR',
+                    'size' => '100',
+                    'null' => 1,
+                    'key' => 0,
+                    'auto_increment' => 0,
                 ]
             ]
         ]);
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
-            'rep_tab_name',
-            'rep_tab_grid',
-            'rep_tab_connection',
-            'fields' => ['*' => ['fld_name', 'fld_type']]
+            'name',
+            'grid',
+            'fields' => ['*' => ['name', 'type']]
         ]);
 
         $returnedObject = json_decode($response->getContent());
-        $this->assertEquals($returnedObject->rep_tab_description, $description);
+        $this->assertEquals($returnedObject->description, $description);
         $this->assertEquals($numberOfColumnsBeforeUpdate + 1, count($returnedObject->fields),
             'The updated report table should have 1 additional field');
     }
@@ -125,7 +124,7 @@ class ReportTableControllerTest extends ApiTestCase
         $report = $this->createDefaultReportTable();
         $numSourcesBefore = ReportTable::count();
 
-        $url = "/api/1.0/project/" . $report->PRO_UID . "/report-table/" . $report->ADD_TAB_UID;
+        $url = "/api/1.0/project/" . $report->process->uid . "/report-table/" . $report->uid;
         $response = $this->api('DELETE', $url);
         $numSourcesAfter = ReportTable::count();
         $response->assertStatus(204);
@@ -144,7 +143,7 @@ class ReportTableControllerTest extends ApiTestCase
         $pmTable = $report->getAssociatedPmTable();
 
         // call to populate report table
-        $url = "/api/1.0/project/" . $report->PRO_UID . "/report-table/" . $report->ADD_TAB_UID . "/populate";
+        $url = "/api/1.0/project/" . $report->process->uid . "/report-table/" . $report->uid . "/populate";
         $response = $this->api('GET', $url);
         $response->assertStatus(200);
 
@@ -165,7 +164,7 @@ class ReportTableControllerTest extends ApiTestCase
     public function testGetAllData()
     {
         $report = $this->createAndPopulateTestReportTable();
-        $url = "/api/1.0/project/" . $report->PRO_UID . "/report-table/" . $report->ADD_TAB_UID . "/data";
+        $url = "/api/1.0/project/" . $report->process->uid . "/report-table/" . $report->uid . "/data";
         $response = $this->api('GET', $url);
         $response->assertStatus(200);
     }
@@ -179,11 +178,11 @@ class ReportTableControllerTest extends ApiTestCase
 
         // we need an user and authenticate him
         $user = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make('password'),
-            'USR_ROLE' => Role::PROCESSMAKER_ADMIN
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
 
-        $this->auth($user->USR_USERNAME, 'password');
+        $this->auth($user->username, 'password');
     }
 
     /**
@@ -198,13 +197,13 @@ class ReportTableControllerTest extends ApiTestCase
         SchemaManager::dropPhysicalTable('PMT_REPORT_TEST');
 
         // we create a report table
-        $report = factory(ReportTable::class)->create();
-        $newReport = ReportTable::whereAddTabUid($report->ADD_TAB_UID)->first();
-        $pmTable = $report->getAssociatedPmTable();
+        $newReport = factory(ReportTable::class)->create();
+
+        $pmTable = $newReport->getAssociatedPmTable();
 
         // we add some variables to the report table
         $varsParams = [];
-        $varsParams ['PRO_ID'] = $newReport->process->PRO_ID;
+        $varsParams ['PRO_ID'] = $newReport->process->id;
         if ($forceVariableTypesTo !== null) {
             $varsParams['VAR_FIELD_TYPE'] = $forceVariableTypesTo;
         }
@@ -215,38 +214,35 @@ class ReportTableControllerTest extends ApiTestCase
         $v2 = factory(ProcessVariable::class)->create($varsParams);
         $var2 = ProcessVariable::where('VAR_UID', $v2->VAR_UID)->first();
 
-        $field1 = factory(ReportTableVariable::class)
+        $field1 = factory(ReportTableColumn::class)
             ->create([
-                'ADD_TAB_UID' => $newReport->ADD_TAB_UID,
-                'ADD_TAB_ID' => $newReport->ADD_TAB_ID,
-                'FLD_DYN_UID' => $var1->VAR_UID,
-                'FLD_DYN_NAME' => $var1->VAR_NAME,
-                'VAR_ID' => $var1->VAR_ID
+                'report_table_id' => $newReport->id,
+                'dynaform_id' => $var1->VAR_ID,
+                'dynaform_name' => $var1->VAR_NAME,
+                'process_variable_id' => $var1->VAR_ID
             ]);
 
-        $field2 = factory(ReportTableVariable::class)
+        $field2 = factory(ReportTableColumn::class)
             ->create([
-                'ADD_TAB_UID' => $newReport->ADD_TAB_UID,
-                'ADD_TAB_ID' => $newReport->ADD_TAB_ID,
-                'FLD_DYN_UID' => $var2->VAR_UID,
-                'FLD_DYN_NAME' => $var2->VAR_NAME,
-                'VAR_ID' => $var2->VAR_ID
+                'report_table_id' => $newReport->id,
+                'dynaform_id' => $var2->VAR_ID,
+                'dynaform_name' => $var2->VAR_NAME,
+                'process_variable_id' => $var2->VAR_ID
             ]);
 
         $column1 = SchemaManager::setDefaultsForReportTablesFields($field1->toArray(), $var1);
         $column2 = SchemaManager::setDefaultsForReportTablesFields($field2->toArray(), $var2);
 
         $columnAppUid = [
-            'FLD_UID' => str_replace('-', '', Uuid::uuid4()),
-            'ADD_TAB_UID' => $pmTable->ADD_TAB_UID,
-            'FLD_NAME' => 'APP_UID',
-            'FLD_DESCRIPTION' => 'String Field',
-            'FLD_TYPE' => 'VARCHAR',
-            'FLD_SIZE' => 32,
-            'FLD_NULL' => 0
+            'additional_table_id' => $pmTable->id,
+            'name' => 'APP_UID',
+            'description' => 'String Field',
+            'type' => 'VARCHAR',
+            'size' => 36,
+            'null' => 0
         ];
 
-        SchemaManager::dropPhysicalTable($newReport->ADD_TAB_NAME);
+        SchemaManager::dropPhysicalTable($newReport->name);
         SchemaManager::updateOrCreateColumn($pmTable, $columnAppUid);
         SchemaManager::updateOrCreateColumn($pmTable, $column1);
         SchemaManager::updateOrCreateColumn($pmTable, $column2);
@@ -265,11 +261,11 @@ class ReportTableControllerTest extends ApiTestCase
         $report = $this->createDefaultReportTable('string');
 
         // we add 2 variables to the rerport table
-        $var1 = ProcessVariable::where('PRO_ID', $report->PRO_ID)
+        $var1 = ProcessVariable::where('PRO_ID', $report->process_id)
                 ->orderBy('VAR_ID', 'ASC')
                 ->first();
 
-        $var2 = ProcessVariable::where('PRO_ID', $report->PRO_ID)
+        $var2 = ProcessVariable::where('PRO_ID', $report->process_id)
                 ->orderBy('VAR_ID', 'DESC')
                 ->first();
 
@@ -280,13 +276,13 @@ class ReportTableControllerTest extends ApiTestCase
         // create 2 instances with the data that was initialized above
         factory(Application::class)
             ->create([
-                'PRO_UID' => $report->PRO_UID,
+                'process_id' => $report->process->id,
                 'APP_DATA' => $dataInstance1
             ]);
 
         factory(Application::class)
             ->create([
-                'PRO_UID' => $report->PRO_UID,
+                'process_id' => $report->process->id,
                 'APP_DATA' => $dataInstance2
             ]);
 
@@ -302,19 +298,18 @@ class ReportTableControllerTest extends ApiTestCase
     private function newReportTableData($process)
     {
         return [
-            'pro_uid' => $process->PRO_UID,
-            'rep_tab_name' => 'ReportTableTest',
-            'rep_tab_dsc' => 'Report table for testing purposes',
-            'rep_tab_connection' => env('DB_DATABASE'),
-            'rep_tab_type' => 'NORMAL',
-            'rep_tab_grid' => '',
+            'process_uid' => $process->uid,
+            'name' => 'ReportTableTest',
+            'description' => 'Report table for testing purposes',
+            'type' => 'NORMAL',
+            'grid' => '',
             'fields' => [
                 [
-                    "fld_dyn" => $process->variables->first()->FLD_NAME,
-                    "fld_name" => "NameForColumn",
-                    "fld_label" => "MyTestField",
-                    "fld_type" => "VARCHAR",
-                    "fld_size" => 32
+                    "dynaform_name" => $process->variables->first()->FLD_NAME,
+                    "name" => "NameForColumn",
+                    "description" => "MyTestField",
+                    "type" => "VARCHAR",
+                    "size" => 32
                 ]
             ]
         ];

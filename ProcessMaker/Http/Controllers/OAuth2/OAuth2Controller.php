@@ -51,7 +51,7 @@ class OAuth2Controller extends Controller
             }
             // Now we have a user
             // Fetch our UserEntity
-            $user = User::where('USR_ID', Auth::id())->first();
+            $user = User::where('id', Auth::id())->first();
             if (!$user) {
                 /**
                  * @todo Replace with translatable string
@@ -92,7 +92,7 @@ class OAuth2Controller extends Controller
                 throw new OAuthServerException("User session not valid.");
             }
             // Verify this user exists.
-            $user = User::where('USR_ID', Auth::id())->first();
+            $user = User::where('id', Auth::id())->first();
             if (!$user) {
                 throw new OAuthServerException("Invalid User");
             }

@@ -14,21 +14,21 @@ use ProcessMaker\Model\User;
  */
 class OAuthAuthorizationCode extends Model implements AuthCodeEntityInterface
 {
-    // Specify our table name
-    protected $table = 'OAUTH_AUTHORIZATION_CODES';
+    // Our table name
+    protected $table = 'oauth_authorization_codes';
 
     // Our primary key is not an autoincrementing key
     public $incrementing = false;
 
     // Our primary key is not ID but AUTHORIZATION_CODE
-    protected $primaryKey = 'AUTHORIZATION_CODE';
+    protected $primaryKey = 'authorization_code';
 
     // We do not sure create/update timestamps in this table
     public $timestamps = false;
 
     // Our dates which will auto translate to Carbon instances
     protected $dates = [
-        'EXPIRES'
+        'expires'
     ];
 
     /**
@@ -37,7 +37,7 @@ class OAuthAuthorizationCode extends Model implements AuthCodeEntityInterface
      */
     public function user()
     {
-        return $this->belongsTo(User::class, 'USER_ID', 'USR_UID');
+        return $this->belongsTo(User::class);
     }
 
     /**
@@ -46,7 +46,7 @@ class OAuthAuthorizationCode extends Model implements AuthCodeEntityInterface
      */
     public function client()
     {
-        return $this->belongsTo(OAuthClient::class, 'CLIENT_ID', 'CLIENT_ID');
+        return $this->belongsTo(OAuthClient::class);
     }
 
     /**
@@ -56,7 +56,7 @@ class OAuthAuthorizationCode extends Model implements AuthCodeEntityInterface
      */
     public function setRedirectUri($uri)
     {
-        $this->REDIRECT_URI = $uri;
+        $this->redirect_uri = $uri;
     }
 
     /**
@@ -66,7 +66,7 @@ class OAuthAuthorizationCode extends Model implements AuthCodeEntityInterface
      */
     public function getRedirectUri()
     {
-        return $this->REDIRECT_URI;
+        return $this->redirect_uri;
     }
 
     /**
@@ -76,7 +76,7 @@ class OAuthAuthorizationCode extends Model implements AuthCodeEntityInterface
      */
     public function setUserIdentifier($identifier)
     {
-        $this->USER_ID = $identifier;
+        $this->user_id = $identifier;
     }
 
     /**
@@ -86,7 +86,7 @@ class OAuthAuthorizationCode extends Model implements AuthCodeEntityInterface
      */
     public function getUserIdentifier()
     {
-        return $this->user->USR_UID;
+        return $this->user->id;
     }
 
     /**
@@ -96,7 +96,7 @@ class OAuthAuthorizationCode extends Model implements AuthCodeEntityInterface
      */
     public function getClient()
     {
-        return OAuthClient::where('CLIENT_ID', $this->CLIENT_ID)->first();
+        return OAuthClient::where('id', $this->client_id)->first();
     }
 
     /**
@@ -107,9 +107,9 @@ class OAuthAuthorizationCode extends Model implements AuthCodeEntityInterface
      */
     public function addScope(ScopeEntityInterface $scope)
     {
-        $scopes = explode(" ", $this->SCOPE);
+        $scopes = explode(" ", $this->scope);
         $scopes[] = $scope->getIdentifier();
-        $this->SCOPE = implode(' ', $scopes);
+        $this->scope = implode(' ', $scopes);
     }
 
     /**
@@ -120,7 +120,7 @@ class OAuthAuthorizationCode extends Model implements AuthCodeEntityInterface
      */
     public function getExpiryDateTime()
     {
-        return $this->EXPIRES;
+        return $this->expires;
     }
 
     /**
@@ -130,7 +130,7 @@ class OAuthAuthorizationCode extends Model implements AuthCodeEntityInterface
      */
     public function setExpiryDateTime(DateTime $dateTime)
     {
-        $this->EXPIRES = $dateTime;
+        $this->expires = $dateTime;
     }
 
     /**
@@ -140,7 +140,7 @@ class OAuthAuthorizationCode extends Model implements AuthCodeEntityInterface
      */
     public function getIdentifier()
     {
-        return $this->AUTHORIZATION_CODE;
+        return $this->authorization_code;
     }
 
     /**
@@ -150,7 +150,7 @@ class OAuthAuthorizationCode extends Model implements AuthCodeEntityInterface
      */
     public function setIdentifier($identifier)
     {
-        $this->AUTHORIZATION_CODE = $identifier;
+        $this->authorization_code = $identifier;
     }
 
     /**
@@ -160,7 +160,7 @@ class OAuthAuthorizationCode extends Model implements AuthCodeEntityInterface
      */
     public function getScopes()
     {
-        $types = explode(" ", $this->SCOPE);
+        $types = explode(" ", $this->scope);
         return OAuthScope::whereIn('TYPE', $types)->get();
     }
 

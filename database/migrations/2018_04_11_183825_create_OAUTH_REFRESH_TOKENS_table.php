@@ -12,11 +12,11 @@ class CreateOAUTHREFRESHTOKENSTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('OAUTH_REFRESH_TOKENS', function(Blueprint $table)
+		Schema::create('oauth_refresh_tokens', function(Blueprint $table)
 		{
-			$table->string('REFRESH_TOKEN')->primary();
-			$table->string('ACCESS_TOKEN');
-			$table->dateTime('EXPIRES');
+			$table->string('refresh_token')->primary();
+			$table->string('access_token');
+			$table->dateTime('expires');
 		});
 	}
 
@@ -28,7 +28,7 @@ class CreateOAUTHREFRESHTOKENSTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('OAUTH_REFRESH_TOKENS');
+		Schema::drop('oauth_refresh_tokens');
 	}
 
 }

@@ -21,10 +21,10 @@ class ProcessCategoryManagerTest extends ApiTestCase
     public function testAccessControl()
     {
         $user = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make('password'),
-            'USR_ROLE'     => Role::PROCESSMAKER_OPERATOR,
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_OPERATOR)->first()->id,
         ]);
-        $this->auth($user->USR_USERNAME, 'password');
+        $this->auth($user->username, 'password');
         $processCategory = factory(ProcessCategory::class)->create();
         $catUid = $processCategory->CATEGORY_UID;
 
@@ -50,15 +50,15 @@ class ProcessCategoryManagerTest extends ApiTestCase
     public function testGetListOfCategories()
     {
         $admin = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make('password'),
-            'USR_ROLE'     => Role::PROCESSMAKER_ADMIN
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
-        $this->auth($admin->USR_USERNAME, 'password');
+        $this->auth($admin->username, 'password');
         //Create test categories
         $processCategory = factory(ProcessCategory::class)->create();
         factory(ProcessCategory::class)->create();
         factory(Process::class)->create([
-            'PRO_CATEGORY' => $processCategory->CATEGORY_UID
+            'category_id' => $processCategory->CATEGORY_ID
         ]);
 
         $response = $this->api('GET', self::API_TEST_CATEGORIES);
@@ -136,10 +136,10 @@ class ProcessCategoryManagerTest extends ApiTestCase
     public function testCreateProcessCategory()
     {
         $admin = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make('password'),
-            'USR_ROLE'     => Role::PROCESSMAKER_ADMIN
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
-        $this->auth($admin->USR_USERNAME, 'password');
+        $this->auth($admin->username, 'password');
         $faker = Faker::create();
 
         $processCategory = factory(ProcessCategory::class)->make();
@@ -192,10 +192,10 @@ class ProcessCategoryManagerTest extends ApiTestCase
     public function testUpdateProcessCategory()
     {
         $admin = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make('password'),
-            'USR_ROLE'     => Role::PROCESSMAKER_ADMIN
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
-        $this->auth($admin->USR_USERNAME, 'password');
+        $this->auth($admin->username, 'password');
         $faker = Faker::create();
 
         $processCategoryExisting = factory(ProcessCategory::class)->create();
@@ -252,10 +252,10 @@ class ProcessCategoryManagerTest extends ApiTestCase
     public function testDeleteProcessCategory()
     {
         $admin = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make('password'),
-            'USR_ROLE'     => Role::PROCESSMAKER_ADMIN
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
-        $this->auth($admin->USR_USERNAME, 'password');
+        $this->auth($admin->username, 'password');
 
         $processCategory = factory(ProcessCategory::class)->create();
         $catUid = $processCategory->CATEGORY_UID;
@@ -271,7 +271,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
         $processCategory = factory(ProcessCategory::class)->create();
         $catUid = $processCategory->CATEGORY_UID;
         factory(Process::class)->create([
-            'PRO_CATEGORY' => $processCategory->CATEGORY_UID
+            'category_id' => $processCategory->CATEGORY_ID
         ]);
         $response = $this->api('DELETE', self::API_TEST_CATEGORY . $catUid);
         $response->assertStatus(422);
@@ -287,10 +287,10 @@ class ProcessCategoryManagerTest extends ApiTestCase
     public function testShowProcessCategory()
     {
         $admin = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make('password'),
-            'USR_ROLE'     => Role::PROCESSMAKER_ADMIN
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
-        $this->auth($admin->USR_USERNAME, 'password');
+        $this->auth($admin->username, 'password');
 
         $processCategory = factory(ProcessCategory::class)->create();
         $catUid = $processCategory->CATEGORY_UID;

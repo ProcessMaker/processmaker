@@ -5,6 +5,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use League\OAuth2\Server\Entities\UserEntityInterface;
 use ProcessMaker\Core\System;
+use ProcessMaker\Model\Traits\Uuid;
 
 /**
  * Represents an Eloquent model of a User
@@ -15,14 +16,7 @@ use ProcessMaker\Core\System;
 class User extends Authenticatable implements UserEntityInterface
 {
     use Notifiable;
-
-    // Specify our table and our primary key
-    protected $table = 'USERS';
-    protected $primaryKey = 'USR_ID';
-
-    // Set our updated/created at
-    const UPDATED_AT = 'USR_UPDATE_DATE';
-    const CREATED_AT = 'USR_CREATE_DATE';
+    use Uuid;
 
     /**
      * Return the full name for this user which is the first name and last name separated with a space
@@ -31,8 +25,8 @@ class User extends Authenticatable implements UserEntityInterface
     public function getFullName()
     {
         return implode(" ", [
-            $this->USR_FIRSTNAME,
-            $this->USR_LASTNAME
+            $this->firstname,
+            $this->lastname
         ]);
     }
 
@@ -42,7 +36,7 @@ class User extends Authenticatable implements UserEntityInterface
      */
     public function groups()
     {
-        return $this->belongsToMany(Group::class, "GROUP_USER", "USR_UID", "GRP_UID");
+        return $this->belongsToMany(Group::class, 'GROUP_USER', 'USR_UID', 'GRP_UID', 'GRP_UID', 'GRP_UID');
     }
 
     /**
@@ -52,7 +46,7 @@ class User extends Authenticatable implements UserEntityInterface
      */
     public function getAuthIdentifier()
     {
-        return $this->USR_ID;
+        return $this->id;
     }
 
     /**
@@ -62,7 +56,7 @@ class User extends Authenticatable implements UserEntityInterface
      */
     public function getAuthIdentifierName()
     {
-        return 'USR_ID';
+        return 'id';
     }
 
     /**
@@ -94,7 +88,7 @@ class User extends Authenticatable implements UserEntityInterface
      */
     public function getAuthPassword()
     {
-        return $this->USR_PASSWORD;
+        return $this->password;
     }
 
     /**
@@ -105,9 +99,9 @@ class User extends Authenticatable implements UserEntityInterface
      */
     public function getTimeZone()
     {
-        if ($this->USR_TIME_ZONE) {
+        if ($this->time_zone) {
             // Return our user specific timezone
-            return $this->USR_TIME_ZONE;
+            return $this->time_zone;
         } else {
             // Let's return our system default timezone
             return app()->getTimezone();
@@ -123,7 +117,7 @@ class User extends Authenticatable implements UserEntityInterface
      */
     public function getIdentifier()
     {
-        return $this->USR_UID;
+        return $this->id;
     }
 
     /**
@@ -133,6 +127,6 @@ class User extends Authenticatable implements UserEntityInterface
      */
     public function role()
     {
-        return $this->belongsTo(Role::class, 'USR_ROLE', 'ROL_CODE');
+        return $this->belongsTo(Role::class);
     }
 }
