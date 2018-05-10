@@ -2,12 +2,12 @@
 
 namespace ProcessMaker\Managers;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use ProcessMaker\Exception\TaskAssignedException;
 use ProcessMaker\Model\Group;
-use ProcessMaker\Model\Process;
 use ProcessMaker\Model\Task;
 use ProcessMaker\Model\TaskUser;
 use ProcessMaker\Model\User;
@@ -28,19 +28,25 @@ class TaskManager
      */
     public function loadAssignees(Task $activity, array $options, $paged = false)
     {
-        $users = $this->getUsers($activity, $options['filter']);
-        $information = [];
-        foreach ($users as $user) {
-            $information[] = $this->formatDataAssignee($user->toArray(), User::TYPE)->toArray();
+        $filter = $options['filter'];
+        $query = TaskUser::where('TAS_ID', $activity->TAS_ID)
+            ->with('user')
+            ->with('group');
+
+        if (!empty($filter)) {
+            $query = $this->generateFilterUserGroup(TaskUser::where('TAS_ID', $activity->TAS_ID), $filter);
         }
 
-        $groups = $this->getGroups($activity, $options['filter']);
-        foreach ($groups as $group) {
-            $group->GRP_TITLE = $this->labelGroup($group);
-            $information[] = $this->formatDataAssignee($group->toArray(), Group::TYPE)->toArray();
+        $assignees = $this->paginate($query, $options, $paged);
+
+        foreach ($assignees as $assigned) {
+            if (!empty($assigned->group)) {
+                $assigned->group->GRP_TITLE = $this->labelGroup($assigned->group);
+            }
+            $assigned = $this->formatDataAssignee($assigned);
         }
 
-        return $this->paginate($information, $options, !$paged);
+        return $assignees;
     }
 
     /**
@@ -52,47 +58,63 @@ class TaskManager
      *
      * @return Paginator | LengthAwarePaginator
      */
-    public function loadAvailable(Task $activity, array $options, $paged =false)
+    public function loadAvailable(Task $activity, array $options, $paged = false)
     {
-        $users = $this->getUsers($activity, $options['filter']);
-        $assigned = [];
-        foreach ($users as $user) {
-            $assigned[] = $user->USR_ID;
+
+        $query = TaskUser::where('TAS_ID', $activity->TAS_ID)
+            ->with('user')
+            ->with('group');
+        $usersAssigned = [];
+        foreach ($query->get() as $assigned) {
+            $usersAssigned[] = $assigned->USR_ID;
         }
-        $query = User::whereNotIn('USR_ID', $assigned);
+
+        $query = User::whereNotIn('USR_ID', $usersAssigned);
         if (!empty($options['filter'])) {
             $user = new User();
-            $query->where($user->getTable() . '.USR_FIRSTNAME', 'like', '%' . $options['filter']. '%')
+            $query->where($user->getTable() . '.USR_FIRSTNAME', 'like', '%' . $options['filter'] . '%')
                 ->orWhere($user->getTable() . '.USR_LASTNAME', 'like', '%' . $options['filter'] . '%');
         }
         $information = [];
         foreach ($query->get() as $user) {
-            $information[] = $this->formatDataAssignee($user->toArray(), User::TYPE)->toArray();
+            $information[] =[
+                'aas_uid' => $user->USR_UID,
+                'aas_name' => $user->USR_FIRSTNAME,
+                'aas_lastname' => $user->USR_LASTNAME,
+                'aas_username' => $user->USR_USERNAME,
+                'aas_type' => User::TYPE
+            ]; 
         }
 
-        $groups = $this->getGroups($activity, $options['filter']);
-        $assigned = [];
-        foreach ($groups as $group) {
-            $assigned[] = $group->GRP_ID;
-        }
-
-        $query = Group::whereNotIn('GRP_ID', $assigned);
+        $query = Group::whereNotIn('GRP_ID', $usersAssigned);
         if (!empty($options['filter'])) {
             $group = new Group();
             $query->where($group->getTable() . '.GRP_TITLE', 'like', '%' . $options['filter'] . '%');
         }
         foreach ($query->get() as $group) {
             $group->GRP_TITLE = $this->labelGroup($group);
-            $information[] = $this->formatDataAssignee($group->toArray(), Group::TYPE)->toArray();
+            $information[] =[
+                'aas_uid' => $group->GRP_UID,
+                'aas_name' => $group->GRP_TITLE,
+                'aas_lastname' => '',
+                'aas_username' => $group->GRP_TITLE,
+                'aas_type' => Group::TYPE
+            ];
         }
 
-        return $this->paginate($information, $options, !$paged);
+        $limit = $options['limit'];
+        $currentPage = !$paged ? Paginator::resolveCurrentPage() : LengthAwarePaginator::resolveCurrentPage();
+        $collection = new Collection($information);
+        $currentPageResults = $collection->slice(($currentPage - 1) * $limit, $limit)->all();
+        if (!$paged) {
+            return new Paginator($currentPageResults, count($collection), $limit);
+        }
+        return new LengthAwarePaginator($currentPageResults, count($collection), $limit);
     }
 
     /**
      * Save the assignment of the user or group in a task.
      *
-     * @param Process $process
      * @param Task $activity
      * @param array $options
      *
@@ -101,31 +123,30 @@ class TaskManager
      * @throws TaskAssignedException
      * @throws \Throwable
      */
-    public function saveAssignee(Process $process, Task $activity, array $options): array
+    public function saveAssignee(Task $activity, array $options): array
     {
-        //todo validate Process and task
         $query = TaskUser::where('TAS_UID', $activity->TAS_UID)->type(self::ASSIGNEE_NORMAL);
         $type = User::TYPE;
+        $field = 'USR_ID';
         switch (strtoupper($options['aas_type'])) {
             case 'USER':
-                $check = User::where('USR_UID', $options['aas_uid'])->get()->toArray();
-                $field = 'USR_ID';
+                $check = User::where('USR_UID', $options['aas_uid'])->first();
                 $query->onlyUsers();
                 break;
             case 'GROUP':
-                $check = Group::where('GRP_UID', $options['aas_uid'])->get()->toArray();
+                $check = Group::where('GRP_UID', $options['aas_uid'])->first();
                 $field = 'GRP_ID';
-                $query->onlyGroups();
                 $type = Group::TYPE;
+                $query->onlyGroups();
                 break;
             default:
-                $check = [];
+                $check = false;
                 break;
         }
         if (!$check) {
             throw new TaskAssignedException(__('This id :uid does not correspond to a registered :type', ['uid' => $options['aas_uid'], 'type' => $options['aas_type']]));
         }
-        $exist = $query->where('USR_UID', $options['aas_uid'])->get()->toArray();
+        $exist = $query->where('USR_UID', $options['aas_uid'])->exists();
         if ($exist) {
             throw new TaskAssignedException(__('This ID: :user is already assigned to task: :task', ['user' => $options['aas_uid'], 'task' => $activity->TAS_UID]));
         }
@@ -133,9 +154,9 @@ class TaskManager
         $assigned->TAS_UID = $activity->TAS_UID;
         $assigned->TAS_ID = $activity->TAS_ID;
         $assigned->USR_UID = $options['aas_uid'];
-        $assigned->USR_ID = $check[0][$field];
+        $assigned->USR_ID = $check[$field];
         $assigned->TU_RELATION = $type;
-        $assigned->TU_TYPE = 1;
+        $assigned->TU_TYPE = self::ASSIGNEE_NORMAL;
         $assigned->saveOrFail();
 
         return $assigned->toArray();
@@ -144,16 +165,15 @@ class TaskManager
     /**
      * Remove user or group assigned to Activity
      *
-     * @param Process $process
      * @param Task $activity
      * @param string $assignee
      *
      * @return void
      * @throws TaskAssignedException
      */
-    public function removeAssignee(Process $process, Task $activity, $assignee): void
+    public function removeAssignee(Task $activity, $assignee): void
     {
-        $response = TaskUser::where('TAS_UID', $activity->TAS_UID)
+        $response = TaskUser::where('TAS_ID', $activity->TAS_ID)
             ->where('USR_UID', $assignee)
             ->type(self::ASSIGNEE_NORMAL)
             ->delete();
@@ -166,116 +186,100 @@ class TaskManager
     /**
      * Get a single user or group assigned to a task.
      *
-     * @param Process $process
      * @param Task $activity
-     * @param string $assignee
+     * @param string $assignee uid user
      *
      * @return TaskUser
      * @throws TaskAssignedException
      */
-    public function getInformationAssignee(Process $process, Task $activity, $assignee): TaskUser
+    public function getInformationAssignee(Task $activity, $assignee): TaskUser
     {
-        $information = $this->getUsers($activity, '', $assignee);
-        if (!$information->isEmpty()) {
-            return $this->formatDataAssignee($information->first()->toArray(), User::TYPE);
-        }
-        $information = $this->getGroups($activity, '', $assignee);
-        if (!$information->isEmpty()) {
-            $group = $information->first();
-            $group->GRP_TITLE = $this->labelGroup($group);
-            return $this->formatDataAssignee($group->first()->toArray(), Group::TYPE);
+        $assigned = TaskUser::where('USR_UID', $assignee)
+            ->where('TAS_ID', $activity->TAS_ID)
+            ->with('user')
+            ->with('group')
+            ->get();
+
+        if ($assigned->isEmpty()) {
+            Throw new TaskAssignedException(__('Record not found for id: :assignee', ['assignee' => $assignee]));
         }
 
-        Throw new TaskAssignedException(__('Record not found for id: :assignee', ['assignee' => $assignee]));
+        return $this->formatDataAssignee($assigned->first());
     }
 
     /**
      *  Get a list all the users who are assigned to a task (including users that are within groups).
      *
-     * @param Process $process
      * @param Task $activity
      * @param array $options
      *
-     * @return LengthAwarePaginator
+     * @return Paginator
      */
-    public function getInformationAllAssignee(Process $process, Task $activity, $options): LengthAwarePaginator
+    public function getInformationAllAssignee(Task $activity, $options): Paginator
     {
-        $users = $this->getUsers($activity, $options['filter']);
-        $information = [];
-        foreach ($users as $user) {
-            $information[] = $this->formatDataAssignee($user->toArray(), User::TYPE)->toArray();
+        $query = TaskUser::where('TAS_ID', $activity->TAS_ID)
+            ->with('user', 'group.users');
+        $filter = $options['filter'];
+
+        if (!empty($filter)) {
+            $user = New User();
+            $query = TaskUser::where('TAS_ID', $activity->TAS_ID)
+                ->where(function ($q) use ($filter, $user) {
+                    $q->whereHas('user', function ($query) use ($filter, $user) {
+                        $query->where($user->getTable() . '.USR_FIRSTNAME', 'like', '%' . $filter . '%')
+                            ->orWhere($user->getTable() . '.USR_LASTNAME', 'like', '%' . $filter . '%');
+                    });
+                })
+                ->orWhere(function ($q) use ($filter, $user) {
+                    $q->whereHas('group.users', function ($query) use ($filter, $user) {
+                        $query->where($user->getTable() . '.USR_FIRSTNAME', 'like', '%' . $filter . '%')
+                            ->orWhere($user->getTable() . '.USR_LASTNAME', 'like', '%' . $filter . '%');
+                    });
+                });
         }
 
-        $groups = $this->getGroups($activity, $options['filter'], '', true);
-        foreach ($groups as $group) {
-            foreach ($group->users as $user) {
-                $information[] = $this->formatDataAssignee($user->toArray(), User::TYPE)->toArray();
+        $assignees = $query->get();
+        $information = [];
+
+        foreach ($assignees as $assign) {
+            if (!empty($assign->user)) {
+                $information[] =[
+                    'aas_uid' => $assign->user->USR_UID,
+                    'aas_name' => $assign->user->USR_FIRSTNAME,
+                    'aas_lastname' => $assign->user->USR_LASTNAME,
+                    'aas_username' => $assign->user->USR_USERNAME,
+                    'aas_type' => User::TYPE
+                ];
+            }
+            if (!empty($assign->group)) {
+                foreach ($assign->group->users as $user) {
+                    $information[] = [
+                        'aas_uid' => $user->USR_UID,
+                        'aas_name' => $user->USR_FIRSTNAME,
+                        'aas_lastname' => $user->USR_LASTNAME,
+                        'aas_username' => $user->USR_USERNAME,
+                        'aas_type' => User::TYPE
+                    ];
+                }
             }
         }
 
-        return $this->paginate($information, $options, false);
+        $limit = $options['limit'];
+        $currentPage = Paginator::resolveCurrentPage();
+        $collection = new Collection($information);
+        $currentPageResults = $collection->slice(($currentPage - 1) * $limit, $limit)->all();
+
+        return new Paginator($currentPageResults, count($collection), $limit);
     }
 
     /**
-     * Get collection users assigned to task
-     *
-     * @param Task $activity
-     * @param string $filter
-     * @param string $uid
-     *
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    private function getUsers(Task $activity, $filter = '', $uid = '')
-    {
-        $query = $activity->usersAssigned();
-        $user = new User();
-        if (!empty($filter)) {
-            $query->where($user->getTable() . '.USR_FIRSTNAME', 'like', '%' . $filter. '%')
-                ->orWhere($user->getTable() . '.USR_LASTNAME', 'like', '%' . $filter . '%');
-        }
-        if (!empty($uid)) {
-            $query->where($user->getTable() . '.USR_UID', $uid);
-        }
-        return $query->get();
-    }
-
-    /**
-     * Get collection groups assigned to task
-     *
-     * @param Task $activity
-     * @param string $filter
-     * @param string $uid
-     * @param bool $withUsers
-     *
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    private function getGroups(Task $activity, $filter = '', $uid = '', $withUsers = false)
-    {
-        $query = $activity->groupsAssigned();
-        $group = new Group();
-        if ($withUsers && !empty($filter)) {
-            $query->with(['users' => function($query) use ($filter) {
-                $query->where('USR_FIRSTNAME', 'like', '%' . $filter . '%')
-                    ->orWhere('USR_LASTNAME', 'like', '%' . $filter . '%');
-            }]);
-        }
-        if (!$withUsers && !empty($filter)) {
-            $query->where($group->getTable() . '.GRP_TITLE', 'like', '%' . $filter . '%');
-        }
-        if (!empty($uid)) {
-            $query->where($group->getTable() . '.GRP_UID', $uid);
-        }
-        return $query->get();
-    }
-
-    /**
-     * Change label group
+     * Add to label group count of users in the group
      *
      * @param Group $group
      *
      * @return string
      */
-    private function labelGroup(Group $group)
+    private function labelGroup(Group $group): string
     {
         $name = $group->GRP_TITLE . ' ' . $group::STATUS_INACTIVE;
         if ($group->GRP_STATUS !== $group::STATUS_INACTIVE) {
@@ -285,58 +289,77 @@ class TaskManager
     }
 
     /**
-     * Creating a Paginator manually
-     *
-     * @param array $information
-     * @param array $options
-     * @param bool $simplePaginator
-     *
-     * @return LengthAwarePaginator|Paginator
-     */
-    private function paginate($information, $options, $simplePaginator = true)
-    {
-        $limit = isset($options['limit']) ? $options['limit'] : 20;
-        $currentPage = $simplePaginator ? Paginator::resolveCurrentPage() : LengthAwarePaginator::resolveCurrentPage();
-        $collection = new Collection($information);
-        $currentPageResults = $collection->slice(($currentPage - 1) * $limit, $limit)->all();
-        if ($simplePaginator) {
-            return new Paginator($currentPageResults, count($collection), $limit);
-        }
-        return new LengthAwarePaginator($currentPageResults, count($collection), $limit);
-    }
-
-    /**
      * Format data response
      *
-     * @param array $data
-     * @param string $type
+     * @param TaskUser $assigned
      *
      * @return TaskUser
      */
-    private function formatDataAssignee($data, $type): TaskUser
+    private function formatDataAssignee(TaskUser $assigned): TaskUser
     {
-        $assigned = new TaskUser();
         $assigned->aas_uid = '';
         $assigned->aas_name = '';
         $assigned->aas_lastname = '';
         $assigned->aas_username = '';
-        switch ($type) {
-            case User::TYPE:
-                $assigned->aas_uid = $data['USR_UID'];
-                $assigned->aas_name = $data['USR_FIRSTNAME'];
-                $assigned->aas_lastname = $data['USR_LASTNAME'];
-                $assigned->aas_username = $data['USR_USERNAME'];
-                break;
-            case Group::TYPE:
-                $assigned->aas_uid = $data['GRP_UID'];
-                $assigned->aas_name = $data['GRP_TITLE'];
-                $assigned->aas_username = $data['GRP_TITLE'];
-                break;
+        $assigned->aas_type = $assigned->TU_RELATION;
+
+        if (!empty($assigned->user)) {
+            $assigned->aas_uid = $assigned->user->USR_UID;
+            $assigned->aas_name = $assigned->user->USR_FIRSTNAME;
+            $assigned->aas_lastname = $assigned->user->USR_LASTNAME;
+            $assigned->aas_username = $assigned->user->USR_USERNAME;
+            $assigned->aas_type = strtolower(User::TYPE);
         }
-        $assigned->aas_type = strtolower($type);
+        if (!empty($assigned->group)) {
+            $assigned->aas_uid = $assigned->group->GRP_UID;
+            $assigned->aas_name = $assigned->group->GRP_TITLE;
+            $assigned->aas_username = $assigned->group->GRP_TITLE;
+            $assigned->aas_type = strtolower(Group::TYPE);
+        }
 
         return $assigned;
     }
 
+    /**
+     * Generate eloquent query adding filter in users and groups
+     *
+     * @param Builder $query
+     * @param string $filter
+     *
+     * @return Builder
+     */
+    private function generateFilterUserGroup($query, string $filter): Builder
+    {
+        $user = new User();
+        $group = new Group();
+        return $query->where(function ($q) use ($filter, $user) {
+                $q->whereHas('user', function ($query) use ($filter, $user) {
+                    $query->where($user->getTable() . '.USR_FIRSTNAME', 'like', '%' . $filter . '%')
+                        ->orWhere($user->getTable() . '.USR_LASTNAME', 'like', '%' . $filter . '%');
+                });
+            })
+            ->orWhere(function ($q) use ($filter, $group) {
+                $q->whereHas('group', function ($query) use ($filter, $group) {
+                    $query->where($group->getTable() . '.GRP_TITLE', 'like', '%' . $filter . '%');
+                });
+            });
+    }
+
+    /**
+     * Get paginate or simple paginate for collection
+     *
+     * @param Builder $query
+     * @param array $parameter
+     * @param bool $paged
+     *
+     * @return LengthAwarePaginator|Paginator
+     */
+    private function paginate(Builder $query, $parameter, $paged = false)
+    {
+        if ($paged) {
+            return $query->paginate($parameter['limit']);
+        }
+        return $query->simplePaginate($parameter['limit']);
+    }
 
 }

@@ -39,7 +39,8 @@ class TaskManagerTest extends ApiTestCase
     public function testCreateTask(Process $process): Task
     {
         $activity = factory(Task::class)->create([
-            'PRO_UID' => $process->PRO_UID
+            'PRO_UID' => $process->PRO_UID,
+            'PRO_ID' => $process->PRO_ID
         ]);
         $this->assertNotNull($activity);
         $this->assertNotNull($activity->TAS_UID);
@@ -111,18 +112,18 @@ class TaskManagerTest extends ApiTestCase
         //validate non-existent Type user or Group
         $url = self::API_ROUTE . $process->PRO_UID . '/activity/' . $activity->TAS_UID . '/assignee';
         $response = $this->api('POST', $url, $data);
-        $response->assertStatus(400);
+        $response->assertStatus(404);
 
         $data['aas_type'] = 'user';
         //validate non-existent user
         $url = self::API_ROUTE . $process->PRO_UID . '/activity/' . $activity->TAS_UID . '/assignee';
         $response = $this->api('POST', $url, $data);
-        $response->assertStatus(400);
+        $response->assertStatus(404);
 
         //validate non-existent group
         $data['aas_type'] = 'group';
         $response = $this->api('POST', $url, $data);
-        $response->assertStatus(400);
+        $response->assertStatus(404);
 
         //correctly insert assignment user
         $data['aas_type'] = 'user';
@@ -132,7 +133,7 @@ class TaskManagerTest extends ApiTestCase
 
         //reassigned user exist
         $response = $this->api('POST', $url, $data);
-        $response->assertStatus(400);
+        $response->assertStatus(404);
 
         //correctly insert assignment user
         $data['aas_type'] = 'group';
@@ -142,7 +143,7 @@ class TaskManagerTest extends ApiTestCase
 
         //Reassigned group exist
         $response = $this->api('POST', $url, $data);
-        $response->assertStatus(400);
+        $response->assertStatus(404);
     }
 
     /**
@@ -329,14 +330,14 @@ class TaskManagerTest extends ApiTestCase
         $assignee->USR_UID = $userMake->USR_UID;
         $url = self::API_ROUTE . $process->PRO_UID . '/activity/' . $activity->TAS_UID . '/assignee/' . $assignee->USR_UID;
         $response = $this->api('GET', $url);
-        $response->assertStatus(400);
+        $response->assertStatus(404);
 
         //Other Group row not exist
         $userMake = factory(Group::class)->make();
         $assignee->USR_UID = $userMake->GRP_UID;
         $url = self::API_ROUTE . $process->PRO_UID . '/activity/' . $activity->TAS_UID . '/assignee/' . $assignee->USR_UID;
         $response = $this->api('GET', $url);
-        $response->assertStatus(400);
+        $response->assertStatus(404);
 
         //Verify user information
         $assignee->USR_UID = $user->USR_UID;
@@ -387,14 +388,11 @@ class TaskManagerTest extends ApiTestCase
             'data',
             'first_page_url',
             'from',
-            'last_page',
-            'last_page_url',
             'next_page_url',
             'path',
             'per_page',
             'prev_page_url',
             'to',
-            'total'
         ];
 
         //List All
@@ -404,7 +402,7 @@ class TaskManagerTest extends ApiTestCase
         //verify structure paginate
         $response->assertJsonstructure($structurePaginate);
         //verify the user and group assigned
-        $this->assertLessThanOrEqual($response->json()['total'], 2);
+        $this->assertLessThanOrEqual(count($response->json()['data']), 2);
 
         //Filter user
         $url = self::API_ROUTE . $process->PRO_UID . '/activity/' . $activity->TAS_UID . '/assignee/all?filter='. $user->USR_FIRSTNAME;
@@ -413,7 +411,7 @@ class TaskManagerTest extends ApiTestCase
         //verify structure paginate
         $response->assertJsonstructure($structurePaginate);
         //verify the user and group assigned
-        $this->assertLessThanOrEqual($response->json()['total'], 1);
+        $this->assertLessThanOrEqual(count($response->json()['data']), 1);
         $data = [];
         foreach ($response->json()['data'] as $info) {
             $data[] = $info['aas_uid'];
@@ -427,7 +425,7 @@ class TaskManagerTest extends ApiTestCase
         //verify structure paginate
         $response->assertJsonstructure($structurePaginate);
         //verify result
-        $this->assertEquals($response->json()['total'], 0);
+        $this->assertLessThanOrEqual(count($response->json()['data']), 0);
     }
 
     /**
@@ -604,7 +602,7 @@ class TaskManagerTest extends ApiTestCase
         $assignee->USR_UID = $userMake->USR_UID;
         $url = self::API_ROUTE . $process->PRO_UID . '/activity/' . $activity->TAS_UID . '/assignee/' . $assignee->USR_UID;
         $response = $this->api('DELETE', $url);
-        $response->assertStatus(400);
+        $response->assertStatus(404);
 
         //Other Activity row not exist
         $activityMake = factory(Task::class)->make();
@@ -617,7 +615,7 @@ class TaskManagerTest extends ApiTestCase
         $assignee->USR_UID = $groupMake->GRP_UID;
         $url = self::API_ROUTE . $process->PRO_UID . '/activity/' . $activity->TAS_UID . '/assignee/' . $assignee->USR_UID;
         $response = $this->api('DELETE', $url);
-        $response->assertStatus(400);
+        $response->assertStatus(404);
 
         //delete user successfully
         $assignee->USR_UID = $user->USR_UID;

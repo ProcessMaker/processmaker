@@ -229,5 +229,4 @@ class Task extends Model
         return $this->morphedByManyCustom(Group::class, 'assignee', 'TASK_USER', 'TAS_ID', 'USR_ID', null, null, 'TU_RELATION');
     }
 
-
 }
