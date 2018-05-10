@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('content')
-<div class="container ">
+<div class="container ml-2">
   <h1>Run</h1>
 
   <div>
