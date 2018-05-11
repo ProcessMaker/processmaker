@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use ProcessMaker\Model\ProcessCategory;
 use ProcessMaker\Model\Traits\Uuid;
+use ProcessMaker\Model\User;
 use Watson\Validating\ValidatingTrait;
 
 /**
@@ -365,6 +366,15 @@ class Process extends Model
     public function variables()
     {
         return $this->hasMany( ProcessVariable::class, 'PRO_ID', 'id');
+    }
+
+    /**
+     * Get the creator/author of this process.
+     * 
+     */
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'creator_user_id');
     }
 
 }

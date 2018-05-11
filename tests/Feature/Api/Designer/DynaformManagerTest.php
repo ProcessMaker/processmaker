@@ -23,25 +23,8 @@ class DynaformManagerTest extends ApiTestCase
     {
         $process = factory(Process::class)->create();
         $this->assertNotNull($process);
-        $this->assertNotNull($process->PRO_UID);
+        $this->assertNotNull($process->uid);
         return $process;
-    }
-
-    /**
-     * create User
-     * @return User
-     *
-     */
-    public function testCreateUser(): User
-    {
-        $user = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make(self::DEFAULT_PASS),
-            'USR_ROLE' => Role::PROCESSMAKER_ADMIN
-        ]);
-        $this->assertNotNull($user);
-        $this->assertNotNull($user->USR_UID);
-        $this->assertNotNull($user->USR_ID);
-        return $user;
     }
 
     /**

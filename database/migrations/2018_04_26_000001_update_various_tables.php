@@ -18,10 +18,6 @@ class UpdateVariousTables extends Migration
      */
     public function up()
     {
-        Schema::table('EMAIL_EVENT', function(Blueprint $table) {
-            $table->dropColumn('PRJ_UID');
-        });
-
         // Update Application table to have a foreign key on process_id
         // APPLICATION
         Schema::table('APPLICATION', function(Blueprint $table) {
@@ -132,12 +128,6 @@ class UpdateVariousTables extends Migration
 
         //TIMER EVENTS
         Schema::table('TIMER_EVENT', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
-        });
-
-        //TRIGGERS
-        Schema::table('TRIGGERS', function(Blueprint $table) {
             $table->unsignedInteger('process_id')->nullable();
             $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
         });
