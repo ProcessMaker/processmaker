@@ -1,6 +1,9 @@
 import {EventShape} from "./eventShape";
 
-export class StartEvent extends EventShape {
+/**
+ * End Event Class
+ */
+export class EndEvent extends EventShape {
     constructor(options, svg) {
         super(svg);
         this.options = {
@@ -23,15 +26,15 @@ export class StartEvent extends EventShape {
         const x = this.options.x + this.options.x * 0.043;
         const y = this.options.y + this.options.y * 0.043;
         const bases = {
-            "bpmn:StartEvent": {
+            "bpmn:EndEvent": {
                 EMPTY: {
-                    path: "m496 48c-176 0-345 113-412 276-70 161-34 362 89 487 119 128 314 175 477 115 169-58 294-224 301-403 12-176-92-351-250-428-62-31-132-47-201-47-1 0-3 0-4 0z m12 49c173 1 335 126 380 293 47 159-17 344-155 439-143 105-354 97-489-18-136-109-185-309-115-468 60-147 212-248 371-246 3 0 6 0 8 0z",
+                    path: "m496 48c-203-1-394 153-437 351-41 174 33 368 181 470 143 103 348 111 497 15 150-91 238-275 210-449-26-181-170-339-350-376-33-7-67-11-101-11z m10 142c150-1 287 123 302 271 19 142-72 291-210 334-134 45-296-13-366-138-77-129-45-313 78-403 56-43 126-66 196-64z",
                     options: {
                         x,
                         y,
                         scale: "s0.04",
                         attr: {
-                            stroke: "#018A4F",
+                            stroke: "#000",
                             strokeWidth: 0
                         }
                     }
