@@ -98,7 +98,7 @@ class DynaformController
     {
         $this->belongsToProcess($process, $dynaform);
         DynaformManager::remove($dynaform);
-        return response([], 200);
+        return response([], 204);
     }
 
     /**

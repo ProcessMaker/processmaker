@@ -40,7 +40,6 @@ class DynaformManager
         $this->validate($data);
 
         $data['uid'] = Uuid::uuid4();
-//        $data['PRO_UID'] = $process->uid;
         $data['process_id'] = $process->id;
 
         if (!isset($data['content']) || empty($data['content'])) {

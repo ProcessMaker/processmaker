@@ -3,8 +3,10 @@ namespace ProcessMaker\Exception;
 
 use Exception;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\App;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Our general exception handler
@@ -52,6 +54,20 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        // This will replace our 404 response with
+        // a JSON response.
+        /*if ($exception instanceof ModelNotFoundException) {
+            $exception = new NotFoundHttpException($exception->getMessage(), $exception);
+            $code = 422;
+            $error = [
+                'error'  => [
+                    'code'    => $code,
+                    'message' => __('This element does not exist!'),
+                ],
+                'errors' => $exception->getMessage()
+            ];
+            return response()->json(['error' => $error], $code);
+        }*/
         return parent::render($request, $exception);
     }
 
