@@ -16,18 +16,6 @@ class DynaformManagerTest extends ApiTestCase
     const DEFAULT_PASS = 'password';
 
     /**
-     * Create process
-     * @return Process
-     */
-    public function testCreateProcess(): Process
-    {
-        $process = factory(Process::class)->create();
-        $this->assertNotNull($process);
-        $this->assertNotNull($process->PRO_UID);
-        return $process;
-    }
-
-    /**
      * create User
      * @return User
      *
@@ -35,14 +23,33 @@ class DynaformManagerTest extends ApiTestCase
     public function testCreateUser(): User
     {
         $user = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make(self::DEFAULT_PASS),
-            'USR_ROLE' => Role::PROCESSMAKER_ADMIN
+            'password' => Hash::make(self::DEFAULT_PASS),
+            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
         $this->assertNotNull($user);
-        $this->assertNotNull($user->USR_UID);
-        $this->assertNotNull($user->USR_ID);
+        $this->assertNotNull($user->uid);
+        $this->assertNotNull($user->id);
         return $user;
     }
+
+    /**
+     * Create process
+     * @param User $user
+     *
+     * @depends testCreateUser
+     * @return Process
+     */
+    public function testCreateProcess(User $user): Process
+    {
+        $process = factory(Process::class)->create([
+            'creator_user_id' => $user->id
+        ]);
+        $this->assertNotNull($process);
+        $this->assertNotNull($process->id);
+        return $process;
+    }
+
+
 
     /**
      * Create new Dynaform in process
@@ -57,21 +64,20 @@ class DynaformManagerTest extends ApiTestCase
      */
     public function testCreateDynaform(Process $process, User $user): Dynaform
     {
-        $this->auth($user->USR_USERNAME, self::DEFAULT_PASS);
+        $this->auth($user->username, self::DEFAULT_PASS);
 
         $structure = [
-            'DYN_UID',
-            'PRO_ID',
-            'PRO_UID',
-            'DYN_TITLE',
-            'DYN_DESCRIPTION',
-            'DYN_CONTENT',
-            'DYN_LABEL'
+            'uid',
+            'process_id',
+            'title',
+            'description',
+            'content',
+            'label'
         ];
 
         $data = [];
         //Post should have the parameter dyn_title
-        $url = self::API_ROUTE . $process->PRO_UID . '/dynaform';
+        $url = self::API_ROUTE . $process->uid . '/dynaform';
         $response = $this->api('POST', $url, $data);
         //validating the answer is an error
         $response->assertStatus(422);
@@ -81,20 +87,20 @@ class DynaformManagerTest extends ApiTestCase
         $data['dyn_title'] = $faker->sentence(3);
         $data['dyn_description'] = $faker->sentence(10);
 
-        $url = self::API_ROUTE . $process->PRO_UID . '/dynaform';
+        $url = self::API_ROUTE . $process->uid . '/dynaform';
         $response = $this->api('POST', $url, $data);
         //validating the answer is correct.
         $response->assertStatus(201);
-        $id = $response->json('DYN_ID');
+        $id = $response->json('id');
         //Check structure of response.
         $response->assertJsonStructure($structure);
 
         //Post title duplicated
-        $url = self::API_ROUTE . $process->PRO_UID . '/dynaform';
+        $url = self::API_ROUTE . $process->uid . '/dynaform';
         $response = $this->api('POST', $url, $data);
         //validating the answer is correct.
         $response->assertStatus(422);
-        return Dynaform::where('DYN_ID', $id)->get()->first();
+        return Dynaform::where('id', $id)->get()->first();
     }
 
     /**
@@ -112,23 +118,22 @@ class DynaformManagerTest extends ApiTestCase
      */
     public function testCopyImportDynaform(Process $process, User $user, Dynaform $dynaform): Dynaform
     {
-        $this->auth($user->USR_USERNAME, self::DEFAULT_PASS);
+        $this->auth($user->username, self::DEFAULT_PASS);
 
         $structure = [
-            'DYN_UID',
-            'PRO_ID',
-            'PRO_UID',
-            'DYN_TITLE',
-            'DYN_DESCRIPTION',
-            'DYN_CONTENT',
-            'DYN_LABEL'
+            'uid',
+            'process_id',
+            'title',
+            'description',
+            'content',
+            'label'
         ];
 
         $data = [
             'copy_import' => 'test'
         ];
-        //copy_import must be an array and fields prj_uid and dyn_uid are required.
-        $url = self::API_ROUTE . $process->PRO_UID . '/dynaform';
+        //copy_import must be an array and fields pro_uid and dyn_uid are required.
+        $url = self::API_ROUTE . $process->uid . '/dynaform';
         $response = $this->api('POST', $url, $data);
         //validating the answer is an error
         $response->assertStatus(422);
@@ -136,9 +141,9 @@ class DynaformManagerTest extends ApiTestCase
         //Process not exist
         $data['copy_import'] = [
             'pro_uid' => 'otheruid',
-            'dyn_uid' => $dynaform->DYN_UID
+            'dyn_uid' => $dynaform->uid
         ];
-        $url = self::API_ROUTE . $process->PRO_UID . '/dynaform';
+        $url = self::API_ROUTE . $process->uid . '/dynaform';
         $response = $this->api('POST', $url, $data);
         //validating the answer is an error
         $response->assertStatus(404);
@@ -146,10 +151,10 @@ class DynaformManagerTest extends ApiTestCase
         //Dynaform not exist
         $otherProcess = $process;
         $data['copy_import'] = [
-            'pro_uid' => $otherProcess->PRO_UID,
+            'pro_uid' => $otherProcess->uid,
             'dyn_uid' => 'otherDynaformUid'
         ];
-        $url = self::API_ROUTE . $process->PRO_UID . '/dynaform';
+        $url = self::API_ROUTE . $process->uid . '/dynaform';
         $response = $this->api('POST', $url, $data);
         //validating the answer is an error
         $response->assertStatus(404);
@@ -158,10 +163,10 @@ class DynaformManagerTest extends ApiTestCase
         $otherProcess = $process;
         $otherDynaform = factory(Dynaform::class)->create();
         $data['copy_import'] = [
-            'pro_uid' => $otherProcess->PRO_UID,
-            'dyn_uid' => $otherDynaform->DYN_UID
+            'pro_uid' => $otherProcess->uid,
+            'dyn_uid' => $otherDynaform->uid
         ];
-        $url = self::API_ROUTE . $process->PRO_UID . '/dynaform';
+        $url = self::API_ROUTE . $process->uid . '/dynaform';
         $response = $this->api('POST', $url, $data);
         //validating the answer is an error
         $response->assertStatus(404);
@@ -172,25 +177,25 @@ class DynaformManagerTest extends ApiTestCase
         $data['dyn_description'] = $faker->sentence(10);
 
         $data['copy_import'] = [
-            'pro_uid' => $otherProcess->PRO_UID,
-            'dyn_uid' => $dynaform->DYN_UID
+            'pro_uid' => $otherProcess->uid,
+            'dyn_uid' => $dynaform->uid
         ];
         $process = factory(Process::class)->create();
 
-        $url = self::API_ROUTE . $process->PRO_UID . '/dynaform';
+        $url = self::API_ROUTE . $process->uid . '/dynaform';
         $response = $this->api('POST', $url, $data);
         //validating the answer is correct.
         $response->assertStatus(201);
-        $id = $response->json('DYN_ID');
+        $id = $response->json('id');
         //Check structure of response.
         $response->assertJsonStructure($structure);
 
         //Post title duplicated
-        $url = self::API_ROUTE . $process->PRO_UID . '/dynaform';
+        $url = self::API_ROUTE . $process->uid . '/dynaform';
         $response = $this->api('POST', $url, $data);
         //validating the answer is correct.
         $response->assertStatus(422);
-        return Dynaform::where('DYN_ID', $id)->get()->first();
+        return Dynaform::where('id', $id)->get()->first();
     }
 
     /**
@@ -205,7 +210,7 @@ class DynaformManagerTest extends ApiTestCase
      */
     public function testListDynaform(Process $process, User $user): void
     {
-        $this->auth($user->USR_USERNAME, self::DEFAULT_PASS);
+        $this->auth($user->username, self::DEFAULT_PASS);
         $structurePaginate = [
             'current_page',
             'data',
@@ -219,12 +224,11 @@ class DynaformManagerTest extends ApiTestCase
         ];
         //add Dynaform to process
         factory(Dynaform::class, 10)->create([
-            'PRO_UID' => $process->PRO_UID,
-            'PRO_ID' => $process->PRO_ID
+            'process_id' => $process->id
         ]);
 
         //List Dynaform
-        $url = self::API_ROUTE . $process->PRO_UID . '/dynaforms';
+        $url = self::API_ROUTE . $process->uid . '/dynaforms';
         $response = $this->api('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
@@ -241,27 +245,25 @@ class DynaformManagerTest extends ApiTestCase
      *
      * @param Process $process
      * @param User $user
-     * @param Dynaform $Dynaform
+     * @param Dynaform $dynaform
      *
      * @depends testCreateProcess
      * @depends testCreateUser
      * @depends testCreateDynaform
      */
-    public function testGetDynaform(Process $process, User $user, Dynaform $Dynaform): void
+    public function testGetDynaform(Process $process, User $user, Dynaform $dynaform): void
     {
-        $this->auth($user->USR_USERNAME, self::DEFAULT_PASS);
+        $this->auth($user->username, self::DEFAULT_PASS);
         $structure = [
-            'DYN_UID',
-            'PRO_ID',
-            'PRO_UID',
-            'DYN_TITLE',
-            'DYN_DESCRIPTION',
-            'DYN_CONTENT',
-            'DYN_LABEL',
-            'DYN_UPDATE_DATE'
+            'uid',
+            'process_id',
+            'title',
+            'description',
+            'content',
+            'label'
         ];
         //load Dynaform
-        $url = self::API_ROUTE . $process->PRO_UID . '/dynaform/' . $Dynaform->DYN_UID;
+        $url = self::API_ROUTE . $process->uid . '/dynaform/' . $dynaform->uid;
         $response = $this->api('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
@@ -270,8 +272,8 @@ class DynaformManagerTest extends ApiTestCase
         $response->assertJsonStructure($structure);
 
         //Dynaform not belong to process.
-        $Dynaform = factory(Dynaform::class)->create();
-        $url = self::API_ROUTE . $process->PRO_UID . '/dynaform/' . $Dynaform->DYN_UID;
+        $dynaform = factory(Dynaform::class)->create();
+        $url = self::API_ROUTE . $process->uid . '/dynaform/' . $dynaform->uid;
         $response = $this->api('GET', $url);
         //Validate the answer is incorrect
         $response->assertStatus(404);
@@ -283,15 +285,15 @@ class DynaformManagerTest extends ApiTestCase
      *
      * @param Process $process
      * @param User $user
-     * @param Dynaform $Dynaform
+     * @param Dynaform $dynaform
      *
      * @depends testCreateProcess
      * @depends testCreateUser
      * @depends testCreateDynaform
      */
-    public function testUpdateDynaform(Process $process, User $user, Dynaform $Dynaform): void
+    public function testUpdateDynaform(Process $process, User $user, Dynaform $dynaform): void
     {
-        $this->auth($user->USR_USERNAME, self::DEFAULT_PASS);
+        $this->auth($user->username, self::DEFAULT_PASS);
 
         $faker = Faker::create();
         $data = [
@@ -299,7 +301,7 @@ class DynaformManagerTest extends ApiTestCase
             'dyn_description' => ''
         ];
         //Post should have the parameter tri_title
-        $url = self::API_ROUTE . $process->PRO_UID . '/dynaform/' . $Dynaform->DYN_UID;
+        $url = self::API_ROUTE . $process->uid . '/dynaform/' . $dynaform->uid;
         $response = $this->api('PUT', $url, $data);
         //Validate the answer is incorrect
         $response->assertStatus(422);
@@ -308,7 +310,7 @@ class DynaformManagerTest extends ApiTestCase
         $data['dyn_title'] = $faker->sentence(2);
         $data['dyn_description'] = $faker->sentence(5);
         $data['dyn_content'] = '';
-        $url = self::API_ROUTE . $process->PRO_UID . '/dynaform/' . $Dynaform->DYN_UID;
+        $url = self::API_ROUTE . $process->uid . '/dynaform/' . $dynaform->uid;
         $response = $this->api('PUT', $url, $data);
         //Validate the answer is correct
         $response->assertStatus(200);
@@ -319,26 +321,26 @@ class DynaformManagerTest extends ApiTestCase
      *
      * @param Process $process
      * @param User $user
-     * @param Dynaform $Dynaform
+     * @param Dynaform $dynaform
      *
      * @depends testCreateProcess
      * @depends testCreateUser
      * @depends testCreateDynaform
      */
-    public function testDeleteDynaform(Process $process, User $user, Dynaform $Dynaform): void
+    public function testDeleteDynaform(Process $process, User $user, Dynaform $dynaform): void
     {
-        $this->auth($user->USR_USERNAME, self::DEFAULT_PASS);
+        $this->auth($user->username, self::DEFAULT_PASS);
 
         //Remove Dynaform
-        $url = self::API_ROUTE . $process->PRO_UID . '/dynaform/' . $Dynaform->DYN_UID;
+        $url = self::API_ROUTE . $process->uid . '/dynaform/' . $dynaform->uid;
         $response = $this->api('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
 
-        $Dynaform = factory(Dynaform::class)->make();
+        $dynaform = factory(Dynaform::class)->make();
 
         //Dynaform not exist
-        $url = self::API_ROUTE . $process->PRO_UID . '/dynaform/' . $Dynaform->DYN_UID;
+        $url = self::API_ROUTE . $process->uid . '/dynaform/' . $dynaform->uid;
         $response = $this->api('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(404);
