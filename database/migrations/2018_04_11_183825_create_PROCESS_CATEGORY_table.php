@@ -12,13 +12,12 @@ class CreatePROCESSCATEGORYTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('PROCESS_CATEGORY', function(Blueprint $table)
+		Schema::create('process_categories', function(Blueprint $table)
 		{
-			$table->integer('CATEGORY_ID', true);
-			$table->string('CATEGORY_UID', 32)->default('')->unique('UQ_CATEGORY_UID');
-			$table->string('CATEGORY_NAME', 100)->default('');
-			$table->dateTime('CREATED_AT')->nullable();
-			$table->dateTime('UPDATED_AT')->nullable();
+			$table->increments('id');
+			$table->uuid('uid');
+			$table->string('name')->default('');
+			$table->timestamps();
 		});
 	}
 
@@ -30,7 +29,7 @@ class CreatePROCESSCATEGORYTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('PROCESS_CATEGORY');
+		Schema::drop('process_categories');
 	}
 
 }
