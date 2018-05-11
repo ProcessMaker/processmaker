@@ -1,12 +1,13 @@
 @extends('layouts.layout')
 
 @section('content')
-
+<div class="container ml-2">
   <h1>Run</h1>
 
-  <div class="container">
+  <div>
     <my-vuetable api-url="/test"></my-vuetable>
   </div>
+</div>
 @endsection
 
 @section('sidebar')

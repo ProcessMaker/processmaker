@@ -18,43 +18,6 @@ class UpdateVariousTables extends Migration
      */
     public function up()
     {
-        Schema::table('BPMN_DIAGRAM', function(Blueprint $table) {
-            $table->dropForeign('fk_bpmn_diagram_project');
-            $table->dropColumn('PRJ_UID');
-        });
-        Schema::table('BPMN_BOUND', function(Blueprint $table) {
-            $table->dropForeign('fk_bpmn_bound_project');
-            $table->dropColumn('PRJ_UID');
-        });
-        Schema::table('BPMN_ACTIVITY', function(Blueprint $table) {
-            $table->dropForeign('fk_bpmn_activity_project');
-            $table->dropColumn('PRJ_UID');
-            $table->dropForeign('fk_bpmn_activity_process');
-            $table->dropColumn('PRO_UID');
-        });
-        Schema::table('BPMN_EVENT', function(Blueprint $table) {
-            $table->dropForeign('fk_bpmn_event_project');
-            $table->dropColumn('PRJ_UID');
-            $table->dropForeign('fk_bpmn_event_process');
-            $table->dropColumn('PRO_UID');
-        });
-        Schema::table('BPMN_GATEWAY', function(Blueprint $table) {
-            $table->dropForeign('fk_bpmn_gateway_project');
-            $table->dropColumn('PRJ_UID');
-            $table->dropForeign('fk_bpmn_gateway_process');
-            $table->dropColumn('PRO_UID');
-        });
-        Schema::table('BPMN_FLOW', function(Blueprint $table) {
-            $table->dropForeign('fk_bpmn_flow_project');
-            $table->dropColumn('PRJ_UID');
-            $table->dropForeign('fk_bpmn_flow_diagram');
-        });
-        Schema::table('BPMN_ARTIFACT', function(Blueprint $table) {
-            $table->dropForeign('fk_bpmn_artifact_project');
-            $table->dropColumn('PRJ_UID');
-            $table->dropForeign('fk_bpmn_artifact_process');
-            $table->dropColumn('PRO_UID');
-        });
         Schema::table('EMAIL_EVENT', function(Blueprint $table) {
             $table->dropColumn('PRJ_UID');
         });
@@ -62,101 +25,6 @@ class UpdateVariousTables extends Migration
         // Update Application table to have a foreign key on process_id
         // APPLICATION
         Schema::table('APPLICATION', function(Blueprint $table) {
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
-        });
-
-        //BPMN ACTIVITIES
-        Schema::table('BPMN_ACTIVITY', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
-        });
-
-        //BPMN ARTIFACTS
-        Schema::table('BPMN_ARTIFACT', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
-        });
-
-        //BPMN BOUNDS
-        Schema::table('BPMN_BOUND', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
-        });
-
-        //BPMN DATA SHAPES
-        Schema::table('BPMN_DATA', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
-        });
-
-        //BPMN DIAGRAM(S)
-        Schema::table('BPMN_DIAGRAM', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
-        });
-
-        //BPMN DOCUMENTATIONS
-        Schema::table('BPMN_DOCUMENTATION', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
-        });
-
-        //BPMN EVENTS
-        Schema::table('BPMN_EVENT', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
-        });
-
-        //BPMN EXTENSIONS
-        Schema::table('BPMN_EXTENSION', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
-        });
-
-        //BPMN FLOWS
-        Schema::table('BPMN_FLOW', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
-        });
-
-        //BPMN GATEWAYS
-        Schema::table('BPMN_GATEWAY', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
-        });
-
-        //BPMN LANES
-        Schema::table('BPMN_LANE', function(Blueprint $table) {
-            $table->dropForeign('fk_bpmn_lane_project');
-            $table->dropColumn('PRJ_UID');
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
-        });
-
-        //BPMN LANESETS
-        Schema::table('BPMN_LANESET', function(Blueprint $table) {
-            $table->dropForeign('fk_bpmn_laneset_project');
-            $table->dropColumn('PRJ_UID');
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
-            $table->dropColumn('LNS_STATE');
-        });
-
-        //BPMN PARTICIPANTS
-        Schema::table('BPMN_PARTICIPANT', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
-        });
-
-        //PROCESS SCHEDULED START CASES (CLASSIC)
-        Schema::table('CASE_SCHEDULER', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
-        });
-
-        //LOG OF PROCESS CASES SCHEDULER
-        Schema::table('LOG_CASES_SCHEDULER', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
             $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
         });
 
@@ -186,18 +54,6 @@ class UpdateVariousTables extends Migration
 
         //EMAIL EVENTS (CLASSIC)
         Schema::table('EMAIL_EVENT', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
-        });
-
-        //EVENTS
-        Schema::table('EVENT', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
-        });
-
-        //GATEWAYS
-        Schema::table('GATEWAY', function(Blueprint $table) {
             $table->unsignedInteger('process_id')->nullable();
             $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
         });
@@ -244,12 +100,6 @@ class UpdateVariousTables extends Migration
             $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
         });
 
-        //STATISTICAL INFORMATION AND KPIs OF THE PROCESS
-        Schema::table('PRO_REPORTING', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
-        });
-
         //ROUTES
         Schema::table('ROUTE', function(Blueprint $table) {
             $table->unsignedInteger('process_id')->nullable();
@@ -258,12 +108,6 @@ class UpdateVariousTables extends Migration
 
         //SCRIPT TASKS
         Schema::table('SCRIPT_TASK', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
-        });
-
-        //STAGES (CLASSIC)
-        Schema::table('STAGE', function(Blueprint $table) {
             $table->unsignedInteger('process_id')->nullable();
             $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
         });
@@ -286,12 +130,6 @@ class UpdateVariousTables extends Migration
             $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
         });
 
-        //SWIMLANES ELEMENTS
-        Schema::table('SWIMLANES_ELEMENTS', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
-        });
-
         //TIMER EVENTS
         Schema::table('TIMER_EVENT', function(Blueprint $table) {
             $table->unsignedInteger('process_id')->nullable();
@@ -300,36 +138,6 @@ class UpdateVariousTables extends Migration
 
         //TRIGGERS
         Schema::table('TRIGGERS', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
-        });
-
-        //USR REPORTING
-        Schema::table('USR_REPORTING', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
-        });
-
-        //WEB ENTRIES
-        Schema::table('WEB_ENTRY', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
-        });
-
-        //WEB ENTRY EVENTS
-        Schema::table('WEB_ENTRY_EVENT', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
-        });
-
-        //CASES ASSIGNMENT, SELF SERVICE VALUES
-        Schema::table('APP_ASSIGN_SELF_SERVICE_VALUE', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
-        });
-
-        //CASES LIST CACHE
-        Schema::table('APP_CACHE_VIEW', function(Blueprint $table) {
             $table->unsignedInteger('process_id')->nullable();
             $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
         });
@@ -351,55 +159,6 @@ class UpdateVariousTables extends Migration
         Schema::table('APP_HISTORY', function(Blueprint $table) {
             $table->unsignedInteger('process_id')->nullable();
             $table->foreign('process_id')->references('id')->on('processes')->onDelete('RESTRICT');
-        });
-
-        //LIST OF CANCELED CASES
-        Schema::table('LIST_CANCELED', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('RESTRICT');
- 
-        });
-
-        //LIST OF COMPLETED CASES
-        Schema::table('LIST_COMPLETED', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('RESTRICT');
- 
-        });
-
-        //LIST INBOX
-        Schema::table('LIST_INBOX', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('RESTRICT');
- 
-        });
-
-        //HISTORIC OF PARTICIPATION
-        Schema::table('LIST_PARTICIPATED_HISTORY', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('RESTRICT');
- 
-        });
-
-        //LIST OF THE LAST PARTICIPATED IN EACH CASE
-        Schema::table('LIST_PARTICIPATED_LAST', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('RESTRICT');
- 
-        });
-
-        //LIST OF PAUSED CASES
-        Schema::table('LIST_PAUSED', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('RESTRICT');
- 
-        });
-
-        //LIST OF UNASSIGNED CASES
-        Schema::table('LIST_UNASSIGNED', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('RESTRICT');
- 
         });
 
         //MESSAGE EVENTS THROUGH THE CASES
