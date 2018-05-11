@@ -4,79 +4,71 @@ namespace ProcessMaker\Model;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use ProcessMaker\Model\Traits\Uuid;
 use Watson\Validating\ValidatingTrait;
 
 /**
  * Class dynaform
+ *
  * @package ProcessMaker\Model
  *
- * @property int DYN_ID
- * @property string DYN_UID
- * @property int PRO_ID
- * @property string PRO_UID
- * @property string DYN_TITLE
- * @property string DYN_DESCRIPTION
- * @property array DYN_CONTENT
- * @property string DYN_LABEL
- * @property Carbon DYN_UPDATE_DATE
+ * @property int id
+ * @property string uid
+ * @property int process_id
+ * @property string title
+ * @property string description
+ * @property array content
+ * @property string label
+ * @property Carbon type
  *
  */
 class Dynaform extends Model
 {
     use ValidatingTrait;
+    use Uuid;
 
-    protected $table = 'DYNAFORM';
-    protected $primaryKey = 'DYN_ID';
-
-    const CREATED_AT = null;
-
-    /**
-     * The name of the "updated at" column.
-     */
-    const UPDATED_AT = 'DYN_UPDATE_DATE';
+    protected $table = 'dynaform';
 
     protected $fillable = [
-        'DYN_UID',
-        'PRO_ID',
-        'PRO_UID',
-        'DYN_TITLE',
-        'DYN_DESCRIPTION',
-        'DYN_CONTENT',
-        'DYN_LABEL',
-        'DYN_UPDATE_DATE'
+        'uid',
+        'title',
+        'description',
+        'content',
+        'label',
+        'type',
+        'created_at',
+        'updated_at',
+        'process_id',
     ];
 
     protected $attributes = [
-        'DYN_UID' => null,
-        'PRO_ID' => '',
-        'PRO_UID' => null,
-        'DYN_TITLE' => null,
-        'DYN_DESCRIPTION' => null,
-        'DYN_CONTENT' => null,
-        'DYN_LABEL' => null,
-        'DYN_UPDATE_DATE' => null,
+        'uid' => null,
+        'process_id' => '',
+        'title' => null,
+        'description' => null,
+        'content' => null,
+        'label' => null,
+        'type' => 'form',
     ];
 
     protected $casts = [
-        'DYN_UID' => 'string',
-        'PRO_ID' => 'int',
-        'PRO_UID' => 'string',
-        'DYN_TITLE' => 'string',
-        'DYN_DESCRIPTION' => 'string',
-        'DYN_CONTENT' => 'array',
-        'DYN_LABEL' => 'string',
-        'DYN_UPDATE_DATE' => 'string',
+        'uid' => 'string',
+        'process_id' => 'int',
+        'title' => 'string',
+        'description' => 'string',
+        'content' => 'array',
+        'label' => 'string',
+        'type' => 'string',
     ];
 
     protected $rules = [
-        'DYN_UID' => 'required|max:32',
-        'PRO_ID' => 'required',
-        'PRO_UID' => 'required|max:32',
-        'DYN_TITLE' => 'required|unique:DYNAFORM,DYN_TITLE',
+        'uid' => 'required|max:36',
+        'process_id' => 'exists:processes,id',
+        'title' => 'required|unique:dynaform,title',
     ];
 
     protected $validationMessages = [
-        'DYN_TITLE.unique' => 'A Dynaform with the same name already exists in this process.'
+        'title.unique' => 'A Dynaform with the same name already exists in this process.'
     ];
 
     /**
@@ -84,33 +76,33 @@ class Dynaform extends Model
      *
      * @return string
      */
-    public function getRouteKeyName()
+    public function getRouteKeyName(): string
     {
-        return 'DYN_UID';
+        return 'uid';
     }
 
     /**
-     * Accessor DYN_CONTENT to json
+     * Accessor content to json
      *
      * @param $value
      *
      * @return array|null
      */
-    public function getDynContentAttribute($value): ?array
+    public function getContentAttribute($value): ?array
     {
         return json_decode($value, true);
     }
 
     /**
-     * Mutator DYN_CONTENT json decode
+     * Mutator content json decode
      *
      * @param $value
      *
      * @return void
      */
-    public function setDynContentAttribute($value): void
+    public function setContentAttribute($value): void
     {
-        $this->attributes['DYN_CONTENT'] = empty($value) ? null : json_encode($value);
+        $this->attributes['content'] = empty($value) ? null : json_encode($value);
     }
 
 }
