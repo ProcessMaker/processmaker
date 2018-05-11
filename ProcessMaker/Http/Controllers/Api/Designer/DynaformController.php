@@ -51,8 +51,8 @@ class DynaformController
     public function store(Process $process, Request $request)
     {
         $data = [
-            'DYN_TITLE' => $request->input('dyn_title', ''),
-            'DYN_DESCRIPTION' => $request->input('dyn_description', '')
+            'title' => $request->input('dyn_title', ''),
+            'description' => $request->input('dyn_description', '')
         ];
         $data = array_merge($data, $this->formatData($request, ['dyn_content']));
 
@@ -98,7 +98,7 @@ class DynaformController
     {
         $this->belongsToProcess($process, $dynaform);
         DynaformManager::remove($dynaform);
-        return response([], 200);
+        return response([], 204);
     }
 
     /**
@@ -111,7 +111,7 @@ class DynaformController
      */
     private function belongsToProcess(Process $process, Dynaform $dynaform): void
     {
-        if ($process->PRO_ID !== $dynaform->PRO_ID) {
+        if ($process->id !== $dynaform->process_id) {
             Throw new DoesNotBelongToProcessException(__('The Dynaform does not belong to this process.'));
         }
     }
@@ -124,12 +124,12 @@ class DynaformController
      *
      * @return array
      */
-    private function formatData(Request $request, array $fields)
+    private function formatData(Request $request, array $fields): array
     {
         $data = [];
         foreach ($fields as $field) {
             if ($request->has($field)) {
-                $data[strtoupper($field)] = $request->input($field);
+                $data[substr($field, 4)] = $request->input($field);
             }
         }
         return $data;
