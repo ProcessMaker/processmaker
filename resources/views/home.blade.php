@@ -4,8 +4,8 @@
 <div class="container ml-2">
   <h1>Run</h1>
 
-  <div>
-    <my-vuetable api-url="/test"></my-vuetable>
+  <div id="home">
+    <inbox></inbox>
   </div>
 </div>
 @endsection
@@ -16,6 +16,8 @@
 
 @section('js')
 <script>
-
+new Vue({
+    el: '#home'
+});
 </script>
 @endsection

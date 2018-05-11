@@ -27,7 +27,7 @@ window.Vue = require('vue');
 
 window.Vue.use(BootstrapVue);
 
-Vue.component('my-vuetable', require('./components/MyVuetable.vue'));
+Vue.component('inbox', require('./components/inbox.vue'));
 
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests

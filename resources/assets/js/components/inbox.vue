@@ -2,7 +2,7 @@
   <div>
     <filter-bar></filter-bar>
     <vuetable ref="vuetable"
-      api-url="/test"
+      api-url="https://vuetable.ratiw.net/api/users"
       :fields="fields"
       pagination-path=""
       :css="css.table"
@@ -43,6 +43,7 @@ Vue.component('my-detail-row', DetailRow)
 Vue.component('filter-bar', FilterBar)
 
 export default {
+
   components: {
     Vuetable,
     VuetablePagination,
@@ -52,20 +53,20 @@ export default {
     return {
       fields: [
         {
-          name: 'USR_FIRSTNAME',
-          sortField: 'USR_FIRSTNAME',
+          name: 'name',
+          sortField: 'name',
         },
         {
-          name: 'USR_LASTNAME',
-          sortField: 'USR_LASTNAME',
+          name: 'nickname',
+          sortField: 'nickname',
         },
         {
-          name: 'USR_EMAIL',
-          sortField: 'USR_EMAIL'
+          name: 'email',
+          sortField: 'email'
         },
         {
-          name: 'USR_CREATE_DATE',
-          sortField: 'USR_CREATE_DATE'
+          name: 'birthdate ',
+          sortField: 'birthdate'
         }
       ],
       css: {
@@ -87,15 +88,9 @@ export default {
             last: '',
           },
         },
-        icons: {
-          first: 'glyphicon glyphicon-step-backward',
-          prev: 'glyphicon glyphicon-chevron-left',
-          next: 'glyphicon glyphicon-chevron-right',
-          last: 'glyphicon glyphicon-step-forward',
-        },
       },
       sortOrder: [
-        { field: 'USR_FIRSTNAME'}
+        { field: 'name'}
       ],
       moreParams: {}
     }
