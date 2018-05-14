@@ -5,7 +5,7 @@
                 <img id="bpmn:StartEvent" name="StartEvent" src="images/start-event.svg" height="25"
                      draggable="true" @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:IntermediateThrowEvent" src="images/intermediate-email-event.svg" height="25"
+                <img id="bpmn:Task" src="images/task.svg" height="20"
                      draggable="true" @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
                 <img id="bpmn:EndEvent" src="images/end-event.svg" height="25" draggable="true"
@@ -14,10 +14,10 @@
                 <img id="bpmn:ExclusiveGateway" src="images/exclusive-gateway.svg" height="25" draggable="true"
                      @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:Task" src="images/task.svg" height="20" draggable="true"
+                <img id="bpmn:ParallelGateway" src="images/parallel-gateway.svg" height="25" draggable="true"
                      @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:SubProcess" src="images/sub-process.svg" height="20" draggable="true"
+                <img id="bpmn:InclusiveGateway" src="images/inclusive-gateway.svg" height="25" draggable="true"
                      @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
                 <img id="bpmn:DataObjectReference" src="images/data-object.svg" height="20" draggable="true"
