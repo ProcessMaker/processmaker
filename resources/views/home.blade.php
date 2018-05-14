@@ -5,7 +5,9 @@
   <h1>Run</h1>
 
   <div id="home">
-    <inbox></inbox>
+    <div id="inbox">
+        <inbox></inbox>
+    </div>
   </div>
 </div>
 @endsection
@@ -17,7 +19,7 @@
 @section('js')
 <script>
 new Vue({
-    el: '#home'
+  el: '#inbox'
 });
 </script>
 @endsection

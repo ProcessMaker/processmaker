@@ -53,6 +53,7 @@ if (window.Processmaker.broadcaster == 'pusher') {
   window.Pusher = require('pusher-js');
 }
 /*
+
 window.Echo = new Echo({
   broadcaster: window.Processmaker.broadcasting.broadcaster,
   key: window.Processmaker.broadcasting.key,
