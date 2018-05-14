@@ -98,8 +98,8 @@ class ProcessCategoryController extends Controller
     public function format(ProcessCategory $processCategory)
     {
         return [
-            "cat_uid" => $processCategory->CATEGORY_UID,
-            "cat_name" => $processCategory->CATEGORY_NAME,
+            "cat_uid" => $processCategory->uid,
+            "cat_name" => $processCategory->name,
             "cat_total_processes" => isset($processCategory->processes_count)
                 ? $processCategory->processes_count : 0,
         ];

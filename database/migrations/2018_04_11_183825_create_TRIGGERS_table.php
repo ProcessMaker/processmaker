@@ -12,15 +12,22 @@ class CreateTRIGGERSTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('TRIGGERS', function(Blueprint $table)
+		Schema::create('triggers', function(Blueprint $table)
 		{
-			$table->string('TRI_UID', 32)->default('')->primary();
-			$table->text('TRI_TITLE', 16777215);
-			$table->text('TRI_DESCRIPTION', 16777215)->nullable();
-			$table->string('PRO_UID', 32)->default('');
-			$table->string('TRI_TYPE', 20)->default('SCRIPT');
-			$table->text('TRI_WEBBOT', 16777215);
-			$table->text('TRI_PARAM', 16777215)->nullable();
+			$table->increments('id');
+			$table->timestamps();
+			$table->uuid('uid');
+			$table->text('title');
+			$table->text('description')->nullable();
+			$table->unsignedInteger('process_id');
+			$table->enum('type', ['SCRIPT'])->default('SCRIPT');
+
+			// @todo Find out what webbot and param are meant for
+			$table->text('webbot');
+			$table->text('param')->nullable();
+
+			// Setup relationship for process we belong to
+			$table->foreign('process_id')->references('id')->on('processes')->onDelete('cascade');
 		});
 	}
 
@@ -32,7 +39,7 @@ class CreateTRIGGERSTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('TRIGGERS');
+		Schema::drop('triggers');
 	}
 
 }

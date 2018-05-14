@@ -15,12 +15,25 @@ class DynaformManagerTest extends ApiTestCase
     const API_ROUTE = '/api/1.0/project/';
     const DEFAULT_PASS = 'password';
 
+
+    /**
+     * Create process
+     * @return Process
+     */
+    public function testCreateProcess(): Process
+    {
+        $process = factory(Process::class)->create();
+        $this->assertNotNull($process);
+        $this->assertNotNull($process->uid);
+        return $process;
+    }
+
+
+
     protected static $user;
     protected static $process;
 
-    /**
-     * Init variables User and Process
-     */
+
     private function initProcess(): void
     {
         self::$user = factory(User::class)->create([
@@ -34,6 +47,7 @@ class DynaformManagerTest extends ApiTestCase
     }
 
     /**
+
      * Create new Dynaform in process
      *
      * @return Dynaform

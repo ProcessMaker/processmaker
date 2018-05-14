@@ -33,11 +33,11 @@ class ProcessCategoryManager
             ]
         );
         $query = ProcessCategory::select([
-                'CATEGORY_UID',
-                'CATEGORY_NAME',
-            ])->where('CATEGORY_UID', '!=', '')
+                'uid',
+                'name',
+            ])->where('uid', '!=', '')
             ->withCount('processes');
-        $filter === null ?: $query->where('CATEGORY_NAME', 'like', "%$filter%");
+        $filter === null ?: $query->where('name', 'like', "%$filter%");
         $start === null ? : $query->offset($start);
         $limit === null ? : $query->limit($limit);
         return $query->get();
@@ -55,12 +55,12 @@ class ProcessCategoryManager
         $this->validate(
             $data,
             [
-                'cat_name' => 'required|string|max:100|unique:PROCESS_CATEGORY,CATEGORY_NAME',
+                'cat_name' => 'required|string|max:100|unique:process_categories,name',
             ]
         );
         return ProcessCategory::create([
-            'CATEGORY_UID' => str_replace('-', '', Uuid::uuid4()),
-            'CATEGORY_NAME' => $data['cat_name'],
+            'uid' => str_replace('-', '', Uuid::uuid4()),
+            'name' => $data['cat_name'],
         ]);
     }
 
@@ -77,11 +77,11 @@ class ProcessCategoryManager
         $this->validate(
             $data,
             [
-                'cat_name' => 'required|string|max:100|unique:PROCESS_CATEGORY,CATEGORY_NAME',
+                'cat_name' => 'required|string|max:100|unique:process_categories,name',
             ]
         );
         $processCategory->update([
-            'CATEGORY_NAME' => $data['cat_name'],
+            'name' => $data['cat_name'],
         ]);
         $processCategory->save();
         return $processCategory;
