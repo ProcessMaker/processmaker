@@ -37,7 +37,7 @@ class UpdateVariousTables extends Migration
         });
 
         //DYNAFORMS
-        Schema::table('DYNAFORM', function(Blueprint $table) {
+        Schema::table('dynaform', function(Blueprint $table) {
             $table->unsignedInteger('process_id')->nullable();
             $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
         });

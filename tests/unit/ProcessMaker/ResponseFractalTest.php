@@ -66,7 +66,7 @@ class ResponseFractalTest extends TestCase
         }
 
         //Custom Serializer
-        $response = response()->collection($reportTable, new ReportTableTransformer(), 200, [], new \Spatie\Fractalistic\ArraySerializer());
+        $response = response()->collection($reportTable, new ReportTableTransformer(), 200, [], new ArraySerializer());
         $data = json_decode($response->getContent(), true);
 
         //verify the response is not null
@@ -75,7 +75,7 @@ class ResponseFractalTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
 
         //verify if the fields exist in the data response
-        foreach ($data as $reportTableData) {
+        foreach ($data['data'] as $reportTableData) {
             $this->verifyStructure($reportTableData);
         }
     }
