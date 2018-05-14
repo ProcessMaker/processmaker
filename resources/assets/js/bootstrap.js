@@ -37,9 +37,11 @@ Vue.component('inbox', require('./components/inbox.vue'));
 
 window.axios = require('axios');
 
+/*
 window.axios.defaults.headers.common['X-CSRF-TOKEN'] = window.Processmaker.csrfToken;
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+*/
 
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
@@ -50,9 +52,10 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 if (window.Processmaker.broadcaster == 'pusher') {
   window.Pusher = require('pusher-js');
 }
-
+/*
 window.Echo = new Echo({
   broadcaster: window.Processmaker.broadcasting.broadcaster,
   key: window.Processmaker.broadcasting.key,
   host: window.Processmaker.broadcasting.host
 });
+*/
