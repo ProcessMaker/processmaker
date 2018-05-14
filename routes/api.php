@@ -97,5 +97,8 @@ Router::group([
         Router::put('project/{process}/output-document/{outPutDocument}', 'Designer\OutPutDocumentController@update')->middleware('can:write,ProcessMaker\Model\OutPutDocument');
         Router::delete('project/{process}/output-document/{outPutDocument}', 'Designer\OutPutDocumentController@remove')->middleware('can:delete,ProcessMaker\Model\OutPutDocument');
 
+        //Cases endpoints
+        Router::get('cases/{application}/variables', 'Cases\VariableController@get')->middleware('can:read,application');
+
     });
 });
