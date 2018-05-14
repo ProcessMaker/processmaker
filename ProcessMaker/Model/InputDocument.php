@@ -3,39 +3,38 @@
 namespace ProcessMaker\Model;
 
 use Illuminate\Database\Eloquent\Model;
+use ProcessMaker\Model\Traits\Uuid;
 use Watson\Validating\ValidatingTrait;
 
 /**
  * Class InputDocument
  * @package ProcessMaker\Model
  *
- * @property string INP_DOC_UID
- * @property int PRO_ID
- * @property string PRO_UID
- * @property string INP_DOC_TITLE
- * @property string INP_DOC_DESCRIPTION
- * @property string INP_DOC_FORM_NEEDED
- * @property string INP_DOC_ORIGINAL
- * @property string INP_DOC_PUBLISHED
- * @property int INP_DOC_VERSIONING
- * @property string INP_DOC_DESTINATION_PATH
- * @property string INP_DOC_TAGS
- * @property string INP_DOC_TYPE_FILE
- * @property int INP_DOC_MAX_FILESIZE
- * @property string INP_DOC_MAX_FILESIZE_UNIT
+ * @property int id
+ * @property string uid
+ * @property int process_id
+ * @property string title
+ * @property string description
+ * @property string form_needed
+ * @property string original
+ * @property string published
+ * @property int versioning
+ * @property string destination_path
+ * @property string tags
+ * @property string type_file
+ * @property int max_filesize
+ * @property string max_filesize_unit
  * 
  */
 class InputDocument extends Model
 {
     use ValidatingTrait;
+    use Uuid;
 
-    protected $table = 'INPUT_DOCUMENT';
-    protected $primaryKey = 'INP_DOC_ID';
-
-    public $timestamps = false;
+    protected $table = 'input_document';
 
     /**
-     * Values for INP_DOC_FORM_NEEDED
+     * Values for form_needed
      */
     const FORM_NEEDED_TYPE = [
         'VIRTUAL' => 'Digital',
@@ -44,7 +43,7 @@ class InputDocument extends Model
     ];
 
     /**
-     * Values for INP_DOC_ORIGINAL
+     * Values for original
      */
     const DOC_ORIGINAL_TYPE = [
         'ORIGINAL',
@@ -53,7 +52,7 @@ class InputDocument extends Model
     ];
 
     /**
-     * Values for INP_DOC_PUBLISHED
+     * Values for published
      */
     const DOC_PUBLISHED_TYPE = [
         'PRIVATE',
@@ -61,73 +60,69 @@ class InputDocument extends Model
     ];
 
     /**
-     * Values for INP_DOC_TAGS
+     * Values for tags
      */
     const DOC_TAGS_TYPE = [
         'INPUT'
     ];
 
     protected $fillable = [
-        'INP_DOC_UID',
-        'PRO_ID',
-        'PRO_UID',
-        'INP_DOC_TITLE',
-        'INP_DOC_DESCRIPTION',
-        'INP_DOC_FORM_NEEDED',
-        'INP_DOC_ORIGINAL',
-        'INP_DOC_PUBLISHED',
-        'INP_DOC_VERSIONING',
-        'INP_DOC_DESTINATION_PATH',
-        'INP_DOC_TAGS',
-        'INP_DOC_TYPE_FILE',
-        'INP_DOC_MAX_FILESIZE',
-        'INP_DOC_MAX_FILESIZE_UNIT'
+        'uid',
+        'process_id',
+        'title',
+        'description',
+        'form_needed',
+        'original',
+        'published',
+        'versioning',
+        'destination_path',
+        'tags',
+        'type_file',
+        'max_filesize',
+        'max_filesize_unit'
     ];
 
     protected $attributes = [
-        'INP_DOC_UID' => null,
-        'PRO_ID' => '',
-        'PRO_UID' => null,
-        'INP_DOC_TITLE' => null,
-        'INP_DOC_DESCRIPTION' => null,
-        'INP_DOC_FORM_NEEDED' => 'REAL',
-        'INP_DOC_ORIGINAL' => 'COPY',
-        'INP_DOC_PUBLISHED' => 'PRIVATE',
-        'INP_DOC_VERSIONING' => 0,
-        'INP_DOC_DESTINATION_PATH' => null,
-        'INP_DOC_TAGS' => null,
-        'INP_DOC_TYPE_FILE' => '*.*',
-        'INP_DOC_MAX_FILESIZE' => 0,
-        'INP_DOC_MAX_FILESIZE_UNIT' => 'KB'
+        'uid' => null,
+        'process_id' => '',
+        'title' => null,
+        'description' => null,
+        'form_needed' => 'REAL',
+        'original' => 'COPY',
+        'published' => 'PRIVATE',
+        'versioning' => 0,
+        'destination_path' => null,
+        'tags' => null,
+        'type_file' => '*.*',
+        'max_filesize' => 0,
+        'max_filesize_unit' => 'KB'
     ];
 
     protected $casts = [
-        'INP_DOC_UID' => 'string',
-        'PRO_ID' => 'int',
-        'PRO_UID' => 'string',
-        'INP_DOC_TITLE' => 'string',
-        'INP_DOC_DESCRIPTION' => 'string',
-        'INP_DOC_FORM_NEEDED' => 'string',
-        'INP_DOC_ORIGINAL' => 'string',
-        'INP_DOC_PUBLISHED' => 'string',
-        'INP_DOC_VERSIONING' => 'int',
-        'INP_DOC_DESTINATION_PATH' => 'string',
-        'INP_DOC_TAGS' => 'string',
-        'INP_DOC_TYPE_FILE' => 'string',
-        'INP_DOC_MAX_FILESIZE' => 'int',
-        'INP_DOC_MAX_FILESIZE_UNIT' => 'string'
+        'uid' => 'string',
+        'process_id' => 'int',
+        'title' => 'string',
+        'description' => 'string',
+        'form_needed' => 'string',
+        'original' => 'string',
+        'published' => 'string',
+        'versioning' => 'int',
+        'destination_path' => 'string',
+        'tags' => 'string',
+        'type_file' => 'string',
+        'max_filesize' => 'int',
+        'max_filesize_unit' => 'string'
     ];
 
     protected $rules = [
-        'INP_DOC_UID' => 'required|max:32',
-        'INP_DOC_TITLE' => 'required|unique:INPUT_DOCUMENT,INP_DOC_TITLE',
-        'PRO_ID' => 'required',
-        'PRO_UID' => 'required|max:32',
-        'INP_DOC_VERSIONING' => 'required|boolean'
+        'uid' => 'max:36',
+        'title' => 'required|unique:input_document,title',
+        'process_id' => 'exists:processes,id',
+        'versioning' => 'required|boolean'
     ];
 
     protected $validationMessages = [
-        'INP_DOC_TITLE.unique' => 'A Input Document with the same name already exists in this process.'
+        'title.unique' => 'A Input Document with the same name already exists in this process.'
     ];
 
     /**
@@ -137,7 +132,7 @@ class InputDocument extends Model
      */
     public function getRouteKeyName()
     {
-        return 'INP_DOC_UID';
+        return 'uid';
     }
 
     /**
@@ -147,7 +142,7 @@ class InputDocument extends Model
      *
      * @return string
      */
-    public function getInpDocFormNeededAttribute($value): ?string
+    public function getFormNeededAttribute($value): ?string
     {
         return __(self::FORM_NEEDED_TYPE[$value]);
     }

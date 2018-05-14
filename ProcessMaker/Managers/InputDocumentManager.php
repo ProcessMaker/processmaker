@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Exception\ValidationException;
 use ProcessMaker\Model\InputDocument;
 use ProcessMaker\Model\Process;
-use Ramsey\Uuid\Uuid;
 
 class InputDocumentManager
 {
@@ -22,7 +21,7 @@ class InputDocumentManager
      */
     public function index(Process $process): Paginator
     {
-        return InputDocument::where('PRO_UID', $process->PRO_UID)->simplePaginate(20);
+        return InputDocument::where('process_id', $process->id)->simplePaginate(20);
     }
 
     /**
@@ -38,9 +37,7 @@ class InputDocumentManager
     {
         $this->validate($data);
 
-        $data['INP_DOC_UID'] = str_replace('-', '', Uuid::uuid4());
-        $data['PRO_UID'] = $process->PRO_UID;
-        $data['PRO_ID'] = $process->PRO_ID;
+        $data['process_id'] = $process->id;
 
         $inputDocument = new InputDocument();
         $inputDocument->fill($data);
@@ -61,10 +58,9 @@ class InputDocumentManager
      */
     public function update(Process $process, InputDocument $inputDocument, $data): InputDocument
     {
-        $data['PRO_UID'] = $process->PRO_UID;
-        $data['PRO_ID'] = $process->PRO_ID;
+        $data['process_id'] = $process->id;
         $inputDocument->fill($data);
-        $this->validate($inputDocument->toArray());
+        $this->validate($inputDocument->toArray(), true);
         $inputDocument->saveOrFail();
         return $inputDocument;
     }
@@ -87,19 +83,21 @@ class InputDocumentManager
      * Validate extra rules
      *
      * @param array $data
+     * @param boolean $update
      *
      * @throws ValidationException
      */
-    private function validate($data): void
+    private function validate($data, $update=false): void
     {
+        $type = $update ? InputDocument::FORM_NEEDED_TYPE : array_keys(InputDocument::FORM_NEEDED_TYPE);
         /* @var $validator \Illuminate\Validation\Validator */
         $validator = Validator::make(
             $data,
             [
-                'INP_DOC_FORM_NEEDED' => 'required|in:' . implode(',', array_keys(InputDocument::FORM_NEEDED_TYPE)),
-                'INP_DOC_ORIGINAL' => 'required|in:' . implode(',', InputDocument::DOC_ORIGINAL_TYPE),
-                'INP_DOC_PUBLISHED' => 'required|in:' . implode(',', InputDocument::DOC_PUBLISHED_TYPE),
-                'INP_DOC_TAGS' => 'required|in:' . implode(',', InputDocument::DOC_TAGS_TYPE)
+                'form_needed' => 'required|in:' . implode(',', $type),
+                'original' => 'required|in:' . implode(',', InputDocument::DOC_ORIGINAL_TYPE),
+                'published' => 'required|in:' . implode(',', InputDocument::DOC_PUBLISHED_TYPE),
+                'tags' => 'required|in:' . implode(',', InputDocument::DOC_TAGS_TYPE)
             ]
         );
 

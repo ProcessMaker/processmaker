@@ -51,14 +51,14 @@ class InputDocumentController
     public function store(Process $process, Request $request)
     {
         $data = [
-            'INP_DOC_TITLE' => $request->input('inp_doc_title', ''),
-            'INP_DOC_DESCRIPTION' => $request->input('inp_doc_description', ''),
-            'INP_DOC_FORM_NEEDED' => $request->input('inp_doc_form_needed', 'REAL'),
-            'INP_DOC_ORIGINAL' => $request->input('inp_doc_original', 'COPY'),
-            'INP_DOC_PUBLISHED' => $request->input('inp_doc_published', 'PRIVATE'),
-            'INP_DOC_VERSIONING' => $request->input('inp_doc_versioning', 0),
-            'INP_DOC_DESTINATION_PATH' => $request->input('inp_doc_destination_path', ''),
-            'INP_DOC_TAGS' => $request->input('inp_doc_tags', 'INPUT')
+            'title' => $request->input('inp_doc_title', ''),
+            'description' => $request->input('inp_doc_description', ''),
+            'form_needed' => $request->input('inp_doc_form_needed', 'REAL'),
+            'original' => $request->input('inp_doc_original', 'COPY'),
+            'published' => $request->input('inp_doc_published', 'PRIVATE'),
+            'versioning' => $request->input('inp_doc_versioning', 0),
+            'destination_path' => $request->input('inp_doc_destination_path', ''),
+            'tags' => $request->input('inp_doc_tags', 'INPUT')
         ];
 
         $response = InputDocumentManager::save($process, $data);
@@ -84,7 +84,7 @@ class InputDocumentController
 
         foreach ($fields as $field) {
             if ($request->has($field)) {
-                $data[strtoupper($field)] = $request->input($field);
+                $data[substr($field, 8)] = $request->input($field);
             }
         }
 
@@ -107,7 +107,7 @@ class InputDocumentController
     {
         $this->belongsToProcess($process, $inputDocument);
         InputDocumentManager::remove($inputDocument);
-        return response([], 200);
+        return response([], 204);
     }
 
     /**
@@ -120,7 +120,7 @@ class InputDocumentController
      */
     private function belongsToProcess(Process $process, InputDocument $inputDocument): void
     {
-        if ($process->PRO_ID !== $inputDocument->PRO_ID) {
+        if ($process->id !== $inputDocument->process_id) {
             Throw new DoesNotBelongToProcessException(__('The Input Document does not belong to this process.'));
         }
     }
