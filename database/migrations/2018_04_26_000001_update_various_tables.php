@@ -85,7 +85,7 @@ class UpdateVariousTables extends Migration
         });
 
         //OUTPUT DOCUMENTS
-        Schema::table('OUTPUT_DOCUMENT', function(Blueprint $table) {
+        Schema::table('output_document', function(Blueprint $table) {
             $table->unsignedInteger('process_id')->nullable();
             $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
         });

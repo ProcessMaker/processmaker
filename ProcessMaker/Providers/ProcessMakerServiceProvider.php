@@ -7,6 +7,7 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
 use ProcessMaker\Managers\DatabaseManager;
 use ProcessMaker\Managers\DynaformManager;
 use ProcessMaker\Managers\InputDocumentManager;
+use ProcessMaker\Managers\OutPutDocumentManager;
 use ProcessMaker\Managers\ProcessCategoryManager;
 use ProcessMaker\Managers\ProcessFileManager;
 use ProcessMaker\Managers\ProcessManager;
@@ -88,5 +89,8 @@ class ProcessMakerServiceProvider extends ServiceProvider
             return new TriggerManager();
         });
 
+        $this->app->singleton('output_document.manager', function ($app) {
+            return new OutPutDocumentManager();
+        });
     }
 }
