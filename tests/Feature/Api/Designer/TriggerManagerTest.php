@@ -44,10 +44,9 @@ class TriggerManagerTest extends ApiTestCase
         $this->initProcess();
         $this->auth(self::$user->username, self::DEFAULT_PASS);
 
-        $data = [];
         //Post should have the parameter tri_title
         $url = self::API_ROUTE . self::$process->uid . '/trigger';
-        $response = $this->api('POST', $url, $data);
+        $response = $this->api('POST', $url, []);
         //validating the answer is an error
         $response->assertStatus(422);
 

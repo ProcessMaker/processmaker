@@ -13,8 +13,8 @@ use Watson\Validating\ValidatingTrait;
  *
  * @property int id
  * @property string uid
- * @property text title
- * @property text description
+ * @property string title
+ * @property string description
  * @property int process_id
  * @property string type
  * @property text webbot
