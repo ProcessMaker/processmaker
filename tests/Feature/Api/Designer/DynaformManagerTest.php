@@ -28,14 +28,12 @@ class DynaformManagerTest extends ApiTestCase
         return $process;
     }
 
-    /**
+
 
     protected static $user;
     protected static $process;
 
-    /**
-     * Init variables User and Process
-     */
+
     private function initProcess(): void
     {
         self::$user = factory(User::class)->create([
