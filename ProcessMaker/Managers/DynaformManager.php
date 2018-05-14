@@ -23,7 +23,7 @@ class DynaformManager
      */
     public function index(Process $process): Paginator
     {
-        return Dynaform::where('PRO_UID', $process->PRO_UID)->simplePaginate(20);
+        return Dynaform::where('process_id', $process->id)->simplePaginate(20);
     }
 
     /**
@@ -39,12 +39,11 @@ class DynaformManager
     {
         $this->validate($data);
 
-        $data['DYN_UID'] = str_replace('-', '', Uuid::uuid4());
-        $data['PRO_UID'] = $process->PRO_UID;
-        $data['PRO_ID'] = $process->PRO_ID;
+        $data['uid'] = Uuid::uuid4();
+        $data['process_id'] = $process->id;
 
-        if (!isset($data['DYN_CONTENT']) || empty($data['DYN_CONTENT'])) {
-            $data['DYN_CONTENT'] = $this->generateContent($data['DYN_UID'], $data['DYN_TITLE'], $data['DYN_DESCRIPTION']);
+        if (!isset($data['content']) || empty($data['content'])) {
+            $data['content'] = $this->generateContent($data['uid'], $data['title'], $data['description']);
         }
 
         $dynaform = new Dynaform();
@@ -66,23 +65,23 @@ class DynaformManager
     public function copyImport(Process $process, $data): Dynaform
     {
         $this->validate($data);
-        $oldProcess = Process::where('PRO_UID', $data['COPY_IMPORT']['pro_uid'])->get();
+        $oldProcess = Process::where('uid', $data['COPY_IMPORT']['pro_uid'])->get();
         if ($oldProcess->isEmpty()) {
             throw new ModelNotFoundException(__('The process not exists.'));
         }
 
-        $copyDynaform = Dynaform::where('DYN_UID', $data['COPY_IMPORT']['dyn_uid'])->get();
+        $copyDynaform = Dynaform::where('uid', $data['COPY_IMPORT']['dyn_uid'])->get();
 
         if ($copyDynaform->isEmpty()) {
             throw new ModelNotFoundException(__('The Dynaform not exists'));
         }
 
-        if ($oldProcess->first()->PRO_ID !== $copyDynaform->first()->PRO_ID) {
+        if ($oldProcess->first()->id !== $copyDynaform->first()->process_id) {
             Throw new DoesNotBelongToProcessException(__('The Dynaform does not belong to this process.'));
         }
 
-        if (!isset($data['DYN_CONTENT'])) {
-            $data['DYN_CONTENT'] = $copyDynaform->first()->DYN_CONTENT;
+        if (!isset($data['content'])) {
+            $data['content'] = $copyDynaform->first()->content;
         }
 
         unset($data['COPY_IMPORT']);
@@ -102,12 +101,11 @@ class DynaformManager
      */
     public function update(Process $process, Dynaform $dynaform, $data): Dynaform
     {
-        $data['PRO_UID'] = $process->PRO_UID;
-        $data['PRO_ID'] = $process->PRO_ID;
+        $data['process_id'] = $process->id;
         $dynaform->fill($data);
         $this->validate($dynaform->toArray());
-        if (empty($dynaform->DYN_CONTENT)) {
-            $dynaform->DYN_CONTENT = $this->generateContent($dynaform->DYN_UID, $dynaform->DYN_TITLE, $dynaform->DYN_DESCRIPTION);
+        if (empty($dynaform->content)) {
+            $dynaform->content = $this->generateContent($dynaform->uid, $dynaform->title, $dynaform->description);
         }
         $dynaform->saveOrFail();
         return $dynaform;
@@ -147,8 +145,8 @@ class DynaformManager
             $data,
             [
                 'COPY_IMPORT' => 'required|array',
-                'COPY_IMPORT.pro_uid' => 'required|string|max:32',
-                'COPY_IMPORT.dyn_uid' => 'required|string|max:32'
+                'COPY_IMPORT.pro_uid' => 'required|string|max:36',
+                'COPY_IMPORT.dyn_uid' => 'required|string|max:36'
             ]
         );
         if ($validator->fails()) {
