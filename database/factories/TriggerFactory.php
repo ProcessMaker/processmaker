@@ -1,8 +1,8 @@
 <?php
-use ProcessMaker\Model\Process;
-use ProcessMaker\Model\Trigger;
 
 use Faker\Generator as Faker;
+use ProcessMaker\Model\Trigger;
+use ProcessMaker\Model\Process;
 
 $factory->define(Trigger::class, function (Faker $faker) {
     return [

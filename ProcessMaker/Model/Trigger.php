@@ -3,7 +3,7 @@
 namespace ProcessMaker\Model;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use ProcessMaker\Model\Traits\Uuid;
 use Watson\Validating\ValidatingTrait;
 
 /**
@@ -11,70 +11,63 @@ use Watson\Validating\ValidatingTrait;
  *
  * @package ProcessMaker\Model
  *
- * @property int TRI_ID
- * @property string TRI_UID
- * @property text TRI_TITLE
- * @property text TRI_DESCRIPTION
- * @property int PRO_ID
- * @property string PRO_UID
- * @property string TRI_TYPE
- * @property text TRI_WEBBOT
- * @property array TRI_PARAM
+ * @property int id
+ * @property string uid
+ * @property text title
+ * @property text description
+ * @property int process_id
+ * @property string type
+ * @property text webbot
+ * @property array param
  *
  */
 class Trigger extends Model
 {
     use ValidatingTrait;
+    use Uuid;
 
-    protected $table = 'TRIGGERS';
-    protected $primaryKey = 'TRI_ID';
+    protected $table = 'triggers';
 
     const TRIGGER_TYPE = 'SCRIPT';
 
-    public $timestamps = false;
-
     protected $fillable = [
-        'TRI_UID',
-        'TRI_TITLE',
-        'TRI_DESCRIPTION',
-        'PRO_ID',
-        'PRO_UID',
-        'TRI_TYPE',
-        'TRI_WEBBOT',
-        'TRI_PARAM'
+        'uid',
+        'title',
+        'description',
+        'process_id',
+        'type',
+        'webbot',
+        'param'
     ];
 
     protected $attributes = [
-        'TRI_UID' => null,
-        'TRI_TITLE' => '',
-        'TRI_DESCRIPTION' => '',
-        'PRO_ID' => '',
-        'PRO_UID' => null,
-        'TRI_TYPE' => self::TRIGGER_TYPE,
-        'TRI_WEBBOT' => '',
-        'TRI_PARAM' => ''
+        'uid' => null,
+        'title' => '',
+        'description' => '',
+        'process_id' => '',
+        'type' => self::TRIGGER_TYPE,
+        'webbot' => '',
+        'param' => ''
     ];
     protected $casts = [
-        'TRI_UID' => 'string',
-        'TRI_TITLE' => 'string',
-        'TRI_DESCRIPTION' => 'string',
-        'PRO_ID' => 'int',
-        'PRO_UID' => 'string',
-        'TRI_TYPE' => 'string',
-        'TRI_WEBBOT' => 'string',
-        'TRI_PARAM' => 'string'
+        'uid' => 'string',
+        'title' => 'string',
+        'description' => 'string',
+        'process_id' => 'int',
+        'type' => 'string',
+        'webbot' => 'string',
+        'param' => 'string'
     ];
 
     protected $rules = [
-        'TRI_UID' => 'required|max:32',
-        'TRI_TITLE' => 'required|unique:TRIGGERS,TRI_TITLE',
-        'PRO_ID' => 'required',
-        'PRO_UID' => 'required|max:32',
-        'TRI_TYPE' => 'required|in:' . self::TRIGGER_TYPE
+        'uid' => 'max:36',
+        'title' => 'required|unique:triggers,title',
+        'process_id' => 'exists:processes,id',
+        'type' => 'required|in:' . self::TRIGGER_TYPE
     ];
 
     protected $validationMessages = [
-        'TRI_TITLE.unique' => 'A trigger with the same name already exists in this process.'
+        'title.unique' => 'A trigger with the same name already exists in this process.'
     ];
 
     /**
@@ -96,27 +89,27 @@ class Trigger extends Model
     }
 
     /**
-     * Accessor tri_param to json
+     * Accessor param to json
      *
      * @param $value
      *
      * @return array|null
      */
-    public function getTriParamAttribute($value): ?array
+    public function getParamAttribute($value): ?array
     {
         return json_decode($value);
     }
 
     /**
-     * Mutator tri_param json decode
+     * Mutator param json decode
      *
      * @param $value
      *
      * @return void
      */
-    public function setTriParamAttribute($value): void
+    public function setParamAttribute($value): void
     {
-        $this->attributes['TRI_PARAM'] = empty($value) ? null : json_encode($value);
+        $this->attributes['param'] = empty($value) ? null : json_encode($value);
     }
 
 }

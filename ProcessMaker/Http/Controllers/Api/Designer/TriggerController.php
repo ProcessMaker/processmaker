@@ -4,13 +4,11 @@ namespace ProcessMaker\Http\Controllers\Api\Designer;
 
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Exception\DoesNotBelongToProcessException;
 use ProcessMaker\Facades\TriggerManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\Trigger;
-use ProcessMaker\Rules\TriggerBelongProcess;
 use Symfony\Component\HttpFoundation\Response;
 
 class TriggerController extends Controller
@@ -54,10 +52,10 @@ class TriggerController extends Controller
     public function store(Process $process, Request $request)
     {
         $data = [
-            'TRI_TITLE' =>  $request->input('tri_title', ''),
-            'TRI_DESCRIPTION' =>  $request->input('tri_description', ''),
-            'TRI_WEBBOT' =>  $request->input('tri_webbot', ''),
-            'TRI_PARAM' =>  $request->input('tri_param', '')
+            'title' =>  $request->input('tri_title', ''),
+            'description' =>  $request->input('tri_description', ''),
+            'webbot' =>  $request->input('tri_webbot', ''),
+            'param' =>  $request->input('tri_param', '')
         ];
 
         $response = TriggerManager::save($process, $data);
@@ -79,16 +77,16 @@ class TriggerController extends Controller
         $this->belongsToProcess($process, $trigger);
         $data = [];
         if ($request->has('tri_title')) {
-            $data['TRI_TITLE'] = $request->input('tri_title');
+            $data['title'] = $request->input('tri_title');
         }
         if ($request->has('tri_description')) {
-            $data['TRI_DESCRIPTION'] = $request->input('tri_description');
+            $data['description'] = $request->input('tri_description');
         }
         if ($request->has('tri_webbot')) {
-            $data['TRI_WEBBOT'] = $request->input('tri_webbot');
+            $data['webbot'] = $request->input('tri_webbot');
         }
         if ($request->has('tri_param')) {
-            $data['TRI_PARAM'] = $request->input('tri_param');
+            $data['param'] = $request->input('tri_param');
         }
         if($data) {
             TriggerManager::update($process, $trigger, $data);
@@ -109,7 +107,7 @@ class TriggerController extends Controller
     {
         $this->belongsToProcess($process, $trigger);
         TriggerManager::remove($trigger);
-        return response([], 200);
+        return response([], 204);
     }
 
     /**
@@ -122,7 +120,7 @@ class TriggerController extends Controller
      */
     private function belongsToProcess(Process $process, Trigger $trigger): void
     {
-        if($process->PRO_ID !== $trigger->PRO_ID) {
+        if($process->id !== $trigger->process_id) {
             Throw new DoesNotBelongToProcessException(__('The trigger does not belong to this process.'));
         }
     }

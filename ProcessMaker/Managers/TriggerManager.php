@@ -18,7 +18,7 @@ class TriggerManager
      */
     public function index(Process $process): Paginator
     {
-        return Trigger::where('PRO_UID', $process->PRO_UID)->simplePaginate(20);
+        return Trigger::where('process_id', $process->id)->simplePaginate(20);
     }
 
     /**
@@ -32,9 +32,7 @@ class TriggerManager
      */
     public function save(Process $process, $data): Trigger
     {
-        $data['TRI_UID'] = str_replace('-', '', Uuid::uuid4());
-        $data['PRO_UID'] = $process->PRO_UID;
-        $data['PRO_ID'] = $process->PRO_ID;
+        $data['process_id'] = $process->id;
 
         $trigger = new Trigger();
         $trigger->fill($data);
@@ -55,10 +53,8 @@ class TriggerManager
      */
     public function update(Process $process, Trigger $trigger, $data): Trigger
     {
-        $data['PRO_UID'] = $process->PRO_UID;
-        $data['PRO_ID'] = $process->PRO_ID;
+        $data['process_id'] = $process->id;
         $trigger->fill($data);
-
         $trigger->saveOrFail();
         return $trigger;
     }
