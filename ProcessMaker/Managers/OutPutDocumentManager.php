@@ -21,7 +21,7 @@ class OutPutDocumentManager
      */
     public function index(Process $process): Paginator
     {
-        return OutPutDocument::where('PRO_UID', $process->PRO_UID)->simplePaginate(20);
+        return OutPutDocument::where('process_id', $process->id)->simplePaginate(20);
     }
 
     /**
@@ -37,9 +37,9 @@ class OutPutDocumentManager
     {
         $this->validate($data);
 
-        $data['OUT_DOC_UID'] = str_replace('-', '', Uuid::uuid4());
-        $data['PRO_UID'] = $process->PRO_UID;
-        $data['PRO_ID'] = $process->PRO_ID;
+        //$data['OUT_DOC_UID'] = str_replace('-', '', Uuid::uuid4());
+        //$data['PRO_UID'] = $process->PRO_UID;
+        $data['process_id'] = $process->id;
 
         $outPutDocument = new OutPutDocument();
         $outPutDocument->fill($data);
@@ -60,8 +60,7 @@ class OutPutDocumentManager
      */
     public function update(Process $process, OutPutDocument $outPutDocument, $data): OutPutDocument
     {
-        $data['PRO_UID'] = $process->PRO_UID;
-        $data['PRO_ID'] = $process->PRO_ID;
+        $data['process_id'] = $process->id;
         $outPutDocument->fill($data);
         $this->validate($outPutDocument->toArray());
         $outPutDocument->saveOrFail();
@@ -97,15 +96,15 @@ class OutPutDocumentManager
         $validator = Validator::make(
             $data,
             [
-                'OUT_DOC_REPORT_GENERATOR' => 'required|in:' . implode(',', OutPutDocument::DOC_REPORT_GENERATOR_TYPE),
-                'OUT_DOC_GENERATE' => 'required|in:' . implode(',', OutPutDocument::DOC_GENERATE_TYPE),
-                'OUT_DOC_TYPE' => 'required|in:' . implode(',', OutPutDocument::DOC_TYPE)
+                'report_generator' => 'required|in:' . implode(',', OutPutDocument::DOC_REPORT_GENERATOR_TYPE),
+                'generate' => 'required|in:' . implode(',', OutPutDocument::DOC_GENERATE_TYPE),
+                'type' => 'required|in:' . implode(',', OutPutDocument::DOC_TYPE)
             ]
         );
 
-        if (!empty($data['OUT_DOC_PDF_SECURITY_PERMISSIONS'])) {
-            $validator->sometimes('OUT_DOC_PDF_SECURITY_PERMISSIONS', 'array', function($value) {
-                foreach ($value->getAttributes()['OUT_DOC_PDF_SECURITY_PERMISSIONS'] as $val) {
+        if (!empty($data['pdf_security_permissions'])) {
+            $validator->sometimes('pdf_security_permissions', 'array', function($value) {
+                foreach ($value->getAttributes()['pdf_security_permissions'] as $val) {
                     if (!in_array($val, OutPutDocument::PDF_SECURITY_PERMISSIONS_TYPE, true)) {
                         return false;
                     }

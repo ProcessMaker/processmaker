@@ -51,16 +51,16 @@ class OutPutDocumentController
     public function store(Process $process, Request $request)
     {
         $data = [
-            'OUT_DOC_REPORT_GENERATOR' => $request->input('out_doc_report_generator', 'HTML2PDF'),
-            'OUT_DOC_LANDSCAPE' => $request->input('out_doc_landscape', 0),
-            'OUT_DOC_LEFT_MARGIN' => $request->input('out_doc_left_margin', 30),
-            'OUT_DOC_RIGHT_MARGIN' => $request->input('out_doc_right_margin', 15),
-            'OUT_DOC_TOP_MARGIN' => $request->input('out_doc_top_margin', 15),
-            'OUT_DOC_BOTTOM_MARGIN' => $request->input('out_doc_bottom_margin', 15),
-            'OUT_DOC_GENERATE' => $request->input('out_doc_generate', 'BOTH'),
-            'OUT_DOC_TYPE' => $request->input('out_doc_type', 'HTML'),
-            'OUT_DOC_VERSIONING' => $request->input('out_doc_versioning', 0),
-            'OUT_DOC_PDF_SECURITY_ENABLED' => $request->input('out_doc_pdf_security_enabled', 0)
+            'report_generator' => $request->input('out_doc_report_generator', 'HTML2PDF'),
+            'landscape' => $request->input('out_doc_landscape', 0),
+            'left_margin' => $request->input('out_doc_left_margin', 30),
+            'right_margin' => $request->input('out_doc_right_margin', 15),
+            'top_margin' => $request->input('out_doc_top_margin', 15),
+            'bottom_margin' => $request->input('out_doc_bottom_margin', 15),
+            'generate' => $request->input('out_doc_generate', 'BOTH'),
+            'type' => $request->input('out_doc_type', 'HTML'),
+            'versioning' => $request->input('out_doc_versioning', 0),
+            'pdf_security_enabled' => $request->input('out_doc_pdf_security_enabled', 0)
         ];
 
         $data = array_merge($data, $this->formatData($request, ['out_doc_title', 'out_doc_description', 'out_doc_filename', 'out_doc_template',
@@ -108,7 +108,7 @@ class OutPutDocumentController
     {
         $this->belongsToProcess($process, $outPutDocument);
         OutPutDocumentManager::remove($outPutDocument);
-        return response([], 200);
+        return response([], 204);
     }
 
     /**
@@ -121,7 +121,7 @@ class OutPutDocumentController
      */
     private function belongsToProcess(Process $process, OutPutDocument $outPutDocument): void
     {
-        if ($process->PRO_ID !== $outPutDocument->PRO_ID) {
+        if ($process->id !== $outPutDocument->process_id) {
             Throw new DoesNotBelongToProcessException(__('The OutPut Document does not belong to this process.'));
         }
     }
@@ -134,17 +134,17 @@ class OutPutDocumentController
      *
      * @return array
      */
-    private function formatData(Request $request, array $fields)
+    private function formatData(Request $request, array $fields): array
     {
         $data = [];
         foreach ($fields as $field) {
             if ($request->has($field)) {
-                $data[strtoupper($field)] = $request->input($field);
+                $data[substr($field, 8)] = $request->input($field);
             }
         }
         if ($request->has('out_doc_pdf_security_permissions')) {
             $permissions = $request->input('out_doc_pdf_security_permissions');
-            $data[strtoupper('OUT_DOC_PDF_SECURITY_PERMISSIONS')] = is_array($permissions) ? $permissions : explode('|' , $permissions);
+            $data['pdf_security_permissions'] = is_array($permissions) ? $permissions : explode('|' , $permissions);
         }
         return $data;
     }

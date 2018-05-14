@@ -3,52 +3,50 @@
 namespace ProcessMaker\Model;
 
 use Illuminate\Database\Eloquent\Model;
+use ProcessMaker\Model\Traits\Uuid;
 use Watson\Validating\ValidatingTrait;
 
 /**
  * Class OutPutDocument
  * @package ProcessMaker\Model
  *
- * @property int OUT_DOC_ID
- * @property string OUT_DOC_UID
- * @property string PRO_ID
- * @property string PRO_UID
- * @property string OUT_DOC_TITLE
- * @property string OUT_DOC_DESCRIPTION
- * @property string OUT_DOC_FILENAME
- * @property string OUT_DOC_TEMPLATE
- * @property string OUT_DOC_REPORT_GENERATOR
- * @property int OUT_DOC_LANDSCAPE
- * @property string OUT_DOC_MEDIA
- * @property int OUT_DOC_LEFT_MARGIN
- * @property int OUT_DOC_RIGHT_MARGIN
- * @property int OUT_DOC_TOP_MARGIN
- * @property int OUT_DOC_BOTTOM_MARGIN
- * @property string OUT_DOC_GENERATE
- * @property string OUT_DOC_TYPE
- * @property int OUT_DOC_CURRENT_REVISION
- * @property string OUT_DOC_FIELD_MAPPING
- * @property int OUT_DOC_VERSIONING
- * @property string OUT_DOC_DESTINATION_PATH
- * @property string OUT_DOC_TAGS
- * @property int OUT_DOC_PDF_SECURITY_ENABLED
- * @property string OUT_DOC_PDF_SECURITY_OPEN_PASSWORD
- * @property string OUT_DOC_PDF_SECURITY_OWNER_PASSWORD
- * @property array OUT_DOC_PDF_SECURITY_PERMISSIONS
- * @property int OUT_DOC_OPEN_TYPE
+ * @property int id
+ * @property string uid
+ * @property string process_id
+ * @property string title
+ * @property string description
+ * @property string filename
+ * @property string template
+ * @property string report_generator
+ * @property int landscape
+ * @property string media
+ * @property int left_margin
+ * @property int right_margin
+ * @property int top_margin
+ * @property int bottom_margin
+ * @property string generate
+ * @property string type
+ * @property int current_revision
+ * @property string field_mapping
+ * @property int versioning
+ * @property string destination_path
+ * @property string tags
+ * @property int pdf_security_enabled
+ * @property string pdf_security_open_password
+ * @property string pdf_security_owner_password
+ * @property array pdf_security_permissions
+ * @property int open_type
  *
  */
 class OutPutDocument extends Model
 {
     use ValidatingTrait;
+    use Uuid;
 
-    protected $table = 'OUTPUT_DOCUMENT';
-    protected $primaryKey = 'OUT_DOC_ID';
-
-    public $timestamps = false;
+    protected $table = 'output_document';
 
     /**
-     * Values for OUT_DOC_REPORT_GENERATOR
+     * Values for report_generator
      */
     const DOC_REPORT_GENERATOR_TYPE = [
         'TCPDF',
@@ -56,7 +54,7 @@ class OutPutDocument extends Model
     ];
 
     /**
-     * Values for OUT_DOC_GENERATE
+     * Values for generate
      */
     const DOC_GENERATE_TYPE = [
         'PDF',
@@ -65,7 +63,7 @@ class OutPutDocument extends Model
     ];
 
     /**
-     * Values for OUT_DOC_TYPE
+     * Values for type
      */
     const DOC_TYPE = [
         'HTML'
@@ -73,7 +71,7 @@ class OutPutDocument extends Model
 
 
     /**
-     * Values for OUT_DOC_PDF_SECURITY_PERMISSIONS
+     * Values for pdf_security_permissions
      */
     const PDF_SECURITY_PERMISSIONS_TYPE = [
         'PRINT',
@@ -83,116 +81,111 @@ class OutPutDocument extends Model
     ];
 
     protected $fillable = [
-        'OUT_DOC_UID',
-        'PRO_ID',
-        'PRO_UID',
-        'OUT_DOC_TITLE',
-        'OUT_DOC_DESCRIPTION',
-        'OUT_DOC_FILENAME',
-        'OUT_DOC_TEMPLATE',
-        'OUT_DOC_REPORT_GENERATOR',
-        'OUT_DOC_LANDSCAPE',
-        'OUT_DOC_MEDIA',
-        'OUT_DOC_LEFT_MARGIN',
-        'OUT_DOC_RIGHT_MARGIN',
-        'OUT_DOC_TOP_MARGIN',
-        'OUT_DOC_BOTTOM_MARGIN',
-        'OUT_DOC_GENERATE',
-        'OUT_DOC_TYPE',
-        'OUT_DOC_CURRENT_REVISION',
-        'OUT_DOC_FIELD_MAPPING',
-        'OUT_DOC_VERSIONING',
-        'OUT_DOC_DESTINATION_PATH',
-        'OUT_DOC_TAGS',
-        'OUT_DOC_PDF_SECURITY_ENABLED',
-        'OUT_DOC_PDF_SECURITY_OPEN_PASSWORD',
-        'OUT_DOC_PDF_SECURITY_OWNER_PASSWORD',
-        'OUT_DOC_PDF_SECURITY_PERMISSIONS', '
-        OUT_DOC_OPEN_TYPE'
+        'uid',
+        'process_id',
+        'title',
+        'description',
+        'filename',
+        'template',
+        'report_generator',
+        'landscape',
+        'media',
+        'left_margin',
+        'right_margin',
+        'top_margin',
+        'bottom_margin',
+        'generate',
+        'type',
+        'current_revision',
+        'field_mapping',
+        'versioning',
+        'destination_path',
+        'tags',
+        'pdf_security_enabled',
+        'pdf_security_open_password',
+        'pdf_security_owner_password',
+        'pdf_security_permissions',
+        'open_type'
     ];
 
     protected $attributes = [
-        'OUT_DOC_UID' => null,
-        'PRO_ID' => '',
-        'PRO_UID' => null,
-        'OUT_DOC_TITLE' => null,
-        'OUT_DOC_DESCRIPTION' => null,
-        'OUT_DOC_FILENAME' => null,
-        'OUT_DOC_TEMPLATE' => null,
-        'OUT_DOC_REPORT_GENERATOR' => 'HTML2PDF',
-        'OUT_DOC_LANDSCAPE' => 0,
-        'OUT_DOC_MEDIA' => 'letter',
-        'OUT_DOC_LEFT_MARGIN' => 30,
-        'OUT_DOC_RIGHT_MARGIN' => 15,
-        'OUT_DOC_TOP_MARGIN' => 15,
-        'OUT_DOC_BOTTOM_MARGIN' => 15,
-        'OUT_DOC_GENERATE' => 'BOTH',
-        'OUT_DOC_TYPE' => 'HTML',
-        'OUT_DOC_CURRENT_REVISION' => 0,
-        'OUT_DOC_FIELD_MAPPING' => null,
-        'OUT_DOC_VERSIONING' => 0,
-        'OUT_DOC_DESTINATION_PATH' => null,
-        'OUT_DOC_TAGS' => null,
-        'OUT_DOC_PDF_SECURITY_ENABLED' => 0,
-        'OUT_DOC_PDF_SECURITY_OPEN_PASSWORD' => '',
-        'OUT_DOC_PDF_SECURITY_OWNER_PASSWORD' => '',
-        'OUT_DOC_PDF_SECURITY_PERMISSIONS' => '',
-        'OUT_DOC_OPEN_TYPE' => 1
+        'uid' => null,
+        'process_id' => '',
+        'title' => null,
+        'description' => null,
+        'filename' => null,
+        'template' => null,
+        'report_generator' => 'HTML2PDF',
+        'landscape' => 0,
+        'media' => 'letter',
+        'left_margin' => 30,
+        'right_margin' => 15,
+        'top_margin' => 15,
+        'bottom_margin' => 15,
+        'generate' => 'BOTH',
+        'type' => 'HTML',
+        'current_revision' => 0,
+        'field_mapping' => null,
+        'versioning' => 0,
+        'destination_path' => null,
+        'tags' => null,
+        'pdf_security_enabled' => 0,
+        'pdf_security_open_password' => '',
+        'pdf_security_owner_password' => '',
+        'pdf_security_permissions' => '',
+        'open_type' => 1
     ];
 
     protected $casts = [
-        'OUT_DOC_UID' => 'string',
-        'PRO_ID' => 'int',
-        'PRO_UID' => 'string',
-        'OUT_DOC_TITLE' => 'string',
-        'OUT_DOC_DESCRIPTION' => 'string',
-        'OUT_DOC_FILENAME' => 'string',
-        'OUT_DOC_TEMPLATE' => 'string',
-        'OUT_DOC_REPORT_GENERATOR' => 'string',
-        'OUT_DOC_LANDSCAPE' => 'int',
-        'OUT_DOC_MEDIA' => 'string',
-        'OUT_DOC_LEFT_MARGIN' => 'int',
-        'OUT_DOC_RIGHT_MARGIN' => 'int',
-        'OUT_DOC_TOP_MARGIN' => 'int',
-        'OUT_DOC_BOTTOM_MARGIN' => 'int',
-        'OUT_DOC_GENERATE' => 'string',
-        'OUT_DOC_TYPE' => 'string',
-        'OUT_DOC_CURRENT_REVISION' => 'int',
-        'OUT_DOC_FIELD_MAPPING' => 'string',
-        'OUT_DOC_VERSIONING' => 'int',
-        'OUT_DOC_DESTINATION_PATH' => 'string',
-        'OUT_DOC_TAGS' => 'string',
-        'OUT_DOC_PDF_SECURITY_ENABLED' => 'int',
-        'OUT_DOC_PDF_SECURITY_OPEN_PASSWORD' => 'string',
-        'OUT_DOC_PDF_SECURITY_OWNER_PASSWORD' => 'string',
-        'OUT_DOC_PDF_SECURITY_PERMISSIONS' => 'array', '
-        OUT_DOC_OPEN_TYPE' => 'int'
+        'uid' => 'string',
+        'process_id' => 'int',
+        'title' => 'string',
+        'description' => 'string',
+        'filename' => 'string',
+        'template' => 'string',
+        'report_generator' => 'string',
+        'landscape' => 'int',
+        'media' => 'string',
+        'left_margin' => 'int',
+        'right_margin' => 'int',
+        'top_margin' => 'int',
+        'bottom_margin' => 'int',
+        'generate' => 'string',
+        'type' => 'string',
+        'current_revision' => 'int',
+        'field_mapping' => 'string',
+        'versioning' => 'int',
+        'destination_path' => 'string',
+        'tags' => 'string',
+        'pdf_security_enabled' => 'int',
+        'pdf_security_open_password' => 'string',
+        'pdf_security_owner_password' => 'string',
+        'pdf_security_permissions' => 'array',
+        'open_type' => 'int'
     ];
 
     protected $rules = [
-        'OUT_DOC_UID' => 'required|max:32',
-        'OUT_DOC_TITLE' => 'required|unique:OUTPUT_DOCUMENT,OUT_DOC_TITLE',
-        'PRO_ID' => 'required',
-        'OUT_DOC_DESCRIPTION' => 'required',
-        'OUT_DOC_FILENAME' => 'required',
-        'PRO_ID' => 'required',
-        'PRO_UID' => 'required|max:32',
-        'OUT_DOC_REPORT_GENERATOR' => 'required',
-        'OUT_DOC_LANDSCAPE' => 'required|boolean',
-        'OUT_DOC_MEDIA' => 'required',
-        'OUT_DOC_LEFT_MARGIN' => 'required|min:0',
-        'OUT_DOC_RIGHT_MARGIN' => 'required|min:0',
-        'OUT_DOC_TOP_MARGIN' => 'required|min:0',
-        'OUT_DOC_BOTTOM_MARGIN' => 'required|min:0',
-        'OUT_DOC_TYPE' => 'required',
-        'OUT_DOC_CURRENT_REVISION' => 'required|min:0',
-        'OUT_DOC_VERSIONING' => 'required|min:0',
-        'OUT_DOC_PDF_SECURITY_ENABLED' => 'required|boolean',
-        'OUT_DOC_OPEN_TYPE' => 'required|boolean'
+        'uid' => 'max:36',
+        'title' => 'required|unique:output_document,title',
+        'process_id' => 'exists:processes,id',
+        'description' => 'required',
+        'filename' => 'required',
+        'report_generator' => 'required',
+        'landscape' => 'required|boolean',
+        'media' => 'required',
+        'left_margin' => 'required|min:0',
+        'right_margin' => 'required|min:0',
+        'top_margin' => 'required|min:0',
+        'bottom_margin' => 'required|min:0',
+        'type' => 'required',
+        'current_revision' => 'required|min:0',
+        'versioning' => 'required|min:0',
+        'pdf_security_enabled' => 'required|boolean',
+        'open_type' => 'required|boolean'
     ];
 
     protected $validationMessages = [
-        'OUT_DOC_TITLE.unique' => 'A OutPut Document with the same name already exists in this process.'
+        'title.unique' => 'A OutPut Document with the same name already exists in this process.'
     ];
 
     /**
@@ -202,79 +195,79 @@ class OutPutDocument extends Model
      */
     public function getRouteKeyName()
     {
-        return 'OUT_DOC_UID';
+        return 'uid';
     }
 
     /**
-     * Accessor OUT_DOC_PDF_SECURITY_PERMISSIONS to json
+     * Accessor pdf_security_permissions to json
      *
      * @param $value
      *
      * @return array|null
      */
-    public function getOutDocPdfSecurityPermissionsAttribute($value): ?array
+    public function getPdfSecurityPermissionsAttribute($value): ?array
     {
         return json_decode($value);
     }
 
     /**
-     * Mutator OUT_DOC_PDF_SECURITY_PERMISSIONS json decode
+     * Mutator pdf_security_permissions json decode
      *
      * @param $value
      *
      * @return void
      */
-    public function setOutDocPdfSecurityPermissionsAttribute($value): void
+    public function setPdfSecurityPermissionsAttribute($value): void
     {
-        $this->attributes['OUT_DOC_PDF_SECURITY_PERMISSIONS'] = empty($value) ? null : json_encode($value);
+        $this->attributes['pdf_security_permissions'] = empty($value) ? null : json_encode($value);
     }
 
     /**
-     * Accessor OUT_DOC_PDF_SECURITY_OPEN_PASSWORD to json
+     * Accessor pdf_security_open_password to json
      *
      * @param $value
      *
      * @return string
      */
-    public function getOutDocPdfSecurityOpenPasswordAttribute($value): string
+    public function getPdfSecurityOpenPasswordAttribute($value): string
     {
         return !empty($value) ? decrypt($value) : '';
     }
 
     /**
-     * Mutator OUT_DOC_PDF_SECURITY_OPEN_PASSWORD json decode
+     * Mutator pdf_security_open_password json decode
      *
      * @param $value
      *
      * @return void
      */
-    public function setOutDocPdfSecurityOpenPasswordAttribute($value): void
+    public function setPdfSecurityOpenPasswordAttribute($value): void
     {
-        $this->attributes['OUT_DOC_PDF_SECURITY_OPEN_PASSWORD'] = !empty($value) ? encrypt($value) : '';
+        $this->attributes['pdf_security_open_password'] = !empty($value) ? encrypt($value) : '';
     }
 
     /**
-     * Accessor OUT_DOC_PDF_SECURITY_OWNER_PASSWORD to json
+     * Accessor pdf_security_owner_password to json
      *
      * @param $value
      *
      * @return string
      */
-    public function getOutDocPdfSecurityOwnerPasswordAttribute($value): string
+    public function getPdfSecurityOwnerPasswordAttribute($value): string
     {
         return !empty($value) ? decrypt($value) : '';
     }
 
     /**
-     * Mutator OUT_DOC_PDF_SECURITY_OWNER_PASSWORD json decode
+     * Mutator pdf_security_owner_password json decode
      *
      * @param $value
      *
      * @return void
      */
-    public function setOutDocPdfSecurityOwnerPasswordAttribute($value): void
+    public function setPdfSecurityOwnerPasswordAttribute($value): void
     {
-        $this->attributes['OUT_DOC_PDF_SECURITY_OWNER_PASSWORD'] = !empty($value) ? encrypt($value) : '';
+        $this->attributes['pdf_security_owner_password'] = !empty($value) ? encrypt($value) : '';
     }
 
 }

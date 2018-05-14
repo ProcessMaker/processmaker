@@ -16,82 +16,37 @@ class OutPutDocumentManagerTest extends ApiTestCase
     const DEFAULT_PASS = 'password';
     const DEFAULT_PASS_OWNER = 'password2';
 
-    /**
-     * Create process
-     * @return Process
-     */
-    public function testCreateProcess(): Process
-    {
-        $process = factory(Process::class)->create();
-        $this->assertNotNull($process);
-        $this->assertNotNull($process->PRO_UID);
-        return $process;
-    }
+    protected static $user;
+    protected static $process;
 
     /**
-     * create User
-     * @return User
-     *
+     * Init variables User and Process
      */
-    public function testCreateUser(): User
+    private function initProcess(): void
     {
-        $user = factory(User::class)->create([
-            'USR_PASSWORD' => Hash::make(self::DEFAULT_PASS),
-            'USR_ROLE' => Role::PROCESSMAKER_ADMIN
+        self::$user = factory(User::class)->create([
+            'password' => Hash::make(self::DEFAULT_PASS),
+            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
-        $this->assertNotNull($user);
-        $this->assertNotNull($user->USR_UID);
-        $this->assertNotNull($user->USR_ID);
-        return $user;
+
+        self::$process = factory(Process::class)->create([
+            'creator_user_id' => self::$user->id
+        ]);
     }
 
     /**
      * Create new OutPut Document in process
      *
-     * @param Process $process
-     * @param User $user
-     *
      * @return OutPutDocument
-     *
-     * @depends testCreateProcess
-     * @depends testCreateUser
      */
-    public function testCreateOutPutDocument(Process $process, User $user): OutPutDocument
+    public function testCreateOutPutDocument(): OutPutDocument
     {
-        $this->auth($user->USR_USERNAME, self::DEFAULT_PASS);
-
-        $structure = [
-            'OUT_DOC_UID',
-            'PRO_ID',
-            'PRO_UID',
-            'OUT_DOC_TITLE',
-            'OUT_DOC_DESCRIPTION',
-            'OUT_DOC_FILENAME',
-            'OUT_DOC_TEMPLATE',
-            'OUT_DOC_REPORT_GENERATOR',
-            'OUT_DOC_LANDSCAPE',
-            'OUT_DOC_MEDIA',
-            'OUT_DOC_LEFT_MARGIN',
-            'OUT_DOC_RIGHT_MARGIN',
-            'OUT_DOC_TOP_MARGIN',
-            'OUT_DOC_BOTTOM_MARGIN',
-            'OUT_DOC_GENERATE',
-            'OUT_DOC_TYPE',
-            'OUT_DOC_CURRENT_REVISION',
-            'OUT_DOC_FIELD_MAPPING',
-            'OUT_DOC_VERSIONING',
-            'OUT_DOC_DESTINATION_PATH',
-            'OUT_DOC_TAGS',
-            'OUT_DOC_PDF_SECURITY_ENABLED',
-            'OUT_DOC_PDF_SECURITY_OPEN_PASSWORD',
-            'OUT_DOC_PDF_SECURITY_OWNER_PASSWORD',
-            'OUT_DOC_PDF_SECURITY_PERMISSIONS',
-            'OUT_DOC_OPEN_TYPE'
-        ];
+        $this->initProcess();
+        $this->auth(self::$user->username, self::DEFAULT_PASS);
 
         $data = [];
-        //Post should have the parameter out_doc_title, out_doc_description, out_doc_filename
-        $url = self::API_ROUTE . $process->PRO_UID . '/output-document';
+        //Post should have the parameter title, description, filename
+        $url = self::API_ROUTE . self::$process->uid . '/output-document';
         $response = $this->api('POST', $url, $data);
         //validating the answer is an error
         $response->assertStatus(422);
@@ -102,7 +57,7 @@ class OutPutDocumentManagerTest extends ApiTestCase
         $data['out_doc_report_generator'] =  $faker->sentence(1);
         $data['out_doc_generate'] =  $faker->sentence(1);
         $data['out_doc_type'] =  $faker->sentence(1);
-        $url = self::API_ROUTE . $process->PRO_UID . '/output-document';
+        $url = self::API_ROUTE . self::$process->uid . '/output-document';
         $response = $this->api('POST', $url, $data);
         //validating the answer is an error
         $response->assertStatus(422);
@@ -119,36 +74,72 @@ class OutPutDocumentManagerTest extends ApiTestCase
         $data['out_doc_pdf_security_owner_password'] =  self::DEFAULT_PASS_OWNER;
 
 
-        $url = self::API_ROUTE . $process->PRO_UID . '/output-document';
+        $url = self::API_ROUTE . self::$process->uid . '/output-document';
         $response = $this->api('POST', $url, $data);
         //validating the answer is correct.
         $response->assertStatus(201);
-        $id = $response->json('OUT_DOC_ID');
+        $document = $response->original;
         //Check structure of response.
-        $response->assertJsonStructure($structure);
+        $response->assertJsonStructure([
+            'uid',
+            'process_id',
+            'title',
+            'description',
+            'filename',
+            'template',
+            'report_generator',
+            'landscape',
+            'media',
+            'left_margin',
+            'right_margin',
+            'top_margin',
+            'bottom_margin',
+            'generate',
+            'type',
+            'current_revision',
+            'field_mapping',
+            'versioning',
+            'destination_path',
+            'tags',
+            'pdf_security_enabled',
+            'pdf_security_open_password',
+            'pdf_security_owner_password',
+            'pdf_security_permissions',
+            'open_type'
+        ]);
 
         //Post title duplicated
-        $url = self::API_ROUTE . $process->PRO_UID . '/output-document';
+        $url = self::API_ROUTE . self::$process->uid . '/output-document';
         $response = $this->api('POST', $url, $data);
         //validating the answer is correct.
         $response->assertStatus(422);
-        return OutPutDocument::where('OUT_DOC_ID', $id)->get()->first();
+        return $document;
     }
 
     /**
      * Get a list of OutPut Document in a project.
      *
-     * @param Process $process
-     * @param User $user
-     *
-     * @depends testCreateProcess
-     * @depends testCreateUser
      * @depends testCreateOutPutDocument
      */
-    public function testListOutPutDocuments(Process $process, User $user): void
+    public function testListOutPutDocuments(): void
     {
-        $this->auth($user->USR_USERNAME, self::DEFAULT_PASS);
-        $structurePaginate = [
+        $this->auth(self::$user->username, self::DEFAULT_PASS);
+
+        //add OutPut Document to process
+        factory(OutPutDocument::class, 10)->create([
+            'process_id' => self::$process->id
+        ]);
+
+        //List OutPut Document
+        $url = self::API_ROUTE . self::$process->uid . '/output-documents';
+        $response = $this->api('GET', $url);
+        //Validate the answer is correct
+        $response->assertStatus(200);
+        //verify count of data
+        $response->assertJsonCount(11, 'data');
+
+        //verify structure paginate
+        $response->assertJsonStructure([
             'current_page',
             'data',
             'first_page_url',
@@ -158,81 +149,59 @@ class OutPutDocumentManagerTest extends ApiTestCase
             'per_page',
             'prev_page_url',
             'to',
-        ];
-        //add OutPut Document to process
-        $faker = Faker::create();
-        factory(OutPutDocument::class, 10)->create([
-            'PRO_UID' => $process->PRO_UID,
-            'PRO_ID' => $process->PRO_ID
         ]);
-
-        //List OutPut Document
-        $url = self::API_ROUTE . $process->PRO_UID . '/output-documents';
-        $response = $this->api('GET', $url);
-        //Validate the answer is correct
-        $response->assertStatus(200);
-        //verify count of data
-        $response->assertJsonCount(11, 'data');
-
-        //verify structure paginate
-        $response->assertJsonStructure($structurePaginate);
 
     }
 
     /**
      * Get a OutPut Document of a project.
      *
-     * @param Process $process
-     * @param User $user
      * @param OutPutDocument $outPutDocument
      *
-     * @depends testCreateProcess
-     * @depends testCreateUser
      * @depends testCreateOutPutDocument
      */
-    public function testGetOutPutDocument(Process $process, User $user, OutPutDocument $outPutDocument): void
+    public function testGetOutPutDocument(OutPutDocument $outPutDocument): void
     {
-        $this->auth($user->USR_USERNAME, self::DEFAULT_PASS);
-        $structurePaginate = [
-            'OUT_DOC_UID',
-            'PRO_ID',
-            'PRO_UID',
-            'OUT_DOC_TITLE',
-            'OUT_DOC_DESCRIPTION',
-            'OUT_DOC_FILENAME',
-            'OUT_DOC_TEMPLATE',
-            'OUT_DOC_REPORT_GENERATOR',
-            'OUT_DOC_LANDSCAPE',
-            'OUT_DOC_MEDIA',
-            'OUT_DOC_LEFT_MARGIN',
-            'OUT_DOC_RIGHT_MARGIN',
-            'OUT_DOC_TOP_MARGIN',
-            'OUT_DOC_BOTTOM_MARGIN',
-            'OUT_DOC_GENERATE',
-            'OUT_DOC_TYPE',
-            'OUT_DOC_CURRENT_REVISION',
-            'OUT_DOC_FIELD_MAPPING',
-            'OUT_DOC_VERSIONING',
-            'OUT_DOC_DESTINATION_PATH',
-            'OUT_DOC_TAGS',
-            'OUT_DOC_PDF_SECURITY_ENABLED',
-            'OUT_DOC_PDF_SECURITY_OPEN_PASSWORD',
-            'OUT_DOC_PDF_SECURITY_OWNER_PASSWORD',
-            'OUT_DOC_PDF_SECURITY_PERMISSIONS',
-            'OUT_DOC_OPEN_TYPE'
-        ];
+        $this->auth(self::$user->username, self::DEFAULT_PASS);
+
         //load OutPutDocument
-        $url = self::API_ROUTE . $process->PRO_UID . '/output-document/' . $outPutDocument->OUT_DOC_UID;
+        $url = self::API_ROUTE . self::$process->uid . '/output-document/' . $outPutDocument->uid;
         $response = $this->api('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
 
         //verify structure paginate
-        $response->assertJsonStructure($structurePaginate);
+        $response->assertJsonStructure([
+            'uid',
+            'process_id',
+            'title',
+            'description',
+            'filename',
+            'template',
+            'report_generator',
+            'landscape',
+            'media',
+            'left_margin',
+            'right_margin',
+            'top_margin',
+            'bottom_margin',
+            'generate',
+            'type',
+            'current_revision',
+            'field_mapping',
+            'versioning',
+            'destination_path',
+            'tags',
+            'pdf_security_enabled',
+            'pdf_security_open_password',
+            'pdf_security_owner_password',
+            'pdf_security_permissions',
+            'open_type'
+        ]);
 
         //OutPutDocument not belong to process.
         $outPutDocument = factory(OutPutDocument::class)->create();
-        $url = self::API_ROUTE . $process->PRO_UID . '/output-document/' . $outPutDocument->OUT_DOC_UID;
+        $url = self::API_ROUTE . self::$process->uid . '/output-document/' . $outPutDocument->uid;
         $response = $this->api('GET', $url);
         //Validate the answer is incorrect
         $response->assertStatus(404);
@@ -242,17 +211,13 @@ class OutPutDocumentManagerTest extends ApiTestCase
     /**
      * Update OutPut Document in process
      *
-     * @param Process $process
-     * @param User $user
      * @param OutPutDocument $outPutDocument
      *
-     * @depends testCreateProcess
-     * @depends testCreateUser
      * @depends testCreateOutPutDocument
      */
-    public function testUpdateOutPutDocument(Process $process, User $user, OutPutDocument $outPutDocument): void
+    public function testUpdateOutPutDocument(OutPutDocument $outPutDocument): void
     {
-        $this->auth($user->USR_USERNAME, self::DEFAULT_PASS);
+        $this->auth(self::$user->username, self::DEFAULT_PASS);
 
         $faker = Faker::create();
         $data = [
@@ -264,7 +229,7 @@ class OutPutDocumentManagerTest extends ApiTestCase
             'out_doc_type' => $faker->randomElement(OutPutDocument::DOC_TYPE)
         ];
         //Post should have the parameter tri_title
-        $url = self::API_ROUTE . $process->PRO_UID . '/output-document/' . $outPutDocument->OUT_DOC_UID;
+        $url = self::API_ROUTE . self::$process->uid . '/output-document/' . $outPutDocument->uid;
         $response = $this->api('PUT', $url, $data);
         //Validate the answer is incorrect
         $response->assertStatus(422);
@@ -274,7 +239,7 @@ class OutPutDocumentManagerTest extends ApiTestCase
         $data['out_doc_description'] = $faker->sentence(2);
         $data['out_doc_filename'] = $faker->sentence(2);
         $data['out_doc_pdf_security_permissions'] =  '';
-        $url = self::API_ROUTE . $process->PRO_UID . '/output-document/' . $outPutDocument->OUT_DOC_UID;
+        $url = self::API_ROUTE . self::$process->uid . '/output-document/' . $outPutDocument->uid;
         $response = $this->api('PUT', $url, $data);
         //Validate the answer is correct
         $response->assertStatus(200);
@@ -283,28 +248,24 @@ class OutPutDocumentManagerTest extends ApiTestCase
     /**
      * Delete OutPut Document in process
      *
-     * @param Process $process
-     * @param User $user
      * @param OutPutDocument $outPutDocument
      *
-     * @depends testCreateProcess
-     * @depends testCreateUser
      * @depends testCreateOutPutDocument
      */
-    public function testDeleteOutPutDocument(Process $process, User $user, OutPutDocument $outPutDocument): void
+    public function testDeleteOutPutDocument(OutPutDocument $outPutDocument): void
     {
-        $this->auth($user->USR_USERNAME, self::DEFAULT_PASS);
+        $this->auth(self::$user->username, self::DEFAULT_PASS);
 
         //Remove OutPutDocument
-        $url = self::API_ROUTE . $process->PRO_UID . '/output-document/' . $outPutDocument->OUT_DOC_UID;
+        $url = self::API_ROUTE . self::$process->uid . '/output-document/' . $outPutDocument->uid;
         $response = $this->api('DELETE', $url);
         //Validate the answer is correct
-        $response->assertStatus(200);
+        $response->assertStatus(204);
 
         $outPutDocument = factory(OutPutDocument::class)->make();
 
         //OutPutDocument not exist
-        $url = self::API_ROUTE . $process->PRO_UID . '/output-document/' . $outPutDocument->OUT_DOC_UID;
+        $url = self::API_ROUTE . self::$process->uid . '/output-document/' . $outPutDocument->uid;
         $response = $this->api('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(404);
