@@ -110,5 +110,8 @@ Router::group([
         Router::put('project/{process}/input-document/{inputDocument}', 'Designer\InputDocumentController@update')->middleware('can:write,ProcessMaker\Model\InputDocument');
         Router::delete('project/{process}/input-document/{inputDocument}', 'Designer\InputDocumentController@remove')->middleware('can:delete,ProcessMaker\Model\InputDocument');
 
+        //Cases endpoints
+        Router::get('cases/{application}/variables', 'Cases\VariableController@get')->middleware('can:read,application');
+
     });
 });
