@@ -65,8 +65,9 @@ export default {
           sortField: 'email'
         },
         {
-          name: 'birthdate ',
-          sortField: 'birthdate'
+          name: 'birthdate',
+          sortField: 'birthdate',
+          callback: 'formatDate|D/MM/Y'
         }
       ],
       css: {
