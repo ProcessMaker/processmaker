@@ -8,7 +8,7 @@ use Faker\Generator as Faker;
 $factory->define(\ProcessMaker\Model\ProcessCategory::class,
                  function (Faker $faker) {
     return [
-        'CATEGORY_UID'  => str_replace('-', '', Uuid::uuid4()),
-        'CATEGORY_NAME' => $faker->name(),
+        'uid'  => str_replace('-', '', Uuid::uuid4()),
+        'name' => $faker->name(),
     ];
 });
