@@ -190,7 +190,7 @@ class Process extends Model
 
         // If not found, let's determine if we're in any of the supervisor groups
         return DB::table('PROCESS_USER')->where('PRO_UID', $this->id)
-            ->whereIn('USR_UID', $user->groups()->pluck('GROUPWF.GRP_UID'))
+            ->whereIn('USR_UID', $user->groups()->pluck('groupwf.uid'))
             ->where('PU_TYPE', 'GROUP_SUPERVISOR')
             ->exists();
     }
@@ -203,7 +203,9 @@ class Process extends Model
     {
         if (!$this->isSupervisor($user)) {
             DB::table('PROCESS_USER')->insert([
+                'PU_UID'  => \Ramsey\Uuid\Uuid::uuid4(),
                 'PRO_UID' => $this->uid,
+                'process_id' => $this->id,
                 'USR_UID' => $user->uid,
                 'PU_TYPE' => 'SUPERVISOR'
             ]);

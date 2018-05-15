@@ -1,4 +1,5 @@
 <?php
+
 use Ramsey\Uuid\Uuid;
 use Faker\Generator as Faker;
 use Illuminate\Support\Facades\Hash;
@@ -13,6 +14,7 @@ $factory->define(\ProcessMaker\Model\User::class, function (Faker $faker) {
      * @todo Determine if we need more base columns populated
      */
     return [
+        'uid' => Uuid::uuid4(),
         'username' => $faker->userName,
         'firstname' => $faker->firstName,
         'lastname' => $faker->lastName,

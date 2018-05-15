@@ -51,13 +51,13 @@ class CasesController extends Controller
             'APPLICATION.APP_UPDATE_DATE',
             'APPLICATION.APP_TITLE',
             'users.uid AS USR_UID',
-            'TASK.uid as TAS_UID',
+            'task.uid as TAS_UID',
             'APP_DELEGATION.DEL_INDEX',
             'APP_DELEGATION.DEL_LAST_INDEX',
             'APP_DELEGATION.DEL_DELEGATE_DATE',
             'APP_DELEGATION.DEL_INIT_DATE',
             'APP_DELEGATION.DEL_FINISH_DATE',
-            'APP_DELEGATION.DEL_TASK_DUE_DATE',
+            'APP_DELEGATION.DEL_task_DUE_DATE',
             'APP_DELEGATION.DEL_RISK_DATE',
             'APP_DELEGATION.DEL_THREAD_STATUS',
             'APP_DELEGATION.DEL_PRIORITY',
@@ -68,18 +68,18 @@ class CasesController extends Controller
             'APP_DELEGATION.DEL_FINISHED',
             'APP_DELEGATION.DEL_DELAYED',
             'APP_DELEGATION.DEL_DELAY_DURATION',
-            'TASK.TAS_TITLE AS APP_TAS_TITLE',
-            'TASK.TAS_TYPE AS APP_TAS_TYPE',
+            'task.title AS APP_TAS_TITLE',
+            'task.type AS APP_TAS_TYPE',
             'users.lastname',
             'users.firstname',
             'users.username',
             'processes.name AS APP_PRO_TITLE'
         )
         ->join('APPLICATION', 'APP_DELEGATION.application_id', '=', 'APPLICATION.id')
-        ->join('TASK', 'APP_DELEGATION.task_id', '=', 'TASK.id')
+        ->join('task', 'APP_DELEGATION.task_id', '=', 'task.id')
         ->join('users', 'APP_DELEGATION.user_id', '=', 'users.id')
         ->join('processes', 'APPLICATION.process_id', '=', 'processes.id')
-        ->whereNotIn('TASK.TAS_TYPE', [
+        ->whereNotIn('task.type', [
             "WEBENTRYEVENT",
             "END-MESSAGE-EVENT",
             "START-MESSAGE-EVENT",
@@ -144,7 +144,7 @@ class CasesController extends Controller
                     $cases->whereIn('APP_DELEGATION.APP_NUMBER', $application->pluck('APP_NUMBER', 'APP_NUMBER'));
                 }
             } elseif ($request->has('columnSearch') && $request->columnSearch === 'TAS_TITLE') {
-                $cases->where('TASK.TAS_TITLE', 'LIKE', "%{$request->search}%");
+                $cases->where('task.title', 'LIKE', "%{$request->search}%");
             }
         }
 
