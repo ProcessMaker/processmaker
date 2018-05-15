@@ -98,68 +98,61 @@ export default {
   mounted() {
     // Maybe fetch is a method you define that does the ajax calls.  By calling it
     // in the mounted handler, it'll do the initial load
-    // this.fetch({
-    //   axios.get('https://jsonplaceholder.typicode.com/users')
-    //     .then(function (response) {
-    //       console.log(response);
-    //     })
-    //     .catch(function (error) {
-    //       console.log(error);
-    //     });
-    // });
+
+    function getusers() {
+      return axios.get('https://jsonplaceholder.typicode.com/users');
+    }
+
+    function gettasks() {
+      return axios.get('https://jsonplaceholder.typicode.com/todos');
+    }
+
+    axios.all([getusers(), gettasks()])
+      .then(axios.spread(function (users, tasks) {
+        console.log(users,tasks)
+      }));
     // Fetch our users and then populate the data
     // Here, you'd want to potentially do your various axious calls, merge the
     // data and then make sure you build up the object that vuetable expects.
     // See: https://ratiw.github.io/vuetable-2/#/Data-Format-JSON
     this.$refs.vuetable.setData({
-  "links": {
-    "pagination": {
-      "total": 5,
-      "per_page": 2,
-      "current_page": 1,
-      "last_page": 2,
-      "next_page_url": "...",
-      "prev_page_url": "...",
-      "from": 1,
-      "to": 2,
-    }
+    "links": {
+      "pagination": {
+        "total": 5,
+        "per_page": 2,
+        "current_page": 1,
+        "last_page": 2,
+        "next_page_url": "...",
+        "prev_page_url": "...",
+        "from": 1,
+        "to": 2,
+      }
+    },
+    " ": [
+      {
+        "id": 1,
+        "name": "xxxxxxxxx",
+        "nickname": "xxxxxxx",
+        "email": "xxx@xxx.xxx",
+        "birthdate": "xxxx-xx-xx",
+        "gender": "X",
+        "group_id": 1,
+      },
+      {
+        "id": 50,
+        "name": "xxxxxxxxx",
+        "nickname": "xxxxxxx",
+        "email": "xxx@xxx.xxx",
+        "birthdate": "xxxx-xx-xx",
+        "gender": "X",
+        "group_id": 3,
+      }
+    ]
+  });
+
+
   },
-  " ": [
-    {
-      "id": 1,
-      "name": "xxxxxxxxx",
-      "nickname": "xxxxxxx",
-      "email": "xxx@xxx.xxx",
-      "birthdate": "xxxx-xx-xx",
-      "gender": "X",
-      "group_id": 1,
-    },
-    {
-      "id": 50,
-      "name": "xxxxxxxxx",
-      "nickname": "xxxxxxx",
-      "email": "xxx@xxx.xxx",
-      "birthdate": "xxxx-xx-xx",
-      "gender": "X",
-      "group_id": 3,
-    }
-  ]
-});
-
-
-},
   methods: {
-    getUsers (){
-      return axios.get('https://jsonplaceholder.typicode.com/users');
-      /*
-      .then(function (response) {
-        console.log(response,"response");
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-      */
-    },
     allcap (value) {
       return value.toUpperCase()
     },
