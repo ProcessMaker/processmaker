@@ -4,6 +4,7 @@
     <vuetable ref="vuetable"
       :fields="fields"
       pagination-path=""
+      data-path="data"
       :css="css.table"
       :sort-order="sortOrder"
       :multi-sort="true"
@@ -56,12 +57,12 @@ export default {
           sortField: 'name',
         },
         {
-          name: 'nickname',
-          sortField: 'nickname',
+          name: 'username',
+          sortField: 'username',
         },
         {
-          name: 'email',
-          sortField: 'email'
+          name: 'title',
+          sortField: 'title'
         },
         {
           name: 'birthdate',
@@ -69,6 +70,12 @@ export default {
           callback: 'formatDate|D/MM/Y'
         }
       ],
+      users:{
+
+      },
+      tasks:{
+
+      },
       css: {
         table: {
           tableClass: 'table table-hover',
@@ -108,9 +115,14 @@ export default {
     }
 
     axios.all([getusers(), gettasks()])
-      .then(axios.spread(function (users, tasks) {
+      .then(axios.spread((users, tasks) => {
         console.log(users,tasks)
+        this.users=users.data;
+        this.tasks=tasks.data;
       }));
+
+
+
     // Fetch our users and then populate the data
     // Here, you'd want to potentially do your various axious calls, merge the
     // data and then make sure you build up the object that vuetable expects.
@@ -118,7 +130,7 @@ export default {
     this.$refs.vuetable.setData({
     "links": {
       "pagination": {
-        "total": 5,
+        "total": 20,
         "per_page": 2,
         "current_page": 1,
         "last_page": 2,
