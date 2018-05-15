@@ -1,4 +1,5 @@
 <?php
+
 namespace ProcessMaker\Providers;
 
 use Illuminate\Auth\RequestGuard;
@@ -16,9 +17,11 @@ use ProcessMaker\Model\ProcessVariable;
 use ProcessMaker\Model\ReportTable;
 use ProcessMaker\Model\Role;
 use ProcessMaker\Model\Trigger;
+use ProcessMaker\Model\TaskUser;
 use ProcessMaker\OAuth2\AccessTokenRepository;
 use ProcessMaker\OAuth2\ClientRepository;
 use ProcessMaker\Policies\ApplicationPolicy;
+use ProcessMaker\Policies\AssigneeTaskPolicy;
 use ProcessMaker\Policies\DynaformPolicy;
 use ProcessMaker\Policies\PmTablePolicy;
 use ProcessMaker\Policies\ProcessCategoryPolicy;
@@ -48,6 +51,7 @@ class AuthServiceProvider extends ServiceProvider
         ReportTable::class => ReportTablePolicy::class,
         Dynaform::class => DynaformPolicy::class,
         Trigger::class => TriggerPolicy::class,
+        TaskUser::class => AssigneeTaskPolicy::class,
     ];
 
     /**

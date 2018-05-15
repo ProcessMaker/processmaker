@@ -3,96 +3,99 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class CreateTASKTable extends Migration {
+class CreateTASKTable extends Migration
+{
 
-	/**
-	 * Run the migrations.
-	 *
-	 * @return void
-	 */
-	public function up()
-	{
-		Schema::create('TASK', function(Blueprint $table)
-		{
-			$table->increments('id');
-			$table->unsignedInteger('process_id');
-			$table->uuid('uid')->index('indexTasUid');
-			$table->text('TAS_TITLE', 16777215);
-			$table->text('TAS_DESCRIPTION', 16777215)->nullable();
-			$table->text('TAS_DEF_TITLE', 16777215)->nullable();
-			$table->text('TAS_DEF_SUBJECT_MESSAGE', 16777215)->nullable();
-			$table->text('TAS_DEF_PROC_CODE', 16777215)->nullable();
-			$table->text('TAS_DEF_MESSAGE', 16777215)->nullable();
-			$table->text('TAS_DEF_DESCRIPTION', 16777215)->nullable();
-			$table->string('TAS_TYPE', 50)->default('NORMAL');
-			$table->float('TAS_DURATION', 10, 0)->default(0);
-			$table->string('TAS_DELAY_TYPE', 30)->default('');
-			$table->float('TAS_TEMPORIZER', 10, 0)->default(0);
-			$table->char('TAS_TYPE_DAY', 1)->default(1);
-			$table->string('TAS_TIMEUNIT', 20)->default('DAYS');
-			$table->string('TAS_ALERT', 20)->default('FALSE');
-			$table->string('TAS_PRIORITY_VARIABLE', 100)->default('');
-			$table->string('TAS_ASSIGN_TYPE', 30)->default('BALANCED');
-			$table->string('TAS_ASSIGN_VARIABLE', 100)->default('@@SYS_NEXT_USER_TO_BE_ASSIGNED');
-			$table->string('TAS_GROUP_VARIABLE', 100)->nullable();
-			$table->string('TAS_MI_INSTANCE_VARIABLE', 100)->default('@@SYS_VAR_TOTAL_INSTANCE');
-			$table->string('TAS_MI_COMPLETE_VARIABLE', 100)->default('@@SYS_VAR_TOTAL_INSTANCES_COMPLETE');
-			$table->string('TAS_ASSIGN_LOCATION', 20)->default('FALSE');
-			$table->string('TAS_ASSIGN_LOCATION_ADHOC', 20)->default('FALSE');
-			$table->string('TAS_TRANSFER_FLY', 20)->default('FALSE');
-			$table->string('TAS_LAST_ASSIGNED', 32)->default('0');
-			$table->string('TAS_USER', 32)->default('0');
-			$table->string('TAS_CAN_UPLOAD', 20)->default('FALSE');
-			$table->string('TAS_VIEW_UPLOAD', 20)->default('FALSE');
-			$table->string('TAS_VIEW_ADDITIONAL_DOCUMENTATION', 20)->default('FALSE');
-			$table->string('TAS_CAN_CANCEL', 20)->default('FALSE');
-			$table->string('TAS_OWNER_APP', 32)->default('');
-			$table->string('STG_UID', 32)->default('');
-			$table->string('TAS_CAN_PAUSE', 20)->default('FALSE');
-			$table->string('TAS_CAN_SEND_MESSAGE', 20)->default('TRUE');
-			$table->string('TAS_CAN_DELETE_DOCS', 20)->default('FALSE');
-			$table->string('TAS_SELF_SERVICE', 20)->default('FALSE');
-			$table->string('TAS_START', 20)->default('FALSE');
-			$table->string('TAS_TO_LAST_USER', 20)->default('FALSE');
-			$table->string('TAS_SEND_LAST_EMAIL', 20)->default('TRUE');
-			$table->string('TAS_DERIVATION', 100)->default('NORMAL');
-			$table->integer('TAS_POSX')->default(0);
-			$table->integer('TAS_POSY')->default(0);
-			$table->integer('TAS_WIDTH')->default(110);
-			$table->integer('TAS_HEIGHT')->default(60);
-			$table->string('TAS_COLOR', 32)->default('');
-			$table->string('TAS_EVN_UID', 32)->default('');
-			$table->string('TAS_BOUNDARY', 32)->default('');
-			$table->string('TAS_DERIVATION_SCREEN_TPL', 128)->nullable()->default('');
-			$table->integer('TAS_SELFSERVICE_TIMEOUT')->nullable()->default(0);
-			$table->integer('TAS_SELFSERVICE_TIME')->nullable()->default(0);
-			$table->string('TAS_SELFSERVICE_TIME_UNIT', 15)->nullable()->default('');
-			$table->string('TAS_SELFSERVICE_TRIGGER_UID', 32)->nullable()->default('');
-			$table->string('TAS_SELFSERVICE_EXECUTION', 15)->nullable()->default('EVERY_TIME');
-			$table->integer('TAS_NOT_EMAIL_FROM_FORMAT')->nullable()->default(0);
-			$table->string('TAS_OFFLINE', 20)->default('FALSE');
-			$table->string('TAS_EMAIL_SERVER_UID', 32)->nullable()->default('');
-			$table->string('TAS_AUTO_ROOT', 20)->default('FALSE');
-			$table->string('TAS_RECEIVE_SERVER_UID', 32)->nullable()->default('');
-			$table->string('TAS_RECEIVE_LAST_EMAIL', 20)->default('FALSE');
-			$table->integer('TAS_RECEIVE_EMAIL_FROM_FORMAT')->nullable()->default(0);
-			$table->string('TAS_RECEIVE_MESSAGE_TYPE', 20)->default('text');
-			$table->string('TAS_RECEIVE_MESSAGE_TEMPLATE', 100)->default('alert_message.html');
-			$table->text('TAS_RECEIVE_SUBJECT_MESSAGE', 16777215)->nullable();
-			$table->text('TAS_RECEIVE_MESSAGE', 16777215)->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
-		});
-	}
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('task', function (Blueprint $table) {
+            $table->increments('id');
+            $table->uuid('uid');
+            $table->unsignedInteger('process_id');
+            $table->text('title', 16777215);
+            $table->text('description', 16777215)->nullable();
+            $table->text('def_title', 16777215)->nullable();
+            $table->text('def_subject_message', 16777215)->nullable();
+            $table->text('def_proc_code', 16777215)->nullable();
+            $table->text('def_message', 16777215)->nullable();
+            $table->text('def_description', 16777215)->nullable();
+            $table->string('type', 50)->default('normal');
+            $table->float('duration', 10, 0)->default(0);
+            $table->string('delay_type', 30)->default('');
+            $table->float('temporizer', 10, 0)->default(0);
+            $table->char('type_day', 1)->default(1);
+            $table->string('timeunit', 20)->default('days');
+            $table->string('alert', 20)->default('false');
+            $table->string('priority_variable', 100)->default('');
+            $table->string('assign_type', 30)->default('balanced');
+            $table->string('assign_variable', 100)->default('@@sys_next_user_to_be_assigned');
+            $table->string('group_variable', 100)->nullable();
+            $table->string('mi_instance_variable', 100)->default('@@sys_var_total_instance');
+            $table->string('mi_complete_variable', 100)->default('@@sys_var_total_instances_complete');
+            $table->string('assign_location', 20)->default('false');
+            $table->string('assign_location_adhoc', 20)->default('false');
+            $table->string('transfer_fly', 20)->default('false');
+            $table->string('last_assigned', 32)->default('0');
+            $table->string('user', 32)->default('0');
+            $table->string('can_upload', 20)->default('false');
+            $table->string('view_upload', 20)->default('false');
+            $table->string('view_additional_documentation', 20)->default('false');
+            $table->string('can_cancel', 20)->default('false');
+            $table->string('owner_app', 32)->default('');
+            $table->string('stg_uid', 32)->default('');
+            $table->string('can_pause', 20)->default('false');
+            $table->string('can_send_message', 20)->default('true');
+            $table->string('can_delete_docs', 20)->default('false');
+            $table->string('self_service', 20)->default('false');
+            $table->string('start', 20)->default('false');
+            $table->string('to_last_user', 20)->default('false');
+            $table->string('send_last_email', 20)->default('true');
+            $table->string('derivation', 100)->default('normal');
+            $table->integer('posx')->default(0);
+            $table->integer('posy')->default(0);
+            $table->integer('width')->default(110);
+            $table->integer('height')->default(60);
+            $table->string('color', 32)->default('');
+            $table->string('evn_uid', 32)->default('');
+            $table->string('boundary', 32)->default('');
+            $table->string('derivation_screen_tpl', 128)->nullable()->default('');
+            $table->integer('selfservice_timeout')->nullable()->default(0);
+            $table->integer('selfservice_time')->nullable()->default(0);
+            $table->string('selfservice_time_unit', 15)->nullable()->default('');
+            $table->string('selfservice_trigger_uid', 32)->nullable()->default('');
+            $table->string('selfservice_execution', 15)->nullable()->default('every_time');
+            $table->integer('not_email_from_format')->nullable()->default(0);
+            $table->string('offline', 20)->default('false');
+            $table->string('email_server_uid', 32)->nullable()->default('');
+            $table->string('auto_root', 20)->default('false');
+            $table->string('receive_server_uid', 32)->nullable()->default('');
+            $table->string('receive_last_email', 20)->default('false');
+            $table->integer('receive_email_from_format')->nullable()->default(0);
+            $table->string('receive_message_type', 20)->default('text');
+            $table->string('receive_message_template', 100)->default('alert_message.html');
+            $table->text('receive_subject_message', 16777215)->nullable();
+            $table->text('receive_message', 16777215)->nullable();
+            $table->timestamps();
+
+            // setup relationship for process we belong to
+            $table->foreign('process_id')->references('id')->on('processes')->ondelete('cascade');
+        });
+    }
 
 
-	/**
-	 * Reverse the migrations.
-	 *
-	 * @return void
-	 */
-	public function down()
-	{
-		Schema::drop('TASK');
-	}
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::drop('task');
+    }
 
 }

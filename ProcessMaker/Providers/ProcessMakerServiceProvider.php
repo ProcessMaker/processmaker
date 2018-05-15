@@ -18,15 +18,9 @@ use ProcessMaker\Managers\ProcessManager;
 use ProcessMaker\Managers\ReportTableManager;
 use ProcessMaker\Managers\SchemaManager;
 use ProcessMaker\Managers\TriggerManager;
-use ProcessMaker\Model\Activity;
-use ProcessMaker\Model\Artifact;
-use ProcessMaker\Model\Diagram;
-use ProcessMaker\Model\Event;
-use ProcessMaker\Model\Gateway;
-use ProcessMaker\Model\Lane;
-use ProcessMaker\Model\Laneset;
-use ProcessMaker\Model\Participant;
-use ProcessMaker\Model\Pool;
+use ProcessMaker\Managers\TaskManager;
+use ProcessMaker\Model\Group;
+use ProcessMaker\Model\User;
 
 /**
  * Provide our ProcessMaker specific services
@@ -131,5 +125,17 @@ class ProcessMakerServiceProvider extends ServiceProvider
             return new TriggerManager();
         });
 
+        /**
+         * Mapping
+         *
+         */
+        Relation::morphMap([
+            User::TYPE => User::class,
+            Group::TYPE => Group::class,
+        ]);
+
+        $this->app->singleton('task.manager', function ($app) {
+            return new TaskManager();
+        });
     }
 }
