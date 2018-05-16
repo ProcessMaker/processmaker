@@ -1,10 +1,10 @@
+import {Shape} from "../shape";
 /**
  * Gateway Shape Class
  */
-export class GatewayShape {
+export class GatewayShape extends Shape {
     constructor(svg) {
-        this.svg = svg;
-        this.shape = this.svg.group();
+        super(svg);
         this.options = {
             id: null,
             marker: "EMPTY",
@@ -19,7 +19,7 @@ export class GatewayShape {
                 stroke: "#000",
                 strokeWidth: 2
             }
-        }
+        };
     }
 
     /**
@@ -29,9 +29,9 @@ export class GatewayShape {
      */
     config(options) {
         if (options) {
-            this.options = Object.assign({}, this.options, options)
+            this.options = Object.assign({}, this.options, options);
         }
-        return this
+        return this;
     }
 
     /**
@@ -49,9 +49,9 @@ export class GatewayShape {
      * function to render shape
      */
     render() {
-        const baseBorder = this.getBaseBorder()
-        const base = this.getBase()
-        this.shape.add(baseBorder, base)
-        this.shape.drag()
+        const baseBorder = this.getBaseBorder();
+        const base = this.getBase();
+        this.shape.add(baseBorder, base);
+        this.shape.drag();
     }
 }
