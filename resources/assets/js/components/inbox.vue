@@ -119,16 +119,14 @@ export default {
         this.users=users.data
         this.tasks=tasks.data
 
-        this.users = this.users.map(user => {
-          user.tasks = this.tasks.filter(task => task.userId === user.id)
-          return user
-          console.log(user)
+        this.tasks = this.tasks.map(task => {
+          task.user = this.users.find(user => task.userId === user.id)
+          return task
         })
       }))
     },
         //possibly use map?
         //loop through users
-        //set an array key to users id
         //loop through tasks
         //find matching userid to user
         //append the user data to the tasks array
