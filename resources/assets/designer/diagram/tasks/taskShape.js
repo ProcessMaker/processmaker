@@ -1,8 +1,10 @@
+import {Shape} from "../shape";
 /**
  * Task Shape class
  */
-export class TaskShape {
-    constructor (svg) {
+export class TaskShape extends Shape {
+    constructor(svg) {
+        super(svg);
         this.id = null;
         this.options = {
             id: null,
@@ -17,8 +19,6 @@ export class TaskShape {
                 strokeWidth: 2
             }
         };
-        this.svg = svg;
-        this.shape = this.svg.group();
     }
 
     /**
@@ -26,7 +26,7 @@ export class TaskShape {
      * @param options
      * @returns {TaskShape}
      */
-    config (options) {
+    config(options) {
         this.options = Object.assign({}, this.options, options);
         return this;
     }
@@ -34,7 +34,7 @@ export class TaskShape {
     /**
      * Render the activity Based in options config
      */
-    render () {
+    render() {
         this.shape.add(this.svg.rect(
             this.options.x,
             this.options.y,

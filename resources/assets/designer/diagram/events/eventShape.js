@@ -1,11 +1,11 @@
+import {Shape} from "../shape";
 /**
  * StartEventShape
  */
 
-export class EventShape {
+export class EventShape extends Shape {
     constructor(svg) {
-        this.svg = svg;
-        this.shape = this.svg.group();
+        super(svg);
     }
 
     /**
@@ -25,8 +25,8 @@ export class EventShape {
      * @returns {EventShape}
      */
     config(options) {
-        this.options = Object.assign({}, this.options, options)
-        return this
+        this.options = Object.assign({}, this.options, options);
+        return this;
     }
 
     /**

@@ -1,10 +1,10 @@
+import {Shape} from "../shape";
 /**
  * Gateway Shape Class
  */
-export class GatewayShape {
-    constructor(svg) {
-        this.svg = svg;
-        this.shape = this.svg.group();
+export class GatewayShape extends Shape {
+    constructor (svg) {
+        super(svg);
         this.options = {
             id: null,
             marker: "EMPTY",
@@ -19,7 +19,7 @@ export class GatewayShape {
                 stroke: "#000",
                 strokeWidth: 2
             }
-        }
+        };
     }
 
     /**
@@ -27,17 +27,17 @@ export class GatewayShape {
      * @param options
      * @returns {EventShape}
      */
-    config(options) {
+    config (options) {
         if (options) {
-            this.options = Object.assign({}, this.options, options)
+            this.options = Object.assign({}, this.options, options);
         }
-        return this
+        return this;
     }
 
     /**
      * Return the object base from border of gateway
      */
-    getBaseBorder() {
+    getBaseBorder () {
         const base = this.svg
             .rect(this.options.x, this.options.y, this.options.edgeLength, this.options.edgeLength)
             .attr(this.options.attr)
@@ -48,10 +48,10 @@ export class GatewayShape {
     /**
      * function to render shape
      */
-    render() {
-        const baseBorder = this.getBaseBorder()
-        const base = this.getBase()
-        this.shape.add(baseBorder, base)
-        this.shape.drag()
+    render () {
+        const baseBorder = this.getBaseBorder();
+        const base = this.getBase();
+        this.shape.add(baseBorder, base);
+        this.shape.drag();
     }
 }
