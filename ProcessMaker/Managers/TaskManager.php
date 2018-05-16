@@ -14,12 +14,12 @@ use ProcessMaker\Model\User;
 
 class TaskManager
 {
-    
+
     /**
      * List the users and groups assigned to a task.
      *
      * @param Task $activity
-     * @param array $options start|limit|filter
+     * @param array $options start|per_page|filter
      * @param boolean $paged
      *
      * @return Paginator | LengthAwarePaginator
@@ -35,7 +35,8 @@ class TaskManager
             $query = $this->generateFilterUserGroup(TaskUser::where('task_id', $activity->id), $filter);
         }
 
-        $assignees = $this->paginate($query, $options, $paged);
+        $assignees = $query->paginate($options['per_page']);
+        $assignees->appends($options);
 
         foreach ($assignees as $assigned) {
             if (!empty($assigned->group)) {
@@ -73,14 +74,14 @@ class TaskManager
                 ->orWhere($user->getTable() . '.lastname', 'like', '%' . $options['filter'] . '%');
         }
         $information = [];
+        $assignee = new TaskUser();
         foreach ($query->get() as $user) {
-            $information[] = [
-                'aas_uid' => $user->uid,
-                'aas_name' => $user->firstname,
-                'aas_lastname' => $user->lastname,
-                'aas_username' => $user->username,
-                'aas_type' => User::TYPE
-            ];
+            $assignee->assign_uid = $user->uid;
+            $assignee->assign_name = $user->firstname;
+            $assignee->assign_lastname = $user->lastname;
+            $assignee->assign_username = $user->username;
+            $assignee->assign_type = User::TYPE;
+            $information[] = $assignee;
         }
 
         $query = Group::whereNotIn('id', $usersAssigned);
@@ -90,22 +91,18 @@ class TaskManager
         }
         foreach ($query->get() as $group) {
             $group->title = $this->labelGroup($group);
-            $information[] = [
-                'aas_uid' => $group->uid,
-                'aas_name' => $group->title,
-                'aas_lastname' => '',
-                'aas_username' => $group->title,
-                'aas_type' => Group::TYPE
-            ];
+            $assignee->assign_uid = $group->uid;
+            $assignee->assign_name = $group->title;
+            $assignee->assign_lastname = '';
+            $assignee->assign_username = $group->title;
+            $assignee->assign_type = Group::TYPE;
+            $information[] = $assignee;
         }
 
-        $limit = $options['limit'];
-        $currentPage = !$paged ? Paginator::resolveCurrentPage() : LengthAwarePaginator::resolveCurrentPage();
+        $limit = $options['per_page'];
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
         $collection = new Collection($information);
         $currentPageResults = $collection->slice(($currentPage - 1) * $limit, $limit)->all();
-        if (!$paged) {
-            return new Paginator($currentPageResults, count($collection), $limit);
-        }
         return new LengthAwarePaginator($currentPageResults, count($collection), $limit);
     }
 
@@ -124,13 +121,13 @@ class TaskManager
     {
         $query = TaskUser::where('task_id', $activity->id)->type(TaskUser::ASSIGNEE_NORMAL);
         $type = User::TYPE;
-        switch (strtoupper($options['aas_type'])) {
+        switch (strtoupper($options['type'])) {
             case 'USER':
-                $check = User::where('uid', $options['aas_uid'])->first();
+                $check = User::where('uid', $options['uid'])->first();
                 $query->onlyUsers();
                 break;
             case 'GROUP':
-                $check = Group::where('uid', $options['aas_uid'])->first();
+                $check = Group::where('uid', $options['uid'])->first();
                 $type = Group::TYPE;
                 $query->onlyGroups();
                 break;
@@ -139,11 +136,11 @@ class TaskManager
                 break;
         }
         if (!$check) {
-            throw new TaskAssignedException(__('This id :uid does not correspond to a registered :type', ['uid' => $options['aas_uid'], 'type' => $options['aas_type']]));
+            throw new TaskAssignedException(__('This id :uid does not correspond to a registered :type', ['uid' => $options['uid'], 'type' => $options['type']]));
         }
         $exist = $query->where('user_id', $check->id)->exists();
         if ($exist) {
-            throw new TaskAssignedException(__('This ID: :user is already assigned to task: :task', ['user' => $options['aas_uid'], 'task' => $activity->uid]));
+            throw new TaskAssignedException(__('This ID: :user is already assigned to task: :task', ['user' => $options['uid'], 'task' => $activity->uid]));
         }
         $assigned = new TaskUser();
         $assigned->task_id = $activity->id;
@@ -226,9 +223,9 @@ class TaskManager
      * @param Task $activity
      * @param array $options
      *
-     * @return Paginator
+     * @return LengthAwarePaginator
      */
-    public function getInformationAllAssignee(Task $activity, $options): Paginator
+    public function getInformationAllAssignee(Task $activity, $options): LengthAwarePaginator
     {
         $query = TaskUser::where('task_id', $activity->id)
             ->with('user', 'group.users');
@@ -254,35 +251,35 @@ class TaskManager
         $assignees = $query->get();
         $information = [];
 
+        $assignee = new TaskUser();
+
         foreach ($assignees as $assign) {
             if (!empty($assign->user)) {
-                $information[] = [
-                    'aas_uid' => $assign->user->uid,
-                    'aas_name' => $assign->user->firstname,
-                    'aas_lastname' => $assign->user->lastname,
-                    'aas_username' => $assign->user->username,
-                    'aas_type' => User::TYPE
-                ];
+                $assignee->assign_uid = $assign->user->uid;
+                $assignee->assign_name = $assign->user->firstname;
+                $assignee->assign_lastname = $assign->user->lastname;
+                $assignee->assign_username = $assign->user->username;
+                $assignee->assign_type = User::TYPE;
+                $information[] = $assignee;
             }
             if (!empty($assign->group)) {
                 foreach ($assign->group->users as $user) {
-                    $information[] = [
-                        'aas_uid' => $user->uid,
-                        'aas_name' => $user->firstname,
-                        'aas_lastname' => $user->lastname,
-                        'aas_username' => $user->username,
-                        'aas_type' => User::TYPE
-                    ];
+                    $assignee->assign_uid = $user->uid;
+                    $assignee->assign_name = $user->firstname;
+                    $assignee->assign_lastname = $user->lastname;
+                    $assignee->assign_username = $user->username;
+                    $assignee->assign_type = User::TYPE;
+                    $information[] = $assignee;
                 }
             }
         }
 
-        $limit = $options['limit'];
-        $currentPage = Paginator::resolveCurrentPage();
+        $limit = $options['per_page'];
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
         $collection = new Collection($information);
         $currentPageResults = $collection->slice(($currentPage - 1) * $limit, $limit)->all();
 
-        return new Paginator($currentPageResults, count($collection), $limit);
+        return new LengthAwarePaginator($currentPageResults, count($collection), $limit);
     }
 
     /**
@@ -310,24 +307,24 @@ class TaskManager
      */
     private function formatDataAssignee(TaskUser $assigned): TaskUser
     {
-        $assigned->aas_uid = '';
-        $assigned->aas_name = '';
-        $assigned->aas_lastname = '';
-        $assigned->aas_username = '';
-        $assigned->aas_type = $assigned->task_user_type;
+        $assigned->assign_uid = '';
+        $assigned->assign_name = '';
+        $assigned->assign_lastname = '';
+        $assigned->assign_username = '';
+        $assigned->assign_type = $assigned->task_user_type;
 
         if (!empty($assigned->user)) {
-            $assigned->aas_uid = $assigned->user->uid;
-            $assigned->aas_name = $assigned->user->firstname;
-            $assigned->aas_lastname = $assigned->user->lastname;
-            $assigned->aas_username = $assigned->user->username;
-            $assigned->aas_type = strtolower(User::TYPE);
+            $assigned->assign_uid = $assigned->user->uid;
+            $assigned->assign_name = $assigned->user->firstname;
+            $assigned->assign_lastname = $assigned->user->lastname;
+            $assigned->assign_username = $assigned->user->username;
+            $assigned->assign_type = strtolower(User::TYPE);
         }
         if (!empty($assigned->group)) {
-            $assigned->aas_uid = $assigned->group->uid;
-            $assigned->aas_name = $assigned->group->title;
-            $assigned->aas_username = $assigned->group->title;
-            $assigned->aas_type = strtolower(Group::TYPE);
+            $assigned->assign_uid = $assigned->group->uid;
+            $assigned->assign_name = $assigned->group->title;
+            $assigned->assign_username = $assigned->group->title;
+            $assigned->assign_type = strtolower(Group::TYPE);
         }
 
         return $assigned;
@@ -357,22 +354,4 @@ class TaskManager
                 });
             });
     }
-
-    /**
-     * Get paginate or simple paginate for collection
-     *
-     * @param Builder $query
-     * @param array $parameter
-     * @param bool $paged
-     *
-     * @return LengthAwarePaginator|Paginator
-     */
-    private function paginate(Builder $query, $parameter, $paged = false)
-    {
-        if ($paged) {
-            return $query->paginate($parameter['limit']);
-        }
-        return $query->simplePaginate($parameter['limit']);
-    }
-
 }

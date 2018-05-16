@@ -11,6 +11,7 @@ use ProcessMaker\Model\Traits\Uuid;
  *
  * @property int id
  * @property string uid
+ * @property int process_id
  * @property text title
  * @property text priority_variable
  * @property string delay_type

@@ -61,31 +61,9 @@ class ProcessMakerServiceProvider extends ServiceProvider
         });
 
         /**
-         * Prepare the response of collection using fractal
-         */
-        response()->macro('collection', function ($item, TransformerAbstract $transformer, $status = 200, array $headers = [], SerializerAbstract $serializer = null) {
-            /**
-             * @var Manager $fractal
-             */
-            $fractal = new Manager();
-            if (!$serializer) {
-                $serialize = config('app.serialize_fractal');
-                $serializer = new $serialize();
-            }
-            $resource = new Collection($item, $transformer);
-            $fractal->setSerializer($serializer);
-
-            return response()->json(
-                $fractal->createData($resource)->toArray(),
-                $status,
-                $headers
-            );
-        });
-
-        /**
          * Prepare the response of the paginate collection using fractal, for compatibility.
          */
-        response()->macro('paged', function ($item, TransformerAbstract $transformer, $status = 200, array $headers = [], SerializerAbstract $serializer = null, IlluminatePaginatorAdapter $paginator = null) {
+        response()->macro('collection', function ($item, TransformerAbstract $transformer, $status = 200, array $headers = [], SerializerAbstract $serializer = null, IlluminatePaginatorAdapter $paginator = null) {
             /**
              * @var Manager $fractal
              */

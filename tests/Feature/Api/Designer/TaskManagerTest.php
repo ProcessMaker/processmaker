@@ -75,28 +75,28 @@ class TaskManagerTest extends ApiTestCase
         $this->auth(self::$user->username, self::DEFAULT_PASS);
 
         $data = [
-            'aas_type' => 'OtherType',
-            'aas_uid' => '123'
+            'type' => 'OtherType',
+            'uid' => '123'
         ];
         //validate non-existent Type user or Group
         $url = self::API_ROUTE . self::$process->uid . '/activity/' . self::$activity->uid . '/assignee';
         $response = $this->api('POST', $url, $data);
         $response->assertStatus(404);
 
-        $data['aas_type'] = 'user';
+        $data['type'] = 'user';
         //validate non-existent user
         $url = self::API_ROUTE . self::$process->uid . '/activity/' . self::$activity->uid . '/assignee';
         $response = $this->api('POST', $url, $data);
         $response->assertStatus(404);
 
         //validate non-existent group
-        $data['aas_type'] = 'group';
+        $data['type'] = 'group';
         $response = $this->api('POST', $url, $data);
         $response->assertStatus(404);
 
         //correctly insert assignment user
-        $data['aas_type'] = 'user';
-        $data['aas_uid'] = self::$user->uid;
+        $data['type'] = 'user';
+        $data['uid'] = self::$user->uid;
         $response = $this->api('POST', $url, $data);
         $response->assertStatus(201);
 
@@ -105,8 +105,8 @@ class TaskManagerTest extends ApiTestCase
         $response->assertStatus(404);
 
         //correctly insert assignment user
-        $data['aas_type'] = 'group';
-        $data['aas_uid'] = self::$group->uid;
+        $data['type'] = 'group';
+        $data['uid'] = self::$group->uid;
         $response = $this->api('POST', $url, $data);
         $response->assertStatus(201);
 
@@ -124,19 +124,17 @@ class TaskManagerTest extends ApiTestCase
     {
         $this->auth(self::$user->username, self::DEFAULT_PASS);
         $structurePaginate = [
-            'current_page',
             'data',
-            'first_page_url',
-            'from',
-            'next_page_url',
-            'path',
-            'per_page',
-            'prev_page_url',
-            'to',
+            'meta',
         ];
 
-        $assigned = [self::$user->uid->toString(), self::$group->uid];
+        //Task not belong to process
+        $activity = factory(Task::class)->create();
+        $url = self::API_ROUTE . self::$process->uid . '/activity/' . $activity->uid . '/assignee';
+        $response = $this->api('GET', $url);
+        $response->assertStatus(404);
 
+        $assigned = [self::$user->uid->toString(), self::$group->uid];
         //List users and groups
         $url = self::API_ROUTE . self::$process->uid . '/activity/' . self::$activity->uid . '/assignee';
         $response = $this->api('GET', $url);
@@ -144,9 +142,9 @@ class TaskManagerTest extends ApiTestCase
         //verify structure paginate
         $response->assertJsonStructure($structurePaginate);
         //verify the user and group assigned
-        $this->assertEquals(count($response->json()['data']), 2);
-        $this->assertContains($response->json()['data'][0]['aas_uid'], $assigned);
-        $this->assertContains($response->json()['data'][1]['aas_uid'], $assigned);
+        $this->assertEquals($response->json()['meta']['total'], 2);
+        $this->assertContains($response->json()['data'][0]['uid'], $assigned);
+        $this->assertContains($response->json()['data'][1]['uid'], $assigned);
 
         //Filter user
         $url = self::API_ROUTE . self::$process->uid . '/activity/' . self::$activity->uid . '/assignee?filter=' . self::$user->firstname;
@@ -158,7 +156,7 @@ class TaskManagerTest extends ApiTestCase
         $this->assertLessThanOrEqual(count($response->json()['data']), 1);
         $data = [];
         foreach ($response->json()['data'] as $info) {
-            $data[] = $info['aas_uid'];
+            $data[] = $info['uid'];
         }
         $this->assertContains(self::$user->uid->toString(), $data);
 
@@ -172,7 +170,7 @@ class TaskManagerTest extends ApiTestCase
         $this->assertLessThanOrEqual(count($response->json()['data']), 1);
         $data = [];
         foreach ($response->json()['data'] as $info) {
-            $data[] = $info['aas_uid'];
+            $data[] = $info['uid'];
         }
         $this->assertContains(self::$group->uid, $data);
 
@@ -195,18 +193,8 @@ class TaskManagerTest extends ApiTestCase
     {
         $this->auth(self::$user->username, self::DEFAULT_PASS);
         $structurePaginate = [
-            'current_page',
             'data',
-            'first_page_url',
-            'from',
-            'last_page',
-            'last_page_url',
-            'next_page_url',
-            'path',
-            'per_page',
-            'prev_page_url',
-            'to',
-            'total'
+            'meta',
         ];
 
         $assigned = [self::$user->uid->toString(), self::$group->uid];
@@ -218,9 +206,9 @@ class TaskManagerTest extends ApiTestCase
         //verify structure paginate
         $response->assertJsonStructure($structurePaginate);
         //verify the user and group assigned
-        $this->assertEquals($response->json()['total'], 2);
-        $this->assertContains($response->json()['data'][0]['aas_uid'], $assigned);
-        $this->assertContains($response->json()['data'][1]['aas_uid'], $assigned);
+        $this->assertEquals($response->json()['meta']['total'], 2);
+        $this->assertContains($response->json()['data'][0]['uid'], $assigned);
+        $this->assertContains($response->json()['data'][1]['uid'], $assigned);
 
         //Filter user
         $url = self::API_ROUTE . self::$process->uid . '/activity/' . self::$activity->uid . '/assignee/paged?filter=' . self::$user->firstname;
@@ -229,10 +217,10 @@ class TaskManagerTest extends ApiTestCase
         //verify structure paginate
         $response->assertJsonStructure($structurePaginate);
         //verify the user and group assigned
-        $this->assertLessThanOrEqual($response->json()['total'], 1);
+        $this->assertLessThanOrEqual($response->json()['meta']['total'], 1);
         $data = [];
         foreach ($response->json()['data'] as $info) {
-            $data[] = $info['aas_uid'];
+            $data[] = $info['uid'];
         }
         $this->assertContains(self::$user->uid->toString(), $data);
 
@@ -243,10 +231,10 @@ class TaskManagerTest extends ApiTestCase
         //verify structure paginate
         $response->assertJsonStructure($structurePaginate);
         //verify the user and group assigned
-        $this->assertLessThanOrEqual($response->json()['total'], 1);
+        $this->assertLessThanOrEqual($response->json()['meta']['total'], 1);
         $data = [];
         foreach ($response->json()['data'] as $info) {
-            $data[] = $info['aas_uid'];
+            $data[] = $info['uid'];
         }
         $this->assertContains(self::$group->uid, $data);
 
@@ -257,7 +245,7 @@ class TaskManagerTest extends ApiTestCase
         //verify structure paginate
         $response->assertJsonStructure($structurePaginate);
         //verify result
-        $this->assertEquals($response->json()['total'], 0);
+        $this->assertEquals($response->json()['meta']['total'], 0);
     }
 
     /**
@@ -269,11 +257,11 @@ class TaskManagerTest extends ApiTestCase
     {
         $this->auth(self::$user->username, self::DEFAULT_PASS);
         $structure = [
-            'aas_uid',
-            'aas_name',
-            'aas_lastname',
-            'aas_username',
-            'aas_type'
+            'uid',
+            'name',
+            'lastname',
+            'username',
+            'type'
         ];
 
         //Other User row not exist
@@ -310,15 +298,8 @@ class TaskManagerTest extends ApiTestCase
     {
         $this->auth(self::$user->username, self::DEFAULT_PASS);
         $structurePaginate = [
-            'current_page',
             'data',
-            'first_page_url',
-            'from',
-            'next_page_url',
-            'path',
-            'per_page',
-            'prev_page_url',
-            'to',
+            'meta',
         ];
 
         //List All
@@ -340,7 +321,7 @@ class TaskManagerTest extends ApiTestCase
         $this->assertLessThanOrEqual(count($response->json()['data']), 1);
         $data = [];
         foreach ($response->json()['data'] as $info) {
-            $data[] = $info['aas_uid'];
+            $data[] = $info['uid'];
         }
         $this->assertContains(self::$user->uid->toString(), $data);
 
@@ -363,15 +344,8 @@ class TaskManagerTest extends ApiTestCase
     {
         $this->auth(self::$user->username, self::DEFAULT_PASS);
         $structurePaginate = [
-            'current_page',
             'data',
-            'first_page_url',
-            'from',
-            'next_page_url',
-            'path',
-            'per_page',
-            'prev_page_url',
-            'to',
+            'meta',
         ];
 
         //List All
@@ -382,8 +356,8 @@ class TaskManagerTest extends ApiTestCase
         $response->assertJsonStructure($structurePaginate);
         //verify the user and group assigned
         foreach ($response->json()['data'] as $available) {
-            $this->assertNotEquals($available['aas_uid'], self::$user->uid->toString());
-            $this->assertNotEquals($available['aas_uid'], self::$group->uid);
+            $this->assertNotEquals($available['uid'], self::$user->uid->toString());
+            $this->assertNotEquals($available['uid'], self::$group->uid);
         }
 
         //Filter user
@@ -394,7 +368,7 @@ class TaskManagerTest extends ApiTestCase
         $response->assertJsonStructure($structurePaginate);
         //verify the user and group assigned
         foreach ($response->json()['data'] as $available) {
-            $this->assertNotEquals($available['aas_uid'], self::$user->uid);
+            $this->assertNotEquals($available['uid'], self::$user->uid);
         }
 
         //Filter group
@@ -405,7 +379,7 @@ class TaskManagerTest extends ApiTestCase
         $response->assertJsonStructure($structurePaginate);
         //verify the user and group assigned
         foreach ($response->json()['data'] as $available) {
-            $this->assertNotEquals($available['aas_uid'], self::$group->uid);
+            $this->assertNotEquals($available['uid'], self::$group->uid);
         }
 
         //Filter not exist results
@@ -427,18 +401,8 @@ class TaskManagerTest extends ApiTestCase
     {
         $this->auth(self::$user->username, self::DEFAULT_PASS);
         $structurePaginate = [
-            'current_page',
             'data',
-            'first_page_url',
-            'from',
-            'last_page',
-            'last_page_url',
-            'next_page_url',
-            'path',
-            'per_page',
-            'prev_page_url',
-            'to',
-            'total'
+            'meta',
         ];
 
         //List All
@@ -449,8 +413,8 @@ class TaskManagerTest extends ApiTestCase
         $response->assertJsonStructure($structurePaginate);
         //verify the user and group assigned
         foreach ($response->json()['data'] as $available) {
-            $this->assertNotEquals($available['aas_uid'], self::$user->uid->toString());
-            $this->assertNotEquals($available['aas_uid'], self::$group->uid);
+            $this->assertNotEquals($available['uid'], self::$user->uid->toString());
+            $this->assertNotEquals($available['uid'], self::$group->uid);
         }
 
         //Filter user
@@ -461,7 +425,7 @@ class TaskManagerTest extends ApiTestCase
         $response->assertJsonStructure($structurePaginate);
         //verify the user and group assigned
         foreach ($response->json()['data'] as $available) {
-            $this->assertNotEquals($available['aas_uid'], self::$user->uid->toString());
+            $this->assertNotEquals($available['uid'], self::$user->uid->toString());
         }
 
         //Filter group
@@ -472,7 +436,7 @@ class TaskManagerTest extends ApiTestCase
         $response->assertJsonStructure($structurePaginate);
         //verify the user and group assigned
         foreach ($response->json()['data'] as $available) {
-            $this->assertNotEquals($available['aas_uid'], self::$group->uid);
+            $this->assertNotEquals($available['uid'], self::$group->uid);
         }
 
         //Filter not exist results
