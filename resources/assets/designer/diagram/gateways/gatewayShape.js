@@ -3,7 +3,7 @@ import {Shape} from "../shape";
  * Gateway Shape Class
  */
 export class GatewayShape extends Shape {
-    constructor(svg) {
+    constructor (svg) {
         super(svg);
         this.options = {
             id: null,
@@ -27,7 +27,7 @@ export class GatewayShape extends Shape {
      * @param options
      * @returns {EventShape}
      */
-    config(options) {
+    config (options) {
         if (options) {
             this.options = Object.assign({}, this.options, options);
         }
@@ -37,7 +37,7 @@ export class GatewayShape extends Shape {
     /**
      * Return the object base from border of gateway
      */
-    getBaseBorder() {
+    getBaseBorder () {
         const base = this.svg
             .rect(this.options.x, this.options.y, this.options.edgeLength, this.options.edgeLength)
             .attr(this.options.attr)
@@ -48,7 +48,7 @@ export class GatewayShape extends Shape {
     /**
      * function to render shape
      */
-    render() {
+    render () {
         const baseBorder = this.getBaseBorder();
         const base = this.getBase();
         this.shape.add(baseBorder, base);

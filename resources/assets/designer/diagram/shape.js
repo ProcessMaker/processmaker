@@ -34,7 +34,7 @@ export class Shape {
     }
 
     /**
-     * Remove this shape
+     * This method remove the shape
      * @returns {Shape}
      */
     remove() {
