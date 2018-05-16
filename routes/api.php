@@ -115,11 +115,11 @@ Router::group([
         Router::get('project/{process}/activity/{activity}/available-assignee/paged', 'Designer\AssigneeController@getActivityAvailablePaged')->middleware('can:read,ProcessMaker\Model\TaskUser');
 
         //Output Document endpoints
-        Router::get('project/{process}/output-documents', 'Designer\OutPutDocumentController@index')->middleware('can:read,ProcessMaker\Model\OutPutDocument');
-        Router::get('project/{process}/output-document/{outPutDocument}', 'Designer\OutPutDocumentController@show')->middleware('can:read,ProcessMaker\Model\OutPutDocument');
-        Router::post('project/{process}/output-document', 'Designer\OutPutDocumentController@store')->middleware('can:write,ProcessMaker\Model\OutPutDocument');
-        Router::put('project/{process}/output-document/{outPutDocument}', 'Designer\OutPutDocumentController@update')->middleware('can:write,ProcessMaker\Model\OutPutDocument');
-        Router::delete('project/{process}/output-document/{outPutDocument}', 'Designer\OutPutDocumentController@remove')->middleware('can:delete,ProcessMaker\Model\OutPutDocument');
+        Router::get('project/{process}/output-documents', 'Designer\OutputDocumentController@index')->middleware('can:read,ProcessMaker\Model\OutputDocument');
+        Router::get('project/{process}/output-document/{outputDocument}', 'Designer\OutputDocumentController@show')->middleware('can:read,ProcessMaker\Model\OutputDocument');
+        Router::post('project/{process}/output-document', 'Designer\OutputDocumentController@store')->middleware('can:write,ProcessMaker\Model\OutputDocument');
+        Router::put('project/{process}/output-document/{outputDocument}', 'Designer\OutputDocumentController@update')->middleware('can:write,ProcessMaker\Model\OutputDocument');
+        Router::delete('project/{process}/output-document/{outputDocument}', 'Designer\OutputDocumentController@remove')->middleware('can:delete,ProcessMaker\Model\OutputDocument');
 
         //Cases endpoints
         Router::get('cases/{application}/variables', 'Cases\VariableController@get')->middleware('can:read,application');

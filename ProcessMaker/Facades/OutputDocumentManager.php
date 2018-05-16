@@ -4,22 +4,22 @@ namespace ProcessMaker\Facades;
 
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Facade;
-use ProcessMaker\Model\OutPutDocument;
+use ProcessMaker\Model\OutputDocument;
 use ProcessMaker\Model\Process;
 
 /**
  * Facade for our OutPut Document Manager
  *
  * @package ProcessMaker\Facades
- * @see \ProcessMaker\Managers\OutPutDocumentManager
+ * @see \ProcessMaker\Managers\OutputDocumentManager
  *
  * @method static Paginator index(Process $process)
- * @method static OutPutDocument save(Process $process, array $data)
- * @method static array update(Process $process, OutPutDocument $outPutDocument, array $data)
- * @method static boolean|null remove(OutPutDocument $outPutDocument)
+ * @method static OutputDocument save(Process $process, array $data)
+ * @method static array update(Process $process, OutputDocument $outPutDocument, array $data)
+ * @method static boolean|null remove(OutputDocument $outPutDocument)
  *
  */
-class OutPutDocumentManager extends Facade
+class OutputDocumentManager extends Facade
 {
     /**
      * Get the registered name of the component.

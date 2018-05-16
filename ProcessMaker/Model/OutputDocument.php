@@ -38,12 +38,12 @@ use Watson\Validating\ValidatingTrait;
  * @property int open_type
  *
  */
-class OutPutDocument extends Model
+class OutputDocument extends Model
 {
     use ValidatingTrait;
     use Uuid;
 
-    protected $table = 'output_document';
+    protected $table = 'output_documents';
 
     /**
      * Values for report_generator
@@ -166,7 +166,7 @@ class OutPutDocument extends Model
 
     protected $rules = [
         'uid' => 'max:36',
-        'title' => 'required|unique:output_document,title',
+        'title' => 'required|unique:output_documents,title',
         'process_id' => 'exists:processes,id',
         'description' => 'required',
         'filename' => 'required',

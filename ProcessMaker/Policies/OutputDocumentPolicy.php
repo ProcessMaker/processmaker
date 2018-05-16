@@ -5,7 +5,7 @@ namespace ProcessMaker\Policies;
 use ProcessMaker\Model\Permission;
 use ProcessMaker\Model\User;
 
-class OutPutDocumentPolicy
+class OutputDocumentPolicy
 {
     /**
      * Determine if the trigger can be read by the user.

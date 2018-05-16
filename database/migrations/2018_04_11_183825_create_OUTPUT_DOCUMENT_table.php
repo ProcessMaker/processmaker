@@ -13,11 +13,11 @@ class CreateOUTPUTDOCUMENTTable extends Migration
      */
     public function up()
     {
-        Schema::create('output_document', function (Blueprint $table) {
+        Schema::create('output_documents', function (Blueprint $table) {
             $table->increments('id');
             $table->uuid('uid')->unique();
-            $table->text('title', 16777215);
-            $table->text('description', 16777215)->nullable();
+            $table->string('title');
+            $table->string('description')->nullable();
             $table->text('filename', 16777215)->nullable();
             $table->text('template', 16777215)->nullable();
             $table->string('report_generator', 10)->default('HTML2PDF');
@@ -51,7 +51,7 @@ class CreateOUTPUTDOCUMENTTable extends Migration
      */
     public function down()
     {
-        Schema::drop('output_document');
+        Schema::drop('output_documents');
     }
 
 }

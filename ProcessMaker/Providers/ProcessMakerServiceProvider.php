@@ -18,6 +18,7 @@ use ProcessMaker\Managers\TriggerManager;
 use ProcessMaker\Model\Group;
 use ProcessMaker\Model\User;
 
+
 /**
  * Provide our ProcessMaker specific services
  * @package ProcessMaker\Providers
@@ -90,7 +91,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton('output_document.manager', function ($app) {
-            return new OutPutDocumentManager();
+            return new OutputDocumentManager();
         });
     }
 }
