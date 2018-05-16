@@ -85,12 +85,21 @@ class ProcessMakerSerializerTest extends TestCase
 
     /**
      * Test serialize a collection of items with pagination:
-     *     {
-     *         "start": 0,
-     *         "limit": 25,
-     *         "total": 1500,
-     *         "data": [...]
-     *     }
+     *  {
+     *      meta: {
+     *          total: (integer, total results)
+     *          count: (integer, total items in current response)
+     *          per_page: (integer, the number of items per page that this pagination is for)
+     *          current_page: (integer, the current page, 1 indexed)
+     *          total_pages: (integer, the total number of pages available, based on per_page and total)
+     *          filter: (string, optional, if a filter was provided to search by, the value of the filter)
+     *          sort_by: (string, optional, if a sort_by was requested, this provides the property names that was sorted by)
+     *          sort_order: (string, optional, enum, if a sort was requested, this provides the sort order that was used)
+     *      },
+     *      data: [
+     *          {...(specific object definition for the data type requested)...}
+     *      ]
+     *  }
      */
     public function testPaginator()
     {
@@ -109,9 +118,18 @@ class ProcessMakerSerializerTest extends TestCase
         }, 'item');
         $resource->setPaginator($paginator);
         $response = $this->getManager()->createData($resource)->toArray();
-        $this->assertEquals(0, $response['start']);
-        $this->assertEquals(count($response['data']), $response['limit']);
-        $this->assertGreaterThan(2, $response['total']);
+
+        //validating format response
+        //$this->assertGreaterThan(2, $response['meta']->total);
+        $this->assertInternalType('array', $response['data']);
+        $this->assertInstanceOf(\stdClass::class, $response['meta']);
+        $this->assertObjectHasAttribute('total', $response['meta']);
+        $this->assertObjectHasAttribute('per_page', $response['meta']);
+        $this->assertObjectHasAttribute('current_page', $response['meta']);
+        $this->assertObjectHasAttribute('total_pages', $response['meta']);
+        $this->assertObjectHasAttribute('filter', $response['meta']);
+        $this->assertObjectHasAttribute('sort_by', $response['meta']);
+        $this->assertObjectHasAttribute('sort_order', $response['meta']);
     }
 
     /**

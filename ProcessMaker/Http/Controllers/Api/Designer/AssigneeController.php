@@ -9,6 +9,7 @@ use ProcessMaker\Facades\TaskManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\Task;
+use ProcessMaker\Transformers\AssigneeTransformer;
 use Symfony\Component\HttpFoundation\Response;
 
 class AssigneeController extends Controller
@@ -29,7 +30,7 @@ class AssigneeController extends Controller
         $options = $this->verifyOptions($request);
         $response = TaskManager::loadAssignees($activity, $options);
 
-        return response($response, 200);
+        return response()->collection($response, new AssigneeTransformer(), 200);
     }
 
     /**
@@ -47,7 +48,7 @@ class AssigneeController extends Controller
         $this->belongsToProcess($process, $activity);
         $options = $this->verifyOptions($request);
         $response = TaskManager::loadAssignees($activity, $options, true);
-        return response($response, 200);
+        return response()->collection($response, new AssigneeTransformer(), 200);
     }
 
     /**
@@ -64,8 +65,8 @@ class AssigneeController extends Controller
     {
         $this->belongsToProcess($process, $activity);
         $options = [
-            'aas_uid' => $request->input('aas_uid', ''),
-            'aas_type' => $request->input('aas_type', ''),
+            'uid' => $request->input('uid', ''),
+            'type' => $request->input('type', ''),
         ];
         $response = TaskManager::saveAssignee($activity, $options);
         return response('', 201);
@@ -102,7 +103,7 @@ class AssigneeController extends Controller
     {
         $this->belongsToProcess($process, $activity);
         $response = TaskManager::getInformationAssignee($activity, $assignee);
-        return response($response, 200);
+        return response()->item($response, new AssigneeTransformer(), 200);
     }
 
     /**
@@ -121,7 +122,7 @@ class AssigneeController extends Controller
         $options = $this->verifyOptions($request);
 
         $response = TaskManager::getInformationAllAssignee($activity, $options);
-        return response($response, 200);
+        return response()->collection($response, new AssigneeTransformer(), 200);
     }
 
     /**
@@ -140,7 +141,7 @@ class AssigneeController extends Controller
         $options = $this->verifyOptions($request);
 
         $response = TaskManager::loadAvailable($activity, $options);
-        return response($response, 200);
+        return response()->collection($response, new AssigneeTransformer(), 200);
     }
 
     /**
@@ -159,7 +160,7 @@ class AssigneeController extends Controller
         $options = $this->verifyOptions($request);
 
         $response = TaskManager::loadAvailable($activity, $options, true);
-        return response($response, 200);
+        return response()->collection($response, new AssigneeTransformer(), 200);
     }
 
     /**
@@ -172,8 +173,10 @@ class AssigneeController extends Controller
     {
         return [
             'filter' => $request->input('filter', ''),
-            'start' => $request->input('start', 0),
-            'limit' => $request->input('limit', 20),
+            'current_page' => $request->input('current_page', 1),
+            'per_page' => $request->input('per_page', 10),
+            'sort_by' => $request->input('sort_by'),
+            'sort_order' => $request->input('sort_order'),
             'type' => $request->input('type', 'All')
         ];
     }
