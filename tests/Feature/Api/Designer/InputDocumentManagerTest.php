@@ -45,24 +45,24 @@ class InputDocumentManagerTest extends ApiTestCase
         $this->auth(self::$user->username, self::DEFAULT_PASS);
 
         $data = [];
-        //Post should have the parameter tri_title
+        //The post must have the required parameters
         $url = self::API_ROUTE . self::$process->uid . '/input-document';
         $response = $this->api('POST', $url, $data);
         //validating the answer is an error
         $response->assertStatus(422);
 
         $data = [];
-        //Post should have the parameter INP_DOC_FORM_NEEDED only types InputDocument::FORM_NEEDED_TYPE
+        //Post should have the parameter FORM_NEEDED only types InputDocument::FORM_NEEDED_TYPE
         $faker = Faker::create();
-        $data['inp_doc_form_needed'] = $faker->sentence(2);
+        $data['form_needed'] = $faker->sentence(2);
         $url = self::API_ROUTE . self::$process->uid . '/input-document';
         $response = $this->api('POST', $url, $data);
         //validating the answer is an error
         $response->assertStatus(422);
 
         //Post saved correctly
-        $data['inp_doc_title'] = $faker->sentence(3);
-        $data['inp_doc_form_needed'] = $faker->randomElement(array_keys(InputDocument::FORM_NEEDED_TYPE));
+        $data['title'] = $faker->sentence(3);
+        $data['form_needed'] = $faker->randomElement(array_keys(InputDocument::FORM_NEEDED_TYPE));
         $url = self::API_ROUTE . self::$process->uid . '/input-document';
         $response = $this->api('POST', $url, $data);
         //validating the answer is correct.
@@ -71,7 +71,6 @@ class InputDocumentManagerTest extends ApiTestCase
         //Check structure of response.
         $response->assertJsonStructure([
             'uid',
-            'process_id',
             'title',
             'description',
             'form_needed',
@@ -80,17 +79,14 @@ class InputDocumentManagerTest extends ApiTestCase
             'versioning',
             'destination_path',
             'tags',
-            'type_file',
-            'max_filesize',
-            'max_filesize_unit'
         ]);
 
-        //Post title duplicated
+        //Duplicate titles are not allowed
         $url = self::API_ROUTE . self::$process->uid . '/input-document';
         $response = $this->api('POST', $url, $data);
         //validating the answer is correct.
         $response->assertStatus(422);
-        return $document;
+        return InputDocument::where('uid', $document['uid'])->first();
     }
 
     /**
@@ -113,19 +109,12 @@ class InputDocumentManagerTest extends ApiTestCase
         //Validate the answer is correct
         $response->assertStatus(200);
         //verify count of data
-        $response->assertJsonCount(11, 'data');
+        $this->assertEquals(11, $response->original['meta']->total);
 
         //verify structure paginate
         $response->assertJsonstructure([
-            'current_page',
             'data',
-            'first_page_url',
-            'from',
-            'next_page_url',
-            'path',
-            'per_page',
-            'prev_page_url',
-            'to',
+            'meta',
         ]);
 
     }
@@ -150,7 +139,6 @@ class InputDocumentManagerTest extends ApiTestCase
         //verify structure paginate
         $response->assertJsonstructure([
             'uid',
-            'process_id',
             'title',
             'description',
             'form_needed',
@@ -159,9 +147,6 @@ class InputDocumentManagerTest extends ApiTestCase
             'versioning',
             'destination_path',
             'tags',
-            'type_file',
-            'max_filesize',
-            'max_filesize_unit'
         ]);
 
         //InputDocument not belong to process.
@@ -186,13 +171,13 @@ class InputDocumentManagerTest extends ApiTestCase
 
         $faker = Faker::create();
         $data = [
-            'inp_doc_title' => '',
-            'inp_doc_description' => $faker->sentence(6),
-            'inp_doc_form_needed' => $faker->randomElement(array_keys(InputDocument::FORM_NEEDED_TYPE)),
-            'inp_doc_original' => $faker->randomElement(InputDocument::DOC_ORIGINAL_TYPE),
-            'inp_doc_published' => $faker->randomElement(InputDocument::DOC_PUBLISHED_TYPE),
-            'inp_doc_versioning' => $faker->randomElement([0, 1]),
-            'inp_doc_tags' => $faker->randomElement(InputDocument::DOC_TAGS_TYPE),
+            'title' => '',
+            'description' => $faker->sentence(6),
+            'form_needed' => $faker->randomElement(array_keys(InputDocument::FORM_NEEDED_TYPE)),
+            'original' => $faker->randomElement(InputDocument::DOC_ORIGINAL_TYPE),
+            'published' => $faker->randomElement(InputDocument::DOC_PUBLISHED_TYPE),
+            'versioning' => $faker->randomElement([0, 1]),
+            'tags' => $faker->randomElement(InputDocument::DOC_TAGS_TYPE),
         ];
         //Post should have the parameter tri_title
         $url = self::API_ROUTE . self::$process->uid . '/input-document/' . $inputDocument->uid;
@@ -201,7 +186,7 @@ class InputDocumentManagerTest extends ApiTestCase
         $response->assertStatus(422);
 
         //Post saved success
-        $data['inp_doc_title'] = $faker->sentence(2);
+        $data['title'] = $faker->sentence(2);
         $url = self::API_ROUTE . self::$process->uid . '/input-document/' . $inputDocument->uid;
         $response = $this->api('PUT', $url, $data);
         //Validate the answer is correct

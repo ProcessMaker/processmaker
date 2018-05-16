@@ -2,7 +2,7 @@
 
 namespace ProcessMaker\Managers;
 
-use Illuminate\Pagination\Paginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Exception\ValidationException;
 use ProcessMaker\Model\InputDocument;
@@ -17,11 +17,11 @@ class InputDocumentManager
      *
      * @param Process $process
      *
-     * @return Paginator
+     * @return LengthAwarePaginator
      */
-    public function index(Process $process): Paginator
+    public function index(Process $process): LengthAwarePaginator
     {
-        return InputDocument::where('process_id', $process->id)->simplePaginate(20);
+        return InputDocument::where('process_id', $process->id)->paginate(20);
     }
 
     /**

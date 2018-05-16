@@ -13,7 +13,7 @@ class CreateINPUTDOCUMENTTable extends Migration
      */
     public function up()
     {
-        Schema::create('input_document', function (Blueprint $table) {
+        Schema::create('input_documents', function (Blueprint $table) {
             $table->increments('id');
             $table->uuid('uid')->unique();
             $table->text('title', 16777215);
@@ -39,7 +39,7 @@ class CreateINPUTDOCUMENTTable extends Migration
      */
     public function down()
     {
-        Schema::drop('input_document');
+        Schema::drop('input_documents');
     }
 
 }

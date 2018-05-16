@@ -55,7 +55,7 @@ class UpdateVariousTables extends Migration
         });
 
         //INPUT DOCUMENTS
-        Schema::table('input_document', function(Blueprint $table) {
+        Schema::table('input_documents', function(Blueprint $table) {
             $table->unsignedInteger('process_id')->nullable();
             $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
         });

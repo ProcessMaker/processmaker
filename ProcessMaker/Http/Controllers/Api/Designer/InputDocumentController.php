@@ -9,6 +9,7 @@ use ProcessMaker\Exception\DoesNotBelongToProcessException;
 use ProcessMaker\Facades\InputDocumentManager;
 use ProcessMaker\Model\InputDocument;
 use ProcessMaker\Model\Process;
+use ProcessMaker\Transformers\InputDocumentTransformer;
 
 class InputDocumentController
 {
@@ -22,7 +23,7 @@ class InputDocumentController
     public function index(Process $process)
     {
         $response = InputDocumentManager::index($process);
-        return response($response, 200);
+        return response()->collection($response, new InputDocumentTransformer(), 200);
     }
 
     /**
@@ -37,7 +38,7 @@ class InputDocumentController
     public function show(Process $process, InputDocument $inputDocument)
     {
         $this->belongsToProcess($process, $inputDocument);
-        return response($inputDocument->toArray(), 200);
+        return response()->item($inputDocument, new InputDocumentTransformer(), 200);
     }
 
     /**
@@ -51,18 +52,18 @@ class InputDocumentController
     public function store(Process $process, Request $request)
     {
         $data = [
-            'title' => $request->input('inp_doc_title', ''),
-            'description' => $request->input('inp_doc_description', ''),
-            'form_needed' => $request->input('inp_doc_form_needed', 'REAL'),
-            'original' => $request->input('inp_doc_original', 'COPY'),
-            'published' => $request->input('inp_doc_published', 'PRIVATE'),
-            'versioning' => $request->input('inp_doc_versioning', 0),
-            'destination_path' => $request->input('inp_doc_destination_path', ''),
-            'tags' => $request->input('inp_doc_tags', 'INPUT')
+            'title' => $request->input('title', ''),
+            'description' => $request->input('description', ''),
+            'form_needed' => $request->input('form_needed', 'REAL'),
+            'original' => $request->input('original', 'COPY'),
+            'published' => $request->input('published', 'PRIVATE'),
+            'versioning' => $request->input('versioning', 0),
+            'destination_path' => $request->input('destination_path', ''),
+            'tags' => $request->input('tags', 'INPUT')
         ];
 
         $response = InputDocumentManager::save($process, $data);
-        return response($response, 201);
+        return response()->item($response, new InputDocumentTransformer(), 201);
     }
 
     /**
@@ -79,12 +80,12 @@ class InputDocumentController
     {
         $this->belongsToProcess($process, $inputDocument);
         $data = [];
-        $fields = ['inp_doc_title', 'inp_doc_description', 'inp_doc_original', 'inp_doc_form_needed', 'inp_doc_published',
-            'inp_doc_versioning', 'inp_doc_destination_path', 'inp_doc_tags'];
+        $fields = ['title', 'description', 'original', 'form_needed', 'published',
+            'versioning', 'destination_path', 'tags'];
 
         foreach ($fields as $field) {
             if ($request->has($field)) {
-                $data[substr($field, 8)] = $request->input($field);
+                $data[$field] = $request->input($field);
             }
         }
 

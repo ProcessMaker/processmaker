@@ -31,7 +31,7 @@ class InputDocument extends Model
     use ValidatingTrait;
     use Uuid;
 
-    protected $table = 'input_document';
+    protected $table = 'input_documents';
 
     /**
      * Values for form_needed
@@ -116,7 +116,7 @@ class InputDocument extends Model
 
     protected $rules = [
         'uid' => 'max:36',
-        'title' => 'required|unique:input_document,title',
+        'title' => 'required|unique:input_documents,title',
         'process_id' => 'exists:processes,id',
         'versioning' => 'required|boolean'
     ];

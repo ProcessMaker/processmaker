@@ -21,12 +21,6 @@ class ApiSerializer extends SerializerAbstract
      *
      * @return array
      */
-    /*
-    public function collection($resourceKey, array $data): array
-    {
-        return [$resourceKey ?: 'data' => $data];
-    }
-    */
     public function collection($resourceKey, array $data)
     {
         if ($resourceKey === false) {
