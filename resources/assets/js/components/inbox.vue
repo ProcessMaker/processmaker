@@ -116,10 +116,24 @@ export default {
 
     axios.all([getusers(), gettasks()])
       .then(axios.spread((users, tasks) => {
-        console.log(users,tasks)
-        this.users=users.data;
-        this.tasks=tasks.data;
-      }));
+        this.users=users.data
+        this.tasks=tasks.data
+
+        this.users = this.users.map(user => {
+          user.tasks = this.tasks.filter(task => task.userId === user.id)
+          return user
+          console.log(user)
+        })
+      }))
+    },
+        //possibly use map?
+        //loop through users
+        //set an array key to users id
+        //loop through tasks
+        //find matching userid to user
+        //append the user data to the tasks array
+        //then log the new array
+
 
 
 
@@ -127,43 +141,43 @@ export default {
     // Here, you'd want to potentially do your various axious calls, merge the
     // data and then make sure you build up the object that vuetable expects.
     // See: https://ratiw.github.io/vuetable-2/#/Data-Format-JSON
-    this.$refs.vuetable.setData({
-    "links": {
-      "pagination": {
-        "total": 20,
-        "per_page": 2,
-        "current_page": 1,
-        "last_page": 2,
-        "next_page_url": "...",
-        "prev_page_url": "...",
-        "from": 1,
-        "to": 2,
-      }
-    },
-    " ": [
-      {
-        "id": 1,
-        "name": "xxxxxxxxx",
-        "nickname": "xxxxxxx",
-        "email": "xxx@xxx.xxx",
-        "birthdate": "xxxx-xx-xx",
-        "gender": "X",
-        "group_id": 1,
-      },
-      {
-        "id": 50,
-        "name": "xxxxxxxxx",
-        "nickname": "xxxxxxx",
-        "email": "xxx@xxx.xxx",
-        "birthdate": "xxxx-xx-xx",
-        "gender": "X",
-        "group_id": 3,
-      }
-    ]
-  });
+  //   this.$refs.vuetable.setData({
+  //   "links": {
+  //     "pagination": {
+  //       "total": 20,
+  //       "per_page": 2,
+  //       "current_page": 1,
+  //       "last_page": 2,
+  //       "next_page_url": "...",
+  //       "prev_page_url": "...",
+  //       "from": 1,
+  //       "to": 2,
+  //     }
+  //   },
+  //   " ": [
+  //     {
+  //       "id": 1,
+  //       "name": "xxxxxxxxx",
+  //       "nickname": "xxxxxxx",
+  //       "email": "xxx@xxx.xxx",
+  //       "birthdate": "xxxx-xx-xx",
+  //       "gender": "X",
+  //       "group_id": 1,
+  //     },
+  //     {
+  //       "id": 50,
+  //       "name": "xxxxxxxxx",
+  //       "nickname": "xxxxxxx",
+  //       "email": "xxx@xxx.xxx",
+  //       "birthdate": "xxxx-xx-xx",
+  //       "gender": "X",
+  //       "group_id": 3,
+  //     }
+  //   ]
+  // }),
 
 
-  },
+
   methods: {
     allcap (value) {
       return value.toUpperCase()
