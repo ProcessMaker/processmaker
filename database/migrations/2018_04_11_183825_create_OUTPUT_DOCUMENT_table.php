@@ -16,8 +16,8 @@ class CreateOUTPUTDOCUMENTTable extends Migration
         Schema::create('output_documents', function (Blueprint $table) {
             $table->increments('id');
             $table->uuid('uid')->unique();
-            $table->string('title');
-            $table->string('description')->nullable();
+            $table->string('title', 8000);
+            $table->text('description')->nullable();
             $table->text('filename', 16777215)->nullable();
             $table->text('template', 16777215)->nullable();
             $table->string('report_generator', 10)->default('HTML2PDF');
