@@ -44,7 +44,7 @@ class TriggerManagerTest extends ApiTestCase
         $this->initProcess();
         $this->auth(self::$user->username, self::DEFAULT_PASS);
 
-        //Post should have the parameter tri_title
+        //Post should have the parameter title
         $url = self::API_ROUTE . self::$process->uid . '/trigger';
         $response = $this->api('POST', $url, []);
         //validating the answer is an error
@@ -52,9 +52,9 @@ class TriggerManagerTest extends ApiTestCase
 
         $faker = Faker::create();
         $data = [
-            'tri_title' => $faker->sentence(3),
-            'tri_description' => $faker->sentence(6),
-            'tri_param' => $faker->words($faker->randomDigitNotNull)
+            'title' => $faker->sentence(3),
+            'description' => $faker->sentence(6),
+            'param' => $faker->words($faker->randomDigitNotNull)
         ];
         //Post saved correctly
         $url = self::API_ROUTE . self::$process->uid . '/trigger';
@@ -64,22 +64,20 @@ class TriggerManagerTest extends ApiTestCase
         $trigger = $response->original;
         //Check structure of response.
         $response->assertJsonStructure([
-            'id',
             'uid',
             'title',
             'description',
-            'process_id',
             'type',
             'webbot',
             'param'
         ]);
 
-        //Post title trigger duplicated
+        //duplicate titles are not allowed
         $url = self::API_ROUTE . self::$process->uid . '/trigger';
         $response = $this->api('POST', $url, $data);
         //validating the answer is correct.
         $response->assertStatus(422);
-        return $trigger;
+        return Trigger::where('uid', $trigger['uid'])->first();
     }
 
     /**
@@ -103,22 +101,15 @@ class TriggerManagerTest extends ApiTestCase
         $response = $this->api('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
-        //verify count of data
-        $response->assertJsonCount(11, 'data');
 
         //verify structure paginate
-        $response->assertJsonstructure([
-            'current_page',
+        $response->assertJsonStructure([
             'data',
-            'first_page_url',
-            'from',
-            'next_page_url',
-            'path',
-            'per_page',
-            'prev_page_url',
-            'to',
+            'meta',
         ]);
 
+        //verify count of data
+        $this->assertEquals(11, $response->original['meta']->total);
     }
 
     /**
@@ -139,12 +130,10 @@ class TriggerManagerTest extends ApiTestCase
         $response->assertStatus(200);
 
         //verify structure paginate
-        $response->assertJsonstructure([
-            'id',
+        $response->assertJsonStructure([
             'uid',
             'title',
             'description',
-            'process_id',
             'type',
             'webbot',
             'param'
@@ -172,23 +161,23 @@ class TriggerManagerTest extends ApiTestCase
 
         $faker = Faker::create();
         $data = [
-            'tri_title' => '',
-            'tri_description' => $faker->sentence(6),
-            'tri_webbot' => $faker->sentence(2),
-            'tri_param' => $faker->words(3),
+            'title' => '',
+            'description' => $faker->sentence(6),
+            'webbot' => $faker->sentence(2),
+            'param' => $faker->words(3),
         ];
-        //Post should have the parameter tri_title
+        //The post must have the required parameters
         $url = self::API_ROUTE . self::$process->uid . '/trigger/' . $trigger->uid;
         $response = $this->api('PUT', $url, $data);
         //Validate the answer is incorrect
         $response->assertStatus(422);
 
         //Post saved success
-        $data['tri_title'] = $faker->sentence(2);
+        $data['title'] = $faker->sentence(2);
         $url = self::API_ROUTE . self::$process->uid . '/trigger/' . $trigger->uid;
         $response = $this->api('PUT', $url, $data);
         //Validate the answer is correct
-        $response->assertStatus(200);
+        $response->assertStatus(204);
     }
 
     /**
@@ -205,7 +194,6 @@ class TriggerManagerTest extends ApiTestCase
         //Remove trigger
         $url = self::API_ROUTE . self::$process->uid . '/trigger/' . $trigger->uid;
         $response = $this->api('DELETE', $url);
-        //Validate the answer is correct
         $response->assertStatus(204);
 
         $trigger = factory(Trigger::class)->make();
@@ -213,7 +201,6 @@ class TriggerManagerTest extends ApiTestCase
         //trigger not exist
         $url = self::API_ROUTE . self::$process->uid . '/trigger/' . $trigger->uid;
         $response = $this->api('DELETE', $url);
-        //Validate the answer is correct
         $response->assertStatus(404);
     }
 

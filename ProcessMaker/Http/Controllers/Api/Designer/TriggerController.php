@@ -9,6 +9,7 @@ use ProcessMaker\Facades\TriggerManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\Trigger;
+use ProcessMaker\Transformers\TriggerTransformer;
 use Symfony\Component\HttpFoundation\Response;
 
 class TriggerController extends Controller
@@ -23,7 +24,7 @@ class TriggerController extends Controller
     public function index(Process $process)
     {
         $response = TriggerManager::index($process);
-        return response($response, 200);
+        return response()->collection($response, new TriggerTransformer(), 200);
     }
 
     /**
@@ -38,7 +39,7 @@ class TriggerController extends Controller
     public function show(Process $process, Trigger $trigger)
     {
         $this->belongsToProcess($process, $trigger);
-        return response($trigger->toArray(), 200);
+        return response()->item($trigger, new TriggerTransformer(), 200);
     }
 
     /**
@@ -52,14 +53,14 @@ class TriggerController extends Controller
     public function store(Process $process, Request $request)
     {
         $data = [
-            'title' =>  $request->input('tri_title', ''),
-            'description' =>  $request->input('tri_description', ''),
-            'webbot' =>  $request->input('tri_webbot', ''),
-            'param' =>  $request->input('tri_param', '')
+            'title' =>  $request->input('title', ''),
+            'description' =>  $request->input('description', ''),
+            'webbot' =>  $request->input('webbot', ''),
+            'param' =>  $request->input('param', '')
         ];
 
         $response = TriggerManager::save($process, $data);
-        return response($response, 201);
+        return response()->item($response, new TriggerTransformer(), 201);
     }
 
     /**
@@ -76,22 +77,22 @@ class TriggerController extends Controller
     {
         $this->belongsToProcess($process, $trigger);
         $data = [];
-        if ($request->has('tri_title')) {
-            $data['title'] = $request->input('tri_title');
+        if ($request->has('title')) {
+            $data['title'] = $request->input('title');
         }
-        if ($request->has('tri_description')) {
-            $data['description'] = $request->input('tri_description');
+        if ($request->has('description')) {
+            $data['description'] = $request->input('description');
         }
-        if ($request->has('tri_webbot')) {
-            $data['webbot'] = $request->input('tri_webbot');
+        if ($request->has('webbot')) {
+            $data['webbot'] = $request->input('webbot');
         }
-        if ($request->has('tri_param')) {
-            $data['param'] = $request->input('tri_param');
+        if ($request->has('param')) {
+            $data['param'] = $request->input('param');
         }
         if($data) {
             TriggerManager::update($process, $trigger, $data);
         }
-        return response([], 200);
+        return response([], 204);
     }
 
     /**

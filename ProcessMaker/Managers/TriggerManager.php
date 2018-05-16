@@ -2,10 +2,9 @@
 
 namespace ProcessMaker\Managers;
 
-use Illuminate\Pagination\Paginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\Trigger;
-use Ramsey\Uuid\Uuid;
 
 class TriggerManager
 {
@@ -14,11 +13,11 @@ class TriggerManager
      *
      * @param Process $process
      *
-     * @return Paginator
+     * @return LengthAwarePaginator
      */
-    public function index(Process $process): Paginator
+    public function index(Process $process): LengthAwarePaginator
     {
-        return Trigger::where('process_id', $process->id)->simplePaginate(20);
+        return Trigger::where('process_id', $process->id)->paginate(20);
     }
 
     /**
