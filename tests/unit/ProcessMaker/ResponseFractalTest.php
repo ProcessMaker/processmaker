@@ -15,7 +15,7 @@ class ResponseFractalTest extends TestCase
     /**
      * Test response Fractal item
      */
-    public function testResponseItem() :void
+    public function testResponseItem(): void
     {
         $this->createDataReportTable();
 
@@ -48,7 +48,7 @@ class ResponseFractalTest extends TestCase
     /**
      * Test Response Fractal Collection
      */
-    public function testResponseCollection() :void
+    public function testResponseCollection(): void
     {
         $reportTable = ReportTable::where('type', 'NORMAL')->get();
 
@@ -83,9 +83,15 @@ class ResponseFractalTest extends TestCase
     /**
      * Test Response Fractal Paged
      */
-    public function testResponsePaged() :void
+    public function testResponsePaged(): void
     {
         $reportTable = ReportTable::where('type', 'NORMAL')->paginate(4);
+
+        $reportTable->appends([
+            'filter' => 'column1',
+            'sort_by' => 'columna2',
+            'sort_order' => 'column3'
+        ]);
 
         $response = response()->paged($reportTable, new ReportTableTransformer());
         $data = json_decode($response->getContent(), true);
@@ -97,16 +103,21 @@ class ResponseFractalTest extends TestCase
 
         //verify if the fields exist in the data response
         $this->assertInternalType('array', $data['data']);
-        $this->assertArrayHasKey('start', $data);
-        $this->assertArrayHasKey('limit', $data);
-        $this->assertArrayHasKey('total', $data);
+        $this->assertInternalType('array', $data['meta']);
+        $this->assertArrayHasKey('total', $data['meta']);
+        $this->assertArrayHasKey('per_page', $data['meta']);
+        $this->assertArrayHasKey('current_page', $data['meta']);
+        $this->assertArrayHasKey('total_pages', $data['meta']);
+        $this->assertArrayHasKey('filter', $data['meta']);
+        $this->assertArrayHasKey('sort_by', $data['meta']);
+        $this->assertArrayHasKey('sort_order', $data['meta']);
         foreach ($data['data'] as $reportTableData) {
             $this->verifyStructure($reportTableData);
         }
 
         //custom Serializer and Paginator
         $paginator = new IlluminatePaginatorAdapter(
-            new LengthAwarePaginator($reportTable, 4,2)
+            new LengthAwarePaginator($reportTable, 4, 2)
         );
         $response = response()->paged($reportTable, new ReportTableTransformer(), 200, [], new ArraySerializer(), $paginator);
         $data = json_decode($response->getContent(), true);
@@ -136,7 +147,7 @@ class ResponseFractalTest extends TestCase
      *
      * @param array $data
      */
-    private function verifyStructure($data) :void
+    private function verifyStructure($data): void
     {
         //verify if the fields exist in the data response
         $this->assertArrayHasKey('uid', $data);
