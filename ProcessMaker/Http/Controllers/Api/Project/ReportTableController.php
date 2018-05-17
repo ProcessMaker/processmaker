@@ -3,9 +3,6 @@
 namespace ProcessMaker\Http\Controllers\Api\Project;
 
 use Illuminate\Http\Request;
-use League\Fractal\Manager;
-use League\Fractal\Resource\Collection;
-use League\Fractal\Resource\Item;
 use ProcessMaker\Facades\ReportTableManager;
 use ProcessMaker\Facades\SchemaManager;
 use ProcessMaker\Http\Controllers\Controller;
@@ -13,7 +10,6 @@ use ProcessMaker\Model\PmTable;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\ReportTable;
 use ProcessMaker\Model\DbSource;
-use ProcessMaker\Transformers\ProcessMakerSerializer;
 use ProcessMaker\Transformers\ReportTableTransformer;
 use Ramsey\Uuid\Uuid;
 
@@ -34,11 +30,8 @@ class ReportTableController extends Controller
         // Eager load the fields, so that they're properly loaded for the serializer
         $repTables = ReportTable::where('process_id', $process->id)->get();
 
-        $fractal = new Manager();
-        $fractal->setSerializer(new ProcessMakerSerializer());
-        $resource = new Collection($repTables, new ReportTableTransformer());
+        return fractal($repTables, new ReportTableTransformer())->respond();
 
-        return $fractal->createData($resource)->toArray();
     }
 
     /**
@@ -50,9 +43,7 @@ class ReportTableController extends Controller
      */
     public function show(Process $process, ReportTable $reportTable)
     {
-        $result = $this->serializeReportTable($reportTable);
-        $result['fields'] = $reportTable->fields;
-        return $result;
+        return fractal($reportTable, new ReportTableTransformer())->respond(200);
     }
 
     /**
@@ -82,8 +73,7 @@ class ReportTableController extends Controller
 
         $reportTable = ReportTable::where('id', $pmTable->id)->first();
 
-        $result = $this->serializeReportTable($reportTable);
-        return response($result, 201);
+        return fractal($reportTable, new ReportTableTransformer())->respond(201);
     }
 
     /**
@@ -112,7 +102,7 @@ class ReportTableController extends Controller
 
         $savedReportTable = ReportTable::where('id', $reportTable->id)->first();
 
-        return response($this->serializeReportTable($savedReportTable), 200);
+        return fractal($savedReportTable, new ReportTableTransformer())->respond(200);
     }
 
     /**
@@ -233,17 +223,4 @@ class ReportTableController extends Controller
         return $reportTableField;
     }
 
-    /**
-     * Serializes a report table with the information that will be returned by the endpoints
-     *
-     * @param ReportTable $reportTable
-     * @return array
-     */
-    private function serializeReportTable(ReportTable $reportTable)
-    {
-        $fractal = new Manager();
-        $fractal->setSerializer(new ProcessMakerSerializer());
-        $result = new Item($reportTable, new ReportTableTransformer());
-        return $fractal->createData($result)->toArray();
-    }
 }

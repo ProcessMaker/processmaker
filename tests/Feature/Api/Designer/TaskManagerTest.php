@@ -59,7 +59,7 @@ class TaskManagerTest extends ApiTestCase
 
         $faker = Faker::create();
         $newData = [];
-        foreach ($faker->randomElements($users, $faker->randomDigitNotNull) as $user) {
+        foreach ($faker->randomElements($users, count($users)) as $user) {
             $newData[] = $user['id'];
         }
 
