@@ -33,7 +33,6 @@ class InputDocumentManagerTest extends ApiTestCase
         ]);
     }
 
-
     /**
      * Create new Input Document in process
      *
@@ -44,14 +43,12 @@ class InputDocumentManagerTest extends ApiTestCase
         $this->initProcess();
         $this->auth(self::$user->username, self::DEFAULT_PASS);
 
-        $data = [];
         //The post must have the required parameters
         $url = self::API_ROUTE . self::$process->uid . '/input-document';
-        $response = $this->api('POST', $url, $data);
+        $response = $this->api('POST', $url, []);
         //validating the answer is an error
         $response->assertStatus(422);
 
-        $data = [];
         //Post should have the parameter FORM_NEEDED only types InputDocument::FORM_NEEDED_TYPE
         $faker = Faker::create();
         $data['form_needed'] = $faker->sentence(2);
@@ -86,7 +83,7 @@ class InputDocumentManagerTest extends ApiTestCase
         $response = $this->api('POST', $url, $data);
         //validating the answer is correct.
         $response->assertStatus(422);
-        return InputDocument::where('uid', $document['uid'])->first();
+        return InputDocument::where('uid', $document->uid)->first();
     }
 
     /**
@@ -109,10 +106,10 @@ class InputDocumentManagerTest extends ApiTestCase
         //Validate the answer is correct
         $response->assertStatus(200);
         //verify count of data
-        $this->assertEquals(11, $response->original['meta']->total);
+        $this->assertEquals(11, $response->original->meta->total);
 
         //verify structure paginate
-        $response->assertJsonstructure([
+        $response->assertJsonStructure([
             'data',
             'meta',
         ]);
@@ -137,7 +134,7 @@ class InputDocumentManagerTest extends ApiTestCase
         $response->assertStatus(200);
 
         //verify structure paginate
-        $response->assertJsonstructure([
+        $response->assertJsonStructure([
             'uid',
             'title',
             'description',

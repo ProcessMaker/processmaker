@@ -23,7 +23,7 @@ class InputDocumentController
     public function index(Process $process)
     {
         $response = InputDocumentManager::index($process);
-        return response()->collection($response, new InputDocumentTransformer(), 200);
+        return fractal($response, new InputDocumentTransformer())->respond(200);
     }
 
     /**
@@ -38,7 +38,7 @@ class InputDocumentController
     public function show(Process $process, InputDocument $inputDocument)
     {
         $this->belongsToProcess($process, $inputDocument);
-        return response()->item($inputDocument, new InputDocumentTransformer(), 200);
+        return fractal($inputDocument, new InputDocumentTransformer())->respond(200);
     }
 
     /**
@@ -63,7 +63,7 @@ class InputDocumentController
         ];
 
         $response = InputDocumentManager::save($process, $data);
-        return response()->item($response, new InputDocumentTransformer(), 201);
+        return fractal($response, new InputDocumentTransformer())->respond(201);
     }
 
     /**
