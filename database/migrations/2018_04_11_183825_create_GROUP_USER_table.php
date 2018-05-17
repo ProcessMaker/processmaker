@@ -13,7 +13,7 @@ class CreateGROUPUSERTable extends Migration
      */
     public function up()
     {
-        Schema::create('group_user', function (Blueprint $table) {
+        Schema::create('group_users', function (Blueprint $table) {
             $table->unsignedInteger('group_id');
             $table->unsignedInteger('user_id')->index('indexForUsrUid');
             $table->primary(['group_id', 'user_id']);
@@ -31,7 +31,7 @@ class CreateGROUPUSERTable extends Migration
      */
     public function down()
     {
-        Schema::drop('group_user');
+        Schema::drop('group_users');
     }
 
 }
