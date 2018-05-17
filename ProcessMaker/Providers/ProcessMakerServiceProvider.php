@@ -11,8 +11,8 @@ use ProcessMaker\Managers\ProcessFileManager;
 use ProcessMaker\Managers\ProcessManager;
 use ProcessMaker\Managers\ReportTableManager;
 use ProcessMaker\Managers\SchemaManager;
-use ProcessMaker\Managers\TriggerManager;
 use ProcessMaker\Managers\TaskManager;
+use ProcessMaker\Managers\TriggerManager;
 use ProcessMaker\Model\Group;
 use ProcessMaker\Model\User;
 
@@ -66,10 +66,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
             return new DynaformManager();
         });
 
-       $this->app->singleton('trigger.manager', function ($app) {
-            return new TriggerManager();
-        });
-
         /**
          * Mapping
          *
@@ -82,6 +78,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->app->singleton('task.manager', function ($app) {
             return new TaskManager();
         });
+
         $this->app->singleton('trigger.manager', function ($app) {
             return new TriggerManager();
         });

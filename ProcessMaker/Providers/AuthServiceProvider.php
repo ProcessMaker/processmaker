@@ -16,8 +16,8 @@ use ProcessMaker\Model\ProcessCategory;
 use ProcessMaker\Model\ProcessVariable;
 use ProcessMaker\Model\ReportTable;
 use ProcessMaker\Model\Role;
-use ProcessMaker\Model\Trigger;
 use ProcessMaker\Model\TaskUser;
+use ProcessMaker\Model\Trigger;
 use ProcessMaker\OAuth2\AccessTokenRepository;
 use ProcessMaker\OAuth2\ClientRepository;
 use ProcessMaker\Policies\ApplicationPolicy;
@@ -53,6 +53,7 @@ class AuthServiceProvider extends ServiceProvider
         Trigger::class => TriggerPolicy::class,
         TaskUser::class => AssigneeTaskPolicy::class,
         Trigger::class => TriggerPolicy::class,
+        TaskUser::class => AssigneeTaskPolicy::class,
     ];
 
     /**
