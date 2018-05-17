@@ -70,7 +70,6 @@ class ApiSerializer extends SerializerAbstract
      */
     public function includedData(ResourceInterface $resource, array $data): array
     {
-        dd('yay');
         return $data;
     }
 

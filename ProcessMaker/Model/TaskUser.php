@@ -54,7 +54,7 @@ class TaskUser extends Model
     ];
 
     protected $rules = [
-        'task_id' => 'exists:task,id',
+        'task_id' => 'exists:tasks,id',
         'user_id' => 'required',
         'type' => 'required|in:' . self::ASSIGNEE_NORMAL . ',' . self::ASSIGNEE_ADHOC,
         'task_user_type' => 'required|in:' . User::TYPE . ',' . Group::TYPE

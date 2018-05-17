@@ -19,7 +19,7 @@ class CreateGROUPUSERTable extends Migration
             $table->primary(['group_id', 'user_id']);
 
             // setup relationship for group we belong to
-            $table->foreign('group_id')->references('id')->on('groupwf')->ondelete('cascade');
+            $table->foreign('group_id')->references('id')->on('groups')->ondelete('cascade');
         });
     }
 

@@ -86,7 +86,7 @@ class Task extends Model
      * The table associated with the model.
      * @var string $table
      */
-    protected $table = 'task';
+    protected $table = 'tasks';
 
     protected $fillable = [
         'id',
@@ -179,7 +179,7 @@ class Task extends Model
     protected $rules = [
         'uid' => 'max:36',
         'process_id' => 'exists:processes,id',
-        'title' => 'required|unique:task,title',
+        'title' => 'required|unique:tasks,title',
         'description' => 'required',
         'type' => 'required',
         'duration' => 'required',
