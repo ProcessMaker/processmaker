@@ -37,56 +37,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
     public function boot()
     {
         parent::boot();
-
-        /**
-         * Prepare the response of an item using fractal
-         */
-        response()->macro('item', function ($item, TransformerAbstract $transformer, $status = 200, array $headers = [], SerializerAbstract $serializer = null) {
-            /**
-             * @var Manager $fractal
-             */
-            $fractal = new Manager();
-            if (!$serializer) {
-                $serialize = config('app.serialize_fractal');
-                $serializer = new $serialize();
-            }
-            $resource = new Item($item, $transformer);
-            $fractal->setSerializer($serializer);
-
-            return response()->json(
-                $fractal->createData($resource)->toArray(),
-                $status,
-                $headers
-            );
-        });
-
-        /**
-         * Prepare the response of the paginate collection using fractal, for compatibility.
-         */
-        response()->macro('collection', function ($item, TransformerAbstract $transformer, $status = 200, array $headers = [], SerializerAbstract $serializer = null, IlluminatePaginatorAdapter $paginator = null) {
-            /**
-             * @var Manager $fractal
-             */
-            $fractal = new Manager();
-            if (!$serializer) {
-                $serialize = config('app.serialize_fractal');
-                $serializer = new $serialize(true);
-            }
-            $fractal->setSerializer($serializer);
-            $resource = new Collection($item, $transformer);
-
-            if (!$paginator) {
-                $paginate = config('app.paginate_fractal');
-                $paginator = new $paginate($item);
-            }
-            $resource->setPaginator($paginator);
-
-            return response()->json(
-                $fractal->createData($resource)->toArray(),
-                $status,
-                $headers
-            );
-        });
     }
 
     /**

@@ -11,7 +11,6 @@ use Tests\TestCase;
 
 class ResponseFractalTest extends TestCase
 {
-
     /**
      * Test response Fractal item
      */
@@ -21,7 +20,8 @@ class ResponseFractalTest extends TestCase
 
         $reportTable = ReportTable::first();
 
-        $response = response()->item($reportTable, new ReportTableTransformer());
+        $response = fractal($reportTable, new ReportTableTransformer())->respond();
+
         $data = json_decode($response->getContent(), true);
 
         //verify the response is not null
@@ -33,7 +33,10 @@ class ResponseFractalTest extends TestCase
         $this->verifyStructure($data);
 
         //Custom serializer
-        $response = response()->item($reportTable, new ReportTableTransformer(), 200, [], new ArraySerializer());
+        $response = fractal($reportTable, new ReportTableTransformer)
+            ->serializeWith(new ArraySerializer)
+            ->respond();
+
         $data = json_decode($response->getContent(), true);
 
         //verify the response is not null
@@ -50,15 +53,10 @@ class ResponseFractalTest extends TestCase
      */
     public function testResponsePaged(): void
     {
-        $reportTable = ReportTable::where('type', 'NORMAL')->paginate(4);
+        $reportTables = ReportTable::where('type', 'NORMAL')->paginate(4);
 
-        $reportTable->appends([
-            'filter' => 'column1',
-            'sort_by' => 'columna2',
-            'sort_order' => 'column3'
-        ]);
+        $response = fractal($reportTables, new ReportTableTransformer())->respond();
 
-        $response = response()->collection($reportTable, new ReportTableTransformer());
         $data = json_decode($response->getContent(), true);
 
         //verify the response is not null
@@ -82,9 +80,14 @@ class ResponseFractalTest extends TestCase
 
         //custom Serializer and Paginator
         $paginator = new IlluminatePaginatorAdapter(
-            new LengthAwarePaginator($reportTable, 4, 2)
+            new LengthAwarePaginator($reportTables, 4, 2)
         );
-        $response = response()->collection($reportTable, new ReportTableTransformer(), 200, [], new ArraySerializer(), $paginator);
+
+        $response = fractal($reportTables, new ReportTableTransformer())
+            ->serializeWith(new ArraySerializer())
+            ->paginateWith($paginator)
+            ->respond();
+
         $data = json_decode($response->getContent(), true);
 
         //verify the response is not null

@@ -1,6 +1,6 @@
 <?php
 
-namespace ProcessMaker\Transformers;
+namespace ProcessMaker\Serializers;
 
 use League\Fractal\Pagination\CursorInterface;
 use League\Fractal\Pagination\PaginatorInterface;
@@ -11,26 +11,8 @@ use League\Fractal\Serializer\SerializerAbstract;
  * Serializer for ProcessMaker API.
  *
  */
-class ProcessMakerSerializer extends SerializerAbstract
+class ApiSerializer extends SerializerAbstract
 {
-
-    /**
-     * True if the resource will have page information.
-     *
-     * @var bool $paged
-     */
-    private $paged = false;
-
-    /**
-     * ProcessMaker serializer constructor.
-     *
-     * @param bool $paged Used to specify that the response include page information.
-     */
-    public function __construct($paged = false)
-    {
-        $this->setPaged($paged);
-    }
-
     /**
      * Serialize a collection.
      *
@@ -39,13 +21,12 @@ class ProcessMakerSerializer extends SerializerAbstract
      *
      * @return array
      */
-    public function collection($resourceKey, array $data): array
+    public function collection($resourceKey, array $data)
     {
-        if ($this->isPaged()) {
-            return ["data" => $data];
-        } else {
+        if ($resourceKey === false) {
             return $data;
         }
+        return array($resourceKey ?: 'data' => $data);
     }
 
     /**
@@ -145,23 +126,4 @@ class ProcessMakerSerializer extends SerializerAbstract
         return ['pagination' => $position];
     }
 
-    /**
-     * Set if the resource will have page information.
-     *
-     * @param bool $paged
-     */
-    private function setPaged($paged)
-    {
-        $this->paged = $paged;
-    }
-
-    /**
-     * True if the resource will have page information.
-     *
-     * @return bool
-     */
-    private function isPaged()
-    {
-        return $this->paged;
-    }
 }

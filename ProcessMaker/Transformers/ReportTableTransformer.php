@@ -33,6 +33,6 @@ class ReportTableTransformer extends TransformerAbstract
      */
     public function includeFields(ReportTable $report)
     {
-        return $this->collection($report->fields, new PmTableColumnTransformer());
+        return $this->collection($report->fields, new PmTableColumnTransformer(), false);
     }
 }

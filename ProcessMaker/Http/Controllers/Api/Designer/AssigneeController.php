@@ -30,7 +30,7 @@ class AssigneeController extends Controller
         $options = $this->verifyOptions($request);
         $response = TaskManager::loadAssignees($activity, $options);
 
-        return response()->collection($response, new AssigneeTransformer(), 200);
+        return fractal($response, new AssigneeTransformer())->respond(200);
     }
 
     /**
@@ -48,7 +48,7 @@ class AssigneeController extends Controller
         $this->belongsToProcess($process, $activity);
         $options = $this->verifyOptions($request);
         $response = TaskManager::loadAssignees($activity, $options, true);
-        return response()->collection($response, new AssigneeTransformer(), 200);
+        return fractal($response, new AssigneeTransformer())->respond(200);
     }
 
     /**
@@ -103,7 +103,7 @@ class AssigneeController extends Controller
     {
         $this->belongsToProcess($process, $activity);
         $response = TaskManager::getInformationAssignee($activity, $assignee);
-        return response()->item($response, new AssigneeTransformer(), 200);
+        return fractal($response, new AssigneeTransformer())->respond(200);
     }
 
     /**
@@ -122,7 +122,7 @@ class AssigneeController extends Controller
         $options = $this->verifyOptions($request);
 
         $response = TaskManager::getInformationAllAssignee($activity, $options);
-        return response()->collection($response, new AssigneeTransformer(), 200);
+        return fractal($response, new AssigneeTransformer())->respond(200);
     }
 
     /**
@@ -141,7 +141,7 @@ class AssigneeController extends Controller
         $options = $this->verifyOptions($request);
 
         $response = TaskManager::loadAvailable($activity, $options);
-        return response()->collection($response, new AssigneeTransformer(), 200);
+        return fractal($response, new AssigneeTransformer())->respond(200);
     }
 
     /**
@@ -160,7 +160,7 @@ class AssigneeController extends Controller
         $options = $this->verifyOptions($request);
 
         $response = TaskManager::loadAvailable($activity, $options, true);
-        return response()->collection($response, new AssigneeTransformer(), 200);
+        return fractal($response, new AssigneeTransformer())->respond(200);
     }
 
     /**
