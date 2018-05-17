@@ -15,25 +15,18 @@ class DynaformManagerTest extends ApiTestCase
     const API_ROUTE = '/api/1.0/project/';
     const DEFAULT_PASS = 'password';
 
-
     /**
-     * Create process
-     * @return Process
+     * @var User
      */
-    public function testCreateProcess(): Process
-    {
-        $process = factory(Process::class)->create();
-        $this->assertNotNull($process);
-        $this->assertNotNull($process->uid);
-        return $process;
-    }
-
-
-
     protected static $user;
+    /**
+     * @var Process
+     */
     protected static $process;
 
-
+    /**
+     * Create user and process
+     */
     private function initProcess(): void
     {
         self::$user = factory(User::class)->create([
@@ -73,7 +66,7 @@ class DynaformManagerTest extends ApiTestCase
         $response = $this->api('POST', $url, $data);
         //validating the answer is correct.
         $response->assertStatus(201);
-        $id = $response->json('id');
+        $dynaform = $response->original;
         //Check structure of response.
         $response->assertJsonStructure([
             'uid',
@@ -89,7 +82,7 @@ class DynaformManagerTest extends ApiTestCase
         $response = $this->api('POST', $url, $data);
         //validating the answer is correct.
         $response->assertStatus(422);
-        return Dynaform::where('id', $id)->first();
+        return $dynaform;
     }
 
     /**

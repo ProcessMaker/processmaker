@@ -1,6 +1,6 @@
 <?php
 
-namespace ProcessMaker\Transformers;
+namespace ProcessMaker\Serializers;
 
 use League\Fractal\Pagination\CursorInterface;
 use League\Fractal\Pagination\PaginatorInterface;
@@ -11,52 +11,39 @@ use League\Fractal\Serializer\SerializerAbstract;
  * Serializer for ProcessMaker API.
  *
  */
-class ProcessMakerSerializer extends SerializerAbstract
+class ApiSerializer extends SerializerAbstract
 {
-
-    /**
-     * True if the resource will have page information.
-     *
-     * @var bool $paged
-     */
-    private $paged = false;
-
-    /**
-     * ProcessMaker serializer constructor.
-     *
-     * @param bool $paged Used to specify that the response include page information.
-     */
-    public function __construct($paged = false)
-    {
-        $this->setPaged($paged);
-    }
-
     /**
      * Serialize a collection.
      *
      * @param string $resourceKey
-     * @param array  $data
+     * @param array $data
      *
      * @return array
      */
+    /*
+    public function collection($resourceKey, array $data): array
+    {
+        return [$resourceKey ?: 'data' => $data];
+    }
+    */
     public function collection($resourceKey, array $data)
     {
-        if ($this->isPaged()) {
-            return ["data"=> $data];
-        } else {
+        if ($resourceKey === false) {
             return $data;
         }
+        return array($resourceKey ?: 'data' => $data);
     }
 
     /**
      * Serialize an item.
      *
      * @param string $resourceKey
-     * @param array  $data
+     * @param array $data
      *
      * @return array
      */
-    public function item($resourceKey, array $data)
+    public function item($resourceKey, array $data): array
     {
         return $data;
     }
@@ -75,13 +62,13 @@ class ProcessMakerSerializer extends SerializerAbstract
      * Serialize the included data.
      *
      * @param ResourceInterface $resource
-     * @param array             $data
+     * @param array $data
      *
      * @return array
      *
      * @codeCoverageIgnore SideloadIncludes not used for this serializer.
      */
-    public function includedData(ResourceInterface $resource, array $data)
+    public function includedData(ResourceInterface $resource, array $data): array
     {
         return $data;
     }
@@ -93,7 +80,7 @@ class ProcessMakerSerializer extends SerializerAbstract
      *
      * @return array
      */
-    public function meta(array $meta)
+    public function meta(array $meta): array
     {
         if (empty($meta)) {
             return [];
@@ -109,12 +96,20 @@ class ProcessMakerSerializer extends SerializerAbstract
      *
      * @return array
      */
-    public function paginator(PaginatorInterface $paginator)
+    public function paginator(PaginatorInterface $paginator): array
     {
-        $pagination = [
-            'start'        => ($paginator->getCurrentPage() - 1) * $paginator->getPerPage(),
-            'limit'     => (int) $paginator->getPerPage(),
-            'total'        => (int) $paginator->getTotal(),
+        //Get data of query parameter filter, sort_by, sort_order
+        parse_str(parse_url($paginator->getUrl(1), PHP_URL_QUERY), $data);
+
+        $pagination['meta'] = (object)[
+            'total' => (int)$paginator->getTotal(),
+            'count' => (int)$paginator->getCount(),
+            'per_page' => (int)$paginator->getPerPage(),
+            'current_page' => (int)$paginator->getCurrentPage(),
+            'total_pages' => (int)$paginator->getLastPage(),
+            'filter' => isset($data['filter']) ? $data['filter'] : '',
+            'sort_by' => isset($data['sort_by']) ? $data['sort_by'] : '',
+            'sort_order' => isset($data['sort_order']) ? $data['sort_order'] : ''
         ];
 
         return ['pagination' => $pagination];
@@ -127,7 +122,7 @@ class ProcessMakerSerializer extends SerializerAbstract
      *
      * @return array
      */
-    public function cursor(CursorInterface $cursor)
+    public function cursor(CursorInterface $cursor): array
     {
         $position = [
             'start' => $cursor->getCurrent(),
@@ -137,23 +132,4 @@ class ProcessMakerSerializer extends SerializerAbstract
         return ['pagination' => $position];
     }
 
-    /**
-     * Set if the resource will have page information.
-     *
-     * @param bool $paged
-     */
-    private function setPaged($paged)
-    {
-        $this->paged = $paged;
-    }
-
-    /**
-     * True if the resource will have page information.
-     *
-     * @return bool
-     */
-    private function isPaged()
-    {
-        return $this->paged;
-    }
 }

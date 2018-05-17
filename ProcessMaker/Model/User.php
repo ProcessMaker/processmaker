@@ -1,4 +1,5 @@
 <?php
+
 namespace ProcessMaker\Model;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -18,6 +19,8 @@ class User extends Authenticatable implements UserEntityInterface
     use Notifiable;
     use Uuid;
 
+    const TYPE = 'USER';
+
     /**
      * Return the full name for this user which is the first name and last name separated with a space
      * @return string
@@ -36,7 +39,7 @@ class User extends Authenticatable implements UserEntityInterface
      */
     public function groups()
     {
-        return $this->belongsToMany(Group::class, 'GROUP_USER', 'USR_UID', 'GRP_UID', 'GRP_UID', 'GRP_UID');
+        return $this->belongsToMany(Group::class, 'group_users');
     }
 
     /**

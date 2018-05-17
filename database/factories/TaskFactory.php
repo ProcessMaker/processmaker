@@ -1,4 +1,7 @@
 <?php
+
+use ProcessMaker\Model\Process;
+use ProcessMaker\Model\Task;
 use Ramsey\Uuid\Uuid;
 
 /**
@@ -7,13 +10,15 @@ use Ramsey\Uuid\Uuid;
 
 use Faker\Generator as Faker;
 
-$factory->define(\ProcessMaker\Model\Task::class, function (Faker $faker) {
+$factory->define(Task::class, function (Faker $faker) {
 
     return [
-      'process_id' => factory(\ProcessMaker\Model\Process::class)->create()->id,
-      'TAS_TITLE' => $faker->sentence(4),
-      'TAS_DESCRIPTION' => $faker->paragraph,
-      'TAS_TYPE' => $faker->randomElement(["GATEWAYTOGATEWAY","NORMAL"])
-
+        'uid' => Uuid::uuid4(),
+        'process_id' => function () {
+            return factory(Process::class)->create()->id;
+        },
+        'title' => $faker->sentence(4),
+        'description' => $faker->paragraph,
+        'type' => $faker->randomElement(['GATEWAYTOGATEWAY', 'NORMAL'])
     ];
 });
