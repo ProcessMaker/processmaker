@@ -10,7 +10,6 @@ use ProcessMaker\Model\Process;
 
 class OutputDocumentManager
 {
-
     /**
      * Get a list of All OutPut Documents in a project.
      *

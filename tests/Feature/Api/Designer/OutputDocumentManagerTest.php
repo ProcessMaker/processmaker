@@ -109,7 +109,7 @@ class OutputDocumentManagerTest extends ApiTestCase
         $response = $this->api('POST', $url, $data);
         //validating the answer is correct.
         $response->assertStatus(422);
-        return OutputDocument::where('uid', $document['uid'])->first();
+        return OutputDocument::where('uid', $document->uid)->first();
     }
 
     /**
@@ -138,7 +138,7 @@ class OutputDocumentManagerTest extends ApiTestCase
             'meta',
         ]);
         //verify count of data
-        $this->assertEquals(11, $response->original['meta']->total);
+        $this->assertEquals(11, $response->original->meta->total);
     }
 
     /**

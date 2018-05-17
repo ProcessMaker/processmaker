@@ -23,7 +23,7 @@ class OutputDocumentController
     public function index(Process $process)
     {
         $response = OutputDocumentManager::index($process);
-        return response()->collection($response, new OutputDocumentTransformer(), 200);
+        return fractal($response, new OutputDocumentTransformer())->respond(200);
     }
 
     /**
@@ -38,7 +38,7 @@ class OutputDocumentController
     public function show(Process $process, OutputDocument $outputDocument)
     {
         $this->belongsToProcess($process, $outputDocument);
-        return response()->item($outputDocument, new OutputDocumentTransformer(), 200);
+        return fractal($outputDocument, new OutputDocumentTransformer())->respond(200);
     }
 
     /**
@@ -69,7 +69,7 @@ class OutputDocumentController
             'pdf_security_owner_password']));
 
         $response = OutputDocumentManager::save($process, $data);
-        return response()->item($response, new OutputDocumentTransformer(), 201);
+        return fractal($response, new OutputDocumentTransformer())->respond(201);
     }
 
     /**
