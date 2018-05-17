@@ -1,10 +1,11 @@
-import {Elements} from "./elements"
-import _ from "lodash"
-import actions from "../actions/index"
+import {Elements} from "./elements";
+import _ from "lodash";
+import actions from "../actions/index";
 
 export class Builder {
     constructor(svg, dispatcher) {
         this.svg = svg;
+        this.selection = [];
         this.dispatcher = dispatcher;
     }
 
@@ -29,6 +30,42 @@ export class Builder {
                 this.svg
             );
             element.render();
+            element.getSnapObject().click(this.onClickShape(element));
+            element.getSnapObject().dblclick(this.removeSelection(element));
         }
+    }
+
+    /**
+     * onClick event for a shape
+     * @param element
+     * @returns {function(*)}
+     */
+    onClickShape(element) {
+        let that = this;
+        return () => {
+            that.removeSelectionBorder();
+            element.createSelectionBorder();
+            that.selection.push(element);
+        };
+    }
+
+    /**
+     * Remove selection border of all shapes selected
+     */
+    removeSelectionBorder() {
+        _.forEach(this.selection, (el) => {
+            el.removeSelectionBorder();
+        });
+    }
+
+    /**
+     * Remove the shape selected
+     * @param element
+     * @returns {function(*)}
+     */
+    removeSelection(element) {
+        return () => {
+            element.remove()
+        };
     }
 }

@@ -10,6 +10,7 @@
 
     <title>ProcessMaker: {{$title}}</title>
 
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico" />
     <!-- Styles -->
 
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">

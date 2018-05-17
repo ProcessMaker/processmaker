@@ -42,7 +42,7 @@ class CreateADDITIONALTABLESTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('ADDITIONAL_TABLES');
+		Schema::drop('additional_tables');
 	}
 
 }

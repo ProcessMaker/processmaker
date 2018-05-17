@@ -1,4 +1,5 @@
 import {mount, shallow} from "@vue/test-utils"
+import {Builder} from "../../../../resources/assets/designer/diagram/builder"
 import {Elements} from "../../../../resources/assets/designer/diagram/elements"
 
 let svg
@@ -34,11 +35,13 @@ mockTrans.mockReturnValue(svg)
 mockCircle.mockReturnValue(svg)
 mockBox.mockReturnValue(svg)
 
-describe("Task ", () => {
-    let eEvent;
+describe("Builder Class ", () => {
+    let eEvent,
+        ev;
 
     beforeEach(() => {
-        eEvent = new Elements.EndEvent(
+        eEvent = new Builder(svg, Dispatcher);
+        ev = new Elements.EndEvent(
             {
                 $type: "bpmn:EndEvent",
                 id: "end1",
@@ -47,33 +50,19 @@ describe("Task ", () => {
             },
             svg
         );
+        ev.render();
     });
 
-    it("config() - verify the merge of options", () => {
-        expect(eEvent.options).toEqual({
-            $type: "bpmn:EndEvent",
-            id: "end1",
-            marker: "EMPTY",
-            moddleElement: {},
-            name: "End Event 1",
-            scale: 40,
-            x: 100,
-            y: 100
-        });
+    it("onClickShape() - Verify the event click in a shape", () => {
+        let fn = eEvent.onClickShape(ev)
+        fn()
+        expect(mockRect.mock.calls.length).toBe(1)
     });
 
-    it("render() - Verify if use the library snap svg", () => {
-        eEvent.render();
-    });
-
-    it("createSelectionBorder() - Verify if the shape create a selection Border from snapSvg object", () => {
-        eEvent.createSelectionBorder();
-        expect(mockRect.mock.calls.length).toBe(1);
-    });
-
-    it("remove() - Verify if the shape is remove", () => {
-        eEvent.createSelectionBorder();
-        eEvent.remove();
-        expect(mockRemove.mock.calls.length).toBe(2);
+    it("RemoveSelection() - Verify the event click in a shape", () => {
+        let fn = eEvent.onClickShape(ev)
+        fn();
+        eEvent.removeSelectionBorder()
+        expect(mockRemove.mock.calls.length).toBe(1)
     });
 });

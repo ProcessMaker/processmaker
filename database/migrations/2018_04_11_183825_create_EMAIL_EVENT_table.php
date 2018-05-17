@@ -16,7 +16,6 @@ class CreateEMAILEVENTTable extends Migration {
 		{
 			$table->integer('EMAIL_EVENT_ID', true);
 			$table->string('EMAIL_EVENT_UID', 32);
-			$table->string('PRJ_UID', 32)->default('');
 			$table->string('EVN_UID', 32);
 			$table->string('EMAIL_EVENT_FROM', 100)->default('');
 			$table->text('EMAIL_EVENT_TO', 16777215);
