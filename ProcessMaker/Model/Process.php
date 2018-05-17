@@ -190,7 +190,7 @@ class Process extends Model
 
         // If not found, let's determine if we're in any of the supervisor groups
         return DB::table('PROCESS_USER')->where('PRO_UID', $this->id)
-            ->whereIn('USR_UID', $user->groups()->pluck('groupwf.uid'))
+            ->whereIn('USR_UID', $user->groups()->pluck('groups.uid'))
             ->where('PU_TYPE', 'GROUP_SUPERVISOR')
             ->exists();
     }

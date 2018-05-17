@@ -14,7 +14,7 @@ class CreateGROUPWFTable extends Migration
      */
     public function up()
     {
-        Schema::create('groupwf', function (Blueprint $table) {
+        Schema::create('groups', function (Blueprint $table) {
             $table->increments('id');
             $table->uuid('uid');
             $table->string('title', 1000);
@@ -33,7 +33,7 @@ class CreateGROUPWFTable extends Migration
      */
     public function down()
     {
-        Schema::drop('groupwf');
+        Schema::drop('groups');
     }
 
 }

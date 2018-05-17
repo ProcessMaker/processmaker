@@ -51,7 +51,7 @@ class CasesController extends Controller
             'APPLICATION.APP_UPDATE_DATE',
             'APPLICATION.APP_TITLE',
             'users.uid AS USR_UID',
-            'task.uid as TAS_UID',
+            'tasks.uid as TAS_UID',
             'APP_DELEGATION.DEL_INDEX',
             'APP_DELEGATION.DEL_LAST_INDEX',
             'APP_DELEGATION.DEL_DELEGATE_DATE',
@@ -68,18 +68,18 @@ class CasesController extends Controller
             'APP_DELEGATION.DEL_FINISHED',
             'APP_DELEGATION.DEL_DELAYED',
             'APP_DELEGATION.DEL_DELAY_DURATION',
-            'task.title AS APP_TAS_TITLE',
-            'task.type AS APP_TAS_TYPE',
+            'tasks.title AS APP_TAS_TITLE',
+            'tasks.type AS APP_TAS_TYPE',
             'users.lastname',
             'users.firstname',
             'users.username',
             'processes.name AS APP_PRO_TITLE'
         )
         ->join('APPLICATION', 'APP_DELEGATION.application_id', '=', 'APPLICATION.id')
-        ->join('task', 'APP_DELEGATION.task_id', '=', 'task.id')
+        ->join('tasks', 'APP_DELEGATION.task_id', '=', 'tasks.id')
         ->join('users', 'APP_DELEGATION.user_id', '=', 'users.id')
         ->join('processes', 'APPLICATION.process_id', '=', 'processes.id')
-        ->whereNotIn('task.type', [
+        ->whereNotIn('tasks.type', [
             "WEBENTRYEVENT",
             "END-MESSAGE-EVENT",
             "START-MESSAGE-EVENT",
@@ -144,7 +144,7 @@ class CasesController extends Controller
                     $cases->whereIn('APP_DELEGATION.APP_NUMBER', $application->pluck('APP_NUMBER', 'APP_NUMBER'));
                 }
             } elseif ($request->has('columnSearch') && $request->columnSearch === 'TAS_TITLE') {
-                $cases->where('task.title', 'LIKE', "%{$request->search}%");
+                $cases->where('tasks.title', 'LIKE', "%{$request->search}%");
             }
         }
 

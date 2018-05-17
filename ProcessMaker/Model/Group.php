@@ -22,7 +22,7 @@ class Group extends Model
 {
 
     // Specify our table and our primary key
-    protected $table = 'groupwf';
+    protected $table = 'groups';
 
     /**
      * Relation
@@ -68,7 +68,7 @@ class Group extends Model
 
     protected $rules = [
         'uid' => 'max:36',
-        'title' => 'required|unique:groupwf,title',
+        'title' => 'required|unique:groups,title',
         'ldap_dn' => 'required',
         'ux' => 'required|in:' . self::UX_NORMAL . ',' . self::UX_MOBILE . ',' . self::UX_SWITCHABLE . ',' . self::UX_SINGLE,
         'status' => 'required|in:' . self::STATUS_ACTIVE . ',' . self::STATUS_INACTIVE
