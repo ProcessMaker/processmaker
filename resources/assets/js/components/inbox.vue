@@ -2,10 +2,14 @@
   <div>
     <filter-bar></filter-bar>
     <vuetable ref="vuetable"
+      :api-mode="false"
       :fields="fields"
-      pagination-path=""
-      data-path="data"
+      :data-total="dataCount"
+      :data-manager="dataManager"
+      pagination-path="pagination"
+      data-path='data'
       :css="css.table"
+      :per-page="20"
       :sort-order="sortOrder"
       :multi-sort="true"
       detail-row-component="my-detail-row"
@@ -53,11 +57,13 @@ export default {
     return {
       fields: [
         {
-          name: 'task',
+          name:'user.username',
+          title: 'task',
           sortField: 'task',
         },
         {
-          name: 'user',
+          name: 'user.name',
+          title: 'name',
           sortField: 'user',
         },
         {
@@ -65,16 +71,19 @@ export default {
           sortField: 'title'
         },
         {
-          name: 'birthdate',
-          sortField: 'birthdate',
-          callback: 'formatDate|D/MM/Y'
+          name: 'completed',
+
         }
       ],
-      users:{
+      tasks:[
 
-      },
-      tasks:{
-
+      ],
+      dataCount: 0,
+      watch: {
+        tasks (newVal, oldVal) {
+          this.$refs.vuetable.refresh()
+          console.log('refresh',refresh)
+        }
       },
       css: {
         table: {
@@ -102,70 +111,30 @@ export default {
       moreParams: {}
     }
   },
-  mounted() {
-
-
-    function getusers() {
-      return axios.get('https://jsonplaceholder.typicode.com/users');
-    }
-
-    function gettasks() {
-      return axios.get('https://jsonplaceholder.typicode.com/todos');
-    }
-
-    axios.all([getusers(), gettasks()])
+  created() {
+    axios.all([this.getusers(), this.gettasks()])
       .then(axios.spread((users, tasks) => {
-        this.users=users.data
-        this.tasks=tasks.data
-
+        this.users = users.data
+        this.tasks = tasks.data
         this.tasks = this.tasks.map(task => {
           task.user = this.users.find(user => task.userId === user.id)
-          return task
         })
+          .then(this.set_data(this.tasks))
       }))
-
-
-    // Fetch our users and then populate the data
-    // Here, you'd want to potentially do your various axious calls, merge the
-    // data and then make sure you build up the object that vuetable expects.
-    // See: https://ratiw.github.io/vuetable-2/#/Data-Format-JSON
-
-    this.$refs.vuetable.setData({
-    "links": {
-      "pagination": {
-        "total": 20,
-        "per_page": 2,
-        "current_page": 1,
-        "last_page": 2,
-        "next_page_url": "...",
-        "prev_page_url": "...",
-        "from": 1,
-        "to": 2,
-      }
     },
-    " ": [
-      {
-        "id": 1,
-        "name": "xxxxxxxxx",
-        "nickname": "xxxxxxx",
-        "email": "xxx@xxx.xxx",
-        "birthdate": "xxxx-xx-xx",
-        "gender": "X",
-        "group_id": 1,
-      },
-      {
-        "id": 50,
-        "name": "xxxxxxxxx",
-        "nickname": "xxxxxxx",
-        "email": "xxx@xxx.xxx",
-        "birthdate": "xxxx-xx-xx",
-        "gender": "X",
-        "group_id": 3,
-      }
-    ]
-  })
-},
+
   methods: {
+    set_data(data){
+      this.$refs.vuetable.setData(data)
+      this.$refs.vuetable.refresh()
+    },
+   getusers() {
+      return axios.get('https://jsonplaceholder.typicode.com/users');
+    },
+
+   gettasks() {
+      return axios.get('https://jsonplaceholder.typicode.com/todos');
+    },
     allcap (value) {
       return value.toUpperCase()
     },
@@ -188,6 +157,44 @@ export default {
       console.log('cellClicked: ', field.name)
       this.$refs.vuetable.toggleDetailRow(data.id)
     },
+    dataManager(sortOrder, pagination) {
+
+      let data = this.tasks;
+
+      // account for search filter
+      if (this.searchFor) {
+        // the text should be case insensitive
+        let txt = new RegExp(this.searchFor, "i");
+
+        // search on name, email, and nickname
+        data = _.filter(data, function(item) {
+          return (
+            item.name.search(txt) >= 0 ||
+            item.email.search(txt) >= 0 ||
+            item.nickname.search(txt) >= 0
+          );
+        });
+      }
+
+      // sortOrder can be empty, so we have to check for that as well
+      if (sortOrder.length > 0) {
+
+        data = _.orderBy(data, sortOrder[0].sortField, sortOrder[0].direction);
+      }
+
+      // since the filter might affect the total number of records
+      // we can ask Vuetable to recalculate the pagination for us
+      // by calling makePagination(). this will make VuetablePagination
+      // work just like in API mode
+      pagination = this.$refs.vuetable.makePagination(data.length);
+
+      // if you don't want to use pagination component, you can just
+      // return the data array
+      return {
+        pagination: pagination,
+        data: _.slice(data, pagination.from - 1, pagination.to)
+      };
+    }
   },
   events: {
     'filter-set' (filterText) {
