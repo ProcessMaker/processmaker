@@ -24,7 +24,7 @@ class TriggerController extends Controller
     public function index(Process $process)
     {
         $response = TriggerManager::index($process);
-        return response()->collection($response, new TriggerTransformer(), 200);
+        return fractal($response, new TriggerTransformer())->respond(200);
     }
 
     /**
@@ -39,7 +39,7 @@ class TriggerController extends Controller
     public function show(Process $process, Trigger $trigger)
     {
         $this->belongsToProcess($process, $trigger);
-        return response()->item($trigger, new TriggerTransformer(), 200);
+        return fractal($trigger, new TriggerTransformer())->respond(200);
     }
 
     /**
@@ -60,7 +60,7 @@ class TriggerController extends Controller
         ];
 
         $response = TriggerManager::save($process, $data);
-        return response()->item($response, new TriggerTransformer(), 201);
+        return fractal($response, new TriggerTransformer())->respond(201);
     }
 
     /**

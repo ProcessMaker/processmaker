@@ -62,13 +62,6 @@ class TriggerManagerTest extends ApiTestCase
         //validating the answer is correct.
         $response->assertStatus(201);
         $trigger = $response->original;
-        $data = ['tri_title' => $faker->sentence(3)];
-        //Post saved correctly
-        $url = self::API_ROUTE . $process->PRO_UID . '/trigger';
-        $response = $this->api('POST', $url, $data);
-        //validating the answer is correct.
-        $response->assertStatus(201);
-        $trigger = $response->json();
         //Check structure of response.
         $response->assertJsonStructure([
             'uid',
@@ -84,7 +77,7 @@ class TriggerManagerTest extends ApiTestCase
         $response = $this->api('POST', $url, $data);
         //validating the answer is correct.
         $response->assertStatus(422);
-        return Trigger::where('uid', $trigger['uid'])->first();
+        return Trigger::where('uid', $trigger->uid)->first();
     }
 
     /**
@@ -116,7 +109,7 @@ class TriggerManagerTest extends ApiTestCase
         ]);
 
         //verify count of data
-        $this->assertEquals(11, $response->original['meta']->total);
+        $this->assertEquals(11, $response->original->meta->total);
     }
 
     /**

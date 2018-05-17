@@ -15,7 +15,6 @@ use ProcessMaker\Managers\TriggerManager;
 use ProcessMaker\Managers\TaskManager;
 use ProcessMaker\Model\Group;
 use ProcessMaker\Model\User;
-use ProcessMaker\Managers\TriggerManager;
 
 /**
  * Provide our ProcessMaker specific services

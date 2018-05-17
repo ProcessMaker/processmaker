@@ -24,7 +24,6 @@ class TriggerManager
      * Create a new trigger in a project.
      *
      * @param Process $process
-<<<<<<< ca410582a8f4f26a3b39882aa49c7f7c189fb371
      * @param array $data
      *
      * @return Trigger
