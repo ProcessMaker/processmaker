@@ -90,6 +90,13 @@ Router::group([
         Router::put('project/{process}/dynaform/{dynaform}', 'Designer\DynaformController@update')->middleware('can:write,ProcessMaker\Model\Dynaform');
         Router::delete('project/{process}/dynaform/{dynaform}', 'Designer\DynaformController@remove')->middleware('can:delete,ProcessMaker\Model\Dynaform');
 
+        //Trigger endpoints
+        Router::get('project/{process}/triggers', 'Designer\TriggerController@index')->middleware('can:read,ProcessMaker\Model\Trigger');
+        Router::get('project/{process}/trigger/{trigger}', 'Designer\TriggerController@show')->middleware('can:read,ProcessMaker\Model\Trigger');
+        Router::post('project/{process}/trigger', 'Designer\TriggerController@store')->middleware('can:write,ProcessMaker\Model\Trigger');
+        Router::put('project/{process}/trigger/{trigger}', 'Designer\TriggerController@update')->middleware('can:write,ProcessMaker\Model\Trigger');
+        Router::delete('project/{process}/trigger/{trigger}', 'Designer\TriggerController@remove')->middleware('can:delete,ProcessMaker\Model\Trigger');
+
         //Assignee users o groups to Activity endpoints
         Router::get('project/{process}/activity/{activity}/assignee', 'Designer\AssigneeController@getActivityAssignees')->middleware('can:read,ProcessMaker\Model\TaskUser');
         Router::get('project/{process}/activity/{activity}/assignee/paged', 'Designer\AssigneeController@getActivityAssigneesPaged')->middleware('can:read,ProcessMaker\Model\TaskUser');
