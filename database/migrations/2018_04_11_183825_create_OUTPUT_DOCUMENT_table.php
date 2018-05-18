@@ -34,7 +34,7 @@ class CreateOUTPUTDOCUMENTTable extends Migration
             $table->boolean('versioning')->default(0);
             $table->text('destination_path', 16777215)->nullable();
             $table->text('tags', 16777215)->nullable();
-            $table->boolean('pdf_security_enabled')->nullable()->default(0);
+            $table->boolean('pdf_security_enabled')->default(0);
             $table->string('pdf_security_open_password', 256)->nullable()->default('');
             $table->string('pdf_security_owner_password', 256)->nullable()->default('');
             $table->string('pdf_security_permissions', 150)->nullable()->default('');

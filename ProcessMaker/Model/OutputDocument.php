@@ -43,8 +43,6 @@ class OutputDocument extends Model
     use ValidatingTrait;
     use Uuid;
 
-    protected $table = 'output_documents';
-
     /**
      * Values for report_generator
      */
