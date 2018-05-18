@@ -15,16 +15,16 @@
       detail-row-component="my-detail-row"
       :append-params="moreParams"
       @vuetable:cell-clicked="onCellClicked"
-      @vuetable:pagination-data="onPaginationData"
-    ></vuetable>
+      @vuetable:pagination-data="onPaginationData">
+    </vuetable>
     <div class="vuetable-pagination">
       <vuetable-pagination-info ref="paginationInfo"
-        info-class="pagination-info"
-      ></vuetable-pagination-info>
+        info-class="pagination-info">
+      </vuetable-pagination-info>
       <vuetable-pagination ref="pagination"
         :css="css.pagination"
-        @vuetable-pagination:change-page="onChangePage"
-      ></vuetable-pagination>
+        @vuetable-pagination:change-page="onChangePage">
+      </vuetable-pagination>
     </div>
   </div>
 </template>
@@ -41,7 +41,7 @@ import CustomActions from './CustomActions'
 import DetailRow from './DetailRow'
 import FilterBar from './FilterBar'
 
-Vue.use(VueEvents)
+
 Vue.component('custom-actions', CustomActions)
 Vue.component('my-detail-row', DetailRow)
 Vue.component('filter-bar', FilterBar)
@@ -59,12 +59,12 @@ export default {
         {
           name:'user.username',
           title: 'task',
-          sortField: 'task',
+          sortField: 'user.username',
         },
         {
           name: 'user.name',
           title: 'name',
-          sortField: 'user',
+          sortField: 'user.name',
         },
         {
           name: 'title',
@@ -72,19 +72,13 @@ export default {
         },
         {
           name: 'completed',
-
+          sortField:'completed'
         }
       ],
       tasks:[
 
       ],
       dataCount: 0,
-      watch: {
-        tasks (newVal, oldVal) {
-          this.$refs.vuetable.refresh()
-          console.log('refresh',refresh)
-        }
-      },
       css: {
         table: {
           tableClass: 'table table-hover',
