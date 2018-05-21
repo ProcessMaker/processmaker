@@ -97,7 +97,7 @@ class OutputDocument extends Model
     ];
 
     protected $validationMessages = [
-        'title.unique' => 'A OutPut Document with the same name already exists in this process.'
+        'title.unique' => 'A output document with the same name already exists in this process.'
     ];
 
     /**
