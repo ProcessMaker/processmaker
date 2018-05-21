@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Serializers;
 
+use Illuminate\Http\Request;
 use League\Fractal\Pagination\CursorInterface;
 use League\Fractal\Pagination\PaginatorInterface;
 use League\Fractal\Resource\ResourceInterface;
@@ -93,7 +94,8 @@ class ApiSerializer extends SerializerAbstract
     public function paginator(PaginatorInterface $paginator): array
     {
         //Get data of query parameter filter, sort_by, sort_order
-        parse_str(parse_url($paginator->getUrl(1), PHP_URL_QUERY), $data);
+        // Build the Request from Laravel, not directly from url
+        $request = app()->make(Request::class);
 
         $pagination['meta'] = (object)[
             'total' => (int)$paginator->getTotal(),
@@ -101,9 +103,9 @@ class ApiSerializer extends SerializerAbstract
             'per_page' => (int)$paginator->getPerPage(),
             'current_page' => (int)$paginator->getCurrentPage(),
             'total_pages' => (int)$paginator->getLastPage(),
-            'filter' => isset($data['filter']) ? $data['filter'] : '',
-            'sort_by' => isset($data['sort_by']) ? $data['sort_by'] : '',
-            'sort_order' => isset($data['sort_order']) ? $data['sort_order'] : ''
+            'filter' => $request->input('filter', ''),
+            'sort_by' => $request->input('filter', ''),
+            'sort_order' => $request->input('sort_order', '')
         ];
 
         return ['pagination' => $pagination];
