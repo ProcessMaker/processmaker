@@ -84,41 +84,6 @@ class OutputDocument extends Model
         'process_id',
     ];
 
-    protected $attributes = [
-        'uid' => null,
-        'title' => null,
-        'description' => null,
-        'filename' => null,
-        'template' => null,
-        'report_generator' => 'HTML2PDF',
-        'type' => 'HTML',
-        'versioning' => 0,
-        'current_revision' => 0,
-        'tags' => null,
-        'open_type' => 1,
-        'generate' => 'BOTH',
-        'properties' => null,
-        'process_id' => '',
-    ];
-
-    protected $casts = [
-        'id' => 'int',
-        'uid' => 'string',
-        'title' => 'string',
-        'description' => 'string',
-        'filename' => 'string',
-        'template' => 'string',
-        'report_generator' => 'string',
-        'type' => 'string',
-        'versioning' => 'int',
-        'current_revision' => 'int',
-        'tags' => 'string',
-        'open_type' => 'int',
-        'generate' => 'string',
-        'properties' => 'string',
-        'process_id' => 'int',
-    ];
-
     protected $rules = [
         'uid' => 'max:36',
         'title' => 'required|unique:output_documents,title',
