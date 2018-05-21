@@ -28,9 +28,10 @@ class CreateOUTPUTDOCUMENTTable extends Migration
             $table->integer('open_type')->default(1);
             $table->string('generate', 10)->default('BOTH');
             $table->text('properties')->nullable();
+            $table->integer('process_id')->unsigned(); 
             $table->timestamps();
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
+            
+            $table->foreign('process_id')->references('id')->on('processes');
         });
     }
 
