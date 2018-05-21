@@ -18,6 +18,7 @@ use ProcessMaker\Model\ProcessVariable;
 use ProcessMaker\Model\ReportTable;
 use ProcessMaker\Model\Role;
 use ProcessMaker\Model\TaskUser;
+use ProcessMaker\Model\Trigger;
 use ProcessMaker\OAuth2\AccessTokenRepository;
 use ProcessMaker\OAuth2\ClientRepository;
 use ProcessMaker\Policies\ApplicationPolicy;
@@ -29,6 +30,7 @@ use ProcessMaker\Policies\ProcessCategoryPolicy;
 use ProcessMaker\Policies\ProcessPolicy;
 use ProcessMaker\Policies\ProcessVariablePolicy;
 use ProcessMaker\Policies\ReportTablePolicy;
+use ProcessMaker\Policies\TriggerPolicy;
 
 /**
  * Our AuthService Provider binds our base processmaker provider and registers any policies, if defined.
@@ -50,6 +52,9 @@ class AuthServiceProvider extends ServiceProvider
         ProcessVariable::class => ProcessVariablePolicy::class,
         ReportTable::class => ReportTablePolicy::class,
         Dynaform::class => DynaformPolicy::class,
+        Trigger::class => TriggerPolicy::class,
+        TaskUser::class => AssigneeTaskPolicy::class,
+        Trigger::class => TriggerPolicy::class,
         TaskUser::class => AssigneeTaskPolicy::class,
         InputDocument::class => InputDocumentPolicy::class,
     ];

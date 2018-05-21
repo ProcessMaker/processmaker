@@ -4,12 +4,6 @@ namespace ProcessMaker\Providers;
 
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use League\Fractal\Manager;
-use League\Fractal\Pagination\IlluminatePaginatorAdapter;
-use League\Fractal\Resource\Collection;
-use League\Fractal\Resource\Item;
-use League\Fractal\Serializer\SerializerAbstract;
-use League\Fractal\TransformerAbstract;
 use ProcessMaker\Managers\DatabaseManager;
 use ProcessMaker\Managers\DynaformManager;
 use ProcessMaker\Managers\InputDocumentManager;
@@ -19,6 +13,7 @@ use ProcessMaker\Managers\ProcessManager;
 use ProcessMaker\Managers\ReportTableManager;
 use ProcessMaker\Managers\SchemaManager;
 use ProcessMaker\Managers\TaskManager;
+use ProcessMaker\Managers\TriggerManager;
 use ProcessMaker\Model\Group;
 use ProcessMaker\Model\User;
 
@@ -63,6 +58,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->app->singleton('process.manager', function ($app) {
             return new ProcessManager();
         });
+
         $this->app->singleton('report_table.manager', function ($app) {
             return new ReportTableManager();
         });
@@ -87,5 +83,10 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->app->singleton('input_document.manager', function ($app) {
             return new InputDocumentManager();
         });
+        
+        $this->app->singleton('trigger.manager', function ($app) {
+            return new TriggerManager();
+        });
+
     }
 }
