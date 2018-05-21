@@ -19,7 +19,7 @@ class CreateOUTPUTDOCUMENTTable extends Migration
             $table->text('title');
             $table->text('description')->nullable();
             $table->text('filename')->nullable();
-            $table->text('template', 16777215)->nullable();
+            $table->text('template')->nullable();
             $table->string('report_generator', 10)->default('HTML2PDF');
             $table->string('type', 32)->default('HTML');
             $table->boolean('versioning')->default(0);
@@ -27,7 +27,7 @@ class CreateOUTPUTDOCUMENTTable extends Migration
             $table->text('tags')->nullable();
             $table->integer('open_type')->default(1);
             $table->string('generate', 10)->default('BOTH');
-            $table->text('properties', 16777215)->nullable();
+            $table->text('properties')->nullable();
             $table->timestamps();
         });
     }
