@@ -27,13 +27,13 @@ class ReportTableControllerTest extends ApiTestCase
         $response = $this->api('GET', $url);
         $response->assertStatus(200);
         $response->assertJsonStructure(
-            [['name', 'grid', 'connection', 'fields']]
+            ['data' => [['name', 'grid', 'connection', 'fields']]]
         );
 
         $returnedList = json_decode($response->getContent());
-        $this->assertGreaterThanOrEqual(1, count($returnedList),
+        $this->assertGreaterThanOrEqual(1, count($returnedList->data),
             'At least one additional ReportTable should exist');
-        $this->assertGreaterThanOrEqual(1, count($returnedList[0]->fields),
+        $this->assertGreaterThanOrEqual(1, count($returnedList->data[0]->fields),
             'The returned test ReportTable must have fields ');
     }
 

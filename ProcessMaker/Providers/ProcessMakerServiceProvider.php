@@ -4,12 +4,6 @@ namespace ProcessMaker\Providers;
 
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use League\Fractal\Manager;
-use League\Fractal\Pagination\IlluminatePaginatorAdapter;
-use League\Fractal\Resource\Collection;
-use League\Fractal\Resource\Item;
-use League\Fractal\Serializer\SerializerAbstract;
-use League\Fractal\TransformerAbstract;
 use ProcessMaker\Managers\DatabaseManager;
 use ProcessMaker\Managers\DynaformManager;
 use ProcessMaker\Managers\ProcessCategoryManager;
@@ -17,15 +11,10 @@ use ProcessMaker\Managers\ProcessFileManager;
 use ProcessMaker\Managers\ProcessManager;
 use ProcessMaker\Managers\ReportTableManager;
 use ProcessMaker\Managers\SchemaManager;
-use ProcessMaker\Model\Activity;
-use ProcessMaker\Model\Artifact;
-use ProcessMaker\Model\Diagram;
-use ProcessMaker\Model\Event;
-use ProcessMaker\Model\Gateway;
-use ProcessMaker\Model\Lane;
-use ProcessMaker\Model\Laneset;
-use ProcessMaker\Model\Participant;
-use ProcessMaker\Model\Pool;
+use ProcessMaker\Managers\TaskManager;
+use ProcessMaker\Managers\TriggerManager;
+use ProcessMaker\Model\Group;
+use ProcessMaker\Model\User;
 
 /**
  * Provide our ProcessMaker specific services
@@ -41,80 +30,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-
         parent::boot();
-
-        /**
-         * Prepare the response of an item using fractal
-         */
-        response()->macro('item', function ($item, TransformerAbstract $transformer, $status = 200, array $headers = [], SerializerAbstract $serializer = null) {
-            /**
-             * @var Manager $fractal
-             */
-            $fractal = new Manager();
-            if (!$serializer) {
-                $serialize = config('app.serialize_fractal');
-                $serializer = new $serialize();
-            }
-            $resource = new Item($item, $transformer);
-            $fractal->setSerializer($serializer);
-
-            return response()->json(
-                $fractal->createData($resource)->toArray(),
-                $status,
-                $headers
-            );
-        });
-
-        /**
-         * Prepare the response of collection using fractal
-         */
-        response()->macro('collection', function ($item, TransformerAbstract $transformer, $status = 200, array $headers = [], SerializerAbstract $serializer = null) {
-            /**
-             * @var Manager $fractal
-             */
-            $fractal = new Manager();
-            if (!$serializer) {
-                $serialize = config('app.serialize_fractal');
-                $serializer = new $serialize();
-            }
-            $resource = new Collection($item, $transformer);
-            $fractal->setSerializer($serializer);
-
-            return response()->json(
-                $fractal->createData($resource)->toArray(),
-                $status,
-                $headers
-            );
-        });
-
-        /**
-         * Prepare the response of the paginate collection using fractal, for compatibility.
-         */
-        response()->macro('paged', function ($item, TransformerAbstract $transformer, $status = 200, array $headers = [], SerializerAbstract $serializer = null, IlluminatePaginatorAdapter $paginator = null) {
-            /**
-             * @var Manager $fractal
-             */
-            $fractal = new Manager();
-            if (!$serializer) {
-                $serialize = config('app.serialize_fractal');
-                $serializer = new $serialize(true);
-            }
-            $fractal->setSerializer($serializer);
-            $resource = new Collection($item, $transformer);
-
-            if (!$paginator) {
-                $paginate = config('app.paginate_fractal');
-                $paginator = new $paginate($item);
-            }
-            $resource->setPaginator($paginator);
-
-            return response()->json(
-                $fractal->createData($resource)->toArray(),
-                $status,
-                $headers
-            );
-        });
     }
 
     /**
@@ -141,6 +57,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->app->singleton('process.manager', function ($app) {
             return new ProcessManager();
         });
+
         $this->app->singleton('report_table.manager', function ($app) {
             return new ReportTableManager();
         });
@@ -148,5 +65,23 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->app->singleton('dynaform.manager', function ($app) {
             return new DynaformManager();
         });
+
+        /**
+         * Mapping
+         *
+         */
+        Relation::morphMap([
+            User::TYPE => User::class,
+            Group::TYPE => Group::class,
+        ]);
+
+        $this->app->singleton('task.manager', function ($app) {
+            return new TaskManager();
+        });
+
+        $this->app->singleton('trigger.manager', function ($app) {
+            return new TriggerManager();
+        });
+
     }
 }

@@ -36,7 +36,7 @@ class ApplicationPolicy
          * @todo perhaps replace with a can() policy check on process policy
          */
         // Let's define the ids we'll look for when finding permissions
-        $ids = array_merge(['0', '', $user->USR_UID], $user->groups()->pluck('GROUPWF.GRP_UID')->toArray());
+        $ids = array_merge(['0', '', $user->USR_UID], $user->groups()->pluck('groups.uid')->toArray());
         // Since this is our last check, we'll just return the result boolean
         return DB::table('OBJECT_PERMISSION')->where('PRO_UID', $application->process->PRO_UID)
             ->where('OP_ACTION', 'VIEW')
