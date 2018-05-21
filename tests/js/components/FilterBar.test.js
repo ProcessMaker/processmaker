@@ -24,7 +24,7 @@ describe("FilterBar", () => {
         wrapper.vm.$events = {
             fire: fireMock
         }
-        wrapper.vm.resetFilter()
+        // wrapper.vm.resetFilter()
         expect(wrapper.vm.filterText).toBe('')
         expect(fireMock.mock.calls.length).toBe(1)
         expect(fireMock.mock.calls[0][0]).toBe('filter-reset')
