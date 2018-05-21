@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1526921289529" clover="3.2.0">
-  <project timestamp="1526921289530" name="All files">
+<coverage generated="1526923588324" clover="3.2.0">
+  <project timestamp="1526923588325" name="All files">
     <metrics statements="148" coveredstatements="144" conditionals="25" coveredconditionals="16" methods="53" coveredmethods="47" elements="226" coveredelements="207" complexity="0" loc="148" ncloc="148" packages="9" files="18" classes="18">
       <package name="jest">
         <metrics statements="4" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
@@ -225,7 +225,7 @@
         <metrics statements="4" coveredstatements="4" conditionals="2" coveredconditionals="2" methods="0" coveredmethods="0"/>
         <file name="FilterBar.vue" path="/opt/processmaker/resources/assets/js/components/FilterBar.vue">
           <metrics statements="4" coveredstatements="4" conditionals="2" coveredconditionals="2" methods="0" coveredmethods="0"/>
-          <line num="15" count="4" type="stmt"/>
+          <line num="15" count="3" type="stmt"/>
           <line num="21" count="2" type="cond" truecount="2" falsecount="0"/>
           <line num="22" count="1" type="stmt"/>
           <line num="23" count="1" type="stmt"/>
