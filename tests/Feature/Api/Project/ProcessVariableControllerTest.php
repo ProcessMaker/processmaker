@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api\Cases;
 
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\DbSource;
 use ProcessMaker\Model\Process;
@@ -12,6 +13,8 @@ use Tests\Feature\Api\ApiTestCase;
 
 class ProcessVariableControllerTest extends ApiTestCase
 {
+    use DatabaseTransactions;
+
     /**
      * Tests that all variables of a process are returned
      */

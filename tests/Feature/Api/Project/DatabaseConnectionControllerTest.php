@@ -1,6 +1,7 @@
 <?php
 namespace Tests\Feature\Api\Project;
 
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\DbSource;
 use ProcessMaker\Model\Process;
@@ -10,6 +11,8 @@ use Tests\Feature\Api\ApiTestCase;
 
 class DatabaseConnectionControllerTest extends ApiTestCase
 {
+    use DatabaseTransactions;
+
     private $defaultConnectionData;
 
     /**
