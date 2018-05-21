@@ -2,25 +2,29 @@
   <div>
     <filter-bar></filter-bar>
     <vuetable ref="vuetable"
-      api-url="/test"
+      :api-mode="false"
       :fields="fields"
-      pagination-path=""
+      :data-total="dataCount"
+      :data-manager="dataManager"
+      pagination-path="pagination"
+      data-path='data'
       :css="css.table"
+      :per-page="20"
       :sort-order="sortOrder"
       :multi-sort="true"
       detail-row-component="my-detail-row"
       :append-params="moreParams"
       @vuetable:cell-clicked="onCellClicked"
-      @vuetable:pagination-data="onPaginationData"
-    ></vuetable>
+      @vuetable:pagination-data="onPaginationData">
+    </vuetable>
     <div class="vuetable-pagination">
       <vuetable-pagination-info ref="paginationInfo"
-        info-class="pagination-info"
-      ></vuetable-pagination-info>
+        info-class="pagination-info">
+      </vuetable-pagination-info>
       <vuetable-pagination ref="pagination"
         :css="css.pagination"
-        @vuetable-pagination:change-page="onChangePage"
-      ></vuetable-pagination>
+        @vuetable-pagination:change-page="onChangePage">
+      </vuetable-pagination>
     </div>
   </div>
 </template>
@@ -37,12 +41,13 @@ import CustomActions from './CustomActions'
 import DetailRow from './DetailRow'
 import FilterBar from './FilterBar'
 
-Vue.use(VueEvents)
+
 Vue.component('custom-actions', CustomActions)
 Vue.component('my-detail-row', DetailRow)
 Vue.component('filter-bar', FilterBar)
 
 export default {
+
   components: {
     Vuetable,
     VuetablePagination,
@@ -52,22 +57,28 @@ export default {
     return {
       fields: [
         {
-          name: 'USR_FIRSTNAME',
-          sortField: 'USR_FIRSTNAME',
+          name:'user.username',
+          title: 'task',
+          sortField: 'user.username',
         },
         {
-          name: 'USR_LASTNAME',
-          sortField: 'USR_LASTNAME',
+          name: 'user.name',
+          title: 'name',
+          sortField: 'user.name',
         },
         {
-          name: 'USR_EMAIL',
-          sortField: 'USR_EMAIL'
+          name: 'title',
+          sortField: 'title'
         },
         {
-          name: 'USR_CREATE_DATE',
-          sortField: 'USR_CREATE_DATE'
+          name: 'completed',
+          sortField:'completed'
         }
       ],
+      tasks:[
+
+      ],
+      dataCount: 0,
       css: {
         table: {
           tableClass: 'table table-hover',
@@ -87,27 +98,39 @@ export default {
             last: '',
           },
         },
-        icons: {
-          first: 'glyphicon glyphicon-step-backward',
-          prev: 'glyphicon glyphicon-chevron-left',
-          next: 'glyphicon glyphicon-chevron-right',
-          last: 'glyphicon glyphicon-step-forward',
-        },
       },
       sortOrder: [
-        { field: 'USR_FIRSTNAME'}
+        { field: 'name'}
       ],
       moreParams: {}
     }
   },
+  created() {
+    axios.all([this.getusers(), this.gettasks()])
+      .then(axios.spread((users, tasks) => {
+        this.users = users.data
+        this.tasks = tasks.data
+        this.tasks = this.tasks.map(task => {
+          task.user = this.users.find(user => task.userId === user.id)
+        })
+          .then(this.set_data(this.tasks))
+      }))
+    },
+
   methods: {
+    set_data(data){
+      this.$refs.vuetable.setData(data)
+      this.$refs.vuetable.refresh()
+    },
+   getusers() {
+      return axios.get('https://jsonplaceholder.typicode.com/users');
+    },
+
+   gettasks() {
+      return axios.get('https://jsonplaceholder.typicode.com/todos');
+    },
     allcap (value) {
       return value.toUpperCase()
-    },
-    genderLabel (value) {
-      return value === 'M'
-        ? '<span class="label label-success"><i class="glyphicon glyphicon-star"></i> Male</span>'
-        : '<span class="label label-danger"><i class="glyphicon glyphicon-heart"></i> Female</span>'
     },
     formatNumber (value) {
       return accounting.formatNumber(value, 2)
@@ -128,6 +151,44 @@ export default {
       console.log('cellClicked: ', field.name)
       this.$refs.vuetable.toggleDetailRow(data.id)
     },
+    dataManager(sortOrder, pagination) {
+
+      let data = this.tasks;
+
+      // account for search filter
+      if (this.searchFor) {
+        // the text should be case insensitive
+        let txt = new RegExp(this.searchFor, "i");
+
+        // search on name, email, and nickname
+        data = _.filter(data, function(item) {
+          return (
+            item.name.search(txt) >= 0 ||
+            item.email.search(txt) >= 0 ||
+            item.nickname.search(txt) >= 0
+          );
+        });
+      }
+
+      // sortOrder can be empty, so we have to check for that as well
+      if (sortOrder.length > 0) {
+
+        data = _.orderBy(data, sortOrder[0].sortField, sortOrder[0].direction);
+      }
+
+      // since the filter might affect the total number of records
+      // we can ask Vuetable to recalculate the pagination for us
+      // by calling makePagination(). this will make VuetablePagination
+      // work just like in API mode
+      pagination = this.$refs.vuetable.makePagination(data.length);
+
+      // if you don't want to use pagination component, you can just
+      // return the data array
+      return {
+        pagination: pagination,
+        data: _.slice(data, pagination.from - 1, pagination.to)
+      };
+    }
   },
   events: {
     'filter-set' (filterText) {

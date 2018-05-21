@@ -6,10 +6,12 @@ var app = new Vue({
         notifications: [],
     },
     mounted() {
+      /*
         window.Echo.private('ProcessMaker.Model.User.' + window.Processmaker.userId)
             .notification((notification) => {
                 let len = this.notifications.length;
                 this.notifications.push({id: len, html: notification.html});
             });
+            */
     }
 })
