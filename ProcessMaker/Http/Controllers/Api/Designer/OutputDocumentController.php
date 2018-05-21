@@ -53,20 +53,14 @@ class OutputDocumentController
     {
         $data = [
             'report_generator' => $request->input('report_generator', 'HTML2PDF'),
-            'landscape' => $request->input('landscape', 0),
-            'left_margin' => $request->input('left_margin', 30),
-            'right_margin' => $request->input('right_margin', 15),
-            'top_margin' => $request->input('top_margin', 15),
-            'bottom_margin' => $request->input('bottom_margin', 15),
             'generate' => $request->input('generate', 'BOTH'),
             'type' => $request->input('type', 'HTML'),
             'versioning' => $request->input('versioning', 0),
-            'pdf_security_enabled' => $request->input('pdf_security_enabled', 0)
+            'properties' => $request->input('properties', []),
         ];
 
         $data = array_merge($data, $this->formatData($request, ['title', 'description', 'filename', 'template',
-            'media', 'destination_path', 'tags', 'pdf_security_open_password',
-            'pdf_security_owner_password']));
+            'type', 'current_revision', 'tags', 'open_type']));
 
         $response = OutputDocumentManager::save($process, $data);
         return fractal($response, new OutputDocumentTransformer())->respond(201);
@@ -86,9 +80,7 @@ class OutputDocumentController
     {
         $this->belongsToProcess($process, $outputDocument);
         $data = $this->formatData($request, ['title', 'description', 'filename', 'template', 'report_generator',
-            'landscape', 'media', 'left_margin', 'right_margin', 'top_margin',
-            'bottom_margin', 'generate', 'type', 'versioning', 'destination_path',
-            'tags', 'pdf_security_enabled', 'pdf_security_open_password', 'pdf_security_owner_password']);
+            'type', 'versioning', 'current_revision', 'tags', 'open_type', 'generate', 'properties']);
 
         if ($data) {
             OutputDocumentManager::update($process, $outputDocument, $data);
@@ -142,10 +134,6 @@ class OutputDocumentController
             if ($request->has($field)) {
                 $data[$field] = $request->input($field);
             }
-        }
-        if ($request->has('pdf_security_permissions')) {
-            $permissions = $request->input('pdf_security_permissions');
-            $data['pdf_security_permissions'] = is_array($permissions) ? $permissions : explode('|' , $permissions);
         }
         return $data;
     }

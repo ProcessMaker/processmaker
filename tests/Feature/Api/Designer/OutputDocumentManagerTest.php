@@ -25,23 +25,12 @@ class OutputDocumentManagerTest extends ApiTestCase
         'filename',
         'template',
         'report_generator',
-        'landscape',
-        'media',
-        'left_margin',
-        'right_margin',
-        'top_margin',
-        'bottom_margin',
-        'generate',
         'type',
-        'current_revision',
-        'field_mapping',
         'versioning',
-        'destination_path',
+        'current_revision',
         'tags',
-        'pdf_security_enabled',
-        'pdf_security_open_password',
-        'pdf_security_owner_password',
-        'pdf_security_permissions',
+        'generate',
+        'properties',
     ];
 
     /**
@@ -92,9 +81,9 @@ class OutputDocumentManagerTest extends ApiTestCase
         $data['report_generator'] = $faker->randomElement(OutputDocument::DOC_REPORT_GENERATOR_TYPE);
         $data['generate'] = $faker->randomElement(OutputDocument::DOC_GENERATE_TYPE);
         $data['type'] = $faker->randomElement(OutputDocument::DOC_TYPE);
-        $data['pdf_security_permissions'] = $faker->randomElements(OutputDocument::PDF_SECURITY_PERMISSIONS_TYPE, 2, false);
-        $data['pdf_security_open_password'] = self::DEFAULT_PASS;
-        $data['pdf_security_owner_password'] = self::DEFAULT_PASS_OWNER;
+        $data['properties']['pdf_security_permissions'] = $faker->randomElements(OutputDocument::PDF_SECURITY_PERMISSIONS_TYPE, 2, false);
+        $data['properties']['pdf_security_open_password'] = self::DEFAULT_PASS;
+        $data['properties']['pdf_security_owner_password'] = self::DEFAULT_PASS_OWNER;
 
         $url = $this->root . 'process/' . self::$process->uid . '/output-document';
         $response = $this->api('POST', $url, $data);
@@ -139,6 +128,9 @@ class OutputDocumentManagerTest extends ApiTestCase
         ]);
         //verify count of data
         $this->assertEquals(11, $response->original->meta->total);
+        foreach ($response->json('data') as $item) {
+            $response->assertJsonStructure(self::STRUCTURE, $item);
+        }
     }
 
     /**
@@ -200,7 +192,7 @@ class OutputDocumentManagerTest extends ApiTestCase
         $data['title'] = $faker->sentence(2);
         $data['description'] = $faker->sentence(2);
         $data['filename'] = $faker->sentence(2);
-        $data['pdf_security_permissions'] = '';
+        $data['properties']['pdf_security_permissions'] = [];
         $url = $this->root . 'process/' . self::$process->uid . '/output-document/' . $outputDocument->uid;
         $response = $this->api('PUT', $url, $data);
         //Validate the answer is correct

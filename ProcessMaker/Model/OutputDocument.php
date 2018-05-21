@@ -18,24 +18,13 @@ use Watson\Validating\ValidatingTrait;
  * @property string filename
  * @property string template
  * @property string report_generator
- * @property int landscape
- * @property string media
- * @property int left_margin
- * @property int right_margin
- * @property int top_margin
- * @property int bottom_margin
- * @property string generate
  * @property string type
- * @property int current_revision
- * @property string field_mapping
  * @property int versioning
- * @property string destination_path
+ * @property int current_revision
  * @property string tags
- * @property int pdf_security_enabled
- * @property string pdf_security_open_password
- * @property string pdf_security_owner_password
- * @property array pdf_security_permissions
  * @property int open_type
+ * @property string generate
+ * @property array properties
  *
  */
 class OutputDocument extends Model
@@ -80,106 +69,66 @@ class OutputDocument extends Model
 
     protected $fillable = [
         'uid',
-        'process_id',
         'title',
         'description',
         'filename',
         'template',
         'report_generator',
-        'landscape',
-        'media',
-        'left_margin',
-        'right_margin',
-        'top_margin',
-        'bottom_margin',
-        'generate',
         'type',
-        'current_revision',
-        'field_mapping',
         'versioning',
-        'destination_path',
+        'current_revision',
         'tags',
-        'pdf_security_enabled',
-        'pdf_security_open_password',
-        'pdf_security_owner_password',
-        'pdf_security_permissions',
-        'open_type'
+        'open_type',
+        'generate',
+        'properties',
+        'process_id',
     ];
 
     protected $attributes = [
         'uid' => null,
-        'process_id' => '',
         'title' => null,
         'description' => null,
         'filename' => null,
         'template' => null,
         'report_generator' => 'HTML2PDF',
-        'landscape' => 0,
-        'media' => 'letter',
-        'left_margin' => 30,
-        'right_margin' => 15,
-        'top_margin' => 15,
-        'bottom_margin' => 15,
-        'generate' => 'BOTH',
         'type' => 'HTML',
-        'current_revision' => 0,
-        'field_mapping' => null,
         'versioning' => 0,
-        'destination_path' => null,
+        'current_revision' => 0,
         'tags' => null,
-        'pdf_security_enabled' => 0,
-        'pdf_security_open_password' => '',
-        'pdf_security_owner_password' => '',
-        'pdf_security_permissions' => '',
-        'open_type' => 1
+        'open_type' => 1,
+        'generate' => 'BOTH',
+        'properties' => null,
+        'process_id' => '',
     ];
 
     protected $casts = [
+        'id' => 'int',
         'uid' => 'string',
-        'process_id' => 'int',
         'title' => 'string',
         'description' => 'string',
         'filename' => 'string',
         'template' => 'string',
         'report_generator' => 'string',
-        'landscape' => 'int',
-        'media' => 'string',
-        'left_margin' => 'int',
-        'right_margin' => 'int',
-        'top_margin' => 'int',
-        'bottom_margin' => 'int',
-        'generate' => 'string',
         'type' => 'string',
-        'current_revision' => 'int',
-        'field_mapping' => 'string',
         'versioning' => 'int',
-        'destination_path' => 'string',
+        'current_revision' => 'int',
         'tags' => 'string',
-        'pdf_security_enabled' => 'int',
-        'pdf_security_open_password' => 'string',
-        'pdf_security_owner_password' => 'string',
-        'pdf_security_permissions' => 'array',
-        'open_type' => 'int'
+        'open_type' => 'int',
+        'generate' => 'string',
+        'properties' => 'string',
+        'process_id' => 'int',
     ];
 
     protected $rules = [
         'uid' => 'max:36',
         'title' => 'required|unique:output_documents,title',
         'process_id' => 'exists:processes,id',
-        'description' => 'required',
         'filename' => 'required',
         'report_generator' => 'required',
-        'landscape' => 'required|boolean',
-        'media' => 'required',
-        'left_margin' => 'required|min:0',
-        'right_margin' => 'required|min:0',
-        'top_margin' => 'required|min:0',
-        'bottom_margin' => 'required|min:0',
         'type' => 'required',
         'current_revision' => 'required|min:0',
         'versioning' => 'required|min:0',
-        'pdf_security_enabled' => 'required|boolean',
-        'open_type' => 'required|boolean'
+        'open_type' => 'required|boolean',
     ];
 
     protected $validationMessages = [
@@ -197,75 +146,32 @@ class OutputDocument extends Model
     }
 
     /**
-     * Accessor pdf_security_permissions to json
+     * Accessor properties to json
      *
      * @param $value
      *
      * @return array|null
      */
-    public function getPdfSecurityPermissionsAttribute($value): ?array
+    public function getPropertiesAttribute($value): ?array
     {
-        return json_decode($value);
+        $value = json_decode($value, true);
+        $value['pdf_security_open_password'] = !empty($value['pdf_security_open_password']) ? decrypt($value['pdf_security_open_password']) : '';
+        $value['pdf_security_owner_password'] = !empty($value['pdf_security_owner_password']) ? decrypt($value['pdf_security_owner_password']) : '';
+        return $value;
     }
 
     /**
-     * Mutator pdf_security_permissions json decode
+     * Mutator properties json decode
      *
      * @param $value
      *
      * @return void
      */
-    public function setPdfSecurityPermissionsAttribute($value): void
+    public function setPropertiesAttribute($value): void
     {
-        $this->attributes['pdf_security_permissions'] = empty($value) ? null : json_encode($value);
-    }
-
-    /**
-     * Accessor pdf_security_open_password to json
-     *
-     * @param $value
-     *
-     * @return string
-     */
-    public function getPdfSecurityOpenPasswordAttribute($value): string
-    {
-        return !empty($value) ? decrypt($value) : '';
-    }
-
-    /**
-     * Mutator pdf_security_open_password json decode
-     *
-     * @param $value
-     *
-     * @return void
-     */
-    public function setPdfSecurityOpenPasswordAttribute($value): void
-    {
-        $this->attributes['pdf_security_open_password'] = !empty($value) ? encrypt($value) : '';
-    }
-
-    /**
-     * Accessor pdf_security_owner_password to json
-     *
-     * @param $value
-     *
-     * @return string
-     */
-    public function getPdfSecurityOwnerPasswordAttribute($value): string
-    {
-        return !empty($value) ? decrypt($value) : '';
-    }
-
-    /**
-     * Mutator pdf_security_owner_password json decode
-     *
-     * @param $value
-     *
-     * @return void
-     */
-    public function setPdfSecurityOwnerPasswordAttribute($value): void
-    {
-        $this->attributes['pdf_security_owner_password'] = !empty($value) ? encrypt($value) : '';
+        $value['pdf_security_open_password'] = !empty($value['pdf_security_open_password']) ? encrypt($value['pdf_security_open_password']) : '';
+        $value['pdf_security_owner_password'] = !empty($value['pdf_security_owner_password']) ? encrypt($value['pdf_security_owner_password']) : '';
+        $this->attributes['properties'] = empty($value) ? null : json_encode($value);
     }
 
 }
