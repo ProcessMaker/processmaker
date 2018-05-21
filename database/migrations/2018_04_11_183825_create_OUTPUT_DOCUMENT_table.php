@@ -28,21 +28,6 @@ class CreateOUTPUTDOCUMENTTable extends Migration
             $table->integer('open_type')->default(1);
             $table->string('generate', 10)->default('BOTH');
             $table->text('properties', 16777215)->nullable();
-
-
-            $table->boolean('landscape')->default(0);
-            $table->string('media', 10)->default('Letter');
-            $table->integer('left_margin')->nullable()->default(30);
-            $table->integer('right_margin')->nullable()->default(15);
-            $table->integer('top_margin')->nullable()->default(15);
-            $table->integer('bottom_margin')->nullable()->default(15);
-            $table->text('field_mapping', 16777215)->nullable();
-            $table->text('destination_path', 16777215)->nullable();
-            $table->boolean('pdf_security_enabled')->default(0);
-            $table->string('pdf_security_open_password', 256)->nullable()->default('');
-            $table->string('pdf_security_owner_password', 256)->nullable()->default('');
-            $table->string('pdf_security_permissions', 150)->nullable()->default('');
-
             $table->timestamps();
         });
     }

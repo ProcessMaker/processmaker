@@ -7,7 +7,7 @@ use ProcessMaker\Model\Traits\Uuid;
 use Watson\Validating\ValidatingTrait;
 
 /**
- * Class OutPutDocument
+ * Class OutputDocument
  * @package ProcessMaker\Model
  *
  * @property int id
