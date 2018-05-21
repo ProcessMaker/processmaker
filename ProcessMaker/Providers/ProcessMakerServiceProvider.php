@@ -7,7 +7,7 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
 use ProcessMaker\Managers\DatabaseManager;
 use ProcessMaker\Managers\DynaformManager;
 use ProcessMaker\Managers\InputDocumentManager;
-use ProcessMaker\Managers\OutPutDocumentManager;
+use ProcessMaker\Managers\OutputDocumentManager;
 use ProcessMaker\Managers\ProcessCategoryManager;
 use ProcessMaker\Managers\ProcessFileManager;
 use ProcessMaker\Managers\ProcessManager;
