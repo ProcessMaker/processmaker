@@ -37,9 +37,4 @@ class TestController extends Controller
       ->paginate();
 
     }
-    public function FlashMessageTest(session('message', 'testMessage'))
-    {
-      session()->flash('message','testMessage');
-      return redirect()->home();
-    }
 }
