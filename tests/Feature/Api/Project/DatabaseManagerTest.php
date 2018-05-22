@@ -1,11 +1,14 @@
 <?php
 namespace Tests\Feature\Api\Cases;
 
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use ProcessMaker\Managers\DatabaseManager;
 use Tests\Feature\Api\ApiTestCase;
 
 class DatabaseManagerTest extends ApiTestCase
 {
+    use DatabaseTransactions;
+
     public function testConnection()
     {
         $connectionParams = [];

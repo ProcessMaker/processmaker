@@ -52,6 +52,7 @@ class Kernel extends HttpKernel
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'guest' => \ProcessMaker\Http\Middleware\RedirectIfAuthenticated::class,
+        'permission' => \ProcessMaker\Http\Middleware\PermissionCheck::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'setlang' => \ProcessMaker\Http\Middleware\SetLanguage::class,
         'setskin' => \ProcessMaker\Http\Middleware\SetSkin::class,

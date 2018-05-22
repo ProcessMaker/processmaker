@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api\Designer;
 
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
@@ -16,6 +17,7 @@ use Tests\Feature\Api\ApiTestCase;
 
 class FileManagerTest extends ApiTestCase
 {
+    use DatabaseTransactions;
 
     const API_TEST_PROJECT = '/api/1.0/project/';
 

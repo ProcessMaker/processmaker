@@ -2,11 +2,14 @@
 
 namespace ProcessMaker\Model;
 
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use ProcessMaker\Model\Process;
 use Tests\TestCase;
 
 class DbSourceTest extends TestCase
 {
+    use DatabaseTransactions;
+
     /**
      * Test the validation logic of the model
      */

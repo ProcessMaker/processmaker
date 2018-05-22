@@ -27,5 +27,8 @@ class PermissionSeeder extends Seeder
         factory(Permission::class)->create([
             'code' => 'PM_SETUP_PM_TABLES'
         ]);
+        factory(Permission::class)->create([
+            'code' => 'PM_USERS'
+        ]);
     }
 }

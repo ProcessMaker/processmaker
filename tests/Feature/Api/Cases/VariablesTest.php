@@ -1,6 +1,7 @@
 <?php
 namespace Tests\Feature\Api\Cases;
 
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\Application;
 use ProcessMaker\Model\User;
@@ -9,6 +10,7 @@ use G;
 
 class VariablesTest extends ApiTestCase
 {
+    use DatabaseTransactions;
 
     /**
      * Test to determine fetching variables for a case/application.  Checks for proper policy check

@@ -1,6 +1,7 @@
 <?php
 namespace Tests\Feature;
 
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\Permission;
@@ -11,6 +12,8 @@ use Tests\TestCase;
 
 class AuthTest extends TestCase
 {
+    use DatabaseTransactions;
+
     /**
      * Tests to determine if we can manually log someone in by setting them in the Auth framework immediately
      *

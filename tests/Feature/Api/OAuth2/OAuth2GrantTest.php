@@ -1,6 +1,7 @@
 <?php
 namespace Tests\Feature\Api\OAuth2;
 
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\User;
@@ -8,6 +9,8 @@ use Tests\TestCase;
 
 class OAuth2GrantTest extends TestCase
 {
+    use DatabaseTransactions;
+
     private $clientId = 'x-pm-local-client';
     private $clientSecret = '179ad45c6ce2cb97cf1029e212046e81';
 
