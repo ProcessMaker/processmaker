@@ -11,9 +11,6 @@ class ApiTestCase extends TestCase
     // Our current access token
     protected $token;
 
-    //Route API_ROUTE
-    public const API_ROUTE = '/api/1.0/';
-
     // Performs an OAuth2 Password grant
     protected function auth($username, $password)
     {
