@@ -70,6 +70,7 @@
         position: fixed;
         background-color: white;
         border-right: 2px solid #e1dbd9;
+        z-index: 2;
     }
 
     .side-menu {

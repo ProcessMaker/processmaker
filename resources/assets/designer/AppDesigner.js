@@ -7,3 +7,8 @@ Vue.component("toolbar", require("./components/toolbar.vue"));
 new Vue({
     el: "#appDesigner"
 })
+
+function autoResizeDiv() {
+    document.getElementById('appDesigner').style.height = window.innerHeight - 100 + 'px';
+}
+autoResizeDiv()

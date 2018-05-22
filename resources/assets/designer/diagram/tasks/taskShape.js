@@ -42,6 +42,18 @@ export class TaskShape extends Shape {
             this.options.scaleY,
             this.options.rounded
         ).attr(this.options.attr));
-        this.shape.drag();
+        this.shape.drag((dx, dy) => {
+                console.log("shape move")
+                this.shape.attr({
+                    transform: this.shape.data('origTransform') + ( this.shape.data('origTransform') ? "T" : "t") + [dx, dy]
+                });
+            }, () => {
+                console.log("shape drag start")
+                this.shape.data('origTransform', this.shape.transform().local);
+            },
+            () => {
+                console.log("shape drag end")
+            }
+        )
     }
 }
