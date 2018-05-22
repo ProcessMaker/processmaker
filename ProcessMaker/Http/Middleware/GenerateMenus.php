@@ -203,20 +203,42 @@ class GenerateMenus
             }
         });
 
-        Menu::make('manage', function ($menu) {
-            $execute = $menu;
-            $tasks = $execute->add('Manage',['class' => 'sidebar-header'])
-            ->prepend('<i class="fa fa-list-ul"></i> ');
-            $tasks->add('Pending',['route'  => 'home', 'id' => 'home']);
-            $tasks->add('Unclaimed',['route'  => 'home', 'id' => 'home']);
-            $tasks->add('Completed',['route'  => 'home', 'id' => 'home']);
+        Menu::make('request', function ($menu) {
+          $task_items = [
+            [
+              'label' => 'In Progress',
+              'route' => 'home',
+              'icon' => 'fa-user',
+              'id' => 'homeid'
+            ],
+            [
+              'label' => 'Draft',
+              'route' => 'home',
+              'icon' => 'fa-users',
+              'id' => 'homeid'
+            ],
+            [
+              'label' => 'Completed',
+              'route' => 'home',
+              'icon' => 'fa-user-plus',
+              'id' => 'homeid'
+            ],
+            [
+              'label' => 'Paused',
+              'route' => 'home',
+              'icon' => 'fa-user-plus',
+              'id' => 'homeid'
+            ]
+          ];
 
-            $cases = $execute->add('Cases',['class' => 'sidebar-header'])
-            ->prepend('<i class="fa fa-briefcase"></i> ');
-            $cases->add('New');
-            $cases->add('Drafts');
-            $cases->add('Mine');
-            $cases->add('Find');
+            $execute = $menu;
+
+            $tasks = $execute->add('request',['class' => 'h5 text-muted font-weight-light']);
+
+
+            foreach ($task_items as $item) {
+              $tasks->add($item['label'],['route' => $item['route'], 'id' => $item['id'], 'icon' => $item['icon']]);
+            }
         });
 
         Menu::make('build', function ($menu) {
