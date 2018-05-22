@@ -24,7 +24,8 @@ class RoleSeeder extends Seeder
                 Permission::PM_SETUP_PROCESS_CATEGORIES,
                 Permission::PM_FACTORY,
                 Permission::PM_SETUP_PM_TABLES,
-                Permission::PM_CASES
+                Permission::PM_CASES,
+                Permission::PM_USERS
             ])->get()
         );
 

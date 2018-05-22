@@ -25,6 +25,7 @@ class Permission extends Model
     const PM_CASES = 'PM_CASES';
     const PM_SETUP_PROCESS_CATEGORIES = 'PM_SETUP_PROCESS_CATEGORIES';
     const PM_SETUP_PM_TABLES = 'PM_SETUP_PM_TABLES';
+    const PM_USERS = 'PM_USERS';
 
     // If the permission is active or not
     const STATUS_DISABLED = 'DISABLED';

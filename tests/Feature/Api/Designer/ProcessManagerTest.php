@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api\Designer;
 
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\Activity;
 use ProcessMaker\Model\Application;
@@ -23,6 +24,8 @@ use Tests\Feature\Api\ApiTestCase;
  */
 class ProcessManagerTest extends ApiTestCase
 {
+    use DatabaseTransactions;
+
     const API_TEST_PROJECT = '/api/1.0/project';
 
     /**

@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\ProcessMaker;
 
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Pagination\LengthAwarePaginator;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use League\Fractal\Serializer\ArraySerializer;
@@ -11,6 +12,8 @@ use Tests\TestCase;
 
 class ResponseFractalTest extends TestCase
 {
+    use DatabaseTransactions;
+
     /**
      * Test response Fractal item
      */
