@@ -13,23 +13,23 @@ class FlashMessageTest extends TestCase
       $response = $this->get('/');
       $response->assertStatus(302);
       /*set a flash session*/
-      $response = $this->withSession(['success_message' => 'testMessage'])->get('/');
+      $response = $this->withSession()->flash(['message','success_message'])->get('/');
       /*load page and check for session text*/
-      $response->assertSeeText('testMessage');
+      $response->assertSeeText('success_message');
       /*reload the page again and make sure its gone*/
       $response = $this->get('/');
-      $response->assertDontSeeText('testMessage');
+      $response->assertDontSeeText('success_message');
     }
     public function testErrorMessage()
     {
       $response = $this->get('/');
       $response->assertStatus(302);
       /*set a flash session*/
-      $response = $this->withSession(['error_message' => 'testMessage'])->get('/');
+      $response = $this->withSession()->flash(['message','error_message'])->get('/');
       /*load page and check for session text*/
-      $response->assertSeeText('testMessage');
+      $response->assertSeeText('error_message');
       /*reload the page again and make sure its gone*/
       $response = $this->get('/');
-      $response->assertDontSeeText('testMessage');
+      $response->assertDontSeeText('error_message');
     }
 }
