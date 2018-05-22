@@ -30,12 +30,16 @@ class TestController extends Controller
 
         }
       }
-
       return $tmp->orderBy($field,$order)
       ->where('USR_FIRSTNAME','LIKE','%'.$request->filter.'%')
       ->orWhere('USR_LASTNAME','LIKE','%'.$request->filter.'%')
       ->orWhere('USR_EMAIL','LIKE','%'.$request->filter.'%')
       ->paginate();
 
+    }
+    public function FlashMessageTest(session('message', 'testMessage'))
+    {
+      session()->flash('message','testMessage');
+      return redirect()->home();
     }
 }
