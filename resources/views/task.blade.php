@@ -9,7 +9,7 @@
 @endsection
 
 @section('sidebar')
-  @include('sidebars.task')
+  @include('sidebars.default')
 @endsection
 
 @section('js')

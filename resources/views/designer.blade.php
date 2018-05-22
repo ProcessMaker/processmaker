@@ -13,4 +13,3 @@
 @section('js')
     <script src="{{ asset('js/AppDesigner.js') }}"></script>
 @endsection
-
