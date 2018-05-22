@@ -37,6 +37,7 @@
             },
             createElement(event) {
                 let name = event.target.id.split(':');
+                debugger
                 const defaultOptions = {
                     id: name[1] + '_' + Math.floor((Math.random() * 100) + 1),
                     x: event.x - this.diagramCoordinates.x,
@@ -46,6 +47,7 @@
                 this.builder.createShape(event.target.id, defaultOptions);
             },
             mouseMove (e) {
+                console.log("mousemove")
                 if (this.pan.mouseDown) {
                     let pageTop = this.pan.pageTop;
                     let pageLeft = this.pan.pageLeft;
@@ -75,13 +77,17 @@
                 }
             },
             mouseDown (e){
-                this.pan.panStartX = e.pageX;
-                this.pan.panStartY = e.pageY;
-                this.pan.mouseDown = true;
-                this.pan.pageTop = parseInt(this.$svg.css('top'), false) || 0;
-                this.pan.pageLeft = parseInt(this.$svg.css('left'), false) || 0;
+                console.log("mousedown")
+                if (!this.svg.shapeDrag) {
+                    this.pan.panStartX = e.pageX;
+                    this.pan.panStartY = e.pageY;
+                    this.pan.mouseDown = true;
+                    this.pan.pageTop = parseInt(this.$svg.css('top'), false) || 0;
+                    this.pan.pageLeft = parseInt(this.$svg.css('left'), false) || 0;
+                }
             },
             mouseUp (e){
+                console.log("mouseup")
                 this.pan.mouseDown = false;
             }
         },

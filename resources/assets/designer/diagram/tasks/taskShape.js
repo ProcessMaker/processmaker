@@ -49,9 +49,11 @@ export class TaskShape extends Shape {
                 });
             }, () => {
                 console.log("shape drag start")
+                this.svg.shapeDrag = true
                 this.shape.data('origTransform', this.shape.transform().local);
             },
             () => {
+                this.svg.shapeDrag = null
                 console.log("shape drag end")
             }
         )
