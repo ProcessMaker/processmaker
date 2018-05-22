@@ -1,20 +1,17 @@
 @extends('layouts.layout')
 
 @section('content')
+<div class="container ml-2">
+  <h1>Task</h1>
 
-  <h1>build</h1>
-  <div class="container">
-    <my-vuetable api-url="/test"></my-vuetable>
-  </div>
 
+</div>
 @endsection
 
 @section('sidebar')
-  @include('sidebars.build')
+  @include('sidebars.task')
 @endsection
 
 @section('js')
-  <script>
 
-  </script>
 @endsection
