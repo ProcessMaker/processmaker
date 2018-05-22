@@ -3,6 +3,7 @@
 namespace ProcessMaker\Managers;
 
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Exception\ValidationException;
 use ProcessMaker\Model\OutputDocument;
@@ -14,12 +15,33 @@ class OutputDocumentManager
      * Get a list of All OutPut Documents in a project.
      *
      * @param Process $process
+     * @param array $options
      *
      * @return LengthAwarePaginator
      */
-    public function index(Process $process): LengthAwarePaginator
+    public function index(Process $process, array $options): LengthAwarePaginator
     {
-        return OutputDocument::where('process_id', $process->id)->paginate(10);
+        $start = $options['current_page'];
+        Paginator::currentPageResolver(function () use ($start) {
+            return $start;
+        });
+        $query = OutputDocument::where('process_id', $process->id);
+        $filter = $options['filter'];
+        if (!empty($filter)) {
+            $query->where(function ($query) use ($filter) {
+                $query->Where('title', 'like', '%' . $filter . '%')
+                    ->orWhere('description', 'like', '%' . $filter . '%')
+                    ->orWhere('filename', 'like', '%' . $filter . '%')
+                    ->orWhere('report_generator', 'like', '%' . $filter . '%')
+                    ->orWhere('type', 'like', '%' . $filter . '%')
+                    ->orWhere('versioning', 'like', '%' . $filter . '%')
+                    ->orWhere('current_revision', 'like', '%' . $filter . '%')
+                    ->orWhere('tags', 'like', '%' . $filter . '%');
+            });
+        }
+        return $query->orderBy($options['sort_by'], $options['sort_order'])
+            ->paginate($options['per_page'])
+            ->appends($options);
     }
 
     /**
@@ -42,7 +64,7 @@ class OutputDocumentManager
         $outputDocument->fill($data);
         $outputDocument->saveOrFail();
 
-        return $outputDocument;
+        return $outputDocument->refresh();
     }
 
     /**
@@ -59,12 +81,12 @@ class OutputDocumentManager
     {
         $data['process_id'] = $process->id;
         if (isset($data['properties'])) {
-            $data['properties'] = array_merge($outputDocument->properties, $data['properties']);
+            $data['properties'] = $this->dataProperties(array_merge($outputDocument->properties, $data['properties']));
         }
         $outputDocument->fill($data);
         $this->validate($outputDocument->toArray());
         $outputDocument->saveOrFail();
-        return $outputDocument;
+        return $outputDocument->refresh();
     }
 
 
@@ -110,17 +132,6 @@ class OutputDocumentManager
                 'properties.pdf_security_permissions.*' => 'required_without:properties.pdf_security_permissions|in: "",' . implode(',', OutputDocument::PDF_SECURITY_PERMISSIONS_TYPE),
             ]
         );
-
-        /*if (!empty($data['pdf_security_permissions'])) {
-            $validator->sometimes('pdf_security_permissions', 'array', function($value) {
-                foreach ($value->getAttributes()['pdf_security_permissions'] as $val) {
-                    if (!in_array($val, OutputDocument::PDF_SECURITY_PERMISSIONS_TYPE, true)) {
-                        return false;
-                    }
-                }
-                return true;
-            });
-        }*/
 
         if ($validator->fails()) {
             throw new ValidationException($validator);

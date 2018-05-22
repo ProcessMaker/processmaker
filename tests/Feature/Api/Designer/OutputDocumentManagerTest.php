@@ -4,13 +4,13 @@ namespace Tests\Feature\Api\Designer;
 
 use Faker\Factory as Faker;
 use Illuminate\Support\Facades\Hash;
-use ProcessMaker\Model\Document;
+use ProcessMaker\Model\OutputDocument as Document;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
 use Tests\Feature\Api\ApiTestCase;
 
-class DocumentManagerTest extends ApiTestCase
+class OutputDocumentManagerTest extends ApiTestCase
 {
     const DEFAULT_PASS = 'password';
     const DEFAULT_PASS_OWNER = 'password2';
@@ -34,10 +34,11 @@ class DocumentManagerTest extends ApiTestCase
     ];
 
     /**
-     * Init variables User and Process
+     *  Init data user and process
      */
-    private function initProcess(): void
+    protected function setUp(): void
     {
+        parent::setUp();
         self::$user = factory(User::class)->create([
             'password' => Hash::make(self::DEFAULT_PASS),
             'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
@@ -55,11 +56,10 @@ class DocumentManagerTest extends ApiTestCase
      */
     public function testCreateDocument(): Document
     {
-        $this->initProcess();
         $this->auth(self::$user->username, self::DEFAULT_PASS);
 
         //Post should have the parameter title, description, filename
-        $url = self::API_ROUTE . 'process/' . self::$process->uid . '/-document';
+        $url = self::API_ROUTE . 'process/' . self::$process->uid . '/document';
         $response = $this->api('POST', $url, []);
         //validating the answer is an error
         $response->assertStatus(422);
@@ -69,7 +69,7 @@ class DocumentManagerTest extends ApiTestCase
         $data['report_generator'] = $faker->sentence(1);
         $data['generate'] = $faker->sentence(1);
         $data['type'] = $faker->sentence(1);
-        $url = self::API_ROUTE . 'process/' . self::$process->uid . '/-document';
+        $url = self::API_ROUTE . 'process/' . self::$process->uid . '/document';
         $response = $this->api('POST', $url, $data);
         //validating the answer is an error
         $response->assertStatus(422);
@@ -85,7 +85,7 @@ class DocumentManagerTest extends ApiTestCase
         $data['properties']['pdf_security_open_password'] = self::DEFAULT_PASS;
         $data['properties']['pdf_security_owner_password'] = self::DEFAULT_PASS_OWNER;
 
-        $url = self::API_ROUTE . 'process/' . self::$process->uid . '/-document';
+        $url = self::API_ROUTE . 'process/' . self::$process->uid . '/document';
         $response = $this->api('POST', $url, $data);
         //validating the answer is correct.
         $response->assertStatus(201);
@@ -94,7 +94,7 @@ class DocumentManagerTest extends ApiTestCase
         $response->assertJsonStructure(self::STRUCTURE);
 
         //Post title duplicated
-        $url = self::API_ROUTE . 'process/' . self::$process->uid . '/-document';
+        $url = self::API_ROUTE . 'process/' . self::$process->uid . '/document';
         $response = $this->api('POST', $url, $data);
         //validating the answer is correct.
         $response->assertStatus(422);
@@ -111,12 +111,12 @@ class DocumentManagerTest extends ApiTestCase
         $this->auth(self::$user->username, self::DEFAULT_PASS);
 
         //add Document to process
-        factory(Document::class, 10)->create([
+        $data = factory(Document::class, 11)->create([
             'process_id' => self::$process->id
         ]);
 
         //List Document
-        $url = self::API_ROUTE . 'process/' . self::$process->uid . '/-documents';
+        $url = self::API_ROUTE . 'process/' . self::$process->uid . '/documents';
         $response = $this->api('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
@@ -131,21 +131,75 @@ class DocumentManagerTest extends ApiTestCase
         foreach ($response->json('data') as $item) {
             $response->assertJsonStructure(self::STRUCTURE, $item);
         }
+
+        //List Document with parameters pages and sort
+        $query = '?current_page=2&per_page=5&sort_by=description&sort_order=DESC';
+
+        $url = self::API_ROUTE . 'process/' . self::$process->uid . '/documents' . $query;
+        $response = $this->api('GET', $url);
+        //Validate the answer is correct
+        $response->assertStatus(200);
+
+        //verify structure paginate
+        $response->assertJsonStructure([
+            'data',
+            'meta',
+        ]);
+        //verify response in meta
+        $this->assertEquals(11, $response->original->meta->total);
+        $this->assertEquals(5, $response->original->meta->count);
+        $this->assertEquals(5, $response->original->meta->per_page);
+        $this->assertEquals(2, $response->original->meta->current_page);
+        $this->assertEquals(3, $response->original->meta->total_pages);
+        $this->assertEquals('description', $response->original->meta->sort_by);
+        $this->assertEquals('DESC', $response->original->meta->sort_order);
+        //verify structure of model
+        foreach ($response->json('data') as $item) {
+            $response->assertJsonStructure(self::STRUCTURE, $item);
+        }
+
+        //List Document with filter option
+        $query = '?current_page=1&per_page=5&sort_by=description&sort_order=DESC';
+        $filter = substr($data[0]->title, 0, strlen($data[0]->title) / 2);
+        $query .= '&filter=' . $filter;
+        $url = self::API_ROUTE . 'process/' . self::$process->uid . '/documents' . $query;
+        $response = $this->api('GET', $url);
+        //Validate the answer is correct
+        $response->assertStatus(200);
+
+        //verify structure paginate
+        $response->assertJsonStructure([
+            'data',
+            'meta',
+        ]);
+        //verify response in meta
+        $this->assertGreaterThanOrEqual(1, $response->original->meta->total);
+        $this->assertGreaterThanOrEqual(1, $response->original->meta->count);
+        $this->assertEquals(5, $response->original->meta->per_page);
+        $this->assertEquals(1, $response->original->meta->current_page);
+        $this->assertGreaterThanOrEqual(1, $response->original->meta->total_pages);
+        $this->assertEquals($filter, $response->original->meta->filter);
+        $this->assertEquals('description', $response->original->meta->sort_by);
+        $this->assertEquals('DESC', $response->original->meta->sort_order);
+        //verify structure of model
+        foreach ($response->json('data') as $item) {
+            $response->assertJsonStructure(self::STRUCTURE, $item);
+        }
     }
 
     /**
      * Get a Document of a project.
-     *
-     * @param Document $Document
-     *
-     * @depends testCreateDocument
      */
-    public function testGetDocument(Document $Document): void
+    public function testGetDocument(): void
     {
         $this->auth(self::$user->username, self::DEFAULT_PASS);
 
+        $document = factory(Document::class)->create([
+            'process_id' => self::$process->id
+        ]);
+
         //load Document
-        $url = self::API_ROUTE . 'process/' . self::$process->uid . '/-document/' . $Document->uid;
+        $url = self::API_ROUTE . 'process/' . self::$process->uid . '/document/' . $document->uid;
         $response = $this->api('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
@@ -154,8 +208,8 @@ class DocumentManagerTest extends ApiTestCase
         $response->assertJsonStructure(self::STRUCTURE);
 
         //Document not belong to process.
-        $Document = factory(Document::class)->create();
-        $url = self::API_ROUTE . 'process/' . self::$process->uid . '/-document/' . $Document->uid;
+        $document = factory(Document::class)->create();
+        $url = self::API_ROUTE . 'process/' . self::$process->uid . '/document/' . $document->uid;
         $response = $this->api('GET', $url);
         //Validate the answer is incorrect
         $response->assertStatus(404);
@@ -164,14 +218,14 @@ class DocumentManagerTest extends ApiTestCase
 
     /**
      * Update Document in process
-     *
-     * @param Document $Document
-     *
-     * @depends testCreateDocument
      */
-    public function testUpdateDocument(Document $Document): void
+    public function testUpdateDocument(): void
     {
         $this->auth(self::$user->username, self::DEFAULT_PASS);
+
+        $document = factory(Document::class)->create([
+            'process_id' => self::$process->id
+        ]);
 
         $faker = Faker::create();
         $data = [
@@ -183,7 +237,7 @@ class DocumentManagerTest extends ApiTestCase
             'type' => $faker->randomElement(Document::DOC_TYPE)
         ];
         //The post should have the required parameters
-        $url = self::API_ROUTE . 'process/' . self::$process->uid . '/-document/' . $Document->uid;
+        $url = self::API_ROUTE . 'process/' . self::$process->uid . '/document/' . $document->uid;
         $response = $this->api('PUT', $url, $data);
         //Validate the answer is incorrect
         $response->assertStatus(422);
@@ -193,33 +247,33 @@ class DocumentManagerTest extends ApiTestCase
         $data['description'] = $faker->sentence(2);
         $data['filename'] = $faker->sentence(2);
         $data['properties']['pdf_security_permissions'] = [];
-        $url = self::API_ROUTE . 'process/' . self::$process->uid . '/-document/' . $Document->uid;
+        $url = self::API_ROUTE . 'process/' . self::$process->uid . '/document/' . $document->uid;
         $response = $this->api('PUT', $url, $data);
         //Validate the answer is correct
         $response->assertStatus(200);
     }
 
     /**
-     * Delete $Document in process
-     *
-     * @param Document $Document
-     *
-     * @depends testCreateDocument
+     * Delete $document in process
      */
-    public function testDeleteDocument(Document $Document): void
+    public function testDeleteDocument(): void
     {
         $this->auth(self::$user->username, self::DEFAULT_PASS);
 
+        $document = factory(Document::class)->create([
+            'process_id' => self::$process->id
+        ]);
+
         //Remove Document
-        $url = self::API_ROUTE . 'process/' . self::$process->uid . '/-document/' . $Document->uid;
+        $url = self::API_ROUTE . 'process/' . self::$process->uid . '/document/' . $document->uid;
         $response = $this->api('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(204);
 
-        $Document = factory(Document::class)->make();
+        $document = factory(Document::class)->make();
 
         //Document not exist
-        $url = self::API_ROUTE . 'process/' . self::$process->uid . '/-document/' . $Document->uid;
+        $url = self::API_ROUTE . 'process/' . self::$process->uid . '/document/' . $document->uid;
         $response = $this->api('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(404);

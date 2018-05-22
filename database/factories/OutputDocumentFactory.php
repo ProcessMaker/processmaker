@@ -20,5 +20,9 @@ $factory->define(OutputDocument::class, function (Faker $faker) {
         'report_generator' => $faker->randomElement(OutputDocument::DOC_REPORT_GENERATOR_TYPE),
         'generate' => $faker->randomElement(OutputDocument::DOC_GENERATE_TYPE),
         'type' => $faker->randomElement(OutputDocument::DOC_TYPE),
+        'current_revision' => $faker->randomElement([0,1]),
+        'open_type' => $faker->randomElement([0,1]),
+        'template' => $faker->randomHtml(2,3),
+        'versioning' => $faker->randomElement([0,1]),
     ];
 });

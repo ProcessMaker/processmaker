@@ -115,11 +115,11 @@ Router::group([
         Router::get('project/{process}/activity/{activity}/available-assignee/paged', 'Designer\AssigneeController@getActivityAvailablePaged')->middleware('can:read,ProcessMaker\Model\TaskUser');
 
         //Output Document endpoints
-        Router::get('process/{process}/output-documents', 'Designer\OutputDocumentController@index')->middleware('can:read,ProcessMaker\Model\OutputDocument');
-        Router::get('process/{process}/output-document/{outputDocument}', 'Designer\OutputDocumentController@show')->middleware('can:read,ProcessMaker\Model\OutputDocument');
-        Router::post('process/{process}/output-document', 'Designer\OutputDocumentController@store')->middleware('can:write,ProcessMaker\Model\OutputDocument');
-        Router::put('process/{process}/output-document/{outputDocument}', 'Designer\OutputDocumentController@update')->middleware('can:write,ProcessMaker\Model\OutputDocument');
-        Router::delete('process/{process}/output-document/{outputDocument}', 'Designer\OutputDocumentController@remove')->middleware('can:delete,ProcessMaker\Model\OutputDocument');
+        Router::get('process/{process}/documents', 'Designer\OutputDocumentController@index')->middleware('can:read,ProcessMaker\Model\OutputDocument');
+        Router::get('process/{process}/document/{outputDocument}', 'Designer\OutputDocumentController@show')->middleware('can:read,ProcessMaker\Model\OutputDocument');
+        Router::post('process/{process}/document', 'Designer\OutputDocumentController@store')->middleware('can:write,ProcessMaker\Model\OutputDocument');
+        Router::put('process/{process}/document/{outputDocument}', 'Designer\OutputDocumentController@update')->middleware('can:write,ProcessMaker\Model\OutputDocument');
+        Router::delete('process/{process}/document/{outputDocument}', 'Designer\OutputDocumentController@remove')->middleware('can:delete,ProcessMaker\Model\OutputDocument');
 
         //Input Document endpoints
         Router::get('project/{process}/input-documents', 'Designer\InputDocumentController@index')->middleware('can:read,ProcessMaker\Model\InputDocument');

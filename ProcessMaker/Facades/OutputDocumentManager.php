@@ -13,7 +13,7 @@ use ProcessMaker\Model\Process;
  * @package ProcessMaker\Facades
  * @see \ProcessMaker\Managers\OutputDocumentManager
  *
- * @method static Paginator index(Process $process)
+ * @method static Paginator index(Process $process, array $options)
  * @method static OutputDocument save(Process $process, array $data)
  * @method static array update(Process $process, OutputDocument $outPutDocument, array $data)
  * @method static boolean|null remove(OutputDocument $outPutDocument)

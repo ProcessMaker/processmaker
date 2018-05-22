@@ -17,12 +17,20 @@ class OutputDocumentController
      * Get a list of OutPut Documents in a project.
      *
      * @param Process $process
+     * @param Request $request
      *
      * @return ResponseFactory|Response
      */
-    public function index(Process $process)
+    public function index(Process $process, Request $request)
     {
-        $response = OutputDocumentManager::index($process);
+        $options = [
+            'filter' => $request->input('filter', ''),
+            'current_page' => $request->input('current_page', 1),
+            'per_page' => $request->input('per_page', 10),
+            'sort_by' => $request->input('sort_by', 'title'),
+            'sort_order' => $request->input('sort_order', 'ASC'),
+        ];
+        $response = OutputDocumentManager::index($process, $options);
         return fractal($response, new OutputDocumentTransformer())->respond(200);
     }
 
@@ -55,12 +63,14 @@ class OutputDocumentController
             'report_generator' => $request->input('report_generator', 'HTML2PDF'),
             'generate' => $request->input('generate', 'BOTH'),
             'type' => $request->input('type', 'HTML'),
+            'current_revision' => $request->input('current_revision', 0),
+            'open_type' => $request->input('open_type', 0),
             'versioning' => $request->input('versioning', 0),
             'properties' => $request->input('properties', []),
         ];
 
         $data = array_merge($data, $this->formatData($request, ['title', 'description', 'filename', 'template',
-            'type', 'current_revision', 'tags', 'open_type']));
+            'type', 'tags']));
 
         $response = OutputDocumentManager::save($process, $data);
         return fractal($response, new OutputDocumentTransformer())->respond(201);
