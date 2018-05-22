@@ -22,7 +22,7 @@ class GenerateMenus
 
 
         // Build the menu
-        Menu::make('main', function ($menu) {
+        Menu::make('admin', function ($menu) {
           $task_items = [
             [
               'label' => 'Users',

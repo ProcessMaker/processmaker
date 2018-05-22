@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container ml-2">
-  <h1>Run</h1>
+  <h1>Home</h1>
 
   <div id="home">
     <div id="inbox">
@@ -13,7 +13,7 @@
 @endsection
 
 @section('sidebar')
-  @include('sidebars.default')
+  @include('sidebars.admin')
 @endsection
 
 @section('js')
