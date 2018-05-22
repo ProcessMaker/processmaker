@@ -3,7 +3,7 @@
   <div class="mr-auto collapse navbar-collapse " id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto p-3">
       <li class="nav-item">
-        <a class="nav-link" href="/">Request</a>
+        <a class="nav-link" href="/request">Request</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="/task">Task</a>
