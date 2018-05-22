@@ -179,35 +179,35 @@ class GenerateMenus
             $task_items = [
             [
               'label' => 'Assigned',
-              'header' => true,
+              'header' => false,
               'route' => 'home',
               'icon' => 'fa-user',
               'id' => 'homeid'
             ],
             [
               'label' => 'Unassigned',
-              'header' => true,
+              'header' => false,
               'route' => 'home',
               'icon' => 'fa-users',
               'id' => 'homeid'
             ],
             [
               'label' => 'Completed',
-              'header' => true,
+              'header' => false,
               'route' => 'home',
               'icon' => 'fa-user-plus',
               'id' => 'homeid'
             ],
             [
               'label' => 'Paused',
-              'header' => true,
+              'header' => false,
               'route' => 'home',
               'icon' => 'fa-user-plus',
               'id' => 'homeid'
             ],
             [
               'label' => 'task',
-              'header' => true,
+              'header' => false,
               'route' => 'home',
               'icon' => 'fa-user-plus',
               'id' => 'homeid'

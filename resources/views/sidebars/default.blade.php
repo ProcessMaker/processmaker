@@ -1,7 +1,7 @@
 <div class="sidebarmenu fixed-top bg-primary" v-bind:class="{sidebarmenuicons: !expanded}" id="sidebarMenu" v-on:mouseover="toggleVisibility" v-on:mouseout="toggleVisibility">
   <img class="sidebarlogo" v-if="expanded" v-bind:src="logo"><img class="sidebaricon" v-else v-bind:src="icon">
   <ul class="l-0 list-unstyled position-fixed text-light" id="sidebarscroll">
-    @foreach($sidebar_admin->items as $row)
+    @foreach($sidebar->items as $row)
       @if(array_key_exists('route',$row->link->path))
         <li>
           <a href="{{ url($row->link->path['route']) }}">
