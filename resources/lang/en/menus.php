@@ -1,16 +1,12 @@
 <?php
 
 return[
-  'execute' => [
+  'sidebar_task' => [
     'tasks' => 'Tasks',
-    'pending' => 'Pending',
-    'unclaimed' => 'Unclaimed',
+    'assigned' => 'Assigned',
+    'unassigned' => 'Unassigned',
     'completed' => 'Completed',
-    'cases' => 'Cases',
-    'new' => 'New',
-    'draft' => 'Draft',
-    'mine' => 'Mine',
-    'find' => 'Find',
+    'paused' => 'Paused'
   ],
   'build' => [
     'applications' => 'Applications',
@@ -19,7 +15,7 @@ return[
     'forms' => 'Forms',
     'scripts' => 'Scripts',
   ],
-  'manage' => [
+  'sidebar_admin' => [
     'organization' => 'organization',
     'users' => 'Users',
     'groups' => 'Groups',
@@ -36,6 +32,7 @@ return[
     'themes' => 'Themes ',
     'system_information' => 'System Information',
     'software_requirements' => 'Software Requirements',
+    'plugins' => 'Plug Ins',
     'integrations' => 'Integrations',
     'tools' => 'Tools',
     'manage_cache' => 'Manage Cache ',
