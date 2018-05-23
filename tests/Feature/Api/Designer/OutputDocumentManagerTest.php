@@ -110,11 +110,12 @@ class OutputDocumentManagerTest extends ApiTestCase
         $this->auth($this->user->username, self::DEFAULT_PASS);
 
         $faker = Faker::create();
-        $data['report_generator'] = $faker->sentence(1);
-        $data['generate'] = $faker->sentence(1);
-        $data['type'] = $faker->sentence(1);
         $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document';
-        $response = $this->api('POST', $url, $data);
+        $response = $this->api('POST', $url, [
+            'report_generator' => $faker->sentence(1),
+            'generate' => $faker->sentence(1),
+            'type' => $faker->sentence(1),
+        ]);
         //validating the answer is an error
         $response->assertStatus(422);
     }
@@ -128,18 +129,21 @@ class OutputDocumentManagerTest extends ApiTestCase
 
         //Post saved correctly
         $faker = Faker::create();
-        $data['title'] = $faker->sentence(3);
-        $data['description'] = $faker->sentence(3);
-        $data['filename'] = $faker->sentence(3);
-        $data['report_generator'] = $faker->randomElement(Document::DOC_REPORT_GENERATOR_TYPE);
-        $data['generate'] = $faker->randomElement(Document::DOC_GENERATE_TYPE);
-        $data['type'] = $faker->randomElement(Document::DOC_TYPE);
-        $data['properties']['pdf_security_permissions'] = $faker->randomElements(Document::PDF_SECURITY_PERMISSIONS_TYPE, 2, false);
-        $data['properties']['pdf_security_open_password'] = self::DEFAULT_PASS;
-        $data['properties']['pdf_security_owner_password'] = self::DEFAULT_PASS_OWNER;
 
         $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document';
-        $response = $this->api('POST', $url, $data);
+        $response = $this->api('POST', $url, [
+            'title' => $faker->sentence(3),
+            'description' => $faker->sentence(3),
+            'filename' => $faker->sentence(3),
+            'report_generator' => $faker->randomElement(Document::DOC_REPORT_GENERATOR_TYPE),
+            'generate' => $faker->randomElement(Document::DOC_GENERATE_TYPE),
+            'type' => $faker->randomElement(Document::DOC_TYPE),
+            'properties' => [
+                'pdf_security_permissions' => $faker->randomElements(Document::PDF_SECURITY_PERMISSIONS_TYPE, 2, false),
+                'pdf_security_open_password' => self::DEFAULT_PASS,
+                'pdf_security_owner_password' => self::DEFAULT_PASS_OWNER,
+            ]
+        ]);
         //validating the answer is correct.
         $response->assertStatus(201);
         //Check structure of response.
@@ -163,18 +167,21 @@ class OutputDocumentManagerTest extends ApiTestCase
 
         //Post title duplicated
         $faker = Faker::create();
-        $data['title'] = $title;
-        $data['description'] = $faker->sentence(3);
-        $data['filename'] = $faker->sentence(3);
-        $data['report_generator'] = $faker->randomElement(Document::DOC_REPORT_GENERATOR_TYPE);
-        $data['generate'] = $faker->randomElement(Document::DOC_GENERATE_TYPE);
-        $data['type'] = $faker->randomElement(Document::DOC_TYPE);
-        $data['properties']['pdf_security_permissions'] = $faker->randomElements(Document::PDF_SECURITY_PERMISSIONS_TYPE, 2, false);
-        $data['properties']['pdf_security_open_password'] = self::DEFAULT_PASS;
-        $data['properties']['pdf_security_owner_password'] = self::DEFAULT_PASS_OWNER;
 
         $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document';
-        $response = $this->api('POST', $url, $data);
+        $response = $this->api('POST', $url, [
+            'title' => $title,
+            'description' => $faker->sentence(3),
+            'filename' => $faker->sentence(3),
+            'report_generator' => $faker->randomElement(Document::DOC_REPORT_GENERATOR_TYPE),
+            'generate' => $faker->randomElement(Document::DOC_GENERATE_TYPE),
+            'type' => $faker->randomElement(Document::DOC_TYPE),
+            'properties' => [
+                'pdf_security_permissions' => $faker->randomElements(Document::PDF_SECURITY_PERMISSIONS_TYPE, 2, false),
+                'pdf_security_open_password' => self::DEFAULT_PASS,
+                'pdf_security_owner_password' => self::DEFAULT_PASS_OWNER,
+            ]
+        ]);
         //validating the answer is correct.
         $response->assertStatus(422);
     }
@@ -337,17 +344,16 @@ class OutputDocumentManagerTest extends ApiTestCase
         ]);
 
         $faker = Faker::create();
-        $data = [
+
+        $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document/' . $document->uid;
+        $response = $this->api('PUT', $url, [
             'title' => '',
             'description' => '',
             'filename' => '',
             'report_generator' => $faker->randomElement(Document::DOC_REPORT_GENERATOR_TYPE),
             'generate' => $faker->randomElement(Document::DOC_GENERATE_TYPE),
             'type' => $faker->randomElement(Document::DOC_TYPE)
-        ];
-
-        $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document/' . $document->uid;
-        $response = $this->api('PUT', $url, $data);
+        ]);
         //Validate the answer is incorrect
         $response->assertStatus(422);
     }
@@ -364,18 +370,19 @@ class OutputDocumentManagerTest extends ApiTestCase
         ]);
 
         $faker = Faker::create();
-        $data = [
+
+        $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document/' . $document->uid;
+        $response = $this->api('PUT', $url, [
             'title' => $faker->sentence(2),
             'description' => $faker->sentence(2),
             'filename' => $faker->sentence(2),
             'report_generator' => $faker->randomElement(Document::DOC_REPORT_GENERATOR_TYPE),
             'generate' => $faker->randomElement(Document::DOC_GENERATE_TYPE),
-            'type' => $faker->randomElement(Document::DOC_TYPE)
-        ];
-
-        $data['properties']['pdf_security_permissions'] = [];
-        $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document/' . $document->uid;
-        $response = $this->api('PUT', $url, $data);
+            'type' => $faker->randomElement(Document::DOC_TYPE),
+            'properties' => [
+                'pdf_security_permissions' => []
+            ]
+        ]);
         //Validate the answer is correct
         $response->assertStatus(200);
     }
