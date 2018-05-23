@@ -16,7 +16,7 @@ use ProcessMaker\Transformers\ProcessTransformer;
  * Implements endpoints to manage the processes.
  *
  */
-class ProcessManagerController extends Controller
+class ProcessesController extends Controller
 {
 
     /**
@@ -28,26 +28,23 @@ class ProcessManagerController extends Controller
      */
     public function index(Request $request)
     {
-        $filter = $request->input("filter");
-        $start = $request->input("start");
-        $limit = $request->input("limit");
-        $response = ProcessManager::index($filter, $start, $limit);
-        $fractal = new Manager();
-        $serializer = new ProcessMakerSerializer();
-        $fractal->setSerializer($serializer);
-        $fractal->parseExcludes('diagram');
-        $json = $fractal->createData(new Collection($response, new ProcessTransformer([
-            'prj_uid',
-            'prj_name',
-            'prj_description',
-            'prj_category',
-            'prj_type',
-            'prj_create_date',
-            'prj_update_date',
-            'prj_status',
-        ])))->toJson();
-        return response($json, 200);
-    }
+        // Get parameters for our request with defaults
+        $filter = $request->input("filter", null);
+        $perPage = $request->input("per_page", 10);
+
+        if($filter) {
+            // We want to search off of name and description
+            $filter = '%' . $filter . '%';
+            $processes = Process::where('name', 'like', $filter)
+                ->orWhere('description', 'like', $filter)
+                ->paginate($perPage);
+        } else {
+            $processes = Process::paginate($perPage);
+        }
+
+        // Now, let's return with fractal to standardize our api output
+        return fractal($processes, new ProcessTransformer())->respond(200);
+   }
 
     /**
      * Stores a new process.

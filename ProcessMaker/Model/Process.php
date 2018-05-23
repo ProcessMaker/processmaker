@@ -152,6 +152,13 @@ class Process extends Model
         'PRO_BPMN_TYPE',
     ];
 
+    // Hidden fields when presenting to api or other toArray calls
+    // BPMN data will be hidden. It will be able to be retrieved in /processes/{process_id}/bpmn GET call
+    protected $hidden = [
+        'id',
+        'bpmn'
+    ];
+
     /**
      * Validation rules.
      *
