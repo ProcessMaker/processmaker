@@ -61,7 +61,7 @@ jest.mock("bpmn-moddle", () => jest.fn().mockImplementation(() => ({
 })))
 
 describe("designer.vue", () => {
-    let cmp
+    let cmp, cmp2
 
     beforeEach(() => {
         cmp = shallow(designer, {
@@ -85,5 +85,10 @@ describe("designer.vue", () => {
                 y: 5
             }
         })
+    })
+
+    it("Verify if the tag contains the class with the background image ", () => {
+        cmp2 = mount(designer)
+        expect(cmp2.find('.svg_canvas').element).toBeInstanceOf(SVGSVGElement)
     })
 })

@@ -55,7 +55,7 @@
 
 <style>
     .svg_canvas {
-        background: #FFFFFF;
+        background-image: url(../img/bg_designer.gif);
     }
 
     .pmdesigner-container {
