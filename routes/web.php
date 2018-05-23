@@ -16,13 +16,17 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
 
   // All the routes in this group and below are for testing purposes only
 
-    $this->get('/build', function(){
-      return view('build',['title' => 'Dashboard']);
-    })->name('build');
+    $this->get('/task', function(){
+      return view('task',['title' => 'Dashboard']);
+    })->name('task');
 
-    $this->get('/manage', function(){
-      return view('manage',['title' => 'Dashboard']);
-    })->name('manage');
+    $this->get('/process', function(){
+      return view('process',['title' => 'Dashboard']);
+    })->name('process');
+
+    $this->get('/admin', function(){
+      return view('admin',['title' => 'Dashboard']);
+    })->name('admin');
 
     $this->get('/', function() {
         return view('home', ['title' => 'Dashboard']);
@@ -31,7 +35,7 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
     $this->get('/home', function() {
         return view('home', ['title' => 'Dashboard']);
     })->name('home');
-    
+
     $this->get('/userprofile', function() {
         return view('userprofile', ['title' => 'Dashboard']);
     })->name('userprofile');
