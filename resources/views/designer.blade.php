@@ -2,9 +2,11 @@
 @section('content')
 
     <div class="pmdesigner-container" id="appDesigner">
-        <toptoolbar></toptoolbar>
+      <toptoolbar></toptoolbar>
+      <div>
         <toolbar></toolbar>
         <designer ref="canvas"></designer>
+      <div>
     </div>
 @endsection
 
