@@ -51,4 +51,36 @@ export class Shape {
     getSnapObject() {
         return this.shape;
     }
+
+    /**
+     * This method updates the position of shape in movement
+     * @param dx
+     * @param dy
+     */
+    onMove() {
+        return (dx, dy) => {
+            this.shape.attr({
+                transform: this.shape.data('origTransform') + ( this.shape.data('origTransform') ? "T" : "t") + [dx, dy]
+            })
+        }
+    }
+
+    /**
+     * This method is execute on DragStart Event
+     */
+    onDragStart() {
+        return (ev) => {
+            this.svg.shapeDrag = true
+            this.shape.data('origTransform', this.shape.transform().local);
+        }
+    }
+
+    /**
+     * This method is execute on DragEnd Event
+     */
+    onDragEnd() {
+        return (ev) => {
+            this.svg.shapeDrag = null
+        }
+    }
 }

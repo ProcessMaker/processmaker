@@ -51,6 +51,6 @@ export class EventShape extends Shape {
             id: this.options.id
         });
         this.shape.add(group);
-        this.shape.drag();
+        this.shape.drag(this.onMove(), this.onDragStart(), this.onDragEnd())
     }
 }

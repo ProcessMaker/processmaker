@@ -61,7 +61,7 @@ jest.mock("bpmn-moddle", () => jest.fn().mockImplementation(() => ({
 })))
 
 describe("designer.vue", () => {
-    let cmp
+    let cmp, cmp2
 
     beforeEach(() => {
         cmp = shallow(designer, {
@@ -85,5 +85,29 @@ describe("designer.vue", () => {
                 y: 5
             }
         })
+    })
+
+    it("mouseMove() - Verify if the mousemove event updates the pan property in vue component", () => {
+        cmp2 = mount(designer, {propsData: {pan: {}}})
+        cmp2.vm.mouseDown({
+            pageX: 100,
+            pageY: 100
+        })
+        cmp2.vm.mouseMove({
+            pageX: 100,
+            pageY: 100
+        })
+        expect(cmp2.vm.pan).toEqual({
+                panStartX: 100,
+                panStartY: 100,
+                mouseDown: true,
+                pageTop: 0,
+                pageLeft: 0,
+                panEndX: 100,
+                panEndY: 100,
+                panTop: 0,
+                panLeft: 0
+            }
+        )
     })
 })
