@@ -5,6 +5,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Lavary\Menu\Facade as Menu;
 
+
 class GenerateMenus
 {
 
@@ -24,140 +25,140 @@ class GenerateMenus
         Menu::make('sidebar_admin', function ($menu) {
             $task_items = [
             [
-              'label' => 'Organization',
+              'label' => __('menus.sidebar_admin.organization'),
               'header' => true,
               'route' => '',
               'icon' => '',
               'id' => ''
             ],
             [
-              'label' => 'Users',
+              'label' => __('menus.sidebar_admin.users'),
               'header' => false,
               'route' => 'home',
               'icon' => 'fa-user',
               'id' => 'homeid'
             ],
             [
-              'label' => 'Groups',
+              'label' => __('menus.sidebar_admin.groups'),
               'header' => false,
               'route' => 'home',
               'icon' => 'fa-users',
               'id' => 'homeid'
             ],
             [
-              'label' => 'Roles',
+              'label' => __('menus.sidebar_admin.roles'),
               'header' => false,
               'route' => 'home',
               'icon' => 'fa-user-plus',
               'id' => 'homeid'
             ],
             [
-              'label' => 'Security',
+              'label' => __('menus.sidebar_admin.security'),
               'header' => true,
               'route' => '',
               'icon' => '',
               'id' => ''
               ],
               [
-                'label' => 'Login',
+                'label' => __('menus.sidebar_admin.login'),
                 'header' => false,
                 'route' => 'home',
                 'icon' => 'fa-key',
                 'id' => 'homeid'
               ],
               [
-                'label' => 'Authentication',
+                'label' => __('menus.sidebar_admin.authentication'),
                 'header' => false,
                 'route' => 'home',
                 'icon' => 'fa-user-secret',
                 'id' => 'homeid'
               ],
               [
-                'label' => 'System Preferences',
+                'label' => __('menus.sidebar_admin.system_preferences'),
                 'route' => '',
                 'icon' => '',
                 'header' => true,
                 'id' => ''
               ],
               [
-                'label' => 'Localization',
+                'label' => __('menus.sidebar_admin.localization'),
                 'route' => 'home',
                 'icon' => 'fa-globe',
                 'header' => false,
                 'id' => 'homeid'
               ],
               [
-                'label' => 'Email Configuration',
+                'label' => __('menus.sidebar_admin.email_configuration'),
                 'route' => 'home',
                 'icon' => 'fa-envelope',
                 'header' => false,
                 'id' => 'homeid'
               ],
               [
-                'label' => 'Notifications',
+                'label' => __('menus.sidebar_admin.notifications'),
                 'route' => 'home',
                 'icon' => 'fa-bell',
                 'header' => false,
                 'id' => 'homeid'
               ],
               [
-                'label' => 'Appearance',
+                'label' => __('menus.sidebar_admin.apperance'),
                 'header' => true,
                 'route' => '',
                 'icon' => '',
                 'id' => ''
               ],
               [
-                'label' => 'Custom',
+                'label' => __('menus.sidebar_admin.customize'),
                 'header' => false,
                 'route' => 'home',
                 'icon' => 'fa-cogs',
                 'id' => 'homeid'
               ],
               [
-                'label' => 'Themes',
+                'label' => __('menus.sidebar_admin.themes'),
                 'header' => false,
                 'route' => 'home',
                 'icon' => 'fa-th',
                 'id' => 'homeid'
               ],
               [
-                'label' => 'System Information',
+                'label' => __('menus.sidebar_admin.system_information'),
                 'header' => true,
                 'route' => '',
                 'icon' => '',
                 'id' => ''
               ],
               [
-                'label' => 'Software Requirements',
+                'label' => __('menus.sidebar_admin.software_requirements'),
                 'header' => false,
                 'route' => 'home',
                 'icon' => 'fa-laptop',
                 'id' => 'homeid'
               ],
               [
-                'label' => 'Plugins',
+                'label' => __('menus.sidebar_admin.plugins'),
                 'header' => false,
                 'route' => 'home',
                 'icon' => 'fa-puzzle-piece',
                 'id' => 'homeid'
               ],
               [
-                'label' => 'Tools',
+                'label' => __('menus.sidebar_admin.tools'),
                 'header' => true,
                 'route' => '',
                 'icon' => '',
                 'id' => ''
               ],
               [
-                'label' => 'Manage Cache',
+                'label' => __('menus.sidebar_admin.manage_cache'),
                 'header' => false,
                 'route' => 'home',
                 'icon' => 'fa-bolt',
                 'id' => 'homeid'
               ],
               [
-                'label' => 'Audit Log',
+                'label' => __('menus.sidebar_admin.audit_log'),
                 'header' => false,
                 'route' => 'home',
                 'icon' => 'fa-list-ul',
@@ -177,36 +178,36 @@ class GenerateMenus
 
         Menu::make('sidebar_task', function ($menu) {
             $task_items = [
+              [
+                'label' => __('menus.sidebar_task.tasks'),
+                'header' => true,
+                'route' => '',
+                'icon' => '',
+                'id' => ''
+              ],
             [
-              'label' => 'Assigned',
+              'label' => __('menus.sidebar_task.assigned'),
               'header' => false,
               'route' => 'home',
               'icon' => 'fa-user',
               'id' => 'homeid'
             ],
             [
-              'label' => 'Unassigned',
+              'label' => __('menus.sidebar_task.unassigned'),
               'header' => false,
               'route' => 'home',
               'icon' => 'fa-users',
               'id' => 'homeid'
             ],
             [
-              'label' => 'Completed',
+              'label' => __('menus.sidebar_task.completed'),
               'header' => false,
               'route' => 'home',
               'icon' => 'fa-user-plus',
               'id' => 'homeid'
             ],
             [
-              'label' => 'Paused',
-              'header' => false,
-              'route' => 'home',
-              'icon' => 'fa-user-plus',
-              'id' => 'homeid'
-            ],
-            [
-              'label' => 'task',
+              'label' => __('menus.sidebar_task.paused'),
               'header' => false,
               'route' => 'home',
               'icon' => 'fa-user-plus',
