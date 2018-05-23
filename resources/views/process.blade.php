@@ -10,7 +10,7 @@
 @endsection
 
 @section('sidebar')
-  @include('sidebars.manage')
+  @include('sidebars.default', ['sidebar'=> $sidebar_admin])
 @endsection
 
 @section('js')

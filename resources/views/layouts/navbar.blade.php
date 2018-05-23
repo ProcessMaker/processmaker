@@ -3,13 +3,16 @@
   <div class="mr-auto collapse navbar-collapse " id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto p-3">
       <li class="nav-item">
-        <a class="nav-link" href="/">Run</a>
+        <a class="nav-link" href="{{ url('home') }}">Request</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/build">Build</a>
+        <a class="nav-link" href="{{ url('task') }}">Task</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/manage">Manage</a>
+        <a class="nav-link" href="/{{ url('process') }}">Process</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url('admin') }}">Admin</a>
       </li>
     </ul>
 

@@ -5,6 +5,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Lavary\Menu\Facade as Menu;
 
+
 class GenerateMenus
 {
 
@@ -17,27 +18,235 @@ class GenerateMenus
      */
     public function handle(Request $request, Closure $next)
     {
-          //set’s application’s locale
+        //set’s application’s locale
         app()->setLocale('en');
 
-
         // Build the menu
-        Menu::make('main', function ($menu) {
-          $task_items = [
+        Menu::make('sidebar_admin', function ($menu) {
+            $task_items = [
             [
-              'label' => 'Users',
+              'label' => __('menus.sidebar_admin.organization'),
+              'header' => true,
+              'route' => '',
+              'icon' => '',
+              'id' => ''
+            ],
+            [
+              'label' => __('menus.sidebar_admin.users'),
+              'header' => false,
               'route' => 'home',
               'icon' => 'fa-user',
               'id' => 'homeid'
             ],
             [
-              'label' => 'Groups',
+              'label' => __('menus.sidebar_admin.groups'),
+              'header' => false,
               'route' => 'home',
               'icon' => 'fa-users',
               'id' => 'homeid'
             ],
             [
-              'label' => 'Roles',
+              'label' => __('menus.sidebar_admin.roles'),
+              'header' => false,
+              'route' => 'home',
+              'icon' => 'fa-user-plus',
+              'id' => 'homeid'
+            ],
+            [
+              'label' => __('menus.sidebar_admin.security'),
+              'header' => true,
+              'route' => '',
+              'icon' => '',
+              'id' => ''
+              ],
+              [
+                'label' => __('menus.sidebar_admin.login'),
+                'header' => false,
+                'route' => 'home',
+                'icon' => 'fa-key',
+                'id' => 'homeid'
+              ],
+              [
+                'label' => __('menus.sidebar_admin.authentication'),
+                'header' => false,
+                'route' => 'home',
+                'icon' => 'fa-user-secret',
+                'id' => 'homeid'
+              ],
+              [
+                'label' => __('menus.sidebar_admin.system_preferences'),
+                'route' => '',
+                'icon' => '',
+                'header' => true,
+                'id' => ''
+              ],
+              [
+                'label' => __('menus.sidebar_admin.localization'),
+                'route' => 'home',
+                'icon' => 'fa-globe',
+                'header' => false,
+                'id' => 'homeid'
+              ],
+              [
+                'label' => __('menus.sidebar_admin.email_configuration'),
+                'route' => 'home',
+                'icon' => 'fa-envelope',
+                'header' => false,
+                'id' => 'homeid'
+              ],
+              [
+                'label' => __('menus.sidebar_admin.notifications'),
+                'route' => 'home',
+                'icon' => 'fa-bell',
+                'header' => false,
+                'id' => 'homeid'
+              ],
+              [
+                'label' => __('menus.sidebar_admin.apperance'),
+                'header' => true,
+                'route' => '',
+                'icon' => '',
+                'id' => ''
+              ],
+              [
+                'label' => __('menus.sidebar_admin.customize'),
+                'header' => false,
+                'route' => 'home',
+                'icon' => 'fa-cogs',
+                'id' => 'homeid'
+              ],
+              [
+                'label' => __('menus.sidebar_admin.themes'),
+                'header' => false,
+                'route' => 'home',
+                'icon' => 'fa-th',
+                'id' => 'homeid'
+              ],
+              [
+                'label' => __('menus.sidebar_admin.system_information'),
+                'header' => true,
+                'route' => '',
+                'icon' => '',
+                'id' => ''
+              ],
+              [
+                'label' => __('menus.sidebar_admin.software_requirements'),
+                'header' => false,
+                'route' => 'home',
+                'icon' => 'fa-laptop',
+                'id' => 'homeid'
+              ],
+              [
+                'label' => __('menus.sidebar_admin.plugins'),
+                'header' => false,
+                'route' => 'home',
+                'icon' => 'fa-puzzle-piece',
+                'id' => 'homeid'
+              ],
+              [
+                'label' => __('menus.sidebar_admin.tools'),
+                'header' => true,
+                'route' => '',
+                'icon' => '',
+                'id' => ''
+              ],
+              [
+                'label' => __('menus.sidebar_admin.manage_cache'),
+                'header' => false,
+                'route' => 'home',
+                'icon' => 'fa-bolt',
+                'id' => 'homeid'
+              ],
+              [
+                'label' => __('menus.sidebar_admin.audit_log'),
+                'header' => false,
+                'route' => 'home',
+                'icon' => 'fa-list-ul',
+                'id' => 'homeid'
+              ],
+            ];
+
+            $tasks = $menu;
+            foreach ($task_items as $item) {
+                if ($item['header'] === false) {
+                    $tasks->add($item['label'], ['route'  => $item['route'], 'id' => $item['id'], 'icon' => $item['icon']]);
+                } else {
+                    $tasks->add($item['label'], ['class' => 'h5 text-muted font-weight-light']);
+                }
+            }
+        });
+
+        Menu::make('sidebar_task', function ($menu) {
+            $task_items = [
+              [
+                'label' => __('menus.sidebar_task.tasks'),
+                'header' => true,
+                'route' => '',
+                'icon' => '',
+                'id' => ''
+              ],
+            [
+              'label' => __('menus.sidebar_task.assigned'),
+              'header' => false,
+              'route' => 'home',
+              'icon' => 'fa-user',
+              'id' => 'homeid'
+            ],
+            [
+              'label' => __('menus.sidebar_task.unassigned'),
+              'header' => false,
+              'route' => 'home',
+              'icon' => 'fa-users',
+              'id' => 'homeid'
+            ],
+            [
+              'label' => __('menus.sidebar_task.completed'),
+              'header' => false,
+              'route' => 'home',
+              'icon' => 'fa-user-plus',
+              'id' => 'homeid'
+            ],
+            [
+              'label' => __('menus.sidebar_task.paused'),
+              'header' => false,
+              'route' => 'home',
+              'icon' => 'fa-user-plus',
+              'id' => 'homeid'
+            ]
+          ];
+
+            $tasks = $menu;
+            foreach ($task_items as $item) {
+                if ($item['header'] === false) {
+                    $tasks->add($item['label'], ['route'  => $item['route'], 'id' => $item['id'], 'icon' => $item['icon']]);
+                } else {
+                    $tasks->add($item['label'], ['class' => 'h5 text-muted font-weight-light']);
+                }
+            }
+        });
+
+        Menu::make('request', function ($menu) {
+          $task_items = [
+            [
+              'label' => 'In Progress',
+              'route' => 'home',
+              'icon' => 'fa-user',
+              'id' => 'homeid'
+            ],
+            [
+              'label' => 'Draft',
+              'route' => 'home',
+              'icon' => 'fa-users',
+              'id' => 'homeid'
+            ],
+            [
+              'label' => 'Completed',
+              'route' => 'home',
+              'icon' => 'fa-user-plus',
+              'id' => 'homeid'
+            ],
+            [
+              'label' => 'Paused',
               'route' => 'home',
               'icon' => 'fa-user-plus',
               'id' => 'homeid'
@@ -46,173 +255,23 @@ class GenerateMenus
 
             $execute = $menu;
 
-            $tasks = $execute->add('Organization',['class' => 'h5 text-muted font-weight-light']);
+
+            $tasks = $execute->add('request',['class' => 'h5 text-muted font-weight-light']);
 
 
             foreach ($task_items as $item) {
               $tasks->add($item['label'],['route' => $item['route'], 'id' => $item['id'], 'icon' => $item['icon']]);
             }
 
-            $task_items = [
-              [
-                'label' => 'Login',
-                'route' => 'home',
-                'icon' => 'fa-key',
-                'id' => 'homeid'
-              ],
-              [
-                'label' => 'Authentication',
-                'route' => 'home',
-                'icon' => 'fa-user-secret',
-                'id' => 'homeid'
-              ],
-            ];
+            $tasks = $execute->add('Manage', ['class' => 'sidebar-header'])->prepend('<i class="fa fa-list-ul"></i> ');
+            $tasks->add('Pending', ['route'  => 'home', 'id' => 'home']);
+            $tasks->add('Unclaimed', ['route'  => 'home', 'id' => 'home']);
+            $tasks->add('Completed', ['route'  => 'home', 'id' => 'home']);
 
-            $tasks = $execute->add('Security',['class' => 'h5 text-muted font-weight-light']);
-
-            foreach ($task_items as $item) {
-              $tasks->add($item['label'],['route'  => $item['route'], 'id' => $item['id'], 'icon' => $item['icon']]);
-            }
-
-            $task_items = [
-              [
-                'label' => 'Localization',
-                'route' => 'home',
-                'icon' => 'fa-globe',
-                'id' => 'homeid'
-              ],
-              [
-                'label' => 'Email Configuration',
-                'route' => 'home',
-                'icon' => 'fa-envelope',
-                'id' => 'homeid'
-              ],
-              [
-                'label' => 'Notifications',
-                'route' => 'home',
-                'icon' => 'fa-bell',
-                'id' => 'homeid'
-              ],
-            ];
-
-            $tasks = $execute->add('System Prefrences',['class' => 'h5 text-muted font-weight-light']);
-
-            foreach ($task_items as $item) {
-              $tasks->add($item['label'],['route'  => $item['route'], 'id' => $item['id'], 'icon' => $item['icon']]);
-            }
-
-            $task_items = [
-              [
-                'label' => 'Custom',
-                'route' => 'home',
-                'icon' => 'fa-cogs',
-                'id' => 'homeid'
-              ],
-              [
-                'label' => 'Themes',
-                'route' => 'home',
-                'icon' => 'fa-th',
-                'id' => 'homeid'
-              ],
-            ];
-
-            $tasks = $execute->add('Appearance',['class' => 'h5 text-muted font-weight-light']);
-
-            foreach ($task_items as $item) {
-              $tasks->add($item['label'],['route'  => $item['route'], 'id' => $item['id'], 'icon' => $item['icon']]);
-            }
-
-            $task_items = [
-              [
-                'label' => 'Software Requirements',
-                'route' => 'home',
-                'icon' => 'fa-laptop',
-                'id' => 'homeid'
-              ],
-              [
-                'label' => 'Plugins',
-                'route' => 'home',
-                'icon' => 'fa-puzzle-piece',
-                'id' => 'homeid'
-              ],
-            ];
-
-            $tasks = $execute->add('System Information',['class' => 'h5 text-muted font-weight-light']);
-
-            foreach ($task_items as $item) {
-              $tasks->add($item['label'],['route'  => $item['route'], 'id' => $item['id'], 'icon' => $item['icon']]);
-            }
-
-            $task_items = [
-              [
-                'label' => 'Manage Cache',
-                'route' => 'home',
-                'icon' => 'fa-bolt',
-                'id' => 'homeid'
-              ],
-              [
-                'label' => 'Audit Log',
-                'route' => 'home',
-                'icon' => 'fa-list-ul',
-                'id' => 'homeid'
-              ],
-            ];
-
-            $tasks = $execute->add('Tools',['class' => 'h5 text-muted font-weight-light']);
-
-            foreach ($task_items as $item) {
-              $tasks->add($item['label'],['route'  => $item['route'], 'id' => $item['id'], 'icon' => $item['icon']]);
-            }
-        });
-
-        Menu::make('run', function ($menu) {
-            $execute = $menu;
-            $tasks = $execute->add('Execute',['class' => 'h5 text-muted font-weight-light'])
-            ->prepend('<i class="fa fa-list-ul"></i> ');
-            $tasks->add('Pending',['route'  => 'home', 'id' => 'home']);
-            $tasks->add('Unclaimed',['route'  => 'home', 'id' => 'home']);
-            $tasks->add('Completed',['route'  => 'home', 'id' => 'home']);
-
-            $cases = $execute->add('Cases',['class' => 'sidebar-header'])
-            ->prepend('<i class="fa fa-briefcase"></i> ');
+            $cases = $execute->add('Cases', ['class' => 'sidebar-header'])->prepend('<i class="fa fa-briefcase"></i> ');
             $cases->add('New');
             $cases->add('Drafts');
             $cases->add('Mine');
             $cases->add('Find');
-        });
 
-        Menu::make('manage', function ($menu) {
-            $execute = $menu;
-            $tasks = $execute->add('Manage',['class' => 'sidebar-header'])
-            ->prepend('<i class="fa fa-list-ul"></i> ');
-            $tasks->add('Pending',['route'  => 'home', 'id' => 'home']);
-            $tasks->add('Unclaimed',['route'  => 'home', 'id' => 'home']);
-            $tasks->add('Completed',['route'  => 'home', 'id' => 'home']);
-
-            $cases = $execute->add('Cases',['class' => 'sidebar-header'])
-            ->prepend('<i class="fa fa-briefcase"></i> ');
-            $cases->add('New');
-            $cases->add('Drafts');
-            $cases->add('Mine');
-            $cases->add('Find');
-        });
-
-        Menu::make('build', function ($menu) {
-            $execute = $menu;
-            $tasks = $execute->add('Build',['class' => 'sidebar-header'])
-            ->prepend('<i class="fa fa-list-ul"></i> ');
-            $tasks->add('Pending',['route'  => 'home', 'id' => 'home']);
-            $tasks->add('Unclaimed',['route'  => 'home', 'id' => 'home']);
-            $tasks->add('Completed',['route'  => 'home', 'id' => 'home']);
-
-            $cases = $execute->add('Cases',['class' => 'sidebar-header'])
-            ->prepend('<i class="fa fa-briefcase"></i> ');
-            $cases->add('New');
-            $cases->add('Drafts');
-            $cases->add('Mine');
-            $cases->add('Find');
-        });
-
-        return $next($request);
-    }
 }
