@@ -53,6 +53,29 @@ class FormManagerTest extends ApiTestCase
     }
 
     /**
+     * Test validate structure table
+     */
+    public function testStructureTable(): void
+    {
+        $db = DB::connection()->getSchemaBuilder()->getColumnListing('forms');
+        $structure = [
+            'id',
+            'uid',
+            'title',
+            'description',
+            'type',
+            'content',
+            'label',
+            'created_at',
+            'updated_at',
+            'process_id'
+        ];
+        sort($db);
+        sort($structure);
+        $this->assertEquals(json_encode($structure), json_encode($db));
+    }
+
+    /**
      * Test verify the parameter required for create form
      */
     public function TestNotCreatedForParameterRequired(): void
@@ -75,11 +98,12 @@ class FormManagerTest extends ApiTestCase
 
         //Post saved correctly
         $faker = Faker::create();
-        $data['title'] = 'Title Form';
-        $data['description'] = $faker->sentence(10);
 
         $url = self::API_TEST_FORM . $this->process->uid . '/form';
-        $response = $this->api('POST', $url, $data);
+        $response = $this->api('POST', $url, [
+            'title' => 'Title Form',
+            'description' => $faker->sentence(10)
+        ]);
         //validating the answer is correct.
         $response->assertStatus(201);
         //Check structure of response.
@@ -93,13 +117,18 @@ class FormManagerTest extends ApiTestCase
     {
         $this->auth($this->user->username, self::DEFAULT_PASS);
 
+        factory(Form::class)->create([
+            'title' => 'Title Form',
+            'process_id' => $this->process->id
+        ]);
+
         //Post title duplicated
         $faker = Faker::create();
-        $data['title'] = 'Title Form';
-        $data['description'] = $faker->sentence(10);
-
         $url = self::API_TEST_FORM . $this->process->uid . '/form';
-        $response = $this->api('POST', $url, $data);
+        $response = $this->api('POST', $url, [
+            'title' => 'Title Form',
+            'description' => $faker->sentence(10)
+        ]);
         $response->assertStatus(422);
     }
 
@@ -110,11 +139,10 @@ class FormManagerTest extends ApiTestCase
     {
         $this->auth($this->user->username, self::DEFAULT_PASS);
 
-        $data = [
-            'copy_import' => 'test'
-        ];
         $url = self::API_TEST_FORM . $this->process->uid . '/form';
-        $response = $this->api('POST', $url, $data);
+        $response = $this->api('POST', $url, [
+            'copy_import' => 'test'
+        ]);
         $response->assertStatus(422);
     }
 
@@ -124,12 +152,13 @@ class FormManagerTest extends ApiTestCase
     public function testCopyImportFormProcessNotExists(): void
     {
         //Process not exist
-        $data['copy_import'] = [
-            'process_uid' => 'processNotExists',
-            'form_uid' => factory(Form::class)->create()->uid
-        ];
         $url = self::API_TEST_FORM . $this->process->uid . '/form';
-        $response = $this->api('POST', $url, $data);
+        $response = $this->api('POST', $url, [
+            'copy_import' => [
+                'process_uid' => 'processNotExists',
+                'form_uid' => factory(Form::class)->create()->uid
+            ]
+        ]);
         $response->assertStatus(404);
     }
 
@@ -139,12 +168,13 @@ class FormManagerTest extends ApiTestCase
     public function testCopyImportFormNotExists(): void
     {
         //Process not exist
-        $data['copy_import'] = [
-            'process_uid' => factory(Process::class)->create()->uid,
-            'form_uid' => 'formNotExists'
-        ];
         $url = self::API_TEST_FORM . $this->process->uid . '/form';
-        $response = $this->api('POST', $url, $data);
+        $response = $this->api('POST', $url, [
+            'copy_import' => [
+                'process_uid' => factory(Process::class)->create()->uid,
+                'form_uid' => 'formNotExists'
+            ]
+        ]);
         $response->assertStatus(404);
     }
 
@@ -154,12 +184,13 @@ class FormManagerTest extends ApiTestCase
     public function testCopyImportNotBelongProcess(): void
     {
         //Process not exist
-        $data['copy_import'] = [
-            'process_uid' => factory(Process::class)->create()->uid,
-            'form_uid' => factory(Form::class)->create()->uid
-        ];
         $url = self::API_TEST_FORM . $this->process->uid . '/form';
-        $response = $this->api('POST', $url, $data);
+        $response = $this->api('POST', $url, [
+            'copy_import' => [
+                'process_uid' => factory(Process::class)->create()->uid,
+                'form_uid' => factory(Form::class)->create()->uid
+            ]
+        ]);
         $response->assertStatus(404);
     }
 
@@ -169,30 +200,28 @@ class FormManagerTest extends ApiTestCase
     public function testCopyImportForm(): void
     {
         $faker = Faker::create();
-        $data['title'] = $faker->sentence(3);
-        $data['description'] = $faker->sentence(10);
 
-        $process = factory(Process::)
-
-        $data['copy_import'] = [
-            'process_uid' => $this->process->uid,
-            'uid' => $Form->uid
-        ];
         $process = factory(Process::class)->create();
 
         $url = self::API_TEST_FORM . $process->uid->toString() . '/form';
-        $response = $this->api('POST', $url, $data);
+        $response = $this->api('POST', $url, [
+            'title' => $faker->sentence(3),
+            'description' => $faker->sentence(10),
+            'copy_import' => [
+                'process_uid' => $this->process->uid,
+                'form_uid' => factory(Form::class)->create([
+                    'process_id' => $this->process->id
+                ])->uid
+            ]
+        ]);
         //validating the answer is correct.
         $response->assertStatus(201);
-        $FormCreated = $response->original;
         //Check structure of response.
         $response->assertJsonStructure(self::STRUCTURE);
     }
 
-
-
     /**
-     * Get a list of Form in a project.
+     * Get a list of Form in process without query parameters.
      *
      * @depends testCreateForm
      */
@@ -218,6 +247,10 @@ class FormManagerTest extends ApiTestCase
             'data',
             'meta',
         ]);
+
+        foreach ($response->json('data') as $item) {
+            $response->assertJsonStructure(self::STRUCTURE, $item);
+        }
     }
 
     /**
@@ -228,7 +261,7 @@ class FormManagerTest extends ApiTestCase
         $this->auth($this->user->username, self::DEFAULT_PASS);
         $title = 'search Title Form';
 
-        $form = factory(Form::class)->create([
+        factory(Form::class)->create([
             'title' => $title,
             'process_id' => $this->process->id
         ]);
@@ -293,13 +326,12 @@ class FormManagerTest extends ApiTestCase
             'process_id' => $this->process->id
         ]);
 
-        $data = [
-            'title' => '',
-            'description' => ''
-        ];
         //Post should have the parameter tri_title
         $url = self::API_TEST_FORM . $this->process->uid . '/form/' . $form->uid;
-        $response = $this->api('PUT', $url, $data);
+        $response = $this->api('PUT', $url, [
+            'title' => '',
+            'description' => ''
+        ]);
         //Validate the answer is incorrect
         $response->assertStatus(422);
     }
@@ -311,12 +343,16 @@ class FormManagerTest extends ApiTestCase
     {
         //Post saved success
         $faker = Faker::create();
-        $data['title'] = $faker->sentence(2);
-        $data['description'] = $faker->sentence(5);
-        $data['content'] = '';
+        $form = factory(Form::class)->create([
+            'process_id' => $this->process->id
+        ]);
 
-        $url = self::API_TEST_FORM . $this->process->uid . '/form/' . $Form->uid;
-        $response = $this->api('PUT', $url, $data);
+        $url = self::API_TEST_FORM . $this->process->uid . '/form/' . $form->uid;
+        $response = $this->api('PUT', $url, [
+            'title' => $faker->sentence(2),
+            'description' => $faker->sentence(5),
+            'content' => '',
+        ]);
         //Validate the answer is correct
         $response->assertStatus(200);
     }
