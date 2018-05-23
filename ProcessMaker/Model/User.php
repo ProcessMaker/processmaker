@@ -21,6 +21,19 @@ class User extends Authenticatable implements UserEntityInterface
 
     const TYPE = 'USER';
 
+    protected $hidden = [
+        'id',
+        'password'
+    ];
+
+    /**
+     * The key to use in routes to fetch a user
+     */
+    public function getRouteKeyName()
+    {
+        return 'uid';
+    }
+
     /**
      * Return the full name for this user which is the first name and last name separated with a space
      * @return string

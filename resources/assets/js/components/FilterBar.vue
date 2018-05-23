@@ -2,7 +2,7 @@
     <div class="filter-bar justify-content-between">
       <form class="form-inline ">
         <div class="form-group ">
-          <label class="table-header"><strong>Completed Tasks<small class="font-weight-light">  (100)</small></strong></label>
+          <label class="table-header"><strong>Completed Tasks<small class="font-weight-light">(100)</small></strong></label>
           <input type="text" v-model="filterText" class="form-control" @keyup="doFilter" placeholder="search...">
           <i @click.prevent="doFilter"></i>
         </div>
@@ -20,11 +20,8 @@
       doFilter () {
         if (this.filterText.length > 3) {
          this.$events.fire('filter-set', this.filterText)
+         console.log(this.filterText)
         }
-      },
-      resetFilter () {
-        this.filterText = ''
-        this.$events.fire('filter-reset')
       }
     }
   }

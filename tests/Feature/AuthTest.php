@@ -1,6 +1,7 @@
 <?php
 namespace Tests\Feature;
 
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\Permission;
@@ -11,6 +12,8 @@ use Tests\TestCase;
 
 class AuthTest extends TestCase
 {
+    use DatabaseTransactions;
+
     /**
      * Tests to determine if we can manually log someone in by setting them in the Auth framework immediately
      *
@@ -33,6 +36,7 @@ class AuthTest extends TestCase
     {
         // Build a user with a specified password
         $user = factory(User::class)->create([
+            'username' =>'newuser',
             'password' => Hash::make('password')
         ]);
         // Make sure we have a failed attempt with a bad password
@@ -42,7 +46,7 @@ class AuthTest extends TestCase
         ]));
         // Test to see if we can provide a successful auth attempt
         $this->assertTrue(Auth::attempt([
-            'username' => $user->username,
+            'username' => 'newuser',
             'password' => 'password'
         ]));
         $this->assertEquals($user->id, Auth::id());

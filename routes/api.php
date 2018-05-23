@@ -24,6 +24,13 @@ Router::group([
     Router::group([
         'middleware' => ['auth:api', 'bindings']
     ], function() {
+        // Users API Endpoints
+        Router::group([
+            'middleware' => ['permission:PM_USERS']
+        ], function() {
+            Router::get('users', 'Administration\UsersController@index');
+            Router::get('users/{user}', 'Administration\UsersController@get');
+        });
 
         //File manager endpoints.
         Router::get('project/{process}/file-manager', 'Designer\FileManagerController@index')->middleware('can:readProcessFiles,process');
@@ -106,6 +113,16 @@ Router::group([
         Router::delete('project/{process}/activity/{activity}/assignee/{assignee}', 'Designer\AssigneeController@remove')->middleware('can:delete,ProcessMaker\Model\TaskUser');
         Router::get('project/{process}/activity/{activity}/available-assignee', 'Designer\AssigneeController@getActivityAvailable')->middleware('can:read,ProcessMaker\Model\TaskUser');
         Router::get('project/{process}/activity/{activity}/available-assignee/paged', 'Designer\AssigneeController@getActivityAvailablePaged')->middleware('can:read,ProcessMaker\Model\TaskUser');
+
+        //Cases endpoints
+        Router::get('cases/{application}/variables', 'Cases\VariableController@get')->middleware('can:read,application');
+
+        //Input Document endpoints
+        Router::get('project/{process}/input-documents', 'Designer\InputDocumentController@index')->middleware('can:read,ProcessMaker\Model\InputDocument');
+        Router::get('project/{process}/input-document/{inputDocument}', 'Designer\InputDocumentController@show')->middleware('can:read,ProcessMaker\Model\InputDocument');
+        Router::post('project/{process}/input-document', 'Designer\InputDocumentController@store')->middleware('can:write,ProcessMaker\Model\InputDocument');
+        Router::put('project/{process}/input-document/{inputDocument}', 'Designer\InputDocumentController@update')->middleware('can:write,ProcessMaker\Model\InputDocument');
+        Router::delete('project/{process}/input-document/{inputDocument}', 'Designer\InputDocumentController@remove')->middleware('can:delete,ProcessMaker\Model\InputDocument');
 
         //Cases endpoints
         Router::get('cases/{application}/variables', 'Cases\VariableController@get')->middleware('can:read,application');
