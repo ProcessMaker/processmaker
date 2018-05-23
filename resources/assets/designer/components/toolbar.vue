@@ -2,14 +2,11 @@
     <div class="pmdesigner-toolbar">
         <ul class="side-menu">
             <li class="bpmn-item-menu">
-                <img id="bpmn:StartEvent" name="StartEvent" src="images/start-event.svg" height="25"
-                     draggable="true" @dragend="createElement($event)"></li>
-            <li class="bpmn-item-menu">
                 <img id="bpmn:Task" src="images/task.svg" height="20"
                      draggable="true" @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:EndEvent" src="images/end-event.svg" height="25" draggable="true"
-                     @dragend="createElement($event)"></li>
+                <img id="bpmn:Subprocess" src="images/sub-process.svg" height="20"
+                     draggable="true" @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
                 <img id="bpmn:ExclusiveGateway" src="images/exclusive-gateway.svg" height="25" draggable="true"
                      @dragend="createElement($event)"></li>
@@ -20,6 +17,23 @@
                 <img id="bpmn:InclusiveGateway" src="images/inclusive-gateway.svg" height="25" draggable="true"
                      @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
+                <img id="bpmn:StartEvent" name="StartEvent" src="images/start-event.svg" height="25"
+                     draggable="true" @dragend="createElement($event)"></li>
+            <li class="bpmn-item-menu">
+                <img id="bpmn:IntermediateEmailEvent" name="IntermediateEmailEvent"
+                     src="images/intermediate-email-event.svg" height="25"
+                     draggable="true" @dragend="createElement($event)"></li>
+            <li class="bpmn-item-menu">
+                <img id="bpmn:IntermediateTimeEvent" name="IntermediateTimeEvent"
+                     src="images/intermediate-time-event.svg" height="25"
+                     draggable="true" @dragend="createElement($event)"></li>
+            <li class="bpmn-item-menu">
+                <img id="bpmn:EndEvent" src="images/end-event.svg" height="25" draggable="true"
+                     @dragend="createElement($event)"></li>
+            <li class="bpmn-item-menu">
+                <img id="bpmn:EndEmailEvent" src="images/end-email-event.svg" height="25" draggable="true"
+                     @dragend="createElement($event)"></li>
+            <li class="bpmn-item-menu">
                 <img id="bpmn:DataObjectReference" src="images/data-object.svg" height="20" draggable="true"
                      @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
@@ -28,27 +42,24 @@
             <li class="bpmn-item-menu">
                 <img id="bpmn:DataStoreReference" src="images/black-box-pool.svg" height="20" draggable="true"
                      @dragend="createElement($event)"></li>
-
             <li class="bpmn-item-menu">
                 <img id="bpmn:DataStoreReference" src="images/pool.svg" height="20" draggable="true"
                      @dragend="createElement($event)"></li>
-
             <li class="bpmn-item-menu">
-                <img id="bpmn:DataStoreReference" src="images/lane.svg" height="20" draggable="true"
+                <img id="bpmn:Lane" src="images/lane.svg" height="20" draggable="true"
                      @dragend="createElement($event)"></li>
-
             <li class="bpmn-item-menu">
-                <img id="bpmn:DataStoreReference" src="images/lasso.svg" height="20" draggable="true"
+                <img id="bpmn:Group" src="images/group.svg" height="20" draggable="true"
                      @dragend="createElement($event)"></li>
-
             <li class="bpmn-item-menu">
-                <img id="bpmn:DataStoreReference" src="images/text-annotation.svg" height="15" draggable="true"
+                <img id="bpmn:TextAnnotation" src="images/text-annotation.svg" height="15" draggable="true"
                      @dragend="createElement($event)"></li>
-
             <li class="bpmn-item-menu">
-                <img id="bpmn:DataStoreReference" src="images/validator.svg" height="20" draggable="true"
+                <img id="bpmn:Lasso" src="images/lasso.svg" height="20" draggable="true"
                      @dragend="createElement($event)"></li>
-
+            <li class="bpmn-item-menu">
+                <img id="bpmn:Validator" src="images/validator.svg" height="20" draggable="true"
+                     @dragend="createElement($event)"></li>
         </ul>
     </div>
 </template>
