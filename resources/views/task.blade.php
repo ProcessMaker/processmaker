@@ -4,7 +4,6 @@
 <div class="container ml-2">
   <h1>Task</h1>
 
-
 </div>
 @endsection
 
