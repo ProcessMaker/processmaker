@@ -2,19 +2,19 @@
 
 @section('content')
 
-  <h1>build</h1>
+  <h1>Admin</h1>
+
   <div class="container">
     <my-vuetable api-url="/test"></my-vuetable>
   </div>
-
 @endsection
 
 @section('sidebar')
-  @include('sidebars.build')
+  @include('sidebars.manage')
 @endsection
 
 @section('js')
-  <script>
+<script>
 
-  </script>
+</script>
 @endsection
