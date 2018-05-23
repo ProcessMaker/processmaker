@@ -1,6 +1,8 @@
 @extends('layouts.layout')
 @section('content')
+
     <div class="pmdesigner-container" id="appDesigner">
+        <toptoolbar></toptoolbar>
         <toolbar></toolbar>
         <designer ref="canvas"></designer>
     </div>
@@ -13,4 +15,3 @@
 @section('js')
     <script src="{{ asset('js/AppDesigner.js') }}"></script>
 @endsection
-
