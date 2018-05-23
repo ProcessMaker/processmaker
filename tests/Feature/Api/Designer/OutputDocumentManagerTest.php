@@ -19,8 +19,8 @@ class OutputDocumentManagerTest extends ApiTestCase
     const DEFAULT_PASS = 'password';
     const DEFAULT_PASS_OWNER = 'password2';
 
-    protected static $user;
-    protected static $process;
+    protected $user;
+    protected $process;
 
     const API_OUTPUT_DOCUMENT_ROUTE = '/api/1.0/process/';
 
@@ -45,13 +45,13 @@ class OutputDocumentManagerTest extends ApiTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        self::$user = factory(User::class)->create([
+        $this->user = factory(User::class)->create([
             'password' => Hash::make(self::DEFAULT_PASS),
             'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
 
-        self::$process = factory(Process::class)->create([
-            'creator_user_id' => self::$user->id
+        $this->process = factory(Process::class)->create([
+            'creator_user_id' => $this->user->id
         ]);
     }
 
@@ -91,10 +91,10 @@ class OutputDocumentManagerTest extends ApiTestCase
      */
     public function testNoCreateByParametersRequired(): void
     {
-        $this->auth(self::$user->username, self::DEFAULT_PASS);
+        $this->auth($this->user->username, self::DEFAULT_PASS);
 
         //Post should have the parameter title, description, filename
-        $url = self::API_OUTPUT_DOCUMENT_ROUTE . self::$process->uid . '/output-document';
+        $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document';
         $response = $this->api('POST', $url, []);
         $response->assertStatus(422);
     }
@@ -107,13 +107,13 @@ class OutputDocumentManagerTest extends ApiTestCase
      */
     public function testCreateParameterDefinedConstant(): void
     {
-        $this->auth(self::$user->username, self::DEFAULT_PASS);
+        $this->auth($this->user->username, self::DEFAULT_PASS);
 
         $faker = Faker::create();
         $data['report_generator'] = $faker->sentence(1);
         $data['generate'] = $faker->sentence(1);
         $data['type'] = $faker->sentence(1);
-        $url = self::API_OUTPUT_DOCUMENT_ROUTE . self::$process->uid . '/output-document';
+        $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document';
         $response = $this->api('POST', $url, $data);
         //validating the answer is an error
         $response->assertStatus(422);
@@ -124,7 +124,7 @@ class OutputDocumentManagerTest extends ApiTestCase
      */
     public function testCreateDocument(): void
     {
-        $this->auth(self::$user->username, self::DEFAULT_PASS);
+        $this->auth($this->user->username, self::DEFAULT_PASS);
 
         //Post saved correctly
         $faker = Faker::create();
@@ -138,7 +138,7 @@ class OutputDocumentManagerTest extends ApiTestCase
         $data['properties']['pdf_security_open_password'] = self::DEFAULT_PASS;
         $data['properties']['pdf_security_owner_password'] = self::DEFAULT_PASS_OWNER;
 
-        $url = self::API_OUTPUT_DOCUMENT_ROUTE . self::$process->uid . '/output-document';
+        $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document';
         $response = $this->api('POST', $url, $data);
         //validating the answer is correct.
         $response->assertStatus(201);
@@ -151,14 +151,14 @@ class OutputDocumentManagerTest extends ApiTestCase
      */
     public function testNoCreateDocumentWithTitleExists(): void
     {
-        $this->auth(self::$user->username, self::DEFAULT_PASS);
+        $this->auth($this->user->username, self::DEFAULT_PASS);
 
         $title = 'Title Output Document';
 
         //add Document to process
         factory(Document::class)->create([
             'title' => $title,
-            'process_id' => self::$process->id
+            'process_id' => $this->process->id
         ]);
 
         //Post title duplicated
@@ -173,7 +173,7 @@ class OutputDocumentManagerTest extends ApiTestCase
         $data['properties']['pdf_security_open_password'] = self::DEFAULT_PASS;
         $data['properties']['pdf_security_owner_password'] = self::DEFAULT_PASS_OWNER;
 
-        $url = self::API_OUTPUT_DOCUMENT_ROUTE . self::$process->uid . '/output-document';
+        $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document';
         $response = $this->api('POST', $url, $data);
         //validating the answer is correct.
         $response->assertStatus(422);
@@ -186,15 +186,15 @@ class OutputDocumentManagerTest extends ApiTestCase
      */
     public function testListDocuments(): void
     {
-        $this->auth(self::$user->username, self::DEFAULT_PASS);
+        $this->auth($this->user->username, self::DEFAULT_PASS);
 
         //add Document to process
         factory(Document::class, 11)->create([
-            'process_id' => self::$process->id
+            'process_id' => $this->process->id
         ]);
 
         //List Document
-        $url = self::API_OUTPUT_DOCUMENT_ROUTE . self::$process->uid . '/output-documents';
+        $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-documents';
         $response = $this->api('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
@@ -216,17 +216,17 @@ class OutputDocumentManagerTest extends ApiTestCase
      */
     public function testListDocumentsWithQueryParameter(): void
     {
-        $this->auth(self::$user->username, self::DEFAULT_PASS);
+        $this->auth($this->user->username, self::DEFAULT_PASS);
 
         //add Document to process
         factory(Document::class, 11)->create([
-            'process_id' => self::$process->id
+            'process_id' => $this->process->id
         ]);
 
         //List Document with parameters pages and sort
         $query = '?current_page=2&per_page=5&sort_by=description&sort_order=DESC';
 
-        $url = self::API_OUTPUT_DOCUMENT_ROUTE . self::$process->uid . '/output-documents' . $query;
+        $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-documents' . $query;
         $response = $this->api('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
@@ -255,18 +255,18 @@ class OutputDocumentManagerTest extends ApiTestCase
      */
     public function testListDocumentWithFilter(): void
     {
-        $this->auth(self::$user->username, self::DEFAULT_PASS);
+        $this->auth($this->user->username, self::DEFAULT_PASS);
 
         //add Document to process
         $title = 'Title for search';
         factory(Document::class)->create([
             'title' => $title,
-            'process_id' => self::$process->id
+            'process_id' => $this->process->id
         ]);
 
         //List Document with filter option
         $query = '?current_page=1&per_page=5&sort_by=description&sort_order=DESC&filter=' . urlencode($title);
-        $url = self::API_OUTPUT_DOCUMENT_ROUTE . self::$process->uid . '/output-documents' . $query;
+        $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-documents' . $query;
         $response = $this->api('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
@@ -296,14 +296,14 @@ class OutputDocumentManagerTest extends ApiTestCase
      */
     public function testGetDocument(): void
     {
-        $this->auth(self::$user->username, self::DEFAULT_PASS);
+        $this->auth($this->user->username, self::DEFAULT_PASS);
 
         $document = factory(Document::class)->create([
-            'process_id' => self::$process->id
+            'process_id' => $this->process->id
         ]);
 
         //load Document
-        $url = self::API_OUTPUT_DOCUMENT_ROUTE . self::$process->uid . '/output-document/' . $document->uid;
+        $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document/' . $document->uid;
         $response = $this->api('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
@@ -317,10 +317,10 @@ class OutputDocumentManagerTest extends ApiTestCase
      */
     public function testGetDocumentNotBelongProcess(): void
     {
-        $this->auth(self::$user->username, self::DEFAULT_PASS);
+        $this->auth($this->user->username, self::DEFAULT_PASS);
 
         $document = factory(Document::class)->create();
-        $url = self::API_OUTPUT_DOCUMENT_ROUTE . self::$process->uid . '/output-document/' . $document->uid;
+        $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document/' . $document->uid;
         $response = $this->api('GET', $url);
         $response->assertStatus(404);
     }
@@ -330,10 +330,10 @@ class OutputDocumentManagerTest extends ApiTestCase
      */
     public function testUpdateParametersRequired(): void
     {
-        $this->auth(self::$user->username, self::DEFAULT_PASS);
+        $this->auth($this->user->username, self::DEFAULT_PASS);
 
         $document = factory(Document::class)->create([
-            'process_id' => self::$process->id
+            'process_id' => $this->process->id
         ]);
 
         $faker = Faker::create();
@@ -346,7 +346,7 @@ class OutputDocumentManagerTest extends ApiTestCase
             'type' => $faker->randomElement(Document::DOC_TYPE)
         ];
 
-        $url = self::API_OUTPUT_DOCUMENT_ROUTE . self::$process->uid . '/output-document/' . $document->uid;
+        $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document/' . $document->uid;
         $response = $this->api('PUT', $url, $data);
         //Validate the answer is incorrect
         $response->assertStatus(422);
@@ -357,10 +357,10 @@ class OutputDocumentManagerTest extends ApiTestCase
      */
     public function testUpdateDocument(): void
     {
-        $this->auth(self::$user->username, self::DEFAULT_PASS);
+        $this->auth($this->user->username, self::DEFAULT_PASS);
 
         $document = factory(Document::class)->create([
-            'process_id' => self::$process->id
+            'process_id' => $this->process->id
         ]);
 
         $faker = Faker::create();
@@ -374,7 +374,7 @@ class OutputDocumentManagerTest extends ApiTestCase
         ];
 
         $data['properties']['pdf_security_permissions'] = [];
-        $url = self::API_OUTPUT_DOCUMENT_ROUTE . self::$process->uid . '/output-document/' . $document->uid;
+        $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document/' . $document->uid;
         $response = $this->api('PUT', $url, $data);
         //Validate the answer is correct
         $response->assertStatus(200);
@@ -385,14 +385,14 @@ class OutputDocumentManagerTest extends ApiTestCase
      */
     public function testDeleteDocument(): void
     {
-        $this->auth(self::$user->username, self::DEFAULT_PASS);
+        $this->auth($this->user->username, self::DEFAULT_PASS);
 
         $document = factory(Document::class)->create([
-            'process_id' => self::$process->id
+            'process_id' => $this->process->id
         ]);
 
         //Remove Document
-        $url = self::API_OUTPUT_DOCUMENT_ROUTE . self::$process->uid . '/output-document/' . $document->uid;
+        $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document/' . $document->uid;
         $response = $this->api('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(204);
@@ -404,10 +404,10 @@ class OutputDocumentManagerTest extends ApiTestCase
      */
     public function testDeleteDocumentNotExist(): void
     {
-        $this->auth(self::$user->username, self::DEFAULT_PASS);
+        $this->auth($this->user->username, self::DEFAULT_PASS);
 
         $document = factory(Document::class)->make();
-        $url = self::API_OUTPUT_DOCUMENT_ROUTE . self::$process->uid . '/output-document/' . $document->uid;
+        $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document/' . $document->uid;
         $response = $this->api('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(404);
