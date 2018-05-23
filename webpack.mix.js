@@ -30,6 +30,7 @@ const {mix} = require('laravel-mix');
  .copy('node_modules/font-awesome/css/font-awesome.css', 'public/css');
  */
 mix.js('resources/assets/js/app.js', 'public/js')
+    .js('resources/assets/js/app-layout.js', 'public/js')
     .js('resources/assets/designer/AppDesigner.js', 'public/js')
     .extract(['vue', 'jquery', 'bootstrap-vue', 'axios', 'popper.js', 'lodash', 'bootstrap', 'imports-loader?this=>window,fix=>module.exports=0!snapsvg/dist/snap.svg.js'])
     .sass('resources/assets/sass/layouts-app.scss', 'public/css')
@@ -46,3 +47,4 @@ mix.js('resources/assets/js/app.js', 'public/js')
     .copy('resources/assets/js/components/DetailRow.vue', 'public/js')
     .copy('resources/assets/js/components/FilterBar.vue', 'public/js')
     .copy('resources/assets/img/favicon.ico', 'public/img')
+    .version()

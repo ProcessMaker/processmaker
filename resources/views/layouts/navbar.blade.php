@@ -15,7 +15,7 @@
         <a class="nav-link" href="{{ url('admin') }}">Admin</a>
       </li>
     </ul>
-
+    <component id="navbar-request-button" v-bind:is="'request-modal'"></component>
       <ul class="navbar-nav">
         <li class="nav-item dropdown" style="white-space:nowrap">
         <a class="nav-link admin-menu" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
