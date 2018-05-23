@@ -5,7 +5,7 @@ namespace Tests\Feature\Api\Designer;
 use Faker\Factory as Faker;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
-use ProcessMaker\Model\Dynaform;
+use ProcessMaker\Model\Form;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
@@ -44,12 +44,11 @@ class DynaformManagerTest extends ApiTestCase
     }
 
     /**
-
-     * Create new Dynaform in process
+ * Create new Dynaform in process
      *
-     * @return Dynaform
+     * @return Form
      */
-    public function testCreateDynaform(): Dynaform
+    public function testCreateDynaform(): Form
     {
         $this->auth($this->user->username, self::DEFAULT_PASS);
 
@@ -91,13 +90,13 @@ class DynaformManagerTest extends ApiTestCase
     /**
      * Copy/import Dynaform in process
      *
-     * @param Dynaform $dynaform
+     * @param Form $dynaform
      *
-     * @return Dynaform
+     * @return Form
      *
      * @depends testCreateDynaform
      */
-    public function testCopyImportDynaform(Dynaform $dynaform): Dynaform
+    public function testCopyImportDynaform(Form $dynaform): Form
     {
         // Stop here and mark this test as incomplete.
         $this->markTestIncomplete(
@@ -136,7 +135,7 @@ class DynaformManagerTest extends ApiTestCase
         $response->assertStatus(404);
 
         //Dynaform does not belong to the process.
-        $otherDynaform = factory(Dynaform::class)->create();
+        $otherDynaform = factory(Form::class)->create();
         $data['copy_import'] = [
             'pro_uid' => $this->process->uid,
             'dyn_uid' => $otherDynaform->uid
@@ -195,7 +194,7 @@ class DynaformManagerTest extends ApiTestCase
         $this->auth($this->user->username, self::DEFAULT_PASS);
 
         //add Dynaform to process
-        factory(Dynaform::class, 10)->create([
+        factory(Form::class, 10)->create([
             'process_id' => $this->process->id
         ]);
 
@@ -224,11 +223,11 @@ class DynaformManagerTest extends ApiTestCase
     /**
      * Get a Dynaform of a project.
      *
-     * @param Dynaform $dynaform
+     * @param Form $dynaform
      *
      * @depends testCreateDynaform
      */
-    public function testGetDynaform(Dynaform $dynaform): void
+    public function testGetDynaform(Form $dynaform): void
     {
         // Stop here and mark this test as incomplete.
         $this->markTestIncomplete(
@@ -254,7 +253,7 @@ class DynaformManagerTest extends ApiTestCase
         ]);
 
         //Dynaform not belong to process.
-        $dynaform = factory(Dynaform::class)->create();
+        $dynaform = factory(Form::class)->create();
         $url = self::API_ROUTE . $this->process->uid . '/dynaform/' . $dynaform->uid;
         $response = $this->api('GET', $url);
         //Validate the answer is incorrect
@@ -265,11 +264,11 @@ class DynaformManagerTest extends ApiTestCase
     /**
      * Update Dynaform in process
      *
-     * @param Dynaform $dynaform
+     * @param Form $dynaform
      *
      * @depends testCreateDynaform
      */
-    public function testUpdateDynaform(Dynaform $dynaform): void
+    public function testUpdateDynaform(Form $dynaform): void
     {
         // Stop here and mark this test as incomplete.
         $this->markTestIncomplete(
@@ -302,11 +301,11 @@ class DynaformManagerTest extends ApiTestCase
     /**
      * Delete Dynaform in process
      *
-     * @param Dynaform $dynaform
+     * @param Form $dynaform
      *
      * @depends testCreateDynaform
      */
-    public function testDeleteDynaform(Dynaform $dynaform): void
+    public function testDeleteDynaform(Form $dynaform): void
     {
         // Stop here and mark this test as incomplete.
         $this->markTestIncomplete(
@@ -321,7 +320,7 @@ class DynaformManagerTest extends ApiTestCase
         //Validate the answer is correct
         $response->assertStatus(204);
 
-        $dynaform = factory(Dynaform::class)->make();
+        $dynaform = factory(Form::class)->make();
 
         //Dynaform not exist
         $url = self::API_ROUTE . $this->process->uid . '/dynaform/' . $dynaform->uid;
