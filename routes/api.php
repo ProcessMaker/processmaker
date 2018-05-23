@@ -79,7 +79,7 @@ Router::group([
             'middleware' => ['permission:PM_FACTORY']
         ], function() {
             Router::get('processes', 'Designer\ProcessesController@index');
-            Router::get('project/{process}', 'Designer\ProcessManagerController@show');
+            Router::get('processes/{process}', 'Designer\ProcessesController@show');
             Router::delete('project/{process}', 'Designer\ProcessManagerController@remove');
         });
 

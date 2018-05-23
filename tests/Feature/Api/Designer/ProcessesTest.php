@@ -4,18 +4,13 @@ namespace Tests\Feature\Api\Designer;
 
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
-use ProcessMaker\Model\Activity;
 use ProcessMaker\Model\Application;
-use ProcessMaker\Model\Artifact;
-use ProcessMaker\Model\Diagram;
-use ProcessMaker\Model\Event;
-use ProcessMaker\Model\Gateway;
-use ProcessMaker\Model\Lane;
-use ProcessMaker\Model\Laneset;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
 use Tests\Feature\Api\ApiTestCase;
+use ProcessMaker\Transformers\ProcessTransformer;
+
 
 /**
  * Tests routes related to processes / CRUD related methods
@@ -96,14 +91,52 @@ class ProcessesTest extends ApiTestCase
         factory(Process::class, 5)->create();
         // Now create a process with some data which will match
         factory(Process::class)->create([
-            'name' => 'Dondich' // Dondich won't be used by faker
+            'name' => 'This is a test process'
         ]);
-        $response = $this->api('GET', self::API_TEST_PROCESS . '?filter=Dondich');
+        // Test filtering, matching middle of name
+        $response = $this->api('GET', self::API_TEST_PROCESS . '?filter=' . urlencode('is a test'));
         $response->assertStatus(200);
         $data = json_decode($response->getContent(), true);
         // Make sure we get 1 result.
         $this->assertCount(1, $data['data']);
         $this->assertEquals(1, $data['meta']['total']);
+        // Now create a process with a description
+        factory(Process::class)->create([
+            'description' => 'Another test process'
+        ]);
+         // Test filtering, matching middle of description
+        $response = $this->api('GET', self::API_TEST_PROCESS . '?filter=' . urlencode('other test'));
+        $response->assertStatus(200);
+        $data = json_decode($response->getContent(), true);
+        // Make sure we get 1 result.
+        $this->assertCount(1, $data['data']);
+        $this->assertEquals(1, $data['meta']['total']);
+    }
+
+    /**
+     * Test to fetch a single item with a uid that does not match a process
+     */
+    public function testProcessesSingleItemNotFound()
+    {
+        $user = $this->authenticateAsAdmin();
+        $response = $this->api('GET', self::API_TEST_PROCESS . '/invalid-uid');
+        $response->assertStatus(404);
+    }
+
+    /**
+     * Test successfully retrieving a single process item, matching the transformed data expected
+     */
+    public function testProcessesSingleItemFound()
+    {
+        $user = $this->authenticateAsAdmin();
+        $process = factory(Process::class)->create();
+        // Fetch from DB to ensure we're getting all columns
+        $process = Process::find($process->id);
+        $response = $this->api('GET', self::API_TEST_PROCESS . '/' . $process->uid);
+        $response->assertStatus(200);
+        $data = json_decode($response->getContent(), true);
+        $expected = fractal($process, new ProcessTransformer())->toArray();
+        $this->assertEquals($expected, $data);
     }
 
 

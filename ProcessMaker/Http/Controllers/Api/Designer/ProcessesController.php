@@ -3,13 +3,9 @@
 namespace ProcessMaker\Http\Controllers\Api\Designer;
 
 use Illuminate\Http\Request;
-use League\Fractal\Manager;
-use League\Fractal\Resource\Collection;
-use League\Fractal\Resource\Item;
 use ProcessMaker\Facades\ProcessManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Model\Process;
-use ProcessMaker\Transformers\ProcessMakerSerializer;
 use ProcessMaker\Transformers\ProcessTransformer;
 
 /**
@@ -89,7 +85,7 @@ class ProcessesController extends Controller
     }
 
     /**
-     * Show the properties of a process.
+     * Retrieve and show a single process
      *
      * @param \ProcessMaker\Model\Process $process
      *
@@ -97,24 +93,6 @@ class ProcessesController extends Controller
      */
     public function show(Process $process)
     {
-        $fractal = new Manager();
-        $serializer = new ProcessMakerSerializer();
-        $fractal->setSerializer($serializer);
-        $json = $fractal->createData(new Item($process, new ProcessTransformer([
-            "prj_uid",
-            "prj_name",
-            "prj_description",
-            "prj_target_namespace",
-            "prj_expresion_language",
-            "prj_type_language",
-            "prj_exporter",
-            "prj_exporter_version",
-            "prj_create_date",
-            "prj_update_date",
-            "prj_author",
-            "prj_author_version",
-            "prj_original_source",
-        ])))->toJson();
-        return response($json, 200);
+        return fractal($process, new ProcessTransformer())->respond(200);
     }
 }
