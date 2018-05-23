@@ -8,7 +8,7 @@ use ProcessMaker\Model\OutputDocument;
 use ProcessMaker\Model\Process;
 
 /**
- * Facade for our OutPut Document Manager
+ * Facade for our Output Document Manager
  *
  * @package ProcessMaker\Facades
  * @see \ProcessMaker\Managers\OutputDocumentManager

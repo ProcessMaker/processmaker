@@ -12,7 +12,7 @@ use ProcessMaker\Model\Process;
 class OutputDocumentManager
 {
     /**
-     * Get a list of All OutPut Documents in a project.
+     * Get a list of All Output Documents in a project.
      *
      * @param Process $process
      * @param array $options
@@ -28,15 +28,16 @@ class OutputDocumentManager
         $query = OutputDocument::where('process_id', $process->id);
         $filter = $options['filter'];
         if (!empty($filter)) {
+            $filter = '%' . $filter . '%';
             $query->where(function ($query) use ($filter) {
-                $query->Where('title', 'like', '%' . $filter . '%')
-                    ->orWhere('description', 'like', '%' . $filter . '%')
-                    ->orWhere('filename', 'like', '%' . $filter . '%')
-                    ->orWhere('report_generator', 'like', '%' . $filter . '%')
-                    ->orWhere('type', 'like', '%' . $filter . '%')
-                    ->orWhere('versioning', 'like', '%' . $filter . '%')
-                    ->orWhere('current_revision', 'like', '%' . $filter . '%')
-                    ->orWhere('tags', 'like', '%' . $filter . '%');
+                $query->Where('title', 'like', $filter)
+                    ->orWhere('description', 'like', $filter)
+                    ->orWhere('filename', 'like', $filter)
+                    ->orWhere('report_generator', 'like', $filter)
+                    ->orWhere('type', 'like', $filter)
+                    ->orWhere('versioning', 'like', $filter)
+                    ->orWhere('current_revision', 'like', $filter)
+                    ->orWhere('tags', 'like', $filter);
             });
         }
         return $query->orderBy($options['sort_by'], $options['sort_order'])
@@ -45,7 +46,7 @@ class OutputDocumentManager
     }
 
     /**
-     * Create a new OutPut Document in a project.
+     * Create a new Output Document in a project.
      *
      * @param Process $process
      * @param array $data
@@ -68,7 +69,7 @@ class OutputDocumentManager
     }
 
     /**
-     * Update OutPut Document in a project.
+     * Update Output Document in a project.
      *
      * @param Process $process
      * @param OutputDocument $outputDocument
@@ -91,7 +92,7 @@ class OutputDocumentManager
 
 
     /**
-     * Remove OutPut Document in a project.
+     * Remove Output Document in a project.
      *
      * @param OutputDocument $outputDocument
      *
