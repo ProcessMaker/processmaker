@@ -39,7 +39,7 @@ class CreateUSERSTable extends Migration {
 			$table->string('time_zone')->nullable();
 			$table->string('lang')->nullable();
 			$table->dateTime('last_login')->nullable();
-        });
+		});
 	}
 
 
