@@ -259,3 +259,11 @@ body {
 #navbar-request-button {
   margin-right: 16px;
 }
+// This is our top shelf notification panel
+#app-alert {
+  position: fixed;
+  width: auto;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+}
