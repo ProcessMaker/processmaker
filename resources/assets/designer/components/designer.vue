@@ -1,9 +1,11 @@
 <template>
-    <svg id="svg" height="7000px" width="7000px" class="svg_canvas"
-         @mousemove="mouseMove"
-         @mousedown="mouseDown"
-         @mouseup="mouseUp">
-    </svg>
+    <div class="svg-container">
+        <svg id="svg" height="7000px" width="7000px" class="svg_canvas"
+             @mousemove="mouseMove"
+             @mousedown="mouseDown"
+             @mouseup="mouseUp">
+        </svg>
+    </div>
 </template>
 
 <script>
@@ -152,7 +154,17 @@
         position: relative;
     }
 
-    .pmdesigner-container {
+    .svg-container {
         overflow: hidden;
+    }
+
+    #appDesigner {
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .flex-column-designer {
+        display: inline-flex;
+        flex-direction: row;
     }
 </style>

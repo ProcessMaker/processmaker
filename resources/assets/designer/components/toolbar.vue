@@ -67,7 +67,6 @@
 <style>
     .pmdesigner-toolbar {
         display: inline-block;
-        position: fixed;
         background-color: white;
         border-right: 2px solid #e1dbd9;
         z-index: 2;
