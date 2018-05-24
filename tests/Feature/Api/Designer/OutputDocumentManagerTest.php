@@ -188,8 +188,6 @@ class OutputDocumentManagerTest extends ApiTestCase
 
     /**
      * Get a list of Document in a project.
-     *
-     * @depends testCreateDocument
      */
     public function testListDocuments(): void
     {
