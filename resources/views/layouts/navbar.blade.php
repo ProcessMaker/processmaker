@@ -14,6 +14,7 @@
       </li>
     </ul>
 
+    <component id="navbar-request-button" v-bind:is="'request-modal'"></component>
 
     <span class="navbar-text notifications">
       <i class="fas fa-bell" aria-hidden="true"></i>
