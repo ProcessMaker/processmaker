@@ -39,5 +39,6 @@
   #designer-nav-header{
     margin: 7px;
     padding-top: 4px;
+    padding-left: 13px;
   }
 </style>
