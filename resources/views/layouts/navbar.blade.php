@@ -9,7 +9,7 @@
         <a class="nav-link" href="{{ url('task') }}">Task</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/{{ url('process') }}">Process</a>
+        <a class="nav-link" href="{{ url('process') }}">Process</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="{{ url('admin') }}">Admin</a>

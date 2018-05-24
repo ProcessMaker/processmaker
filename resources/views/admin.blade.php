@@ -1,20 +1,16 @@
 @extends('layouts.layout')
 
 @section('content')
-
+<div class="container ml-2">
   <h1>Admin</h1>
 
-  <div class="container">
-    <my-vuetable api-url="/test"></my-vuetable>
-  </div>
+</div>
 @endsection
 
 @section('sidebar')
-  @include('sidebars.manage')
+  @include('sidebars.default', ['sidebar'=> $sidebar_admin])
 @endsection
 
 @section('js')
-<script>
 
-</script>
 @endsection
