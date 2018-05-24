@@ -17,8 +17,8 @@
     <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico" />
     <!-- Styles -->
 
-    <link href="{{ mix('css/app.css') }}" rel="stylesheet">
-    <link href="{{ mix('css/layouts-app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/layouts-app.css') }}" rel="stylesheet">
 
     <script>
         window.Processmaker = {
@@ -37,23 +37,34 @@
     @yield('css')
 </head>
 <body>
+<div id="app">
+    @include('layouts.navbar')
     @yield('sidebar')
-    <div id="app-container">
-        <div id="top-navbar" style="background-image: url('/img/logo.png')">
-            @include('layouts.navbar')
-        </div>
-        <div id="content" class="{{isset($contentClass) ? $contentClass : ''}}">
-            <div id="content-inner">
-                @yield('content')
-            </div>
-        </div>
+
+    @if(session('alert'))
+        @if(session('alert')['success'])
+            <div id="app-alert" class="alert alert-success alert-dismissible fade show" role="alert">
+        @else
+            <div id="app-alert" class="alert alert-danger alert-dismissible fade show" role="alert">
+        @endif
+        <strong>{{session('alert')['message']}}</strong>
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    @endif
+
+    <div id="page-content-wrapper">
+        @yield('content')
     </div>
+</div>
 <!-- Scripts -->
 <script src="{{ asset('js/manifest.js') }}"></script>
 <script src="{{ asset('js/vendor.js') }}"></script>
 <script src="{{ asset('js/app.js') }}"></script>
-<script src="{{ asset('js/app-layout.js') }}"></script>
-
+<!-- Menu Toggle Script -->
+<script>
+/script>
 <!--javascript!-->
 @yield('js')
 </body>
