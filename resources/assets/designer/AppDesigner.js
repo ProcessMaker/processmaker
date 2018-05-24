@@ -10,6 +10,6 @@ new Vue({
 })
 
 function autoResizeDiv() {
-    document.getElementById('appDesigner').style.height = window.innerHeight - 100 + 'px';
+    document.getElementById('appDesigner').style.height = window.innerHeight - 60 + 'px';
 }
 autoResizeDiv()

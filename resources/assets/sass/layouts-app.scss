@@ -7,75 +7,92 @@ body {
   font-style: normal;
   overflow-x: hidden;
 }
-.navbar{
-  height:60px;
+
+.navbar {
+  height: 60px;
 }
+
 .nav_icon {
   color: #7e8ba1;
 }
+
 .nav-link {
   font-size: 18px;
   font-weight: 600;
   color: #333333 !important;
 }
+
 .nav-link:hover {
   color: $primary !important;
   padding-bottom: 20px;
   margin-bottom: -20px;
 }
+
 .sidebarmenu {
   font-size: 14px !important;
   height: 100%;
   width: 208px;
 }
-.sidebarmenu ul{
+
+.sidebarmenu ul {
   overflow: auto;
   width: auto;
   height: 100%;
   padding-bottom: 75px;
 }
+
 .sidebarmenu i {
   font-size: 19px !important;
   margin-right: 5px;
 }
+
 .sidebarmenu a {
   color: $light
 }
-.sidebarmenu li{
+
+.sidebarmenu li {
   padding: 6px 14px;
   line-height: 1;
   white-space: nowrap;
 }
-.sidebarmenu li:hover{
- background-color: rgb(70, 156, 225);
- width: 206px;
+
+.sidebarmenu li:hover {
+  background-color: rgb(70, 156, 225);
+  width: 206px;
 }
-.sidebarlogo{
+
+.sidebarlogo {
   padding: 15px;
 }
-.sidebaricon{
+
+.sidebaricon {
   padding: 15px;
 }
-.sidebarimage{
+
+.sidebarimage {
   height: 60px;
   width: 58px;
 }
-.sidebarimage:hover{
- background-color: $primary !important;
+
+.sidebarimage:hover {
+  background-color: $primary !important;
 }
-.sidebarmenuicons{
-  width:58px !important;
+
+.sidebarmenuicons {
+  width: 58px !important;
 }
-.sidebarmenuicons li{
+
+.sidebarmenuicons li {
   padding-bottom: 16px;
 }
+
 .sidebarheader, .sidebarheader:hover {
   background-color: $primary !important;
   color: $text-muted !important;
   font-weight: 300 !important;
   text-transform: uppercase !important;
   margin-top: .5rem !important;
- }
+}
 
 #wrapper {
   padding-left: 0;
@@ -122,6 +139,7 @@ body {
 #wrapper ul {
   margin-left: -25px;
 }
+
 /* Sidebar Styles */
 .sidebar-nav {
   position: absolute;
@@ -179,7 +197,7 @@ body {
   font-weight: 600;
   color: $gray-500;
   margin-left: 21px !important;
-  margin-top:12px;
+  margin-top: 12px;
 }
 
 .sidebar-header ul {
@@ -207,12 +225,12 @@ body {
   color: $primary;
 }
 
-
 .menu-toggle {
   padding: 20px;
   color: $gray-500;
 }
-@media(min-width:768px) {
+
+@media(min-width: 768px) {
   #wrapper {
     padding-left: 0;
   }
@@ -230,7 +248,7 @@ body {
   }
 
   #page-content-wrapper {
-    padding: 20px 20px 20px 60px;
+    padding: 0 0 0 60px;
     position: relative;
   }
 
@@ -241,19 +259,22 @@ body {
 }
 
 .table thead th {
-    border: 0;
-    background-color: $body-bg;
-    font-size: 12px;
+  border: 0;
+  background-color: $body-bg;
+  font-size: 12px;
 }
+
 .table td {
   font-size: 12px;
 }
-.table-header{
+
+.table-header {
   font-size: 18px;
 }
-.vuetable-pagination{
-   color: #788793;
-   font-size: 12px;
+
+.vuetable-pagination {
+  color: #788793;
+  font-size: 12px;
 }
 
 // This is our top shelf notification panel
