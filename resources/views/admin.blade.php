@@ -2,13 +2,8 @@
 
 @section('content')
 <div class="container ml-2">
-  <h1>Run</h1>
+  <h1>Admin</h1>
 
-  <div id="home">
-    <div id="inbox">
-        <inbox></inbox>
-    </div>
-  </div>
 </div>
 @endsection
 
@@ -17,9 +12,5 @@
 @endsection
 
 @section('js')
-<script>
-new Vue({
-  el: '#inbox'
-});
-</script>
+
 @endsection
