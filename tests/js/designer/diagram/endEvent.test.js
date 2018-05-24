@@ -1,7 +1,10 @@
 import {mount, shallow} from "@vue/test-utils"
 import {Elements} from "../../../../resources/assets/designer/diagram/elements"
+import Vue from "vue"
+
 
 let svg
+Dispatcher = new Vue()
 const mockGroup = jest.fn(() => svg)
 const mockAdd = jest.fn(() => svg)
 const mockDrag = jest.fn(() => svg)
@@ -12,9 +15,12 @@ const mockTrans = jest.fn(() => svg)
 const mockCircle = jest.fn(() => svg)
 const mockBox = jest.fn(() => svg)
 const mockRemove = jest.fn(() => svg)
+const mockData = jest.fn(() => svg)
+
 
 svg = {
     group: mockGroup,
+    data: mockData,
     add: mockAdd,
     drag: mockDrag,
     rect: mockRect,
@@ -26,6 +32,7 @@ svg = {
     remove: mockRemove
 }
 mockAdd.mockReturnValue(svg)
+mockTrans.mockReturnValue(svg)
 mockGroup.mockReturnValue(svg)
 mockRect.mockReturnValue(svg)
 mockAttr.mockReturnValue(svg)
@@ -33,6 +40,7 @@ mockPath.mockReturnValue(svg)
 mockTrans.mockReturnValue(svg)
 mockCircle.mockReturnValue(svg)
 mockBox.mockReturnValue(svg)
+mockData.mockReturnValue(svg)
 
 describe("Task ", () => {
     let eEvent;
@@ -47,6 +55,15 @@ describe("Task ", () => {
             },
             svg
         );
+        mockAdd.mockClear()
+        mockGroup.mockClear()
+        mockRect.mockClear()
+        mockAttr.mockClear()
+        mockPath.mockClear()
+        mockTrans.mockClear()
+        mockCircle.mockClear()
+        mockBox.mockClear()
+        mockData.mockClear()
     });
 
     it("config() - verify the merge of options", () => {
@@ -75,5 +92,19 @@ describe("Task ", () => {
         eEvent.createSelectionBorder();
         eEvent.remove();
         expect(mockRemove.mock.calls.length).toBe(2);
+    });
+
+    it("onMove() - Verify if the execute this event and use the library", () => {
+        let fn = eEvent.onMove()
+        fn()
+        expect(mockAttr.mock.calls.length).toBe(1)
+        expect(mockData.mock.calls.length).toBe(2)
+    });
+
+    it("onDragStart() - Verify if the execute this event and use the library", () => {
+        let fn = eEvent.onDragStart()
+        fn()
+        expect(mockTrans.mock.calls.length).toBe(1)
+        expect(mockData.mock.calls.length).toBe(1)
     });
 });

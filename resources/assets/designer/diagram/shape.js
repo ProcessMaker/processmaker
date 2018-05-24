@@ -1,3 +1,4 @@
+import actions from "../actions/"
 /**
  * Class Shape - Base Class
  */
@@ -60,9 +61,9 @@ export class Shape {
     onMove() {
         return (dx, dy) => {
             this.shape.attr({
-                transform: this.shape.data('origTransform') + ( this.shape.data('origTransform') ? "T" : "t") + [dx, dy]
-            })
-        }
+                transform: this.shape.data("origTransform") + (this.shape.data("origTransform") ? "T" : "t") + [dx, dy]
+            });
+        };
     }
 
     /**
@@ -70,9 +71,10 @@ export class Shape {
      */
     onDragStart() {
         return (ev) => {
-            this.svg.shapeDrag = true
-            this.shape.data('origTransform', this.shape.transform().local);
-        }
+            let action = actions.designer.drag.shape.start(ev)
+            Dispatcher.$emit(action.type, action.payload)
+            this.shape.data("origTransform", this.shape.transform().local);
+        };
     }
 
     /**
@@ -80,7 +82,8 @@ export class Shape {
      */
     onDragEnd() {
         return (ev) => {
-            this.svg.shapeDrag = null
-        }
+            let action = actions.designer.drag.shape.end(ev)
+            Dispatcher.$emit(action.type, action.payload)
+        };
     }
 }

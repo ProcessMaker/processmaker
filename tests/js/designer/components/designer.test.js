@@ -109,5 +109,40 @@ describe("designer.vue", () => {
                 panLeft: 0
             }
         )
+        cmp2.vm.mouseMove({
+            pageX: -100,
+            pageY: -100
+        })
+        expect(cmp2.vm.pan).toEqual({
+            "mouseDown": true,
+            "pageLeft": 0,
+            "pageTop": 0,
+            "panEndX": -100,
+            "panEndY": -100,
+            "panLeft": -200,
+            "panStartX": 100,
+            "panStartY": 100,
+            "panTop": -200
+        })
+    })
+
+    it("mouseUp() - Verify if the mouseup event updates the pan property in vue component", () => {
+        cmp2 = mount(designer, {propsData: {pan: {}}})
+        cmp2.vm.mouseUp()
+        expect(cmp2.vm.pan.mouseDown).toEqual(false)
+    })
+
+    it("onDragStartShape() - Verify if the mouseup event updates the shapeDrag in pan property", () => {
+        cmp2 = mount(designer, {propsData: {pan: {}}})
+        let fn = cmp2.vm.onDragStartShape()
+        fn()
+        expect(cmp2.vm.pan.shapeDrag).toEqual(true)
+    })
+
+    it("onDragEndShape() - Verify if the mouseup event updates the shapeDrag in pan property", () => {
+        cmp2 = mount(designer, {propsData: {pan: {}}})
+        let fn = cmp2.vm.onDragEndShape()
+        fn()
+        expect(cmp2.vm.pan.shapeDrag).toEqual(false)
     })
 })

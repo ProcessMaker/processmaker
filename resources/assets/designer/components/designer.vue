@@ -21,11 +21,23 @@
                 diagramCoordinates: null, // Coordinates for svg tag
                 builder: null,
                 scale: 1,
-                pan: {}
+                pan: {
+                    panStartX: null,
+                    panStartY: null,
+                    mouseDown: null,
+                    pageTop: null,
+                    pageLeft: null,
+                    panEndX: null,
+                    panEndY: null,
+                    panTop: null,
+                    panLeft: null
+                } // Options for panning in the designer
             }
         },
         created() {
-            Dispatcher.$on(actions.designer.drag.end().type, (value) => this.createElement(value))
+            Dispatcher.$on(actions.designer.drag.toolbar.end().type, (value) => this.createElement(value))
+            Dispatcher.$on(actions.designer.drag.shape.start().type, this.onDragStartShape())
+            Dispatcher.$on(actions.designer.drag.shape.end().type, this.onDragEndShape())
         },
         methods: {
             loadXML(xml = null) {
@@ -35,6 +47,10 @@
                     that.definitions = def;
                 });
             },
+            /**
+             * Create the element
+             * @param event
+             */
             createElement(event) {
                 let name = event.target.id.split(':')
                 this.diagramCoordinates = {
@@ -49,6 +65,10 @@
                 };
                 this.builder.createShape(event.target.id, defaultOptions);
             },
+            /**
+             * On mouseMove Event
+             * @param e
+             */
             mouseMove (e) {
                 if (this.pan.mouseDown) {
                     let pageTop = this.pan.pageTop;
@@ -78,8 +98,12 @@
                     }
                 }
             },
+            /**
+             * On mouseDown Event
+             * @param e
+             */
             mouseDown (e){
-                if (!this.svg.shapeDrag) {
+                if (!this.pan.shapeDrag) {
                     this.pan.panStartX = e.pageX;
                     this.pan.panStartY = e.pageY;
                     this.pan.mouseDown = true;
@@ -87,8 +111,31 @@
                     this.pan.pageLeft = parseInt(this.$svg.css('left'), false) || 0;
                 }
             },
+            /**
+             * On mouseUp Event
+             * @param e
+             */
             mouseUp (e){
                 this.pan.mouseDown = false;
+            },
+            /**
+             * On Drag start Shape listener
+             * @returns {function()}
+             */
+            onDragStartShape (){
+                return (ev) => {
+                    this.pan.shapeDrag = true;
+                }
+            },
+            /**
+             * On Drag End Shape listener
+             * @param e
+             * @returns {function()}
+             */
+            onDragEndShape (e){
+                return (ev) => {
+                    this.pan.shapeDrag = false;
+                }
             }
         },
         mounted() {
@@ -101,7 +148,7 @@
 
 <style>
     .svg_canvas {
-        background-image: url(../img/bg_designer.gif);
+        background-color: white;
         position: relative;
     }
 

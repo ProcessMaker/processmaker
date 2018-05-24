@@ -43,7 +43,6 @@ export class Builder {
     onClickShape(element) {
         let that = this;
         return (event) => {
-            console.log("clickShape")
             that.removeSelectionBorder();
             element.createSelectionBorder();
             that.selection.push(element);

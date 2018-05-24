@@ -58,7 +58,7 @@
     export default {
         methods: {
             createElement (value) {
-                let action = actions.designer.drag.end(value)
+                let action = actions.designer.drag.toolbar.end(value)
                 Dispatcher.$emit(action.type, action.payload)
             }
         }
