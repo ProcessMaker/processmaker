@@ -274,7 +274,7 @@ class Process extends Model
      */
     public function category()
     {
-        return $this->belongsTo( ProcessCategory::class, "id");
+        return $this->belongsTo(ProcessCategory::class, "category_id");
     }
 
     /**

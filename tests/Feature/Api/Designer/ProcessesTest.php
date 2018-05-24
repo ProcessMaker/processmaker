@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\Application;
 use ProcessMaker\Model\Process;
+use ProcessMaker\Model\ProcessCategory;
 use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
 use Tests\Feature\Api\ApiTestCase;
@@ -82,9 +83,9 @@ class ProcessesTest extends ApiTestCase
     }
 
     /**
-     * Tests filtering processes by a filter which matches one process
+     * Tests filtering processes by a filter which matches one process on name field
      */
-    public function testProcessesListingWithFilterWithMatches()
+    public function testProcessesListingWithFilterWithMatchesOnName()
     {
         $user = $this->authenticateAsAdmin();
         // Create some processes, keep our list
@@ -100,12 +101,46 @@ class ProcessesTest extends ApiTestCase
         // Make sure we get 1 result.
         $this->assertCount(1, $data['data']);
         $this->assertEquals(1, $data['meta']['total']);
+    }
+
+    /**
+     * Tests filtering processes by a filter which matches one process on description field
+     */
+    public function testProcessesListingWithFilterWithMatchesOnDescription()
+    {
+         $user = $this->authenticateAsAdmin();
+        // Create some processes, keep our list
+        factory(Process::class, 5)->create();
         // Now create a process with a description
         factory(Process::class)->create([
             'description' => 'Another test process'
         ]);
          // Test filtering, matching middle of description
         $response = $this->api('GET', self::API_TEST_PROCESS . '?filter=' . urlencode('other test'));
+        $response->assertStatus(200);
+        $data = json_decode($response->getContent(), true);
+        // Make sure we get 1 result.
+        $this->assertCount(1, $data['data']);
+        $this->assertEquals(1, $data['meta']['total']);
+    }
+
+    /**
+     * Tests filtering processes by a filter which matches one process on category name
+     */
+    public function testProcessesListingWithFilterWithMatchesOnCategoryName()
+    {
+         $user = $this->authenticateAsAdmin();
+        // Create some processes, keep our list
+        factory(Process::class, 5)->create();
+        // Now test with a matched category
+        $category = factory(ProcessCategory::class)->create([
+            'name' => 'My Test Category'
+        ]);
+        // Create process with that category defined
+        $process = factory(Process::class)->create([
+            'category_id' => $category->id
+        ]);
+        $response = $this->api('GET', self::API_TEST_PROCESS . '?filter=' . urlencode('Test Cat'));
         $response->assertStatus(200);
         $data = json_decode($response->getContent(), true);
         // Make sure we get 1 result.
@@ -137,6 +172,25 @@ class ProcessesTest extends ApiTestCase
         $data = json_decode($response->getContent(), true);
         $expected = fractal($process, new ProcessTransformer())->toArray();
         $this->assertEquals($expected, $data);
+    }
+
+
+    public function testProcessesSingleItemFoundWithCategory()
+    {
+        $category = factory(ProcessCategory::class)->create();
+        $user = $this->authenticateAsAdmin();
+        $process = factory(Process::class)->create([
+            'category_id' => $category->id
+        ]);
+        // Fetch from DB to ensure we're getting all columns
+        $process = Process::find($process->id);
+        $response = $this->api('GET', self::API_TEST_PROCESS . '/' . $process->uid);
+        $response->assertStatus(200);
+        $data = json_decode($response->getContent(), true);
+        $expected = fractal($process, new ProcessTransformer())->toArray();
+        $this->assertEquals($expected, $data);
+        // Ensure that the category NAME is property set to the name of the category we created
+        $this->assertEquals($category->name, $data['category']);
     }
 
 

@@ -27,8 +27,7 @@ class ProcessTransformer extends TransformerAbstract
         // But we need to grab the category and insert it in there if it's defined
         if($data['category_id']) {
             // Category is set, let's include the category
-            $category = ProcessCategory::find($data['category_id'])->first();
-            $data['category'] = $category ? $category->name : '';
+            $data['category'] = $process->category->name;
         }
         // Unset category_id, we don't need it anymore
         unset($data['category_id']);

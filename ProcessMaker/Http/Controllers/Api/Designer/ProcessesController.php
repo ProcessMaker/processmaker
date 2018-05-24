@@ -29,10 +29,13 @@ class ProcessesController extends Controller
         $perPage = $request->input("per_page", 10);
 
         if($filter) {
-            // We want to search off of name and description
+            // We want to search off of name and description and category name
             $filter = '%' . $filter . '%';
-            $processes = Process::where('name', 'like', $filter)
-                ->orWhere('description', 'like', $filter)
+            // Join the category table, but by leftJoin because processes may not have a category defined
+            $processes = Process::leftJoin('process_categories', 'category_id', 'process_categories.id')
+                ->where('processes.name', 'like', $filter)
+                ->orWhere('processes.description', 'like', $filter)
+                ->orWhere('process_categories.name', 'like', $filter)
                 ->paginate($perPage);
         } else {
             $processes = Process::paginate($perPage);
