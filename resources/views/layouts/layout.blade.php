@@ -7,6 +7,8 @@
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <!-- API Token -->
+    <meta name="api-token" content="{{ session('apiToken')['access_token']}}">
 
     <title>ProcessMaker: {{$title}}</title>
 

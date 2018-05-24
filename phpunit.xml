@@ -37,7 +37,7 @@
       <env name="DB_PORT" value="3306" />
       <env name="DB_USERNAME" value="root" />
       <env name="DB_PASSWORD" value="" />
-      <env name="DB_DATABASE" value="workflow" />
+      <env name="DB_DATABASE" value="test" />
 
 
       <!-- MS Sql server -->

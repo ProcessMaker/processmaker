@@ -1,16 +1,21 @@
 <template>
-    <div @click="window.location = url" class="process-card"><div class="inner">
-            <div class="title" v-html="transformedTitle"></div>
+    <div @click="go" class="process-card"><div class="inner">
+            <div class="name" v-html="transformedName"></div>
             <div ref="description" class="description" v-html="truncatedDescription"></div>
         </div></div>
 </template>
 
 <script>
 export default {
-  props: ["title", "description", "url", "filter"],
+  props: ["name", "description", "filter", "uid"],
+  methods: {
+    go() {
+      window.location = '/requests/' + this.uid + '/new'
+    }
+  },
   computed: {
-    transformedTitle() {
-      return this.title.replace(new RegExp(this.filter, "gi"), match => {
+    transformedName() {
+      return this.name.replace(new RegExp(this.filter, "gi"), match => {
         return '<span class="filtered">' + match + "</span>";
       });
     },
@@ -57,7 +62,7 @@ export default {
     padding: 14px 23px;
     height: 91px;
 
-    .title {
+    .name {
       font-size: 14px;
       font-weight: bold;
       font-style: normal;
@@ -87,7 +92,7 @@ export default {
   }
 
   &:hover {
-    .title {
+    .name {
       color: #00bf9c; 
       & /deep/ .filtered {
         color: #00bf9c; 

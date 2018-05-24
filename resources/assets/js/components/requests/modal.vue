@@ -20,13 +20,19 @@
                 </div>
             </div>
             <div class="header-bar"></div>
-            <div class="process-list">
+            <div v-if="Object.keys(processes).length && !loading" class="process-list">
                 <div class="category" v-for="(processList, index) in processes" :key="index">
                     <h3 class="name">{{index}}</h3>
                     <div class="processes">
-                        <process-card v-for="(process,index) in processList" :filter="filter" :key="index" :title="process.title" :description="process.description"></process-card>
+                        <process-card v-for="(process,index) in processList" :filter="filter" :key="index" :name="process.name" :description="process.description" :uid="process.uid"></process-card>
                     </div>
                 </div>
+            </div>
+            <div class="no-requests" v-if="!Object.keys(processes).length && !loading">
+                No Requests have been defined yet or are available to you
+            </div>
+            <div v-if="loading" class="loading">
+                Finding Requests available to you
             </div>
         </div>
     </div>
@@ -34,6 +40,8 @@
 
 <script>
 import card from "./card";
+import _ from "lodash";
+
 export default {
   components: {
     "process-card": card
@@ -46,42 +54,62 @@ export default {
         top: "0px",
         left: "0px"
       },
+      loading: false,
+      error: false,
       processes: {
-          'Test': [
-              {
-                  title: 'One process',
-                  description: 'This is a sample description',
-                  url: '/'
-              }
-
-          ],
-          'Another': [
-              {
-                  title: 'two process',
-                  description: 'This is a sample description',
-                  url: '/'
-              },
-              {
-                  title: 'three process',
-                  description: 'This is a sample description',
-                  url: '/'
-              }
-          ],
-          'Yet Another': [
-              {
-                  title: 'four process',
-                  description: 'This is a sample description',
-                  url: '/'
-              }
- 
-          ]
+        // Blank
+      },
+   };
+  },
+  watch: {
+    filter: _.debounce(function() {
+      if(!this.loading) {
+        this.fetch()
       }
-
-    };
+    }, 250)
   },
   methods: {
     toggleRequestModal() {
       this.show = !this.show;
+      if(this.show && !this.loaded) {
+        // Perform initial load of requests from backend
+        this.fetch();
+      }
+    },
+    fetch() {
+      this.loading = true;
+      // Now call our api
+      // Maximum number of requests returned is 200 but should be enough
+      // @todo Determine if we need to paginate or lazy scroll if someone has more than 200 requests
+      window.ProcessMaker.apiClient.get('/api/1.0/processes?filter=' + this.filter + '&per_page=200')
+        .then((response) => {
+          let data = response.data;
+          // Empty processes
+          this.processes = {};
+          // Now populate our processes array with data for rendering
+          this.populate(data.data);
+          // Do initial filter
+          this.loading = false;
+        })
+        .catch((error) => {
+          this.loading = false;
+          this.error = true;
+        })
+    },
+    populate(data) {
+      // Each element in data represents an individual process
+      // We need to pull out the category name, and if it's available in our processes, append it there
+      // if not, create the category in our processes array and then append it
+      for(let process of data) {
+        let category = process.category ? process.category : 'Uncategorized';
+        // Now determine if we have it defined in our processes list
+        if(typeof this.processes[category] == 'undefined') {
+          // Create it
+          this.processes[category] = [];
+        }
+        // Now append
+        this.processes[category].push(process);
+      }
     }
   },
   mounted() {
@@ -167,6 +195,13 @@ export default {
     opacity: 0.05;
     background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0), #000000);
   }
+
+  .loading, .no-requests {
+    padding: 32px 60px;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
 
   .process-list {
     //flex-grow: 1;
