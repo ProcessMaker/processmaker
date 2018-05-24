@@ -61,7 +61,7 @@ jest.mock("bpmn-moddle", () => jest.fn().mockImplementation(() => ({
 })))
 
 describe("designer.vue", () => {
-    let cmp, cmp2
+    let cmp
 
     beforeEach(() => {
         cmp = shallow(designer, {
