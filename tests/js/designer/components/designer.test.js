@@ -86,9 +86,4 @@ describe("designer.vue", () => {
             }
         })
     })
-
-    it("Verify if the tag contains the class with the background image ", () => {
-        cmp2 = mount(designer)
-        expect(cmp2.find('.svg_canvas').element).toBeInstanceOf(SVGSVGElement)
-    })
 })
