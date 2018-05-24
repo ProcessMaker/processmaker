@@ -192,9 +192,9 @@ class TaskDelegationManagerTest extends ApiTestCase
     }
 
     /**
-     * List Tasks with filter
+     * List Tasks with filter user
      */
-    public function testListTaskWithFilter(): void
+    public function testListTaskWithFilterUser(): void
     {
         $this->auth($this->user->username, self::DEFAULT_PASS);
         //add Task to process
@@ -204,7 +204,7 @@ class TaskDelegationManagerTest extends ApiTestCase
         ]);
         //List Task with filter option
         $query = '?current_page=1&per_page=5&sort_by=delegate_date&sort_order=DESC&filter=' . urlencode($this->user->firstname);
-        $url = self::API_ROUTE_TASK . $this->process->uid . '/output-Tasks' . $query;
+        $url = self::API_ROUTE_TASK . $this->task->uid . $query;
         $response = $this->api('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
@@ -220,6 +220,80 @@ class TaskDelegationManagerTest extends ApiTestCase
         $this->assertEquals(1, $response->original->meta->current_page);
         $this->assertEquals(1, $response->original->meta->total_pages);
         $this->assertEquals($this->user->firstname, $response->original->meta->filter);
+        $this->assertEquals('delegate_date', $response->original->meta->sort_by);
+        $this->assertEquals('DESC', $response->original->meta->sort_order);
+        //verify structure of model
+        foreach ($response->json('data') as $item) {
+            $response->assertJsonStructure(self::STRUCTURE, $item);
+        }
+    }
+
+    /**
+     * List Tasks with filter tasks
+     */
+    public function testListTaskWithFilterTask(): void
+    {
+        $this->auth($this->user->username, self::DEFAULT_PASS);
+        //add Task to process
+        factory(Delegation::class)->create([
+            'user_id' => $this->user->id,
+            'task_id' => $this->task->id
+        ]);
+        //List Task with filter option
+        $query = '?current_page=1&per_page=5&sort_by=delegate_date&sort_order=DESC&filter=' . urlencode($this->task->title);
+        $url = self::API_ROUTE_TASK . $this->task->uid . $query;
+        $response = $this->api('GET', $url);
+        //Validate the answer is correct
+        $response->assertStatus(200);
+        //verify structure paginate
+        $response->assertJsonStructure([
+            'data',
+            'meta',
+        ]);
+        //verify response in meta
+        $this->assertEquals(1, $response->original->meta->total);
+        $this->assertEquals(1, $response->original->meta->count);
+        $this->assertEquals(5, $response->original->meta->per_page);
+        $this->assertEquals(1, $response->original->meta->current_page);
+        $this->assertEquals(1, $response->original->meta->total_pages);
+        $this->assertEquals($this->task->title, $response->original->meta->filter);
+        $this->assertEquals('delegate_date', $response->original->meta->sort_by);
+        $this->assertEquals('DESC', $response->original->meta->sort_order);
+        //verify structure of model
+        foreach ($response->json('data') as $item) {
+            $response->assertJsonStructure(self::STRUCTURE, $item);
+        }
+    }
+
+    /**
+    * List Tasks with filter process
+    */
+    public function testListTaskWithFilterProcess(): void
+    {
+        $this->auth($this->user->username, self::DEFAULT_PASS);
+        //add Task to process
+        factory(Delegation::class)->create([
+            'user_id' => $this->user->id,
+            'task_id' => $this->task->id
+        ]);
+        //List Task with filter option
+        $query = '?current_page=1&per_page=5&sort_by=delegate_date&sort_order=DESC&filter=' . urlencode($this->process->title);
+        $url = self::API_ROUTE_TASK . $this->task->uid . $query;
+        $response = $this->api('GET', $url);
+        //Validate the answer is correct
+        $response->assertStatus(200);
+        //verify structure paginate
+        $response->assertJsonStructure([
+            'data',
+            'meta',
+        ]);
+        //verify response in meta
+        $this->assertEquals(1, $response->original->meta->total);
+        $this->assertEquals(1, $response->original->meta->count);
+        $this->assertEquals(5, $response->original->meta->per_page);
+        $this->assertEquals(1, $response->original->meta->current_page);
+        $this->assertEquals(1, $response->original->meta->total_pages);
+        $this->assertEquals($this->process->title, $response->original->meta->filter);
         $this->assertEquals('delegate_date', $response->original->meta->sort_by);
         $this->assertEquals('DESC', $response->original->meta->sort_order);
         //verify structure of model
