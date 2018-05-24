@@ -1,14 +1,10 @@
 <?php
 namespace ProcessMaker\Http\Middleware;
-
 use Closure;
 use Illuminate\Http\Request;
 use Lavary\Menu\Facade as Menu;
-
-
 class GenerateMenus
 {
-
     /**
      * Generate the core menus that are used in web requests for our application
      *
@@ -20,7 +16,6 @@ class GenerateMenus
     {
         //set’s application’s locale
         app()->setLocale('en');
-
         // Build the menu
         Menu::make('sidebar_admin', function ($menu) {
             $task_items = [
@@ -165,7 +160,6 @@ class GenerateMenus
                 'id' => 'homeid'
               ],
             ];
-
             $tasks = $menu;
             foreach ($task_items as $item) {
                 if ($item['header'] === false) {
@@ -175,7 +169,6 @@ class GenerateMenus
                 }
             }
         });
-
         Menu::make('sidebar_task', function ($menu) {
             $task_items = [
               [
@@ -214,7 +207,6 @@ class GenerateMenus
               'id' => 'homeid'
             ]
           ];
-
             $tasks = $menu;
             foreach ($task_items as $item) {
                 if ($item['header'] === false) {
@@ -224,21 +216,53 @@ class GenerateMenus
                 }
             }
         });
-
-        Menu::make('manage', function ($menu) {
-            $execute = $menu;
-            $tasks = $execute->add('Manage', ['class' => 'sidebar-header'])->prepend('<i class="fa fa-list-ul"></i> ');
-            $tasks->add('Pending', ['route'  => 'home', 'id' => 'home']);
-            $tasks->add('Unclaimed', ['route'  => 'home', 'id' => 'home']);
-            $tasks->add('Completed', ['route'  => 'home', 'id' => 'home']);
-
-            $cases = $execute->add('Cases', ['class' => 'sidebar-header'])->prepend('<i class="fa fa-briefcase"></i> ');
-            $cases->add('New');
-            $cases->add('Drafts');
-            $cases->add('Mine');
-            $cases->add('Find');
+        Menu::make('sidebar_request', function ($menu) {
+            $task_items = [
+              [
+                'label' => __('menus.sidebar_request.request'),
+                'header' => true,
+                'route' => '',
+                'icon' => '',
+                'id' => ''
+              ],
+              [
+                'label' => __('menus.sidebar_request.in_progress'),
+                'header' => false,
+                'route' => 'home',
+                'icon' => 'fa-user',
+                'id' => 'homeid'
+              ],
+            [
+              'label' => __('menus.sidebar_request.draft'),
+              'header' => false,
+              'route' => 'home',
+              'icon' => 'fa-user',
+              'id' => 'homeid'
+            ],
+            [
+              'label' => __('menus.sidebar_request.completed'),
+              'header' => false,
+              'route' => 'home',
+              'icon' => 'fa-users',
+              'id' => 'homeid'
+            ],
+            [
+              'label' => __('menus.sidebar_request.paused'),
+              'header' => false,
+              'route' => 'home',
+              'icon' => 'fa-user-plus',
+              'id' => 'homeid'
+            ],
+          ];
+            $tasks = $menu;
+            foreach ($task_items as $item) {
+                if ($item['header'] === false) {
+                    $tasks->add($item['label'], ['route'  => $item['route'], 'id' => $item['id'], 'icon' => $item['icon']]);
+                } else {
+                    $tasks->add($item['label'], ['class' => 'h5 text-muted font-weight-light']);
+                }
+            }
         });
-
         Menu::make('build', function ($menu) {
             $execute = $menu;
             $tasks = $execute->add('Build', ['class' => 'sidebar-header'])
@@ -246,7 +270,6 @@ class GenerateMenus
             $tasks->add('Pending', ['route'  => 'home', 'id' => 'home']);
             $tasks->add('Unclaimed', ['route'  => 'home', 'id' => 'home']);
             $tasks->add('Completed', ['route'  => 'home', 'id' => 'home']);
-
             $cases = $execute->add('Cases', ['class' => 'sidebar-header'])
             ->prepend('<i class="fa fa-briefcase"></i> ');
             $cases->add('New');
@@ -254,7 +277,6 @@ class GenerateMenus
             $cases->add('Mine');
             $cases->add('Find');
         });
-
         return $next($request);
     }
 }

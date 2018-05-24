@@ -24,6 +24,10 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
       return view('process',['title' => 'Dashboard']);
     })->name('process');
 
+    $this->get('/request', function(){
+      return view('request',['title' => 'Dashboard']);
+    })->name('request');
+
     $this->get('/admin', function(){
       return view('admin',['title' => 'Dashboard']);
     })->name('admin');
