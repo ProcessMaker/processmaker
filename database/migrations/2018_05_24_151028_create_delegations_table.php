@@ -15,6 +15,7 @@ class CreateDelegationsTable extends Migration
     {
         Schema::create('delegations', function (Blueprint $table) {
             $table->increments('id');
+            $table->uuid('uid')->unique();
             $table->unsignedInteger('application_id');
             $table->integer('index')->default(0);
             $table->integer('previous')->default(0);
@@ -40,7 +41,7 @@ class CreateDelegationsTable extends Migration
             $table->unsignedInteger('user_id')->default(null)->index('userididx');
             $table->index(['application_id', 'index']);
 
-            $table->foreign('application_id')->references('id')->on('processes');
+            $table->foreign('application_id')->references('id')->on('APPLICATION');
             $table->foreign('task_id')->references('id')->on('tasks');
             $table->foreign('user_id')->references('id')->on('users');
 

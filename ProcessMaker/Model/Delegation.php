@@ -50,6 +50,14 @@ class Delegation extends Model
     public $timestamps = false;
 
     /**
+     * Thread status types
+     */
+    const THREAD_STATUS_OPEN = 'OPEN';
+    const THREAD_STATUS_CLOSED = 'CLOSED';
+
+    const TYPE_NORMAL = 'NORMAL';
+
+    /**
      * The attributes that should be mutated to dates.
      */
     protected $dates = [

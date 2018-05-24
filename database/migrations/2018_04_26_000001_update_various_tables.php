@@ -127,12 +127,6 @@ class UpdateVariousTables extends Migration
  
         });
 
-        //CASES DELEGATIONS
-        Schema::table('APP_DELEGATION', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('RESTRICT');
-        });
-
         //CASES HISTORY
         Schema::table('APP_HISTORY', function(Blueprint $table) {
             $table->unsignedInteger('process_id')->nullable();
