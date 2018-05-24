@@ -4,70 +4,203 @@ namespace Tests\Feature\Api\Designer;
 
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
-use ProcessMaker\Model\Activity;
 use ProcessMaker\Model\Application;
-use ProcessMaker\Model\Artifact;
-use ProcessMaker\Model\Diagram;
-use ProcessMaker\Model\Event;
-use ProcessMaker\Model\Gateway;
-use ProcessMaker\Model\Lane;
-use ProcessMaker\Model\Laneset;
 use ProcessMaker\Model\Process;
+use ProcessMaker\Model\ProcessCategory;
 use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
 use Tests\Feature\Api\ApiTestCase;
+use ProcessMaker\Transformers\ProcessTransformer;
+
 
 /**
- * Process Manager tests
+ * Tests routes related to processes / CRUD related methods
  *
- * @package \ProcessMaker\Managers
  */
-class ProcessManagerTest extends ApiTestCase
+class ProcessesTest extends ApiTestCase
 {
     use DatabaseTransactions;
 
-    const API_TEST_PROJECT = '/api/1.0/project';
+    const API_TEST_PROCESS = '/api/1.0/processes';
 
     /**
-     * Validate access to process end points.
-     *
+     * Tests to determine that reaching the processes endpoint is protected by an authenticated user
      */
-    public function testAccessControl()
+    public function testUnauthenticated()
     {
-        $this->markTestSkipped('Process Manager tests need to be refactored');
-        //Login with an PROCESSMAKER_OPERATOR user.
+        // Not creating a user, not logging in
+        // Now attempt to connect to api
+        $response = $this->api('GET', self::API_TEST_PROCESS);
+        $response->assertStatus(401);
+    }
+
+    /**
+     * Test to ensure our endpoints are protected by permissions (PM_FACTORY permission is needed)
+     */
+    public function testUnauthorized()
+    {
+        // Create our user we will log in with, but not have the needed permissions
         $user = factory(User::class)->create([
+            'role_id' => null,
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_OPERATOR)->first()->id
         ]);
         $this->auth($user->username, 'password');
-        $process = factory(Process::class)->create([
-            'creator_user_id' => $user->id
-        ]);
-
-        //Create a test process using factories
-        $process = factory(Process::class)->create([
-            'creator_user_id' => $user->id
-        ]);
-        $diagram = factory(Diagram::class)->create([
-            'process_id' => $process->id,
-        ]);
-
-        //Validate does not have access to list of processes.
-        $response = $this->api('GET', self::API_TEST_PROJECT);
-        $response->assertStatus(403);
-
-        //Validate does not have access to get a process definition.
-        $response = $this->api('GET', self::API_TEST_PROJECT . '/' . $process->uid);
-        $response->assertStatus(403);
-
-        //Validate does not have access to delete a process.
-        $response = $this->api('DELETE', self::API_TEST_PROJECT . '/' . $process->uid);
+        // Now try our api endpoint, but this time, will get a 403 Unauthorized
+        $response = $this->api('GET', self::API_TEST_PROCESS);
         $response->assertStatus(403);
     }
 
     /**
+     * Test to verify our processes listing api endpoint works without any filters
+     */
+    public function testProcessesListing()
+    {
+        $user = $this->authenticateAsAdmin();
+        // Create some processes
+        factory(Process::class, 5)->create();
+        $response = $this->api('GET', self::API_TEST_PROCESS);
+        $response->assertStatus(200);
+        $data = json_decode($response->getContent(), true);
+        $this->assertCount(5, $data['data']);
+        $this->assertEquals(5, $data['meta']['total']);
+    }
+
+    /**
+     * Tests filtering processes by a filter which will not match
+     */
+    public function testProcessesListingWithFilterNoMatches()
+    {
+        $user = $this->authenticateAsAdmin();
+        // Create some processes
+        // Chances are the title/description will not include our invalid filter
+        factory(Process::class, 5)->create();
+        $response = $this->api('GET', self::API_TEST_PROCESS . '?filter=invalidfilter');
+        $response->assertStatus(200);
+        $data = json_decode($response->getContent(), true);
+        // Make sure we get no results.
+        $this->assertCount(0, $data['data']);
+        $this->assertEquals(0, $data['meta']['total']);
+    }
+
+    /**
+     * Tests filtering processes by a filter which matches one process on name field
+     */
+    public function testProcessesListingWithFilterWithMatchesOnName()
+    {
+        $user = $this->authenticateAsAdmin();
+        // Create some processes, keep our list
+        factory(Process::class, 5)->create();
+        // Now create a process with some data which will match
+        factory(Process::class)->create([
+            'name' => 'This is a test process'
+        ]);
+        // Test filtering, matching middle of name
+        $response = $this->api('GET', self::API_TEST_PROCESS . '?filter=' . urlencode('is a test'));
+        $response->assertStatus(200);
+        $data = json_decode($response->getContent(), true);
+        // Make sure we get 1 result.
+        $this->assertCount(1, $data['data']);
+        $this->assertEquals(1, $data['meta']['total']);
+    }
+
+    /**
+     * Tests filtering processes by a filter which matches one process on description field
+     */
+    public function testProcessesListingWithFilterWithMatchesOnDescription()
+    {
+         $user = $this->authenticateAsAdmin();
+        // Create some processes, keep our list
+        factory(Process::class, 5)->create();
+        // Now create a process with a description
+        factory(Process::class)->create([
+            'description' => 'Another test process'
+        ]);
+         // Test filtering, matching middle of description
+        $response = $this->api('GET', self::API_TEST_PROCESS . '?filter=' . urlencode('other test'));
+        $response->assertStatus(200);
+        $data = json_decode($response->getContent(), true);
+        // Make sure we get 1 result.
+        $this->assertCount(1, $data['data']);
+        $this->assertEquals(1, $data['meta']['total']);
+    }
+
+    /**
+     * Tests filtering processes by a filter which matches one process on category name
+     */
+    public function testProcessesListingWithFilterWithMatchesOnCategoryName()
+    {
+         $user = $this->authenticateAsAdmin();
+        // Create some processes, keep our list
+        factory(Process::class, 5)->create();
+        // Now test with a matched category
+        $category = factory(ProcessCategory::class)->create([
+            'name' => 'My Test Category'
+        ]);
+        // Create process with that category defined
+        $process = factory(Process::class)->create([
+            'category_id' => $category->id
+        ]);
+        $response = $this->api('GET', self::API_TEST_PROCESS . '?filter=' . urlencode('Test Cat'));
+        $response->assertStatus(200);
+        $data = json_decode($response->getContent(), true);
+        // Make sure we get 1 result.
+        $this->assertCount(1, $data['data']);
+        $this->assertEquals(1, $data['meta']['total']);
+    }
+
+    /**
+     * Test to fetch a single item with a uid that does not match a process
+     */
+    public function testProcessesSingleItemNotFound()
+    {
+        $user = $this->authenticateAsAdmin();
+        $response = $this->api('GET', self::API_TEST_PROCESS . '/invalid-uid');
+        $response->assertStatus(404);
+    }
+
+    /**
+     * Test successfully retrieving a single process item, matching the transformed data expected
+     */
+    public function testProcessesSingleItemFound()
+    {
+        $user = $this->authenticateAsAdmin();
+        $process = factory(Process::class)->create();
+        // Fetch from DB to ensure we're getting all columns
+        $process = Process::find($process->id);
+        $response = $this->api('GET', self::API_TEST_PROCESS . '/' . $process->uid);
+        $response->assertStatus(200);
+        $data = json_decode($response->getContent(), true);
+        $expected = fractal($process, new ProcessTransformer())->toArray();
+        $this->assertEquals($expected, $data);
+    }
+
+
+    public function testProcessesSingleItemFoundWithCategory()
+    {
+        $category = factory(ProcessCategory::class)->create();
+        $user = $this->authenticateAsAdmin();
+        $process = factory(Process::class)->create([
+            'category_id' => $category->id
+        ]);
+        // Fetch from DB to ensure we're getting all columns
+        $process = Process::find($process->id);
+        $response = $this->api('GET', self::API_TEST_PROCESS . '/' . $process->uid);
+        $response->assertStatus(200);
+        $data = json_decode($response->getContent(), true);
+        $expected = fractal($process, new ProcessTransformer())->toArray();
+        $this->assertEquals($expected, $data);
+        // Ensure that the category NAME is property set to the name of the category we created
+        $this->assertEquals($category->name, $data['category']);
+    }
+
+
+
+    /**
      * Test get a list of the files in a project.
+     * 
+     * @todo, we are not going to return the json/BPMN design in our get.  Instead we should have it in a route
+     * of processes/{process_id}/bpmn (GET/POST/DELETE)
+     * So please refactor as such
      *
      */
     public function testGetPublic()

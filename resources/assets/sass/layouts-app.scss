@@ -255,3 +255,12 @@ body {
    color: #788793;
    font-size: 12px;
 }
+
+// This is our top shelf notification panel
+#app-alert {
+  position: fixed;
+  width: auto;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+}
