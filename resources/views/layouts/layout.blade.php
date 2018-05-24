@@ -8,7 +8,11 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>ProcessMaker: {{$title}}</title>
+    @if(isset($title))
+        <title>{{__('ProcessMaker')}}: {{$title}}</title>
+    @else
+        <title>{{__('ProcessMaker')}}</title>
+    @endif
 
     <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico" />
     <!-- Styles -->
@@ -36,6 +40,19 @@
 <div id="app">
     @include('layouts.navbar')
     @yield('sidebar')
+
+    @if(session('alert'))
+        @if(session('alert')['success'])
+            <div id="app-alert" class="alert alert-success alert-dismissible fade show" role="alert">
+        @else
+            <div id="app-alert" class="alert alert-danger alert-dismissible fade show" role="alert">
+        @endif
+        <strong>{{session('alert')['message']}}</strong>
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    @endif
 
     <div id="page-content-wrapper">
         @yield('content')
