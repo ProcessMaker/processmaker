@@ -36,7 +36,11 @@
                 });
             },
             createElement(event) {
-                let name = event.target.id.split(':');
+                let name = event.target.id.split(':')
+                this.diagramCoordinates = {
+                    x: this.svg.node.getBoundingClientRect().left,
+                    y: this.svg.node.getBoundingClientRect().top
+                }
                 const defaultOptions = {
                     id: name[1] + '_' + Math.floor((Math.random() * 100) + 1),
                     x: event.x - this.diagramCoordinates.x,
@@ -90,10 +94,6 @@
         mounted() {
             this.$svg = $("#svg") // Object Jquery
             this.svg = Snap("#svg") // Object Snap svg
-            this.diagramCoordinates = {
-                x: this.svg.node.getBoundingClientRect().left,
-                y: this.svg.node.getBoundingClientRect().top
-            }
             this.builder = new Builder(this.svg, Dispatcher)
         }
     }
