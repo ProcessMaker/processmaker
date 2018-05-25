@@ -7,6 +7,8 @@
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <!-- API Token -->
+    <meta name="api-token" content="{{ session('apiToken')['access_token']}}">
 
     @if(isset($title))
         <title>{{__('ProcessMaker')}}: {{$title}}</title>
@@ -17,8 +19,8 @@
     <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico" />
     <!-- Styles -->
 
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/layouts-app.css') }}" rel="stylesheet">
+    <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+    <link href="{{ mix('css/layouts-app.css') }}" rel="stylesheet">
 
     <script>
         window.Processmaker = {
@@ -59,9 +61,9 @@
     </div>
 </div>
 <!-- Scripts -->
-<script src="{{ asset('js/manifest.js') }}"></script>
-<script src="{{ asset('js/vendor.js') }}"></script>
-<script src="{{ asset('js/app.js') }}"></script>
+<script src="{{ mix('js/manifest.js') }}"></script>
+<script src="{{ mix('js/vendor.js') }}"></script>
+<script src="{{ mix('js/app-layout.js') }}"></script>
 <!-- Menu Toggle Script -->
 <script>
     $("#menu-toggle").click(function (e) {

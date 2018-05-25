@@ -5,7 +5,7 @@ namespace ProcessMaker\Policies;
 use ProcessMaker\Model\Permission;
 use ProcessMaker\Model\User;
 
-class DynaformPolicy
+class FormPolicy
 {
     /**
      * Determine if the trigger can be read by the user.

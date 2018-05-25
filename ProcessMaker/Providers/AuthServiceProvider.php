@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Gate;
 use League\OAuth2\Server\ResourceServer;
 use ProcessMaker\Guards\OAuth2Guard;
 use ProcessMaker\Model\Application;
-use ProcessMaker\Model\Dynaform;
+use ProcessMaker\Model\Form;
+use ProcessMaker\Model\Delegation;
 use ProcessMaker\Model\InputDocument;
 use ProcessMaker\Model\OutputDocument;
 use ProcessMaker\Model\PmTable;
@@ -24,7 +25,7 @@ use ProcessMaker\OAuth2\AccessTokenRepository;
 use ProcessMaker\OAuth2\ClientRepository;
 use ProcessMaker\Policies\ApplicationPolicy;
 use ProcessMaker\Policies\AssigneeTaskPolicy;
-use ProcessMaker\Policies\DynaformPolicy;
+use ProcessMaker\Policies\FormPolicy;
 use ProcessMaker\Policies\InputDocumentPolicy;
 use ProcessMaker\Policies\OutputDocumentPolicy;
 use ProcessMaker\Policies\PmTablePolicy;
@@ -53,11 +54,11 @@ class AuthServiceProvider extends ServiceProvider
         PmTable::class => PmTablePolicy::class,
         ProcessVariable::class => ProcessVariablePolicy::class,
         ReportTable::class => ReportTablePolicy::class,
-        Dynaform::class => DynaformPolicy::class,
+        Form::class => FormPolicy::class,
+        Trigger::class => TriggerPolicy::class,
         Trigger::class => TriggerPolicy::class,
         TaskUser::class => AssigneeTaskPolicy::class,
-        Trigger::class => TriggerPolicy::class,
-        TaskUser::class => AssigneeTaskPolicy::class,
+        Delegation::class => AssigneeTaskPolicy::class,
         InputDocument::class => InputDocumentPolicy::class,
         OutputDocument::class => OutputDocumentPolicy::class,
     ];

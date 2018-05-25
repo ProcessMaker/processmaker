@@ -8,7 +8,7 @@ use ProcessMaker\Model\Traits\Uuid;
 use Watson\Validating\ValidatingTrait;
 
 /**
- * Class dynaform
+ * Class Form
  *
  * @package ProcessMaker\Model
  *
@@ -22,12 +22,10 @@ use Watson\Validating\ValidatingTrait;
  * @property Carbon type
  *
  */
-class Dynaform extends Model
+class Form extends Model
 {
     use ValidatingTrait;
     use Uuid;
-
-    protected $table = 'dynaform';
 
     protected $fillable = [
         'uid',
@@ -41,34 +39,14 @@ class Dynaform extends Model
         'process_id',
     ];
 
-    protected $attributes = [
-        'uid' => null,
-        'process_id' => '',
-        'title' => null,
-        'description' => null,
-        'content' => null,
-        'label' => null,
-        'type' => 'form',
-    ];
-
-    protected $casts = [
-        'uid' => 'string',
-        'process_id' => 'int',
-        'title' => 'string',
-        'description' => 'string',
-        'content' => 'array',
-        'label' => 'string',
-        'type' => 'string',
-    ];
-
     protected $rules = [
         'uid' => 'required|max:36',
         'process_id' => 'exists:processes,id',
-        'title' => 'required|unique:dynaform,title',
+        'title' => 'required|unique:forms,title',
     ];
 
     protected $validationMessages = [
-        'title.unique' => 'A Dynaform with the same name already exists in this process.'
+        'title.unique' => 'A Form with the same name already exists in this process.'
     ];
 
     /**
@@ -82,12 +60,12 @@ class Dynaform extends Model
     }
 
     /**
-     * Accessor content to json
-     *
-     * @param $value
-     *
-     * @return array|null
-     */
+ * Accessor content to json
+ *
+ * @param $value
+ *
+ * @return array|null
+ */
     public function getContentAttribute($value): ?array
     {
         return json_decode($value, true);
@@ -103,6 +81,28 @@ class Dynaform extends Model
     public function setContentAttribute($value): void
     {
         $this->attributes['content'] = empty($value) ? null : json_encode($value);
+    }
+
+    /**
+     * Accessor Label to json
+     *
+     * @param $value
+     *
+     * @return array|null
+     */
+    public function getLabelAttribute($value): ?array
+    {
+        return json_decode($value, true);
+    }
+
+    /**
+     * Mutator Label json decode
+     *
+     * @param $value
+     */
+    public function setLabelAttribute($value): void
+    {
+        $this->attributes['label'] = empty($value) ? null : json_encode($value);
     }
 
 }
