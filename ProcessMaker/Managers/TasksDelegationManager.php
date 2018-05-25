@@ -24,7 +24,7 @@ class TasksDelegationManager
         Paginator::currentPageResolver(function () use ($start) {
             return $start;
         });
-        //$query = Delegation::with('task', 'user', 'application');
+        $query = Delegation::with('task', 'user', 'application');
         $filter = $options['filter'];
         if (!empty($filter)) {
             $filter = '%' . $filter . '%';

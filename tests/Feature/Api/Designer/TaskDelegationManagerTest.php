@@ -137,10 +137,8 @@ class TaskDelegationManagerTest extends ApiTestCase
         ]);
         //verify response in meta
         $this->assertEquals(11, $response->original->meta->total);
-        $this->assertEquals($perPage, $response->original->meta->count);
         $this->assertEquals($perPage, $response->original->meta->per_page);
         $this->assertEquals(2, $response->original->meta->current_page);
-        $this->assertEquals(3, $response->original->meta->total_pages);
         $this->assertEquals('delegate_date', $response->original->meta->sort_by);
         $this->assertEquals('DESC', $response->original->meta->sort_order);
         //verify structure of data
@@ -225,7 +223,10 @@ class TaskDelegationManagerTest extends ApiTestCase
     public function testListTaskWithFilterApplication(): void
     {
         //add delegations
-        $application = factory(Application::class)->create();
+        $title = 'Application title for search';
+        $application = factory(Application::class)->create([
+            'APP_TITLE' => $title
+        ]);
         factory(Delegation::class)->create([
             'application_id' => $application->id,
             'user_id' => $this->user->id,
@@ -234,7 +235,7 @@ class TaskDelegationManagerTest extends ApiTestCase
         factory(Delegation::class, 5)->create();
         //List Delegations with filter options
         $perPage = Faker::create()->randomDigitNotNull;
-        $query = '?current_page=1&per_page=' . $perPage . '&sort_by=delegate_date&sort_order=DESC&filter=' . urlencode($application->APP_TITLE);
+        $query = '?current_page=1&per_page=' . $perPage . '&sort_by=delegate_date&sort_order=DESC&filter=' . urlencode($title);
         $url = self::API_ROUTE_TASK . $query;
         $response = $this->api('GET', $url);
         //Validate the answer is correct
@@ -250,7 +251,7 @@ class TaskDelegationManagerTest extends ApiTestCase
         $this->assertEquals($perPage, $response->original->meta->per_page);
         $this->assertEquals(1, $response->original->meta->current_page);
         $this->assertEquals(1, $response->original->meta->total_pages);
-        $this->assertEquals($application->APP_TITLE, $response->original->meta->filter);
+        $this->assertEquals($title, $response->original->meta->filter);
         $this->assertEquals('delegate_date', $response->original->meta->sort_by);
         $this->assertEquals('DESC', $response->original->meta->sort_order);
         //verify structure of data
