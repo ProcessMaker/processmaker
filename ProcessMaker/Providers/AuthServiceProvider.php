@@ -10,6 +10,7 @@ use League\OAuth2\Server\ResourceServer;
 use ProcessMaker\Guards\OAuth2Guard;
 use ProcessMaker\Model\Application;
 use ProcessMaker\Model\Form;
+use ProcessMaker\Model\Delegation;
 use ProcessMaker\Model\InputDocument;
 use ProcessMaker\Model\OutputDocument;
 use ProcessMaker\Model\PmTable;
@@ -57,6 +58,7 @@ class AuthServiceProvider extends ServiceProvider
         Trigger::class => TriggerPolicy::class,
         Trigger::class => TriggerPolicy::class,
         TaskUser::class => AssigneeTaskPolicy::class,
+        Delegation::class => AssigneeTaskPolicy::class,
         InputDocument::class => InputDocumentPolicy::class,
         OutputDocument::class => OutputDocumentPolicy::class,
     ];

@@ -135,5 +135,9 @@ Router::group([
         //Cases endpoints
         Router::get('cases/{application}/variables', 'Cases\VariableController@get')->middleware('can:read,application');
 
+        //Task Delegations endpoints
+        Router::get('tasks', 'Designer\TaskDelegationController@index')->middleware('can:read,ProcessMaker\Model\Delegation');
+        Router::get('tasks/{task}', 'Designer\TaskDelegationController@show')->middleware('can:read,ProcessMaker\Model\Delegation');
+
     });
 });
