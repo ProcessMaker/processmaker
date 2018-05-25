@@ -89,10 +89,11 @@ class ProcessesTest extends ApiTestCase
     {
         $user = $this->authenticateAsAdmin();
         // Create some processes, keep our list
-        factory(Process::class, 5)->create();
+        factory(Process::class, 20)->create();
         // Now create a process with some data which will match
         factory(Process::class)->create([
-            'name' => 'This is a test process'
+            'name' => 'This is a test process',
+            'description' => 'A test description'
         ]);
         // Test filtering, matching middle of name
         $response = $this->api('GET', self::API_TEST_PROCESS . '?filter=' . urlencode('is a test'));
@@ -101,6 +102,11 @@ class ProcessesTest extends ApiTestCase
         // Make sure we get 1 result.
         $this->assertCount(1, $data['data']);
         $this->assertEquals(1, $data['meta']['total']);
+        // Ensure our name is the same
+        $this->assertEquals('This is a test process', $data['data'][0]['name']);
+        // Ensure description is the same
+        $this->assertEquals('A test description', $data['data'][0]['description']);
+
     }
 
     /**
