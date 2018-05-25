@@ -150,6 +150,7 @@
 
 <style>
     .svg_canvas {
+        background-image: url(../img/bg_designer.gif);
         background-color: white;
         position: relative;
     }
