@@ -3,7 +3,7 @@
 
     <div class="pmdesigner-container" id="appDesigner">
       <toptoolbar></toptoolbar>
-      <div>
+      <div class="flex-column-designer">
         <toolbar></toolbar>
         <designer ref="canvas"></designer>
       <div>

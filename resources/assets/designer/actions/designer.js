@@ -2,8 +2,14 @@
 export const designer = {
     designer: {
         drag: {
-            end: x => x,
-            start: x => x
+            toolbar: {
+                start: x => x,
+                end: x => x
+            },
+            shape: {
+                start: x => x,
+                end: x => x
+            }
         },
         zoom: {
             in: x => x,
