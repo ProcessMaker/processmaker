@@ -333,6 +333,8 @@ body {
 #app-alert {
   position: fixed;
   width: auto;
+  // Needs to lay over the navbar that is fixed
+  z-index: 10000;
   top: 4px;
   left: 50%;
   transform: translateX(-50%);

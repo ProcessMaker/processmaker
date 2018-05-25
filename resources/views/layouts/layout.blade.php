@@ -39,6 +39,18 @@
     @yield('css')
 </head>
 <body>
+    @if(session('alert'))
+        @if(session('alert')['success'])
+            <div id="app-alert" class="alert alert-success alert-dismissible fade show" role="alert">
+        @else
+            <div id="app-alert" class="alert alert-danger alert-dismissible fade show" role="alert">
+        @endif
+        <strong>{{session('alert')['message']}}</strong>
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    @endif
     @yield('sidebar')
     <div id="app-container">
         <div id="top-navbar" style="background-image: url('/img/logo.png')">

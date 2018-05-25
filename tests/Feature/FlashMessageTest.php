@@ -44,7 +44,6 @@ class FlashMessageTest extends TestCase
 
     public function testErrorMessage()
     {
-      $this->markTestIncomplete('herp');
       // Create a fake route that flashes a message with a error alert
       Router::get('/_tests/alert_failure_test', function () {
         // Flash a message
