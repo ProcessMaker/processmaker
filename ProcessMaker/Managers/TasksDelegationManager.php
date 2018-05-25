@@ -24,7 +24,7 @@ class TasksDelegationManager
         Paginator::currentPageResolver(function () use ($start) {
             return $start;
         });
-        $query = Delegation::with('task', 'user', 'application');
+        //$query = Delegation::with('task', 'user', 'application');
         $filter = $options['filter'];
         if (!empty($filter)) {
             $filter = '%' . $filter . '%';
@@ -39,12 +39,14 @@ class TasksDelegationManager
                 })
                 ->orWhere(function ($q) use ($filter, $task) {
                     $q->whereHas('task', function ($query) use ($filter, $task) {
-                        $query->where($task->getTable() . '.title', 'like', $filter);
+                        $query->where($task->getTable() . '.title', 'like', $filter)
+                            ->orWhere($task->getTable() . '.description', 'like', $filter);
                     });
                 })
                 ->orWhere(function ($q) use ($filter, $application) {
                     $q->whereHas('application', function ($query) use ($filter, $application) {
-                        $query->where($application->getTable() . '.title', 'like', $filter);
+                        $query->where($application->getTable() . '.APP_TITLE', 'like', $filter)
+                            ->orWhere($application->getTable() . '.APP_DESCRIPTION', 'like', $filter);
                     });
                 });
 
