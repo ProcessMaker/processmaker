@@ -1,17 +1,13 @@
-var app = new Vue({
-    el: '#app',
-    data: {
-        sidebarCollapsed: false,
-        notificationShown: false,
-        notifications: [],
-    },
-    mounted() {
-      /*
-        window.Echo.private('ProcessMaker.Model.User.' + window.Processmaker.userId)
-            .notification((notification) => {
-                let len = this.notifications.length;
-                this.notifications.push({id: len, html: notification.html});
-            });
-            */
+require('./bootstrap');
+let Vue = window.Vue;
+
+// Import our requests modal
+import requestModal from './components/requests/modal'
+
+// Setup our request modal and wire it to our button in the navbar
+new Vue({
+    el: '#navbar-request-button',
+    components: {
+        requestModal
     }
 })

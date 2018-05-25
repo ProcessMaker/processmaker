@@ -5,7 +5,7 @@ namespace ProcessMaker\Providers;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use ProcessMaker\Managers\DatabaseManager;
-use ProcessMaker\Managers\DynaformManager;
+use ProcessMaker\Managers\FormsManager;
 use ProcessMaker\Managers\InputDocumentManager;
 use ProcessMaker\Managers\OutputDocumentManager;
 use ProcessMaker\Managers\ProcessCategoryManager;
@@ -14,6 +14,7 @@ use ProcessMaker\Managers\ProcessManager;
 use ProcessMaker\Managers\ReportTableManager;
 use ProcessMaker\Managers\SchemaManager;
 use ProcessMaker\Managers\TaskManager;
+use ProcessMaker\Managers\TasksDelegationManager;
 use ProcessMaker\Managers\TriggerManager;
 use ProcessMaker\Model\Group;
 use ProcessMaker\Model\User;
@@ -65,8 +66,8 @@ class ProcessMakerServiceProvider extends ServiceProvider
             return new ReportTableManager();
         });
 
-        $this->app->singleton('dynaform.manager', function ($app) {
-            return new DynaformManager();
+        $this->app->singleton('form.manager', function ($app) {
+            return new FormsManager();
         });
 
         /**
@@ -92,6 +93,10 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         $this->app->singleton('output_document.manager', function ($app) {
             return new OutputDocumentManager();
+        });
+
+        $this->app->singleton('task_delegation.manager', function ($app) {
+            return new TasksDelegationManager();
         });
     }
 }

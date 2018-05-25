@@ -36,12 +36,6 @@ class UpdateVariousTables extends Migration
             $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
         });
 
-        //DYNAFORMS
-        Schema::table('dynaform', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('CASCADE');
-        });
-
         //ELEMENT(GATEWAY, EVENT) TO DUMMY TASK RELATIONS
         Schema::table('ELEMENT_TASK_RELATION', function(Blueprint $table) {
             $table->unsignedInteger('process_id')->nullable();
@@ -131,12 +125,6 @@ class UpdateVariousTables extends Migration
             $table->unsignedInteger('process_id')->nullable();
             $table->foreign('process_id')->references('id')->on('processes')->onDelete('RESTRICT');
  
-        });
-
-        //CASES DELEGATIONS
-        Schema::table('APP_DELEGATION', function(Blueprint $table) {
-            $table->unsignedInteger('process_id')->nullable();
-            $table->foreign('process_id')->references('id')->on('processes')->onDelete('RESTRICT');
         });
 
         //CASES HISTORY
