@@ -104,7 +104,7 @@ class Application extends Model
     public function hasUserParticipated(User $user)
     {
         // Check if there is a delegation that was / is assigned for this
-        return DB::table('APP_DELEGATION')
+        return DB::table('delegations')
             ->where('application_id', $this->id)
             ->where('user_id', $user->id)
             ->exists();
