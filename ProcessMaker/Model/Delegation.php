@@ -35,7 +35,6 @@ use Watson\Validating\ValidatingTrait;
  * @param boolean started
  * @param boolean finished
  * @param boolean delayed
- * @param string data
  * @param float app_overdue_percentage
  * @param integer user_id
  * 
@@ -91,7 +90,6 @@ class Delegation extends Model
         'started',
         'finished',
         'delayed',
-        'data',
         'app_overdue_percentage',
         'user_id'
     ];

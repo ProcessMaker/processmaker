@@ -45,7 +45,6 @@ class TaskDelegationManagerTest extends ApiTestCase
         'started',
         'finished',
         'delayed',
-        'data',
         'app_overdue_percentage',
         'user',
         'task',
@@ -69,44 +68,8 @@ class TaskDelegationManagerTest extends ApiTestCase
         $this->task = factory(Task::class)->create([
             'process_id' => $this->process->id
         ]);
-    }
 
-    /**
-     * Test validate structure table
-     */
-    public function testStructureTable(): void
-    {
-        $db = DB::connection()->getSchemaBuilder()->getColumnListing('delegations');
-        $structure = [
-            'id',
-            'uid',
-            'application_id',
-            'index',
-            'previous',
-            'last_index',
-            'task_id',
-            'type',
-            'thread',
-            'thread_status',
-            'priority',
-            'delegate_date',
-            'init_date',
-            'finish_date',
-            'task_due_date',
-            'risk_date',
-            'duration',
-            'queue_duration',
-            'delay_duration',
-            'started',
-            'finished',
-            'delayed',
-            'data',
-            'app_overdue_percentage',
-            'user_id',
-        ];
-        sort($db);
-        sort($structure);
-        $this->assertEquals(json_encode($structure), json_encode($db));
+        $this->auth($this->user->username, self::DEFAULT_PASS);
     }
 
     /**
@@ -114,8 +77,7 @@ class TaskDelegationManagerTest extends ApiTestCase
      */
     public function testGetDelegationTask(): void
     {
-        $this->auth($this->user->username, self::DEFAULT_PASS);
-
+        //add delegation
         factory(Delegation::class)->create([
             'task_id' => $this->task->id
         ]);
@@ -133,7 +95,6 @@ class TaskDelegationManagerTest extends ApiTestCase
      */
     public function testGetListDelegationsTask(): void
     {
-        $this->auth($this->user->username, self::DEFAULT_PASS);
         //add delegations
         factory(Delegation::class, 11)->create([
             'task_id' => $this->task->id
@@ -150,9 +111,8 @@ class TaskDelegationManagerTest extends ApiTestCase
         ]);
         //verify count of data
         $this->assertEquals(11, $response->original->meta->total);
-        foreach ($response->json('data') as $item) {
-            $response->assertJsonStructure(self::STRUCTURE, $item);
-        }
+        //verify structure of data
+        $response->assertJsonStructure(['*' => self::STRUCTURE], $response->json('data'));
     }
 
     /**
@@ -160,8 +120,6 @@ class TaskDelegationManagerTest extends ApiTestCase
      */
     public function testListTasksWithQueryParameter(): void
     {
-        $this->auth($this->user->username, self::DEFAULT_PASS);
-        //add Task to process
         //add delegations
         factory(Delegation::class, 11)->create([
             'task_id' => $this->task->id
@@ -185,10 +143,8 @@ class TaskDelegationManagerTest extends ApiTestCase
         $this->assertEquals(3, $response->original->meta->total_pages);
         $this->assertEquals('delegate_date', $response->original->meta->sort_by);
         $this->assertEquals('DESC', $response->original->meta->sort_order);
-        //verify structure of model
-        foreach ($response->json('data') as $item) {
-            $response->assertJsonStructure(self::STRUCTURE, $item);
-        }
+        //verify structure of data
+        $response->assertJsonStructure(['*' => self::STRUCTURE], $response->json('data'));
     }
 
     /**
@@ -196,7 +152,6 @@ class TaskDelegationManagerTest extends ApiTestCase
      */
     public function testListTaskWithFilterUser(): void
     {
-        $this->auth($this->user->username, self::DEFAULT_PASS);
         //add Task to process
         factory(Delegation::class)->create([
             'user_id' => $this->user->id,
@@ -222,10 +177,8 @@ class TaskDelegationManagerTest extends ApiTestCase
         $this->assertEquals($this->user->firstname, $response->original->meta->filter);
         $this->assertEquals('delegate_date', $response->original->meta->sort_by);
         $this->assertEquals('DESC', $response->original->meta->sort_order);
-        //verify structure of model
-        foreach ($response->json('data') as $item) {
-            $response->assertJsonStructure(self::STRUCTURE, $item);
-        }
+        //verify structure of data
+        $response->assertJsonStructure(['*' => self::STRUCTURE], $response->json('data'));
     }
 
     /**
@@ -233,7 +186,6 @@ class TaskDelegationManagerTest extends ApiTestCase
      */
     public function testListTaskWithFilterTask(): void
     {
-        $this->auth($this->user->username, self::DEFAULT_PASS);
         //add Task to process
         factory(Delegation::class)->create([
             'user_id' => $this->user->id,
@@ -259,10 +211,8 @@ class TaskDelegationManagerTest extends ApiTestCase
         $this->assertEquals($this->task->title, $response->original->meta->filter);
         $this->assertEquals('delegate_date', $response->original->meta->sort_by);
         $this->assertEquals('DESC', $response->original->meta->sort_order);
-        //verify structure of model
-        foreach ($response->json('data') as $item) {
-            $response->assertJsonStructure(self::STRUCTURE, $item);
-        }
+        //verify structure of data
+        $response->assertJsonStructure(['*' => self::STRUCTURE], $response->json('data'));
     }
 
     /**
@@ -270,7 +220,6 @@ class TaskDelegationManagerTest extends ApiTestCase
     */
     public function testListTaskWithFilterProcess(): void
     {
-        $this->auth($this->user->username, self::DEFAULT_PASS);
         //add Task to process
         factory(Delegation::class)->create([
             'user_id' => $this->user->id,
@@ -296,10 +245,8 @@ class TaskDelegationManagerTest extends ApiTestCase
         $this->assertEquals($this->process->title, $response->original->meta->filter);
         $this->assertEquals('delegate_date', $response->original->meta->sort_by);
         $this->assertEquals('DESC', $response->original->meta->sort_order);
-        //verify structure of model
-        foreach ($response->json('data') as $item) {
-            $response->assertJsonStructure(self::STRUCTURE, $item);
-        }
+        //verify structure of data
+        $response->assertJsonStructure(['*' => self::STRUCTURE], $response->json('data'));
     }
 
 }

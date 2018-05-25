@@ -18,7 +18,6 @@ $factory->define(Delegation::class, function (Faker $faker) {
         'thread_status' => $faker->randomElement([Delegation::THREAD_STATUS_OPEN, Delegation::THREAD_STATUS_CLOSED]),
         'last_index' => $faker->randomElement(['0', '1']),
         'delegate_date' => Carbon::now(),
-        'data' => $faker->paragraph,
         'started'=> $faker->randomElement(['0', '1']),
         'finished'=> $faker->randomElement(['0', '1']),
         'delayed'=> $faker->randomElement(['0', '1']),

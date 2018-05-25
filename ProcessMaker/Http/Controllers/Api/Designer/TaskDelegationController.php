@@ -26,12 +26,12 @@ class TaskDelegationController
             'filter' => $request->input('filter', ''),
             'current_page' => $request->input('current_page', 1),
             'per_page' => $request->input('per_page', 10),
-            'sort_by' => $request->input('sort_by', 'title'),
+            'sort_by' => $request->input('sort_by', 'id'),
             'sort_order' => $request->input('sort_order', 'ASC'),
         ];
         $response = TasksDelegationManager::index($options);
         return fractal($response, new TaskDelegationTransformer())
-            ->parseIncludes(['user', 'application'])
+            ->parseIncludes(['user', 'task', 'application'])
             ->respond();
     }
 
@@ -48,7 +48,7 @@ class TaskDelegationController
         $response = TasksDelegationManager::show($task);
         return fractal()
             ->item($response)
-            ->parseIncludes(['user', 'application'])
+            ->parseIncludes(['user', 'task', 'application'])
             ->transformWith(new TaskDelegationTransformer())
             ->respond();
     }

@@ -4,39 +4,50 @@ namespace ProcessMaker\Managers;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
+use ProcessMaker\Model\Application;
 use ProcessMaker\Model\Delegation;
 use ProcessMaker\Model\Task;
+use ProcessMaker\Model\User;
 
 class TasksDelegationManager
 {
     /**
      * Get a list of All Output Documents in a project.
      *
-     * @param Task $task
      * @param array $options
      *
      * @return LengthAwarePaginator
      */
-    public function index(Task $task, array $options): LengthAwarePaginator
+    public function index(array $options): LengthAwarePaginator
     {
         $start = $options['current_page'];
         Paginator::currentPageResolver(function () use ($start) {
             return $start;
         });
-        $query = Delegation::where('process_id', $task->id);
+        $query = Delegation::with('task', 'user', 'application');
         $filter = $options['filter'];
         if (!empty($filter)) {
             $filter = '%' . $filter . '%';
-            $query->where(function ($query) use ($filter) {
-                $query->Where('title', 'like', $filter)
-                    ->orWhere('description', 'like', $filter)
-                    ->orWhere('filename', 'like', $filter)
-                    ->orWhere('report_generator', 'like', $filter)
-                    ->orWhere('type', 'like', $filter)
-                    ->orWhere('versioning', 'like', $filter)
-                    ->orWhere('current_revision', 'like', $filter)
-                    ->orWhere('tags', 'like', $filter);
-            });
+            $user = new User();
+            $task = new Task();
+            $application = new Application();
+            $query = Delegation::where(function ($q) use ($filter, $user) {
+                    $q->whereHas('user', function ($query) use ($filter, $user) {
+                        $query->where($user->getTable() . '.firstname', 'like', $filter)
+                            ->orWhere($user->getTable() . '.lastname', 'like', $filter);
+                    });
+                })
+                ->orWhere(function ($q) use ($filter, $task) {
+                    $q->whereHas('task', function ($query) use ($filter, $task) {
+                        $query->where($task->getTable() . '.title', 'like', $filter);
+                    });
+                })
+                ->orWhere(function ($q) use ($filter, $application) {
+                    $q->whereHas('application', function ($query) use ($filter, $application) {
+                        $query->where($application->getTable() . '.title', 'like', $filter);
+                    });
+                });
+
         }
         return $query->orderBy($options['sort_by'], $options['sort_order'])
             ->paginate($options['per_page'])

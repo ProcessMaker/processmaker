@@ -4,6 +4,7 @@ namespace ProcessMaker\Transformers;
 
 use League\Fractal\Resource\Item;
 use League\Fractal\TransformerAbstract;
+use ProcessMaker\Application;
 use ProcessMaker\Model\Delegation;
 
 /**
@@ -22,6 +23,7 @@ class TaskDelegationTransformer extends TransformerAbstract
      */
     protected $availableIncludes = [
         'user',
+        'task',
         'application',
     ];
 
@@ -35,9 +37,6 @@ class TaskDelegationTransformer extends TransformerAbstract
     public function transform(Delegation $item)
     {
         $data = $item->toArray();
-        /*$data['user'] = $item->user;
-        $data['task'] = $item->task;
-        $data['application'] = $item->application;*/
         unset($data['id'], $data['process_id'], $data['open_type'], $data['created_at'], $data['updated_at']);
         return $data;
     }
@@ -55,17 +54,26 @@ class TaskDelegationTransformer extends TransformerAbstract
     }
 
     /**
+     * Fractal Include to add the fields of the users table in the transformation
+     *
+     * @param Delegation $item
+     *
+     * @return Item
+     */
+    public function includeTask(Delegation $item): Item
+    {
+        return $this->item($item->task, new TaskTransformer());
+    }
+
+    /**
      * Fractal Include to add the fields of the Application table in the transformation
      *
      * @param Delegation $item
      *
-     * @return array
+     * @return item
      */
-    public function includeApplication(Delegation $item): array
+    public function includeApplication(Delegation $item): item
     {
-        $data = $item->application->toArray();
-        unset($data['id']);
-        return $data;
-        return $this->item($item->application, new ApplicationTransformer());
+        return $this->item($item->application, new ApplicationSingleTransformer());
     }
 }

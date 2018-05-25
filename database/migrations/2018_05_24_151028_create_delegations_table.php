@@ -36,7 +36,6 @@ class CreateDelegationsTable extends Migration
             $table->boolean('started')->default(0);
             $table->boolean('finished')->default(0);
             $table->boolean('delayed')->default(0);
-            $table->text('data');
             $table->float('app_overdue_percentage', 10, 0)->default(0);
             $table->unsignedInteger('user_id')->default(null)->index('userididx');
             $table->index(['application_id', 'index']);
