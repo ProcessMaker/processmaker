@@ -30,7 +30,6 @@ class TestController extends Controller
 
         }
       }
-
       return $tmp->orderBy($field,$order)
       ->where('USR_FIRSTNAME','LIKE','%'.$request->filter.'%')
       ->orWhere('USR_LASTNAME','LIKE','%'.$request->filter.'%')

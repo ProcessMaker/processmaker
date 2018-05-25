@@ -14,27 +14,6 @@ use ProcessMaker\Model\Process;
 class ProcessTransformer extends TransformerAbstract
 {
     /**
-     * List of resources possible to include
-     *
-     * @var array
-     */
-    protected $defaultIncludes = [
-        'diagram'
-    ];
-
-    /**
-     * Fields that will be returned by the transformer.
-     *
-     * @var array $fields
-     */
-    private $fields;
-
-    public function __construct(array $fields = null)
-    {
-        $this->fields = $fields;
-    }
-
-    /**
      * Transform the process.
      *
      * @param Process $process
@@ -43,50 +22,16 @@ class ProcessTransformer extends TransformerAbstract
      */
     public function transform(Process $process)
     {
-        return $this->transformWithFieldFilter([
-            "prj_uid"                => $process->uid,
-            "prj_name"               => $process->name,
-            "prj_description"        => $process->description,
-            "prj_target_namespace"   => $process->target_namespace,
-            "prj_expresion_language" => $process->expresion_language,
-            "prj_type_language"      => $process->type_language,
-            "prj_exporter"           => $process->exporter,
-            "prj_exporter_version"   => $process->exporter_version,
-            "prj_create_date"        => $process->created_at->toIso8601String(),
-            "prj_update_date"        => $process->updated_at->toIso8601String(),
-            "prj_author"             => $process->author,
-            "prj_author_version"     => $process->author_version,
-            "prj_original_source"    => $process->original_source,
-            'prj_category'           => $process->category ? $process->category->name : null,
-            'prj_type'               => $process->type,
-            'prj_status'             => $process->status,
-        ]);
-    }
-
-    /**
-     * Includes the process.
-     *
-     * @param Process $process
-     *
-     * @return \League\Fractal\Resource\Item
-     */
-    public function includeDiagram(Process $process)
-    {
-        return $this->item($process->diagram, new DiagramTransformer);
-    }
-
-    /**
-     *
-     * @param array $data
-     *
-     * @return array
-     */
-    protected function transformWithFieldFilter(array $data)
-    {
-        if (is_null($this->fields)) {
-            return $data;
+        $data = $process->toArray();
+        // Now we have the associative array form of process
+        // But we need to grab the category and insert it in there if it's defined
+        if($data['category_id']) {
+            // Category is set, let's include the category
+            $data['category'] = $process->category->name;
         }
-
-        return array_intersect_key($data, array_flip((array) $this->fields));
+        // Unset category_id, we don't need it anymore
+        unset($data['category_id']);
+        return $data;
     }
+
 }
