@@ -5,3 +5,5 @@ global.Snap = () => {
 global.Dispatcher = () => {
     return {}
 };
+
+global.$ = require("jquery")

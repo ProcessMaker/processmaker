@@ -42,10 +42,11 @@ export class Builder {
      */
     onClickShape(element) {
         let that = this;
-        return () => {
+        return (event) => {
             that.removeSelectionBorder();
             element.createSelectionBorder();
             that.selection.push(element);
+            return false;
         };
     }
 

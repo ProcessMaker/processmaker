@@ -58,7 +58,7 @@
     export default {
         methods: {
             createElement (value) {
-                let action = actions.designer.drag.end(value)
+                let action = actions.designer.drag.toolbar.end(value)
                 Dispatcher.$emit(action.type, action.payload)
             }
         }
@@ -67,9 +67,9 @@
 <style>
     .pmdesigner-toolbar {
         display: inline-block;
-        position: fixed;
         background-color: white;
         border-right: 2px solid #e1dbd9;
+        z-index: 2;
     }
 
     .side-menu {

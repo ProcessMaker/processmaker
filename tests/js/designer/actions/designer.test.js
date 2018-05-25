@@ -7,12 +7,22 @@ describe('designer.vue', () => {
     })
 
     it('Actions', () => {
-        expect(actions.designer.drag.end({})).toEqual({
-            type: "designer/drag/end",
+        expect(actions.designer.drag.toolbar.end({})).toEqual({
+            type: "designer/drag/toolbar/end",
             payload: {}
         })
-        expect(actions.designer.drag.start({})).toEqual({
-            type: "designer/drag/start",
+        expect(actions.designer.drag.toolbar.start({})).toEqual({
+            type: "designer/drag/toolbar/start",
+            payload: {}
+        })
+
+        expect(actions.designer.drag.shape.start({})).toEqual({
+            type: "designer/drag/shape/start",
+            payload: {}
+        })
+
+        expect(actions.designer.drag.shape.end({})).toEqual({
+            type: "designer/drag/shape/end",
             payload: {}
         })
 

@@ -1,3 +1,4 @@
+import actions from "../actions/"
 /**
  * Class Shape - Base Class
  */
@@ -50,5 +51,39 @@ export class Shape {
      */
     getSnapObject() {
         return this.shape;
+    }
+
+    /**
+     * This method updates the position of shape in movement
+     * @param dx
+     * @param dy
+     */
+    onMove() {
+        return (dx, dy) => {
+            this.shape.attr({
+                transform: this.shape.data("origTransform") + (this.shape.data("origTransform") ? "T" : "t") + [dx, dy]
+            });
+        };
+    }
+
+    /**
+     * This method is execute on DragStart Event
+     */
+    onDragStart() {
+        return (ev) => {
+            let action = actions.designer.drag.shape.start(ev)
+            Dispatcher.$emit(action.type, action.payload)
+            this.shape.data("origTransform", this.shape.transform().local);
+        };
+    }
+
+    /**
+     * This method is execute on DragEnd Event
+     */
+    onDragEnd() {
+        return (ev) => {
+            let action = actions.designer.drag.shape.end(ev)
+            Dispatcher.$emit(action.type, action.payload)
+        };
     }
 }

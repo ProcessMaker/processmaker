@@ -42,6 +42,6 @@ export class TaskShape extends Shape {
             this.options.scaleY,
             this.options.rounded
         ).attr(this.options.attr));
-        this.shape.drag();
+        this.shape.drag(this.onMove(), this.onDragStart(), this.onDragEnd())
     }
 }
