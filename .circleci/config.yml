@@ -24,6 +24,18 @@ jobs:
     working_directory: ~/repo
 
     steps:
+      - run:
+          name: Set Build Name Environment Variable
+          # Set BUILD_NAME environment variable to a filesystem friendly name and store it in our bash environment
+          command: |
+            echo 'export BUILD_NAME=$(echo "$CIRCLE_BRANCH" | tr /. -)' >> $BASH_ENV
+            source $BASH_ENV
+
+      - run:
+          name: QA Host SSH Host Identifier Import
+          command: |
+            echo $BUILDBOT_HOST_IDENTIFIER >> ~/.ssh/known_hosts
+
       - checkout
 
       # Install PHP dependencies
@@ -79,11 +91,6 @@ jobs:
       # Enable xdebug to support code coverage
       - run: sudo docker-php-ext-enable xdebug
 
-      # Build frontend assets for production
-      - run:
-          name: "Front-End Asset Build"
-          command: "npm run production"
-
       # run tests!
       - run:
           name: "PHPUnit"
@@ -105,4 +112,25 @@ jobs:
 
       - store_artifacts:
           path: tests/js/coverage
+
+      # Prepare for packaging for QA environment
+      - run:
+          name: "QA Package"
+          command: "./vendor/bin/phing package -Dpackage_name=processmaker-qa-${BUILD_NAME}.tar.gz"
+
+      - run:
+          name: "QA Deploy"
+          command: |
+            # Delete existing target QA directory, if it exists
+            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "rm -Rf ~/builds/$BUILD_NAME"
+            # Create new target QA directory
+            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "mkdir ~/builds/$BUILD_NAME"
+            # Copy over packaged qa deployment
+            scp -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" ./processmaker-qa-$BUILD_NAME.tar.gz qa-pm4builds:~/builds/$BUILD_NAME/
+            # Extract to qa deployment dir
+            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "tar zxf ~/builds/$BUILD_NAME/processmaker-qa-$BUILD_NAME.tar.gz -C ~/builds/$BUILD_NAME/"
+            # Restart nginx and php-fpm to clear cache
+            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "sudo nginx restart"
+            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "sudo php-fpm restart"
+
 
