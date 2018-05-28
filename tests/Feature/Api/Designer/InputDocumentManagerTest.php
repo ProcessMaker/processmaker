@@ -66,6 +66,23 @@ class InputDocumentManagerTest extends ApiTestCase
     }
 
     /**
+     * Test verify the constants required for create InputDocument
+     */
+    public function testNotCreatedForConstantsParameterRequired(): void
+    {
+        //Post should have the parameter required
+        $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-document';
+        $response = $this->api('POST', $url, [
+            'title' => 'Title Test Input Document',
+            'form_needed' => 'other type'
+        ]);
+
+        //validating the answer is an error
+        $response->assertStatus(422);
+        $this->assertArrayHasKey('message', $response->json('error'));
+    }
+
+    /**
      * Create new Input Document in process
      */
     public function testCreateInputDocument(): void
