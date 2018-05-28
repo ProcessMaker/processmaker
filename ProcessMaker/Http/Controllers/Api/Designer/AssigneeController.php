@@ -145,25 +145,6 @@ class AssigneeController extends Controller
     }
 
     /**
-     * Get a page of the available users and groups which may be assigned to a task.
-     *
-     * @param Process $process
-     * @param Task $activity
-     * @param Request $request
-     *
-     * @return ResponseFactory|Response
-     * @throws DoesNotBelongToProcessException
-     */
-    public function getActivityAvailablePaged(Process $process, Task $activity, Request $request)
-    {
-        $this->belongsToProcess($process, $activity);
-        $options = $this->verifyOptions($request);
-
-        $response = TaskAssigneeManager::loadAvailable($activity, $options, true);
-        return fractal($response, new AssigneeTransformer())->respond(200);
-    }
-
-    /**
      * Verify parameters in request
      *
      * @param Request $request

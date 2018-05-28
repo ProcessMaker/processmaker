@@ -150,6 +150,7 @@ class TaskManagerTest extends ApiTestCase
         //verify count of data
         $this->assertEquals(10, $response->original->meta->total);
 
+
         //verify structure paginate
         $response->assertJsonStructure([
             'data',
@@ -219,6 +220,7 @@ class TaskManagerTest extends ApiTestCase
         $task = factory(Task::class)->create();
         $url = self::API_TEST_TASK . $this->process->uid . '/task/' . $task->uid;
         $response = $this->api('GET', $url);
+        //Validate the answer is incorrect
         $response->assertStatus(404);
     }
 
