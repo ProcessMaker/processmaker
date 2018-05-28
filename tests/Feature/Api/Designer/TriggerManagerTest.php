@@ -110,7 +110,8 @@ class TriggerManagerTest extends ApiTestCase
     {
         //add triggers to process
         $faker = Faker::create();
-        factory(Trigger::class, 10)->create([
+        $total = $faker->randomDigitNotNull;
+        factory(Trigger::class, $total)->create([
             'process_id' => $this->process->id,
             'param' => $faker->words($faker->randomDigitNotNull)
         ]);
@@ -128,7 +129,7 @@ class TriggerManagerTest extends ApiTestCase
         ]);
 
         //verify count of data
-        $this->assertEquals(10, $response->original->meta->total);
+        $this->assertEquals($total, $response->original->meta->total);
         //Verify the structure
         $response->assertJsonStructure(['*' => self::STRUCTURE], $response->json('data'));
     }
