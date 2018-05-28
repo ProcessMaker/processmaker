@@ -93,6 +93,11 @@ jobs:
       # Enable xdebug to support code coverage
       - run: sudo docker-php-ext-enable xdebug
 
+      # Build frontend assets for production
+      - run:
+          name: "Front-End Asset Build"
+          command: "npm run production"
+
       # run tests!
       - run:
           name: "PHPUnit"
