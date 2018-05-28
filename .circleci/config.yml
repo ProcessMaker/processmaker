@@ -140,5 +140,12 @@ jobs:
             # Restart nginx and php-fpm to clear cache
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "sudo service nginx restart"
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "sudo service php-fpm restart"
+            # Create MYSQL Database
+            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "mysql -h ${QA_RDS_HOST} -u ${QA_RDS_USERNAME} -p${QA_RDS_PASSWORD} -e \"CREATE DATABASE IF NOT EXISTS BPM4-${BUILD_NAME}\""
+            # Run php artisan migrate:fresh --seed to have a clean installed database in RDS
+            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "php ~/builds/$BUILD_NAME/artisan migrate:fresh --seed"
+            @echo "Deployed to https://${BUILD_NAME}.bpm4.qa.processmaker.net/"
+
+
 
 
