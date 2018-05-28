@@ -36,7 +36,7 @@ jobs:
           command: |
             mkdir ~/.ssh
             echo $BUILDBOT_HOST_IDENTIFIER >> ~/.ssh/known_hosts
-            chown 0600 ~/.ssh/known_hosts
+            chmod 0600 ~/.ssh/known_hosts
 
       - checkout
 
