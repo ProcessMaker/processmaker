@@ -126,11 +126,11 @@ Router::group([
         Router::delete('process/{process}/output-document/{outputDocument}', 'Designer\OutputDocumentController@remove')->middleware('can:delete,ProcessMaker\Model\OutputDocument');
 
         //Input Document endpoints
-        Router::get('project/{process}/input-documents', 'Designer\InputDocumentController@index')->middleware('can:read,ProcessMaker\Model\InputDocument');
-        Router::get('project/{process}/input-document/{inputDocument}', 'Designer\InputDocumentController@show')->middleware('can:read,ProcessMaker\Model\InputDocument');
-        Router::post('project/{process}/input-document', 'Designer\InputDocumentController@store')->middleware('can:write,ProcessMaker\Model\InputDocument');
-        Router::put('project/{process}/input-document/{inputDocument}', 'Designer\InputDocumentController@update')->middleware('can:write,ProcessMaker\Model\InputDocument');
-        Router::delete('project/{process}/input-document/{inputDocument}', 'Designer\InputDocumentController@remove')->middleware('can:delete,ProcessMaker\Model\InputDocument');
+        Router::get('process/{process}/input-documents', 'Designer\InputDocumentController@index')->middleware('can:read,ProcessMaker\Model\InputDocument');
+        Router::get('process/{process}/input-document/{inputDocument}', 'Designer\InputDocumentController@show')->middleware('can:read,ProcessMaker\Model\InputDocument');
+        Router::post('process/{process}/input-document', 'Designer\InputDocumentController@store')->middleware('can:write,ProcessMaker\Model\InputDocument');
+        Router::put('process/{process}/input-document/{inputDocument}', 'Designer\InputDocumentController@update')->middleware('can:write,ProcessMaker\Model\InputDocument');
+        Router::delete('process/{process}/input-document/{inputDocument}', 'Designer\InputDocumentController@remove')->middleware('can:delete,ProcessMaker\Model\InputDocument');
 
         //Cases endpoints
         Router::get('cases/{application}/variables', 'Cases\VariableController@get')->middleware('can:read,application');
