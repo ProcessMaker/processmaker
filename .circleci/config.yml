@@ -138,7 +138,7 @@ jobs:
             # Extract to qa deployment dir
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "tar zxf ~/builds/$BUILD_NAME/processmaker-qa-$BUILD_NAME.tar.gz -C ~/builds/$BUILD_NAME/"
             # Restart nginx and php-fpm to clear cache
-            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "sudo nginx restart"
-            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "sudo php-fpm restart"
+            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "sudo service nginx restart"
+            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "sudo service php-fpm restart"
 
 
