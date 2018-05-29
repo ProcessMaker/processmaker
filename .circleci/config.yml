@@ -136,7 +136,7 @@ jobs:
             echo "DB_PASSWORD=${QA_DB_PASSWORD}" >> .env
             echo "APP_URL=https://${BUILD_NAME}${QA_HOST_SUFFIX}" >> .env
             # Generate unique app key
-            php artisan key:generate
+            php artisan key:generate --force
 
       - run:
           name: "QA Package"
