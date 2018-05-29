@@ -1,4 +1,4 @@
-import {mount, shallow} from "@vue/test-utils"
+import {mount, shallow, shallowMount} from "@vue/test-utils"
 import designer from "../../../../resources/assets/designer/components/designer.vue"
 
 let svg
@@ -64,7 +64,7 @@ describe("designer.vue", () => {
     let cmp, cmp2
 
     beforeEach(() => {
-        cmp = shallow(designer, {
+        cmp = shallowMount(designer, {
             propsData: {
                 $parent: {
                     dispatcher: {$emit: {}}
@@ -88,7 +88,7 @@ describe("designer.vue", () => {
     })
 
     it("mouseMove() - Verify if the mousemove event updates the pan property in vue component", () => {
-        cmp2 = mount(designer, {propsData: {pan: {}}})
+        cmp2 = shallowMount(designer, {propsData: {pan: {}}})
         cmp2.vm.mouseDown({
             pageX: 100,
             pageY: 100
@@ -127,20 +127,20 @@ describe("designer.vue", () => {
     })
 
     it("mouseUp() - Verify if the mouseup event updates the pan property in vue component", () => {
-        cmp2 = mount(designer, {propsData: {pan: {}}})
+        cmp2 = shallowMount(designer, {propsData: {pan: {}}})
         cmp2.vm.mouseUp()
         expect(cmp2.vm.pan.mouseDown).toEqual(false)
     })
 
     it("onDragStartShape() - Verify if the mouseup event updates the shapeDrag in pan property", () => {
-        cmp2 = mount(designer, {propsData: {pan: {}}})
+        cmp2 = shallowMount(designer, {propsData: {pan: {}}})
         let fn = cmp2.vm.onDragStartShape()
         fn()
         expect(cmp2.vm.pan.shapeDrag).toEqual(true)
     })
 
     it("onDragEndShape() - Verify if the mouseup event updates the shapeDrag in pan property", () => {
-        cmp2 = mount(designer, {propsData: {pan: {}}})
+        cmp2 = shallowMount(designer, {propsData: {pan: {}}})
         let fn = cmp2.vm.onDragEndShape()
         fn()
         expect(cmp2.vm.pan.shapeDrag).toEqual(false)
