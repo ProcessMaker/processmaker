@@ -15,7 +15,7 @@ return [
      * of your proxy (e.g. if using ELB or similar).
      *
      */
-    'proxies' => explode(',', env('PROXIES', '')),
+    'proxies' => (env('PROXIES', null) == null || env('PROXIES', null) == '*' || env('PROXIES', null)  == '**') ? env('PROXIES', null) : explode(',', env('PROXIES')),
 
     /*
      * To trust one or more specific proxies that connect
