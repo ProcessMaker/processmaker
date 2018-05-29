@@ -132,8 +132,8 @@ jobs:
             echo "APP_ENV=production" >> .env
             echo "DB_HOSTNAME=${QA_RDS_HOST}" >> .env
             echo "DB_DATABASE=${QA_DB_NAME}" >> .env
-            echo "DB_USERNAME=${QA_DB_USERNAME}" >> .env
-            echo "DB_PASSWORD=${QA_DB_PASSWORD}" >> .env
+            echo "DB_USERNAME=${QA_RDS_USERNAME}" >> .env
+            echo "DB_PASSWORD=${QA_RDS_PASSWORD}" >> .env
             echo "APP_URL=https://${BUILD_NAME}${QA_HOST_SUFFIX}" >> .env
             # Generate unique app key
             php artisan key:generate --force
