@@ -140,6 +140,8 @@ jobs:
             echo "PROXIES_AWS=true" >> .env
             # Generate unique app key
             php artisan key:generate --force
+            # Copy over our test oauth keys. Regular install will create new ones
+            cp tests/storage/keys/* storage/keys/
 
       - run:
           name: "QA Package"
