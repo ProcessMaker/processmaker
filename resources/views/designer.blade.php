@@ -6,9 +6,10 @@
       <div class="flex-column-designer">
         <toolbar></toolbar>
         <designer ref="canvas"></designer>
-        <designerobjectsmenu></designerobjectsmenu>
+        <designer-objects-menu></designer-objects-menu>
       <div>
     </div>
+
 @endsection
 
 @section('sidebar')
