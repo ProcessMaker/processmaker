@@ -6,6 +6,7 @@
       <div class="flex-column-designer">
         <toolbar></toolbar>
         <designer ref="canvas"></designer>
+        <designerobjectsmenu></designerobjectsmenu>
       <div>
     </div>
 @endsection
