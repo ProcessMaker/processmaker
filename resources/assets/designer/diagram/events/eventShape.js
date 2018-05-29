@@ -1,4 +1,5 @@
 import {Shape} from "../shape";
+import Crown from "../../components/crown.vue"
 /**
  * StartEventShape
  */
@@ -52,5 +53,18 @@ export class EventShape extends Shape {
         });
         this.shape.add(group);
         this.shape.drag(this.onMove(), this.onDragStart(), this.onDragEnd())
+    }
+
+    createCrown() {
+        var ComponentClass = Vue.extend(Crown)
+        var instance = new ComponentClass({
+            data: {
+                top: this.options.y + this.svg.node.getBoundingClientRect().top,
+                left: this.options.x + this.svg.node.getBoundingClientRect().left + 50
+            }
+        })
+        instance.$mount() // pass nothing
+        $(".svg-container").append(instance.$el)
+        this.crown = instance
     }
 }

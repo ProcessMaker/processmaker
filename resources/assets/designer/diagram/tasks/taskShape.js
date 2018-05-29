@@ -1,4 +1,5 @@
-import {Shape} from "../shape";
+import {Shape} from "../shape"
+import Crown from "../../components/crown.vue"
 /**
  * Task Shape class
  */
@@ -43,5 +44,18 @@ export class TaskShape extends Shape {
             this.options.rounded
         ).attr(this.options.attr));
         this.shape.drag(this.onMove(), this.onDragStart(), this.onDragEnd())
+    }
+
+    createCrown() {
+        var ComponentClass = Vue.extend(Crown)
+        var instance = new ComponentClass({
+            data: {
+                top: this.options.y + this.svg.node.getBoundingClientRect().top,
+                left: this.options.x + this.svg.node.getBoundingClientRect().left + 105
+            }
+        })
+        instance.$mount() // pass nothing
+        $(".svg-container").append(instance.$el)
+        this.crown = instance
     }
 }

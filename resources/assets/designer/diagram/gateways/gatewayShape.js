@@ -1,4 +1,5 @@
-import {Shape} from "../shape";
+import {Shape} from "../shape"
+import Crown from "../../components/crown.vue"
 /**
  * Gateway Shape Class
  */
@@ -53,5 +54,18 @@ export class GatewayShape extends Shape {
         const base = this.getBase();
         this.shape.add(baseBorder, base);
         this.shape.drag(this.onMove(), this.onDragStart(), this.onDragEnd())
+    }
+
+    createCrown() {
+        var ComponentClass = Vue.extend(Crown)
+        var instance = new ComponentClass({
+            data: {
+                top: this.options.y + this.svg.node.getBoundingClientRect().top - 10,
+                left: this.options.x + this.svg.node.getBoundingClientRect().left + 30
+            }
+        })
+        instance.$mount() // pass nothing
+        $(".svg-container").append(instance.$el)
+        this.crown = instance
     }
 }

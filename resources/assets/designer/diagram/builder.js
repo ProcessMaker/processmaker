@@ -1,6 +1,6 @@
 import {Elements} from "./elements";
 import _ from "lodash";
-import actions from "../actions/index";
+import actions from "../actions/index"
 
 export class Builder {
     constructor(svg, dispatcher) {
@@ -31,7 +31,6 @@ export class Builder {
             );
             element.render();
             element.getSnapObject().click(this.onClickShape(element));
-            element.getSnapObject().dblclick(this.removeSelection(element));
         }
     }
 
@@ -44,7 +43,10 @@ export class Builder {
         let that = this;
         return (event) => {
             that.removeSelectionBorder();
+            that.removeCrown();
             element.createSelectionBorder();
+            element.createCrown()
+            that.selection = [];
             that.selection.push(element);
             return false;
         };
@@ -60,13 +62,23 @@ export class Builder {
     }
 
     /**
+     * This method removes the crown in the selected shape
+     */
+    removeCrown() {
+        _.forEach(this.selection, (el) => {
+            el.removeCrown();
+        });
+    }
+
+    /**
      * Remove the shape selected
      * @param element
      * @returns {function(*)}
      */
-    removeSelection(element) {
-        return () => {
-            element.remove()
-        };
+    removeSelection() {
+        _.forEach(this.selection, (el) => {
+            el.removeCrown();
+            el.remove();
+        });
     }
 }
