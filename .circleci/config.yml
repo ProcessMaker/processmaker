@@ -137,6 +137,7 @@ jobs:
             echo "DB_PASSWORD=${QA_RDS_PASSWORD}" >> .env
             echo "APP_URL=https://${BUILD_NAME}${QA_HOST_SUFFIX}" >> .env
             echo "PROXIES=*" >> .env
+            echo "PROXIES_AWS=true" >> .env
             # Generate unique app key
             php artisan key:generate --force
 

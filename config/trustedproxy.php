@@ -39,5 +39,5 @@ return [
      * 
      * @link https://symfony.com/doc/current/deployment/proxies.html
      */
-    'headers' => Illuminate\Http\Request::HEADER_X_FORWARDED_ALL,
+    'headers' => env('PROXIES_AWS', false) ? Illuminate\Http\Request::HEADER_X_FORWARDED_AWS_ELB : Illuminate\Http\Request::HEADER_X_FORWARDED_ALL,
 ];
