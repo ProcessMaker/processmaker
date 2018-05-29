@@ -29,6 +29,7 @@ jobs:
           # Set BUILD_NAME environment variable to a filesystem friendly name and store it in our bash environment
           command: |
             echo 'export BUILD_NAME=$(echo "$CIRCLE_BRANCH" | tr /. -)' >> $BASH_ENV
+            echo 'export QA_DB_NAME=$(echo "bpm4$CIRCLE_BRANCH" | tr -d /.' >> $BASH_ENV
             source $BASH_ENV
 
       - run:
@@ -122,6 +123,21 @@ jobs:
           path: tests/js/coverage
 
       # Prepare for packaging for QA environment
+
+      - run:
+          name: "QA Configuration File Build"
+          command: |
+            echo "APP_DEBUG=TRUE" >> .env
+            echo "APP_NAME=ProcessMaker" >> .env
+            echo "APP_ENV=production" >> .env
+            echo "DB_HOSTNAME=${QA_RDS_HOST}" >> .env
+            echo "DB_DATABASE=${QA_DB_NAME}" >> .env
+            echo "DB_USERNAME=${QA_DB_USERNAME}" >> .env
+            echo "DB_PASSWORD=${QA_DB_PASSWORD}" >> .env
+            echo "APP_URL=https://${BUILD_NAME}${QA_HOST_SUFFIX}" >> .env
+            # Generate unique app key
+            php artisan key:generate
+
       - run:
           name: "QA Package"
           command: "./vendor/bin/phing package -Dpackage_name=processmaker-qa-${BUILD_NAME}.tar.gz"
@@ -141,7 +157,7 @@ jobs:
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "sudo service nginx restart"
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "sudo service php-fpm restart"
             # Create MYSQL Database
-            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "mysql -h ${QA_RDS_HOST} -u ${QA_RDS_USERNAME} -p${QA_RDS_PASSWORD} -e \"CREATE DATABASE IF NOT EXISTS BPM4-${BUILD_NAME}\""
+            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "mysql -h ${QA_RDS_HOST} -u ${QA_RDS_USERNAME} -p${QA_RDS_PASSWORD} -e \"CREATE DATABASE IF NOT EXISTS ${QA_DB_NAME}\""
             # Run php artisan migrate:fresh --seed to have a clean installed database in RDS
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "php ~/builds/$BUILD_NAME/artisan migrate:fresh --seed"
             @echo "Deployed to https://${BUILD_NAME}.bpm4.qa.processmaker.net/"
