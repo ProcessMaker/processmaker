@@ -57,5 +57,6 @@ export class TaskShape extends Shape {
         instance.$mount() // pass nothing
         $(".svg-container").append(instance.$el)
         this.crown = instance
+        return this.crown
     }
 }

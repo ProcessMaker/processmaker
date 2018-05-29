@@ -102,14 +102,14 @@ export class Shape {
         };
     }
 
-
-    createCrown() {
-    }
-
+    /**
+     * This method removes the crown of shape
+     */
     removeCrown() {
         if (this.crown) {
             $(this.crown.$el).remove()
             this.crown = null
         }
+        return this.crown
     }
 }

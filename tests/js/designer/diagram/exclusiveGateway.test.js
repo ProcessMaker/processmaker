@@ -1,5 +1,7 @@
 import {mount, shallow} from '@vue/test-utils'
 import {Elements} from '../../../../resources/assets/designer/diagram/elements'
+import Crown from "../../../../resources/assets/designer/components/crown.vue"
+import Vue from "vue"
 
 let svg
 const mockGroup = jest.fn(() => svg);
@@ -11,6 +13,9 @@ const mockPath = jest.fn(() => svg);
 const mockTrans = jest.fn(() => svg);
 const mockCircle = jest.fn(() => svg);
 const mockPolyline = jest.fn(() => svg);
+const mockNode = {
+    getBoundingClientRect: jest.fn(() => svg)
+};
 
 svg = {
     group: mockGroup,
@@ -21,7 +26,8 @@ svg = {
     path: mockPath,
     transform: mockTrans,
     circle: mockCircle,
-    polyline: mockPolyline
+    polyline: mockPolyline,
+    node: mockNode
 }
 mockAdd.mockReturnValue(svg)
 mockGroup.mockReturnValue(svg)
@@ -72,4 +78,13 @@ describe('ExclusiveGateway - Class', () => {
         expect(mockTrans.mock.calls.length).toBe(1);
         expect(mockPolyline.mock.calls.length).toBe(2);
     })
+
+    it("createCrown() - Verify if the crown has been created", () => {
+        expect(eGat.createCrown()).toBeInstanceOf(Vue.extend(Crown))
+    });
+
+    it("removeCrown() - Verify if the crown has been removed", () => {
+        eGat.createCrown()
+        expect(eGat.removeCrown()).toEqual(null)
+    });
 })
