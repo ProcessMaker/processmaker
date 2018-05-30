@@ -46,6 +46,8 @@
         },
         methods: {
             remove (ev){
+                let action = actions.designer.shape.remove()
+                EventBus.$emit(action.type, action.payload)
             },
             show(conf){
                 this.x = conf.x
