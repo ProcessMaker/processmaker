@@ -145,7 +145,7 @@ class TaskManager
         $assigned = new TaskUser();
         $assigned->task_id = $activity->id;
         $assigned->user_id = $check->id;
-        $assigned->task_user_type = $type;
+        $assigned->task_users_type = $type;
         $assigned->type = TaskUser::ASSIGNEE_NORMAL;
         $assigned->saveOrFail();
 
@@ -311,7 +311,7 @@ class TaskManager
         $assigned->assign_name = '';
         $assigned->assign_lastname = '';
         $assigned->assign_username = '';
-        $assigned->assign_type = $assigned->task_user_type;
+        $assigned->assign_type = $assigned->task_users_type;
 
         if (!empty($assigned->user)) {
             $assigned->assign_uid = $assigned->user->uid;
