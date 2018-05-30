@@ -1,10 +1,11 @@
 <template>
-    <svg id="svg" class="svg_canvas"
+    <svg id="svg" ref="canvas" :style="{width: canvasWidth, height:canvasHeight}" class="svg_canvas"
             @mousemove="mouseMove"
             @mousedown="mouseDown"
             @mouseup="mouseUp">
     </svg>
 </template>
+
 
 <script>
     import bpmn from "bpmn-moddle"
@@ -33,6 +34,16 @@
                     panTop: null,
                     panLeft: null
                 } // Options for panning in the designer
+            }
+        },
+        computed: {
+            canvasWidth() {
+                // Calculate the width needed based off our object model
+                return '100%'
+            },
+            canvasHeight() {
+                // Calcuate the height needed based off our object model
+                return '100%'
             }
         },
         created() {
