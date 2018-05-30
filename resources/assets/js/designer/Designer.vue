@@ -5,6 +5,7 @@
             <toolbar ref="toolbar"></toolbar>
             <div class="canvas-container">
                 <designer ref="canvas"></designer>
+                <designerobjectsmenu></designerobjectsmenu>
             </div>
         </div>
     </div>
@@ -23,11 +24,17 @@ import toolbar from "./components/toolbar";
 // This is our top toolbar with process title and process options
 import toptoolbar from "./components/toptoolbar";
 
+// This is our objects menu with nested object-menu items components
+import designerobjectsmenu from "./components/designer-objects-menu";
+
+
+
 export default {
   components: {
     designer,
     toolbar,
-    toptoolbar
+    toptoolbar,
+    designerobjectsmenu
   }
 };
 </script>
@@ -62,5 +69,3 @@ export default {
   }
 }
 </style>
-
-
