@@ -49,5 +49,5 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
 
 
 $this->get('/designer', function() {
-    return view('designer', ['title' => 'Designer']);
+    return view('designer.designer', ['title' => 'Designer']);
 })->name('designer');

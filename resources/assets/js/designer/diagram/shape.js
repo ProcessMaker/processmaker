@@ -1,4 +1,6 @@
 import actions from "../actions/"
+import EventBus from "../lib/event-bus"
+
 /**
  * Class Shape - Base Class
  */
@@ -72,7 +74,7 @@ export class Shape {
     onDragStart() {
         return (ev) => {
             let action = actions.designer.drag.shape.start(ev)
-            Dispatcher.$emit(action.type, action.payload)
+            EventBus.$emit(action.type, action.payload)
             this.shape.data("origTransform", this.shape.transform().local);
         };
     }
@@ -83,7 +85,7 @@ export class Shape {
     onDragEnd() {
         return (ev) => {
             let action = actions.designer.drag.shape.end(ev)
-            Dispatcher.$emit(action.type, action.payload)
+            EventBus.$emit(action.type, action.payload)
         };
     }
 }

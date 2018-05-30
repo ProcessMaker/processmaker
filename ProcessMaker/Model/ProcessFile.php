@@ -159,7 +159,7 @@ class ProcessFile extends Model
         $filename = basename($this->PRF_PATH);
         return $this->process->derivation_screen_template === $filename
             || $this->process->tasks()
-                ->where('derivation_screen_tpl', $filename)
+                ->where('routing_screen_template', $filename)
                 ->count() > 0;
     }
 

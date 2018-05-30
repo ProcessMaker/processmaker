@@ -29,9 +29,9 @@
 
 <style>
   #designer-nav{
-    width:100%;
     background-color:#b6bfc6;
-    z-index: 2;
+    height: 40px;
+    min-height: 40px;
   }
   #designer-icons{
     color:white;
