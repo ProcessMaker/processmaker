@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="processmaker" default="package">
+
+    <target name="package" 
+            description="Archive working directory into tar.gz file, name could be specified via -Dpackage_name=filename.tar.gz">
+        <if>
+            <isset property="package_name"/>
+            <then>
+                <property name="package_name" value="{package_name}"/>
+            </then>
+            <else>
+                <property name="package_name" value="build/build.tar.gz"/>
+            </else>
+        </if>
+
+        <echo msg="Packaging ProcessMaker into ${package_name}..."/>
+
+        <delete includeemptydirs="true">
+            <!-- Remove any logs that were produced during testing -->
+            <fileset dir="${project.basedir}/storage/logs" includes="**">
+                <exclude name=".gitkeep"/>
+            </fileset>
+            <!-- Remove any artifacts of SQLite related DBs during testing -->
+            <fileset dir="${project.basedir}/storage/databases" includes="**">
+                <exclude name=".gitkeep"/>
+            </fileset>
+        </delete>
+        <delete file="${package_name}" failonerror="false"/>
+        <tar destfile="${package_name}" compression="gzip">
+            <fileset dir="." defaultexcludes="true">
+                <!-- Default of include everything -->
+                <!-- Do note that defaultexcludes removes anything related to general Version Control files and aother files. -->
+                <!-- See: https://www.phing.info/phing/guide/en/output/chunkhtml/FileSet.html -->
+                <include name="**/**" />
+           </fileset>
+        </tar>
+    </target>
+
+</project>
