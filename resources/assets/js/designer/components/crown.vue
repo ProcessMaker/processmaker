@@ -1,5 +1,5 @@
 <template>
-    <div v-show="visible" class="designer-container-crown">
+    <div v-show="visible" class="designer-container-crown" v-bind:style="{ top: y+'px', left:x+'px' }">
         <div class="d-flex flex-row">
             <div class="item-crown">
                 <img id="bpmn:Task" src="images/task.svg" height="18"
@@ -50,8 +50,6 @@
             show(conf){
                 this.x = conf.x
                 this.y = conf.y
-                $(this.$el).css("top", this.y)
-                $(this.$el).css("left", this.x)
                 this.visible = true
             },
             hide(){
