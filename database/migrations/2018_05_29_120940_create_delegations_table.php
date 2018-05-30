@@ -30,9 +30,9 @@ class CreateDelegationsTable extends Migration
             $table->dateTime('finish_date')->nullable();
             $table->dateTime('task_due_date')->nullable();
             $table->dateTime('risk_date')->nullable();
-            $table->float('duration', 10, 0)->default(0.0);
-            $table->float('queue_duration', 10, 0)->default(0.0);
-            $table->float('delay_duration', 10, 0)->default(0.0);
+            $table->float('duration', 10, 0)->default(0);
+            $table->float('queue_duration', 10, 0)->default(0);
+            $table->float('delay_duration', 10, 0)->default(0);
             $table->boolean('started')->default(0);
             $table->boolean('finished')->default(0);
             $table->boolean('delayed')->default(0);
