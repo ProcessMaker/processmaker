@@ -1,5 +1,5 @@
 import {mount, shallow} from "@vue/test-utils"
-import designer from "../../../../resources/assets/designer/components/designer.vue"
+import designer from "../../../../resources/assets/js/designer/components/designer.vue"
 
 let svg
 const mockGroup = jest.fn(() => svg)
