@@ -35,7 +35,7 @@ class Task extends Model
     use Notifiable,
         Uuid;
 
-    //Task type
+    //Task types
     const TYPE_NORMAL = 'NORMAL';
     const TYPE_ADHOC = 'ADHOC';
     const TYPE_SUB_PROCESS = 'SUB_PROCESS';
@@ -53,7 +53,7 @@ class Task extends Model
     const TYPE_INTERMEDIATE_THROW_EMAIL_EVENT = 'INTERMEDIATE_THROW_EMAIL_EVENT';
     const TYPE_SERVICE_TASK = 'SERVICE_TASK';
 
-    //Task Assign type
+    //Assign types
     const ASSIGN_TYPE_BALANCED = 'BALANCED';
     const ASSIGN_TYPE_MANUAL = 'MANUAL';
     const ASSIGN_TYPE_EVALUATE = 'EVALUATE';
@@ -64,7 +64,7 @@ class Task extends Model
     const ASSIGN_TYPE_MULTIPLE_INSTANCE = 'MULTIPLE_INSTANCE';
     const ASSIGN_TYPE_MULTIPLE_INSTANCE_VALUE_BASED = 'MULTIPLE_INSTANCE_VALUE_BASED';
 
-    //Task Type Routing
+    //Routing types
     const ROUTE_TYPE_NORMAL = 'NORMAL';
     const ROUTE_TYPE_FAST = 'FAST';
     const ROUTE_TYPE_AUTOMATIC = 'AUTOMATIC';

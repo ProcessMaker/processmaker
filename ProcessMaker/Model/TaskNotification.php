@@ -16,7 +16,7 @@ use ProcessMaker\Model\Traits\Uuid;
  * @property string type
  * @property boolean last_email
  * @property boolean email_from_format
- * @property string subject_message
+ * @property string message_subject
  * @property string message
  * @property string message_template
  * @property string message_type
@@ -28,11 +28,11 @@ class TaskNotification extends Model
     use Notifiable,
         Uuid;
 
-    //type notification
+    //Notification types
     const TYPE_AFTER_ROUTING = 'AFTER_ROUTING';
     const TYPE_RECEIVE = 'RECEIVE';
 
-    //Type message
+    //Message types
     const MESSAGE_TEXT = 'TEXT';
     const MESSAGE_TEMPLATE = 'TEMPLATE';
 
@@ -43,7 +43,7 @@ class TaskNotification extends Model
         'type',
         'last_email',
         'email_from_format',
-        'subject_message',
+        'message_subject',
         'message',
         'message_template',
         'message_type',

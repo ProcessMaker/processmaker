@@ -23,7 +23,7 @@ class CreateTaskNotificationsTable extends Migration
             $table->enum('type', ['AFTER_ROUTING', 'RECEIVE'])->default('AFTER_ROUTING');
             $table->boolean('last_email')->default(true);
             $table->boolean('email_from_format')->default(false);
-            $table->text('subject_message')->nullable();
+            $table->text('message_subject')->nullable();
             $table->text('message')->nullable();
             $table->string('message_template')->default('alert_message.html');
             $table->enum('message_type', ['TEXT', 'TEMPLATE'])->default('TEXT');

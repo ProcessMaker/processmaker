@@ -22,7 +22,7 @@ use ProcessMaker\Model\Traits\Uuid;
  * @property string smtp_secure
  * @property boolean try_send_immediately
  * @property string mail_to
- * @property string by_default
+ * @property boolean by_default
  *
  */
 class EmailServer extends Model
@@ -65,6 +65,8 @@ class EmailServer extends Model
         'account' => 'required',
         'password' => 'required',
         'try_send_immediately' => 'required|boolean',
+        'by_default' => 'required|boolean',
+        'rauth' => 'required|boolean',
         'engine' => 'required|in:' . self::TYPE_MAIL . ',' . self::TYPE_PHP_MAILER,
         'smtp_secure' => 'required|in:' . self::NO_SECURE . ',' . self::SSL_SECURE . ',' . self::TLS_SECURE
     ];
@@ -80,7 +82,7 @@ class EmailServer extends Model
     }
 
     /**
-     * Accessor properties to json
+     * Accessor field password
      *
      * @param $value
      *
@@ -92,7 +94,7 @@ class EmailServer extends Model
     }
 
     /**
-     * Mutator properties json decode
+     * Mutator field password
      *
      * @param $value
      *
