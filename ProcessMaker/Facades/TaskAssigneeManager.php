@@ -9,10 +9,10 @@ use ProcessMaker\Model\Task;
 use ProcessMaker\Model\TaskUser;
 
 /**
- * Facade for our Task Manager
+ * Facade for our Task Assignee Manager
  *
  * @package ProcessMaker\Facades
- * @see \ProcessMaker\Managers\TaskManager
+ * @see \ProcessMaker\Managers\TaskAssigneeManager
  *
  * @method static array saveAssignee(Task $task , array $options)
  * @method static Paginator|LengthAwarePaginator loadAssignees(Task $task, array $options, boolean $paged = false)
@@ -22,7 +22,7 @@ use ProcessMaker\Model\TaskUser;
  * @method static Paginator getInformationAllAssignee(Task $activity, array $options)
  *
  */
-class TaskManager extends Facade
+class TaskAssigneeManager extends Facade
 {
     /**
      * Get the registered name of the component.
@@ -31,6 +31,6 @@ class TaskManager extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return 'task.manager';
+        return 'task_assignee.manager';
     }
 }

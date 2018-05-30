@@ -12,7 +12,7 @@ use ProcessMaker\Model\Task;
 use ProcessMaker\Model\TaskUser;
 use ProcessMaker\Model\User;
 
-class TaskManager
+class TaskAssigneeManager
 {
 
     /**

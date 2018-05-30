@@ -13,11 +13,11 @@ use ProcessMaker\Model\TaskUser;
 use ProcessMaker\Model\User;
 use Tests\Feature\Api\ApiTestCase;
 
-class TaskManagerTest extends ApiTestCase
+class TaskAssigneeManagerTest extends ApiTestCase
 {
     use DatabaseTransactions;
 
-    const API_ROUTE = '/api/1.0/project/';
+    const API_ROUTE = '/api/1.0/process/';
     const DEFAULT_PASS = 'password';
 
     /**
@@ -71,7 +71,7 @@ class TaskManagerTest extends ApiTestCase
         $this->markTestIncomplete(
             'This test must be refactored to support database transaction style testing.'
         );
- 
+
         $this->initProcess();
         $this->auth(self::$user->username, self::DEFAULT_PASS);
 
