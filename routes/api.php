@@ -80,7 +80,7 @@ Router::group([
         ], function() {
             Router::get('processes', 'Designer\ProcessesController@index');
             Router::get('processes/{process}', 'Designer\ProcessesController@show');
-            Router::delete('project/{process}', 'Designer\ProcessManagerController@remove');
+            Router::delete('processes/{process}', 'Designer\ProcessesController@remove');
         });
 
         //Report Tables endpoints

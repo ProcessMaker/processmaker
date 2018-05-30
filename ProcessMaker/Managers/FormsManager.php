@@ -113,18 +113,6 @@ class FormsManager
      */
     public function update(Process $process, Form $form, $data): Form
     {
-        /**
-         * @var $validator \Illuminate\Validation\Validator
-         */
-        /*$validator = Validator::make(
-            $data,
-            [
-                'title' => 'required|unique:forms,title',
-            ]
-        );
-        if ($validator->fails()) {
-            throw new ValidationException($validator);
-        }*/
         $data['process_id'] = $process->id;
         $form->fill($data);
         if (empty($form->content)) {
