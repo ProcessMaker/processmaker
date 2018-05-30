@@ -47,7 +47,7 @@ export default {
           },
           {
             'title': 'Permissions',
-            'btn-action': 'openpermissionsmodal',
+            'btnaction': 'openpermissionsmodal',
           },
           {
             'title': 'Case Tracker'
