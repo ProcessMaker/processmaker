@@ -21,12 +21,12 @@ class CreateTaskNotificationsTable extends Migration
             //task description
             $table->unsignedInteger('email_server_id')->nullable();
             $table->enum('type', ['AFTER_ROUTING', 'RECEIVE'])->default('AFTER_ROUTING');
-            $table->boolean('receive_last_email')->default(true);
-            $table->boolean('receive_email_from_format')->default(false);
-            $table->text('receive_subject_message')->nullable();
-            $table->text('receive_message')->nullable();
-            $table->string('receive_message_template')->default('alert_message.html');
-            $table->enum('receive_message_type', ['TEXT', 'TEMPLATE'])->default('TEXT');
+            $table->boolean('last_email')->default(true);
+            $table->boolean('email_from_format')->default(false);
+            $table->text('subject_message')->nullable();
+            $table->text('message')->nullable();
+            $table->string('message_template')->default('alert_message.html');
+            $table->enum('message_type', ['TEXT', 'TEMPLATE'])->default('TEXT');
             $table->timestamps();
 
             // setup relationships of the task_notifications with tasks and other tables

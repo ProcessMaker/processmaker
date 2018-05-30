@@ -23,7 +23,7 @@ class CreateTasksTable extends Migration
             $table->text('description')->nullable();
 
             //type definitions
-            $table->enum('type', ['NORMAL', 'ADHOC', 'SUBPROCESS', 'HIDDEN', 'GATEWAYTOGATEWAY', 'WEBENTRYEVENT', 'END-MESSAGE-EVENT', 'START-MESSAGE-EVENT', 'INTERMEDIATE-THROW-MESSAGE-EVENT', 'INTERMEDIATE-CATCH-MESSAGE-EVENT', 'SCRIPT-TASK', 'START-TIMER-EVENT', 'INTERMEDIATE-CATCH-TIMER-EVENT', 'END-EMAIL-EVENT', 'INTERMEDIATE-THROW-EMAIL-EVENT', 'SERVICE-TASK'])->default('NORMAL');
+            $table->enum('type', ['NORMAL', 'ADHOC', 'SUB_PROCESS', 'HIDDEN', 'GATEWAY_TO_GATEWAY', 'WEB_ENTRY_EVENT', 'END_MESSAGE_EVENT', 'START_MESSAGE_EVENT', 'INTERMEDIATE_THROW_MESSAGE_EVENT', 'INTERMEDIATE_CATCH_MESSAGE_EVENT', 'SCRIPT_TASK', 'START_TIMER_EVENT', 'INTERMEDIATE_CATCH_TIMER_EVENT', 'END_EMAIL_EVENT', 'INTERMEDIATE_THROW_EMAIL_EVENT', 'SERVICE_TASK'])->default('NORMAL');
             $table->enum('assign_type', ['BALANCED', 'MANUAL', 'EVALUATE', 'REPORT_TO', 'SELF_SERVICE', 'STATIC_MI', 'CANCEL_MI', 'MULTIPLE_INSTANCE', 'MULTIPLE_INSTANCE_VALUE_BASED'])->default('BALANCED');
             $table->enum('routing_type', ['NORMAL', 'FAST', 'AUTOMATIC'])->default('NORMAL');
 
@@ -78,54 +78,6 @@ class CreateTasksTable extends Migration
             $table->foreign('process_id')->references('id')->on('processes')->ondelete('cascade');
             // setup relationships of the task with triggers and other tables
             $table->foreign('self_service_trigger_id')->references('id')->on('triggers')->ondelete('cascade');
-
-            /*************************************************************************************************
-            These fields are used in the old designer. therefore they are removed
-             * def_proc_code
-             * auto_root
-             *
-             * mi_instance_variable
-             * mi_complete_variable
-             *
-             * owner_app
-             * stg_uid
-             *
-             * can_upload
-             * view_upload
-             * view_additional_documentation
-             * can_cancel
-             * can_pause
-             * can_send_message
-             * can_delete_docs
-             *
-             * mi_instance_variable
-             * mi_complete_variable
-             *
-             *
-             * posx
-             * posy
-             * width
-             * height
-             * color
-             * evn_uid
-             * boundary
-             *
-             * last_assigned
-             * user
-             * to_last_user
-             * assign_location
-             * assign_location_adhoc
-             *
-             * Need the definition
-             *
-             * mobile
-             * transfer_fly  //Custom timing control configuration
-             *
-             ***********************************************************************************************/
-
-            /***********************************************************************************************
-             * Information of notifications moved to table task_notifications
-             ************************************************************************************************/
         });
     }
 

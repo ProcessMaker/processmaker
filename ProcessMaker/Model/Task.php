@@ -32,31 +32,42 @@ use ProcessMaker\Model\Traits\Uuid;
 class Task extends Model
 {
 
-    use Notifiable, Uuid;
+    use Notifiable,
+        Uuid;
 
-    /**
-     * The table associated with the model.
-     * @var string $table
-     */
-    protected $table = 'tasks';
-    
     //Task type
     const TYPE_NORMAL = 'NORMAL';
     const TYPE_ADHOC = 'ADHOC';
-    const TYPE_SUB_PROCESS = 'SUBPROCESS';
+    const TYPE_SUB_PROCESS = 'SUB_PROCESS';
     const TYPE_HIDDEN = 'HIDDEN';
-    const TYPE_GATEWAY = 'GATEWAYTOGATEWAY';
-    const TYPE_WEB_ENTRY_EVENT = 'WEBENTRYEVENT';
-    const TYPE_END_MESSAGE_EVENT = 'END-MESSAGE-EVENT';
-    const TYPE_START_MESSAGE_EVENT = 'START-MESSAGE-EVENT';
-    const TYPE_INTERMEDIATE_THROW_MESSAGE_EVENT = 'INTERMEDIATE-THROW-MESSAGE-EVENT';
-    const TYPE_INTERMEDIATE_CATCH_MESSAGE_EVENT = 'INTERMEDIATE-CATCH-MESSAGE-EVENT';
-    const TYPE_SCRIPT_TASK = 'SCRIPT-TASK';
-    const TYPE_START_TIMER_EVENT = 'START-TIMER-EVENT';
-    const TYPE_INTERMEDIATE_CATCH_TIMER_EVENT = 'INTERMEDIATE-CATCH-TIMER-EVENT';
-    const TYPE_END_EMAIL_EVENT = 'END-EMAIL-EVENT';
-    const TYPE_INTERMEDIATE_THROW_EMAIL_EVENT = 'INTERMEDIATE-THROW-EMAIL-EVENT';
-    const TYPE_SERVICE_TASK = 'SERVICE-TASK';
+    const TYPE_GATEWAY = 'GATEWAY_TO_GATEWAY';
+    const TYPE_WEB_ENTRY_EVENT = 'WEB_ENTRY_EVENT';
+    const TYPE_END_MESSAGE_EVENT = 'END_MESSAGE_EVENT';
+    const TYPE_START_MESSAGE_EVENT = 'START_MESSAGE_EVENT';
+    const TYPE_INTERMEDIATE_THROW_MESSAGE_EVENT = 'INTERMEDIATE_THROW_MESSAGE_EVENT';
+    const TYPE_INTERMEDIATE_CATCH_MESSAGE_EVENT = 'INTERMEDIATE_CATCH_MESSAGE_EVENT';
+    const TYPE_SCRIPT_TASK = 'SCRIPT_TASK';
+    const TYPE_START_TIMER_EVENT = 'START_TIMER_EVENT';
+    const TYPE_INTERMEDIATE_CATCH_TIMER_EVENT = 'INTERMEDIATE_CATCH_TIMER_EVENT';
+    const TYPE_END_EMAIL_EVENT = 'END_EMAIL_EVENT';
+    const TYPE_INTERMEDIATE_THROW_EMAIL_EVENT = 'INTERMEDIATE_THROW_EMAIL_EVENT';
+    const TYPE_SERVICE_TASK = 'SERVICE_TASK';
+
+    //Task Assign type
+    const ASSIGN_TYPE_BALANCED = 'BALANCED';
+    const ASSIGN_TYPE_MANUAL = 'MANUAL';
+    const ASSIGN_TYPE_EVALUATE = 'EVALUATE';
+    const ASSIGN_TYPE_REPORT_TO = 'REPORT_TO';
+    const ASSIGN_TYPE_SELF_SERVICE = 'SELF_SERVICE';
+    const ASSIGN_TYPE_STATIC_MI = 'STATIC_MI';
+    const ASSIGN_TYPE_CANCEL_MI = 'CANCEL_MI';
+    const ASSIGN_TYPE_MULTIPLE_INSTANCE = 'MULTIPLE_INSTANCE';
+    const ASSIGN_TYPE_MULTIPLE_INSTANCE_VALUE_BASED = 'MULTIPLE_INSTANCE_VALUE_BASED';
+
+    //Task Type Routing
+    const ROUTE_TYPE_NORMAL = 'NORMAL';
+    const ROUTE_TYPE_FAST = 'FAST';
+    const ROUTE_TYPE_AUTOMATIC = 'AUTOMATIC';
 
     protected $fillable = [
         'uid',
@@ -86,10 +97,9 @@ class Task extends Model
         'self_service_trigger_id' => 'sometimes|exists:triggers,id',
         'title' => 'required|unique:tasks,title',
         'description' => 'required',
-        'type' => 'required',
-        'type',
-        'assign_type',
-        'routing_type',
+        'type' => 'required|in:' . self::TYPE_NORMAL . ',' . self::TYPE_ADHOC . ',' . self::TYPE_SUB_PROCESS . ',' . self::TYPE_HIDDEN . ',' . self::TYPE_GATEWAY . ',' . self::TYPE_WEB_ENTRY_EVENT . ',' . self::TYPE_END_MESSAGE_EVENT . ',' . self::TYPE_START_MESSAGE_EVENT . ',' . self::TYPE_INTERMEDIATE_THROW_MESSAGE_EVENT . ',' . self::TYPE_INTERMEDIATE_CATCH_MESSAGE_EVENT . ',' . self::TYPE_SCRIPT_TASK . ',' . self::TYPE_START_TIMER_EVENT . ',' . self::TYPE_INTERMEDIATE_CATCH_TIMER_EVENT . ',' . self::TYPE_END_EMAIL_EVENT . ',' . self::TYPE_INTERMEDIATE_THROW_EMAIL_EVENT . ',' . self::TYPE_SERVICE_TASK,
+        'assign_type' => 'required|in:' . self::ASSIGN_TYPE_BALANCED . ',' . self::ASSIGN_TYPE_MANUAL . ',' . self::ASSIGN_TYPE_EVALUATE . ',' . self::ASSIGN_TYPE_REPORT_TO . ',' . self::ASSIGN_TYPE_SELF_SERVICE . ',' . self::ASSIGN_TYPE_STATIC_MI . ',' . self::ASSIGN_TYPE_CANCEL_MI . ',' . self::ASSIGN_TYPE_MULTIPLE_INSTANCE . ',' . self::ASSIGN_TYPE_MULTIPLE_INSTANCE_VALUE_BASED,
+        'routing_type' => 'required|in:' . self::ROUTE_TYPE_NORMAL . ',' . self::ROUTE_TYPE_FAST . ',' . self::ROUTE_TYPE_AUTOMATIC
     ];
 
     /**
