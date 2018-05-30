@@ -2,11 +2,12 @@ import {Elements} from "./elements";
 import _ from "lodash";
 import actions from "../actions/index";
 
+import EventBus from "../lib/event-bus"
+
 export class Builder {
-    constructor(svg, dispatcher) {
+    constructor(svg) {
         this.svg = svg;
         this.selection = [];
-        this.dispatcher = dispatcher;
     }
 
     /**

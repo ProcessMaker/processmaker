@@ -65,31 +65,36 @@
 </template>
 
 <script>
+    import EventBus from "../lib/event-bus"
     import actions from "../actions/"
     export default {
         methods: {
             createElement (value) {
                 let action = actions.designer.drag.toolbar.end(value)
-                Dispatcher.$emit(action.type, action.payload)
+                EventBus.$emit(action.type, action.payload)
+                console.log("Emitting");
             }
         }
     };
 </script>
-<style>
-    .pmdesigner-toolbar {
-        display: inline-block;
-        background-color: white;
-        border-right: 2px solid #e1dbd9;
-        z-index: 2;
-    }
+<style lang="scss" scoped>
+.pmdesigner-toolbar {
+    background-color: white;
+    border-right: 2px solid #e1dbd9;
+    min-height: 100%;
+    max-height: 100%;
+    overflow: auto;
 
     .side-menu {
         list-style-type: none;
         padding: 0;
         text-align: center;
-    }
+        width: 56px;
 
-    .bpmn-item-menu {
-        padding: 7px 13px
+
+        .bpmn-item-menu {
+            padding: 7px 13px
+        }
     }
+}
 </style>

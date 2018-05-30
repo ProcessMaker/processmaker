@@ -1,17 +1,16 @@
 <template>
-    <div class="svg-container">
-        <svg id="svg" height="7000px" width="7000px" class="svg_canvas"
-             @mousemove="mouseMove"
-             @mousedown="mouseDown"
-             @mouseup="mouseUp">
-        </svg>
-    </div>
+    <svg id="svg" class="svg_canvas"
+            @mousemove="mouseMove"
+            @mousedown="mouseDown"
+            @mouseup="mouseUp">
+    </svg>
 </template>
 
 <script>
     import bpmn from "bpmn-moddle"
     import {Builder} from "../diagram/builder"
     import actions from "../actions"
+    import EventBus from "../lib/event-bus"
     let moddle = new bpmn()
     export default {
         data() {
@@ -37,9 +36,9 @@
             }
         },
         created() {
-            Dispatcher.$on(actions.designer.drag.toolbar.end().type, (value) => this.createElement(value))
-            Dispatcher.$on(actions.designer.drag.shape.start().type, this.onDragStartShape())
-            Dispatcher.$on(actions.designer.drag.shape.end().type, this.onDragEndShape())
+            EventBus.$on(actions.designer.drag.toolbar.end().type, (value) => this.createElement(value))
+            EventBus.$on(actions.designer.drag.shape.start().type, this.onDragStartShape())
+            EventBus.$on(actions.designer.drag.shape.end().type, this.onDragEndShape())
         },
         methods: {
             loadXML(xml = null) {
@@ -143,29 +142,17 @@
         mounted() {
             this.$svg = $("#svg") // Object Jquery
             this.svg = Snap("#svg") // Object Snap svg
-            this.builder = new Builder(this.svg, Dispatcher)
+            this.builder = new Builder(this.svg, EventBus)
         }
     }
 </script>
 
-<style>
+<style lang="scss" scoped>
     .svg_canvas {
+        display: block;
         background-image: url(../img/bg_designer.gif);
         background-color: white;
-        position: relative;
-    }
-
-    .svg-container {
-        overflow: hidden;
-    }
-
-    #appDesigner {
-        flex-direction: column;
-        overflow: hidden;
-    }
-
-    .flex-column-designer {
-        display: inline-flex;
-        flex-direction: row;
+        min-height: 100%;
+        min-width: 100%;
     }
 </style>
