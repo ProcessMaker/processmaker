@@ -105,8 +105,8 @@
              * @param e
              */
             mouseDown (e){
+                this.builder.removeCrown()
                 if (!this.pan.shapeDrag) {
-                    this.builder.removeCrown()
                     this.pan.panStartX = e.pageX;
                     this.pan.panStartY = e.pageY;
                     this.pan.mouseDown = true;
