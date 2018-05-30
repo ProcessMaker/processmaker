@@ -53,6 +53,8 @@ class OutputDocumentManagerTest extends ApiTestCase
         $this->process = factory(Process::class)->create([
             'creator_user_id' => $this->user->id
         ]);
+
+        $this->auth($this->user->username, self::DEFAULT_PASS);
     }
 
     /**
@@ -91,8 +93,6 @@ class OutputDocumentManagerTest extends ApiTestCase
      */
     public function testNoCreateByParametersRequired(): void
     {
-        $this->auth($this->user->username, self::DEFAULT_PASS);
-
         //Post should have the parameter title, description, filename
         $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document';
         $response = $this->api('POST', $url, []);
@@ -107,8 +107,6 @@ class OutputDocumentManagerTest extends ApiTestCase
      */
     public function testCreateParameterDefinedConstant(): void
     {
-        $this->auth($this->user->username, self::DEFAULT_PASS);
-
         $faker = Faker::create();
         $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document';
         $response = $this->api('POST', $url, [
@@ -125,8 +123,6 @@ class OutputDocumentManagerTest extends ApiTestCase
      */
     public function testCreateDocument(): void
     {
-        $this->auth($this->user->username, self::DEFAULT_PASS);
-
         //Post saved correctly
         $faker = Faker::create();
 
@@ -155,8 +151,6 @@ class OutputDocumentManagerTest extends ApiTestCase
      */
     public function testNoCreateDocumentWithTitleExists(): void
     {
-        $this->auth($this->user->username, self::DEFAULT_PASS);
-
         $title = 'Title Output Document';
 
         //add Document to process
@@ -191,8 +185,6 @@ class OutputDocumentManagerTest extends ApiTestCase
      */
     public function testListDocuments(): void
     {
-        $this->auth($this->user->username, self::DEFAULT_PASS);
-
         //add Document to process
         factory(Document::class, 11)->create([
             'process_id' => $this->process->id
@@ -220,8 +212,6 @@ class OutputDocumentManagerTest extends ApiTestCase
      */
     public function testListDocumentsWithQueryParameter(): void
     {
-        $this->auth($this->user->username, self::DEFAULT_PASS);
-
         //add Document to process
         factory(Document::class, 11)->create([
             'process_id' => $this->process->id
@@ -258,8 +248,6 @@ class OutputDocumentManagerTest extends ApiTestCase
      */
     public function testListDocumentWithFilter(): void
     {
-        $this->auth($this->user->username, self::DEFAULT_PASS);
-
         //add Document to process
         $title = 'Title for search';
         factory(Document::class)->create([
@@ -297,8 +285,6 @@ class OutputDocumentManagerTest extends ApiTestCase
      */
     public function testGetDocument(): void
     {
-        $this->auth($this->user->username, self::DEFAULT_PASS);
-
         $document = factory(Document::class)->create([
             'process_id' => $this->process->id
         ]);
@@ -318,8 +304,6 @@ class OutputDocumentManagerTest extends ApiTestCase
      */
     public function testGetDocumentNotBelongProcess(): void
     {
-        $this->auth($this->user->username, self::DEFAULT_PASS);
-
         $document = factory(Document::class)->create();
         $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document/' . $document->uid;
         $response = $this->api('GET', $url);
@@ -331,8 +315,6 @@ class OutputDocumentManagerTest extends ApiTestCase
      */
     public function testUpdateParametersRequired(): void
     {
-        $this->auth($this->user->username, self::DEFAULT_PASS);
-
         $document = factory(Document::class)->create([
             'process_id' => $this->process->id
         ]);
@@ -357,8 +339,6 @@ class OutputDocumentManagerTest extends ApiTestCase
      */
     public function testUpdateDocument(): void
     {
-        $this->auth($this->user->username, self::DEFAULT_PASS);
-
         $document = factory(Document::class)->create([
             'process_id' => $this->process->id
         ]);
@@ -386,8 +366,6 @@ class OutputDocumentManagerTest extends ApiTestCase
      */
     public function testDeleteDocument(): void
     {
-        $this->auth($this->user->username, self::DEFAULT_PASS);
-
         $document = factory(Document::class)->create([
             'process_id' => $this->process->id
         ]);
@@ -405,8 +383,6 @@ class OutputDocumentManagerTest extends ApiTestCase
      */
     public function testDeleteDocumentNotExist(): void
     {
-        $this->auth($this->user->username, self::DEFAULT_PASS);
-
         $document = factory(Document::class)->make();
         $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document/' . $document->uid;
         $response = $this->api('DELETE', $url);
