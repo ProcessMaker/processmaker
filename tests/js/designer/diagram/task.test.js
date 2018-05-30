@@ -1,6 +1,6 @@
 import {mount, shallow} from '@vue/test-utils'
-import {Elements} from '../../../../resources/assets/designer/diagram/elements'
-import Crown from "../../../../resources/assets/designer/components/crown.vue"
+import {Elements} from '../../../../resources/assets/js/designer/diagram/elements'
+import Crown from "../../../../resources/assets/js/designer/components/crown.vue"
 import Vue from "vue"
 
 
@@ -59,13 +59,4 @@ describe('Task ', () => {
     it('render() - Verify if use the library snap svg', () => {
         task.render()
     })
-
-    it("createCrown() - Verify if the crown has been created", () => {
-        expect(task.createCrown()).toBeInstanceOf(Vue.extend(Crown))
-    });
-
-    it("removeCrown() - Verify if the crown has been removed", () => {
-        task.createCrown()
-        expect(task.removeCrown()).toEqual(null)
-    });
 })

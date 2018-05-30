@@ -1,6 +1,6 @@
 import {mount, shallow} from '@vue/test-utils'
-import {Elements} from '../../../../resources/assets/designer/diagram/elements'
-import Crown from "../../../../resources/assets/designer/components/crown.vue"
+import {Elements} from '../../../../resources/assets/js/designer/diagram/elements'
+import Crown from "../../../../resources/assets/js/designer/components/crown.vue"
 import Vue from "vue"
 
 let svg
@@ -78,13 +78,4 @@ describe('ExclusiveGateway - Class', () => {
         expect(mockTrans.mock.calls.length).toBe(1);
         expect(mockPolyline.mock.calls.length).toBe(2);
     })
-
-    it("createCrown() - Verify if the crown has been created", () => {
-        expect(eGat.createCrown()).toBeInstanceOf(Vue.extend(Crown))
-    });
-
-    it("removeCrown() - Verify if the crown has been removed", () => {
-        eGat.createCrown()
-        expect(eGat.removeCrown()).toEqual(null)
-    });
 })

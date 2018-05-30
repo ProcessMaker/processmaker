@@ -1,5 +1,6 @@
 import {Shape} from "../shape"
-import Crown from "../../components/crown.vue"
+import actions from "../../actions"
+import EventBus from "../../lib/event-bus"
 /**
  * Task Shape class
  */
@@ -46,17 +47,16 @@ export class TaskShape extends Shape {
         this.shape.drag(this.onMove(), this.onDragStart(), this.onDragEnd())
     }
 
-    createCrown() {
-        var ComponentClass = Vue.extend(Crown)
-        var instance = new ComponentClass({
-            data: {
-                top: this.options.y + this.svg.node.getBoundingClientRect().top,
-                left: this.options.x + this.svg.node.getBoundingClientRect().left + 105
-            }
+    /**
+     * Emit a message to crown to display
+     */
+    showCrown() {
+        let dx = 105
+        let dy = 10
+        let action = actions.designer.crown.show({
+            y: this.options.y + this.svg.node.getBoundingClientRect().top - dy,
+            x: this.options.x + this.svg.node.getBoundingClientRect().left + dx
         })
-        instance.$mount() // pass nothing
-        $(".svg-container").append(instance.$el)
-        this.crown = instance
-        return this.crown
+        EventBus.$emit(action.type, action.payload)
     }
 }

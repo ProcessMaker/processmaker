@@ -1,6 +1,6 @@
 import {mount, shallow} from "@vue/test-utils"
-import {Builder} from "../../../../resources/assets/designer/diagram/builder"
-import {Elements} from "../../../../resources/assets/designer/diagram/elements"
+import {Builder} from "../../../../resources/assets/js/designer/diagram/builder"
+import {Elements} from "../../../../resources/assets/js/designer/diagram/elements"
 import Vue from "vue"
 let svg
 const mockGroup = jest.fn(() => svg)

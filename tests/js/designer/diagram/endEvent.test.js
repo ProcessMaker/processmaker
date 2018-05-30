@@ -1,8 +1,7 @@
 import {mount, shallow} from "@vue/test-utils"
-import {Elements} from "../../../../resources/assets/designer/diagram/elements"
-import Crown from "../../../../resources/assets/designer/components/crown.vue"
+import {Elements} from "../../../../resources/assets/js/designer/diagram/elements"
+import Crown from "../../../../resources/assets/js/designer/components/crown.vue"
 import Vue from "vue"
-
 
 let svg
 Dispatcher = new Vue()
@@ -121,14 +120,5 @@ describe("Task ", () => {
         fn()
         expect(eEvent.dy).toBe(null)
         expect(eEvent.dx).toBe(null)
-    });
-
-    it("createCrown() - Verify if the crown has been created", () => {
-        expect(eEvent.createCrown()).toBeInstanceOf(Vue.extend(Crown))
-    });
-
-    it("removeCrown() - Verify if the crown has been removed", () => {
-        eEvent.createCrown()
-        expect(eEvent.removeCrown()).toEqual(null)
     });
 });

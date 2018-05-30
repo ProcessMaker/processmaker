@@ -1,5 +1,5 @@
 <template>
-    <div class="designer-container-crown">
+    <div v-show="visible" class="designer-container-crown">
         <div class="d-flex flex-row">
             <div class="item-crown">
                 <img id="bpmn:Task" src="images/task.svg" height="18"
@@ -31,23 +31,35 @@
 
 <script>
     import actions from "../actions"
+    import EventBus from "../lib/event-bus"
     export default {
         data() {
             return {
-                top: null,
-                left: null
+                x: null,
+                y: null,
+                visible: false
             }
         },
         created() {
-
+            EventBus.$on(actions.designer.crown.show().type, (value) => this.show(value))
+            EventBus.$on(actions.designer.crown.hide().type, (value) => this.hide(value))
         },
         methods: {
             remove (ev){
+            },
+            show(conf){
+                this.x = conf.x
+                this.y = conf.y
+                $(this.$el).css("top", this.y)
+                $(this.$el).css("left", this.x)
+                this.visible = true
+            },
+            hide(){
+                this.visible = false
             }
         },
         mounted() {
-            $(this.$el).css("top", this.top)
-            $(this.$el).css("left", this.left)
+
         }
     }
 </script>

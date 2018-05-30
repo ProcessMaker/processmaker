@@ -2,6 +2,7 @@ import actions from "../actions/"
 import Crown from "../components/crown.vue"
 import Vue from 'vue'
 import $ from 'jquery'
+import EventBus from "../lib/event-bus"
 
 /**
  * Class Shape - Base Class
@@ -12,7 +13,6 @@ export class Shape {
         this.svg = svg
         this.shape = this.svg.group()
         this.selectionBorder = null
-        this.crown = null
         this.dx = 0
         this.dy = 0
     }
@@ -81,7 +81,7 @@ export class Shape {
     onDragStart() {
         return (ev) => {
             let action = actions.designer.drag.shape.start(ev)
-            Dispatcher.$emit(action.type, action.payload)
+            EventBus.$emit(action.type, action.payload)
             this.shape.data("origTransform", this.shape.transform().local);
         };
     }
@@ -98,18 +98,15 @@ export class Shape {
             this.dx = null
             this.dy = null
             let action = actions.designer.drag.shape.end(ev)
-            Dispatcher.$emit(action.type, action.payload)
+            EventBus.$emit(action.type, action.payload)
         };
     }
 
     /**
-     * This method removes the crown of shape
+     * This method hides the crown of shape
      */
-    removeCrown() {
-        if (this.crown) {
-            $(this.crown.$el).remove()
-            this.crown = null
-        }
-        return this.crown
+    hideCrown() {
+        let action = actions.designer.crown.hide()
+        EventBus.$emit(action.type, action.payload)
     }
 }

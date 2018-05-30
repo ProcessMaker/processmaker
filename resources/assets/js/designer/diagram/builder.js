@@ -2,11 +2,12 @@ import {Elements} from "./elements";
 import _ from "lodash";
 import actions from "../actions/index"
 
+import EventBus from "../lib/event-bus"
+
 export class Builder {
-    constructor(svg, dispatcher) {
+    constructor(svg) {
         this.svg = svg;
         this.selection = [];
-        this.dispatcher = dispatcher;
     }
 
     /**
@@ -43,9 +44,9 @@ export class Builder {
         let that = this;
         return (event) => {
             that.removeSelectionBorder();
-            that.removeCrown();
+            that.hideCrown();
             element.createSelectionBorder();
-            element.createCrown()
+            element.showCrown()
             that.selection = [];
             that.selection.push(element);
             return false;
@@ -64,9 +65,9 @@ export class Builder {
     /**
      * This method removes the crown in the selected shape
      */
-    removeCrown() {
+    hideCrown() {
         _.forEach(this.selection, (el) => {
-            el.removeCrown();
+            el.hideCrown();
         });
     }
 
