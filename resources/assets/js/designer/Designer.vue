@@ -5,8 +5,8 @@
             <toolbar ref="toolbar"></toolbar>
             <div class="canvas-container">
                 <designer ref="canvas"></designer>
-                <designerobjectsmenu></designerobjectsmenu>
             </div>
+            <designerobjectsmenu></designerobjectsmenu>
         </div>
     </div>
 </template>

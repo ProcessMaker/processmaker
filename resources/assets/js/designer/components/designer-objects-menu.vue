@@ -1,72 +1,114 @@
 <template>
-  <div class="list-group">
-    <a href="#" id="object-menu-title" class="object-menu-items list-group-item text-light">Process Objects<i class="fas fa-minus-circle float-right"></i><i class="fas fa-sync-alt float-right"></i></a>
-    <designer-options-menu-item v-for="(item, index) in menuItems" :key="item.id" :title="item.title"></designer-options-menu-item>
+  <div class="objects-menu">
+    <div class="object-menu-title">Process Objects</div>
+    <div class="object-menu-items-container">
+    <designer-options-menu-item @title-click="handleItemClick(item)" @button-click="handleAddClick(item)" v-for="(item, index) in menuItems" :key="item.id" :title="item.title"></designer-options-menu-item>
+    </div>
   </div>
 </template>
 
 <script>
-import designerOptionsMenuItem from './designer-options-menu-item.vue'
+import EventBus from '../lib/event-bus'
+import designerOptionsMenuItem from "./designer-options-menu-item.vue";
 export default {
-  components:{
-    'designer-options-menu-item': designerOptionsMenuItem
+  components: {
+    "designer-options-menu-item": designerOptionsMenuItem
   },
-  data(){
+  data() {
     return {
-        menuItems:[
-          {
-            'title': 'Variables'
-          },
-          {
-            'title': 'Message Types'
-          },
-          {
-            'title': 'Forms'
-          },
-          {
-            'title': 'Input Documents'
-          },
-          {
-            'title': 'Output Documents'
-          },
-          {
-            'title': 'Triggers'
-          },
-          {
-            'title': 'Report Tables'
-          },
-          {
-            'title': 'Database Connections'
-          },
-          {
-            'title': 'Templates'
-          },
-          {
-            'title': 'Public Files'
-          },
-          {
-            'title': 'Permissions'
-          },
-          {
-            'title': 'Case Tracker'
-          },
-          {
-            'title': 'Supervisiors'
-          },
-        ]
-    }
+      menuItems: [
+        {
+          title: "Variables",
+          key: 'variables'
+        },
+        {
+          title: "Message Types",
+          key: 'message-types'
+        },
+        {
+          title: "Forms",
+          key: 'forms'
+        },
+        {
+          title: "Input Documents",
+          key: 'input-documents'
+        },
+        {
+          title: "Output Documents",
+          key: 'output-documents'
+        },
+        {
+          title: "Triggers",
+          key: 'triggers'
+        },
+        {
+          title: "Report Tables",
+          key: 'report-tables'
+        },
+        {
+          title: "Database Connections",
+          key: 'database-connections'
+        },
+        {
+          title: "Templates",
+          key: 'templates'
+        },
+        {
+          title: "Public Files",
+          key: 'public-files'
+        },
+        {
+          title: "Permissions",
+          key: 'permissions'
+        },
+        {
+          title: "Case Tracker",
+          key: 'case-tracker'
+        },
+        {
+          title: "Supervisiors",
+          key: 'supervisors'
+        }
+      ]
+    };
   },
-}
+  methods: {
+    handleItemClick(item) {
+      alert('Behavior TBD');
+    },
+    handleAddClick(item) {
+      EventBus.$emit('open-add-dialog', item.key);
+    }
+  }
+};
 </script>
 
 <style lang="scss" scoped>
-  .list-group {
-    width: 220px;
-    font-size: 12px;
-    
-  }
-  #object-menu-title{
-    background-color: rgb(174,183,190);
+.objects-menu {
+  width: 220px;
+  font-size: 12px;
+  min-height: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  border-left: 2px solid #e1dbd9;
+
+  .object-menu-title {
+    min-height: 32px;
+    max-height: 32px;
+    line-height: 32px;
+    background-color: rgb(174, 183, 190);
+    font-size: 10px;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: white;
+    padding-left: 16px;
   }
 
+  .object-menu-items-container {
+    overflow: auto;
+    padding: 4px;
+  }
+}
 </style>
