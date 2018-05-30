@@ -211,9 +211,8 @@ class OutputDocumentManagerTest extends ApiTestCase
         ]);
         //verify count of data
         $this->assertEquals(11, $response->original->meta->total);
-        foreach ($response->json('data') as $item) {
-            $response->assertJsonStructure(self::STRUCTURE, $item);
-        }
+        //Verify the structure
+        $response->assertJsonStructure(['*' => self::STRUCTURE], $response->json('data'));
     }
 
     /**
@@ -250,9 +249,8 @@ class OutputDocumentManagerTest extends ApiTestCase
         $this->assertEquals('description', $response->original->meta->sort_by);
         $this->assertEquals('DESC', $response->original->meta->sort_order);
         //verify structure of model
-        foreach ($response->json('data') as $item) {
-            $response->assertJsonStructure(self::STRUCTURE, $item);
-        }
+        //Verify the structure
+        $response->assertJsonStructure(['*' => self::STRUCTURE], $response->json('data'));
     }
 
     /**
@@ -290,10 +288,8 @@ class OutputDocumentManagerTest extends ApiTestCase
         $this->assertEquals($title, $response->original->meta->filter);
         $this->assertEquals('description', $response->original->meta->sort_by);
         $this->assertEquals('DESC', $response->original->meta->sort_order);
-        //verify structure of model
-        foreach ($response->json('data') as $item) {
-            $response->assertJsonStructure(self::STRUCTURE, $item);
-        }
+        //Verify the structure
+        $response->assertJsonStructure(['*' => self::STRUCTURE], $response->json('data'));
     }
 
     /**

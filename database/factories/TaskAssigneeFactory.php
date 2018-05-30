@@ -26,7 +26,7 @@ $factory->define(TaskUser::class, function (Faker $faker) {
         },
         'type' => 1,
         'user_id' => $model->id,
-        'task_user_type' => $model::TYPE
+        'task_users_type' => $model::TYPE
     ];
 });
 
@@ -36,7 +36,7 @@ $factory->defineAs(TaskUser::class, 'user', function (Faker $faker) use ($factor
         'user_id' => function () {
             return factory(User::class)->create()->id;
         },
-        'task_user_type' => User::TYPE
+        'task_users_type' => User::TYPE
     ];
     return array_merge($follow, $extras);
 });
@@ -47,7 +47,7 @@ $factory->defineAs(TaskUser::class, 'group', function (Faker $faker) use ($facto
         'user_id' => function () {
             return factory(Group::class)->create(['status' => Group::STATUS_ACTIVE])->id;
         },
-        'task_user_type' => Group::TYPE
+        'task_users_type' => Group::TYPE
     ];
     return array_merge($follow, $extras);
 });
