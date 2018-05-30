@@ -139,5 +139,12 @@ Router::group([
         Router::get('tasks', 'Designer\TaskDelegationController@index')->middleware('can:read,ProcessMaker\Model\Delegation');
         Router::get('tasks/{task}', 'Designer\TaskDelegationController@show')->middleware('can:read,ProcessMaker\Model\Delegation');
 
+        //Task endpoints
+        Router::get('process/{process}/tasks', 'Designer\TaskController@index')->middleware('can:read,ProcessMaker\Model\Task');
+        Router::get('process/{process}/task/{task}', 'Designer\TaskController@show')->middleware('can:read,ProcessMaker\Model\Task');
+        Router::post('process/{process}/task', 'Designer\TaskController@store')->middleware('can:write,ProcessMaker\Model\Task');
+        Router::put('process/{process}/task/{task}', 'Designer\TaskController@update')->middleware('can:write,ProcessMaker\Model\Task');
+        Router::delete('process/{process}/task/{task}', 'Designer\TaskController@remove')->middleware('can:delete,ProcessMaker\Model\Task');
+
     });
 });

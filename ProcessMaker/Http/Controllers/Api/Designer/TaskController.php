@@ -6,12 +6,12 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use ProcessMaker\Exception\DoesNotBelongToProcessException;
-use ProcessMaker\Facades\TaskAssigneeManager;
+use ProcessMaker\Facades\TaskManager;
 use ProcessMaker\Model\Task;
 use ProcessMaker\Model\Process;
-use ProcessMaker\TransTaskers\TaskTransTasker;
+use ProcessMaker\Transformers\TaskTransformer;
 
-    class TaskController
+class TaskController
 {
     /**
      * Get a list of Tasks in a project.
@@ -30,23 +30,23 @@ use ProcessMaker\TransTaskers\TaskTransTasker;
             'sort_by' => $request->input('sort_by', 'title'),
             'sort_order' => $request->input('sort_order', 'ASC'),
         ];
-        $response = TaskAssigneeManager::index($process, $options);
-        return fractal($response, new TaskTransTasker())->respond();
+        $response = TaskManager::index($process, $options);
+        return fractal($response, new TaskTransformer())->respond();
     }
 
     /**
      * Get a single Task in a project.
      *
      * @param Process $process
-     * @param Task $Task
+     * @param Task $task
      *
      * @return ResponseFactory|Response
      * @throws DoesNotBelongToProcessException
      */
-    public function show(Process $process, Task $Task)
+    public function show(Process $process, Task $task)
     {
-        $this->belongsToProcess($process, $Task);
-        return fractal($Task, new TaskTransTasker())->respond();
+        $this->belongsToProcess($process, $task);
+        return fractal($task, new TaskTransformer())->respond();
     }
 
     /**
@@ -63,33 +63,29 @@ use ProcessMaker\TransTaskers\TaskTransTasker;
             'title' => $request->input('title', ''),
             'description' => $request->input('description', '')
         ];
-        $data = array_merge($data, $this->TaskatData($request, ['content']));
+        $data = array_merge($data, $this->formatData($request, ['title', 'description', 'type', 'assign_type', 'routing_type', 'priority_variable', 'assign_variable', 'group_variable', 'is_start_task', 'routing_screen_template', 'timing_control_configuration', 'self_service_trigger_id', 'self_service_timeout_configuration', 'custom_title', 'custom_description']));
 
-        if ($request->has('copy_import')) {
-            $data['copy_import'] = $request->input('copy_import');
-            return fractal(TaskAssigneeManager::copyImport($process, $data), new TaskTransTasker())->respond(201);
-        }
-        $response = TaskAssigneeManager::save($process, $data);
-        return fractal($response, new TaskTransTasker())->respond(201);
+        $response = TaskManager::save($process, $data);
+        return fractal($response, new TaskTransformer())->respond(201);
     }
 
     /**
      * Update a Task in a project.
      *
      * @param Process $process
-     * @param Task $Task
+     * @param Task $task
      * @param Request $request
      *
      * @return ResponseFactory|Response
      * @throws DoesNotBelongToProcessException
      */
-    public function update(Process $process, Task $Task, Request $request)
+    public function update(Process $process, Task $task, Request $request)
     {
-        $this->belongsToProcess($process, $Task);
-        $data = $this->TaskatData($request, ['title', 'description', 'content']);
+        $this->belongsToProcess($process, $task);
+        $data = $this->formatData($request, ['title', 'description', 'type', 'assign_type', 'routing_type', 'priority_variable', 'assign_variable', 'group_variable', 'is_start_task', 'routing_screen_template', 'timing_control_configuration', 'self_service_trigger_id', 'self_service_timeout_configuration', 'custom_title', 'custom_description']);
 
         if ($data) {
-            TaskAssigneeManager::update($process, $Task, $data);
+            TaskManager::update($process, $task, $data);
         }
         return response([], 200);
     }
@@ -98,15 +94,15 @@ use ProcessMaker\TransTaskers\TaskTransTasker;
      * Delete a Task in a project.
      *
      * @param Process $process
-     * @param Task $Task
+     * @param Task $task
      *
      * @return ResponseFactory|Response
      * @throws DoesNotBelongToProcessException
      */
-    public function remove(Process $process, Task $Task)
+    public function remove(Process $process, Task $task)
     {
-        $this->belongsToProcess($process, $Task);
-        TaskAssigneeManager::remove($Task);
+        $this->belongsToProcess($process, $task);
+        TaskManager::remove($task);
         return response([], 204);
     }
 
@@ -114,26 +110,26 @@ use ProcessMaker\TransTaskers\TaskTransTasker;
      * Validate if Task belong to process.
      *
      * @param Process $process
-     * @param Task $Task
+     * @param Task $task
      *
      * @throws DoesNotBelongToProcessException|void
      */
-    private function belongsToProcess(Process $process, Task $Task): void
+    private function belongsToProcess(Process $process, Task $task): void
     {
-        if ($process->id !== $Task->process_id) {
+        if ($process->id !== $task->process_id) {
             Throw new DoesNotBelongToProcessException(__('The Task does not belong to this process.'));
         }
     }
 
     /**
-     * Taskat in capital letters to send inTaskation.
+     * Request data
      *
      * @param Request $request
      * @param array $fields
      *
      * @return array
      */
-    private function TaskatData(Request $request, array $fields): array
+    private function formatData(Request $request, array $fields): array
     {
         $data = [];
         foreach ($fields as $field) {
