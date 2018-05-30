@@ -24,10 +24,6 @@ class TaskManager
      */
     public function index(Process $process, array $options): LengthAwarePaginator
     {
-        /*$start = $options['current_page'];
-        Paginator::currentPageResolver(function () use ($start) {
-            return $start;
-        });*/
         $query = Task::where('process_id', $process->id);
         $filter = $options['filter'];
         if (!empty($filter)) {
@@ -53,7 +49,6 @@ class TaskManager
      */
     public function save(Process $process, $data): Task
     {
-        //$this->validate($data);
         $data['process_id'] = $process->id;
 
         $task = new Task();
@@ -94,17 +89,5 @@ class TaskManager
     {
         return $task->delete();
     }
-
-    /**
-     * Validate extra rules
-     *
-     * @param array $data
-     *
-     * @throws ValidationException
-     */
-    /*private function validate($data): void
-    {
-        return true;
-    }*/
 
 }

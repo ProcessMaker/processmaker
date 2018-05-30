@@ -63,7 +63,7 @@ class TaskController
             'title' => $request->input('title', ''),
             'description' => $request->input('description', '')
         ];
-        $data = array_merge($data, $this->formatData($request, ['title', 'description', 'type', 'assign_type', 'routing_type', 'priority_variable', 'assign_variable', 'group_variable', 'is_start_task', 'routing_screen_template', 'timing_control_configuration', 'self_service_trigger_id', 'self_service_timeout_configuration', 'custom_title', 'custom_description']));
+        $data = array_merge($data, $this->formatData($request, ['type', 'assign_type', 'routing_type', 'priority_variable', 'assign_variable', 'group_variable', 'is_start_task', 'routing_screen_template', 'timing_control_configuration', 'self_service_trigger_id', 'self_service_timeout_configuration', 'custom_title', 'custom_description']));
 
         $response = TaskManager::save($process, $data);
         return fractal($response, new TaskTransformer())->respond(201);
