@@ -1,7 +1,7 @@
 <template>
   <div class="list-group">
     <a href="#" id="object-menu-title" class="object-menu-items list-group-item text-light">Process Objects<i class="fas fa-minus-circle float-right"></i><i class="fas fa-sync-alt float-right"></i></a>
-    <designer-options-menu-item v-for="(item, index) in menuItems" :title="item.title"></designer-options-menu-item>
+    <designer-options-menu-item v-for="(item, index) in menuItems" :key="item.id" :title="item.title"></designer-options-menu-item>
   </div>
 </template>
 
@@ -46,7 +46,8 @@ export default {
             'title': 'Public Files'
           },
           {
-            'title': 'Permissions'
+            'title': 'Permissions',
+            'btn-action': 'openpermissionsmodal',
           },
           {
             'title': 'Case Tracker'
