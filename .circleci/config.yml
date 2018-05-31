@@ -179,6 +179,7 @@ jobs:
             DB_DATABASE: "circle_test"
             RUN_MSSQL_TESTS: "true"
             MSSQL_HOST: "127.0.0.1"
+
       - run:
           name: "SauceLabs Browser Tests: Firefox"
          command: |
