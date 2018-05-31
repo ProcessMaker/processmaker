@@ -8,6 +8,9 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class ExampleTest extends DuskTestCase
 {
+    // Wipes database each run
+    use DatabaseMigrations;
+
     /**
      * A basic browser test example.
      *
