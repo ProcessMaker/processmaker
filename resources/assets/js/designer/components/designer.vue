@@ -4,7 +4,6 @@
             @mousedown="mouseDown"
             @mouseup="mouseUp">
     </svg>
-  <component :is="item.key" :if=""></component>
 </template>
 
 
@@ -13,8 +12,11 @@
     import {Builder} from "../diagram/builder"
     import actions from "../actions"
     import EventBus from "../lib/event-bus"
+
+
     let moddle = new bpmn()
     export default {
+        // Set our own static components but also bring in our dynamic list of modals from above
         data() {
             return {
                 xml: null, // BPMN XML string
@@ -52,15 +54,9 @@
             EventBus.$on(actions.designer.drag.shape.start().type, this.onDragStartShape())
             EventBus.$on(actions.designer.drag.shape.end().type, this.onDragEndShape())
 
-            // Listen for opening an add dialog
-            EventBus.$on('open-add-dialog', this.openAddDialog);
-        },
+       },
         methods: {
-            openAddDialog(key) {
-                alert('I should open the ' + key + ' add dialog!');
-                // Actually open the appropriate modal dialog vue component
-            },
-            loadXML(xml = null) {
+           loadXML(xml = null) {
                 let that = this;
                 if (xml) this.xml = xml;
                 moddle.fromXML(that.xml, function (err, def) {

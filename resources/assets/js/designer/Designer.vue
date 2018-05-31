@@ -1,5 +1,6 @@
 <template>
     <div id="designer-container">
+        <component :is="modalComponent" :if="modalComponent"></component>
         <toptoolbar ref="toptoolbar"></toptoolbar>
         <div id="designer-subcontainer">
             <toolbar ref="toolbar"></toolbar>
@@ -13,6 +14,8 @@
 
 
 <script>
+// Import our designer event-bus
+import EventBus from "./lib/event-bus";
 // Import our top-level components
 
 // Designer is our overall canvas tool
@@ -27,14 +30,38 @@ import toptoolbar from "./components/toptoolbar";
 // This is our objects menu with nested object-menu items components
 import designerobjectsmenu from "./components/designer-objects-menu";
 
-
+// @todo Figure out a way to add these modals to the properties of components
+import modalPermissionsAdd from "./components/modals/modal-permissions-add";
 
 export default {
   components: {
     designer,
     toolbar,
     toptoolbar,
-    designerobjectsmenu
+    designerobjectsmenu,
+    "modal-permissions-add": modalPermissionsAdd
+  },
+  data() {
+    return {
+      modalComponent: null
+    }
+  },
+  created() {
+    // Listen for opening an add dialog
+    EventBus.$on("open-add-dialog", this.openAddDialog);
+  },
+  methods: {
+    openAddDialog(key) {
+      // Replace this with dynamic modal generation once we have all modals in place
+      // We're not doing this now so we can have visual alert feedback when a modal isn't implemented
+      switch(key) {
+        case 'permissions':
+          this.modalComponent = 'modal-permissions-add'
+          break;
+        default:
+          alert(key + ' add modal not yet implemented.')
+      }
+    }
   }
 };
 </script>
@@ -60,7 +87,6 @@ export default {
     max-width: 100%;
     min-height: 100%;
     max-height: 100%;
-
 
     .canvas-container {
       flex: 1;
