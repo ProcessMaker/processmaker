@@ -92,7 +92,13 @@ class TaskManagerTest extends ApiTestCase
             'description' => $faker->sentence(10),
             'type' => $faker->randomElement([Task::TYPE_NORMAL, Task::TYPE_ADHOC, Task::TYPE_SUB_PROCESS, Task::TYPE_HIDDEN, Task::TYPE_GATEWAY, Task::TYPE_WEB_ENTRY_EVENT, Task::TYPE_END_MESSAGE_EVENT, Task::TYPE_START_MESSAGE_EVENT, Task::TYPE_INTERMEDIATE_THROW_MESSAGE_EVENT, Task::TYPE_INTERMEDIATE_CATCH_MESSAGE_EVENT, Task::TYPE_SCRIPT_TASK, Task::TYPE_START_TIMER_EVENT, Task::TYPE_INTERMEDIATE_CATCH_TIMER_EVENT, Task::TYPE_END_EMAIL_EVENT, Task::TYPE_INTERMEDIATE_THROW_EMAIL_EVENT, Task::TYPE_SERVICE_TASK]),
             'assign_type' => $faker->randomElement([Task::ASSIGN_TYPE_BALANCED, Task::ASSIGN_TYPE_MANUAL, Task::ASSIGN_TYPE_EVALUATE, Task::ASSIGN_TYPE_REPORT_TO, Task::ASSIGN_TYPE_SELF_SERVICE, Task::ASSIGN_TYPE_STATIC_MI, Task::ASSIGN_TYPE_CANCEL_MI, Task::ASSIGN_TYPE_MULTIPLE_INSTANCE, Task::ASSIGN_TYPE_MULTIPLE_INSTANCE_VALUE_BASED]),
-            'routing_type' => $faker->randomElement([Task::ROUTE_TYPE_NORMAL, Task::ROUTE_TYPE_FAST, Task::ROUTE_TYPE_AUTOMATIC])
+            'routing_type' => $faker->randomElement([Task::ROUTE_TYPE_NORMAL, Task::ROUTE_TYPE_FAST, Task::ROUTE_TYPE_AUTOMATIC]),
+            'timing_control_configuration' => [
+                'duration' => 10,
+            ],
+            'self_service_timeout_configuration' => [
+                'self_service_timeout' => 10
+            ],
         ]);
         //validating the answer is correct.
         $response->assertStatus(201);
@@ -132,7 +138,6 @@ class TaskManagerTest extends ApiTestCase
     public function testListTask(): void
     {
         //add Task to process
-        $faker = Faker::create();
         factory(Task::class, 10)->create([
             'process_id' => $this->process->id
         ]);
@@ -204,6 +209,17 @@ class TaskManagerTest extends ApiTestCase
 
         //verify structure paginate
         $response->assertJsonStructure(self::STRUCTURE);
+    }
+
+    /**
+     * Task not belong to process.
+     */
+    public function testGetTaskNotBelongProcess(): void
+    {
+        $task = factory(Task::class)->create();
+        $url = self::API_TEST_TASK . $this->process->uid . '/task/' . $task->uid;
+        $response = $this->api('GET', $url);
+        $response->assertStatus(404);
     }
 
     /**

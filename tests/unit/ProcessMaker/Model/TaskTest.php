@@ -22,17 +22,22 @@ class TaskTest extends TestCase
         $assignType = $faker->randomElement([Task::ASSIGN_TYPE_BALANCED, Task::ASSIGN_TYPE_MANUAL, Task::ASSIGN_TYPE_EVALUATE, Task::ASSIGN_TYPE_REPORT_TO, Task::ASSIGN_TYPE_SELF_SERVICE, Task::ASSIGN_TYPE_STATIC_MI, Task::ASSIGN_TYPE_CANCEL_MI, Task::ASSIGN_TYPE_MULTIPLE_INSTANCE, Task::ASSIGN_TYPE_MULTIPLE_INSTANCE_VALUE_BASED]);
         $routingType = $faker->randomElement([Task::ROUTE_TYPE_NORMAL, Task::ROUTE_TYPE_FAST, Task::ROUTE_TYPE_AUTOMATIC]);
 
-        $server = factory(Task::class)->create([
+        $task = factory(Task::class)->create([
             'type' => $type,
             'assign_type' => $assignType,
-            'routing_type' => $routingType
-
+            'routing_type' => $routingType,
+            'timing_control_configuration' => [
+                'duration' => 10
+            ],
+            'self_service_timeout_configuration' => [
+                'self_service_timeout' => 10
+            ],
         ]);
 
-        $this->assertGreaterThan(0, $server->id);
-        $this->assertEquals($type, $server->type);
-        $this->assertEquals($assignType, $server->assign_type);
-        $this->assertEquals($routingType, $server->routing_type);
+        $this->assertGreaterThan(0, $task->id);
+        $this->assertEquals($type, $task->type);
+        $this->assertEquals($assignType, $task->assign_type);
+        $this->assertEquals($routingType, $task->routing_type);
 
     }
 
