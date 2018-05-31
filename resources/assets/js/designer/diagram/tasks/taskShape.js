@@ -51,11 +51,11 @@ export class TaskShape extends Shape {
      * Emit a message to crown to display
      */
     showCrown() {
-        let dx = 105
-        let dy = 10
+        let taskWidthDef = 105
+        let taskDyDef = 10
         let action = actions.designer.crown.show({
-            y: this.options.y + this.svg.node.getBoundingClientRect().top - dy,
-            x: this.options.x + this.svg.node.getBoundingClientRect().left + dx
+            y: this.options.y + this.svg.node.getBoundingClientRect().top - taskDyDef,
+            x: this.options.x + this.svg.node.getBoundingClientRect().left + taskWidthDef
         })
         EventBus.$emit(action.type, action.payload)
     }

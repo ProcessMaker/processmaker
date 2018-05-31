@@ -62,11 +62,11 @@ export class GatewayShape extends Shape {
      */
 
     showCrown() {
-        let dx = 30
-        let dy = 10
+        let gatWidthDefault = 30
+        let gatDyDefault = 10
         let action = actions.designer.crown.show({
-            y: this.options.y + this.svg.node.getBoundingClientRect().top - dy,
-            x: this.options.x + this.svg.node.getBoundingClientRect().left + dx
+            y: this.options.y + this.svg.node.getBoundingClientRect().top - gatDyDefault,
+            x: this.options.x + this.svg.node.getBoundingClientRect().left + gatWidthDefault
         })
         EventBus.$emit(action.type, action.payload)
     }

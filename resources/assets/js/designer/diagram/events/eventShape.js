@@ -60,10 +60,10 @@ export class EventShape extends Shape {
      * Emit a message to crown to display
      */
     showCrown() {
-        let dx = 50
+        let evWidthDefault = 50
         let action = actions.designer.crown.show({
             y: this.options.y + this.svg.node.getBoundingClientRect().top,
-            x: this.options.x + this.svg.node.getBoundingClientRect().left + dx
+            x: this.options.x + this.svg.node.getBoundingClientRect().left + evWidthDefault
         })
         EventBus.$emit(action.type, action.payload)
     }
