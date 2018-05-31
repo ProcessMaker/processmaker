@@ -130,7 +130,7 @@ jobs:
             echo "APP_KEY=" >> .env
             echo "APP_DEBUG=TRUE" >> .env
             echo "APP_NAME=ProcessMaker" >> .env
-            echo "APP_ENV=production" >> .env
+            echo "APP_ENV=staging" >> .env
             echo "DB_HOST=${QA_RDS_HOST}" >> .env
             echo "DB_DATABASE=${QA_DB_NAME}" >> .env
             echo "DB_USERNAME=${QA_RDS_USERNAME}" >> .env
