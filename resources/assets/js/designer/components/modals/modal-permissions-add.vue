@@ -50,10 +50,19 @@
         <div class="form-group">
         <label for="PermissionsSelect" v-model="permission">{{permission}}</label>
         <select class="form-control" id="PermissionsSelect" v-model="permissionSelect">
-          <option v-for="select in typeSelectOptions">{{select}}</option>
+          <option v-for="select in permissionSelectOptions">{{select}}</option>
         </select>
         </div>
     </form>
+
+    <template slot="modal-footer">
+      <b-button :variant="secondary">
+        SAVE
+      </b-button>
+      <b-button :variant="btn-outline-secondary">
+        CANCEL
+      </b-button>
+    </template>
 
   </b-modal>
 </template>
@@ -64,31 +73,31 @@ export default {
     return {
       // form models here
       'casesStatus': "Cases Status",
-      'casesSelect': 1,
+      'casesSelect': "All",
       'casesSelectOptions':[
-        1,2,3,4,5
+        'All','Assigned','Unassigned','Completed','Paused'
       ],
       'targetTask': "Target Task",
-      'targetSelect': 1,
+      'targetSelect': 'All',
       'targetSelectOptions':[
-        1,2,3,4,5
+        'All','Task 1', 'Task 2'
       ],
       'groupOrUser':"Group Or User",
       'originTask':"Origin Task",
-      'originSelect': 1,
+      'originSelect': "All",
       'originSelectOptions':[
-        1,2,3,4,5
+        'All','Task 1', 'Task 2'
       ],
       'participationRequired':"Participation Required?",
       'type':"Type",
-      'typeSelect': 1,
+      'typeSelect': 'Form',
       'typeSelectOptions':[
-        1,2,3,4,5
+        'Form', 'Attachment', 'Status', 'Summary', 'Comments','Input Document', 'Output Document'
       ],
       'permission':"Permission",
-      'permissionSelect':1,
+      'permissionSelect': 'View',
       'permissionSelectOptions':[
-        1,2,3,4,5
+        'View', 'Block'
       ]
     }
   },
