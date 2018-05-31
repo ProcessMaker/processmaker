@@ -4,6 +4,7 @@
             @mousedown="mouseDown"
             @mouseup="mouseUp">
     </svg>
+  <component :is="item.key" :if=""></component>
 </template>
 
 
