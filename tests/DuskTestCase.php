@@ -19,7 +19,9 @@ abstract class DuskTestCase extends BaseTestCase
      */
     public static function prepare()
     {
-        static::startChromeDriver();
+        if(!env('CLOUD_BROWSER_TESTING', false)) {
+          static::startChromeDriver();
+        }
     }
 
     /**
@@ -29,15 +31,27 @@ abstract class DuskTestCase extends BaseTestCase
      */
     protected function driver()
     {
-        $options = (new ChromeOptions)->addArguments([
-            '--disable-gpu',
-            '--headless'
-        ]);
+        if(!env('SAUCELABS_BROWSER_TESTING', false)) {
+            $options = (new ChromeOptions)->addArguments([
+                '--disable-gpu',
+                '--headless'
+            ]);
 
-        return RemoteWebDriver::create(
-            'http://localhost:9515', DesiredCapabilities::chrome()->setCapability(
-                ChromeOptions::CAPABILITY, $options
-            )
-        );
+            return RemoteWebDriver::create(
+                'http://localhost:9515', DesiredCapabilities::chrome()->setCapability(
+                    ChromeOptions::CAPABILITY, $options
+                )
+            );
+        } else {
+            // We currently support SauceLabs based cloud testing
+            return RemoteWebDriver::create(
+                "https://" . env('SAUCELABS_USERNAME') . ":" . env('SAUCELABS_ACCESS_KEY') . "@ondemand.saucelabs.com:443/wd/hub",
+                [
+                    "platform" => env('SAUCELABS_PLATFORM', "Windows 7"), 
+                    "browserName" => env('SAUCELABS_BROWSER', "chrome"), 
+                    "version"=> env('SAUCELABS_BROWSER_VERSION', "67")
+                ]
+            );
+        }
     }
 }

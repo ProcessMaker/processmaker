@@ -138,6 +138,10 @@ jobs:
             echo "APP_URL=https://${BUILD_NAME}${QA_HOST_SUFFIX}" >> .env
             echo "PROXIES=*" >> .env
             echo "PROXIES_AWS=true" >> .env
+            # Put in configuration for SauceLabs Cloud based Browser Testing
+            echo "SAUCELABS_BROWSER_TESTING=true" >> .env
+            echo "SAUCELABS_USERNAME=${SAUCELABS_USERNAME}" >> .env
+            echo "SAUCELABS_ACCESS_KEY=${SAUCELABS_ACCESS_KEY}" >> .env
             # Generate unique app key
             php artisan key:generate --force
             # Copy over our test oauth keys. Regular install will create new ones
@@ -166,6 +170,47 @@ jobs:
             # Run php artisan migrate:fresh --seed to have a clean installed database in RDS
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "php ~/builds/$BUILD_NAME/artisan migrate:fresh --seed --force"
             echo "Deployed to https://${BUILD_NAME}.bpm4.qa.processmaker.net/"
+
+      - run:
+          name: "SauceLabs Browser Tests: Chrome"
+          environment:
+            DB_DATABASE: "circle_test"
+            RUN_MSSQL_TESTS: "true"
+            MSSQL_HOST: "127.0.0.1"
+          command: |
+            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "php ~/builds/$BUILD_NAME/artisan dusk 
+
+      - run:
+          name: "SauceLabs Browser Tests: Firefox"
+          environment:
+            SAUCELABS_BROWSER: "firefox",
+            SAUCELABS_PLATFORM: "Windows 10",
+            SAUCELABS_BROWSER_VERSION: "47.0"
+          command: |
+            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "php ~/builds/$BUILD_NAME/artisan dusk 
+
+      - run:
+          name: "SauceLabs Browser Tests: Edge"
+          environment:
+            SAUCELABS_BROWSER: "MicrosoftEdge",
+            SAUCELABS_PLATFORM: "Windows 10",
+            SAUCELABS_BROWSER_VERSION: "16.16299"
+          command: |
+            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "php ~/builds/$BUILD_NAME/artisan dusk 
+
+      - run:
+          name: "SauceLabs Browser Tests: Safari"
+          environment:
+            SAUCELABS_BROWSER: "safari",
+            SAUCELABS_PLATFORM: "macOS 10.13",
+            SAUCELABS_BROWSER_VERSION: "11.0"
+          command: |
+            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "php ~/builds/$BUILD_NAME/artisan dusk 
+
+
+
+
+
 
 
 
