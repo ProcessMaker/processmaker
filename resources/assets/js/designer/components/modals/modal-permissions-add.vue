@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="add-modal-permissions" ref="modal" size="lg" centered title="Create Permissions">
+  <b-modal id="add-modal-permissions" ref="modal" size="md" centered title="Create Permissions">
       <form>
         <div class="form-group">
           <label for="casesStatus" v-model="casesStatus">{{casesStatus}}</label>
