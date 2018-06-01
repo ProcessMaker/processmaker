@@ -45,13 +45,24 @@
             EventBus.$on(actions.designer.crown.hide().type, (value) => this.hide(value))
         },
         methods: {
+            /**
+             * Method for remove the Selected Shape
+             */
             remove (ev){
+                let action = actions.designer.shape.remove()
+                EventBus.$emit(action.type, action.payload)
             },
+            /**
+             * Method for show the crown
+             */
             show(conf){
                 this.x = conf.x
                 this.y = conf.y
                 this.visible = true
             },
+            /**
+             * Method for hide the crown
+             */
             hide(){
                 this.visible = false
             }

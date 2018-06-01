@@ -13,6 +13,7 @@ use ProcessMaker\Managers\ProcessFileManager;
 use ProcessMaker\Managers\ProcessManager;
 use ProcessMaker\Managers\ReportTableManager;
 use ProcessMaker\Managers\SchemaManager;
+use ProcessMaker\Managers\TaskAssigneeManager;
 use ProcessMaker\Managers\TaskManager;
 use ProcessMaker\Managers\TasksDelegationManager;
 use ProcessMaker\Managers\TriggerManager;
@@ -81,6 +82,11 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         $this->app->singleton('task.manager', function ($app) {
             return new TaskManager();
+        });
+
+
+        $this->app->singleton('task_assignee.manager', function ($app) {
+            return new TaskAssigneeManager();
         });
 
         $this->app->singleton('input_document.manager', function ($app) {

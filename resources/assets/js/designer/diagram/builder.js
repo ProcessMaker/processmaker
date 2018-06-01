@@ -78,7 +78,7 @@ export class Builder {
      */
     removeSelection() {
         _.forEach(this.selection, (el) => {
-            el.removeCrown();
+            el.hideCrown();
             el.remove();
         });
     }

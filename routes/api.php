@@ -109,14 +109,14 @@ Router::group([
         Router::delete('project/{process}/trigger/{trigger}', 'Designer\TriggerController@remove')->middleware('can:delete,ProcessMaker\Model\Trigger');
 
         //Assignee users o groups to Activity endpoints
-        Router::get('project/{process}/activity/{activity}/assignee', 'Designer\AssigneeController@getActivityAssignees')->middleware('can:read,ProcessMaker\Model\TaskUser');
-        Router::get('project/{process}/activity/{activity}/assignee/paged', 'Designer\AssigneeController@getActivityAssigneesPaged')->middleware('can:read,ProcessMaker\Model\TaskUser');
-        Router::get('project/{process}/activity/{activity}/assignee/all', 'Designer\AssigneeController@getActivityAssigneesAll')->middleware('can:read,ProcessMaker\Model\TaskUser');
-        Router::get('project/{process}/activity/{activity}/assignee/{assignee}', 'Designer\AssigneeController@getActivityAssignee')->middleware('can:read,ProcessMaker\Model\TaskUser');
-        Router::post('project/{process}/activity/{activity}/assignee', 'Designer\AssigneeController@store')->middleware('can:write,ProcessMaker\Model\TaskUser');
-        Router::delete('project/{process}/activity/{activity}/assignee/{assignee}', 'Designer\AssigneeController@remove')->middleware('can:delete,ProcessMaker\Model\TaskUser');
-        Router::get('project/{process}/activity/{activity}/available-assignee', 'Designer\AssigneeController@getActivityAvailable')->middleware('can:read,ProcessMaker\Model\TaskUser');
-        Router::get('project/{process}/activity/{activity}/available-assignee/paged', 'Designer\AssigneeController@getActivityAvailablePaged')->middleware('can:read,ProcessMaker\Model\TaskUser');
+        Router::get('process/{process}/activity/{activity}/assignee', 'Designer\AssigneeController@getActivityAssignees')->middleware('can:read,ProcessMaker\Model\TaskUser');
+        Router::get('process/{process}/activity/{activity}/assignee/paged', 'Designer\AssigneeController@getActivityAssigneesPaged')->middleware('can:read,ProcessMaker\Model\TaskUser');
+        Router::get('process/{process}/activity/{activity}/assignee/all', 'Designer\AssigneeController@getActivityAssigneesAll')->middleware('can:read,ProcessMaker\Model\TaskUser');
+        Router::get('process/{process}/activity/{activity}/assignee/{assignee}', 'Designer\AssigneeController@getActivityAssignee')->middleware('can:read,ProcessMaker\Model\TaskUser');
+        Router::post('process/{process}/activity/{activity}/assignee', 'Designer\AssigneeController@store')->middleware('can:write,ProcessMaker\Model\TaskUser');
+        Router::delete('process/{process}/activity/{activity}/assignee/{assignee}', 'Designer\AssigneeController@remove')->middleware('can:delete,ProcessMaker\Model\TaskUser');
+        Router::get('process/{process}/activity/{activity}/available-assignee', 'Designer\AssigneeController@getActivityAvailable')->middleware('can:read,ProcessMaker\Model\TaskUser');
+        Router::get('process/{process}/activity/{activity}/available-assignee/paged', 'Designer\AssigneeController@getActivityAvailablePaged')->middleware('can:read,ProcessMaker\Model\TaskUser');
 
         //Output Document endpoints
         Router::get('process/{process}/output-documents', 'Designer\OutputDocumentController@index')->middleware('can:read,ProcessMaker\Model\OutputDocument');
@@ -138,6 +138,13 @@ Router::group([
         //Task Delegations endpoints
         Router::get('tasks', 'Designer\TaskDelegationController@index')->middleware('can:read,ProcessMaker\Model\Delegation');
         Router::get('tasks/{task}', 'Designer\TaskDelegationController@show')->middleware('can:read,ProcessMaker\Model\Delegation');
+
+        //Task endpoints
+        Router::get('process/{process}/tasks', 'Designer\TaskController@index')->middleware('can:read,ProcessMaker\Model\Task');
+        Router::get('process/{process}/task/{task}', 'Designer\TaskController@show')->middleware('can:read,ProcessMaker\Model\Task');
+        Router::post('process/{process}/task', 'Designer\TaskController@store')->middleware('can:write,ProcessMaker\Model\Task');
+        Router::put('process/{process}/task/{task}', 'Designer\TaskController@update')->middleware('can:write,ProcessMaker\Model\Task');
+        Router::delete('process/{process}/task/{task}', 'Designer\TaskController@remove')->middleware('can:delete,ProcessMaker\Model\Task');
 
     });
 });
