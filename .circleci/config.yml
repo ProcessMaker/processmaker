@@ -205,7 +205,7 @@ jobs:
 
       - run:
           name: "Final QA Artisan DB Migration"
-          command: "ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "php ~/builds/$BUILD_NAME/artisan migrate:fresh --seed --force\""
+          command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"php ~/builds/$BUILD_NAME/artisan migrate:fresh --seed --force\""
 
 
 
