@@ -2,24 +2,21 @@
 
 namespace ProcessMaker\Facades;
 
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Facade;
 use ProcessMaker\Model\Task;
-use ProcessMaker\Model\TaskUser;
+use ProcessMaker\Model\Process;
 
 /**
- * Facade for our Task Assignee Manager
+ * Facade for our OutPut Document Manager
  *
  * @package ProcessMaker\Facades
  * @see \ProcessMaker\Managers\TaskAssigneeManager
  *
- * @method static array saveAssignee(Task $task , array $options)
- * @method static Paginator|LengthAwarePaginator loadAssignees(Task $task, array $options, boolean $paged = false)
- * @method static Paginator|LengthAwarePaginator loadAvailable(Task $activity, array $options, $paged = false)
- * @method static void removeAssignee(Task $activity, string $assignee)
- * @method static TaskUser getInformationAssignee(Task $activity, string $assignee)
- * @method static Paginator getInformationAllAssignee(Task $activity, array $options)
+ * @method static Paginator index(Process $process, array $options)
+ * @method static Task save(Process $process, array $data)
+ * @method static array update(Process $process, Task $task, array $data)
+ * @method static boolean|null remove(Task $task)
  *
  */
 class TaskAssigneeManager extends Facade
