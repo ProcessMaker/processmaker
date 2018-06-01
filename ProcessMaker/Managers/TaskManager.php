@@ -3,19 +3,14 @@
 namespace ProcessMaker\Managers;
 
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
-use Illuminate\Support\Facades\Validator;
-use ProcessMaker\Exception\DoesNotBelongToProcessException;
-use ProcessMaker\Exception\ValidationException;
 use ProcessMaker\Model\Task;
 use ProcessMaker\Model\Process;
-use Ramsey\Uuid\Uuid;
 
 class TaskManager
 {
 
     /**
-     * Get a list of All Task in a project.
+     * Get a list of All Task in a process.
      *
      * @param Process $process
      * @param array $options
@@ -39,7 +34,7 @@ class TaskManager
     }
 
     /**
-     * Create a new Task in a project.
+     * Create a new Task in a process.
      *
      * @param Process $process
      * @param array $data
@@ -59,7 +54,7 @@ class TaskManager
     }
 
     /**
-     * Update Task in a project.
+     * Update Task in a process.
      *
      * @param Process $process
      * @param Task $task
@@ -78,7 +73,7 @@ class TaskManager
     }
 
     /**
-     * Remove Task in a project.
+     * Remove Task in a process.
      *
      * @param Task $task
      *

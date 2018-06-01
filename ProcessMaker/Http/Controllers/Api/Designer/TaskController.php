@@ -14,7 +14,7 @@ use ProcessMaker\Transformers\TaskTransformer;
 class TaskController
 {
     /**
-     * Get a list of Tasks in a project.
+     * Get a list of Tasks in a process.
      *
      * @param Process $process
      * @param Request $request
@@ -35,7 +35,7 @@ class TaskController
     }
 
     /**
-     * Get a single Task in a project.
+     * Get a single Task in a process.
      *
      * @param Process $process
      * @param Task $task
@@ -50,7 +50,7 @@ class TaskController
     }
 
     /**
-     * Create a new Task in a project.
+     * Create a new Task in a process.
      *
      * @param Process $process
      * @param Request $request
@@ -63,14 +63,13 @@ class TaskController
             'title' => $request->input('title', ''),
             'description' => $request->input('description', '')
         ];
-        $data = array_merge($data, $this->formatData($request, ['type', 'assign_type', 'routing_type', 'priority_variable', 'assign_variable', 'group_variable', 'is_start_task', 'routing_screen_template', 'timing_control_configuration', 'self_service_trigger_id', 'self_service_timeout_configuration', 'custom_title', 'custom_description']));
 
-        $response = TaskManager::save($process, $data);
+        $response = TaskManager::save($process, array_merge($data, $request->all()));
         return fractal($response, new TaskTransformer())->respond(201);
     }
 
     /**
-     * Update a Task in a project.
+     * Update a Task in a process.
      *
      * @param Process $process
      * @param Task $task
@@ -82,16 +81,15 @@ class TaskController
     public function update(Process $process, Task $task, Request $request)
     {
         $this->belongsToProcess($process, $task);
-        $data = $this->formatData($request, ['title', 'description', 'type', 'assign_type', 'routing_type', 'priority_variable', 'assign_variable', 'group_variable', 'is_start_task', 'routing_screen_template', 'timing_control_configuration', 'self_service_trigger_id', 'self_service_timeout_configuration', 'custom_title', 'custom_description']);
 
-        if ($data) {
-            TaskManager::update($process, $task, $data);
+        if ($request->all()) {
+            TaskManager::update($process, $task, $request->all());
         }
         return response([], 200);
     }
 
     /**
-     * Delete a Task in a project.
+     * Delete a Task in a process.
      *
      * @param Process $process
      * @param Task $task
@@ -119,25 +117,6 @@ class TaskController
         if ($process->id !== $task->process_id) {
             Throw new DoesNotBelongToProcessException(__('The Task does not belong to this process.'));
         }
-    }
-
-    /**
-     * Request data
-     *
-     * @param Request $request
-     * @param array $fields
-     *
-     * @return array
-     */
-    private function formatData(Request $request, array $fields): array
-    {
-        $data = [];
-        foreach ($fields as $field) {
-            if ($request->has($field)) {
-                $data[$field] = $request->input($field);
-            }
-        }
-        return $data;
     }
 
 }
