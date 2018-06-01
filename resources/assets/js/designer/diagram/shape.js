@@ -1,4 +1,7 @@
 import actions from "../actions/"
+import Crown from "../components/crown.vue"
+import Vue from 'vue'
+import $ from 'jquery'
 import EventBus from "../lib/event-bus"
 
 /**
@@ -7,9 +10,11 @@ import EventBus from "../lib/event-bus"
 
 export class Shape {
     constructor(svg) {
-        this.svg = svg;
-        this.shape = this.svg.group();
-        this.selectionBorder = null;
+        this.svg = svg
+        this.shape = this.svg.group()
+        this.selectionBorder = null
+        this.dx = 0
+        this.dy = 0
     }
 
     /**
@@ -61,7 +66,9 @@ export class Shape {
      * @param dy
      */
     onMove() {
-        return (dx, dy) => {
+        return (dx, dy, x, y) => {
+            this.dx = dx
+            this.dy = dy
             this.shape.attr({
                 transform: this.shape.data("origTransform") + (this.shape.data("origTransform") ? "T" : "t") + [dx, dy]
             });
@@ -84,8 +91,22 @@ export class Shape {
      */
     onDragEnd() {
         return (ev) => {
+            this.config({
+                x: this.options.x + this.dx,
+                y: this.options.y + this.dy
+            })
+            this.dx = null
+            this.dy = null
             let action = actions.designer.drag.shape.end(ev)
             EventBus.$emit(action.type, action.payload)
         };
+    }
+
+    /**
+     * This method hides the crown of shape
+     */
+    hideCrown() {
+        let action = actions.designer.crown.hide()
+        EventBus.$emit(action.type, action.payload)
     }
 }

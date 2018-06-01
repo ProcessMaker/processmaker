@@ -15,6 +15,10 @@ export const designer = {
             in: x => x,
             out: x => x,
             reset: x => x
+        },
+        crown: {
+            show: x => x,
+            hide: x => x
         }
     }
 };

@@ -1,4 +1,6 @@
-import {Shape} from "../shape";
+import {Shape} from "../shape"
+import actions from "../../actions"
+import EventBus from "../../lib/event-bus"
 /**
  * Task Shape class
  */
@@ -43,5 +45,18 @@ export class TaskShape extends Shape {
             this.options.rounded
         ).attr(this.options.attr));
         this.shape.drag(this.onMove(), this.onDragStart(), this.onDragEnd())
+    }
+
+    /**
+     * Emit a message to crown to display
+     */
+    showCrown() {
+        let taskWidthDef = 105
+        let taskDyDef = 10
+        let action = actions.designer.crown.show({
+            y: this.options.y + this.svg.node.getBoundingClientRect().top - taskDyDef,
+            x: this.options.x + this.svg.node.getBoundingClientRect().left + taskWidthDef
+        })
+        EventBus.$emit(action.type, action.payload)
     }
 }

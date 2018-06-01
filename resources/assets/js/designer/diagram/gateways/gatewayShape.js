@@ -1,4 +1,6 @@
-import {Shape} from "../shape";
+import {Shape} from "../shape"
+import actions from "../../actions"
+import EventBus from "../../lib/event-bus"
 /**
  * Gateway Shape Class
  */
@@ -53,5 +55,19 @@ export class GatewayShape extends Shape {
         const base = this.getBase();
         this.shape.add(baseBorder, base);
         this.shape.drag(this.onMove(), this.onDragStart(), this.onDragEnd())
+    }
+
+    /**
+     * Emit a message to crown to display
+     */
+
+    showCrown() {
+        let gatWidthDefault = 30
+        let gatDyDefault = 10
+        let action = actions.designer.crown.show({
+            y: this.options.y + this.svg.node.getBoundingClientRect().top - gatDyDefault,
+            x: this.options.x + this.svg.node.getBoundingClientRect().left + gatWidthDefault
+        })
+        EventBus.$emit(action.type, action.payload)
     }
 }
