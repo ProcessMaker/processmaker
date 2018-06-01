@@ -5,9 +5,11 @@ namespace Tests\Feature\Api\Designer;
 use Faker\Factory as Faker;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
-use ProcessMaker\Model\Task;
+use ProcessMaker\Model\Group;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\Role;
+use ProcessMaker\Model\Task;
+use ProcessMaker\Model\TaskUser;
 use ProcessMaker\Model\User;
 use Tests\Feature\Api\ApiTestCase;
 
@@ -15,7 +17,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
 {
     use DatabaseTransactions;
 
-    const API_TEST_TASK = '/api/1.0/process/';
+    const API_TEST_ASSIGNEE = '/api/1.0/process/';
     const DEFAULT_PASS = 'password';
 
     /**
@@ -26,28 +28,25 @@ class TaskAssigneeManagerTest extends ApiTestCase
      * @var Process
      */
     protected $process;
+    /**
+     * @var Task
+     */
+    protected $activity;
+    /**
+     * @var Group
+     */
+    protected $group;
 
     const STRUCTURE = [
         'uid',
-        'title',
-        'description',
-        'type',
-        'assign_type',
-        'routing_type',
-        'priority_variable',
-        'assign_variable',
-        'group_variable',
-        'is_start_task',
-        'routing_screen_template',
-        'timing_control_configuration',
-        'self_service_trigger_id',
-        'self_service_timeout_configuration',
-        'custom_title',
-        'custom_description',
+        'name',
+        'lastname',
+        'username',
+        'type'
     ];
 
     /**
-     * Create user and process
+     * Create user, task,  process
      */
     protected function setUp(): void
     {
@@ -57,99 +56,299 @@ class TaskAssigneeManagerTest extends ApiTestCase
             'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
 
+        $this->auth($this->user->username, self::DEFAULT_PASS);
+
         $this->process = factory(Process::class)->create([
             'creator_user_id' => $this->user->id
         ]);
 
-        $this->auth($this->user->username, self::DEFAULT_PASS);
+        $this->activity = factory(Task::class)->create([
+            'process_id' => $this->process->id
+        ]);
+
+        $this->group = factory(Group::class)->create();
     }
 
     /**
-     * Test verify the parameter required for create Task
+     * Test if exists parameter type
      */
-    public function testNotCreatedForParameterRequired(): void
+    public function testStoreNotExistType(): void
     {
-        //Post should have the parameter required
-        $url = self::API_TEST_TASK . $this->process->uid . '/task';
-        $response = $this->api('POST', $url, []);
-
-        //validating the answer is an error
-        $response->assertStatus(422);
+        //validate non-existent Type definided
+        $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee';
+        $response = $this->api('POST', $url, [
+            'type' => 'OtherType',
+            'uid' => '123'
+        ]);
+        $response->assertStatus(404);
         $this->assertArrayHasKey('message', $response->json());
     }
 
     /**
-     * Create new Task correctly
+     * User not exist
      */
-    public function testCreateTask(): void
+    public function testStoreNotExistUser(): void
     {
-        //Post saved correctly
-        $faker = Faker::create();
-
-        $url = self::API_TEST_TASK . $this->process->uid . '/task';
+        //validate non-existent Type user
+        $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee';
         $response = $this->api('POST', $url, [
-            'title' => 'Title Task',
-            'description' => $faker->sentence(10),
-            'type' => $faker->randomElement([Task::TYPE_NORMAL, Task::TYPE_ADHOC, Task::TYPE_SUB_PROCESS, Task::TYPE_HIDDEN, Task::TYPE_GATEWAY, Task::TYPE_WEB_ENTRY_EVENT, Task::TYPE_END_MESSAGE_EVENT, Task::TYPE_START_MESSAGE_EVENT, Task::TYPE_INTERMEDIATE_THROW_MESSAGE_EVENT, Task::TYPE_INTERMEDIATE_CATCH_MESSAGE_EVENT, Task::TYPE_SCRIPT_TASK, Task::TYPE_START_TIMER_EVENT, Task::TYPE_INTERMEDIATE_CATCH_TIMER_EVENT, Task::TYPE_END_EMAIL_EVENT, Task::TYPE_INTERMEDIATE_THROW_EMAIL_EVENT, Task::TYPE_SERVICE_TASK]),
-            'assign_type' => $faker->randomElement([Task::ASSIGN_TYPE_BALANCED, Task::ASSIGN_TYPE_MANUAL, Task::ASSIGN_TYPE_EVALUATE, Task::ASSIGN_TYPE_REPORT_TO, Task::ASSIGN_TYPE_SELF_SERVICE, Task::ASSIGN_TYPE_STATIC_MI, Task::ASSIGN_TYPE_CANCEL_MI, Task::ASSIGN_TYPE_MULTIPLE_INSTANCE, Task::ASSIGN_TYPE_MULTIPLE_INSTANCE_VALUE_BASED]),
-            'routing_type' => $faker->randomElement([Task::ROUTE_TYPE_NORMAL, Task::ROUTE_TYPE_FAST, Task::ROUTE_TYPE_AUTOMATIC]),
-            'timing_control_configuration' => [
-                'duration' => 10,
-            ],
-            'self_service_timeout_configuration' => [
-                'self_service_timeout' => 10
-            ],
+            'type' => 'user',
+            'uid' => '123'
         ]);
-        //validating the answer is correct.
+        $response->assertStatus(404);
+        $this->assertArrayHasKey('message', $response->json());
+    }
+
+    /**
+     * Group not exist
+     */
+    public function testStoreNotExistGroup(): void
+    {
+        //validate non-existent Type group
+        $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee';
+        $response = $this->api('POST', $url, [
+            'type' => 'group',
+            'uid' => '123'
+        ]);
+        $response->assertStatus(404);
+        $this->assertArrayHasKey('message', $response->json());
+    }
+
+    /**
+     * Assignee correctly user
+     */
+    public function testStoreUser(): void
+    {
+        //validate non-existent Type user or group
+        $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee';
+        $response = $this->api('POST', $url, [
+            'type' => 'user',
+            'uid' => $this->user->uid
+        ]);
         $response->assertStatus(201);
-        //Check structure of response.
+    }
+
+    /**
+     * Assignee correctly Group
+     */
+    public function testStoreGroup(): void
+    {
+        //validate non-existent Type user or group
+        $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee';
+        $response = $this->api('POST', $url, [
+            'type' => 'group',
+            'uid' => $this->group->uid
+        ]);
+        $response->assertStatus(201);
+    }
+
+    /**
+     * User already assigned
+     */
+    public function testStoreUserAlreadyAssigned(): void
+    {
+        factory(TaskUser::class, 'user')->create([
+            'task_id' => $this->activity->id,
+            'user_id' => $this->user->id
+        ]);
+        //validate non-existent Type user or group
+        $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee';
+        $response = $this->api('POST', $url, [
+            'type' => 'user',
+            'uid' => $this->user->uid
+        ]);
+        $response->assertStatus(404);
+        $this->assertArrayHasKey('message', $response->json());
+    }
+
+    /**
+     * Group already assigned
+     */
+    public function testStoreGroupAlreadyAssigned(): void
+    {
+        factory(TaskUser::class, 'group')->create([
+            'task_id' => $this->activity->id,
+            'user_id' => $this->group->id
+        ]);
+        //validate non-existent Type user or group
+        $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee';
+        $response = $this->api('POST', $url, [
+            'type' => 'group',
+            'uid' => $this->group->uid
+        ]);
+        $response->assertStatus(404);
+        $this->assertArrayHasKey('message', $response->json());
+    }
+
+    /**
+     * The task not belongs to process.
+     */
+    public function testGetTriggerNotBelongToProcess(): void
+    {
+        //load assignee
+        $activity = factory(Task::class)->create();
+        $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $activity->uid . '/assignee';
+        $response = $this->api('GET', $url);
+        //Validate the answer is incorrect
+        $response->assertStatus(404);
+        $this->assertArrayHasKey('message', $response->json());
+    }
+
+    /**
+     * List users and groups assignee
+     */
+    public function testGetAllAssignee(): void
+    {
+        //load assignee
+        $total = Faker::create()->randomDigitNotNull;
+        factory(TaskUser::class, $total)->create([
+            'task_id' => $this->activity->id
+        ]);
+        $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee';
+        $response = $this->api('GET', $url);
+        //Validate the answer is correct
+        $response->assertStatus(200);
+
+        //verify structure paginate
+        $response->assertJsonStructure([
+            'data',
+            'meta',
+        ]);
+
+        //verify count of data
+        $this->assertEquals($total, $response->original->meta->total);
+        //Verify the structure
+        $response->assertJsonStructure(['*' => self::STRUCTURE], $response->json('data'));
+    }
+
+    /**
+     * Search a user assignee
+     */
+    public function testFilterUserAssigned(): void
+    {
+        $filter = 'User Filter';
+        factory(TaskUser::class, 'user')->create([
+            'task_id' => $this->activity->id,
+            'user_id' => factory(User::class)->create(['firstname' => $filter])->id
+        ]);
+        $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee?filter=' . urlencode($filter);
+        $response = $this->api('GET', $url);
+        $response->assertStatus(200);
+
+        //verify count of data
+        $this->assertEquals(1, $response->original->meta->total);
+        //Verify the structure
+        $response->assertJsonStructure(['*' => self::STRUCTURE], $response->json('data'));
+    }
+
+    /**
+     * Search a Group assignee
+     */
+    public function testFilterGroupAssigned(): void
+    {
+        $filter = 'Group Filter';
+        factory(TaskUser::class, 'group')->create([
+            'task_id' => $this->activity->id,
+            'user_id' => factory(Group::class)->create(['title' => $filter])->id
+        ]);
+        $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee?filter=' . urlencode($filter);
+        $response = $this->api('GET', $url);
+        $response->assertStatus(200);
+
+        //verify count of data
+        $this->assertEquals(1, $response->original->meta->total);
+        //Verify the structure
+        $response->assertJsonStructure(['*' => self::STRUCTURE], $response->json('data'));
+    }
+
+    /**
+     * Search without results
+     */
+    public function testFilterWithoutResult(): void
+    {
+        //Filter not exist results
+        $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee?filter=' . 'THERE_ARE_NO_RESULTS';
+        $response = $this->api('GET', $url);
+        $response->assertStatus(200);
+        $this->assertEquals(0, $response->original->meta->total);
+    }
+
+    /**
+     * Load information of user not exists
+     */
+    public function testGetInformationUserNoExists(): void
+    {
+        $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee/' . factory(User::class)->make()->uid;
+        $response = $this->api('GET', $url);
+        //Validate the answer is incorrect
+        $response->assertStatus(404);
+        $this->assertArrayHasKey('message', $response->json());
+    }
+
+    /**
+     * Load information of Group not exists
+     */
+    public function testGetInformationGroupNoExists(): void
+    {
+        $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee/' . factory(Group::class)->make()->uid;
+        $response = $this->api('GET', $url);
+        //Validate the answer is incorrect
+        $response->assertStatus(404);
+        $this->assertArrayHasKey('message', $response->json());
+    }
+
+    /**
+     * Load information of user assignee
+     */
+    public function testGetInformationUserAssignee(): void
+    {
+        factory(TaskUser::class, 'user')->create([
+            'task_id' => $this->activity->id,
+            'user_id' => $this->user->id
+        ]);
+        $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee/' . $this->user->uid;
+        $response = $this->api('GET', $url);
+        $response->assertStatus(200);
         $response->assertJsonStructure(self::STRUCTURE);
     }
 
     /**
-     * Can not create a Task with an existing title
+     * Load information of Group assignee
      */
-    public function testNotCreateTaskWithTitleExists(): Void
+    public function testGetInformationGroupAssignee(): void
     {
-        $title = 'Title Task';
-        factory(Task::class)->create([
-            'title' => $title,
-            'process_id' => $this->process->id
+        factory(TaskUser::class, 'group')->create([
+            'task_id' => $this->activity->id,
+            'user_id' => $this->group->id
         ]);
-
-        //Post title duplicated
-        $faker = Faker::create();
-        $url = self::API_TEST_TASK . $this->process->uid . '/task';
-        $response = $this->api('POST', $url, [
-            'title' => $title,
-            'description' => $faker->sentence(10),
-            'type' => $faker->randomElement([Task::TYPE_NORMAL, Task::TYPE_ADHOC, Task::TYPE_SUB_PROCESS, Task::TYPE_HIDDEN, Task::TYPE_GATEWAY, Task::TYPE_WEB_ENTRY_EVENT, Task::TYPE_END_MESSAGE_EVENT, Task::TYPE_START_MESSAGE_EVENT, Task::TYPE_INTERMEDIATE_THROW_MESSAGE_EVENT, Task::TYPE_INTERMEDIATE_CATCH_MESSAGE_EVENT, Task::TYPE_SCRIPT_TASK, Task::TYPE_START_TIMER_EVENT, Task::TYPE_INTERMEDIATE_CATCH_TIMER_EVENT, Task::TYPE_END_EMAIL_EVENT, Task::TYPE_INTERMEDIATE_THROW_EMAIL_EVENT, Task::TYPE_SERVICE_TASK]),
-            'assign_type' => $faker->randomElement([Task::ASSIGN_TYPE_BALANCED, Task::ASSIGN_TYPE_MANUAL, Task::ASSIGN_TYPE_EVALUATE, Task::ASSIGN_TYPE_REPORT_TO, Task::ASSIGN_TYPE_SELF_SERVICE, Task::ASSIGN_TYPE_STATIC_MI, Task::ASSIGN_TYPE_CANCEL_MI, Task::ASSIGN_TYPE_MULTIPLE_INSTANCE, Task::ASSIGN_TYPE_MULTIPLE_INSTANCE_VALUE_BASED]),
-            'routing_type' => $faker->randomElement([Task::ROUTE_TYPE_NORMAL, Task::ROUTE_TYPE_FAST, Task::ROUTE_TYPE_AUTOMATIC])
-        ]);
-        $response->assertStatus(422);
-        $this->assertArrayHasKey('message', $response->json());
+        $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee/' . $this->group->uid;
+        $response = $this->api('GET', $url);
+        $response->assertStatus(200);
+        $response->assertJsonStructure(self::STRUCTURE);
     }
 
-
     /**
-     * Get a list of Task in process without query parameters.
+     * List users assignee
      */
-    public function testListTask(): void
+    public function testGetInformationAllAssignee(): void
     {
-        //add Task to process
-        factory(Task::class, 10)->create([
-            'process_id' => $this->process->id
+        //load assignee
+        $total = Faker::create()->randomDigitNotNull;
+        $previous = TaskUser::where('task_id', $this->activity->id)->count() + 1;
+        factory(TaskUser::class, 'user', $total)->create([
+            'task_id' => $this->activity->id
         ]);
+        $group = factory(Group::class)->create();
 
-        //List Task
-        $url = self::API_TEST_TASK . $this->process->uid . '/tasks';
+        $group->users()->attach(factory(User::class, $total)->create());
+        factory(TaskUser::class, 'group')->create([
+            'task_id' => $this->activity->id,
+            'user_id' => $group->id
+        ]);
+        $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee/all';
         $response = $this->api('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
-        //verify count of data
-        $this->assertEquals(10, $response->original->meta->total);
-
 
         //verify structure paginate
         $response->assertJsonStructure([
@@ -162,125 +361,142 @@ class TaskAssigneeManagerTest extends ApiTestCase
     }
 
     /**
-     * Get a list of Task with parameters
+     * Search a user information assignee
      */
-    public function testListTaskWithQueryParameter(): void
+    public function testFilterInformationUserAssigned(): void
     {
-        $title = 'search Title Task';
-        factory(Task::class)->create([
-            'title' => $title,
-            'process_id' => $this->process->id
+        $filter = 'User Filter';
+        factory(TaskUser::class, 'user', 10)->create([
+            'task_id' => $this->activity->id,
         ]);
-
-        //List Document with filter option
-        $perPage = Faker::create()->randomDigitNotNull;
-        $query = '?current_page=1&per_page=' . $perPage . '&sort_by=description&sort_order=DESC&filter=' . urlencode($title);
-        $url = self::API_TEST_TASK . $this->process->uid . '/tasks?' . $query;
+        factory(TaskUser::class, 'user')->create([
+            'task_id' => $this->activity->id,
+            'user_id' => factory(User::class)->create(['firstname' => $filter])->id
+        ]);
+        $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee/all?filter=' . urlencode($filter);
         $response = $this->api('GET', $url);
-        //Validate the answer is correct
         $response->assertStatus(200);
-        //verify structure paginate
-        $response->assertJsonStructure([
-            'data',
-            'meta',
-        ]);
-        //verify response in meta
+
+        //verify count of data
         $this->assertEquals(1, $response->original->meta->total);
-        $this->assertEquals(1, $response->original->meta->count);
-        $this->assertEquals($perPage, $response->original->meta->per_page);
-        $this->assertEquals(1, $response->original->meta->current_page);
-        $this->assertEquals(1, $response->original->meta->total_pages);
-        $this->assertEquals($title, $response->original->meta->filter);
-        $this->assertEquals('description', $response->original->meta->sort_by);
-        $this->assertEquals('DESC', $response->original->meta->sort_order);
-        //verify structure of model
+        //Verify the structure
         $response->assertJsonStructure(['*' => self::STRUCTURE], $response->json('data'));
     }
 
     /**
-     * Get a Task of a project.
+     * Search without results
      */
-    public function testGetTask(): void
+    public function testInformationFilterWithoutResult(): void
     {
-        //load Task
-        $url = self::API_TEST_TASK . $this->process->uid . '/task/' . factory(Task::class)->create(['process_id' => $this->process->id])->uid;
+        //Filter not exist results
+        $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee/all?filter=' . 'THERE_ARE_NO_RESULTS';
         $response = $this->api('GET', $url);
-        //Validate the answer is correct
         $response->assertStatus(200);
-
-        //verify structure paginate
-        $response->assertJsonStructure(self::STRUCTURE);
+        $this->assertEquals(0, $response->original->meta->total);
     }
 
     /**
-     * Task not belong to process.
+     * Search a user's information assignee
      */
-    public function testGetTaskNotBelongProcess(): void
+    public function testUsersGroupsAvailable(): void
     {
-        $task = factory(Task::class)->create();
-        $url = self::API_TEST_TASK . $this->process->uid . '/task/' . $task->uid;
+        factory(TaskUser::class)->create([
+            'task_id' => $this->activity->id
+        ]);
+        factory(Group::class, 10 - Group::All()->count())->create();
+        factory(User::class, 10 - User::All()->count())->create();
+        $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/available-assignee';
         $response = $this->api('GET', $url);
-        //Validate the answer is incorrect
+        $response->assertStatus(200);
+
+        //verify count of data
+        $this->assertEquals(19, $response->original->meta->total);
+        //Verify the structure
+        $response->assertJsonStructure(['*' => self::STRUCTURE], $response->json('data'));
+    }
+
+    /**
+     * Search a user information assignee
+     */
+    public function testUserAvailable(): void
+    {
+        factory(Group::class, 10 - Group::All()->count())->create();
+        factory(User::class, 10 - User::All()->count())->create();
+        $filter = 'Test User Available';
+        factory(User::class)->create([
+            'firstname' => $filter
+        ]);
+        $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/available-assignee?filter=' . urlencode($filter);
+        $response = $this->api('GET', $url);
+        $response->assertStatus(200);
+
+        //verify count of data
+        $this->assertEquals(1, $response->original->meta->total);
+        //Verify the structure
+        $response->assertJsonStructure(['*' => self::STRUCTURE], $response->json('data'));
+    }
+
+    /**
+     * Search a Group information assignee
+     */
+    public function testGroupAvailable(): void
+    {
+        factory(Group::class, 10 - Group::All()->count())->create();
+        factory(User::class, 10 - User::All()->count())->create();
+        $filter = 'Test Group Available';
+        factory(Group::class)->create([
+            'title' => $filter
+        ]);
+        $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/available-assignee?filter=' . urlencode($filter);
+        $response = $this->api('GET', $url);
+        $response->assertStatus(200);
+
+        //verify count of data
+        $this->assertEquals(1, $response->original->meta->total);
+        //Verify the structure
+        $response->assertJsonStructure(['*' => self::STRUCTURE], $response->json('data'));
+    }
+
+    /**
+     * Remove assignee of Activity
+     */
+    public function testRemoveNotExistsAssignee(): void
+    {
+        //Other User row not exist
+        $assignee = factory(User::class)->make();
+        $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee/' . $assignee->uid;
+        $response = $this->api('DELETE', $url);
         $response->assertStatus(404);
     }
 
     /**
-     * Update Task parameter are required
+     * Delete User assignee in process
      */
-    public function testUpdateTaskParametersRequired(): void
+    public function testDeleteUserAssignee(): void
     {
-        //Post should have the parameter title
-        $url = self::API_TEST_TASK . $this->process->uid . '/task/' . factory(Task::class)->create(['process_id' => $this->process->id])->uid;
-        $response = $this->api('PUT', $url, [
-            'title' => '',
-            'description' => ''
+        factory(TaskUser::class, 'user')->create([
+            'task_id' => $this->activity->id,
+            'user_id' => $this->user->id
         ]);
-        //Validate the answer is incorrect
-        $response->assertStatus(422);
-        $this->assertArrayHasKey('message', $response->json());
-    }
-
-    /**
-     * Update Task in process successfully
-     */
-    public function testUpdateTask(): void
-    {
-        //Post saved success
-        $faker = Faker::create();
-        $url = self::API_TEST_TASK . $this->process->uid . '/task/' . factory(Task::class)->create(['process_id' => $this->process->id])->uid;
-        $response = $this->api('PUT', $url, [
-            'title' => $faker->sentence(2),
-            'description' => $faker->sentence(5),
-            'type' => $faker->randomElement([Task::TYPE_NORMAL, Task::TYPE_ADHOC, Task::TYPE_SUB_PROCESS, Task::TYPE_HIDDEN, Task::TYPE_GATEWAY, Task::TYPE_WEB_ENTRY_EVENT, Task::TYPE_END_MESSAGE_EVENT, Task::TYPE_START_MESSAGE_EVENT, Task::TYPE_INTERMEDIATE_THROW_MESSAGE_EVENT, Task::TYPE_INTERMEDIATE_CATCH_MESSAGE_EVENT, Task::TYPE_SCRIPT_TASK, Task::TYPE_START_TIMER_EVENT, Task::TYPE_INTERMEDIATE_CATCH_TIMER_EVENT, Task::TYPE_END_EMAIL_EVENT, Task::TYPE_INTERMEDIATE_THROW_EMAIL_EVENT, Task::TYPE_SERVICE_TASK]),
-            'assign_type' => $faker->randomElement([Task::ASSIGN_TYPE_BALANCED, Task::ASSIGN_TYPE_MANUAL, Task::ASSIGN_TYPE_EVALUATE, Task::ASSIGN_TYPE_REPORT_TO, Task::ASSIGN_TYPE_SELF_SERVICE, Task::ASSIGN_TYPE_STATIC_MI, Task::ASSIGN_TYPE_CANCEL_MI, Task::ASSIGN_TYPE_MULTIPLE_INSTANCE, Task::ASSIGN_TYPE_MULTIPLE_INSTANCE_VALUE_BASED]),
-            'routing_type' => $faker->randomElement([Task::ROUTE_TYPE_NORMAL, Task::ROUTE_TYPE_FAST, Task::ROUTE_TYPE_AUTOMATIC])
-        ]);
-        //Validate the answer is correct
-        $response->assertStatus(200);
-    }
-
-    /**
-     * Delete Task in process
-     */
-    public function testDeleteTask(): void
-    {
-        //Remove Task
-        $url = self::API_TEST_TASK . $this->process->uid . '/task/' . factory(Task::class)->create(['process_id' => $this->process->id])->uid;
+        $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee/' . $this->user->uid;
         $response = $this->api('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(204);
     }
 
     /**
-     * Delete Task in process
+     * Delete Group assignee in process
      */
-    public function testDeleteTaskNotExist(): void
+    public function testDeleteGroupAssignee(): void
     {
-        //task not exist
-        $url = self::API_TEST_TASK . $this->process->uid . '/task/' . factory(Task::class)->make()->uid;
+        factory(TaskUser::class, 'group')->create([
+            'task_id' => $this->activity->id,
+            'user_id' => $this->group->id
+        ]);
+        $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee/' . $this->group->uid;
         $response = $this->api('DELETE', $url);
         //Validate the answer is correct
-        $response->assertStatus(404);
+        $response->assertStatus(204);
     }
 
 }
