@@ -34,24 +34,6 @@ class AssigneeController extends Controller
     }
 
     /**
-     * List the users and groups assigned to a task paged
-     *
-     * @param Process $process
-     * @param Task $activity
-     * @param Request $request
-     *
-     * @return ResponseFactory|Response
-     * @throws DoesNotBelongToProcessException
-     */
-    public function getActivityAssigneesPaged(Process $process, Task $activity, Request $request)
-    {
-        $this->belongsToProcess($process, $activity);
-        $options = $this->verifyOptions($request);
-        $response = TaskAssigneeManager::loadAssignees($activity, $options, true);
-        return fractal($response, new AssigneeTransformer())->respond(200);
-    }
-
-    /**
      * Assign a user or group to a task.
      *
      * @param Process $process
@@ -86,7 +68,7 @@ class AssigneeController extends Controller
     {
         $this->belongsToProcess($process, $activity);
         TaskAssigneeManager::removeAssignee($activity, $assignee);
-        return response('', 200);
+        return response('', 204);
     }
 
     /**
@@ -163,13 +145,13 @@ class AssigneeController extends Controller
     }
 
     /**
-    * Validate if Activity belong to process.
-    *
-    * @param Process $process
-    * @param Task $activity
-    *
-    * @throws DoesNotBelongToProcessException|void
-    */
+     * Validate if Activity belong to process.
+     *
+     * @param Process $process
+     * @param Task $activity
+     *
+     * @throws DoesNotBelongToProcessException|void
+     */
     private function belongsToProcess(Process $process, Task $activity): void
     {
         if ($process->id !== $activity->process_id) {
@@ -178,4 +160,3 @@ class AssigneeController extends Controller
     }
 
 }
-
