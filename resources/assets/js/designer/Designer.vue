@@ -5,7 +5,8 @@
         <div id="designer-subcontainer">
             <toolbar ref="toolbar"></toolbar>
             <div class="canvas-container">
-                <designer ref="canvas"></designer>
+                <crown ref="crown"></crown>
+                <svgcanvas ref="svgcanvas"></svgcanvas>
             </div>
             <designerobjectsmenu></designerobjectsmenu>
         </div>
@@ -19,7 +20,7 @@ import EventBus from "./lib/event-bus";
 // Import our top-level components
 
 // Designer is our overall canvas tool
-import designer from "./components/designer";
+import svgcanvas from "./components/svgcanvas";
 
 // This is our toolbar palette
 import toolbar from "./components/toolbar";
@@ -33,9 +34,13 @@ import designerobjectsmenu from "./components/designer-objects-menu";
 // @todo Figure out a way to add these modals to the properties of components
 import modalPermissionsAdd from "./components/modals/modal-permissions-add";
 
+// This is out Cron for every shape
+import crown from "./components/crown";
+
+
 export default {
   components: {
-    designer,
+    svgcanvas,
     toolbar,
     toptoolbar,
     designerobjectsmenu,
