@@ -8,7 +8,7 @@ use ProcessMaker\Model\User;
 class InputDocumentPolicy
 {
     /**
-     * Determine if the trigger can be read by the user.
+     * Determine if the Input Document can be read by the user.
      *
      * @param User $user
      * @return bool
@@ -19,7 +19,7 @@ class InputDocumentPolicy
     }
 
     /**
-     * Determine if the trigger can be written by the user.
+     * Determine if the Input Document can be written by the user.
      *
      * @param User $user
      * @return bool
@@ -30,7 +30,7 @@ class InputDocumentPolicy
     }
 
     /**
-     * Determine if the trigger can be deleted by the user.
+     * Determine if the Input Document can be deleted by the user.
      *
      * @param User $user
      * @return bool

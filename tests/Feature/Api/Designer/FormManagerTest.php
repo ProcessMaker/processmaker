@@ -4,7 +4,6 @@ namespace Tests\Feature\Api\Designer;
 
 use Faker\Factory as Faker;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\Form;
 use ProcessMaker\Model\Process;
@@ -67,6 +66,21 @@ class FormManagerTest extends ApiTestCase
         $response->assertStatus(422);
         $this->assertArrayHasKey('message', $response->json());
     }
+    /**
+     * Create form successfully
+     */
+    public function testCreateForm(): Void
+    {
+        //Post title duplicated
+        $faker = Faker::create();
+        $url = self::API_TEST_FORM . $this->process->uid . '/form';
+        $response = $this->api('POST', $url, [
+            'title' => 'Title Form',
+            'description' => $faker->sentence(10)
+        ]);
+        $response->assertStatus(201);
+    }
+
 
     /**
      * Can not create a form with an existing title
