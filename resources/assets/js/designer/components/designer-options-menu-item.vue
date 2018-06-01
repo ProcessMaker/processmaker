@@ -1,9 +1,9 @@
 <template>
 
   <a href="#" @click="titleClick" class="object-menu-item">
-      {{title}}
-      <i v-if="buttonvisible == false" class="plus-icon fas fa-plus-circle"></i>
-      <button @click.stop="buttonClick" type="button" class="add-button btn btn-secondary btn-sm float-right"><i class="fas fa-plus fa-sm"></i> Add</button>
+    {{title}}
+    <i v-if="buttonvisible == false" class="plus-icon fas fa-plus-circle"></i>
+    <button @click.stop="buttonClick" type="button" class="add-button btn btn-secondary btn-sm float-right"><i class="fas fa-plus fa-sm"></i> Add</button>
   </a>
 
 </template>
