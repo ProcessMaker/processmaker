@@ -7,6 +7,7 @@
                 <crown ref="crown"></crown>
                 <svgcanvas ref="svgcanvas"></svgcanvas>
             </div>
+            <designerobjectsmenu></designerobjectsmenu>
         </div>
     </div>
 </template>
@@ -24,15 +25,18 @@ import toolbar from "./components/toolbar";
 // This is our top toolbar with process title and process options
 import toptoolbar from "./components/toptoolbar";
 
+// This is our objects menu with nested object-menu items components
+import designerobjectsmenu from "./components/designer-objects-menu";
+
 // This is out Cron for every shape
 import crown from "./components/crown";
-
 
 export default {
   components: {
     svgcanvas,
     toolbar,
     toptoolbar,
+    designerobjectsmenu,
     crown
   }
 };
@@ -68,5 +72,3 @@ export default {
   }
 }
 </style>
-
-

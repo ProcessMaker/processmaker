@@ -29,7 +29,7 @@ jobs:
           # Set BUILD_NAME environment variable to a filesystem friendly name and store it in our bash environment
           command: |
             echo 'export BUILD_NAME=$(echo "$CIRCLE_BRANCH" | tr /. -)' >> $BASH_ENV
-            echo 'export QA_DB_NAME=$(echo "bpm4$CIRCLE_BRANCH" | tr -d /.)' >> $BASH_ENV
+            echo 'export QA_DB_NAME=$(echo "bpm4$CIRCLE_BRANCH" | tr -d /.-)' >> $BASH_ENV
             source $BASH_ENV
 
       - run:
