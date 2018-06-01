@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="add-modal-permissions" ref="modal" size="md" centered title="Create Permissions">
+  <b-modal ref="modal" size="md" centered title="Create Permissions">
       <form>
         <div class="form-group">
           <label for="casesStatus" v-model="casesStatus">{{casesStatus}}</label>
@@ -108,8 +108,5 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-  #add-modal-permissions >>> .modal-dialog {
-    width: 464px;
-    height: 573px;
-  }
+
 </style>
