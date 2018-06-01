@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1527865372107" clover="3.2.0">
-  <project timestamp="1527865372108" name="All files">
+<coverage generated="1527866854201" clover="3.2.0">
+  <project timestamp="1527866854201" name="All files">
     <metrics statements="242" coveredstatements="221" conditionals="43" coveredconditionals="29" methods="75" coveredmethods="61" elements="360" coveredelements="311" complexity="0" loc="242" ncloc="242" packages="10" files="20" classes="20">
       <package name="jest">
         <metrics statements="6" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
@@ -38,7 +38,7 @@
           <line num="17" count="1" type="stmt"/>
           <line num="20" count="4" type="stmt"/>
           <line num="21" count="2" type="stmt"/>
-          <line num="24" count="10" type="stmt"/>
+          <line num="24" count="11" type="stmt"/>
         </file>
         <file name="index.js" path="/opt/processmaker/resources/assets/js/designer/actions/index.js">
           <metrics statements="0" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
