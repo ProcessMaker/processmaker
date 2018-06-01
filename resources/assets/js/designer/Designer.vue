@@ -37,7 +37,6 @@ import modalPermissionsAdd from "./components/modals/modal-permissions-add";
 // This is out Cron for every shape
 import crown from "./components/crown";
 
-
 export default {
   components: {
     svgcanvas,

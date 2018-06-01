@@ -5,7 +5,7 @@ namespace ProcessMaker\Http\Controllers\Api\Designer;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use ProcessMaker\Exception\DoesNotBelongToProcessException;
-use ProcessMaker\Facades\TaskManager;
+use ProcessMaker\Facades\TaskAssigneeManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\Task;
@@ -28,7 +28,7 @@ class AssigneeController extends Controller
     {
         $this->belongsToProcess($process, $activity);
         $options = $this->verifyOptions($request);
-        $response = TaskManager::loadAssignees($activity, $options);
+        $response = TaskAssigneeManager::loadAssignees($activity, $options);
 
         return fractal($response, new AssigneeTransformer())->respond(200);
     }
@@ -47,7 +47,7 @@ class AssigneeController extends Controller
     {
         $this->belongsToProcess($process, $activity);
         $options = $this->verifyOptions($request);
-        $response = TaskManager::loadAssignees($activity, $options, true);
+        $response = TaskAssigneeManager::loadAssignees($activity, $options, true);
         return fractal($response, new AssigneeTransformer())->respond(200);
     }
 
@@ -68,7 +68,7 @@ class AssigneeController extends Controller
             'uid' => $request->input('uid', ''),
             'type' => $request->input('type', ''),
         ];
-        $response = TaskManager::saveAssignee($activity, $options);
+        $response = TaskAssigneeManager::saveAssignee($activity, $options);
         return response('', 201);
     }
 
@@ -85,7 +85,7 @@ class AssigneeController extends Controller
     public function remove(Process $process, Task $activity, $assignee)
     {
         $this->belongsToProcess($process, $activity);
-        TaskManager::removeAssignee($activity, $assignee);
+        TaskAssigneeManager::removeAssignee($activity, $assignee);
         return response('', 200);
     }
 
@@ -102,7 +102,7 @@ class AssigneeController extends Controller
     public function getActivityAssignee(Process $process, Task $activity, $assignee)
     {
         $this->belongsToProcess($process, $activity);
-        $response = TaskManager::getInformationAssignee($activity, $assignee);
+        $response = TaskAssigneeManager::getInformationAssignee($activity, $assignee);
         return fractal($response, new AssigneeTransformer())->respond(200);
     }
 
@@ -121,7 +121,7 @@ class AssigneeController extends Controller
         $this->belongsToProcess($process, $activity);
         $options = $this->verifyOptions($request);
 
-        $response = TaskManager::getInformationAllAssignee($activity, $options);
+        $response = TaskAssigneeManager::getInformationAllAssignee($activity, $options);
         return fractal($response, new AssigneeTransformer())->respond(200);
     }
 
@@ -140,7 +140,7 @@ class AssigneeController extends Controller
         $this->belongsToProcess($process, $activity);
         $options = $this->verifyOptions($request);
 
-        $response = TaskManager::loadAvailable($activity, $options);
+        $response = TaskAssigneeManager::loadAvailable($activity, $options);
         return fractal($response, new AssigneeTransformer())->respond(200);
     }
 
@@ -159,7 +159,7 @@ class AssigneeController extends Controller
         $this->belongsToProcess($process, $activity);
         $options = $this->verifyOptions($request);
 
-        $response = TaskManager::loadAvailable($activity, $options, true);
+        $response = TaskAssigneeManager::loadAvailable($activity, $options, true);
         return fractal($response, new AssigneeTransformer())->respond(200);
     }
 

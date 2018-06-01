@@ -29,7 +29,7 @@ jobs:
           # Set BUILD_NAME environment variable to a filesystem friendly name and store it in our bash environment
           command: |
             echo 'export BUILD_NAME=$(echo "$CIRCLE_BRANCH" | tr /. -)' >> $BASH_ENV
-            echo 'export QA_DB_NAME=$(echo "bpm4$CIRCLE_BRANCH" | tr -d /.)' >> $BASH_ENV
+            echo 'export QA_DB_NAME=$(echo "bpm4$CIRCLE_BRANCH" | tr -d /.-)' >> $BASH_ENV
             source $BASH_ENV
 
       - run:
@@ -130,7 +130,7 @@ jobs:
             echo "APP_KEY=" >> .env
             echo "APP_DEBUG=TRUE" >> .env
             echo "APP_NAME=ProcessMaker" >> .env
-            echo "APP_ENV=production" >> .env
+            echo "APP_ENV=staging" >> .env
             echo "DB_HOST=${QA_RDS_HOST}" >> .env
             echo "DB_DATABASE=${QA_DB_NAME}" >> .env
             echo "DB_USERNAME=${QA_RDS_USERNAME}" >> .env
@@ -138,6 +138,10 @@ jobs:
             echo "APP_URL=https://${BUILD_NAME}${QA_HOST_SUFFIX}" >> .env
             echo "PROXIES=*" >> .env
             echo "PROXIES_AWS=true" >> .env
+            # Put in configuration for SauceLabs Cloud based Browser Testing
+            echo "SAUCELABS_BROWSER_TESTING=true" >> .env
+            echo "SAUCELABS_USERNAME=${SAUCELABS_USERNAME}" >> .env
+            echo "SAUCELABS_ACCESS_KEY=${SAUCELABS_ACCESS_KEY}" >> .env
             # Generate unique app key
             php artisan key:generate --force
             # Copy over our test oauth keys. Regular install will create new ones
@@ -166,6 +170,47 @@ jobs:
             # Run php artisan migrate:fresh --seed to have a clean installed database in RDS
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "php ~/builds/$BUILD_NAME/artisan migrate:fresh --seed --force"
             echo "Deployed to https://${BUILD_NAME}.bpm4.qa.processmaker.net/"
+
+      - run:
+          name: "SauceLabs Browser Tests: Chrome"
+          command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"cd ~/builds/$BUILD_NAME && php artisan dusk\"" 
+          environment:
+            DB_DATABASE: "circle_test"
+            RUN_MSSQL_TESTS: "true"
+            MSSQL_HOST: "127.0.0.1"
+
+      - run:
+          name: "SauceLabs Browser Tests: Firefox"
+          command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk\"" 
+          environment:
+            SAUCELABS_BROWSER: "firefox"
+            SAUCELABS_PLATFORM: "Windows 10"
+            SAUCELABS_BROWSER_VERSION: "47.0"
+
+      - run:
+          name: "SauceLabs Browser Tests: Edge"
+          command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk\"" 
+          environment:
+            SAUCELABS_BROWSER: "MicrosoftEdge"
+            SAUCELABS_PLATFORM: "Windows 10"
+            SAUCELABS_BROWSER_VERSION: "16.16299"
+
+      - run:
+          name: "SauceLabs Browser Tests: Safari"
+          command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk\"" 
+          environment:
+            SAUCELABS_BROWSER: "safari"
+            SAUCELABS_PLATFORM: "macOS 10.13"
+            SAUCELABS_BROWSER_VERSION: "11.0"
+
+      - run:
+          name: "Final QA Artisan DB Migration"
+          command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"php ~/builds/$BUILD_NAME/artisan migrate:fresh --seed --force\""
+
+
+
+
+
 
 
 

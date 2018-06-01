@@ -1,6 +1,6 @@
 <template>
   <div class="objects-menu">
-    <div class="object-menu-title">Process Objects</div>
+    <div class="object-menu-title"><span class="menu-title-span">Process Objects</span></div>
     <div class="object-menu-items-container">
     <designer-options-menu-item @title-click="handleItemClick(item)" @button-click="handleAddClick(item)" v-for="(item, index) in menuItems" :key="item.id" :title="item.title" data-target="#item.key" data-toggle="modal"></designer-options-menu-item>
     </div>
@@ -19,55 +19,78 @@ export default {
       menuItems: [
         {
           title: "Variables",
-          key: 'variables'
+          key: 'variables',
+          hasadd: true,
         },
         {
           title: "Message Types",
-          key: 'message-types'
+          key: 'message-types',
+          hasadd: true,
         },
         {
           title: "Forms",
-          key: 'forms'
+          key: 'forms',
+          hasadd: true,
         },
         {
           title: "Input Documents",
-          key: 'input-documents'
+          key: 'input-documents',
+          hasadd: true,
         },
         {
           title: "Output Documents",
-          key: 'output-documents'
+          key: 'output-documents',
+          hasadd: true,
         },
         {
           title: "Triggers",
-          key: 'triggers'
+          key: 'triggers',
+          hasadd: true,
         },
         {
           title: "Report Tables",
-          key: 'report-tables'
+          key: 'report-tables',
+          hasadd: true,
         },
         {
           title: "Database Connections",
-          key: 'database-connections'
+          key: 'database-connections',
+          hasadd: true,
         },
         {
           title: "Templates",
-          key: 'templates'
+          key: 'templates',
+          hasadd: true,
         },
         {
           title: "Public Files",
-          key: 'public-files'
+          key: 'public-files',
+          hasadd: true,
         },
         {
           title: "Permissions",
-          key: 'permissions'
+          key: 'permissions',
+          hasadd: true,
         },
         {
           title: "Case Tracker",
-          key: 'case-tracker'
+          key: 'case-tracker',
+          hasadd: false,
         },
         {
-          title: "Supervisiors",
-          key: 'supervisors'
+          title: "Supervisors",
+          key: 'supervisors',
+          hasadd: false,
+        },
+        {
+          title: "Task List View",
+          key: 'task-list-view',
+          hasadd: false,
+        },
+        {
+          title: "Request Summary",
+          key: 'request-summary',
+          hasadd: false,
         }
       ]
     };
@@ -98,14 +121,16 @@ export default {
     min-height: 32px;
     max-height: 32px;
     line-height: 32px;
-    background-color: rgb(174, 183, 190);
+    background-color: #b6bfc6;
     font-size: 10px;
     text-transform: uppercase;
     font-weight: bold;
     color: white;
     padding-left: 16px;
   }
-
+  .menu-title-span{
+    margin-left: -9px;
+  }
   .object-menu-items-container {
     overflow: auto;
     padding: 4px;

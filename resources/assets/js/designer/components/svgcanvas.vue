@@ -53,8 +53,10 @@
             EventBus.$on(actions.designer.drag.toolbar.end().type, (value) => this.createElement(value))
             EventBus.$on(actions.designer.drag.shape.start().type, this.onDragStartShape())
             EventBus.$on(actions.designer.drag.shape.end().type, this.onDragEndShape())
-
-       },
+            // Listen for opening an add dialog
+            EventBus.$on('open-add-dialog', this.openAddDialog);
+            EventBus.$on(actions.designer.shape.remove().type, (value) => this.removeElement(value))
+        },
         methods: {
            loadXML(xml = null) {
                 let that = this;
@@ -153,6 +155,13 @@
                 return (ev) => {
                     this.pan.shapeDrag = false;
                 }
+            },
+            /**
+             * Listener for remove element of the canvas
+             * @param e
+             */
+            removeElement (e){
+                this.builder.removeSelection()
             }
         },
         mounted() {
