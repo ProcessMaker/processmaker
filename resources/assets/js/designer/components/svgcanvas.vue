@@ -50,6 +50,7 @@
             EventBus.$on(actions.designer.drag.toolbar.end().type, (value) => this.createElement(value))
             EventBus.$on(actions.designer.drag.shape.start().type, this.onDragStartShape())
             EventBus.$on(actions.designer.drag.shape.end().type, this.onDragEndShape())
+            EventBus.$on(actions.designer.shape.remove().type, (value) => this.removeElement(value))
         },
         methods: {
             loadXML(xml = null) {
@@ -149,6 +150,14 @@
                 return (ev) => {
                     this.pan.shapeDrag = false;
                 }
+            },
+            /**
+             * On Drag End Shape listener
+             * @param e
+             * @returns {function()}
+             */
+            removeElement (e){
+                this.builder.removeSelection()
             }
         },
         mounted() {
