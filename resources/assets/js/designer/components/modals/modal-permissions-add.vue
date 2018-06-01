@@ -1,5 +1,5 @@
 <template>
-  <b-modal ref="modal" size="md" centered title="Create Permissions">
+  <b-modal ref="modal" size="md" centered title="Create Permission">
       <form>
         <div class="form-group">
           <label for="casesStatus" v-model="casesStatus">{{casesStatus}}</label>
@@ -56,10 +56,10 @@
     </form>
 
     <template slot="modal-footer">
-      <b-button class="btn-outline-secondary">
+      <b-button class="btn-outline-secondary btn-md">
         CANCEL
       </b-button>
-      <b-button class="btn-secondary text-light">
+      <b-button class="btn-secondary text-light btn-md">
         SAVE
       </b-button>
     </template>
