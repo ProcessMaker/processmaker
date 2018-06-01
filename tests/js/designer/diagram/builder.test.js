@@ -1,7 +1,7 @@
 import {mount, shallow} from "@vue/test-utils"
 import {Builder} from "../../../../resources/assets/js/designer/diagram/builder"
 import {Elements} from "../../../../resources/assets/js/designer/diagram/elements"
-
+import Vue from "vue"
 let svg
 const mockGroup = jest.fn(() => svg)
 const mockAdd = jest.fn(() => svg)
@@ -13,6 +13,10 @@ const mockTrans = jest.fn(() => svg)
 const mockCircle = jest.fn(() => svg)
 const mockBox = jest.fn(() => svg)
 const mockRemove = jest.fn(() => svg)
+const mockNode = {
+    getBoundingClientRect: jest.fn(() => svg)
+};
+const mockBounding = jest.fn(() => svg)
 
 svg = {
     group: mockGroup,
@@ -24,7 +28,11 @@ svg = {
     transform: mockTrans,
     circle: mockCircle,
     getBBox: mockBox,
-    remove: mockRemove
+    remove: mockRemove,
+    node: mockNode,
+    getBoundingClientRect: mockBounding,
+    top: 0,
+    left: 0
 }
 mockAdd.mockReturnValue(svg)
 mockGroup.mockReturnValue(svg)
@@ -34,6 +42,7 @@ mockPath.mockReturnValue(svg)
 mockTrans.mockReturnValue(svg)
 mockCircle.mockReturnValue(svg)
 mockBox.mockReturnValue(svg)
+mockBounding.mockReturnValue(svg)
 
 describe("Builder Class ", () => {
     let eEvent,
