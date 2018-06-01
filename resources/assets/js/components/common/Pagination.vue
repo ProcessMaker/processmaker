@@ -66,8 +66,12 @@ export default {
         background-color: #e9edf1;
     }
 
+    &.disabled {
+      cursor: not-allowed;
+    }
+
     &:hover {
-        background-color: #e9edf1;
+        background-color: white;
     }
 }
 

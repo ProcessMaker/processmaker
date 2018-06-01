@@ -71,7 +71,19 @@ export default {
         this.$refs.pagination.setPaginationData(data)
       },
       onPageChange(page) {
-        this.page = page
+        if(page == 'next') {
+          this.page = this.page + 1;
+        } else if(page == 'prev') {
+          this.page = this.page - 1;
+        } else {
+          this.page = page
+        }
+        if(this.page <= 0) {
+          this.page = 1;
+        }
+        if(this.page > this.data.meta.last_page) {
+          this.page = this.data.meta.last_page;
+        }
         this.fetch()
       }
   }
