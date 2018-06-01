@@ -46,14 +46,14 @@
         },
         methods: {
             /**
-             * Method for remove Selected Shape
+             * Method for remove the Selected Shape
              */
             remove (ev){
                 let action = actions.designer.shape.remove()
                 EventBus.$emit(action.type, action.payload)
             },
             /**
-             * Method for show crown
+             * Method for show the crown
              */
             show(conf){
                 this.x = conf.x
@@ -61,7 +61,7 @@
                 this.visible = true
             },
             /**
-             * Method for hide crown
+             * Method for hide the crown
              */
             hide(){
                 this.visible = false
