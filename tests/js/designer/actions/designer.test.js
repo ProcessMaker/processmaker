@@ -40,5 +40,10 @@ describe('designer.vue', () => {
             type: "designer/zoom/reset",
             payload: {}
         })
+
+        expect(actions.designer.shape.remove({})).toEqual({
+            type: "designer/shape/remove",
+            payload: {}
+        })
     })
 })
