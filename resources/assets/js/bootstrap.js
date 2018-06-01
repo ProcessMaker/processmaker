@@ -43,6 +43,8 @@ if (token) {
 } else {
   console.error('ProcessMaker API Token not found in document. API requests via JavaScript may not function.');
 }
+window.ProcessMaker.apiClient.defaults.baseURL = '/api/1.0/';
+
 
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
