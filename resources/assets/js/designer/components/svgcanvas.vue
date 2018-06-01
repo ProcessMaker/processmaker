@@ -1,8 +1,8 @@
 <template>
     <svg id="svg" ref="canvas" :style="{width: canvasWidth, height:canvasHeight}" class="svg_canvas"
-            @mousemove="mouseMove"
-            @mousedown="mouseDown"
-            @mouseup="mouseUp">
+         @mousemove="mouseMove"
+         @mousedown="mouseDown"
+         @mouseup="mouseUp">
     </svg>
 </template>
 
@@ -115,6 +115,7 @@
              * @param e
              */
             mouseDown (e){
+                this.builder.hideCrown()
                 if (!this.pan.shapeDrag) {
                     this.pan.panStartX = e.pageX;
                     this.pan.panStartY = e.pageY;

@@ -4,7 +4,8 @@
         <div id="designer-subcontainer">
             <toolbar ref="toolbar"></toolbar>
             <div class="canvas-container">
-                <designer ref="canvas"></designer>
+                <crown ref="crown"></crown>
+                <svgcanvas ref="svgcanvas"></svgcanvas>
             </div>
         </div>
     </div>
@@ -15,7 +16,7 @@
 // Import our top-level components
 
 // Designer is our overall canvas tool
-import designer from "./components/designer";
+import svgcanvas from "./components/svgcanvas";
 
 // This is our toolbar palette
 import toolbar from "./components/toolbar";
@@ -23,11 +24,16 @@ import toolbar from "./components/toolbar";
 // This is our top toolbar with process title and process options
 import toptoolbar from "./components/toptoolbar";
 
+// This is out Cron for every shape
+import crown from "./components/crown";
+
+
 export default {
   components: {
-    designer,
+    svgcanvas,
     toolbar,
-    toptoolbar
+    toptoolbar,
+    crown
   }
 };
 </script>

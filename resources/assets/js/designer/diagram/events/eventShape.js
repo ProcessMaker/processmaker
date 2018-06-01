@@ -1,4 +1,6 @@
 import {Shape} from "../shape";
+import actions from "../../actions"
+import EventBus from "../../lib/event-bus"
 /**
  * StartEventShape
  */
@@ -52,5 +54,17 @@ export class EventShape extends Shape {
         });
         this.shape.add(group);
         this.shape.drag(this.onMove(), this.onDragStart(), this.onDragEnd())
+    }
+
+    /**
+     * Emit a message to crown to display
+     */
+    showCrown() {
+        let evWidthDefault = 50
+        let action = actions.designer.crown.show({
+            y: this.options.y + this.svg.node.getBoundingClientRect().top,
+            x: this.options.x + this.svg.node.getBoundingClientRect().left + evWidthDefault
+        })
+        EventBus.$emit(action.type, action.payload)
     }
 }

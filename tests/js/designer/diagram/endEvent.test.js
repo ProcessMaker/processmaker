@@ -1,7 +1,7 @@
 import {mount, shallow} from "@vue/test-utils"
 import {Elements} from "../../../../resources/assets/js/designer/diagram/elements"
+import Crown from "../../../../resources/assets/js/designer/components/crown.vue"
 import Vue from "vue"
-
 
 let svg
 Dispatcher = new Vue()
@@ -16,6 +16,9 @@ const mockCircle = jest.fn(() => svg)
 const mockBox = jest.fn(() => svg)
 const mockRemove = jest.fn(() => svg)
 const mockData = jest.fn(() => svg)
+const mockNode = {
+    getBoundingClientRect: jest.fn(() => svg)
+};
 
 
 svg = {
@@ -29,7 +32,8 @@ svg = {
     transform: mockTrans,
     circle: mockCircle,
     getBBox: mockBox,
-    remove: mockRemove
+    remove: mockRemove,
+    node: mockNode
 }
 mockAdd.mockReturnValue(svg)
 mockTrans.mockReturnValue(svg)
@@ -41,6 +45,7 @@ mockTrans.mockReturnValue(svg)
 mockCircle.mockReturnValue(svg)
 mockBox.mockReturnValue(svg)
 mockData.mockReturnValue(svg)
+
 
 describe("Task ", () => {
     let eEvent;
@@ -106,5 +111,14 @@ describe("Task ", () => {
         fn()
         expect(mockTrans.mock.calls.length).toBe(1)
         expect(mockData.mock.calls.length).toBe(1)
+    });
+
+    it("onDragEnd() - Verify if the dx and dy are reset", () => {
+        let fn = eEvent.onDragEnd()
+        eEvent.dx = 5
+        eEvent.dy = 5
+        fn()
+        expect(eEvent.dy).toBe(null)
+        expect(eEvent.dx).toBe(null)
     });
 });
