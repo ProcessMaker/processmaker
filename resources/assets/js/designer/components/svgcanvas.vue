@@ -152,7 +152,7 @@
                 }
             },
             /**
-             * Listener for remove element of canvas
+             * Listener for remove element of the canvas
              * @param e
              */
             removeElement (e){
