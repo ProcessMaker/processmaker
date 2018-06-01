@@ -152,9 +152,8 @@
                 }
             },
             /**
-             * On Drag End Shape listener
+             * Listener for remove element of canvas
              * @param e
-             * @returns {function()}
              */
             removeElement (e){
                 this.builder.removeSelection()
