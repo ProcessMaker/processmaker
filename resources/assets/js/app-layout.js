@@ -1,17 +1,32 @@
-var app = new Vue({
-    el: '#app',
+require('./bootstrap');
+let Vue = window.Vue;
+
+new Vue({
+    el: '#sidebarMenu',
     data: {
-        sidebarCollapsed: false,
-        notificationShown: false,
-        notifications: [],
+        expanded: false,
+        icon: 'img/processmaker-icon-white-sm.png',
+        logo: 'img/processmaker-logo-white-sm.png'
     },
-    mounted() {
-      /*
-        window.Echo.private('ProcessMaker.Model.User.' + window.Processmaker.userId)
-            .notification((notification) => {
-                let len = this.notifications.length;
-                this.notifications.push({id: len, html: notification.html});
-            });
-            */
+    methods: {
+        toggleVisibility() {
+            this.expanded = !this.expanded;
+        }
+    }
+})
+
+$("#menu-toggle").click(function (e) {
+    e.preventDefault();
+    $("#wrapper").toggleClass("toggled");
+});
+
+// Import our requests modal
+import requestModal from './components/requests/modal'
+
+// Setup our request modal and wire it to our button in the navbar
+new Vue({
+    el: '#navbar-request-button',
+    components: {
+        requestModal
     }
 })

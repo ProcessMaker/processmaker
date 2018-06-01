@@ -52,22 +52,22 @@ class CasesController extends Controller
             'APPLICATION.APP_TITLE',
             'users.uid AS USR_UID',
             'tasks.uid as TAS_UID',
-            'APP_DELEGATION.DEL_INDEX',
-            'APP_DELEGATION.DEL_LAST_INDEX',
-            'APP_DELEGATION.DEL_DELEGATE_DATE',
-            'APP_DELEGATION.DEL_INIT_DATE',
-            'APP_DELEGATION.DEL_FINISH_DATE',
-            'APP_DELEGATION.DEL_task_DUE_DATE',
-            'APP_DELEGATION.DEL_RISK_DATE',
-            'APP_DELEGATION.DEL_THREAD_STATUS',
-            'APP_DELEGATION.DEL_PRIORITY',
-            'APP_DELEGATION.DEL_DURATION',
-            'APP_DELEGATION.DEL_QUEUE_DURATION',
-            'APP_DELEGATION.DEL_STARTED',
-            'APP_DELEGATION.DEL_DELAY_DURATION',
-            'APP_DELEGATION.DEL_FINISHED',
-            'APP_DELEGATION.DEL_DELAYED',
-            'APP_DELEGATION.DEL_DELAY_DURATION',
+            'delegations.index',
+            'delegations.last_index',
+            'delegations.delegate_date',
+            'delegations.init_date',
+            'delegations.finish_date',
+            'delegations.task_due_date',
+            'delegations.risk_date',
+            'delegations.thread_status',
+            'delegations.priority',
+            'delegations.duration',
+            'delegations.queue_duration',
+            'delegations.started',
+            'delegations.delay_duration',
+            'delegations.finished',
+            'delegations.delayed',
+            'delegations.delay_duration',
             'tasks.title AS APP_TAS_TITLE',
             'tasks.type AS APP_TAS_TYPE',
             'users.lastname',
@@ -75,9 +75,9 @@ class CasesController extends Controller
             'users.username',
             'processes.name AS APP_PRO_TITLE'
         )
-        ->join('APPLICATION', 'APP_DELEGATION.application_id', '=', 'APPLICATION.id')
-        ->join('tasks', 'APP_DELEGATION.task_id', '=', 'tasks.id')
-        ->join('users', 'APP_DELEGATION.user_id', '=', 'users.id')
+        ->join('APPLICATION', 'delegations.application_id', '=', 'APPLICATION.id')
+        ->join('tasks', 'delegations.task_id', '=', 'tasks.id')
+        ->join('users', 'delegations.user_id', '=', 'users.id')
         ->join('processes', 'APPLICATION.process_id', '=', 'processes.id')
         ->whereNotIn('tasks.type', [
             "WEBENTRYEVENT",
@@ -90,40 +90,40 @@ class CasesController extends Controller
         switch ($request->status) {
             case 1:
                 $cases
-                    ->where('APP_DELEGATION.DEL_THREAD_STATUS', 'OPEN')
+                    ->where('delegations.thread_status', 'OPEN')
                     ->where('APPLICATION.APP_STATUS_ID', Application::STATUS_DRAFT);
                 break;
             case 2:
                 $cases
-                    ->where('APP_DELEGATION.DEL_THREAD_STATUS', 'OPEN')
+                    ->where('delegations.thread_status', 'OPEN')
                     ->where('APPLICATION.APP_STATUS_ID', Application::STATUS_TO_DO);
                 break;
             case 3:
                 $cases
-                    ->where('APP_DELEGATION.DEL_LAST_INDEX', '1')
+                    ->where('delegations.last_index', '1')
                     ->where('APPLICATION.APP_STATUS_ID', Application::STATUS_COMPLETED);
                 break;
             case 4:
                 $cases
-                    ->where('APP_DELEGATION.DEL_LAST_INDEX', '1')
+                    ->where('delegations.last_index', '1')
                     ->where('APPLICATION.APP_STATUS_ID', Application::STATUS_CANCELLED);
                 break;
             default:
                 $cases
-                    ->where('APP_DELEGATION.DEL_THREAD_STATUS', 'OPEN')
-                    ->orWhere('APP_DELEGATION.DEL_THREAD_STATUS', 'CLOSED')
-                    ->where('APP_DELEGATION.DEL_LAST_INDEX', '1')
+                    ->where('delegations.thread_status', 'OPEN')
+                    ->orWhere('delegations.thread_status', 'CLOSED')
+                    ->where('delegations.last_index', '1')
                     ->where('APPLICATION.APP_STATUS_ID', Application::STATUS_COMPLETED);
                 break;
 
         }
 
         if ($request->has('userUid') && $request->userUid <> '') {
-            $cases->where('APP_DELEGATION.USR_UID', $request->userUid);
+            $cases->where('delegations.user_id', $request->userUid);
         }
 
         if ($request->has('process') && $request->process <> '') {
-            $cases->where('APP_DELEGATION.PRO_UID', $request->process);
+            $cases->where('delegations.process_id', $request->process);
         }
 
         if ($request->has('category') && $request->category <> '') {
@@ -141,7 +141,7 @@ class CasesController extends Controller
                 }
 
                 if ($application->count() > 0) {
-                    $cases->whereIn('APP_DELEGATION.APP_NUMBER', $application->pluck('APP_NUMBER', 'APP_NUMBER'));
+                    $cases->whereIn('delegations.id', $application->pluck('APP_NUMBER', 'APP_NUMBER'));
                 }
             } elseif ($request->has('columnSearch') && $request->columnSearch === 'TAS_TITLE') {
                 $cases->where('tasks.title', 'LIKE', "%{$request->search}%");
@@ -149,15 +149,15 @@ class CasesController extends Controller
         }
 
         if ($request->has('dateFrom') && $request->dateFrom <> '') {
-            $cases->where('APP_DELEGATION.DEL_DELEGATE_DATE', '>=', Carbon\Carbon::createFromFormat('Y-m-d', $request->dateFrom));
+            $cases->where('delegations.delegate_date', '>=', Carbon\Carbon::createFromFormat('Y-m-d', $request->dateFrom));
         }
 
         if ($request->has('dateTo') && $request->dateTo <> '') {
-            $cases->where('APP_DELEGATION.DEL_DELEGATE_DATE', '>=', Carbon\Carbon::createFromFormat('Y-m-d 23:59:59', $request->dateTo));
+            $cases->where('delegations.delegate_date', '>=', Carbon\Carbon::createFromFormat('Y-m-d 23:59:59', $request->dateTo));
         }
 
         if ($request->has('sort')) {
-            $sort = 'APP_DELEGATION.APP_NUMBER';
+            $sort = 'delegations.id';
 
             if ($request->sort == 'APP_CURRENT_USER') {
                 $sort = 'USR_LASTNAME, USR_FIRSTNAME';

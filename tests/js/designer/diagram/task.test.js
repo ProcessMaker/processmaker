@@ -1,5 +1,8 @@
 import {mount, shallow} from '@vue/test-utils'
-import {Elements} from '../../../../resources/assets/designer/diagram/elements'
+import {Elements} from '../../../../resources/assets/js/designer/diagram/elements'
+import Crown from "../../../../resources/assets/js/designer/components/crown.vue"
+import Vue from "vue"
+
 
 let svg
 const mockGroup = jest.fn(() => svg);
@@ -7,13 +10,16 @@ const mockAdd = jest.fn(() => svg);
 const mockDrag = jest.fn(() => svg);
 const mockRect = jest.fn(() => svg);
 const mockAttr = jest.fn(() => svg);
-
+const mockNode = {
+    getBoundingClientRect: jest.fn(() => svg)
+};
 svg = {
     group: mockGroup,
     add: mockAdd,
     drag: mockDrag,
     rect: mockRect,
-    attr: mockAttr
+    attr: mockAttr,
+    node: mockNode
 }
 mockAdd.mockReturnValue(svg)
 mockGroup.mockReturnValue(svg)

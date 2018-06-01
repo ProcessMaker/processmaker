@@ -3,9 +3,11 @@
 namespace ProcessMaker\Http\Controllers\Api\Designer;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use ProcessMaker\Facades\ProcessManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Model\Process;
+use ProcessMaker\Model\ProcessCategory;
 use ProcessMaker\Transformers\ProcessTransformer;
 
 /**
@@ -16,7 +18,7 @@ class ProcessesController extends Controller
 {
 
     /**
-     * List of processes.
+     * List of processes. What is returned is ordered by category and id (uncategorized shows last)
      *
      * @param Request $request
      *
@@ -30,15 +32,22 @@ class ProcessesController extends Controller
 
         if($filter) {
             // We want to search off of name and description and category name
+            // Cannot join on table because of Eloquent's lack of specific table column names in generated SQL
+            // See: https://github.com/laravel/ideas/issues/347
             $filter = '%' . $filter . '%';
-            // Join the category table, but by leftJoin because processes may not have a category defined
-            $processes = Process::leftJoin('process_categories', 'category_id', 'process_categories.id')
-                ->where('processes.name', 'like', $filter)
-                ->orWhere('processes.description', 'like', $filter)
-                ->orWhere('process_categories.name', 'like', $filter)
+            // Find matching categories
+            $categories = ProcessCategory::where('name', 'like', $filter)->get();
+            $processes = Process::where('name', 'like', $filter)
+                ->orWhere('description', 'like', $filter)
+                ->orWhereIn('category_id', $categories->pluck('id'))
+                // We need minus to ensure null categories are sorted AFTER
+                ->orderBy(DB::raw('-category_id'), 'desc')
+                ->orderBy('id')
                 ->paginate($perPage);
         } else {
-            $processes = Process::paginate($perPage);
+            $processes = Process::orderBy(DB::raw('-category_id'), 'desc')
+                ->orderBy('id')
+                ->paginate($perPage);
         }
 
         // Now, let's return with fractal to standardize our api output

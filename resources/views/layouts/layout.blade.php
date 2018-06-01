@@ -7,6 +7,8 @@
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <!-- API Token -->
+    <meta name="api-token" content="{{ session('apiToken')['access_token']}}">
 
     @if(isset($title))
         <title>{{__('ProcessMaker')}}: {{$title}}</title>
@@ -17,8 +19,8 @@
     <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico" />
     <!-- Styles -->
 
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/layouts-app.css') }}" rel="stylesheet">
+    <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+    <link href="{{ mix('css/layouts-app.css') }}" rel="stylesheet">
 
     <script>
         window.Processmaker = {
@@ -37,10 +39,6 @@
     @yield('css')
 </head>
 <body>
-<div id="app">
-    @include('layouts.navbar')
-    @yield('sidebar')
-
     @if(session('alert'))
         @if(session('alert')['success'])
             <div id="app-alert" class="alert alert-success alert-dismissible fade show" role="alert">
@@ -53,15 +51,22 @@
         </button>
       </div>
     @endif
-
-    <div id="page-content-wrapper">
-        @yield('content')
+    @yield('sidebar')
+    <div id="app-container">
+        <div id="top-navbar" style="background-image: url('/img/logo.png')">
+            @include('layouts.navbar')
+        </div>
+        <div id="content" class="{{isset($contentClass) ? $contentClass : ''}}">
+            <div id="content-inner">
+                @yield('content')
+            </div>
+        </div>
     </div>
-</div>
 <!-- Scripts -->
-<script src="{{ asset('js/manifest.js') }}"></script>
-<script src="{{ asset('js/vendor.js') }}"></script>
-<script src="{{ asset('js/app.js') }}"></script>
+<script src="{{ mix('js/manifest.js') }}"></script>
+<script src="{{ mix('js/vendor.js') }}"></script>
+<script src="{{ mix('js/app.js') }}"></script>
+<script src="{{ mix('js/app-layout.js') }}"></script>
 <!-- Menu Toggle Script -->
 <script>
     $("#menu-toggle").click(function (e) {

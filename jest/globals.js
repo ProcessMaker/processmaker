@@ -5,3 +5,6 @@ global.Snap = () => {
 global.Dispatcher = () => {
     return {}
 };
+
+global.$ = require("jquery")
+global.Vue = require("vue")
