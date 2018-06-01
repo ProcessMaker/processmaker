@@ -203,6 +203,11 @@ jobs:
             SAUCELABS_PLATFORM: "macOS 10.13"
             SAUCELABS_BROWSER_VERSION: "11.0"
 
+      - run:
+          name: "Final QA Artisan DB Migration"
+          command: "ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "php ~/builds/$BUILD_NAME/artisan migrate:fresh --seed --force\""
+
+
 
 
 
