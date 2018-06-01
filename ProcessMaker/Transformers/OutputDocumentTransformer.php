@@ -15,7 +15,7 @@ class OutputDocumentTransformer extends TransformerAbstract
 {
 
     /**
-     * Transform the activity.
+     * Transform the Output Document.
      *
      * @param OutputDocument $item
      *

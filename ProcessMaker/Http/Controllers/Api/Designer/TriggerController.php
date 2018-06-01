@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 class TriggerController extends Controller
 {
     /**
-     * Get a list of triggers in a project.
+     * Get a list of triggers in a process.
      *
      * @param Process $process
      *
@@ -28,7 +28,7 @@ class TriggerController extends Controller
     }
 
     /**
-     * Get a single trigger in a project.
+     * Get a single trigger in a process.
      *
      * @param Process $process
      * @param Trigger $trigger
@@ -43,7 +43,7 @@ class TriggerController extends Controller
     }
 
     /**
-     * Create a new trigger in a project.
+     * Create a new trigger in a process.
      *
      * @param Process $process
      * @param Request $request
@@ -64,7 +64,7 @@ class TriggerController extends Controller
     }
 
     /**
-     * Update a trigger in a project.
+     * Update a trigger in a process.
      *
      * @param Process $process
      * @param Trigger $trigger
@@ -96,7 +96,7 @@ class TriggerController extends Controller
     }
 
     /**
-     * Delete a trigger in a project.
+     * Delete a trigger in a process.
      *
      * @param Process $process
      * @param Trigger $trigger
