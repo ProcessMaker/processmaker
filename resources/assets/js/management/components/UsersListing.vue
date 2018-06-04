@@ -2,7 +2,7 @@
   <div>
     <vuetable :api-mode="false"  @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data" pagination-path="meta"></vuetable> 
     <div class="float-right">
-      <pagination @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
+      <pagination :perPageSelectEnabled="true" @changePerPage="changePerPage" @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
     </div>
    </div>
 </template>
@@ -21,6 +21,7 @@ export default {
       // Our listing of users
       data: [],
       page: 1,
+      perPage: 10,
       loading: false,
       fields: [
         {
@@ -47,10 +48,14 @@ export default {
     this.fetch()
   },
   methods: {
+    changePerPage(value) {
+      this.perPage = value
+      this.fetch()
+    },
       fetch() {
           this.loading = true;
           // Load from our api client
-          ProcessMaker.apiClient.get('users?page=' + this.page)
+          ProcessMaker.apiClient.get('users?page=' + this.page + '&per_page=' + this.perPage)
             .then((response) => {
                 this.data = this.transform(response.data)
                 this.loading = false

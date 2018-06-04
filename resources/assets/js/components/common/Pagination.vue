@@ -32,6 +32,11 @@
       :class="['pagination-nav-item', css.linkClass, isOnLastPage ? css.disabledClass : '']">
         <i class="fas fa-angle-double-right"></i>
     </div>
+    <select v-if="perPageSelectEnabled" v-model="perPage">
+      <option value="10">10</option>
+      <option value="25">25</option>
+      <option value="50">50</option>
+    </select>
   </div>
 
 </template>
@@ -43,7 +48,20 @@ import PaginationMixin from 'vuetable-2/src/components/VuetablePaginationMixin.v
 export default {
     mixins: [
         PaginationMixin
-    ]
+    ],
+    props: [
+      'perPageSelectEnabled'
+    ],
+    data() {
+      return {
+        perPage: 10
+      }
+    },
+    watch: {
+      perPage(value) {
+        this.$emit('changePerPage', value);
+      }
+    }
 }
 </script>
 
