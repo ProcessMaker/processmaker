@@ -81,7 +81,7 @@ export default {
       // Now call our api
       // Maximum number of requests returned is 200 but should be enough
       // @todo Determine if we need to paginate or lazy scroll if someone has more than 200 requests
-      window.ProcessMaker.apiClient.get('/api/1.0/processes?filter=' + this.filter + '&per_page=200')
+      window.ProcessMaker.apiClient.get('processes?filter=' + this.filter + '&per_page=200')
         .then((response) => {
           let data = response.data;
           // Empty processes

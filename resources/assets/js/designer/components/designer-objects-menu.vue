@@ -2,7 +2,7 @@
   <div class="objects-menu">
     <div class="object-menu-title"><span class="menu-title-span">Process Objects</span></div>
     <div class="object-menu-items-container">
-    <designer-options-menu-item @title-click="handleItemClick(item)" @button-click="handleAddClick(item)" v-for="(item, index) in menuItems" :key="item.id" :title="item.title" data-target="#item.key" data-toggle="modal"></designer-options-menu-item>
+    <designer-options-menu-item @title-click="handleItemClick(item)" @button-click="handleAddClick(item)" v-for="(item, index) in menuItems" :key="item.id" :title="item.title" :hasadd="item.hasadd"></designer-options-menu-item>
     </div>
   </div>
 </template>

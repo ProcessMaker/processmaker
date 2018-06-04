@@ -5,8 +5,8 @@ new Vue({
     el: '#sidebarMenu',
     data: {
         expanded: false,
-        icon: 'img/processmaker-icon-white-sm.png',
-        logo: 'img/processmaker-logo-white-sm.png'
+        icon: '/img/processmaker-icon-white-sm.png',
+        logo: '/img/processmaker-logo-white-sm.png'
     },
     methods: {
         toggleVisibility() {
