@@ -44,7 +44,7 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
         return view('userprofile', ['title' => 'Dashboard']);
     })->name('userprofile');
 
-    $this->get('/manage/users', 'Management\UsersController@index')->name('management-users-index');
+    $this->get('/admin/users', 'Admin\UsersController@index')->name('admin-users-index');
 });
 
 
