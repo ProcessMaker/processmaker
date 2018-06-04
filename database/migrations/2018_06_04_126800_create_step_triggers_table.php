@@ -14,8 +14,7 @@ class CreateStepTriggersTable extends Migration
      */
     public function up()
     {
-        Schema::create('step_triggers', function(Blueprint $table)
-        {
+        Schema::create('step_triggers', function (Blueprint $table) {
             $table->increments('id');
             $table->uuid('uid')->unique();
             $table->integer('step_id')->unsigned();
@@ -23,7 +22,7 @@ class CreateStepTriggersTable extends Migration
             $table->string('TYPE', 20)->default('');
             $table->string('condition')->default('');
             $table->integer('position')->default(0);
-            $table->index(['step_id','trigger_id','TYPE'], 'indexStepTriggers');
+            $table->index(['step_id', 'trigger_id', 'TYPE'], 'indexStepTriggers');
 
             // Setup relationship for Step we belong to
             $table->foreign('step_id')->references('id')->on('steps')->onDelete('cascade');
