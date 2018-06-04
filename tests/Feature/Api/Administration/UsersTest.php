@@ -34,7 +34,7 @@ class UsersTest extends ApiTestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => null,
+            'role_id' => factory(Role::class)->make(),
         ]);
         // No role means it should not be authorized
         $this->auth($user->username, 'password');
