@@ -40,6 +40,29 @@ class Role extends Model
         'status',
     ];
 
+    protected $hidden = [
+        'id'
+    ];
+
+
+
+    /**
+     * The key to use in routes to fetch a user
+     */
+    public function getRouteKeyName()
+    {
+        return 'uid';
+    }
+
+    /**
+     * Parent role, if provided
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function parent()
+    {
+        return $this->hasOne(Role::class, 'parent_role_id');
+    }
+
     /**
      * Users of the role.
      *

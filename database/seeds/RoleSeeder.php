@@ -16,6 +16,8 @@ class RoleSeeder extends Seeder
     {
         // Generate the appropriate initial roles for ProcessMaker
         $role = factory(Role::class)->create([
+            'name' => 'Administrator',
+            'description' => 'Overall Administration of System',
             'code' => 'PROCESSMAKER_ADMIN'
         ]);
         // Assign permissions
@@ -31,14 +33,15 @@ class RoleSeeder extends Seeder
 
 
         $role = factory(Role::class)->create([
+            'name' => 'Operator',
+            'description' => 'Standard Users that allow login and execution of cases',
             'code' => 'PROCESSMAKER_OPERATOR'
         ]);
 
         factory(Role::class)->create([
+            'name' => 'Manager',
+            'description' => 'Allow management of cases,users and groups.',
             'code' => 'PROCESSMAKER_MANAGER'
         ]);
-        factory(Role::class)->create([
-            'code' => 'PROCESSMAKER_GUEST'
-        ]);
-    }
+   }
 }
