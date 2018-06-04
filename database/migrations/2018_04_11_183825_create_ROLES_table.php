@@ -31,7 +31,9 @@ class CreateROLESTable extends Migration {
 	 */
 	public function down()
 	{
+		Schema::disableForeignKeyConstraints();
 		Schema::drop('roles');
+		Schema::enableForeignKeyConstraints();
 	}
 
 }

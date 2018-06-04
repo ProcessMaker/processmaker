@@ -19,6 +19,9 @@ export const designer = {
         crown: {
             show: x => x,
             hide: x => x
+        },
+        shape: {
+            remove: x => x
         }
     }
 };

@@ -30,7 +30,9 @@ class CreatePERMISSIONSTable extends Migration {
 	 */
 	public function down()
 	{
+		Schema::disableForeignKeyConstraints();
 		Schema::drop('permissions');
+		Schema::enableForeignKeyConstraints();
 	}
 
 }

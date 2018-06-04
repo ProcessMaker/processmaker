@@ -33,7 +33,10 @@ class CreateGROUPWFTable extends Migration
      */
     public function down()
     {
+		Schema::disableForeignKeyConstraints();
         Schema::drop('groups');
+		Schema::disableForeignKeyConstraints();
+
     }
 
 }
