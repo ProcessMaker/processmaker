@@ -20,11 +20,10 @@ class TaskAssigneeManager
      *
      * @param Task $activity
      * @param array $options start|per_page|filter
-     * @param boolean $paged
      *
      * @return Paginator | LengthAwarePaginator
      */
-    public function loadAssignees(Task $activity, array $options, $paged = false)
+    public function loadAssignees(Task $activity, array $options)
     {
         $filter = $options['filter'];
         $query = TaskUser::where('task_id', $activity->id)
@@ -42,7 +41,7 @@ class TaskAssigneeManager
             if (!empty($assigned->group)) {
                 $assigned->group->title = $this->labelGroup($assigned->group);
             }
-            $assigned = $this->formatAssigneeData($assigned);
+            $assigned = $this->formatDataAssignee($assigned);
         }
 
         return $assignees;
@@ -53,11 +52,10 @@ class TaskAssigneeManager
      *
      * @param Task $activity
      * @param array $options
-     * @param boolean $paged
      *
      * @return Paginator | LengthAwarePaginator
      */
-    public function loadAvailable(Task $activity, array $options, $paged = false)
+    public function loadAvailable(Task $activity, array $options)
     {
         $query = TaskUser::where('task_id', $activity->id)
             ->with('user')
@@ -120,29 +118,31 @@ class TaskAssigneeManager
     public function saveAssignee(Task $activity, array $options): array
     {
         $query = TaskUser::where('task_id', $activity->id)->type(TaskUser::ASSIGNEE_NORMAL);
-        $type = strtoupper($options['type']);
-        switch ($type) {
-            case User::TYPE:
-                $groupOrUserFound = User::where('uid', $options['uid'])->first();
+        $type = User::TYPE;
+        switch (strtoupper($options['type'])) {
+            case 'USER':
+                $check = User::where('uid', $options['uid'])->first();
                 $query->onlyUsers();
                 break;
-            case Group::TYPE:
-                $groupOrUserFound = Group::where('uid', $options['uid'])->first();
+            case 'GROUP':
+                $check = Group::where('uid', $options['uid'])->first();
+                $type = Group::TYPE;
                 $query->onlyGroups();
                 break;
             default:
-                $groupOrUserFound = false;
+                $check = false;
                 break;
         }
-        if (!$groupOrUserFound) {
+        if (!$check) {
             throw new TaskAssignedException(__('This id :uid does not correspond to a registered :type', ['uid' => $options['uid'], 'type' => $options['type']]));
         }
-        if ($query->where('user_id', $groupOrUserFound->id)->exists()) {
+        $exist = $query->where('user_id', $check->id)->exists();
+        if ($exist) {
             throw new TaskAssignedException(__('This ID: :user is already assigned to task: :task', ['user' => $options['uid'], 'task' => $activity->uid]));
         }
         $assigned = new TaskUser();
         $assigned->task_id = $activity->id;
-        $assigned->user_id = $groupOrUserFound->id;
+        $assigned->user_id = $check->id;
         $assigned->task_users_type = $type;
         $assigned->type = TaskUser::ASSIGNEE_NORMAL;
         $assigned->saveOrFail();
@@ -163,7 +163,7 @@ class TaskAssigneeManager
     {
         $user = new User();
         $group = new Group();
-        $deleteResponse = TaskUser::where('task_id', $activity->id)
+        $response = TaskUser::where('task_id', $activity->id)
             ->where(function ($q) use ($assignee, $user) {
                 $q->whereHas('user', function ($query) use ($assignee, $user) {
                     $query->where($user->getTable() . '.uid', '=', $assignee);
@@ -177,7 +177,7 @@ class TaskAssigneeManager
             ->type(TaskUser::ASSIGNEE_NORMAL)
             ->delete();
 
-        if (!$deleteResponse) {
+        if (!$response) {
             Throw new TaskAssignedException(__('This row does not exist!'));
         }
     }
@@ -195,7 +195,7 @@ class TaskAssigneeManager
     {
         $user = new User();
         $group = new Group();
-        $taskAssignee = TaskUser::where('task_id', $activity->id)
+        $assigned = TaskUser::where('task_id', $activity->id)
             ->where(function ($q) use ($assignee, $user) {
                 $q->whereHas('user', function ($query) use ($assignee, $user) {
                     $query->where($user->getTable() . '.uid', '=', $assignee);
@@ -208,11 +208,11 @@ class TaskAssigneeManager
             })
             ->get();
 
-        if ($taskAssignee->isEmpty()) {
+        if ($assigned->isEmpty()) {
             Throw new TaskAssignedException(__('Record not found for id: :assignee', ['assignee' => $assignee]));
         }
 
-        return $this->formatAssigneeData($taskAssignee->first());
+        return $this->formatDataAssignee($assigned->first());
     }
 
     /**
@@ -223,7 +223,7 @@ class TaskAssigneeManager
      *
      * @return LengthAwarePaginator
      */
-    public function getInformationAllAssignees(Task $activity, $options): LengthAwarePaginator
+    public function getInformationAllAssignee(Task $activity, $options): LengthAwarePaginator
     {
         $query = TaskUser::where('task_id', $activity->id)
             ->with('user', 'group.users');
@@ -251,17 +251,17 @@ class TaskAssigneeManager
 
         $assignee = new TaskUser();
 
-        foreach ($assignees as $currentAssignee) {
-            if (!empty($currentAssignee->user)) {
-                $assignee->assign_uid = $currentAssignee->user->uid;
-                $assignee->assign_name = $currentAssignee->user->firstname;
-                $assignee->assign_lastname = $currentAssignee->user->lastname;
-                $assignee->assign_username = $currentAssignee->user->username;
+        foreach ($assignees as $assign) {
+            if (!empty($assign->user)) {
+                $assignee->assign_uid = $assign->user->uid;
+                $assignee->assign_name = $assign->user->firstname;
+                $assignee->assign_lastname = $assign->user->lastname;
+                $assignee->assign_username = $assign->user->username;
                 $assignee->assign_type = User::TYPE;
                 $information[] = $assignee;
             }
-            if (!empty($currentAssignee->group)) {
-                foreach ($currentAssignee->group->users as $user) {
+            if (!empty($assign->group)) {
+                foreach ($assign->group->users as $user) {
                     $assignee->assign_uid = $user->uid;
                     $assignee->assign_name = $user->firstname;
                     $assignee->assign_lastname = $user->lastname;
@@ -281,7 +281,7 @@ class TaskAssigneeManager
     }
 
     /**
-     * Add label with the count of users in the group
+     * Add to label group count of users in the group
      *
      * @param Group $group
      *
@@ -303,7 +303,7 @@ class TaskAssigneeManager
      *
      * @return TaskUser
      */
-    private function formatAssigneeData(TaskUser $assigned): TaskUser
+    private function formatDataAssignee(TaskUser $assigned): TaskUser
     {
         $assigned->assign_uid = '';
         $assigned->assign_name = '';
@@ -329,7 +329,7 @@ class TaskAssigneeManager
     }
 
     /**
-     * Generates a query which uses the filter parameter to filter the users and groups
+     * Generate eloquent query adding filter in users and groups
      *
      * @param Builder $query
      * @param string $filter

@@ -14,7 +14,7 @@ use ProcessMaker\Transformers\TaskDelegationTransformer;
 class TaskDelegationController
 {
     /**
-     * Get a list of Task Delegations in a project.
+     * Get a list of Task Delegations in a process.
      *
      * @param Request $request
      *
@@ -36,7 +36,7 @@ class TaskDelegationController
     }
 
     /**
-     * Get a single task delegation in a project.
+     * Get a single task delegation in a process.
      *
      * @param Task $task
      *

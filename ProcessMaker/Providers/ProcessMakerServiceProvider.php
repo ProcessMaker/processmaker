@@ -84,7 +84,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
             return new TaskManager();
         });
 
-
         $this->app->singleton('task_assignee.manager', function ($app) {
             return new TaskAssigneeManager();
         });

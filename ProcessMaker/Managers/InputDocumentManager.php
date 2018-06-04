@@ -13,7 +13,7 @@ class InputDocumentManager
 
 
     /**
-     * Get a list of All Input Documents in a project.
+     * Get a list of All Input Documents in a process.
      *
      * @param Process $process
      *
@@ -25,7 +25,7 @@ class InputDocumentManager
     }
 
     /**
-     * Create a new Input Document in a project.
+     * Create a new Input Document in a process.
      *
      * @param Process $process
      * @param array $data
@@ -47,7 +47,7 @@ class InputDocumentManager
     }
 
     /**
-     * Update Input Document in a project.
+     * Update Input Document in a process.
      *
      * @param Process $process
      * @param InputDocument $inputDocument
@@ -67,7 +67,7 @@ class InputDocumentManager
 
 
     /**
-     * Remove Input Document in a project.
+     * Remove Input Document in a process.
      *
      * @param InputDocument $inputDocument
      *
