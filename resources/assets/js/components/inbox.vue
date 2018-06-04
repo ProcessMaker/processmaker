@@ -210,28 +210,27 @@ export default {
   float: right;
 }
 .pagination a.page {
-  border: 1px solid lightgray;
+  background-color: rgb(246,248,249);
   border-radius: 3px;
   padding: 5px 10px;
   margin-right: 2px;
 }
 .pagination a.page.active {
-  color: white;
-  background-color: #337ab7;
-  border: 1px solid lightgray;
+  color: #788793;
+  background-color: rgb(230,234,239);
   border-radius: 3px;
   padding: 5px 10px;
   margin-right: 2px;
 }
 .pagination a.btn-nav {
-  border: 1px solid lightgray;
+  background-color: rgb(246,248,249);
   border-radius: 3px;
   padding: 5px 7px;
   margin-right: 2px;
 }
 .pagination a.btn-nav.disabled {
+  background-color: rgb(246,248,249);
   color: lightgray;
-  border: 1px solid lightgray;
   border-radius: 3px;
   padding: 5px 7px;
   margin-right: 2px;

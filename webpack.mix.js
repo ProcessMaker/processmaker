@@ -13,6 +13,7 @@ const {mix} = require('laravel-mix');
 
 mix.js('resources/assets/js/app-layout.js', 'public/js')
     .js('resources/assets/js/designer/main.js', 'public/js/designer')
+    .js('resources/assets/js/management/users.js', 'public/js/management')
     // Note, that this should go last for the extract to properly put the manifest and vendor in the right location
     // See: https://github.com/JeffreyWay/laravel-mix/issues/1118
     .js('resources/assets/js/app.js', 'public/js')
