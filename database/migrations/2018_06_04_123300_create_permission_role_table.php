@@ -15,8 +15,8 @@ class CreatePermissionRoleTable extends Migration
     {
         Schema::create('permission_role', function(Blueprint $table)
         {
-            $table->unsignedInteger('role_id');
-            $table->unsignedInteger('permission_id');
+            $table->integer('role_id')->unsigned();
+            $table->integer('permission_id')->unsigned();
             $table->primary(['role_id','permission_id']);
 
             // setup relationship for Rol we belong to
@@ -33,6 +33,6 @@ class CreatePermissionRoleTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('permission_roles');
+        Schema::dropIfExists('permission_role');
     }
 }
