@@ -39,6 +39,7 @@ export default{
 
 .object-menu-item {
   display: block;
+  position: relative;
   height: 22px;
   max-height: 22px;
   line-height: 22px;
