@@ -34,6 +34,8 @@ import designerobjectsmenu from "./components/designer-objects-menu";
 // @todo Figure out a way to add these modals to the properties of components
 import modalPermissionsAdd from "./components/modals/modal-permissions-add";
 
+import modalPublicFileAdd from "./components/modals/modal-public-file-add";
+
 // This is out Cron for every shape
 import crown from "./components/crown";
 
@@ -45,7 +47,9 @@ export default {
     designerobjectsmenu,
     crown,
     // Editor,
-    modalPermissionsAdd
+    modalPermissionsAdd,
+    ///camel case because vue will transform it into dash's
+    modalPublicFileAdd
   },
   data() {
     return {
@@ -58,11 +62,14 @@ export default {
   },
   methods: {
     openAddDialog(key) {
-      // Replace this with dynamic modal generation once we have all modals in place
+      // @todo Replace this with dynamic modal generation once we have all modals in place
       // We're not doing this now so we can have visual alert feedback when a modal isn't implemented
       switch(key) {
         case 'permissions':
           this.modalComponent = 'modal-permissions-add'
+          break;
+        case 'public-files':
+          this.modalComponent = 'modal-public-file-add'
           break;
         default:
           alert(key + ' add modal not yet implemented.')
