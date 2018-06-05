@@ -17,6 +17,91 @@ class PmTableControllerTest extends ApiTestCase
 {
     use DatabaseTransactions;
 
+    const API_TEST_PM_TABLES = '/api/1.0/pmtable';
+
+    /**
+     * Overwrite of the setup method that authenticates and fills the default connection data
+     */
+    protected function setUp()
+    {
+        parent::setUp();
+
+        // we need an user and authenticate him
+        $user = factory(User::class)->create([
+            'password' => Hash::make('password'),
+            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+        ]);
+
+        $this->auth($user->username, 'password');
+    }
+
+    /**
+     * Tests the addition of a PmTable
+     */
+    public function testCreateOnePmTable(): void
+    {
+        // Stop here and mark this test as incomplete.
+        $this->markTestIncomplete(
+            'This test must be refactored to support database transaction style testing.'
+        );
+        $pmInputData = $this->pmInputDefaultData();
+        $response = $this->api('POST', self::API_TEST_PM_TABLES, $pmInputData);
+        $response->assertStatus(201);
+
+        $returnedObject = json_decode($response->getContent());
+        $this->assertTrue($returnedObject->name === $pmInputData['name'],
+            'The added pmTable has not the passed name');
+
+        $this->assertGreaterThanOrEqual(0, count($returnedObject->fields),
+            'The added pmTable must have fields');
+    }
+
+    /**
+     * Tests the update of a PmTable
+     */
+    public function testUpdateOnePmTable()
+    {
+        // Stop here and mark this test as incomplete.
+        $this->markTestIncomplete(
+            'This test must be refactored to support database transaction style testing.'
+        );
+
+        $pmTable = $this->createTestPmTable();
+        $description = 'Changed Description';
+
+        // we update the pmTable
+        $url = "/api/1.0/pmtable/" . $pmTable->uid;
+        $response = $this->api('PUT', $url, ['description' => $description]);
+        $response->assertStatus(200);
+        $returnedObject = json_decode($response->getContent());
+        $this->assertEquals($returnedObject->description, $description);
+
+        $url = "/api/1.0/pmtable/" . $pmTable->uid;
+        $response = $this->api('PUT', $url, [
+            'description' => $description,
+            'fields' => [
+                [
+                    'name' => 'NewField',
+                    'description' => 'Field2 description',
+                    'type' => 'VARCHAR',
+                    'size' => '100',
+                    'null' => 1,
+                    'key' => 0,
+                    'auto_increment' => 0,
+                ]
+            ]]);
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'name',
+            'grid',
+            'db_source_id',
+            'fields' => ['*' => ['name', 'type']]
+        ]);
+
+        $returnedObject = json_decode($response->getContent());
+        $this->assertEquals($returnedObject->description, $description);
+    }
+
     /**
      * Tests the return of the list of all PmTables
      */
@@ -66,73 +151,7 @@ class PmTableControllerTest extends ApiTestCase
         $this->assertTrue(Schema::hasTable($physicalTableName), 'The PmTable was not created');
     }
 
-    /**
-     * Tests the addition of a PmTable
-     */
-    public function testCreateOnePmTable()
-    {
-        // Stop here and mark this test as incomplete.
-        $this->markTestIncomplete(
-            'This test must be refactored to support database transaction style testing.'
-        );
- 
-        $pmInputData = $this->pmInputDefaultData();
-        $response = $this->api('POST', '/api/1.0/pmtable/', $pmInputData);
-        $response->assertStatus(201);
 
-        $returnedObject = json_decode($response->getContent());
-        $this->assertTrue($returnedObject->name === $pmInputData['name'],
-            'The added pmTable has not the passed name');
-
-        $this->assertGreaterThanOrEqual(0, count($returnedObject->fields),
-            'The added pmTable must have fields');
-    }
-
-    /**
-     * Tests the update of a PmTable
-     */
-    public function testUpdateOnePmTable()
-    {
-        // Stop here and mark this test as incomplete.
-        $this->markTestIncomplete(
-            'This test must be refactored to support database transaction style testing.'
-        );
- 
-        $pmTable = $this->createTestPmTable();
-        $description = 'Changed Description';
-
-        // we update the pmTable
-        $url = "/api/1.0/pmtable/" . $pmTable->uid;
-        $response = $this->api('PUT', $url, ['description' => $description]);
-        $response->assertStatus(200);
-        $returnedObject = json_decode($response->getContent());
-        $this->assertEquals($returnedObject->description, $description);
-
-        $url = "/api/1.0/pmtable/" . $pmTable->uid;
-        $response = $this->api('PUT', $url, [
-            'description' => $description,
-            'fields' => [
-                [
-                    'name' => 'NewField',
-                    'description' => 'Field2 description',
-                    'type' => 'VARCHAR',
-                    'size' => '100',
-                    'null' => 1,
-                    'key' => 0,
-                    'auto_increment' => 0,
-                ]
-            ]]);
-        $response->assertStatus(200);
-        $response->assertJsonStructure([
-            'name',
-            'grid',
-            'db_source_id',
-            'fields' => ['*' => ['name', 'type']]
-        ]);
-
-        $returnedObject = json_decode($response->getContent());
-        $this->assertEquals($returnedObject->description, $description);
-    }
 
     /**
      * Tests the deletion of a PmTable
@@ -267,21 +286,7 @@ class PmTableControllerTest extends ApiTestCase
         $this->assertEquals($numberRowsBefore - 1, $numberRowsAfter, "After the deletion the PmTable must have on less dataRow.");
     }
 
-    /**
-     * Overwrite of the setup method that authenticates and fills the default connection data
-     */
-    protected function setUp()
-    {
-        parent::setUp();
 
-        // we need an user and authenticate him
-        $user = factory(User::class)->create([
-            'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
-        ]);
-
-        $this->auth($user->username, 'password');
-    }
 
     /**
      * Returns the data that will be used in the tests for the creation of a PmTable

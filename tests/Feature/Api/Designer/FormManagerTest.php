@@ -4,7 +4,6 @@ namespace Tests\Feature\Api\Designer;
 
 use Faker\Factory as Faker;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\Form;
 use ProcessMaker\Model\Process;
@@ -67,26 +66,21 @@ class FormManagerTest extends ApiTestCase
         $response->assertStatus(422);
         $this->assertArrayHasKey('message', $response->json());
     }
-
     /**
-     * Create new Form correctly
+     * Create form successfully
      */
-    public function testCreateForm(): void
+    public function testCreateForm(): Void
     {
-        //Post saved correctly
+        //Post title duplicated
         $faker = Faker::create();
-
         $url = self::API_TEST_FORM . $this->process->uid . '/form';
         $response = $this->api('POST', $url, [
             'title' => 'Title Form',
-            'description' => $faker->sentence(10),
-            'label' => $faker->sentences(4)
+            'description' => $faker->sentence(10)
         ]);
-        //validating the answer is correct.
         $response->assertStatus(201);
-        //Check structure of response.
-        $response->assertJsonStructure(self::STRUCTURE);
     }
+
 
     /**
      * Can not create a form with an existing title
@@ -197,8 +191,6 @@ class FormManagerTest extends ApiTestCase
 
     /**
      * Get a list of Form in process without query parameters.
-     *
-     * @depends testCreateForm
      */
     public function testListForm(): void
     {
@@ -264,7 +256,7 @@ class FormManagerTest extends ApiTestCase
     }
 
     /**
-     * Get a Form of a project.
+     * Get a Form of a process.
      */
     public function testGetForm(): void
     {
@@ -276,6 +268,19 @@ class FormManagerTest extends ApiTestCase
 
         //verify structure paginate
         $response->assertJsonStructure(self::STRUCTURE);
+    }
+
+    /**
+     * Get a Form not belongs to process
+     */
+    public function testGetFormNotBelongToProcess(): void
+    {
+        //load Form
+        $url = self::API_TEST_FORM . $this->process->uid . '/form/' . factory(Form::class)->create()->uid;
+        $response = $this->api('GET', $url);
+        //Validate the answer is correct
+        $response->assertStatus(404);
+        $this->assertArrayHasKey('message', $response->json());
     }
 
     /**

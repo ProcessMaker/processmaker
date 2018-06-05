@@ -15,102 +15,109 @@ class TriggerManagerTest extends ApiTestCase
 {
     use DatabaseTransactions;
 
-    const API_ROUTE = '/api/1.0/project/';
+    const API_TEST_TRIGGER = '/api/1.0/process/';
     const DEFAULT_PASS = 'password';
 
-    protected static $user;
-    protected static $process;
+    protected $user;
+    protected $process;
+
+    const STRUCTURE = [
+        'uid',
+        'title',
+        'description',
+        'type',
+        'webbot',
+        'param'
+    ];
 
     /**
-     * Init variables User and Process
+     * Create user and process
      */
-    private function initProcess(): void
+    protected function setUp(): void
     {
-        self::$user = factory(User::class)->create([
+        parent::setUp();
+        $this->user = factory(User::class)->create([
             'password' => Hash::make(self::DEFAULT_PASS),
             'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
 
-        self::$process = factory(Process::class)->create([
-            'creator_user_id' => self::$user->id
+        $this->process = factory(Process::class)->create([
+            'creator_user_id' => $this->user->id
         ]);
+
+        $this->auth($this->user->username, self::DEFAULT_PASS);
     }
 
+    /**
+     * Test verify the parameter required for create Trigger
+     */
+    public function testNotCreatedForParameterRequired(): void
+    {
+        //Post should have the parameter required
+        $url = self::API_TEST_TRIGGER . $this->process->uid . '/trigger';
+        $response = $this->api('POST', $url, []);
+
+        //validating the answer is an error
+        $response->assertStatus(422);
+        $this->assertArrayHasKey('message', $response->json());
+    }
 
     /**
      * Create new trigger in process
-     *
-     * @return Trigger
      */
-    public function testCreateTrigger(): Trigger
+    public function testCreateTrigger(): void
     {
-        // Stop here and mark this test as incomplete.
-        $this->markTestIncomplete(
-            'This test must be refactored to support database transaction style testing.'
-        );
- 
-        $this->initProcess();
-        $this->auth(self::$user->username, self::DEFAULT_PASS);
-
-        //Post should have the parameter title
-        $url = self::API_ROUTE . self::$process->uid . '/trigger';
-        $response = $this->api('POST', $url, []);
-        //validating the answer is an error
-        $response->assertStatus(422);
-
         $faker = Faker::create();
-        $data = [
-            'title' => $faker->sentence(3),
+        //Post saved correctly
+        $url = self::API_TEST_TRIGGER . $this->process->uid . '/trigger';
+        $response = $this->api('POST', $url, [
+            'title' => 'Title Trigger',
             'description' => $faker->sentence(6),
             'param' => $faker->words($faker->randomDigitNotNull)
-        ];
-        //Post saved correctly
-        $url = self::API_ROUTE . self::$process->uid . '/trigger';
-        $response = $this->api('POST', $url, $data);
+        ]);
         //validating the answer is correct.
         $response->assertStatus(201);
-        $trigger = $response->original;
         //Check structure of response.
-        $response->assertJsonStructure([
-            'uid',
-            'title',
-            'description',
-            'type',
-            'webbot',
-            'param'
+        $response->assertJsonStructure(self::STRUCTURE);
+    }
+
+    /**
+     * Can not create a Trigger with an existing title
+     */
+    public function testNotCreateTriggerWithTitleExists(): Void
+    {
+        factory(Trigger::class)->create([
+            'title' => 'Title Trigger',
+            'process_id' => $this->process->id
         ]);
 
-        //duplicate titles are not allowed
-        $url = self::API_ROUTE . self::$process->uid . '/trigger';
-        $response = $this->api('POST', $url, $data);
-        //validating the answer is correct.
+        //Post title duplicated
+        $faker = Faker::create();
+        $url = self::API_TEST_TRIGGER . $this->process->uid . '/trigger';
+        $response = $this->api('POST', $url, [
+            'title' => 'Title Trigger',
+            'description' => $faker->sentence(6),
+            'param' => $faker->words($faker->randomDigitNotNull)
+        ]);
         $response->assertStatus(422);
-        return Trigger::where('uid', $trigger->uid)->first();
+        $this->assertArrayHasKey('message', $response->json());
     }
 
     /**
      * Get a list of triggers in a project.
-     *
-     * @depends testCreateTrigger
      */
     public function testListTriggers(): void
     {
-        // Stop here and mark this test as incomplete.
-        $this->markTestIncomplete(
-            'This test must be refactored to support database transaction style testing.'
-        );
- 
-        $this->auth(self::$user->username, self::DEFAULT_PASS);
-
         //add triggers to process
         $faker = Faker::create();
-        factory(Trigger::class, 10)->create([
-            'process_id' => self::$process->id,
+        $total = $faker->randomDigitNotNull;
+        factory(Trigger::class, $total)->create([
+            'process_id' => $this->process->id,
             'param' => $faker->words($faker->randomDigitNotNull)
         ]);
 
         //List triggers
-        $url = self::API_ROUTE . self::$process->uid . '/triggers';
+        $url = self::API_TEST_TRIGGER . $this->process->uid . '/triggers';
         $response = $this->api('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
@@ -122,113 +129,105 @@ class TriggerManagerTest extends ApiTestCase
         ]);
 
         //verify count of data
-        $this->assertEquals(11, $response->original->meta->total);
+        $this->assertEquals($total, $response->original->meta->total);
+        //Verify the structure
+        $response->assertJsonStructure(['*' => self::STRUCTURE], $response->json('data'));
     }
 
     /**
      * Get a trigger of a project.
-     *
-     * @param Trigger $trigger
-     *
-     * @depends testCreateTrigger
      */
-    public function testGetTrigger(Trigger $trigger): void
+    public function testGetTrigger(): void
     {
-        // Stop here and mark this test as incomplete.
-        $this->markTestIncomplete(
-            'This test must be refactored to support database transaction style testing.'
-        );
- 
-        $this->auth(self::$user->username, self::DEFAULT_PASS);
+        //add trigger to process
+        $faker = Faker::create();
 
         //load trigger
-        $url = self::API_ROUTE . self::$process->uid . '/trigger/' . $trigger->uid;
+        $url = self::API_TEST_TRIGGER . $this->process->uid . '/trigger/' . factory(Trigger::class)->create([
+                'process_id' => $this->process->id,
+                'param' => $faker->words($faker->randomDigitNotNull)
+            ])->uid;
         $response = $this->api('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
 
         //verify structure paginate
-        $response->assertJsonStructure([
-            'uid',
-            'title',
-            'description',
-            'type',
-            'webbot',
-            'param'
-        ]);
-
-        //trigger not belong to process.
-        $trigger = factory(Trigger::class)->create();
-        $url = self::API_ROUTE . self::$process->uid . '/trigger/' . $trigger->uid;
-        $response = $this->api('GET', $url);
-        //Validate the answer is incorrect
-        $response->assertStatus(404);
-
+        $response->assertJsonStructure(self::STRUCTURE);
     }
 
     /**
-     * Update trigger in process
-     *
-     * @param Trigger $trigger
-     *
-     * @depends testCreateTrigger
+     * The trigger not belongs to process.
      */
-    public function testUpdateTrigger(Trigger $trigger): void
+    public function testGetTriggerNotBelongToProcess(): void
     {
-        // Stop here and mark this test as incomplete.
-        $this->markTestIncomplete(
-            'This test must be refactored to support database transaction style testing.'
-        );
- 
-        $this->auth(self::$user->username, self::DEFAULT_PASS);
+        //load trigger
+        $url = self::API_TEST_TRIGGER . $this->process->uid . '/trigger/' . factory(Trigger::class)->create()->uid;
+        $response = $this->api('GET', $url);
+        //Validate the answer is incorrect
+        $response->assertStatus(404);
+        $this->assertArrayHasKey('message', $response->json());
+    }
 
+    /**
+     * Parameters required for update of Triggers
+     */
+    public function testUpdateTriggerParametersRequired(): void
+    {
         $faker = Faker::create();
-        $data = [
+        //The post must have the required parameters
+        $url = self::API_TEST_TRIGGER . $this->process->uid . '/trigger/' . factory(Trigger::class)->create([
+                'process_id' => $this->process->id,
+                'param' => $faker->words($faker->randomDigitNotNull)
+            ])->uid;
+        $response = $this->api('PUT', $url, [
             'title' => '',
             'description' => $faker->sentence(6),
             'webbot' => $faker->sentence(2),
             'param' => $faker->words(3),
-        ];
-        //The post must have the required parameters
-        $url = self::API_ROUTE . self::$process->uid . '/trigger/' . $trigger->uid;
-        $response = $this->api('PUT', $url, $data);
+        ]);
         //Validate the answer is incorrect
         $response->assertStatus(422);
+    }
 
+    /**
+     * Update trigger in process
+     */
+    public function testUpdateTrigger(): void
+    {
+        $faker = Faker::create();
         //Post saved success
-        $data['title'] = $faker->sentence(2);
-        $url = self::API_ROUTE . self::$process->uid . '/trigger/' . $trigger->uid;
-        $response = $this->api('PUT', $url, $data);
+        $url = self::API_TEST_TRIGGER . $this->process->uid . '/trigger/' . factory(Trigger::class)->create([
+                'process_id' => $this->process->id,
+                'param' => $faker->words($faker->randomDigitNotNull)
+            ])->uid;
+        $response = $this->api('PUT', $url, [
+            'title' => $faker->sentence(2)
+        ]);
         //Validate the answer is correct
         $response->assertStatus(204);
     }
 
     /**
-     * Delete trigger in process
-     *
-     * @param Trigger $trigger
-     *
-     * @depends testCreateTrigger
+     * Delete Trigger in process
      */
-    public function testDeleteTrigger(Trigger $trigger): void
+    public function testDeleteTrigger(): void
     {
-        // Stop here and mark this test as incomplete.
-        $this->markTestIncomplete(
-            'This test must be refactored to support database transaction style testing.'
-        );
- 
-        $this->auth(self::$user->username, self::DEFAULT_PASS);
-
-        //Remove trigger
-        $url = self::API_ROUTE . self::$process->uid . '/trigger/' . $trigger->uid;
+        //Remove Trigger
+        $url = self::API_TEST_TRIGGER . $this->process->uid . '/trigger/' . factory(Trigger::class)->create(['process_id' => $this->process->id])->uid;
         $response = $this->api('DELETE', $url);
+        //Validate the answer is correct
         $response->assertStatus(204);
+    }
 
-        $trigger = factory(Trigger::class)->make();
-
-        //trigger not exist
-        $url = self::API_ROUTE . self::$process->uid . '/trigger/' . $trigger->uid;
+    /**
+     * The trigger does not exist in process
+     */
+    public function testDeleteTriggerNotExist(): void
+    {
+        //Trigger not exist
+        $url = self::API_TEST_TRIGGER . $this->process->uid . '/trigger/' . factory(Trigger::class)->make()->uid;
         $response = $this->api('DELETE', $url);
+        //Validate the answer is correct
         $response->assertStatus(404);
     }
 

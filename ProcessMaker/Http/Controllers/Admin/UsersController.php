@@ -1,5 +1,5 @@
 <?php
-namespace ProcessMaker\Http\Controllers\Management;
+namespace ProcessMaker\Http\Controllers\Admin;
 
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Model\User;
@@ -15,6 +15,6 @@ class UsersController extends Controller
     public function index()
     {
         $users = User::paginate(25);
-        return view('management.users.index');
+        return view('admin.users.index');
     }
 }
