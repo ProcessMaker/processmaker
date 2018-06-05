@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class CreateAPPMESSAGETable extends Migration {
+class CreateAppMessagetable extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -34,6 +34,10 @@ class CreateAPPMESSAGETable extends Migration {
 			$table->text('APP_MSG_ERROR', 16777215)->nullable();
 			$table->integer('TAS_ID')->nullable()->default(0)->index('INDEX_TAS_ID');
 			$table->integer('APP_NUMBER')->nullable()->default(0)->index('INDEX_APP_NUMBER');
+
+            $table->unsignedInteger('application_id');
+            // Setup relationship for Application we belong to
+            $table->foreign('application_id')->references('id')->on('APPLICATION')->onDelete('cascade');
 		});
 	}
 
