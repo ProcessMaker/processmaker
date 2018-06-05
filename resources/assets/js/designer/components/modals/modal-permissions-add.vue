@@ -103,7 +103,7 @@ export default {
   },
   methods:{
     onHidden() {
-      this.$emit('onHidden')
+      this.$emit('hidden')
     }
   },
   mounted() {

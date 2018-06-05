@@ -1,6 +1,6 @@
 <template>
     <div id="designer-container">
-        <component :is="modalComponent" :if="modalComponent" :on="onHidden"></component>
+        <component :is="modalComponent" :if="modalComponent" @hidden="onHidden"></component>
         <toptoolbar ref="toptoolbar"></toptoolbar>
         <div id="designer-subcontainer">
             <toolbar ref="toolbar"></toolbar>
@@ -67,7 +67,6 @@ export default {
       }
     },
     onHidden(){
-      console.log('hidden')
       this.modalComponent = null
     }
   }
