@@ -9,7 +9,7 @@ use ProcessMaker\Model\DbSource;
  */
 $factory->define(PmTable::class, function (Faker $faker) {
     return [
-        'name' => "TestPMTable",
+        'name' => $faker->regexify('[a-zA-Z0-9_]{5,10}'),
         'description' =>$faker->sentence(3),
         'type' => 'PMTABLE',
         'db_source_id' => function() {

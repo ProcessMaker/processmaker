@@ -2,110 +2,98 @@
 
 namespace Tests\Unit;
 
-use Ramsey\Uuid\Uuid;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Faker\Factory as Faker;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
+use League\OAuth2\Server\Entities\Traits\RefreshTokenTrait;
 use ProcessMaker\Facades\SchemaManager;
 use ProcessMaker\Model\PmTable;
 use Tests\TestCase;
 
 class SchemaManagerTest extends TestCase
 {
-    use DatabaseTransactions;
+    use RefreshTokenTrait;
+    //use DatabaseMigrations;
 
     /**
-     * Tests the addition or update of a column in a physical table
+     * Create PM table with columns
      */
-    public function testUpdateOrCreateColumn()
+    public function testCreateColumns(): void
     {
-        // Stop here and mark this test as incomplete.
-        $this->markTestIncomplete(
-            'This test must be refactored to support database transaction style testing.'
-        );
- 
-        SchemaManager::dropPhysicalTable('PMT_TESTPMTABLE');
-
+        $faker = Faker::create();
         $pmTable = factory(PmTable::class)->create();
 
-        $field1 = [
-            'additional_table_id' => $pmTable->id,
-            'name' => 'StringField',
-            'description' => 'String Field',
-            'type' => 'VARCHAR',
-            'size' => 100,
-            'null' => 1
-        ];
+        $numberFields = $faker->randomDigitNotNull;
+        $this->addColumns($pmTable, $numberFields);
+        $this->assertCount($numberFields, $pmTable->getTableMetadata()->columns, 'The Pmtable did not add all the columns');
+    }
 
-        $field2 = [
+    /**
+     * Create PM table with column auto increment
+     */
+    public function testCreateColumnAutoIncrement(): void
+    {
+        $faker = Faker::create();
+        $pmTable = factory(PmTable::class)->create();
+
+        $numberFields = $faker->randomDigitNotNull;
+        $this->addColumns($pmTable, $numberFields);
+
+        SchemaManager::updateOrCreateColumn($pmTable, [
             'additional_table_id' => $pmTable->id,
-            'name' => 'IntegerField',
-            'description' => 'Integer Field',
+            'name' => 'field_' . $numberFields++,
+            'description' => $faker->sentence(4),
             'type' => 'INTEGER',
-            'key' => 1
-        ];
+            'key' => 1,
+            'auto_increment' => 0
+        ]);
 
-        SchemaManager::updateOrCreateColumn($pmTable, $field1);
-        SchemaManager::updateOrCreateColumn($pmTable, $field2);
-        $metadata = $pmTable->getTableMetadata();
-        $this->assertCount(2, $metadata->columns, 'The PmTable should have two columns');
-
-
-        // now we change the column size
-        $field1['type'] = 'VARCHAR';
-        $field1['size'] = 500;
-        SchemaManager::updateOrCreateColumn($pmTable, $field1);
-        $metadata = $pmTable->getTableMetadata();
-        $this->assertEquals($metadata->columns[0]->size, 500, 'Now the first column is a varchar of 500 characters');
-
-        // now we change the column type
-        $field1['type'] = 'MEDIUMTEXT';
-        SchemaManager::updateOrCreateColumn($pmTable, $field1);
-        $metadata = $pmTable->getTableMetadata();
-        $this->assertEquals($metadata->columns[0]->type, 'text', 'The first column now must be returned as text');
-
-
-        // now we add a new column and change the key to the new table
-        $field3 = [
+        SchemaManager::updateOrCreateColumn($pmTable, [
             'additional_table_id' => $pmTable->id,
-            'name' => 'IntegerField2',
-            'description' => 'Integer Field2',
+            'name' => 'field_' . $numberFields++,
+            'description' => $faker->sentence(4),
             'type' => 'INTEGER',
-            'key' => 1
-        ];
+            'key' => 1,
+            'auto_increment' => 1
+        ]);
 
-        SchemaManager::updateOrCreateColumn($pmTable, $field3);
+        $this->assertCount($numberFields, $pmTable->getTableMetadata()->columns, 'The Pmtable did not add all the columns');
+    }
+
+    /**
+     * Update PM table with column
+     */
+    public function testUpdateColumns(): void
+    {
+        $faker = Faker::create();
+        $pmTable = factory(PmTable::class)->create();
+
+        $numberFields = $faker->randomDigitNotNull;
+        $this->addColumns($pmTable, $numberFields);
+
+        $numberRandom = $faker->numberBetween(0, $numberFields - 1);
+        $field = (array)$pmTable->getTableMetadata()->columns[$numberRandom];
+        $field['type'] = 'VARCHAR';
+        $field['size'] = $faker->numberBetween(100, 500);
+
+        SchemaManager::updateOrCreateColumn($pmTable, $field);
         $metadata = $pmTable->getTableMetadata();
-        $this->assertCount(1, $metadata->primaryKeyColumns, 'Just one column is primary key in the test table');
-        $this->assertArraySubset([$field3['name']], $metadata->primaryKeyColumns,
-            'Now the key is the new added column:'. $field3['name']);
+        $this->assertEquals($metadata->columns[$numberRandom]->type, 'string', 'The type of column is not the same');
+        $this->assertEquals($metadata->columns[$numberRandom]->size, $field['size'], 'The size of column is not the same');
     }
 
     /**
      * Tests that the columns' metadata is filled correctly from the schema
      */
-    public function testGetColumnsFromSchema()
+    public function testGetColumnsFromSchema(): void
     {
-        // Stop here and mark this test as incomplete.
-        $this->markTestIncomplete(
-            'This test must be refactored to support database transaction style testing.'
-        );
- 
-        SchemaManager::dropPhysicalTable('PMT_TESTPMTABLE');
-
+        $faker = Faker::create();
         $pmTable = factory(PmTable::class)->create();
 
-        $field1 = [
-            'additional_table_id' => $pmTable->id,
-            'name' => 'IntegerField',
-            'description' => 'Integer Field',
-            'type' => 'INTEGER',
-            'null' => 1
-        ];
-
-        SchemaManager::updateOrCreateColumn($pmTable, $field1);
-        $columns = SchemaManager::getMetadataFromSchema($pmTable, $field1)->columns;
-
-        $this->assertCount(1, $columns, 'The PmTable should have one column');
+        $numberFields = $faker->randomDigitNotNull;
+        $this->addColumns($pmTable, $numberFields);
+        $this->assertCount($numberFields, $pmTable->getTableMetadata()->columns, "The PmTable should have $numberFields columns");
     }
 
     /**
@@ -113,39 +101,19 @@ class SchemaManagerTest extends TestCase
      */
     public function testDropColumns()
     {
-        // Stop here and mark this test as incomplete.
-        $this->markTestIncomplete(
-            'This test must be refactored to support database transaction style testing.'
-        );
- 
-        SchemaManager::dropPhysicalTable('PMT_TESTPMTABLE');
-
+        $faker = Faker::create();
         $pmTable = factory(PmTable::class)->create();
 
-        $field1 = [
-            'additional_table_id' => $pmTable->id,
-            'name' => 'StringField',
-            'description' => 'String Field',
-            'type' => 'VARCHAR',
-            'size' => 250,
-            'null' => 1
-        ];
+        $numberFields = $faker->randomDigitNotNull;
+        $this->addColumns($pmTable, $numberFields);
 
-        $field2 = [
-            'additional_table_id' => $pmTable->id,
-            'name' => 'StringField2',
-            'description' => 'String Field 2',
-            'type' => 'VARCHAR',
-            'size' => 250,
-            'null' => 1
-        ];
+        $numberRandom = $faker->numberBetween(0, $numberFields - 1);
+        $field = (array)$pmTable->getTableMetadata()->columns[$numberRandom];
 
-        SchemaManager::updateOrCreateColumn($pmTable, $field1);
-        SchemaManager::updateOrCreateColumn($pmTable, $field2);
+        SchemaManager::dropColumn($pmTable, $field['name']);
+        $metadata = $pmTable->getTableMetadata();
+        $this->assertCount($numberFields - 1, $metadata->columns, 'The column was not deleted');
 
-        SchemaManager::dropColumn($pmTable, $field1['name']);
-        $columns = SchemaManager::getMetadataFromSchema($pmTable)->columns;
-        $this->assertCount(1, $columns, 'After the column delete, on column must remain');
     }
 
     /**
@@ -153,25 +121,35 @@ class SchemaManagerTest extends TestCase
      */
     public function testDropTable()
     {
-        // Stop here and mark this test as incomplete.
-        $this->markTestIncomplete(
-            'This test must be refactored to support database transaction style testing.'
-        );
- 
+        $faker = Faker::create();
         $pmTable = factory(PmTable::class)->create();
 
-        $field1 = [
-            'additional_table_id' => $pmTable->id,
-            'name' => 'StringField',
-            'description' => 'String Field',
-            'type' => 'VARCHAR',
-            'size' => 250,
-            'null' => 1
-        ];
+        $numberFields = $faker->randomDigitNotNull;
+        $this->addColumns($pmTable, $numberFields);
 
-        SchemaManager::updateOrCreateColumn($pmTable, $field1);
         SchemaManager::dropPhysicalTable($pmTable->physicalTableName());
-
         $this->assertNotTrue(Schema::hasTable($pmTable->physicalTableName()));
     }
+
+    /**
+     * Add columns to PmTable
+     *
+     * @param PmTable $pmTable
+     * @param integer $numberColumns
+     */
+    private function addColumns(PmTable $pmTable, $numberColumns): void
+    {
+        $faker = Faker::create();
+        for ($i = 0; $i < $numberColumns; $i++) {
+            $type = $faker->randomElement(['INTEGER', 'VARCHAR', 'MEDIUMTEXT']);
+            SchemaManager::updateOrCreateColumn($pmTable, [
+                'additional_table_id' => $pmTable->id,
+                'name' => 'field_' . $i,
+                'description' => $faker->sentence(4),
+                'type' => $type,
+                'size' => 100,
+            ]);
+        }
+    }
+
 }
