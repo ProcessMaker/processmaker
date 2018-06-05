@@ -10,7 +10,7 @@
 
         <div class="form-group">
         <label>Content</label>
-          <Editor :init="{menubar: false, branding: false, height : 250, theme: 'modern'}"></Editor>
+          <Editor :init="{menubar: false, branding: false, height : 250, statusbar: false, theme_url: '/js/designer/themes/custom/skin.min.css'}"></Editor>
         </div>
     </form>
 
