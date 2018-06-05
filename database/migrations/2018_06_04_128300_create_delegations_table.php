@@ -40,9 +40,9 @@ class CreateDelegationsTable extends Migration
             $table->unsignedInteger('user_id')->default(null)->index('userididx');
             $table->index(['application_id', 'index']);
 
-            $table->foreign('application_id')->references('id')->on('APPLICATION');
-            $table->foreign('task_id')->references('id')->on('tasks');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('application_id')->references('id')->on('APPLICATION')->onDelete('cascade');
+            $table->foreign('task_id')->references('id')->on('tasks')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
 
         });
     }
