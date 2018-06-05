@@ -19,9 +19,10 @@ class CreateProcessUsersTable extends Migration
             $table->uuid('PRO_UID');
             $table->uuid('USR_UID');
             $table->string('PU_TYPE', 20);
+            $table->integer('process_id')->unsigned();
 
             // Setup relationship for process we belong to
-            //$table->foreign('process_id')->references('id')->on('processes')->onDelete('cascade');
+            $table->foreign('process_id')->references('id')->on('processes')->onDelete('cascade');
         });
     }
 

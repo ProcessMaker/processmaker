@@ -16,6 +16,7 @@ class CreateEmailServersTable extends Migration
         Schema::create('email_servers', function (Blueprint $table) {
             $table->increments('id');
             $table->uuid('uid');
+            $table->integer('process_id')->unsigned();
             $table->enum('engine', ['MAIL', 'PHPMAILER'])->default('MAIL');
             $table->string('server')->default('');
             $table->integer('port')->default(0);
@@ -29,6 +30,9 @@ class CreateEmailServersTable extends Migration
             $table->string('mail_to', 256)->nullable()->default('');
             $table->boolean('by_default')->default(false);
             $table->timestamps();
+
+            // Setup relationship for Process we belong to
+            $table->foreign('process_id')->references('id')->on('processes')->onDelete('cascade');
         });
     }
 

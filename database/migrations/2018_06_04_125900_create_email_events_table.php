@@ -25,6 +25,11 @@ class CreateEmailEventsTable extends Migration
             $table->string('EMAIL_SERVER_UID', 32)->nullable()->default('');
             $table->dateTime('EMAIL_EVENT_CREATE');
             $table->dateTime('EMAIL_EVENT_UPDATE');
+
+            $table->integer('process_id')->unsigned();
+
+            // Setup relationship for Process we belong to
+            $table->foreign('process_id')->references('id')->on('processes')->onDelete('cascade');
         });
     }
 

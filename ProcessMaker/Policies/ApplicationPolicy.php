@@ -31,6 +31,7 @@ class ApplicationPolicy
             return true;
         }
 
+
         // Check to see if we have SUMMARY_FORM object permission
         /**
          * @todo perhaps replace with a can() policy check on process policy
@@ -38,11 +39,11 @@ class ApplicationPolicy
         // Let's define the ids we'll look for when finding permissions
         $ids = array_merge(['0', '', $user->USR_UID], $user->groups()->pluck('groups.uid')->toArray());
         // Since this is our last check, we'll just return the result boolean
-        return DB::table('OBJECT_PERMISSION')->where('PRO_UID', $application->process->PRO_UID)
-            ->where('OP_ACTION', 'VIEW')
-            ->whereIn('OP_OBJ_TYPE', ['ANY', 'SUMMARY_FORM'])
-            ->whereIn('OP_CASE_STATUS', ['ALL', '', '0', $application->APP_STATUS])
-            ->whereIn('USR_UID', $ids)
+        return DB::table('object_permissions')->where('process_id', $application->process->id)
+            ->where('action', 'VIEW')
+            ->whereIn('obj_type', ['ANY', 'SUMMARY_FORM'])
+            ->whereIn('case_status', ['ALL', '', '0', $application->APP_STATUS])
+            ->whereIn('user_id', $ids)
             ->exists();
     }
 }
