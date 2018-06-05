@@ -37,7 +37,8 @@ export default {
     toolbar,
     toptoolbar,
     designerobjectsmenu,
-    crown
+    crown,
+    Editor
   }
 };
 </script>
