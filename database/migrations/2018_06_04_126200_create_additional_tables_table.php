@@ -22,8 +22,8 @@ class CreateAdditionalTablesTable extends Migration
             $table->string('grid')->nullable();
             $table->string('tags')->nullable();
 
-            $table->integer('db_source_id')->unsigned();
-            $table->integer('process_id')->unsigned()->index('indexAdditionalProcess');
+            $table->integer('db_source_id')->nullable()->unsigned();
+            $table->integer('process_id')->nullable()->unsigned()->index('indexAdditionalProcess');
 
 
             // Setup relationship for Db Sources we belong to
