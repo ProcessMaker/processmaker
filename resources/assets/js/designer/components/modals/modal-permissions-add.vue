@@ -1,5 +1,5 @@
 <template>
-  <b-modal ref="modal" size="md" centered title="Create Permission">
+  <b-modal ref="modal" size="md" @hidden="onHidden" centered title="Create Permission">
       <form>
         <div class="form-group">
           <label for="casesStatus" v-model="casesStatus">{{casesStatus}}</label>
@@ -99,6 +99,11 @@ export default {
       'permissionSelectOptions':[
         'View', 'Block'
       ]
+    }
+  },
+  methods:{
+    onHidden() {
+      this.$emit('onHidden')
     }
   },
   mounted() {

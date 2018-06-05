@@ -1,6 +1,6 @@
 <template>
     <div id="designer-container">
-        <component :is="modalComponent" :if="modalComponent"></component>
+        <component :is="modalComponent" :if="modalComponent" :on="onHidden"></component>
         <toptoolbar ref="toptoolbar"></toptoolbar>
         <div id="designer-subcontainer">
             <toolbar ref="toolbar"></toolbar>
@@ -43,7 +43,7 @@ export default {
     toolbar,
     toptoolbar,
     designerobjectsmenu,
-    "modal-permissions-add": modalPermissionsAdd
+    modalPermissionsAdd
   },
   data() {
     return {
@@ -65,6 +65,10 @@ export default {
         default:
           alert(key + ' add modal not yet implemented.')
       }
+    },
+    onHidden(){
+      console.log('hidden')
+      this.modalComponent = null
     }
   }
 };
