@@ -10,7 +10,9 @@
 
         <div class="form-group">
         <label>Content</label>
-          <Editor :init="{menubar: false, branding: false, height : 250, statusbar: false, theme_url: '/js/designer/themes/custom/skin.min.css'}"></Editor>
+          <div class="editor-wrapper">
+            <Editor :init="{menubar: false, branding: false, height : 250, width: 350, toolbar_items_size : 'small', statusbar: false, skin: 'custom'}"></Editor>
+          </div>
         </div>
     </form>
 
@@ -55,5 +57,9 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-
+  .editor-wrapper{
+    border: solid 1px #b6bfc6;
+    padding: 0 20px 0 40px;
+    border-radius: 2px;
+  }
 </style>
