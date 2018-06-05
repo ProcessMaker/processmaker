@@ -13,16 +13,18 @@ class CreateProcessUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create('PROCESS_USER', function(Blueprint $table)
+        Schema::create('process_users', function(Blueprint $table)
         {
-            $table->uuid('PU_UID')->default('')->primary();
-            $table->uuid('PRO_UID');
-            $table->uuid('USR_UID');
-            $table->string('PU_TYPE', 20);
+            $table->increments('id');
+            $table->uuid('uid')->unique();
             $table->integer('process_id')->unsigned();
+            $table->integer('user_id')->unsigned();
+            $table->string('type', 20);
 
             // Setup relationship for process we belong to
             $table->foreign('process_id')->references('id')->on('processes')->onDelete('cascade');
+            // Setup relationship for User we belong to
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
@@ -33,6 +35,6 @@ class CreateProcessUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('PROCESS_USER');
+        Schema::dropIfExists('process_users');
     }
 }

@@ -19,8 +19,9 @@ class CreateStepSupervisorsTable extends Migration
             $table->increments('id');
             $table->uuid('uid')->unique();
             $table->integer('step_id')->unsigned();
+            //relation with form, input, output document.
             $table->integer('object_id')->unsigned();
-            $table->string('supervisors_type', 20)->default('DYNAFORM');
+            $table->enum('supervisors_type', ['FORM', 'INPUT', 'OUTPUT'])->default('FORM');
             $table->integer('position')->default(0);
             $table->index(['step_id', 'object_id', 'supervisors_type'], 'indexStepSupervisors');
 

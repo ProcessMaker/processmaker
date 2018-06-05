@@ -28,7 +28,7 @@ class CreateReportTableColumnsTable extends Migration
             // Setup relationship for Form we belong to
             $table->foreign('dynaform_id')->references('id')->on('forms')->onDelete('cascade');
             // Setup relationship for Process Variable we belong to
-            //$table->foreign('process_variable_id')->references('VAR_ID')->on('PROCESS_VARIABLES')->onDelete('cascade');
+            $table->foreign('process_variable_id')->references('id')->on('process_variables')->onDelete('cascade');
         });
     }
 

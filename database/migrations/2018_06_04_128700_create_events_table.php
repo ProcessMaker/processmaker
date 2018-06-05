@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class CreateSubApplicationsTable extends Migration
+class CreateEventsTable extends Migration
 {
 
     /**
@@ -14,17 +14,15 @@ class CreateSubApplicationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('sub_applications', function (Blueprint $table) {
+        Schema::create('events', function (Blueprint $table) {
             $table->increments('id');
             $table->uuid('uid')->unique();
             $table->integer('application_id')->unsigned();
-            $table->integer('del_index_parent')->default(0);
-            $table->integer('del_thread_parent')->default(0);
-            $table->string('status', 32)->default('');
-            $table->text('values_out');
-            $table->text('values_in')->nullable();
-            $table->dateTime('init_date')->nullable();
-            $table->dateTime('finish_date')->nullable();
+            $table->integer('index')->default(0);
+            $table->dateTime('action_date');
+            $table->boolean('attempts')->default(false);
+            $table->dateTime('last_execution_date')->nullable();
+            $table->string('status', 32)->default('OPEN');
 
             // Setup relationship for Application we belong to
             $table->foreign('application_id')->references('id')->on('APPLICATION')->onDelete('cascade');
@@ -39,7 +37,7 @@ class CreateSubApplicationsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('sub_applications');
+        Schema::drop('events');
     }
 
 }

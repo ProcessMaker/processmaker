@@ -53,7 +53,7 @@ class CreateTasksTable extends Migration
              *************************************************************************************************/
 
             //Options to run a trigger when you have a Self service timeout
-            $table->unsignedInteger('self_service_trigger_id')->nullable();
+            $table->unsignedInteger('trigger_id')->nullable();
 
             //self service json configuration
             $table->json('self_service_timeout_configuration')->nullable();
@@ -77,7 +77,7 @@ class CreateTasksTable extends Migration
             // setup relationships of the task with processes and other tables
             $table->foreign('process_id')->references('id')->on('processes')->ondelete('cascade');
             // setup relationships of the task with triggers and other tables
-            $table->foreign('self_service_trigger_id')->references('id')->on('triggers')->ondelete('cascade');
+            $table->foreign('trigger_id')->references('id')->on('triggers')->ondelete('cascade');
         });
     }
 

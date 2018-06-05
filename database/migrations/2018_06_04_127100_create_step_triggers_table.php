@@ -19,7 +19,7 @@ class CreateStepTriggersTable extends Migration
             $table->uuid('uid')->unique();
             $table->integer('step_id')->unsigned();
             $table->integer('trigger_id')->unsigned();
-            $table->string('TYPE', 20)->default('');
+            $table->enum('TYPE', ['AFTER', 'BEFORE'])->default('AFTER');
             $table->string('condition')->default('');
             $table->integer('position')->default(0);
             $table->index(['step_id', 'trigger_id', 'TYPE'], 'indexStepTriggers');

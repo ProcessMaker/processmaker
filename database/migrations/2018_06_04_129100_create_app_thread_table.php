@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
@@ -19,7 +20,7 @@ class CreateAppThreadTable extends Migration
             $table->integer('APP_THREAD_PARENT')->default(0);
             $table->string('APP_THREAD_STATUS', 32)->default('OPEN');
             $table->integer('DEL_INDEX')->default(0);
-            $table->primary(['APP_UID', 'APP_THREAD_INDEX']);
+            $table->primary(['application_id', 'APP_THREAD_INDEX']);
 
             $table->unsignedInteger('application_id');
             // Setup relationship for Application we belong to

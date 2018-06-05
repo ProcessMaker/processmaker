@@ -33,10 +33,10 @@ use Watson\Validating\ValidatingTrait;
  * @property string $visibility_id
  * @property bool $show_delegate
  * @property bool $show_dynaform
- * @property string $category
+ * @property integer process_category_id
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
- * @property string $creator_user_id
+ * @property int $user_id
  * @property int $height
  * @property int $width
  * @property int $title_x
@@ -120,10 +120,10 @@ class Process extends Model
         'visibility',
         'show_delegate',
         'show_dynaform',
-        'category',
+        'process_category_id',
         'updated_at',
         'created_at',
-        'creator_user_id',
+        'user_id',
         'height',
         'width',
         'title_x',
@@ -169,15 +169,15 @@ class Process extends Model
         'name' => 'required',
         'process_parent_id' => 'exists:processes',
         'status' => 'in:' . self::STATUS_ACTIVE . ',' . self::STATUS_INACTIVE,
-        'create_trigger_id' => 'exists:triggers',
+        'create_trigger_id' => 'exists:triggers,id',
         'open_trigger_id' => 'exists:triggers',
         'deleted_trigger_id' => 'nullable|max:32',
         'canceled_trigger_id' => 'nullable|max:32',
         'paused_trigger_id' => 'nullable|max:32',
         'reassigned_trigger_id' => 'nullable|max:32',
         'unpaused_trigger_id' => 'nullable|max:32',
-        'category' => 'max:32',
-        'creator_user_id' => 'exists:users,id',
+        'process_category_id' => 'exists:process_categories,id',
+        'user_id' => 'exists:users,id',
     ];
 
     /**
@@ -188,17 +188,17 @@ class Process extends Model
     public function isSupervisor(User $user)
     {
         // First determine if we're a direct supervisor
-        if (DB::table('PROCESS_USER')->where('PRO_UID', $this->uid)
-            ->where('USR_UID', $user->uid)
-            ->where('PU_TYPE', 'SUPERVISOR')
+        if (DB::table('process_users')->where('process_id', $this->id)
+            ->where('user_id', $user->id)
+            ->where('type', 'SUPERVISOR')
             ->exists()) {
             return true;
         }
 
         // If not found, let's determine if we're in any of the supervisor groups
-        return DB::table('PROCESS_USER')->where('PRO_UID', $this->id)
-            ->whereIn('USR_UID', $user->groups()->pluck('groups.uid'))
-            ->where('PU_TYPE', 'GROUP_SUPERVISOR')
+        return DB::table('process_users')->where('process_id', $this->id)
+            ->whereIn('user_id', $user->groups()->pluck('groups.id'))
+            ->where('type', 'GROUP_SUPERVISOR')
             ->exists();
     }
 
@@ -209,12 +209,11 @@ class Process extends Model
     public function addUserSupervisor(User $user)
     {
         if (!$this->isSupervisor($user)) {
-            DB::table('PROCESS_USER')->insert([
-                'PU_UID'  => \Ramsey\Uuid\Uuid::uuid4(),
-                'PRO_UID' => $this->uid,
+            DB::table('process_users')->insert([
+                'uid'  => \Ramsey\Uuid\Uuid::uuid4(),
                 'process_id' => $this->id,
-                'USR_UID' => $user->uid,
-                'PU_TYPE' => 'SUPERVISOR'
+                'user_id' => $user->id,
+                'type' => 'SUPERVISOR'
             ]);
         }
     }
@@ -225,13 +224,14 @@ class Process extends Model
      */
     public function addGroupSupervisor(Group $group)
     {
-        if (!DB::table('PROCESS_USER')->where('process_id', $this->id)
-            ->where('USR_UID', $group->uid)
+        if (!DB::table('process_users')->where('process_id', $this->id)
+            ->where('user_id', $group->id)
             ->where('type', 'GROUP_SUPERVISOR')
             ->exists()) {
             DB::table('process_users')->insert([
-                'PR_UID' => $this->uid,
-                'USR_UID' => $group->uid,
+                'uid'  => \Ramsey\Uuid\Uuid::uuid4(),
+                'process_id' => $this->id,
+                'user_id' => $group->id,
                 'type' => 'SUPERVISOR'
             ]);
         }
@@ -274,7 +274,7 @@ class Process extends Model
      */
     public function category()
     {
-        return $this->belongsTo(ProcessCategory::class, "category_id");
+        return $this->belongsTo(ProcessCategory::class, 'id');
     }
 
     /**
@@ -383,7 +383,7 @@ class Process extends Model
      */
     public function creator()
     {
-        return $this->belongsTo(User::class, 'creator_user_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
 }

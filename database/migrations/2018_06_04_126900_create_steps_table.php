@@ -20,8 +20,9 @@ class CreateStepsTable extends Migration
             $table->integer('process_id')->unsigned();
             $table->integer('task_id')->unsigned();
 
+            //relation with form, input, output document.
             $table->integer('object_id')->unsigned();
-            $table->string('steps_type', 20)->default('DYNAFORM');
+            $table->enum('steps_type', ['FORM', 'INPUT', 'OUTPUT'])->default('FORM');
 
             $table->text('condition');
             $table->integer('position')->default(0);

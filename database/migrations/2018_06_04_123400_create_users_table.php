@@ -32,7 +32,6 @@ class CreateUsersTable extends Migration
             $table->string('fax')->nullable();
             $table->string('cell')->nullable();
             $table->string('postal')->nullable();
-            $table->unsignedInteger('department_id')->nullable();
             $table->string('title')->nullable();
             $table->date('birthdate')->nullable();
             $table->unsignedInteger('role_id')->nullable();
@@ -42,10 +41,6 @@ class CreateUsersTable extends Migration
 
             // setup relationship for Rol we belong to
             $table->foreign('role_id')->references('id')->on('roles')->ondelete('cascade');
-
-            //check table
-            // setup relationship for Department we belong to
-            //$table->foreign('department_id')->references('id')->on('departments')->ondelete('cascade');
         });
     }
 

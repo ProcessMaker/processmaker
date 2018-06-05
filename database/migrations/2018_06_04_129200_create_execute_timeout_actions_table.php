@@ -1,9 +1,10 @@
 <?php
 
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class CreateAppTimeoutActionExecutedTable extends Migration
+class CreateExecuteTimeoutActionsTable extends Migration
 {
 
     /**
@@ -13,12 +14,13 @@ class CreateAppTimeoutActionExecutedTable extends Migration
      */
     public function up()
     {
-        Schema::create('APP_TIMEOUT_ACTION_EXECUTED', function (Blueprint $table) {
-            $table->string('APP_UID', 32)->default('')->primary();
-            $table->integer('DEL_INDEX')->default(0);
-            $table->dateTime('EXECUTION_DATE')->nullable();
-
+        Schema::create('execute_timeout_actions', function (Blueprint $table) {
+            $table->increments('id');
+            $table->uuid('uid')->unique();
             $table->unsignedInteger('application_id');
+            $table->integer('index')->default(0);
+            $table->dateTime('execution_date')->nullable();
+
             // Setup relationship for Application we belong to
             $table->foreign('application_id')->references('id')->on('APPLICATION')->onDelete('cascade');
         });
@@ -32,7 +34,7 @@ class CreateAppTimeoutActionExecutedTable extends Migration
      */
     public function down()
     {
-        Schema::drop('APP_TIMEOUT_ACTION_EXECUTED');
+        Schema::drop('execute_timeout_actions');
     }
 
 }

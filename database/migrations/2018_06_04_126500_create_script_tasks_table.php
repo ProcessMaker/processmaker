@@ -18,8 +18,9 @@ class CreateScriptTasksTable extends Migration
             $table->increments('id');
             $table->uuid('uid')->unique();
             $table->integer('tasks_id')->unsigned();
+            //Id Relations with triggers, services
             $table->integer('object_id')->unsigned();
-            $table->string('script_tasks_type', 10)->default('TRIGGER');
+            $table->enum('script_tasks_type', ['TRIGGER', 'SERVICE'])->default('TRIGGER');
 
             // Setup relationship for Tasks we belong to
             $table->foreign('tasks_id')->references('id')->on('tasks')->onDelete('cascade');

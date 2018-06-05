@@ -16,12 +16,12 @@ class CreateIsoSubDivisionsTable extends Migration
         Schema::create('iso_sub_divisions', function(Blueprint $table)
         {
             $table->increments('id');
-            $table->unsignedInteger('country_id');
+            $table->unsignedInteger('iso_country_id');
             $table->string('uid', 2)->unique();
             $table->string('name')->default('');
 
             // setup relationship for Country we belong to
-            $table->foreign('country_id')->references('id')->on('iso_countries')->ondelete('cascade');
+            $table->foreign('iso_country_id')->references('id')->on('iso_countries')->ondelete('cascade');
         });
     }
 

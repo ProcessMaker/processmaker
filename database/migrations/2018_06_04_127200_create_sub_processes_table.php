@@ -19,7 +19,6 @@ class CreateSubProcessesTable extends Migration
             $table->uuid('uid')->unique();
             $table->integer('process_id')->unsigned();
             $table->integer('task_id')->unsigned();
-            $table->integer('parent_process_id')->unsigned();
             $table->integer('parent_task_id')->unsigned();
 
             $table->string('type', 20)->default('');
@@ -29,14 +28,11 @@ class CreateSubProcessesTable extends Migration
             $table->text('variables_out')->nullable();
             $table->text('variables_in')->nullable();
             $table->string('grid_in', 50)->default('');
-            $table->index(['process_id', 'parent_process_id'], 'indexSubProcess');
 
             // Setup relationship for Process we belong to
             $table->foreign('process_id')->references('id')->on('processes')->onDelete('cascade');
             // Setup relationship for Task we belong to
             $table->foreign('task_id')->references('id')->on('tasks')->onDelete('cascade');
-            // Setup relationship for Process we belong to
-            $table->foreign('parent_process_id')->references('id')->on('processes')->onDelete('cascade');
             // Setup relationship for Task we belong to
             $table->foreign('parent_task_id')->references('id')->on('tasks')->onDelete('cascade');
         });

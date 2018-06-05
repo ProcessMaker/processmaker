@@ -17,7 +17,7 @@ class CreateConfigurationsTable extends Migration
         Schema::create('configurations', function (Blueprint $table) {
             $table->increments('id');
             $table->uuid('uid')->unique();
-            $table->string('object_uid', 128)->default('');
+            $table->string('parameter', 128)->default('');
             $table->text('value')->nullable();
             $table->integer('user_id')->nullable()->unsigned();
             $table->integer('process_id')->nullable()->unsigned();

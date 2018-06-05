@@ -13,25 +13,30 @@ class CreateProcessVariablesTable extends Migration
      */
     public function up()
     {
-        Schema::create('PROCESS_VARIABLES', function(Blueprint $table)
-        {
-            $table->integer('VAR_ID', true);
-            $table->string('VAR_UID', 32)->unique();
-            $table->integer('PRO_ID')->nullable();
-            $table->string('VAR_NAME')->nullable()->default('');
-            $table->string('VAR_FIELD_TYPE', 32)->nullable()->default('');
-            $table->integer('VAR_FIELD_SIZE')->nullable();
-            $table->string('VAR_LABEL')->nullable()->default('');
-            $table->uuid('VAR_DBCONNECTION')->nullable();
-            $table->text('VAR_SQL', 16777215)->nullable();
-            $table->boolean('VAR_NULL')->nullable()->default(0);
-            $table->string('VAR_DEFAULT', 32)->nullable()->default('');
-            $table->text('VAR_ACCEPTED_VALUES', 16777215)->nullable();
-            $table->string('INP_DOC_UID', 32)->nullable()->default('');
-            $table->unique(['PRO_ID','VAR_NAME'], 'uniqueVariableName');
+        Schema::create('process_variables', function (Blueprint $table) {
+            $table->increments('id');
+            $table->uuid('uid');
+            $table->integer('process_id')->nullable()->unsigned();
+            $table->integer('input_document_id')->nullable()->unsigned();
+            $table->integer('db_source_id')->nullable()->unsigned();
+
+            $table->string('name');
+            $table->string('field_type', 32)->nullable()->default('');
+            $table->integer('field_size')->nullable();
+            $table->string('label')->default('');
+            $table->text('sql')->nullable();
+            $table->boolean('null')->default(false);
+            $table->string('default', 32)->default('');
+            $table->text('accepted_values')->nullable('');
+
+            $table->unique(['process_id', 'name'], 'uniqueVariableName');
 
             // Setup relationship for process we belong to
-            //$table->foreign('process_id')->references('id')->on('processes')->onDelete('cascade');
+            $table->foreign('process_id')->references('id')->on('processes')->onDelete('cascade');
+            // Setup relationship for process we belong to
+            $table->foreign('input_document_id')->references('id')->on('input_documents')->onDelete('cascade');
+            // Setup relationship for process we belong to
+            $table->foreign('db_source_id')->references('id')->on('db_sources')->onDelete('cascade');
         });
     }
 
@@ -42,6 +47,6 @@ class CreateProcessVariablesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('PROCESS_VARIABLES');
+        Schema::dropIfExists('process_variables');
     }
 }
