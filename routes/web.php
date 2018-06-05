@@ -44,7 +44,12 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
         return view('userprofile', ['title' => 'Dashboard']);
     })->name('userprofile');
 
-    $this->get('/manage/users', 'Management\UsersController@index')->name('management-users-index');
+    Router::group([
+        'middleware' => ['permission:PM_USERS']
+    ], function() {
+      $this->get('/manage/users', 'Management\UsersController@index')->name('management-users-index');
+      $this->get('/manage/roles', 'Management\RolesController@index')->name('management-roles-index');
+    });
 });
 
 
