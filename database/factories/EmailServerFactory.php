@@ -1,6 +1,7 @@
 <?php
 
 use ProcessMaker\Model\EmailServer;
+use ProcessMaker\Model\Process;
 use Ramsey\Uuid\Uuid;
 
 /**
@@ -13,6 +14,9 @@ $factory->define(EmailServer::class, function (Faker $faker) {
 
     return [
         'uid' => Uuid::uuid4(),
+        'process_id' => function () {
+            return factory(Process::class)->create()->id;
+        },
         'from_name' => $faker->sentence(5),
         'account' => $faker->freeEmail,
         'password' => $faker->password,
