@@ -15,9 +15,9 @@ class CreateProcessVariablesTable extends Migration
     {
         Schema::create('PROCESS_VARIABLES', function(Blueprint $table)
         {
-            $table->integer('VAR_ID', true);
+            $table->increments('VAR_ID');
             $table->string('VAR_UID', 32)->unique();
-            $table->integer('PRO_ID')->nullable();
+            $table->unsignedInteger('PRO_ID');
             $table->string('VAR_NAME')->nullable()->default('');
             $table->string('VAR_FIELD_TYPE', 32)->nullable()->default('');
             $table->integer('VAR_FIELD_SIZE')->nullable();
@@ -31,7 +31,7 @@ class CreateProcessVariablesTable extends Migration
             $table->unique(['PRO_ID','VAR_NAME'], 'uniqueVariableName');
 
             // Setup relationship for process we belong to
-            //$table->foreign('process_id')->references('id')->on('processes')->onDelete('cascade');
+            $table->foreign('PRO_ID')->references('id')->on('processes')->onDelete('cascade');
         });
     }
 
