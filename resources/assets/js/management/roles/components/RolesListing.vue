@@ -1,6 +1,18 @@
 <template>
   <div>
-    <vuetable :dataManager="dataManager" :sortOrder="sortOrder" :css="css" :api-mode="false"  @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data" pagination-path="meta"></vuetable> 
+    <vuetable :dataManager="dataManager" :sortOrder="sortOrder" :css="css" :api-mode="false"  @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data" pagination-path="meta">
+        <template slot="actions" slot-scope="props"> 
+          <div class="actions">
+            <i class="fas fa-ellipsis-h"></i>
+            <div class="popout">
+              <b-btn variant="action" @click="onAction('edit-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="Edit"><i class="fas fa-edit"></i></b-btn>
+              <b-btn variant="action" @click="onAction('remove-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="Remove"><i class="fas fa-trash-alt"></i></b-btn>
+              <b-btn variant="action" @click="onAction('users-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="Users"><i class="fas fa-users"></i></b-btn>
+              <b-btn variant="action" @click="onAction('permissions-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="Permissions"><i class="fas fa-user-lock"></i></b-btn>
+            </div>
+          </div>
+    </template>  
+    </vuetable> 
     <pagination single="Role" plural="Roles" :perPageSelectEnabled="true" @changePerPage="changePerPage" @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
    </div>
 </template>
@@ -8,7 +20,7 @@
 <script>
 import Vuetable from "vuetable-2/src/components/Vuetable";
 import Pagination from "../../../components/common/Pagination";
-import moment from 'moment'
+import moment from "moment";
 
 export default {
   components: {
@@ -22,8 +34,8 @@ export default {
       data: [],
       page: 1,
       perPage: 10,
-      orderBy: 'name',
-      orderDirection: 'asc',
+      orderBy: "name",
+      orderDirection: "asc",
       loading: false,
       cancelToken: null,
       css: {
@@ -71,7 +83,7 @@ export default {
           sortField: "status",
           callback: this.formatStatus
         },
-       {
+        {
           title: "Active Users",
           name: "total_users",
           sortField: "total_users",
@@ -88,6 +100,10 @@ export default {
           name: "updated_at",
           sortField: "updated_at",
           callback: this.formatDate
+        },
+        {
+          name: "__slot:actions",
+          title: ""
         }
       ]
     };
@@ -105,14 +121,14 @@ export default {
   },
   methods: {
     formatDate(value) {
-      return moment(value).format('l LTS')
+      return moment(value).format("l LTS");
     },
     formatActiveUsers(value) {
-      return '<div class="text-center">' + value + '</div>';
+      return '<div class="text-center">' + value + "</div>";
     },
     formatStatus(value) {
       value = value.toLowerCase();
-      let response = '<i class="fas fa-circle ' + value +'"></i> ';
+      let response = '<i class="fas fa-circle ' + value + '"></i> ';
       value = value.charAt(0).toUpperCase() + value.slice(1);
       return response + value;
     },
@@ -127,7 +143,7 @@ export default {
     },
     fetch() {
       this.loading = true;
-      if(this.cancelToken) {
+      if (this.cancelToken) {
         this.cancelToken();
         this.cancelToken = null;
       }
@@ -142,11 +158,11 @@ export default {
             "&filter=" +
             this.filter +
             "&order_by=" +
-            this.orderBy + 
+            this.orderBy +
             "&order_direction=" +
             this.orderDirection,
           {
-            cancelToken: new CancelToken((c) => {
+            cancelToken: new CancelToken(c => {
               this.cancelToken = c;
             })
           }
@@ -190,7 +206,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 /deep/ th#_total_users {
   width: 150px;
   text-align: center;
@@ -198,6 +213,10 @@ export default {
 
 /deep/ th#_description {
   width: 250px;
+}
+
+/deep/ tr:hover td {
+  background-color: #d8d8d8;
 }
 
 /deep/ i.fa-circle {
@@ -209,6 +228,48 @@ export default {
   }
 }
 
+/deep/ .vuetable-slot {
+  position: relative;
+}
 
+/deep/ .actions {
+  cursor: pointer;
+
+  .popout {
+    display: none;
+    align-items: center;
+    position: absolute;
+    background-color: #d8d8d8;
+    right: 0px;
+    top: 0px;
+    font-size: 17px;
+    text-align: right;
+    height: 42px;
+
+    button.btn-action {
+      color: #212529;
+      height: 32px;
+      width: 32px;
+      margin-left: 4px;
+      margin-right: 4px;
+      background-color: #d8d8d8;
+      border-color: #d8d8d8;
+      text-align: center;
+      padding: 0px;
+
+      &:hover {
+        background-color: white;
+        border-radius: 2px;
+      }
+  }
+    
+  }
+
+  &:hover {
+    .popout {
+      display: flex;
+    }
+  }
+}
 </style>
 
