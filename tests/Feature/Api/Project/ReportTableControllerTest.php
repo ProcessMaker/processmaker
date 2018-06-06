@@ -252,10 +252,10 @@ class ReportTableControllerTest extends ApiTestCase
         }
 
         $v1 = factory(ProcessVariable::class)->create($varsParams);
-        $var1 = ProcessVariable::where('VAR_UID', $v1->VAR_UID)->first();
+        $var1 = ProcessVariable::where('uid', $v1->uid)->first();
 
         $v2 = factory(ProcessVariable::class)->create($varsParams);
-        $var2 = ProcessVariable::where('VAR_UID', $v2->VAR_UID)->first();
+        $var2 = ProcessVariable::where('uid', $v2->uid)->first();
 
         $field1 = factory(ReportTableColumn::class)
             ->create([

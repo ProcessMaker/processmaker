@@ -22,7 +22,7 @@ class OAuthClientSeeder extends Seeder
             'description' => 'ProcessMaker Web App',
             'website' => 'www.processmaker.com',
             'redirect_uri' => config('app.url') . '/oauth2/grant',
-            'creator_user_id' => User::where('username', 'admin')->first()->id
+            'user_id' => User::where('username', 'admin')->first()->id
         ]);
    }
 }

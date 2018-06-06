@@ -53,7 +53,7 @@ class ProcessesTest extends ApiTestCase
     /**
      * Test to verify our processes listing api endpoint works without any filters
      */
-    public function testProcessesListing()
+    public function testProcessesListing(): void
     {
         $user = $this->authenticateAsAdmin();
         // Create some processes
@@ -144,7 +144,7 @@ class ProcessesTest extends ApiTestCase
         ]);
         // Create process with that category defined
         $process = factory(Process::class)->create([
-            'category_id' => $category->id
+            'process_category_id' => $category->id
         ]);
         $response = $this->api('GET', self::API_TEST_PROCESS . '?filter=' . urlencode('Test Cat'));
         $response->assertStatus(200);
@@ -186,7 +186,7 @@ class ProcessesTest extends ApiTestCase
         $category = factory(ProcessCategory::class)->create();
         $user = $this->authenticateAsAdmin();
         $process = factory(Process::class)->create([
-            'category_id' => $category->id
+            'process_category_id' => $category->id
         ]);
         // Fetch from DB to ensure we're getting all columns
         $process = Process::find($process->id);
@@ -217,7 +217,7 @@ class ProcessesTest extends ApiTestCase
 
         //Create a test process using factories
         $process = factory(Process::class)->create([
-            'creator_user_id' => $admin->id
+            'user_id' => $admin->id
         ]);
         $response = $this->api('GET', self::API_TEST_PROJECT);
         $response->assertStatus(200);
@@ -279,7 +279,7 @@ class ProcessesTest extends ApiTestCase
                 "prj_uid"         => $process->uid,
                 "prj_name"        => $process->name,
                 "prj_description" => $process->description,
-                "prj_category"    => $process->category_id,
+                "prj_category"    => $process->process_category_id,
                 "prj_type"        => $process->type,
                 "prj_create_date" => $process->created_at->toIso8601String(),
                 "prj_update_date" => $process->updated_at->toIso8601String(),
@@ -307,7 +307,7 @@ class ProcessesTest extends ApiTestCase
          *         +------------------+
          */
         $process = factory(Process::class)->create([
-            'creator_user_id' => $admin->id
+            'user_id' => $admin->id
         ]);
         $diagram = factory(Diagram::class)->create([
             'process_id' => $process->id,
@@ -590,7 +590,7 @@ class ProcessesTest extends ApiTestCase
         $admin = $this->authenticateAsAdmin();
         // We need a process
         $process = factory(Process::class)->create([
-            'creator_user_id' => $admin->id
+            'user_id' => $admin->id
         ]);
         $diagram = factory(Diagram::class)->create([
             'process_id' => $process->id,
@@ -700,7 +700,7 @@ class ProcessesTest extends ApiTestCase
 
         //Test to delete a process with cases
         $process = factory(Process::class)->create([
-            'creator_user_id' => $admin->id
+            'user_id' => $admin->id
         ]);
         $application = factory(Application::class)->create([
             'process_id'  => $process->id,
