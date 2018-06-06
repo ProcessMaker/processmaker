@@ -1,12 +1,10 @@
-import {Shape} from "../shape"
 import actions from "../../actions"
 import EventBus from "../../lib/event-bus"
 /**
  * Gateway Shape Class
  */
-export class GatewayShape extends Shape {
+export class GatewayShape {
     constructor(svg) {
-        super(svg);
         this.options = {
             id: null,
             marker: "EMPTY",

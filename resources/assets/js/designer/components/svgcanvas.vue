@@ -11,8 +11,10 @@
     import EventBus from "../lib/event-bus"
     import _ from "lodash"
     import joint from 'jointjs'
+
     let moddle = new bpmn()
     export default {
+        // Set our own static components but also bring in our dynamic list of modals from above
         data() {
             return {
                 graph: null,
@@ -51,18 +53,11 @@
         created() {
             EventBus.$on(actions.designer.drag.toolbar.end().type, (value) => this.createElement(value))
             EventBus.$on(actions.designer.flow.create().type, (value) => this.createFlow(value))
-
-            //EventBus.$on(actions.designer.drag.shape.start().type, this.onDragStartShape())
-            //EventBus.$on(actions.designer.drag.shape.end().type, this.onDragEndShape())
-            // Listen for opening an add dialog
-            //EventBus.$on('open-add-dialog', this.openAddDialog);
-            //EventBus.$on(actions.designer.shape.remove().type, (value) => this.removeElement(value))
+            EventBus.$on(actions.designer.drag.shape.start().type, this.onDragStartShape())
+            EventBus.$on(actions.designer.drag.shape.end().type, this.onDragEndShape())
+            EventBus.$on(actions.designer.shape.remove().type, (value) => this.removeElement(value))
         },
         methods: {
-            openAddDialog(key) {
-                alert('I should open the ' + key + ' add dialog!');
-                // Actually open the appropriate modal dialog vue component
-            },
             loadXML(xml = null) {
                 let that = this;
                 if (xml) this.xml = xml;
@@ -125,10 +120,6 @@
             }
         },
         mounted() {
-            //this.$svg = $("#svg") // Object Jquery
-            //this.svg = Snap("#svg") // Object Snap svg
-
-
             this.graph = new joint.dia.Graph
             this.paper = new joint.dia.Paper({
                 el: document.getElementById('svgCanvas'),
