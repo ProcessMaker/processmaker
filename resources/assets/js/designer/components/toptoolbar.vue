@@ -1,7 +1,7 @@
 <template>
   <ul id="designer-nav" class="nav flex-column flex-md-row mt--1 text-light">
   <li class="mr-auto">
-    <h6 id="designer-nav-header" class="font-weight-bold">Invite New Employee</h6>
+    <h1 id="designer-nav-header">Invite New Employee</h1>
   </li>
   <li class="nav-item ">
     <a class="nav-link active" href="#"><i id="designer-icons" class="fas fa-expand-arrows-alt"></i></a>
@@ -27,7 +27,7 @@
 </ul>
 </template>
 
-<style>
+<style lang='scss' scoped>
   #designer-nav{
     background-color:#b6bfc6;
     height: 40px;
@@ -40,5 +40,7 @@
     margin: 7px;
     padding-top: 4px;
     padding-left: 13px;
+    font-size: 18px;
+    font-weight: 400;
   }
 </style>
