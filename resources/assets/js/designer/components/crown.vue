@@ -17,7 +17,7 @@
             </div>
             <div class="item-crown">
                 <img id="bpmn:EndEvent" src="../img/corona-flow.png" height="25"
-                     @click="createAction($event)">
+                     @click="createFlow($event)">
             </div>
         </div>
         <div class="d-flex flex-row">
@@ -56,8 +56,8 @@
              * Method for show the crown
              */
             show(conf){
-                this.x = conf.x
-                this.y = conf.y
+                this.x = conf.x + document.getElementById('svgCanvas').getBoundingClientRect().left
+                this.y = conf.y + document.getElementById('svgCanvas').getBoundingClientRect().top
                 this.visible = true
             },
             /**
@@ -65,6 +65,10 @@
              */
             hide(){
                 this.visible = false
+            },
+            createFlow(ev){
+                let action = actions.designer.flow.create()
+                EventBus.$emit(action.type, action.payload)
             }
         },
         mounted() {
