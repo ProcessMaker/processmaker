@@ -35,6 +35,8 @@ import designerobjectsmenu from "./components/designer-objects-menu";
 import modalPermissionsAdd from "./components/modals/modal-permissions-add";
 
 import modalPublicFileAdd from "./components/modals/modal-public-file-add";
+//
+import modalFormsAdd from "./components/modals/modal-forms-add";
 
 // This is out Cron for every shape
 import crown from "./components/crown";
@@ -48,7 +50,7 @@ export default {
     modalPermissionsAdd,
     ///camel case because vue will transform it into dash's
     modalPublicFileAdd,
-    modalPermissionsAdd,
+    modalFormsAdd,
     crown
   },
   data() {
@@ -64,12 +66,16 @@ export default {
     openAddDialog(key) {
       // @todo Replace this with dynamic modal generation once we have all modals in place
       // We're not doing this now so we can have visual alert feedback when a modal isn't implemented
+      console.log(key)
       switch(key) {
         case 'permissions':
           this.modalComponent = 'modal-permissions-add'
           break;
         case 'public-files':
           this.modalComponent = 'modal-public-file-add'
+          break;
+        case 'forms':
+          this.modalComponent = 'modal-forms-add'
           break;
         default:
           alert(key + ' add modal not yet implemented.')
