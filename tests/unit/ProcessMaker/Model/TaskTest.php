@@ -14,7 +14,7 @@ class TaskTest extends TestCase
     /**
      * Tests create email server
      */
-    public function testCreateEmailServer(): void
+    public function testCreateEmailServer()
     {
         $faker = Faker::create();
 

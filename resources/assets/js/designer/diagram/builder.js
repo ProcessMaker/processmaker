@@ -1,13 +1,15 @@
 import {Elements} from "./elements";
 import _ from "lodash";
 import actions from "../actions/index"
-
+import joint from "jointjs"
 import EventBus from "../lib/event-bus"
 
 export class Builder {
-    constructor(svg) {
-        this.svg = svg;
-        this.selection = [];
+    constructor(graph, paper) {
+        this.graph = graph
+        this.paper = paper
+        this.collection = []
+        this.creatingFlow = false
     }
 
     /**
@@ -28,10 +30,13 @@ export class Builder {
         if (Elements[options.eClass]) {
             element = new Elements[options.eClass](
                 defaultOptions,
-                this.svg
+                this.graph,
+                this.paper
             );
             element.render();
-            element.getSnapObject().click(this.onClickShape(element));
+            this.collection.push(element)
+            this.paper.on('element:pointerclick', this.onClickShape())
+            this.paper.on('blank:pointerclick', this.onClickCanvas())
         }
     }
 
@@ -40,18 +45,37 @@ export class Builder {
      * @param element
      * @returns {function(*)}
      */
-    onClickShape(element) {
+    onClickShape() {
         let that = this;
-        return (event) => {
-            that.removeSelectionBorder();
-            that.hideCrown();
-            element.createSelectionBorder();
-            element.showCrown()
-            that.selection = [];
-            that.selection.push(element);
+        return (element) => {
+            let res = _.find(that.collection, (o) => {
+                return element.model.id === o.shape.id
+            })
+
+            if (res) {
+                that.hideCrown();
+                res.showCrown()
+                that.selection = [];
+                that.selection.push(res);
+            }
+
             return false;
         };
     }
+
+    /**
+     * onClick event for canvas
+     * @param element
+     * @returns {function(*)}
+     */
+    onClickCanvas() {
+        let that = this;
+        return (element) => {
+            that.hideCrown()
+            return false;
+        };
+    }
+
 
     /**
      * Remove selection border of all shapes selected
@@ -81,5 +105,15 @@ export class Builder {
             el.hideCrown();
             el.remove();
         });
+    }
+
+    updatePosition(element) {
+        this.hideCrown()
+        let res = _.find(this.collection, (o) => {
+            return element.id === o.shape.id
+        })
+        if (res) {
+            res.config(element.get("position"))
+        }
     }
 }

@@ -1,6 +1,11 @@
 import {mount, shallow, shallowMount} from "@vue/test-utils"
 import crown from "../../../../resources/assets/js/designer/components/crown.vue"
 
+
+document.body.innerHTML =
+    '<div id ="svgCanvas">' +
+    '</div>';
+
 describe("crown.vue", () => {
     let cmp
     beforeEach(() => {

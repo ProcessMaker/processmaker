@@ -22,6 +22,9 @@ export const designer = {
         },
         shape: {
             remove: x => x
+        },
+        flow: {
+            create: x => x
         }
     }
 };

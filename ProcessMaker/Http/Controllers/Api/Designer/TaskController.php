@@ -112,7 +112,7 @@ class TaskController
      *
      * @throws DoesNotBelongToProcessException|void
      */
-    private function belongsToProcess(Process $process, Task $task): void
+    private function belongsToProcess(Process $process, Task $task)
     {
         if ($process->id !== $task->process_id) {
             Throw new DoesNotBelongToProcessException(__('The Task does not belong to this process.'));

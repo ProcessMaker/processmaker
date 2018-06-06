@@ -47,7 +47,8 @@ export default {
     toptoolbar,
     designerobjectsmenu,
     modalPermissionsAdd,
-    modalFormsAdd
+    modalFormsAdd,
+    crown
   },
   data() {
     return {
