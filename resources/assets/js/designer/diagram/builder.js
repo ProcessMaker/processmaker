@@ -51,23 +51,14 @@ export class Builder {
             let res = _.find(that.collection, (o) => {
                 return element.model.id === o.shape.id
             })
-            if (this.creatingFlow) {
-                var link = new joint.shapes.standard.Link({
-                    router: {name: 'manhattan'}
-                });
-                link.source(that.selection[0].shape);
-                link.target(res.shape);
-                link.addTo(this.graph);
-            } else {
-                if (res) {
-                    //that.removeSelectionBorder();
-                    that.hideCrown();
-                    //element.createSelectionBorder();
-                    res.showCrown()
-                    that.selection = [];
-                    that.selection.push(res);
-                }
+
+            if (res) {
+                that.hideCrown();
+                res.showCrown()
+                that.selection = [];
+                that.selection.push(res);
             }
+
             return false;
         };
     }

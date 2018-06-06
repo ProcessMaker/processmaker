@@ -84,25 +84,6 @@
                 this.builder.createShape(event.target.id, defaultOptions);
             },
             /**
-             * On Drag start Shape listener
-             * @returns {function()}
-             */
-            onDragStartShape (){
-                return (ev) => {
-                    this.pan.shapeDrag = true;
-                }
-            },
-            /**
-             * On Drag End Shape listener
-             * @param e
-             * @returns {function()}
-             */
-            onDragEndShape (e){
-                return (ev) => {
-                    this.pan.shapeDrag = false;
-                }
-            },
-            /**
              * Listener for remove element of the canvas
              * @param e
              */

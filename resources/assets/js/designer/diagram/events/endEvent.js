@@ -2,7 +2,7 @@ import joint from "jointjs"
 import actions from "../../actions"
 import EventBus from "../../lib/event-bus"
 /**
- * Activity class
+ * EndEvent class
  */
 export class EndEvent {
     constructor(options, graph, paper) {
@@ -36,7 +36,7 @@ export class EndEvent {
     }
 
     /**
-     * Render the activity Based in options config
+     * Render the End Event
      */
     render() {
         this.shape = new joint.shapes.standard.Path();
@@ -72,7 +72,7 @@ export class EndEvent {
     }
 
     /**
-     * Return the object snapsvg
+     * Return the object jointjs
      * @returns {*}
      */
     getShape() {

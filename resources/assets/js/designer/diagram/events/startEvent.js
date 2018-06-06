@@ -2,7 +2,7 @@ import joint from "jointjs"
 import actions from "../../actions"
 import EventBus from "../../lib/event-bus"
 /**
- * Activity class
+ * StartEvent class
  */
 export class StartEvent {
     constructor(options, graph, paper) {
@@ -36,7 +36,7 @@ export class StartEvent {
     }
 
     /**
-     * Render the activity Based in options config
+     * Render the StartEvent Based in options config
      */
     render() {
         this.shape = new joint.shapes.standard.Circle();
@@ -70,7 +70,7 @@ export class StartEvent {
     }
 
     /**
-     * Return the object snapsvg
+     * Return the object jointjs
      * @returns {*}
      */
     getShape() {

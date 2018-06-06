@@ -1,8 +1,6 @@
 import {mount, shallow} from '@vue/test-utils'
 import {Elements} from '../../../../resources/assets/js/designer/diagram/elements'
-import Crown from "../../../../resources/assets/js/designer/components/crown.vue"
-import Vue from "vue"
-
+import joint from 'jointjs'
 
 let svg
 const mockGroup = jest.fn(() => svg);
@@ -37,7 +35,18 @@ describe('Task ', () => {
                 name: "Task 1",
                 moddleElement: {}
             },
-            svg
+            new joint.dia.Graph,
+            new joint.dia.Paper({
+                el: document.getElementById('svgCanvas'),
+                model: this.graph,
+                width: 7000,
+                height: 7000,
+                gridSize: 10,
+                drawGrid: true,
+                background: {
+                    color: 'white'
+                }
+            })
         );
     })
 
@@ -46,8 +55,8 @@ describe('Task ', () => {
             id: 't1',
             x: null,
             y: null,
-            scaleX: 100,
-            scaleY: 80,
+            width: 120,
+            height: 80,
             rounded: 10,
             attr: {fill: '#FFF', stroke: '#000', strokeWidth: 2},
             "$type": 'bpmn:Task',
