@@ -119,11 +119,7 @@
 </script>
 
 <style lang="scss" scoped>
-    .svg_canvas {
-        display: block;
+    #svgCanvas {
         background-image: url(../img/bg_designer.gif);
-        background-color: white;
-        min-height: 100%;
-        min-width: 100%;
     }
 </style>
