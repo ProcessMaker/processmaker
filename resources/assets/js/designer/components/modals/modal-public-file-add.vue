@@ -11,7 +11,7 @@
         <div class="form-group">
         <label>Content</label>
           <div class="editor-wrapper">
-            <Editor :init="{menubar: false, branding: false, height : 250, width: 350, toolbar_items_size : 'small', statusbar: false, skin: 'custom'}"></Editor>
+            <Editor :init="{menubar: false, branding: false, height : 250, width: 415, toolbar_items_size : 'small', statusbar: false, skin: 'custom', plugins: 'lists', toolbar1: 'undo redo | formatselect | bold | italic | alignleft aligncenter alignright | numlist bullist indent outdent'}"></Editor>
           </div>
         </div>
     </form>
@@ -59,7 +59,7 @@ export default {
 <style lang="scss" scoped>
   .editor-wrapper{
     border: solid 1px #b6bfc6;
-    padding: 0 20px 0 40px;
     border-radius: 2px;
+    padding-left: 10px;
   }
 </style>
