@@ -14,7 +14,7 @@ use ProcessMaker\Transformers\FormTransformer;
 class FormController
 {
     /**
-     * Get a list of Forms in a project.
+     * Get a list of Forms in a process.
      *
      * @param Process $process
      * @param Request $request
@@ -35,7 +35,7 @@ class FormController
     }
 
     /**
-     * Get a single Form in a project.
+     * Get a single Form in a process.
      *
      * @param Process $process
      * @param Form $form
@@ -50,7 +50,7 @@ class FormController
     }
 
     /**
-     * Create a new Form in a project.
+     * Create a new Form in a process.
      *
      * @param Process $process
      * @param Request $request
@@ -74,7 +74,7 @@ class FormController
     }
 
     /**
-     * Update a Form in a project.
+     * Update a Form in a process.
      *
      * @param Process $process
      * @param Form $form
@@ -95,7 +95,7 @@ class FormController
     }
 
     /**
-     * Delete a Form in a project.
+     * Delete a Form in a process.
      *
      * @param Process $process
      * @param Form $form
@@ -118,7 +118,7 @@ class FormController
      *
      * @throws DoesNotBelongToProcessException|void
      */
-    private function belongsToProcess(Process $process, Form $form): void
+    private function belongsToProcess(Process $process, Form $form)
     {
         if ($process->id !== $form->process_id) {
             Throw new DoesNotBelongToProcessException(__('The Form does not belong to this process.'));

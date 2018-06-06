@@ -11,7 +11,7 @@ use ProcessMaker\Model\Form;
 class FormTransformer extends TransformerAbstract
 {
     /**
-     * Transform the activity.
+     * Transform the Form.
      *
      * @param Form $item
      *

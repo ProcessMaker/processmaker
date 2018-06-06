@@ -14,7 +14,7 @@ class EmailServerTest extends TestCase
     /**
      * Tests create email server
      */
-    public function testCreateEmailServer(): void
+    public function testCreateEmailServer()
     {
         $faker = Faker::create();
         $engine = $faker->randomElement([EmailServer::TYPE_MAIL, EmailServer::TYPE_PHP_MAILER]);

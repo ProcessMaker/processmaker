@@ -14,7 +14,7 @@ use ProcessMaker\Transformers\InputDocumentTransformer;
 class InputDocumentController
 {
     /**
-     * Get a list of Input Documents in a project.
+     * Get a list of Input Documents in a process.
      *
      * @param Process $process
      *
@@ -27,7 +27,7 @@ class InputDocumentController
     }
 
     /**
-     * Get a single Input Document in a project.
+     * Get a single Input Document in a process.
      *
      * @param Process $process
      * @param InputDocument $inputDocument
@@ -42,7 +42,7 @@ class InputDocumentController
     }
 
     /**
-     * Create a new Input Document in a project.
+     * Create a new Input Document in a process.
      *
      * @param Process $process
      * @param Request $request
@@ -67,7 +67,7 @@ class InputDocumentController
     }
 
     /**
-     * Update a Input Document in a project.
+     * Update a Input Document in a process.
      *
      * @param Process $process
      * @param InputDocument $inputDocument
@@ -96,7 +96,7 @@ class InputDocumentController
     }
 
     /**
-     * Delete a Input Document in a project.
+     * Delete a Input Document in a process.
      *
      * @param Process $process
      * @param InputDocument $inputDocument
@@ -119,7 +119,7 @@ class InputDocumentController
      *
      * @throws DoesNotBelongToProcessException|void
      */
-    private function belongsToProcess(Process $process, InputDocument $inputDocument): void
+    private function belongsToProcess(Process $process, InputDocument $inputDocument)
     {
         if ($process->id !== $inputDocument->process_id) {
             Throw new DoesNotBelongToProcessException(__('The Input Document does not belong to this process.'));

@@ -6,7 +6,8 @@ use Faker\Generator as Faker;
  * Model factory for a process file.
  */
 $factory->define(\ProcessMaker\Model\ProcessFile::class, function (Faker $faker) {
-    $filepath = $faker->file('/tmp','tests/shared/public');
+    //was need base_path for complete to relative path.
+    $filepath = $faker->file('/tmp',base_path('tests/shared/public'));
     return [
         'PRF_UID'            => str_replace('-', '', Uuid::uuid4()),
         'process_id'            => function () {

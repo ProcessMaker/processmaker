@@ -45,11 +45,11 @@ export default {
     toolbar,
     toptoolbar,
     designerobjectsmenu,
-    crown,
-    // Editor,
     modalPermissionsAdd,
     ///camel case because vue will transform it into dash's
-    modalPublicFileAdd
+    modalPublicFileAdd,
+    modalPermissionsAdd,
+    crown
   },
   data() {
     return {

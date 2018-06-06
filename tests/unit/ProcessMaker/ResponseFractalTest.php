@@ -17,7 +17,7 @@ class ResponseFractalTest extends TestCase
     /**
      * Test response Fractal item
      */
-    public function testResponseItem(): void
+    public function testResponseItem()
     {
         $this->createDataReportTable();
 
@@ -54,7 +54,7 @@ class ResponseFractalTest extends TestCase
     /**
      * Test Response Fractal Paged
      */
-    public function testResponsePaged(): void
+    public function testResponsePaged()
     {
         $reportTables = ReportTable::where('type', 'NORMAL')->paginate(4);
 
@@ -118,7 +118,7 @@ class ResponseFractalTest extends TestCase
      *
      * @param array $data
      */
-    private function verifyStructure($data): void
+    private function verifyStructure($data)
     {
         //verify if the fields exist in the data response
         $this->assertArrayHasKey('uid', $data);
@@ -135,7 +135,7 @@ class ResponseFractalTest extends TestCase
     /**
      * Populate table for test
      */
-    private function createDataReportTable(): void
+    private function createDataReportTable()
     {
         $reportTable = ReportTable::All()->toArray();
         if (count($reportTable) < 3) {

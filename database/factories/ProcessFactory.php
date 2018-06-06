@@ -11,6 +11,7 @@ use Ramsey\Uuid\Uuid;
 $factory->define(Process::class, function (Faker $faker) {
 
     return [
+        'uid' => Uuid::uuid4(),
         'name' => $faker->sentence(3),
         'description' => $faker->paragraph(3),
         'status' => 'ACTIVE',

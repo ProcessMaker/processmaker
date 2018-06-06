@@ -10,6 +10,18 @@ use Watson\Validating\ValidatingTrait;
 /**
  * Represents an Eloquent model of reportTable
  * @package ProcessMaker\Model
+ *
+ * @property int id
+ * @property string uid
+ * @property string name
+ * @property string description
+ * @property string type
+ * @property Process process
+ * @property integer db_source_id
+ * @property array grid
+ * @property array tag
+ * @property array fields
+ *
  */
 class ReportTable extends Model
 {
