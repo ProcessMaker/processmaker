@@ -54,7 +54,7 @@ class TaskDelegationManagerTest extends ApiTestCase
     /**
      *  Init data user and process
      */
-    protected function setUp(): void
+    protected function setUp()
     {
         parent::setUp();
         $this->user = factory(User::class)->create([
@@ -76,7 +76,7 @@ class TaskDelegationManagerTest extends ApiTestCase
     /**
      * Get a Task and delegations.
      */
-    public function testGetDelegationTask(): void
+    public function testGetDelegationTask()
     {
         //add delegation
         factory(Delegation::class)->create([
@@ -94,7 +94,7 @@ class TaskDelegationManagerTest extends ApiTestCase
     /**
      * Get a list of Task in a project.
      */
-    public function testGetListDelegationsTask(): void
+    public function testGetListDelegationsTask()
     {
         //add delegations
         factory(Delegation::class, 11)->create();
@@ -117,7 +117,7 @@ class TaskDelegationManagerTest extends ApiTestCase
     /**
      * List Tasks with query parameters
      */
-    public function testListTasksWithQueryParameter(): void
+    public function testListTasksWithQueryParameter()
     {
         //add delegations
         factory(Delegation::class, 11)->create([
@@ -148,17 +148,23 @@ class TaskDelegationManagerTest extends ApiTestCase
     /**
      * List Tasks with filter user
      */
-    public function testListTaskWithFilterUser(): void
+    public function testListTaskWithFilterUser()
     {
         //add delegations
+        $filter = 'First name filter';
+        $user = factory(User::class)->create([
+            'firstname' => $filter,
+            'password' => Hash::make(self::DEFAULT_PASS),
+            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+        ]);
         factory(Delegation::class)->create([
-            'user_id' => $this->user->id,
+            'user_id' => $user->id,
             'task_id' => $this->task->id
         ]);
         factory(Delegation::class, 5)->create();
         //List Delegations with filter options
         $perPage = Faker::create()->randomDigitNotNull;
-        $query = '?current_page=1&per_page=' . $perPage . '&sort_by=delegate_date&sort_order=DESC&filter=' . urlencode($this->user->firstname);
+        $query = '?current_page=1&per_page=' . $perPage . '&sort_by=delegate_date&sort_order=DESC&filter=' . urlencode($filter);
         $url = self::API_ROUTE_TASK . $query;
         $response = $this->api('GET', $url);
         //Validate the answer is correct
@@ -174,7 +180,7 @@ class TaskDelegationManagerTest extends ApiTestCase
         $this->assertEquals($perPage, $response->original->meta->per_page);
         $this->assertEquals(1, $response->original->meta->current_page);
         $this->assertEquals(1, $response->original->meta->total_pages);
-        $this->assertEquals($this->user->firstname, $response->original->meta->filter);
+        $this->assertEquals($filter, $response->original->meta->filter);
         $this->assertEquals('delegate_date', $response->original->meta->sort_by);
         $this->assertEquals('DESC', $response->original->meta->sort_order);
         //verify structure of data
@@ -184,7 +190,7 @@ class TaskDelegationManagerTest extends ApiTestCase
     /**
      * List Tasks with filter tasks
      */
-    public function testListTaskWithFilterTask(): void
+    public function testListTaskWithFilterTask()
     {
         //add delegations
         factory(Delegation::class)->create([
@@ -220,7 +226,7 @@ class TaskDelegationManagerTest extends ApiTestCase
     /**
      * List Tasks with filter process
      */
-    public function testListTaskWithFilterApplication(): void
+    public function testListTaskWithFilterApplication()
     {
         //add delegations
         $title = 'Application title for search';

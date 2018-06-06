@@ -14,7 +14,7 @@ class TaskNotificationTest extends TestCase
     /**
      * Tests create email server
      */
-    public function testCreateEmailServer(): void
+    public function testCreateEmailServer()
     {
         $faker = Faker::create();
         $type = $faker->randomElement([TaskNotification::TYPE_AFTER_ROUTING, TaskNotification::TYPE_RECEIVE]);

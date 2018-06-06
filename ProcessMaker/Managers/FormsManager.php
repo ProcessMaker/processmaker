@@ -15,7 +15,7 @@ class FormsManager
 {
 
     /**
-     * Get a list of All Forms in a project.
+     * Get a list of All Forms in a process.
      *
      * @param Process $process
      * @param array $options
@@ -46,7 +46,7 @@ class FormsManager
     }
 
     /**
-     * Create a new Form in a project.
+     * Create a new Form in a process.
      *
      * @param Process $process
      * @param array $data
@@ -102,7 +102,7 @@ class FormsManager
     }
 
     /**
-     * Update Form in a project.
+     * Update Form in a process.
      *
      * @param Process $process
      * @param Form $form
@@ -113,18 +113,6 @@ class FormsManager
      */
     public function update(Process $process, Form $form, $data): Form
     {
-        /**
-         * @var $validator \Illuminate\Validation\Validator
-         */
-        /*$validator = Validator::make(
-            $data,
-            [
-                'title' => 'required|unique:forms,title',
-            ]
-        );
-        if ($validator->fails()) {
-            throw new ValidationException($validator);
-        }*/
         $data['process_id'] = $process->id;
         $form->fill($data);
         if (empty($form->content)) {
@@ -135,7 +123,7 @@ class FormsManager
     }
 
     /**
-     * Remove Form in a project.
+     * Remove Form in a process.
      *
      * @param Form $form
      *
@@ -154,7 +142,7 @@ class FormsManager
      *
      * @throws ValidationException
      */
-    private function validate($data): void
+    private function validate($data)
     {
         /**
          * @var $validator \Illuminate\Validation\Validator
@@ -179,7 +167,7 @@ class FormsManager
     }
 
     /**
-     * Generate structure content dynaform
+     * Generate structure content Form
      *
      * @param string $uid
      * @param string $title
