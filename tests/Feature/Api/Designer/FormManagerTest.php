@@ -38,7 +38,7 @@ class FormManagerTest extends ApiTestCase
     /**
      * Create user and process
      */
-    protected function setUp(): void
+    protected function setUp()
     {
         parent::setUp();
         $this->user = factory(User::class)->create([
@@ -56,7 +56,7 @@ class FormManagerTest extends ApiTestCase
     /**
      * Test verify the parameter required for create form
      */
-    public function testNotCreatedForParameterRequired(): void
+    public function testNotCreatedForParameterRequired()
     {
         //Post should have the parameter required
         $url = self::API_TEST_FORM . $this->process->uid . '/form';
@@ -69,7 +69,7 @@ class FormManagerTest extends ApiTestCase
     /**
      * Create form successfully
      */
-    public function testCreateForm(): Void
+    public function testCreateForm()
     {
         //Post title duplicated
         $faker = Faker::create();
@@ -85,7 +85,7 @@ class FormManagerTest extends ApiTestCase
     /**
      * Can not create a form with an existing title
      */
-    public function testNotCreateFormWithTitleExists(): Void
+    public function testNotCreateFormWithTitleExists()
     {
         factory(Form::class)->create([
             'title' => 'Title Form',
@@ -106,7 +106,7 @@ class FormManagerTest extends ApiTestCase
     /**
      * Test copy/import should receive a array copy_import and fields process_uid and form_uid are required.
      */
-    public function testCopyImportFormWithErrorParameters(): void
+    public function testCopyImportFormWithErrorParameters()
     {
         $url = self::API_TEST_FORM . $this->process->uid . '/form';
         $response = $this->api('POST', $url, [
@@ -119,7 +119,7 @@ class FormManagerTest extends ApiTestCase
     /**
      * Test copy/import the process not exists
      */
-    public function testCopyImportFormProcessNotExists(): void
+    public function testCopyImportFormProcessNotExists()
     {
         //Process not exist
         $url = self::API_TEST_FORM . $this->process->uid . '/form';
@@ -136,7 +136,7 @@ class FormManagerTest extends ApiTestCase
     /**
      * Test copy/import the Form not exists
      */
-    public function testCopyImportFormNotExists(): void
+    public function testCopyImportFormNotExists()
     {
         //Process not exist
         $url = self::API_TEST_FORM . $this->process->uid . '/form';
@@ -153,7 +153,7 @@ class FormManagerTest extends ApiTestCase
     /**
      * Test copy/import the Form not exists
      */
-    public function testCopyImportNotBelongProcess(): void
+    public function testCopyImportNotBelongProcess()
     {
         //Process not exist
         $url = self::API_TEST_FORM . $this->process->uid . '/form';
@@ -170,7 +170,7 @@ class FormManagerTest extends ApiTestCase
     /**
      * Copy/import Form in process successfully
      */
-    public function testCopyImportForm(): void
+    public function testCopyImportForm()
     {
         $faker = Faker::create();
 
@@ -192,7 +192,7 @@ class FormManagerTest extends ApiTestCase
     /**
      * Get a list of Form in process without query parameters.
      */
-    public function testListForm(): void
+    public function testListForm()
     {
         //add Form to process
         $faker = Faker::create();
@@ -222,7 +222,7 @@ class FormManagerTest extends ApiTestCase
     /**
      * Get a list of Form with parameters
      */
-    public function testListFormWithQueryParameter(): void
+    public function testListFormWithQueryParameter()
     {
         $title = 'search Title Form';
         factory(Form::class)->create([
@@ -258,7 +258,7 @@ class FormManagerTest extends ApiTestCase
     /**
      * Get a Form of a process.
      */
-    public function testGetForm(): void
+    public function testGetForm()
     {
         //load Form
         $url = self::API_TEST_FORM . $this->process->uid . '/form/' . factory(Form::class)->create(['process_id' => $this->process->id])->uid;
@@ -273,7 +273,7 @@ class FormManagerTest extends ApiTestCase
     /**
      * Get a Form not belongs to process
      */
-    public function testGetFormNotBelongToProcess(): void
+    public function testGetFormNotBelongToProcess()
     {
         //load Form
         $url = self::API_TEST_FORM . $this->process->uid . '/form/' . factory(Form::class)->create()->uid;
@@ -286,7 +286,7 @@ class FormManagerTest extends ApiTestCase
     /**
      * Update Form parameter are required
      */
-    public function testUpdateFormParametersRequired(): void
+    public function testUpdateFormParametersRequired()
     {
         //Post should have the parameter title
         $url = self::API_TEST_FORM . $this->process->uid . '/form/' . factory(Form::class)->create(['process_id' => $this->process->id])->uid;
@@ -302,7 +302,7 @@ class FormManagerTest extends ApiTestCase
     /**
      * Update Form in process successfully
      */
-    public function testUpdateForm(): void
+    public function testUpdateForm()
     {
         //Post saved success
         $faker = Faker::create();
@@ -319,7 +319,7 @@ class FormManagerTest extends ApiTestCase
     /**
      * Delete Form in process
      */
-    public function testDeleteForm(): void
+    public function testDeleteForm()
     {
         //Remove Form
         $url = self::API_TEST_FORM . $this->process->uid . '/form/' . factory(Form::class)->create(['process_id' => $this->process->id])->uid;
@@ -331,7 +331,7 @@ class FormManagerTest extends ApiTestCase
     /**
      * Delete Form in process
      */
-    public function testDeleteFormNotExist(): void
+    public function testDeleteFormNotExist()
     {
         //form not exist
         $url = self::API_TEST_FORM . $this->process->uid . '/form/' . factory(Form::class)->make()->uid;

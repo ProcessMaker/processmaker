@@ -91,7 +91,7 @@ class ProcessManager
         array $rules,
         array $messages = [],
         array $customAttributes = []
-    ): void
+    )
     {
         $validator = Validator::make($data, $rules, $messages, $customAttributes);
 

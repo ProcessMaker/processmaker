@@ -119,7 +119,7 @@ class InputDocumentController
      *
      * @throws DoesNotBelongToProcessException|void
      */
-    private function belongsToProcess(Process $process, InputDocument $inputDocument): void
+    private function belongsToProcess(Process $process, InputDocument $inputDocument)
     {
         if ($process->id !== $inputDocument->process_id) {
             Throw new DoesNotBelongToProcessException(__('The Input Document does not belong to this process.'));

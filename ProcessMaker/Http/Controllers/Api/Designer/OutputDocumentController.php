@@ -122,7 +122,7 @@ class OutputDocumentController
      *
      * @throws DoesNotBelongToProcessException|void
      */
-    private function belongsToProcess(Process $process, OutputDocument $outputDocument): void
+    private function belongsToProcess(Process $process, OutputDocument $outputDocument)
     {
         if ($process->id !== $outputDocument->process_id) {
             Throw new DoesNotBelongToProcessException(__('The Output Document does not belong to this process.'));

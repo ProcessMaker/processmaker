@@ -118,7 +118,7 @@ class FormController
      *
      * @throws DoesNotBelongToProcessException|void
      */
-    private function belongsToProcess(Process $process, Form $form): void
+    private function belongsToProcess(Process $process, Form $form)
     {
         if ($process->id !== $form->process_id) {
             Throw new DoesNotBelongToProcessException(__('The Form does not belong to this process.'));

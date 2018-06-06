@@ -152,7 +152,7 @@ class AssigneeController extends Controller
      *
      * @throws DoesNotBelongToProcessException|void
      */
-    private function belongsToProcess(Process $process, Task $activity): void
+    private function belongsToProcess(Process $process, Task $activity)
     {
         if ($process->id !== $activity->process_id) {
             Throw new DoesNotBelongToProcessException(__('The Activity does not belong to this process.'));

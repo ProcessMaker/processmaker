@@ -48,7 +48,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     /**
      * Create user, task,  process
      */
-    protected function setUp(): void
+    protected function setUp()
     {
         parent::setUp();
         $this->user = factory(User::class)->create([
@@ -72,7 +72,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     /**
      * Test if exists parameter type
      */
-    public function testStoreNotExistType(): void
+    public function testStoreNotExistType()
     {
         //validate non-existent Type definided
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee';
@@ -87,7 +87,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     /**
      * User not exist
      */
-    public function testStoreNotExistUser(): void
+    public function testStoreNotExistUser()
     {
         //validate non-existent Type user
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee';
@@ -102,7 +102,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     /**
      * Group not exist
      */
-    public function testStoreNotExistGroup(): void
+    public function testStoreNotExistGroup()
     {
         //validate non-existent Type group
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee';
@@ -117,7 +117,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     /**
      * Assignee correctly user
      */
-    public function testStoreUser(): void
+    public function testStoreUser()
     {
         //validate non-existent Type user or group
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee';
@@ -131,7 +131,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     /**
      * Assignee correctly Group
      */
-    public function testStoreGroup(): void
+    public function testStoreGroup()
     {
         //validate non-existent Type user or group
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee';
@@ -145,7 +145,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     /**
      * User already assigned
      */
-    public function testStoreUserAlreadyAssigned(): void
+    public function testStoreUserAlreadyAssigned()
     {
         factory(TaskUser::class, 'user')->create([
             'task_id' => $this->activity->id,
@@ -164,7 +164,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     /**
      * Group already assigned
      */
-    public function testStoreGroupAlreadyAssigned(): void
+    public function testStoreGroupAlreadyAssigned()
     {
         factory(TaskUser::class, 'group')->create([
             'task_id' => $this->activity->id,
@@ -183,7 +183,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     /**
      * The task not belongs to process.
      */
-    public function testGetTriggerNotBelongToProcess(): void
+    public function testGetTriggerNotBelongToProcess()
     {
         //load assignee
         $activity = factory(Task::class)->create();
@@ -197,7 +197,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     /**
      * List users and groups assignee
      */
-    public function testGetAllAssignee(): void
+    public function testGetAllAssignee()
     {
         //load assignee
         $total = Faker::create()->randomDigitNotNull;
@@ -224,7 +224,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     /**
      * Search a user assignee
      */
-    public function testFilterUserAssigned(): void
+    public function testFilterUserAssigned()
     {
         $filter = 'User Filter';
         factory(TaskUser::class, 'user')->create([
@@ -244,7 +244,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     /**
      * Search a Group assignee
      */
-    public function testFilterGroupAssigned(): void
+    public function testFilterGroupAssigned()
     {
         $filter = 'Group Filter';
         factory(TaskUser::class, 'group')->create([
@@ -264,7 +264,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     /**
      * Search without results
      */
-    public function testFilterWithoutResult(): void
+    public function testFilterWithoutResult()
     {
         //Filter not exist results
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee?filter=' . 'THERE_ARE_NO_RESULTS';
@@ -276,7 +276,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     /**
      * Load information of user not exists
      */
-    public function testGetInformationUserNoExists(): void
+    public function testGetInformationUserNoExists()
     {
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee/' . factory(User::class)->make()->uid;
         $response = $this->api('GET', $url);
@@ -288,7 +288,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     /**
      * Load information of Group not exists
      */
-    public function testGetInformationGroupNoExists(): void
+    public function testGetInformationGroupNoExists()
     {
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee/' . factory(Group::class)->make()->uid;
         $response = $this->api('GET', $url);
@@ -300,7 +300,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     /**
      * Load information of user assignee
      */
-    public function testGetInformationUserAssignee(): void
+    public function testGetInformationUserAssignee()
     {
         factory(TaskUser::class, 'user')->create([
             'task_id' => $this->activity->id,
@@ -315,7 +315,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     /**
      * Load information of Group assignee
      */
-    public function testGetInformationGroupAssignee(): void
+    public function testGetInformationGroupAssignee()
     {
         factory(TaskUser::class, 'group')->create([
             'task_id' => $this->activity->id,
@@ -330,7 +330,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     /**
      * List users assignee
      */
-    public function testGetInformationAllAssignee(): void
+    public function testGetInformationAllAssignee()
     {
         //load assignee
         $total = Faker::create()->randomDigitNotNull;
@@ -363,7 +363,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     /**
      * Search a user information assignee
      */
-    public function testFilterInformationUserAssigned(): void
+    public function testFilterInformationUserAssigned()
     {
         $filter = 'User Filter';
         factory(TaskUser::class, 'user', 10)->create([
@@ -386,7 +386,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     /**
      * Search without results
      */
-    public function testInformationFilterWithoutResult(): void
+    public function testInformationFilterWithoutResult()
     {
         //Filter not exist results
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee/all?filter=' . 'THERE_ARE_NO_RESULTS';
@@ -398,7 +398,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     /**
      * Search a user's information assignee
      */
-    public function testUsersGroupsAvailable(): void
+    public function testUsersGroupsAvailable()
     {
         factory(TaskUser::class)->create([
             'task_id' => $this->activity->id
@@ -418,7 +418,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     /**
      * Search a user information assignee
      */
-    public function testUserAvailable(): void
+    public function testUserAvailable()
     {
         factory(Group::class, 10 - Group::All()->count())->create();
         factory(User::class, 10 - User::All()->count())->create();
@@ -439,7 +439,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     /**
      * Search a Group information assignee
      */
-    public function testGroupAvailable(): void
+    public function testGroupAvailable()
     {
         factory(Group::class, 10 - Group::All()->count())->create();
         factory(User::class, 10 - User::All()->count())->create();
@@ -460,7 +460,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     /**
      * Remove assignee of Activity
      */
-    public function testRemoveNotExistsAssignee(): void
+    public function testRemoveNotExistsAssignee()
     {
         //Other User row not exist
         $assignee = factory(User::class)->make();
@@ -472,7 +472,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     /**
      * Delete User assignee in process
      */
-    public function testDeleteUserAssignee(): void
+    public function testDeleteUserAssignee()
     {
         factory(TaskUser::class, 'user')->create([
             'task_id' => $this->activity->id,
@@ -487,7 +487,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     /**
      * Delete Group assignee in process
      */
-    public function testDeleteGroupAssignee(): void
+    public function testDeleteGroupAssignee()
     {
         factory(TaskUser::class, 'group')->create([
             'task_id' => $this->activity->id,

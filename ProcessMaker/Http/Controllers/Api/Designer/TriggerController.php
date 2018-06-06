@@ -119,7 +119,7 @@ class TriggerController extends Controller
      *
      * @throws DoesNotBelongToProcessException|void
      */
-    private function belongsToProcess(Process $process, Trigger $trigger): void
+    private function belongsToProcess(Process $process, Trigger $trigger)
     {
         if($process->id !== $trigger->process_id) {
             Throw new DoesNotBelongToProcessException(__('The trigger does not belong to this process.'));

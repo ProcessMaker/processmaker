@@ -192,7 +192,7 @@ class ReportTableController extends Controller
      *
      * @internal param ReportTable $reportTable
      */
-    private function mapRequestToPmTable(Request $request, PmTable $pmTable): void
+    private function mapRequestToPmTable(Request $request, PmTable $pmTable)
     {
         $colsToChange = $request->toArray();
 

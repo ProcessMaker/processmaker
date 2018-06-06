@@ -54,7 +54,7 @@ class TaskDelegationManagerTest extends ApiTestCase
     /**
      *  Init data user and process
      */
-    protected function setUp(): void
+    protected function setUp()
     {
         parent::setUp();
         $this->user = factory(User::class)->create([
@@ -76,7 +76,7 @@ class TaskDelegationManagerTest extends ApiTestCase
     /**
      * Get a Task and delegations.
      */
-    public function testGetDelegationTask(): void
+    public function testGetDelegationTask()
     {
         //add delegation
         factory(Delegation::class)->create([
@@ -94,7 +94,7 @@ class TaskDelegationManagerTest extends ApiTestCase
     /**
      * Get a list of Task in a project.
      */
-    public function testGetListDelegationsTask(): void
+    public function testGetListDelegationsTask()
     {
         //add delegations
         factory(Delegation::class, 11)->create();
@@ -117,7 +117,7 @@ class TaskDelegationManagerTest extends ApiTestCase
     /**
      * List Tasks with query parameters
      */
-    public function testListTasksWithQueryParameter(): void
+    public function testListTasksWithQueryParameter()
     {
         //add delegations
         factory(Delegation::class, 11)->create([
@@ -148,7 +148,7 @@ class TaskDelegationManagerTest extends ApiTestCase
     /**
      * List Tasks with filter user
      */
-    public function testListTaskWithFilterUser(): void
+    public function testListTaskWithFilterUser()
     {
         //add delegations
         $filter = 'First name filter';
@@ -190,7 +190,7 @@ class TaskDelegationManagerTest extends ApiTestCase
     /**
      * List Tasks with filter tasks
      */
-    public function testListTaskWithFilterTask(): void
+    public function testListTaskWithFilterTask()
     {
         //add delegations
         factory(Delegation::class)->create([
@@ -226,7 +226,7 @@ class TaskDelegationManagerTest extends ApiTestCase
     /**
      * List Tasks with filter process
      */
-    public function testListTaskWithFilterApplication(): void
+    public function testListTaskWithFilterApplication()
     {
         //add delegations
         $title = 'Application title for search';

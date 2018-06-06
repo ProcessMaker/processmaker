@@ -42,7 +42,7 @@ class OutputDocumentManagerTest extends ApiTestCase
     /**
      *  Init data user and process
      */
-    protected function setUp(): void
+    protected function setUp()
     {
         parent::setUp();
         $this->user = factory(User::class)->create([
@@ -60,7 +60,7 @@ class OutputDocumentManagerTest extends ApiTestCase
     /**
      * Test validate structure table
      */
-    public function testStructureTable(): void
+    public function testStructureTable()
     {
         $db = DB::connection()->getSchemaBuilder()->getColumnListing('output_documents');
         $structure = [
@@ -91,7 +91,7 @@ class OutputDocumentManagerTest extends ApiTestCase
     /**
      * Create document need parameters required
      */
-    public function testNoCreateByParametersRequired(): void
+    public function testNoCreateByParametersRequired()
     {
         //Post should have the parameter title, description, filename
         $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document';
@@ -105,7 +105,7 @@ class OutputDocumentManagerTest extends ApiTestCase
      * Document::DOC_GENERATE_TYPE
      * Document::DOC_TYPE
      */
-    public function testCreateParameterDefinedConstant(): void
+    public function testCreateParameterDefinedConstant()
     {
         $faker = Faker::create();
         $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document';
@@ -121,7 +121,7 @@ class OutputDocumentManagerTest extends ApiTestCase
     /**
      * Create new Document successfully
      */
-    public function testCreateDocument(): void
+    public function testCreateDocument()
     {
         //Post saved correctly
         $faker = Faker::create();
@@ -149,7 +149,7 @@ class OutputDocumentManagerTest extends ApiTestCase
     /**
      * Can not create document with the same title
      */
-    public function testNoCreateDocumentWithTitleExists(): void
+    public function testNoCreateDocumentWithTitleExists()
     {
         $title = 'Title Output Document';
 
@@ -183,7 +183,7 @@ class OutputDocumentManagerTest extends ApiTestCase
     /**
      * Get a list of Document in a project.
      */
-    public function testListDocuments(): void
+    public function testListDocuments()
     {
         //add Document to process
         factory(Document::class, 11)->create([
@@ -210,7 +210,7 @@ class OutputDocumentManagerTest extends ApiTestCase
     /**
      * List documents with query parameters
      */
-    public function testListDocumentsWithQueryParameter(): void
+    public function testListDocumentsWithQueryParameter()
     {
         //add Document to process
         factory(Document::class, 11)->create([
@@ -246,7 +246,7 @@ class OutputDocumentManagerTest extends ApiTestCase
     /**
      * List documents with filter
      */
-    public function testListDocumentWithFilter(): void
+    public function testListDocumentWithFilter()
     {
         //add Document to process
         $title = 'Title for search';
@@ -283,7 +283,7 @@ class OutputDocumentManagerTest extends ApiTestCase
     /**
      * Get a Document of process.
      */
-    public function testGetDocument(): void
+    public function testGetDocument()
     {
         $document = factory(Document::class)->create([
             'process_id' => $this->process->id
@@ -302,7 +302,7 @@ class OutputDocumentManagerTest extends ApiTestCase
     /**
      * document not belong to process.
      */
-    public function testGetDocumentNotBelongProcess(): void
+    public function testGetDocumentNotBelongProcess()
     {
         $document = factory(Document::class)->create();
         $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document/' . $document->uid;
@@ -313,7 +313,7 @@ class OutputDocumentManagerTest extends ApiTestCase
     /**
      * The update should have the required parameters
      */
-    public function testUpdateParametersRequired(): void
+    public function testUpdateParametersRequired()
     {
         $document = factory(Document::class)->create([
             'process_id' => $this->process->id
@@ -337,7 +337,7 @@ class OutputDocumentManagerTest extends ApiTestCase
     /**
      * Update Document in process successfully
      */
-    public function testUpdateDocument(): void
+    public function testUpdateDocument()
     {
         $document = factory(Document::class)->create([
             'process_id' => $this->process->id
@@ -364,7 +364,7 @@ class OutputDocumentManagerTest extends ApiTestCase
     /**
      * Delete document successfully
      */
-    public function testDeleteDocument(): void
+    public function testDeleteDocument()
     {
         $document = factory(Document::class)->create([
             'process_id' => $this->process->id
@@ -381,7 +381,7 @@ class OutputDocumentManagerTest extends ApiTestCase
     /**
      * Test delete Document not exist
      */
-    public function testDeleteDocumentNotExist(): void
+    public function testDeleteDocumentNotExist()
     {
         $document = factory(Document::class)->make();
         $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document/' . $document->uid;

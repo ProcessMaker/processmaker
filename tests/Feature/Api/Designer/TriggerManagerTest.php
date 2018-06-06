@@ -33,7 +33,7 @@ class TriggerManagerTest extends ApiTestCase
     /**
      * Create user and process
      */
-    protected function setUp(): void
+    protected function setUp()
     {
         parent::setUp();
         $this->user = factory(User::class)->create([
@@ -51,7 +51,7 @@ class TriggerManagerTest extends ApiTestCase
     /**
      * Test verify the parameter required for create Trigger
      */
-    public function testNotCreatedForParameterRequired(): void
+    public function testNotCreatedForParameterRequired()
     {
         //Post should have the parameter required
         $url = self::API_TEST_TRIGGER . $this->process->uid . '/trigger';
@@ -65,7 +65,7 @@ class TriggerManagerTest extends ApiTestCase
     /**
      * Create new trigger in process
      */
-    public function testCreateTrigger(): void
+    public function testCreateTrigger()
     {
         $faker = Faker::create();
         //Post saved correctly
@@ -84,7 +84,7 @@ class TriggerManagerTest extends ApiTestCase
     /**
      * Can not create a Trigger with an existing title
      */
-    public function testNotCreateTriggerWithTitleExists(): Void
+    public function testNotCreateTriggerWithTitleExists()
     {
         factory(Trigger::class)->create([
             'title' => 'Title Trigger',
@@ -106,7 +106,7 @@ class TriggerManagerTest extends ApiTestCase
     /**
      * Get a list of triggers in a project.
      */
-    public function testListTriggers(): void
+    public function testListTriggers()
     {
         //add triggers to process
         $faker = Faker::create();
@@ -137,7 +137,7 @@ class TriggerManagerTest extends ApiTestCase
     /**
      * Get a trigger of a project.
      */
-    public function testGetTrigger(): void
+    public function testGetTrigger()
     {
         //add trigger to process
         $faker = Faker::create();
@@ -158,7 +158,7 @@ class TriggerManagerTest extends ApiTestCase
     /**
      * The trigger not belongs to process.
      */
-    public function testGetTriggerNotBelongToProcess(): void
+    public function testGetTriggerNotBelongToProcess()
     {
         //load trigger
         $url = self::API_TEST_TRIGGER . $this->process->uid . '/trigger/' . factory(Trigger::class)->create()->uid;
@@ -171,7 +171,7 @@ class TriggerManagerTest extends ApiTestCase
     /**
      * Parameters required for update of Triggers
      */
-    public function testUpdateTriggerParametersRequired(): void
+    public function testUpdateTriggerParametersRequired()
     {
         $faker = Faker::create();
         //The post must have the required parameters
@@ -192,7 +192,7 @@ class TriggerManagerTest extends ApiTestCase
     /**
      * Update trigger in process
      */
-    public function testUpdateTrigger(): void
+    public function testUpdateTrigger()
     {
         $faker = Faker::create();
         //Post saved success
@@ -210,7 +210,7 @@ class TriggerManagerTest extends ApiTestCase
     /**
      * Delete Trigger in process
      */
-    public function testDeleteTrigger(): void
+    public function testDeleteTrigger()
     {
         //Remove Trigger
         $url = self::API_TEST_TRIGGER . $this->process->uid . '/trigger/' . factory(Trigger::class)->create(['process_id' => $this->process->id])->uid;
@@ -222,7 +222,7 @@ class TriggerManagerTest extends ApiTestCase
     /**
      * The trigger does not exist in process
      */
-    public function testDeleteTriggerNotExist(): void
+    public function testDeleteTriggerNotExist()
     {
         //Trigger not exist
         $url = self::API_TEST_TRIGGER . $this->process->uid . '/trigger/' . factory(Trigger::class)->make()->uid;

@@ -159,7 +159,7 @@ class TaskAssigneeManager
      * @return void
      * @throws TaskAssignedException
      */
-    public function removeAssignee(Task $activity, $assignee): void
+    public function removeAssignee(Task $activity, $assignee)
     {
         $user = new User();
         $group = new Group();

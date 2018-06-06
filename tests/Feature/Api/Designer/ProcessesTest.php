@@ -248,7 +248,7 @@ class ProcessesTest extends ApiTestCase
     /**
      * Test get a list of the files in a process.
      */
-    public function testGetPublic(): void
+    public function testGetPublic()
     {
 
         //Create a test process using factories
@@ -265,7 +265,7 @@ class ProcessesTest extends ApiTestCase
     /**
      * Test get a list of the files filter
      */
-    public function testGetPublicFilter(): void
+    public function testGetPublicFilter()
     {
 
         //Create a test process using factories
@@ -282,7 +282,7 @@ class ProcessesTest extends ApiTestCase
     /**
      * Test get a list of the files filter
      */
-    public function testGetPublicFilterWithParameters(): void
+    public function testGetPublicFilterWithParameters()
     {
 
         //Create a test process using factories
@@ -307,7 +307,7 @@ class ProcessesTest extends ApiTestCase
      * Get the process definition.
      *
      */
-    public function testGetDefinition(): void
+    public function testGetDefinition()
     {
         //Login as admin user
         $admin = $this->authenticateAsAdmin();
@@ -327,7 +327,7 @@ class ProcessesTest extends ApiTestCase
      * Test delete a process.
      *
      */
-    public function testDelete(): void
+    public function testDelete()
     {
         $admin = $this->authenticateAsAdmin();
         // We need a process
@@ -348,7 +348,7 @@ class ProcessesTest extends ApiTestCase
      * Test delete a process not exists.
      *
      */
-    public function testDeleteProcessNotExists(): void
+    public function testDeleteProcessNotExists()
     {
         $this->authenticateAsAdmin();
 

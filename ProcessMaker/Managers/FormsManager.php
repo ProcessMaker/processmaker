@@ -142,7 +142,7 @@ class FormsManager
      *
      * @throws ValidationException
      */
-    private function validate($data): void
+    private function validate($data)
     {
         /**
          * @var $validator \Illuminate\Validation\Validator

@@ -36,7 +36,7 @@ class InputDocumentManagerTest extends ApiTestCase
     /**
      * Create user and process
      */
-    protected function setUp(): void
+    protected function setUp()
     {
         parent::setUp();
         $this->user = factory(User::class)->create([
@@ -54,7 +54,7 @@ class InputDocumentManagerTest extends ApiTestCase
     /**
      * Test verify the parameter required for create InputDocument
      */
-    public function testNotCreatedForParameterRequired(): void
+    public function testNotCreatedForParameterRequired()
     {
         //Post should have the parameter required
         $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-document';
@@ -68,7 +68,7 @@ class InputDocumentManagerTest extends ApiTestCase
     /**
      * Test verify the constants required for create InputDocument
      */
-    public function testNotCreatedForConstantsParameterRequired(): void
+    public function testNotCreatedForConstantsParameterRequired()
     {
         //Post should have the parameter required
         $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-document';
@@ -85,7 +85,7 @@ class InputDocumentManagerTest extends ApiTestCase
     /**
      * Create new Input Document in process
      */
-    public function testCreateInputDocument(): void
+    public function testCreateInputDocument()
     {
         $faker = Faker::create();
         //Post saved correctly
@@ -103,7 +103,7 @@ class InputDocumentManagerTest extends ApiTestCase
     /**
      * Can not create a Input Document with an existing title
      */
-    public function testNotCreateInputDocumentWithTitleExists(): Void
+    public function testNotCreateInputDocumentWithTitleExists()
     {
         factory(InputDocument::class)->create([
             'title' => 'Title Test Input Document',
@@ -124,7 +124,7 @@ class InputDocumentManagerTest extends ApiTestCase
     /**
      * Get a list of Input Document in a project.
      */
-    public function testListInputDocuments(): void
+    public function testListInputDocuments()
     {
         $total = Faker::create()->randomDigitNotNull;
         //add Input Document to process
@@ -153,7 +153,7 @@ class InputDocumentManagerTest extends ApiTestCase
     /**
      * Get a Input Document of a project.
      */
-    public function testGetInputDocument(): void
+    public function testGetInputDocument()
     {
         //load InputDocument
         $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-document/' . factory(InputDocument::class)->create([
@@ -170,7 +170,7 @@ class InputDocumentManagerTest extends ApiTestCase
     /**
      * The InputDocument not belongs to process.
      */
-    public function testGetInputDocumentNotBelongToProcess(): void
+    public function testGetInputDocumentNotBelongToProcess()
     {
         //load Input Document
         $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-document/' . factory(InputDocument::class)->create()->uid;
@@ -183,7 +183,7 @@ class InputDocumentManagerTest extends ApiTestCase
     /**
      * Parameters required for update of input Document
      */
-    public function testUpdateInputDocumentParametersRequired(): void
+    public function testUpdateInputDocumentParametersRequired()
     {
         $faker = Faker::create();
         //The post must have the required parameters
@@ -206,7 +206,7 @@ class InputDocumentManagerTest extends ApiTestCase
     /**
      * Update Input Document in process
      */
-    public function testUpdateInputDocument(): void
+    public function testUpdateInputDocument()
     {
         $faker = Faker::create();
         //Post saved success
@@ -229,7 +229,7 @@ class InputDocumentManagerTest extends ApiTestCase
     /**
      * Delete Input Document in process
      */
-    public function testDeleteInputDocument(): void
+    public function testDeleteInputDocument()
     {
         //Remove InputDocument
         $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-document/' . factory(InputDocument::class)->create(['process_id' => $this->process->id])->uid;
@@ -241,7 +241,7 @@ class InputDocumentManagerTest extends ApiTestCase
     /**
      * The Input Document does not exist in process
      */
-    public function testDeleteInputDocumentNotExist(): void
+    public function testDeleteInputDocumentNotExist()
     {
         //InputDocument not exist
         $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-document/' . factory(InputDocument::class)->make()->uid;

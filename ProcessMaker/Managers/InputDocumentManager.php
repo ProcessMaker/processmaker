@@ -87,7 +87,7 @@ class InputDocumentManager
      *
      * @throws ValidationException
      */
-    private function validate($data, $update=false): void
+    private function validate($data, $update=false)
     {
         $type = $update ? InputDocument::FORM_NEEDED_TYPE : array_keys(InputDocument::FORM_NEEDED_TYPE);
         /* @var $validator \Illuminate\Validation\Validator */

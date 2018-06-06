@@ -51,7 +51,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
     /**
      * Test get the list of categories.
      */
-    public function testGetListOfCategories(): void
+    public function testGetListOfCategories()
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
@@ -80,7 +80,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
     /**
      * Test get the list of categories filter
      */
-    public function testGetListOfCategoriesFilter(): void
+    public function testGetListOfCategoriesFilter()
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
@@ -111,7 +111,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
     /**
      * Test get the list of categories without results
      */
-    public function testGetFilterWithoutResult(): void
+    public function testGetFilterWithoutResult()
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
@@ -134,7 +134,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
     /**
      * Test get the list of categories invalid parameter start
      */
-    public function testGetListOfCategoriesInvalidStart(): void
+    public function testGetListOfCategoriesInvalidStart()
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
@@ -157,7 +157,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
     /**
      * Test get the list of categories invalid parameter limit
      */
-    public function testGetListOfCategoriesInvalidLimit(): void
+    public function testGetListOfCategoriesInvalidLimit()
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
@@ -180,7 +180,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
     /**
      * Test get the list of categories with start and limit
      */
-    public function testGetListOfCategoriesStartLimit(): void
+    public function testGetListOfCategoriesStartLimit()
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
