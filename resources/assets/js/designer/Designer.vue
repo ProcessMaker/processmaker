@@ -68,7 +68,7 @@ export default {
     },
     onHidden(){
       this.modalComponent = null
-    }
+    },
   }
 };
 </script>
