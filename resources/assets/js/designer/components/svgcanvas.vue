@@ -53,8 +53,6 @@
         created() {
             EventBus.$on(actions.designer.drag.toolbar.end().type, (value) => this.createElement(value))
             EventBus.$on(actions.designer.flow.create().type, (value) => this.createFlow(value))
-            EventBus.$on(actions.designer.drag.shape.start().type, this.onDragStartShape())
-            EventBus.$on(actions.designer.drag.shape.end().type, this.onDragEndShape())
             EventBus.$on(actions.designer.shape.remove().type, (value) => this.removeElement(value))
         },
         methods: {
@@ -103,7 +101,7 @@
         mounted() {
             this.graph = new joint.dia.Graph
             this.paper = new joint.dia.Paper({
-                el: document.getElementById('svgCanvas'),
+                el: this.$el,
                 model: this.graph,
                 width: 7000,
                 height: 7000,
