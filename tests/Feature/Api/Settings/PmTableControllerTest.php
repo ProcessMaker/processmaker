@@ -2,29 +2,56 @@
 
 namespace Tests\Feature\Api\Settings;
 
-use Ramsey\Uuid\Uuid;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Faker\Factory as Faker;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Facades\SchemaManager;
+use ProcessMaker\Model\DbSource;
+use ProcessMaker\Model\Form;
 use ProcessMaker\Model\PmTable;
+use ProcessMaker\Model\Process;
 use ProcessMaker\Model\User;
 use ProcessMaker\Model\Role;
 use Tests\Feature\Api\ApiTestCase;
 
 class PmTableControllerTest extends ApiTestCase
 {
-    use DatabaseTransactions;
+    use DatabaseMigrations;
 
-    const API_TEST_PM_TABLES = '/api/1.0/pmtable';
+    /**
+     * @var PmTable $pmTable
+     */
+    protected $pmTable;
+
+    const API_TEST_PM_TABLES = '/api/1.0/pmtable/';
+
+    const STRUCTURE = [
+        'name',
+        'description',
+        'type',
+        'uid',
+        'fields'
+    ];
+
+    const STRUCTURE_FIELD = [
+        'name',
+        'description',
+        'type',
+        'size',
+        'null',
+        'auto_increment',
+        'table_index',
+        'key',
+    ];
 
     /**
      * Overwrite of the setup method that authenticates and fills the default connection data
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
+        $this->artisan('db:seed');
 
         // we need an user and authenticate him
         $user = factory(User::class)->create([
@@ -33,50 +60,29 @@ class PmTableControllerTest extends ApiTestCase
         ]);
 
         $this->auth($user->username, 'password');
+        $this->pmTable = $this->createTestPmTable();
     }
 
     /**
      * Tests the addition of a PmTable
      */
-    public function testCreateOnePmTable(): void
+    public function testCreatePmTable(): void
     {
-        // Stop here and mark this test as incomplete.
-        $this->markTestIncomplete(
-            'This test must be refactored to support database transaction style testing.'
-        );
-        $pmInputData = $this->pmInputDefaultData();
-        $response = $this->api('POST', self::API_TEST_PM_TABLES, $pmInputData);
+        $response = $this->api('POST', self::API_TEST_PM_TABLES, $this->pmInputDefaultData());
         $response->assertStatus(201);
 
-        $returnedObject = json_decode($response->getContent());
-        $this->assertTrue($returnedObject->name === $pmInputData['name'],
-            'The added pmTable has not the passed name');
-
-        $this->assertGreaterThanOrEqual(0, count($returnedObject->fields),
-            'The added pmTable must have fields');
+        $response->assertJsonStructure(self::STRUCTURE);
+        $this->assertCount(3, $response->json('fields'));
     }
 
     /**
      * Tests the update of a PmTable
      */
-    public function testUpdateOnePmTable()
+    public function testUpdatePmTable(): void
     {
-        // Stop here and mark this test as incomplete.
-        $this->markTestIncomplete(
-            'This test must be refactored to support database transaction style testing.'
-        );
-
-        $pmTable = $this->createTestPmTable();
         $description = 'Changed Description';
 
-        // we update the pmTable
-        $url = "/api/1.0/pmtable/" . $pmTable->uid;
-        $response = $this->api('PUT', $url, ['description' => $description]);
-        $response->assertStatus(200);
-        $returnedObject = json_decode($response->getContent());
-        $this->assertEquals($returnedObject->description, $description);
-
-        $url = "/api/1.0/pmtable/" . $pmTable->uid;
+        $url = self::API_TEST_PM_TABLES . $this->pmTable->uid;
         $response = $this->api('PUT', $url, [
             'description' => $description,
             'fields' => [
@@ -91,201 +97,147 @@ class PmTableControllerTest extends ApiTestCase
                 ]
             ]]);
         $response->assertStatus(200);
-        $response->assertJsonStructure([
-            'name',
-            'grid',
-            'db_source_id',
-            'fields' => ['*' => ['name', 'type']]
-        ]);
-
-        $returnedObject = json_decode($response->getContent());
-        $this->assertEquals($returnedObject->description, $description);
+        $response->assertJsonStructure(self::STRUCTURE);
+        $response->assertJsonStructure(['*' => self::STRUCTURE_FIELD], $response->json('fields'));
+        $this->assertEquals($description, $response->json('description'));
     }
 
     /**
      * Tests the return of the list of all PmTables
      */
-    public function testGetAllPmTables()
+    public function testGetAllPmTables(): void
     {
-        // Stop here and mark this test as incomplete.
-        $this->markTestIncomplete(
-            'This test must be refactored to support database transaction style testing.'
-        );
- 
-        $this->createTestPmTable();
-        $url = "/api/1.0/pmtable";
-        $response = $this->api('GET', $url);
+        $response = $this->api('GET', self::API_TEST_PM_TABLES);
         $response->assertStatus(200);
-        $returnedList = json_decode($response->getContent());
-        $this->assertGreaterThanOrEqual(1, count($returnedList),
+        $this->assertGreaterThanOrEqual(1, count($response->json('data')),
             'At least one additional PmTable should exist');
-        $this->assertGreaterThanOrEqual(1, count($returnedList[0]->fields),
+        $this->assertGreaterThanOrEqual(1, count($response->json('data')[0]['fields']),
             'The returned test PmTable must have fields ');
+        $response->assertJsonStructure(['*' => self::STRUCTURE], $response->json('data'));
+        $response->assertJsonStructure(['*' => self::STRUCTURE_FIELD], $response->json('data')[0]['fields']);
+    }
+
+    /**
+     * Tests the return of the list of all PmTables
+     */
+    public function testGetAllPmTablesWhitFilter(): void
+    {
+        $perPage = Faker::create()->randomDigitNotNull;
+        $query = '?current_page=1&per_page=' . $perPage . '&sort_by=name&sort_order=DESC&filter=' . urlencode($this->pmTable->name);
+        $response = $this->api('GET', self::API_TEST_PM_TABLES . $query);
+        $response->assertStatus(200);
+        $this->assertGreaterThanOrEqual(1, count($response->json('data')),
+            'At least one additional PmTable should exist');
+        $this->assertGreaterThanOrEqual(1, count($response->json('data')[0]['fields']),
+            'The returned test PmTable must have fields ');
+        $response->assertJsonStructure(['*' => self::STRUCTURE], $response->json('data'));
+        $response->assertJsonStructure(['*' => self::STRUCTURE_FIELD], $response->json('data')[0]['fields']);
     }
 
     /**
      * Tests the endpoint that gets one pmTable from the database
      */
-    public function testShowOnePmTable()
+    public function testShowOnePmTable(): void
     {
-        // Stop here and mark this test as incomplete.
-        $this->markTestIncomplete(
-            'This test must be refactored to support database transaction style testing.'
-        );
- 
-        $pmTable = $this->createTestPmTable();
-
         // we retrieve the pmTable with the endpoint
-        $url = "/api/1.0/pmtable/" . $pmTable->uid;
+        $url = self::API_TEST_PM_TABLES . $this->pmTable->uid;
         $response = $this->api('GET', $url);
         $response->assertStatus(200);
-        $returnedModel = json_decode($response->getContent());
-
-        $this->assertEquals($returnedModel->uid, $pmTable->uid,
-            'The created test pmTable should be returned by the endpoint');
-
-        $this->assertGreaterThanOrEqual(1, count($returnedModel->fields),
-            'The returned test PmTable must have fields ');
-
-        $physicalTableName = $pmTable->physicalTableName();
-        $this->assertTrue(Schema::hasTable($physicalTableName), 'The PmTable was not created');
+        $response->assertJsonStructure(self::STRUCTURE, $response->json());
+        $response->assertJsonStructure(['*' => self::STRUCTURE_FIELD], $response->json('fields'));
     }
-
 
 
     /**
      * Tests the deletion of a PmTable
      */
-    public function testDeletePmTable()
+    public function testDeletePmTable(): void
     {
-        // Stop here and mark this test as incomplete.
-        $this->markTestIncomplete(
-            'This test must be refactored to support database transaction style testing.'
-        );
- 
-        $pmTable = $this->createTestPmTable();
-
         $numSourcesBefore = PmTable::count();
-        $url = "/api/1.0/pmtable/" . $pmTable->uid;
+        $url = self::API_TEST_PM_TABLES . $this->pmTable->uid;
         $response = $this->api('DELETE', $url);
-        $numSourcesAfter = PmTable::count();
         $response->assertStatus(204);
-        $this->assertEquals($numSourcesBefore, $numSourcesAfter + 1);
+        $this->assertEquals($numSourcesBefore, PmTable::count() + 1);
     }
 
     /**
      * Test get all the data of a pmTable
      */
-    public function testGetAllData()
+    public function testGetAllData(): void
     {
-        // Stop here and mark this test as incomplete.
-        $this->markTestIncomplete(
-            'This test must be refactored to support database transaction style testing.'
-        );
- 
-        $pmTable = $this->createTestPmTable();
-
-        $url = "/api/1.0/pmtable/" . $pmTable->uid . "/data";
+        DB::table($this->pmTable->physicalTableName())
+            ->insert([
+                'StringField' => 'string field',
+                'TextField' => 'a text'
+            ]);
+        $url = self::API_TEST_PM_TABLES . $this->pmTable->uid . '/data';
         $response = $this->api('GET', $url);
         $response->assertStatus(200);
+        $this->assertCount(1, $response->json());
     }
 
     /**
      * Test to add data to a PmTable
      */
-    public function testAddDataRow()
+    public function testAddDataRow(): void
     {
-        // Stop here and mark this test as incomplete.
-        $this->markTestIncomplete(
-            'This test must be refactored to support database transaction style testing.'
-        );
- 
-        $pmTable = $this->createTestPmTable();
-
-        $dataRow = [
+        $url = self::API_TEST_PM_TABLES . $this->pmTable->uid . '/data';
+        $response = $this->api('POST', $url, [
             'StringField' => 'string field',
             'TextField' => 'a text'
-        ];
-
-        $url = "/api/1.0/pmtable/" . $pmTable->uid . "/data";
-        $response = $this->api('POST', $url, $dataRow);
+        ]);
         $response->assertStatus(201);
     }
 
     /**
      * Test to update a row in the PmTable
      */
-    public function testUpdateDataRow()
+    public function testUpdateDataRow(): void
     {
-        // Stop here and mark this test as incomplete.
-        $this->markTestIncomplete(
-            'This test must be refactored to support database transaction style testing.'
-        );
- 
-        $pmTable = $this->createTestPmTable();
+        DB::table($this->pmTable->physicalTableName())
+            ->insert([
+                'StringField' => 'string field',
+                'TextField' => 'a text'
+            ]);
 
-        $dataRow = [
-            'StringField' => 'string field',
-            'TextField' => 'Text field changed'
-        ];
 
-        $url = "/api/1.0/pmtable/" . $pmTable->uid . "/data";
-        $response = $this->api('POST', $url, $dataRow);
-        $response->assertStatus(201);
-
-        $lastItem = DB::table($pmTable->physicalTableName())->orderBy('IntegerField', 'desc')->first();
-
-        $updateData = [
-            'StringField' => 'string updated',
-            'IntegerField' => $lastItem->IntegerField,
-            'TextField' => 'text field updated'
-        ];
-
-        $url = "/api/1.0/pmtable/" . $pmTable->uid . "/data";
-        $response = $this->api('PUT', $url, $updateData);
+        $url = self::API_TEST_PM_TABLES . $this->pmTable->uid . '/data';
+        $text = 'string updated';
+        $text2 = 'text field updated';
+        $response = $this->api('PUT', $url, [
+            'StringField' => $text,
+            'IntegerField' => 1,
+            'TextField' => $text2
+        ]);
         $response->assertStatus(200);
+        $this->assertEquals($text, $response->json('StringField'));
+        $this->assertEquals($text2, $response->json('TextField'));
     }
 
     /**
      * Test deletion of a row
      */
-    public function testDeleteDataRow()
+    public function testDeleteDataRow(): void
     {
-        // Stop here and mark this test as incomplete.
-        $this->markTestIncomplete(
-            'This test must be refactored to support database transaction style testing.'
-        );
- 
-        $pmTable = $this->createTestPmTable();
+        $tableName = $this->pmTable->physicalTableName();
+        DB::table($tableName)
+            ->insert([
+                'StringField' => 'String1',
+                'TextField' => 'Text1'
+            ]);
+        DB::table($tableName)
+            ->insert([
+                'StringField' => 'String2',
+                'TextField' => 'Text2'
+            ]);
 
-        $dataRow = [
-            'StringField' => 'String1',
-            'TextField' => 'Text1'
-        ];
-
-        // Add data to the PmTable
-        $url = "/api/1.0/pmtable/" . $pmTable->uid . "/data";
-        $response = $this->api('POST', $url, $dataRow);
-        $response->assertStatus(201);
-
-        //we need to the the id of the added row
-        $insertedRow = (array)DB::table('PMT_TESTPMTABLE')
-            ->orderBy('IntegerField', 'desc')
-            ->first();
-        $lastId = $insertedRow['IntegerField'];
-
-        //a deletion with no keys must return an error
+        $numberRowsBefore = count($this->pmTable->allDataRows());
+        $url = self::API_TEST_PM_TABLES . $this->pmTable->uid . '/data/StringField/String1/TextField/Text1/IntegerField/1';
         $response = $this->api('DELETE', $url);
-        $response->assertStatus(405);
-
-        $numberRowsBefore = count($pmTable->allDataRows());
-        $url = "/api/1.0/pmtable/" . $pmTable->uid . "/data/StringField/String1/TextField/Text1/IntegerField/" . $lastId;
-        $response = $this->api('DELETE', $url);
-        $numberRowsAfter = count($pmTable->allDataRows());
+        $numberRowsAfter = count($this->pmTable->allDataRows());
         $response->assertStatus(204);
-        $this->assertEquals($numberRowsBefore - 1, $numberRowsAfter, "After the deletion the PmTable must have on less dataRow.");
+        $this->assertEquals($numberRowsBefore - 1, $numberRowsAfter, 'After the deletion the PmTable must have on less dataRow.');
     }
-
 
 
     /**
@@ -295,32 +247,43 @@ class PmTableControllerTest extends ApiTestCase
      */
     private function pmInputDefaultData()
     {
-        return [
-            'name' => 'TestPmTable',
-            'description' => 'Table Description',
-            'type' => 'PMTABLE',
-            'fields' => [
-                [
-                    'name' => 'Field1',
-                    'description' => 'Field1 description',
-                    'type' => 'INTEGER',
-                    'null' => 1,
-                    'table_index' => 1,
-                    'auto_increment' => 0,
-                    'key' => 0,
-                ],
-                [
-                    'name' => 'Field2',
-                    'description' => 'Field2 description',
-                    'type' => 'VARCHAR',
-                    'size' => '100',
-                    'null' => 1,
-                    'key' => 0,
-                    'table_index' => 2,
-                    'auto_increment' => 0,
-                ]
-            ]
+        $pmTable = factory(PmTable::class)->make();
+        $pmTable->db_source_uid = factory(DbSource::class)->create()->uid;
+        $pmTable->process_uid = factory(Process::class)->create()->uid->toString();
+        $pmTable->fields = [
+            [
+                'name' => 'Field1',
+                'description' => 'Field1 description',
+                'type' => 'INTEGER',
+                'null' => 1,
+                'table_index' => 1,
+                'auto_increment' => 0,
+                'key' => 0,
+            ],
+            [
+                'name' => 'Field2',
+                'description' => 'Field2 description',
+                'type' => 'VARCHAR',
+                'size' => '100',
+                'null' => 1,
+                'key' => 0,
+                'table_index' => 2,
+                'auto_increment' => 0,
+            ],
+            [
+                'name' => 'Field3',
+                'description' => 'Field2 description',
+                'type' => 'VARCHAR',
+                'size' => '100',
+                'null' => 1,
+                'key' => 0,
+                'table_index' => 3,
+                'auto_increment' => 0,
+                'dynaform_uid' => factory(Form::class)->create()->uid
+            ],
+
         ];
+        return $pmTable->toArray();
     }
 
     /**
@@ -332,36 +295,36 @@ class PmTableControllerTest extends ApiTestCase
     {
         // we create a new pmTable
         $pmTable = factory(PmTable::class)->create();
-
-        $field1 = [
+        SchemaManager::updateOrCreateColumn($pmTable, [
             'name' => 'StringField',
             'description' => 'String Field',
             'type' => 'VARCHAR',
             'size' => 250,
             'null' => 1
-        ];
-
-        $field2 = [
+        ]);
+        SchemaManager::updateOrCreateColumn($pmTable, [
             'name' => 'IntegerField',
             'description' => 'Integer Field',
             'type' => 'INTEGER',
             'null' => 0,
             'key' => 1,
             'auto_increment' => 1
-        ];
-
-        $field3 = [
+        ]);
+        SchemaManager::updateOrCreateColumn($pmTable, [
             'name' => 'TextField',
             'description' => 'Text Field',
             'type' => 'TEXT',
             'null' => 1
-        ];
-
-        SchemaManager::dropPhysicalTable('PMT_TESTPMTABLE');
-        SchemaManager::updateOrCreateColumn($pmTable, $field1);
-        SchemaManager::updateOrCreateColumn($pmTable, $field2);
-        SchemaManager::updateOrCreateColumn($pmTable, $field3);
+        ]);
 
         return $pmTable;
+    }
+
+    protected function tearDown(): void
+    {
+        if ($this->getName() === 'testDeleteDataRowXX') {
+            $this->artisan('migrate:fresh');
+            $this->seed();
+        }
     }
 }

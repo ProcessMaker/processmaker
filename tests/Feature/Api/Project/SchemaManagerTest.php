@@ -5,16 +5,15 @@ namespace Tests\Unit;
 use Faker\Factory as Faker;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schema;
-use League\OAuth2\Server\Entities\Traits\RefreshTokenTrait;
 use ProcessMaker\Facades\SchemaManager;
 use ProcessMaker\Model\PmTable;
 use Tests\TestCase;
 
 class SchemaManagerTest extends TestCase
 {
-    use RefreshTokenTrait;
-    //use DatabaseMigrations;
+    use DatabaseMigrations;
 
     /**
      * Create PM table with columns
@@ -149,6 +148,14 @@ class SchemaManagerTest extends TestCase
                 'type' => $type,
                 'size' => 100,
             ]);
+        }
+    }
+
+    protected function tearDown(): void
+    {
+        if ($this->getName() === 'testDropTable') {
+            $this->artisan('migrate:fresh');
+            $this->seed();
         }
     }
 
