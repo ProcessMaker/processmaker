@@ -1,5 +1,5 @@
 <template>
-  <div class="data-table">
+  <div>
     <vuetable :dataManager="dataManager" :sortOrder="sortOrder" :css="css" :api-mode="false"  @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data" pagination-path="meta">
         <template slot="actions" slot-scope="props"> 
           <div class="actions">
@@ -7,53 +7,43 @@
             <div class="popout">
               <b-btn variant="action" @click="onAction('edit-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="Edit"><i class="fas fa-edit"></i></b-btn>
               <b-btn variant="action" @click="onAction('remove-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="Remove"><i class="fas fa-trash-alt"></i></b-btn>
-              <b-btn variant="action" @click="onAction('users-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="Users"><i class="fas fa-users"></i></b-btn>
-              <b-btn variant="action" @click="onAction('permissions-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="Permissions"><i class="fas fa-user-lock"></i></b-btn>
             </div>
           </div>
-    </template>  
-    </vuetable> 
-    <pagination single="Role" plural="Roles" :perPageSelectEnabled="true" @changePerPage="changePerPage" @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
+      </template>  
+    </vuetable>
+    <pagination single="User" plural="Users" :perPageSelectEnabled="true" @changePerPage="changePerPage" @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
    </div>
 </template>
 
 <script>
 import Vuetable from "vuetable-2/src/components/Vuetable";
-import Pagination from "../../../components/common/Pagination";
 import datatableMixin from "../../../components/common/mixins/datatable";
+import Pagination from "../../../components/common/Pagination";
 
 export default {
   mixins: [datatableMixin],
   props: ["filter"],
   data() {
     return {
-      orderBy: "code",
-
+      orderBy: "username",
+      // Our listing of users
       sortOrder: [
         {
-          field: "code",
-          sortField: "code",
+          field: "username",
+          sortField: "username",
           direction: "asc"
         }
       ],
       fields: [
         {
-          name: "__checkbox"
+          title: "Username",
+          name: "username",
+          sortField: "username"
         },
         {
-          title: "Code",
-          name: "code",
-          sortField: "code"
-        },
-        {
-          title: "Name",
-          name: "name",
-          sortField: "name"
-        },
-        {
-          title: "Description",
-          name: "description",
-          sortField: "description"
+          title: "Full Name",
+          name: "full_name",
+          sortField: "full_name"
         },
         {
           title: "Status",
@@ -61,52 +51,59 @@ export default {
           sortField: "status",
           callback: this.formatStatus
         },
-        {
-          title: "Active Users",
-          name: "total_users",
-          sortField: "total_users",
-          callback: this.formatActiveUsers
+         {
+          title: "Role",
+          name: "role",
+          sortField: "role"
         },
         {
-          title: "Created At",
-          name: "created_at",
-          sortField: "created_at",
+          title: 'Login',
+          name: "last_login",
+          sortField: "last_login",
           callback: this.formatDate
         },
         {
-          title: "Updated At",
-          name: "updated_at",
-          sortField: "updated_at",
-          callback: this.formatDate
+          title: 'Expires On',
+          name: 'expires_at',
+          sortField: 'expires_at',
+          callback: 'formatDate|l'
         },
         {
           name: "__slot:actions",
           title: ""
         }
-      ]
+     ]
     };
   },
   methods: {
-    formatActiveUsers(value) {
-      return '<div class="text-center">' + value + "</div>";
-    },
     formatStatus(value) {
       value = value.toLowerCase();
       let response = '<i class="fas fa-circle ' + value + '"></i> ';
       value = value.charAt(0).toUpperCase() + value.slice(1);
       return response + value;
     },
+    transform(data) {
+      // Bring in our mixin version, but we have to do additional transformation to create a full_name field
+      // Clean up fields for meta pagination so vue table pagination can understand
+      data.meta.last_page = data.meta.total_pages;
+      data.meta.from = (data.meta.current_page - 1) * data.meta.per_page;
+      data.meta.to = data.meta.from + data.meta.count;
+
+      // Create full name field
+      // Iterate through each data.data row and create one
+      for(let record of data.data) {
+        record['full_name'] = [record['firstname'], record['lastname']].join(' ');
+        // put in placeholder for case count
+        record['task_count'] = '#'
+      }
+      return data;
+    },
     fetch() {
       this.loading = true;
-      if (this.cancelToken) {
-        this.cancelToken();
-        this.cancelToken = null;
-      }
-      const CancelToken = ProcessMaker.apiClient.CancelToken;
       // Load from our api client
       ProcessMaker.apiClient
         .get(
-          "roles?page=" +
+          "users?page=" +
             this.page +
             "&per_page=" +
             this.perPage +
@@ -115,12 +112,7 @@ export default {
             "&order_by=" +
             this.orderBy +
             "&order_direction=" +
-            this.orderDirection,
-          {
-            cancelToken: new CancelToken(c => {
-              this.cancelToken = c;
-            })
-          }
+            this.orderDirection
         )
         .then(response => {
           this.data = this.transform(response.data);
@@ -135,15 +127,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/deep/ th#_total_users {
-  width: 150px;
-  text-align: center;
-}
-
-/deep/ th#_description {
-  width: 250px;
-}
-
 /deep/ i.fa-circle {
   &.active {
     color: green;

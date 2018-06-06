@@ -14,7 +14,9 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        // Nothing yet
+        'Illuminate\Auth\Events\Login' => [
+            'ProcessMaker\Listeners\LoginListener',
+        ],
     ];
 
     /**

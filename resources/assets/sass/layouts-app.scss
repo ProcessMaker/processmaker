@@ -399,6 +399,55 @@ table.vuetable {
   margin-top: 16px;
   background-color: transparent;
 
+    tr:hover td {
+      background-color: #d8d8d8;
+    }
+
+ .vuetable-slot {
+  position: relative;
+}
+
+ .actions {
+  cursor: pointer;
+
+  .popout {
+    display: none;
+    align-items: center;
+    position: absolute;
+    background-color: #d8d8d8;
+    right: 0px;
+    top: 0px;
+    font-size: 17px;
+    text-align: right;
+    height: 42px;
+
+    button.btn-action {
+      color: #212529;
+      height: 32px;
+      width: 32px;
+      margin-left: 4px;
+      margin-right: 4px;
+      background-color: #d8d8d8;
+      border-color: #d8d8d8;
+      text-align: center;
+      padding: 0px;
+
+      &:hover {
+        background-color: white;
+        border-radius: 2px;
+      }
+    }
+  }
+
+  &:hover {
+    .popout {
+      display: flex;
+    }
+  }
+}
+
+
+
     td {
       border-top: 2px solid #f7f9fb;
     }
