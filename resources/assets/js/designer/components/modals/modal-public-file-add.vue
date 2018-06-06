@@ -60,6 +60,7 @@ export default {
   .editor-wrapper{
     border: solid 1px #b6bfc6;
     border-radius: 2px;
-    padding-left: 10px;
+    padding-left: 12px;
+    padding-top: 10px;
   }
 </style>

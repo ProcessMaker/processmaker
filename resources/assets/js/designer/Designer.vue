@@ -66,7 +66,6 @@ export default {
     openAddDialog(key) {
       // @todo Replace this with dynamic modal generation once we have all modals in place
       // We're not doing this now so we can have visual alert feedback when a modal isn't implemented
-      console.log(key)
       switch(key) {
         case 'permissions':
           this.modalComponent = 'modal-permissions-add'
