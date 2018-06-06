@@ -1,8 +1,6 @@
 <template>
     <div id="svgCanvas" ref="canvas"></div>
-
 </template>
-
 
 <script>
     import bpmn from "bpmn-moddle"
