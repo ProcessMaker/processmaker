@@ -21,7 +21,7 @@ class CreateEmailEventsTable extends Migration
             $table->string('EMAIL_EVENT_FROM', 100)->default('');
             $table->text('EMAIL_EVENT_TO', 16777215);
             $table->string('EMAIL_EVENT_SUBJECT')->nullable()->default('');
-            $table->string('PRF_UID', 32)->nullable()->default('');
+            $table->unsignedInteger('process_file_id')->nullable();
             $table->string('EMAIL_SERVER_UID', 32)->nullable()->default('');
             $table->dateTime('EMAIL_EVENT_CREATE');
             $table->dateTime('EMAIL_EVENT_UPDATE');

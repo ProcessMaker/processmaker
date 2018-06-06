@@ -4,6 +4,7 @@ namespace ProcessMaker\Transformers;
 
 use League\Fractal\TransformerAbstract;
 use ProcessMaker\Model\Process;
+use ProcessMaker\Model\ProcessCategory;
 
 /**
  * Process transformer, used to prepare the JSON response returned in the
@@ -27,7 +28,7 @@ class ProcessTransformer extends TransformerAbstract
         // But we need to grab the category and insert it in there if it's defined
         if($data['process_category_id']) {
             // Category is set, let's include the category
-            $data['category'] = $process->category->name;
+            $data['category'] = ProcessCategory::where('id', $process->process_category_id)->first()->name;//$process->category->name;
         }
         // Unset category_id, we don't need it anymore
         unset($data['process_category_id']);

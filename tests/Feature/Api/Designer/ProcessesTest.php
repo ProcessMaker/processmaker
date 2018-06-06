@@ -53,7 +53,7 @@ class ProcessesTest extends ApiTestCase
     /**
      * Test to verify our processes listing api endpoint works without any filters
      */
-    public function testProcessesListing()
+    public function testProcessesListing(): void
     {
         $user = $this->authenticateAsAdmin();
         // Create some processes

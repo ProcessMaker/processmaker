@@ -41,11 +41,11 @@ class ProcessesController extends Controller
                 ->orWhere('description', 'like', $filter)
                 ->orWhereIn('process_category_id', $categories->pluck('id'))
                 // We need minus to ensure null categories are sorted AFTER
-                ->orderBy(DB::raw('-process_category_id'), 'desc')
+                ->orderBy(DB::raw('process_category_id'), 'desc')
                 ->orderBy('id')
                 ->paginate($perPage);
         } else {
-            $processes = Process::orderBy(DB::raw('-process_category_id'), 'desc')
+            $processes = Process::orderBy(DB::raw('process_category_id'), 'desc')
                 ->orderBy('id')
                 ->paginate($perPage);
         }

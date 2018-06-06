@@ -28,7 +28,7 @@ class FileManagerTest extends ApiTestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_OPERATOR)->first()->id
+            'role_id' => Role::where('code', Role::PROCESSMAKER_OPERATOR)->first()->id
         ]);
         $this->auth($user->username, 'password');
 
@@ -43,9 +43,9 @@ class FileManagerTest extends ApiTestCase
         //Assert store into a folder
         Storage::fake('public');
         $data = [
-            'prf_filename' => 'file.html',
-            'prf_path' => 'public/folder',
-            'prf_content' => 'document content',
+            'filename' => 'file.html',
+            'path' => 'public/folder',
+            'content' => 'document content',
         ];
         $response = $this->api('POST', self::API_TEST_PROJECT . $process->uid . '/file-manager', $data);
 
@@ -53,11 +53,11 @@ class FileManagerTest extends ApiTestCase
         Storage::disk('public')->assertMissing($process->uid . '/folder/file.html');
 
         $processFile = factory(ProcessFile::class)->create();
-        $prfUid = $processFile->PRF_UID;
+        $prfUid = $processFile->uid;
         //Change content
         $newContent = 'new content';
         $data = [
-            'prf_content' => $newContent,
+            'content' => $newContent,
         ];
         $response = $this->api('PUT', self::API_TEST_PROJECT . $process->uid . '/file-manager/' . $prfUid, $data);
         $response->assertStatus(403);
@@ -74,7 +74,7 @@ class FileManagerTest extends ApiTestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
 
         // We need a project
@@ -87,21 +87,21 @@ class FileManagerTest extends ApiTestCase
         $response->assertStatus(200);
         $response->assertJsonFragment(
             [
-                'name'     => "templates",
-                'type'     => "folder",
-                'path'     => "/",
+                'name' => 'templates',
+                'type' => 'folder',
+                'path' => '/',
                 'editable' => false
             ]
         );
         $response->assertJsonFragment(
             [
-                'name'     => "public",
-                'type'     => "folder",
-                'path'     => "/",
+                'name' => 'public',
+                'type' => 'folder',
+                'path' => '/',
                 'editable' => false
             ]
         );
-        
+
         //Assert public response
         Storage::fake('public');
         $response = $this->api('GET', self::API_TEST_PROJECT . $process->uid . '/file-manager?path=public');
@@ -126,9 +126,9 @@ class FileManagerTest extends ApiTestCase
         $response->assertStatus(200);
         $response->assertJsonFragment(
             [
-                "prf_name" => "other",
-                "prf_type" => "folder",
-                "prf_path" => "public",
+                'name' => 'other',
+                'type' => 'folder',
+                'path' => 'public',
             ]
         );
 
@@ -137,14 +137,14 @@ class FileManagerTest extends ApiTestCase
         $response->assertStatus(200);
         $response->assertJsonFragment(
             [
-                "prf_uid"            => "",
-                "prf_filename"       => "file.txt",
-                "usr_uid"            => "",
-                "prf_update_usr_uid" => "",
-                "prf_path"           => "public/other/",
-                "prf_type"           => "file",
-                "prf_editable"       => "true",
-                "prf_content"        => "other file",
+                'uid' => '',
+                'filename' => 'file.txt',
+                'user_id' => 0,
+                'update_user_id' => null,
+                'path' => 'public/other/',
+                'type' => 'file',
+                'editable' => 'true',
+                'content' => 'other file',
             ]
         );
     }
@@ -157,7 +157,7 @@ class FileManagerTest extends ApiTestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
         $process = factory(Process::class)->create();
         //
@@ -166,93 +166,93 @@ class FileManagerTest extends ApiTestCase
         //Assert store into a folder
         Storage::fake('public');
         $data = [
-            'prf_filename' => 'file.html',
-            'prf_path' => 'public/folder',
-            'prf_content' => 'document content',
+            'filename' => 'file.html',
+            'path' => 'public/folder',
+            'content' => 'document content',
         ];
         $response = $this->api('POST', self::API_TEST_PROJECT . $process->uid . '/file-manager', $data);
         //Check expected status
         $response->assertStatus(201);
         $response->assertJsonStructure();
         $json = $response->json();
-        $prfUid = $json['prf_uid'];
-        $processFile = ProcessFile::where('PRF_UID', $prfUid)->first();
+        $prfUid = $json['uid'];
+        $processFile = ProcessFile::where('uid', $prfUid)->first();
         //Check if file was stored
         Storage::disk('public')->assertExists($process->uid . '/folder/file.html');
         //Check owner user
-        $this->assertEquals($admin->username, $processFile->user->username);
+        $this->assertEquals($admin->id, $processFile->user_id);
         //Folder with a final slash
         $data = [
-            'prf_filename' => 'file1.html',
-            'prf_path' => 'public/folder_1/',
-            'prf_content' => 'document content',
+            'filename' => 'file1.html',
+            'path' => 'public/folder_1/',
+            'content' => 'document content',
         ];
         $response = $this->api('POST', self::API_TEST_PROJECT . $process->uid . '/file-manager', $data);
         $response->assertStatus(201);
         Storage::disk('public')->assertExists($process->uid . '/folder_1/file1.html');
 
-        //Test prf_filename is required validation
+        //Test filename is required validation
         $data = [
-            'prf_path' => 'public/folder_1/',
-            'prf_content' => 'document content',
+            'path' => 'public/folder_1/',
+            'content' => 'document content',
         ];
         $response = $this->api('POST', self::API_TEST_PROJECT . $process->uid . '/file-manager', $data);
         $response->assertStatus(422);
         $this->assertEquals(
-            __('validation.required', ['attribute'=>'prf filename']),
+            __('validation.required', ['attribute' => 'filename']),
             $response->json()['error']['message']
         );
 
         //Test filemanager.filename_is_valid validation
         $data = [
-            'prf_filename' => ' ../other/name.txt',
-            'prf_path' => 'public/folder_1/',
-            'prf_content' => 'document content',
+            'filename' => ' ../other/name.txt',
+            'path' => 'public/folder_1/',
+            'content' => 'document content',
         ];
         $response = $this->api('POST', self::API_TEST_PROJECT . $process->uid . '/file-manager', $data);
         $response->assertStatus(422);
         $this->assertEquals(
-            __('validation.custom.prf_filename.filemanager.filename_is_valid', ['attribute'=>'prf filename']),
+            __('validation.custom.filename.filemanager.filename_is_valid', ['attribute' => 'filename']),
             $response->json()['error']['message']
         );
 
         //Test filemanager.store_only_html_to_templates validation
         $data = [
-            'prf_filename' => 'I_am_not_html.txt',
-            'prf_path' => 'templates/folder_1/',
-            'prf_content' => 'document content',
+            'filename' => 'I_am_not_html.txt',
+            'path' => 'templates/folder_1/',
+            'content' => 'document content',
         ];
         $response = $this->api('POST', self::API_TEST_PROJECT . $process->uid . '/file-manager', $data);
         $response->assertStatus(422);
         $this->assertEquals(
-            __('validation.custom.prf_filename.filemanager.store_only_html_to_templates', ['attribute'=>'prf filename']),
+            __('validation.custom.filename.filemanager.store_only_html_to_templates', ['attribute' => 'filename']),
             $response->json()['error']['message']
         );
 
         //Test filemanager.do_not_store_exe_in_public validation
         $data = [
-            'prf_filename' => 'executable.exe',
-            'prf_path' => 'templates/folder_1/',
-            'prf_content' => 'EXE_FILE',
+            'filename' => 'executable.exe',
+            'path' => 'templates/folder_1/',
+            'content' => 'EXE_FILE',
         ];
         $response = $this->api('POST', self::API_TEST_PROJECT . $process->uid . '/file-manager', $data);
         $response->assertStatus(422);
         $this->assertEquals(
-            __('validation.custom.prf_filename.filemanager.do_not_store_exe_in_public', ['attribute'=>'prf filename']),
+            __('validation.custom.filename.filemanager.do_not_store_exe_in_public', ['attribute' => 'prf filename']),
             $response->json()['error']['message']
         );
 
         //Test filemanager.do_not_store_php_in_public validation
         Config::set(['app.disable_php_upload_execution' => 1]);
         $data = [
-            'prf_filename' => 'index.php',
-            'prf_path' => 'public/',
-            'prf_content' => 'EXE_FILE',
+            'filename' => 'index.php',
+            'path' => 'public/',
+            'content' => 'EXE_FILE',
         ];
         $response = $this->api('POST', self::API_TEST_PROJECT . $process->uid . '/file-manager', $data);
         $response->assertStatus(422);
         $this->assertEquals(
-            __('validation.custom.prf_filename.filemanager.do_not_store_php_in_public', ['attribute'=>'prf filename']),
+            __('validation.custom.filename.filemanager.do_not_store_php_in_public', ['attribute' => 'prf filename']),
             $response->json()['error']['message']
         );
     }
@@ -265,7 +265,7 @@ class FileManagerTest extends ApiTestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
         $process = factory(Process::class)->create();
 
@@ -274,20 +274,20 @@ class FileManagerTest extends ApiTestCase
         //Upload a public test file
         Storage::fake('public');
         $data = [
-            'prf_filename' => 'file.html',
-            'prf_path' => 'public/folder',
-            'prf_content' => 'document content',
+            'filename' => 'file.html',
+            'path' => 'public/folder',
+            'content' => 'document content',
         ];
         $response = $this->api('POST', self::API_TEST_PROJECT . $process->uid . '/file-manager', $data);
         $response->assertStatus(201);
         Storage::disk('public')->assertExists($process->uid . '/folder/file.html');
         $processFile = $response->json();
-        $prfUid = $processFile['prf_uid'];
+        $prfUid = $processFile['uid'];
 
         //Change content
         $newContent = 'new content';
         $data = [
-            'prf_content' => $newContent,
+            'content' => $newContent,
         ];
         $response = $this->api('PUT', self::API_TEST_PROJECT . $process->uid . '/file-manager/' . $prfUid, $data);
         $response->assertStatus(200);
@@ -302,7 +302,7 @@ class FileManagerTest extends ApiTestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
         $process = factory(Process::class)->create();
 
@@ -311,15 +311,15 @@ class FileManagerTest extends ApiTestCase
         //Upload a public test file
         Storage::fake('public');
         $data = [
-            'prf_filename' => 'file.html',
-            'prf_path' => 'public/folder',
-            'prf_content' => 'document content',
+            'filename' => 'file.html',
+            'path' => 'public/folder',
+            'content' => 'document content',
         ];
         $response = $this->api('POST', self::API_TEST_PROJECT . $process->uid . '/file-manager', $data);
         $response->assertStatus(201);
         Storage::disk('public')->assertExists($process->uid . '/folder/file.html');
         $processFile = $response->json();
-        $prfUid = $processFile['prf_uid'];
+        $prfUid = $processFile['uid'];
 
         //Delete file
         $response = $this->api('DELETE', self::API_TEST_PROJECT . $process->uid . '/file-manager/' . $prfUid);
@@ -328,13 +328,13 @@ class FileManagerTest extends ApiTestCase
 
         //Delete file that is used as template
         $data = [
-            'prf_filename' => 'routing_template.html',
-            'prf_path' => 'templates/',
-            'prf_content' => 'document content',
+            'filename' => 'routing_template.html',
+            'path' => 'templates/',
+            'content' => 'document content',
         ];
         $response = ProcessFileManager::store($process, $admin, $data);
-        $path = $response['prf_path'].$response['prf_filename'];
-        $prfUid = $response['prf_uid'];
+        $path = $response['path'] . $response['filename'];
+        $prfUid = $response['uid'];
         $process->derivation_screen_template = 'routing_template.html';
         $process->save();
         $response = $this->api('DELETE', self::API_TEST_PROJECT . $process->uid . '/file-manager/' . $prfUid);
@@ -342,25 +342,25 @@ class FileManagerTest extends ApiTestCase
         $this->assertEquals(
             __(
                 'validation.custom.processFile.filemanager.file_is_not_used_as_routing_screen',
-                ['path'=>$path]
+                ['path' => $path]
             ),
             $response->json()['error']['message']
         );
 
         //Delete file that is used as email template
         $data = [
-            'prf_filename' => 'email_template.html',
-            'prf_path' => 'templates/',
-            'prf_content' => 'email content',
+            'filename' => 'email_template.html',
+            'path' => 'templates/',
+            'content' => 'email content',
         ];
         $response = ProcessFileManager::store($process, $admin, $data);
-        $path = $response['prf_path'].$response['prf_filename'];
-        $prfUid = $response['prf_uid'];
+        $path = $response['path'] . $response['filename'];
+        $prfUid = $response['uid'];
         /* @var $processFile ProcessFile */
-        $processFile = ProcessFile::where('PRF_UID', $response['prf_uid'])->firstOrFail();
+        $processFile = ProcessFile::where('uid', $response['uid'])->firstOrFail();
         $emailEvent = factory(EmailEvent::class)->create([
             'process_id' => $process->id,
-            'PRF_UID' => $prfUid,
+            'process_file_id' => ProcessFile::where('uid', $prfUid)->first()->id,
         ]);
         $process->save();
         $response = $this->api('DELETE', self::API_TEST_PROJECT . $process->uid . '/file-manager/' . $prfUid);
@@ -368,7 +368,7 @@ class FileManagerTest extends ApiTestCase
         $this->assertEquals(
             __(
                 'validation.custom.processFile.filemanager.file_is_not_used_at_email_events',
-                ['path'=>$path]
+                ['path' => $path]
             ),
             $response->json()['error']['message']
         );
@@ -382,7 +382,7 @@ class FileManagerTest extends ApiTestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
         $process = factory(Process::class)->create();
 
@@ -391,24 +391,23 @@ class FileManagerTest extends ApiTestCase
         //Upload a public test file
         Storage::fake('public');
         $data = [
-            'prf_filename' => 'file5.html',
-            'prf_path' => 'public/folder5',
-            'prf_content' => 'document content',
+            'filename' => 'file5.html',
+            'path' => 'public/folder5',
+            'content' => 'document content',
         ];
         $response = $this->api('POST', self::API_TEST_PROJECT . $process->uid . '/file-manager', $data);
         $response->assertStatus(201);
         Storage::disk('public')->assertExists($process->uid . '/folder5/file5.html');
         $processFile = $response->json();
-        $prfUid = $processFile['prf_uid'];
+        $prfUid = $processFile['uid'];
 
         //Delete file 
         $response = $this->api('DELETE', self::API_TEST_PROJECT . $process->uid . '/file-manager/folder?path=public/folder5');
         $response->assertStatus(200);
         Storage::disk('public')->assertMissing($process->uid . '/folder5/file5.html');
-        Storage::disk('public')->assertMissing($process->uid . '/folder5');
 
         //Verify that the record was deleted.
-        $processFileExists = ProcessFile::where('PRF_UID', $prfUid)->exists();
+        $processFileExists = ProcessFile::where('uid', $prfUid)->exists();
         $this->assertFalse($processFileExists);
     }
 
@@ -419,7 +418,7 @@ class FileManagerTest extends ApiTestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
         $process = factory(Process::class)->create();
         $this->auth($admin->username, 'password');
@@ -428,18 +427,18 @@ class FileManagerTest extends ApiTestCase
 
         $processFile = factory(ProcessFile::class)->create([
             'process_id' => $process->id,
-            'PRF_PATH' => 'tests/storage/public/'.$process->uid.'/image.png',
-            'PRF_DRIVE' => 'public',
-            'PRF_PATH_FOR_CLIENT' => 'image.png',
+            'path' => 'tests/storage/public/' . $process->uid . '/image.png',
+            'drive' => 'public',
+            'path_for_client' => 'image.png',
         ]);
-        $prfUid = $processFile->PRF_UID;
+        $prfUid = $processFile->uid;
 
         Storage::disk('public')->assertMissing($processFile->getPathInDisk());
         $file = UploadedFile::fake()->image('upload_file.png', 16, 16);
         $data = [
-            'prf_file' => $file,
+            'file' => $file,
         ];
-        $response = $this->api('POST', self::API_TEST_PROJECT . $process->uid  . '/file-manager/' . $prfUid . '/upload', $data);
+        $response = $this->api('POST', self::API_TEST_PROJECT . $process->uid . '/file-manager/' . $prfUid . '/upload', $data);
         $response->assertStatus(201);
         Storage::disk('public')->assertExists($processFile->getPathInDisk());
         $this->assertEquals('image/png', Storage::disk('public')->getMimeType($processFile->getPathInDisk()));
@@ -452,7 +451,7 @@ class FileManagerTest extends ApiTestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
         $process = factory(Process::class)->create();
         $this->auth($admin->username, 'password');
@@ -462,10 +461,10 @@ class FileManagerTest extends ApiTestCase
         $processFile = factory(ProcessFile::class)->create([
             'process_id' => $process->id,
         ]);
-        $prfUid = $processFile->PRF_UID;
+        $prfUid = $processFile->uid;
         $processFile->setContent('show content');
 
-        $response = $this->api('GET', self::API_TEST_PROJECT . $process->uid  . '/file-manager/' . $prfUid);
+        $response = $this->api('GET', self::API_TEST_PROJECT . $process->uid . '/file-manager/' . $prfUid);
         $response->assertStatus(200);
     }
 
@@ -476,7 +475,7 @@ class FileManagerTest extends ApiTestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
         $process = factory(Process::class)->create();
         $this->auth($admin->username, 'password');
@@ -491,11 +490,11 @@ class FileManagerTest extends ApiTestCase
         $processFile = factory(ProcessFile::class)->create([
             'process_id' => $process->id,
         ]);
-        $prfUid = $processFile->PRF_UID;
+        $prfUid = $processFile->uid;
         $content = 'show content';
         $processFile->setContent($content);
-        $basename = basename($processFile->PRF_PATH);
-        $response = $this->get(self::API_TEST_PROJECT . $process->uid  . '/file-manager/' . $prfUid . '/download', $headers);
+        $basename = basename($processFile->path);
+        $response = $this->get(self::API_TEST_PROJECT . $process->uid . '/file-manager/' . $prfUid . '/download', $headers);
         $response->assertStatus(200);
         $this->assertEquals($basename, $response->getFile()->getBasename());
         $this->assertEquals(strlen($content), $response->getFile()->getSize());
@@ -503,15 +502,15 @@ class FileManagerTest extends ApiTestCase
         //Test a binary file
         $processFile = factory(ProcessFile::class)->create([
             'process_id' => $process->id,
-            'PRF_PATH' => 'tests/storage/public/'.$process->uid.'/image.png',
-            'PRF_DRIVE' => 'public',
-            'PRF_PATH_FOR_CLIENT' => 'image.png',
+            'path' => 'tests/storage/public/' . $process->uid . '/image.png',
+            'drive' => 'public',
+            'path_for_client' => 'image.png',
         ]);
         $file = UploadedFile::fake()->image('upload_file.png', 16, 16);
         ProcessFileManager::putUploadedFileIntoProcessFile($file, $processFile);
-        $prfUid = $processFile->PRF_UID;
-        $basename = basename($processFile->PRF_PATH);
-        $response = $this->get(self::API_TEST_PROJECT . $process->uid  . '/file-manager/' . $prfUid . '/download', $headers);
+        $prfUid = $processFile->uid;
+        $basename = basename($processFile->path);
+        $response = $this->get(self::API_TEST_PROJECT . $process->uid . '/file-manager/' . $prfUid . '/download', $headers);
         $response->assertStatus(200);
         $this->assertEquals($basename, $response->getFile()->getBasename());
         $this->assertEquals($file->getSize(), $response->getFile()->getSize());

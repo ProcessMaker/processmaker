@@ -13,24 +13,26 @@ class CreateProcessFilesTable extends Migration
      */
     public function up()
     {
-        Schema::create('PROCESS_FILES', function(Blueprint $table)
+        Schema::create('process_files', function(Blueprint $table)
         {
-            $table->integer('PRF_ID', true);
-            $table->string('PRF_UID', 32);
-            $table->unsignedInteger('process_id');
-            $table->uuid('USR_UID');
-            $table->uuid('PRF_UPDATE_USR_UID');
-            $table->string('PRF_PATH', 256)->default('');
-            $table->string('PRF_TYPE', 32)->nullable()->default('');
-            $table->boolean('PRF_EDITABLE')->nullable()->default(1);
-            $table->string('PRF_DRIVE', 32);
-            $table->string('PRF_PATH_FOR_CLIENT');
-            $table->dateTime('PRF_CREATE_DATE');
-            $table->dateTime('PRF_UPDATE_DATE')->nullable();
-            $table->unique(['process_id','PRF_PATH_FOR_CLIENT'], 'UQ_PRO_UID_PRF_PATH_FOR_CLIENT');
+            $table->increments('id');
+            $table->uuid('uid')->unique();
+            $table->integer('process_id')->unsigned();
+            $table->integer('user_id')->unsigned();
+            $table->unsignedInteger('update_user_id')->nullable();
+            $table->string('path', 256)->default('');
+            $table->string('type', 32)->default('');
+            $table->boolean('editable')->default(true);
+            $table->string('drive', 32);
+            $table->string('path_for_client');
+            $table->timestamps();
 
             // Setup relationship for process we belong to
             $table->foreign('process_id')->references('id')->on('processes')->onDelete('cascade');
+            // Setup relationship for User we belong to
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            // Setup relationship for User we belong to
+            $table->foreign('update_user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
@@ -41,6 +43,6 @@ class CreateProcessFilesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('PROCESS_FILES');
+        Schema::dropIfExists('process_files');
     }
 }
