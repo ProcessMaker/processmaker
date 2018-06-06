@@ -2,7 +2,9 @@
 
 namespace ProcessMaker\Http\Controllers\Api\Project;
 
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use ProcessMaker\Facades\ReportTableManager;
 use ProcessMaker\Facades\SchemaManager;
 use ProcessMaker\Http\Controllers\Controller;
@@ -11,7 +13,6 @@ use ProcessMaker\Model\Process;
 use ProcessMaker\Model\ReportTable;
 use ProcessMaker\Model\DbSource;
 use ProcessMaker\Transformers\ReportTableTransformer;
-use Ramsey\Uuid\Uuid;
 
 /**
  * Handles requests for ReportTables
@@ -23,15 +24,36 @@ class ReportTableController extends Controller
      * Gets the list of ReportTables of a process
      *
      * @param Process $process
-     * @return array
+     * @param Request $request
+     *
+     * @return ResponseFactory|Response
      */
-    public function index(Process $process)
+    public function index(Process $process, Request $request)
     {
-        // Eager load the fields, so that they're properly loaded for the serializer
-        $repTables = ReportTable::where('process_id', $process->id)->get();
+        $options = [
+            'filter' => $request->input('filter', ''),
+            'current_page' => $request->input('current_page', 1),
+            'per_page' => $request->input('per_page', 10),
+            'sort_by' => $request->input('sort_by', 'name'),
+            'sort_order' => $request->input('sort_order', 'ASC'),
+        ];
+        $query = ReportTable::where('process_id', $process->id);
 
-        return fractal($repTables, new ReportTableTransformer())->respond();
+        if (!empty($options['filter'])) {
+            $filter = '%' . $options['filter'] . '%';
+            $query->where(function ($query) use ($filter) {
+                $query->Where('name', 'like', $filter)
+                    ->orWhere('description', 'like', $filter)
+                    ->orWhere('type', 'like', $filter);
+            });
+        }
 
+        $response = $query->paginate($options['per_page'])
+            ->appends($options);
+
+        return fractal($response, new ReportTableTransformer())
+            ->parseIncludes(['fields'])
+            ->respond();
     }
 
     /**
@@ -39,11 +61,14 @@ class ReportTableController extends Controller
      *
      * @param Process $process
      * @param ReportTable $reportTable
-     * @return array
+     *
+     * @return ResponseFactory|Response
      */
     public function show(Process $process, ReportTable $reportTable)
     {
-        return fractal($reportTable, new ReportTableTransformer())->respond(200);
+        return fractal($reportTable, new ReportTableTransformer())
+            ->parseIncludes(['fields'])
+            ->respond();
     }
 
     /**
@@ -51,7 +76,8 @@ class ReportTableController extends Controller
      *
      * @param Request $request
      *
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * @return ResponseFactory|Response
+     * @throws \Throwable
      */
     public function store(Request $request)
     {
@@ -73,7 +99,9 @@ class ReportTableController extends Controller
 
         $reportTable = ReportTable::where('id', $pmTable->id)->first();
 
-        return fractal($reportTable, new ReportTableTransformer())->respond(201);
+        return fractal($reportTable, new ReportTableTransformer())
+            ->parseIncludes(['fields'])
+            ->respond(201);
     }
 
     /**
@@ -81,8 +109,10 @@ class ReportTableController extends Controller
      *
      * @param Request $request
      * @param Process $process
+     *
      * @param ReportTable $reportTable
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * @return ResponseFactory|Response
+     * @throws \Throwable
      */
     public function update(Request $request, Process $process, ReportTable $reportTable)
     {
@@ -102,7 +132,9 @@ class ReportTableController extends Controller
 
         $savedReportTable = ReportTable::where('id', $reportTable->id)->first();
 
-        return fractal($savedReportTable, new ReportTableTransformer())->respond(200);
+        return fractal($savedReportTable, new ReportTableTransformer())
+            ->parseIncludes(['fields'])
+            ->respond();
     }
 
     /**
@@ -110,7 +142,8 @@ class ReportTableController extends Controller
      *
      * @param Process $process
      * @param ReportTable $reportTable
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * @return ResponseFactory|Response
+     * @throws \Throwable
      */
     public function remove(Process $process, ReportTable $reportTable)
     {
@@ -126,7 +159,7 @@ class ReportTableController extends Controller
      *
      * @param Process $process
      * @param ReportTable $reportTable
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * @return ResponseFactory|Response
      */
     public function populate(Process $process, ReportTable $reportTable)
     {
@@ -141,7 +174,8 @@ class ReportTableController extends Controller
      *
      * @param Process $process
      * @param ReportTable $reportTable
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     *
+     * @return ResponseFactory|Response
      * @internal param Request $request
      */
     public function getAllDataRows(Process $process, ReportTable $reportTable)
@@ -155,9 +189,10 @@ class ReportTableController extends Controller
      *
      * @param Request $request
      * @param PmTable $pmTable
+     *
      * @internal param ReportTable $reportTable
      */
-    private function mapRequestToPmTable(Request $request, PmTable $pmTable)
+    private function mapRequestToPmTable(Request $request, PmTable $pmTable): void
     {
         $colsToChange = $request->toArray();
 
@@ -193,7 +228,7 @@ class ReportTableController extends Controller
      *
      * @return array
      */
-    private function mapRequestFieldToReportTableField(array $field)
+    private function mapRequestFieldToReportTableField(array $field): array
     {
         $reportTableField = [];
         $attributesList = [

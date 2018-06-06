@@ -84,13 +84,13 @@ Router::group([
         });
 
         //Report Tables endpoints
-        Router::get('project/{process}/report-tables', 'Project\ReportTableController@index')->middleware('can:read,ProcessMaker\Model\ReportTable');
-        Router::get('project/{process}/report-table/{reportTable}', 'Project\ReportTableController@show')->middleware('can:read,reportTable');
-        Router::post('project/{process}/report-table', 'Project\ReportTableController@store')->middleware('can:write,ProcessMaker\Model\ReportTable');
-        Router::put('project/{process}/report-table/{reportTable}', 'Project\ReportTableController@update')->middleware('can:write,reportTable');
-        Router::delete('project/{process}/report-table/{reportTable}', 'Project\ReportTableController@remove')->middleware('can:delete,reportTable');
-        Router::get('project/{process}/report-table/{reportTable}/populate', 'Project\ReportTableController@populate')->middleware('can:write,reportTable');
-        Router::get('project/{process}/report-table/{reportTable}/data', 'Project\ReportTableController@getAllDataRows')->middleware('can:read,reportTable');
+        Router::get('process/{process}/report-tables', 'Project\ReportTableController@index')->middleware('can:read,ProcessMaker\Model\ReportTable');
+        Router::get('process/{process}/report-table/{reportTable}', 'Project\ReportTableController@show')->middleware('can:read,reportTable');
+        Router::post('process/{process}/report-table', 'Project\ReportTableController@store')->middleware('can:write,ProcessMaker\Model\ReportTable');
+        Router::put('process/{process}/report-table/{reportTable}', 'Project\ReportTableController@update')->middleware('can:write,reportTable');
+        Router::delete('process/{process}/report-table/{reportTable}', 'Project\ReportTableController@remove')->middleware('can:delete,reportTable');
+        Router::get('process/{process}/report-table/{reportTable}/populate', 'Project\ReportTableController@populate')->middleware('can:write,reportTable');
+        Router::get('process/{process}/report-table/{reportTable}/data', 'Project\ReportTableController@getAllDataRows')->middleware('can:read,reportTable');
 
         //DynaForm endpoints
         Router::get('process/{process}/forms', 'Designer\FormController@index')->middleware('can:read,ProcessMaker\Model\Form');
