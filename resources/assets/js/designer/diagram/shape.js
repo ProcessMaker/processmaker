@@ -102,11 +102,5 @@ export class Shape {
         };
     }
 
-    /**
-     * This method hides the crown of shape
-     */
-    hideCrown() {
-        let action = actions.designer.crown.hide()
-        EventBus.$emit(action.type, action.payload)
-    }
+
 }
