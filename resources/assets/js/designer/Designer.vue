@@ -34,6 +34,8 @@ import designerobjectsmenu from "./components/designer-objects-menu";
 // @todo Figure out a way to add these modals to the properties of components
 import modalPermissionsAdd from "./components/modals/modal-permissions-add";
 
+import modalVariablesAdd from "./components/modals/modal-variables-add";
+
 // This is out Cron for every shape
 import crown from "./components/crown";
 
@@ -43,7 +45,8 @@ export default {
     toolbar,
     toptoolbar,
     designerobjectsmenu,
-    modalPermissionsAdd
+    modalPermissionsAdd,
+    modalVariablesAdd
   },
   data() {
     return {
@@ -61,6 +64,9 @@ export default {
       switch(key) {
         case 'permissions':
           this.modalComponent = 'modal-permissions-add'
+          break;
+        case 'variables':
+          this.modalComponent = 'modal-variables-add'
           break;
         default:
           alert(key + ' add modal not yet implemented.')
