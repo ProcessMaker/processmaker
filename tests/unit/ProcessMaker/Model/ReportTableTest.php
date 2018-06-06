@@ -2,9 +2,7 @@
 
 namespace Tests\Unit;
 
-use Ramsey\Uuid\Uuid;
-
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Support\Facades\DB;
 use ProcessMaker\Facades\ReportTableManager;
 use ProcessMaker\Facades\SchemaManager;
@@ -19,18 +17,13 @@ use Tests\TestCase;
  */
 class ReportTableTest extends TestCase
 {
-    use DatabaseTransactions;
+    use DatabaseMigrations;
 
     /**
      * Tests that the model returns all the data of the report table
      */
-    public function testAllDataRows()
+    public function testAllDataRows(): void
     {
-        // Stop here and mark this test as incomplete.
-        $this->markTestIncomplete(
-            'This test must be refactored to support database transaction style testing.'
-        );
- 
         // we empty the list of instances
         DB::table('APPLICATION')->delete();
 
@@ -43,13 +36,8 @@ class ReportTableTest extends TestCase
     /**
      * Tests that the pmTable related to the report table is returned
      */
-    public function testGetAssociatedPmTable()
+    public function testGetAssociatedPmTable(): void
     {
-        // Stop here and mark this test as incomplete.
-        $this->markTestIncomplete(
-            'This test must be refactored to support database transaction style testing.'
-        );
- 
         $report = $this->createDefaultReportTable();
         $pmTable = $report->getAssociatedPmTable();
         $this->assertEquals($report->uid, $pmTable->uid);
@@ -64,13 +52,6 @@ class ReportTableTest extends TestCase
      */
     private function createDefaultReportTable($forceVariableTypesTo = null)
     {
-        // Stop here and mark this test as incomplete.
-        $this->markTestIncomplete(
-            'This test must be refactored to support database transaction style testing.'
-        );
- 
-        SchemaManager::dropPhysicalTable('PMT_REPORT_TEST');
-
         // we create a report table
         $newReport = factory(ReportTable::class)->create();
 
@@ -130,13 +111,8 @@ class ReportTableTest extends TestCase
      *
      * @return ReportTable
      */
-    public function createAndPopulateTestReportTable()
+    public function createAndPopulateTestReportTable(): ReportTable
     {
-        // Stop here and mark this test as incomplete.
-        $this->markTestIncomplete(
-            'This test must be refactored to support database transaction style testing.'
-        );
- 
         // we create a report table
         $report = $this->createDefaultReportTable('string');
 
@@ -167,5 +143,13 @@ class ReportTableTest extends TestCase
             ]);
 
         return $report;
+    }
+
+    protected function tearDown(): void
+    {
+        if ($this->getName() === 'testGetAssociatedPmTable') {
+            $this->artisan('migrate:fresh');
+            $this->seed();
+        }
     }
 }

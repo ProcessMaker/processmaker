@@ -322,7 +322,7 @@ class PmTableControllerTest extends ApiTestCase
 
     protected function tearDown(): void
     {
-        if ($this->getName() === 'testDeleteDataRowXX') {
+        if ($this->getName() === 'testDeleteDataRow') {
             $this->artisan('migrate:fresh');
             $this->seed();
         }
