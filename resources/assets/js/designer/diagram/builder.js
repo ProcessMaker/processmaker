@@ -108,6 +108,7 @@ export class Builder {
     }
 
     updatePosition(element) {
+        this.hideCrown()
         let res = _.find(this.collection, (o) => {
             return element.id === o.shape.id
         })

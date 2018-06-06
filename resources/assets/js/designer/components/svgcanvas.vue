@@ -38,16 +38,7 @@
                 } // Options for panning in the designer
             }
         },
-        computed: {
-            canvasWidth() {
-                // Calculate the width needed based off our object model
-                return '100%'
-            },
-            canvasHeight() {
-                // Calcuate the height needed based off our object model
-                return '100%'
-            }
-        },
+        computed: {},
         created() {
             EventBus.$on(actions.designer.drag.toolbar.end().type, (value) => this.createElement(value))
             EventBus.$on(actions.designer.flow.create().type, (value) => this.createFlow(value))
@@ -68,8 +59,8 @@
             createElement(event) {
                 let name = event.target.id.split(':')
                 this.diagramCoordinates = {
-                    x: document.getElementById('svgCanvas').getBoundingClientRect().left,
-                    y: document.getElementById('svgCanvas').getBoundingClientRect().top
+                    x: this.$el.getBoundingClientRect().left,
+                    y: this.$el.getBoundingClientRect().top
                 }
                 const defaultOptions = {
                     id: name[1] + '_' + Math.floor((Math.random() * 100) + 1),
@@ -112,7 +103,6 @@
             this.builder = new Builder(this.graph, this.paper)
             this.addListeners()
         }
-
     }
 </script>
 
