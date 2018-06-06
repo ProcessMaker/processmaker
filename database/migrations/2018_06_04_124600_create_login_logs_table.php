@@ -23,7 +23,7 @@ class CreateLoginLogsTable extends Migration
             $table->string('sid', 100)->default('');
             $table->dateTime('init_date')->nullable();
             $table->dateTime('end_date')->nullable();
-            $table->string('client_hostname', 100)->default('');
+            $table->string('client_hostname', 100);
             $table->index(['sid','user_id','status','end_date'], 'indexLoginLogSelect');
 
             // setup relationship for User we belong to

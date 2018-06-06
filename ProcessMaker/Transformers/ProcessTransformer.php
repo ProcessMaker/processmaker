@@ -25,12 +25,12 @@ class ProcessTransformer extends TransformerAbstract
         $data = $process->toArray();
         // Now we have the associative array form of process
         // But we need to grab the category and insert it in there if it's defined
-        if($data['category_id']) {
+        if($data['process_category_id']) {
             // Category is set, let's include the category
             $data['category'] = $process->category->name;
         }
         // Unset category_id, we don't need it anymore
-        unset($data['category_id']);
+        unset($data['process_category_id']);
         return $data;
     }
 

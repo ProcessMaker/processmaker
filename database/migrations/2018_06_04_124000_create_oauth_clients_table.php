@@ -20,10 +20,10 @@ class CreateOauthClientsTable extends Migration
             $table->string('description');
             $table->string('website');
             $table->string('redirect_uri');
-            $table->unsignedInteger('creator_user_id');
+            $table->unsignedInteger('user_id');
 
             // setup relationship for User we belong to
-            $table->foreign('creator_user_id')->references('id')->on('users')->ondelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->ondelete('cascade');
         });
     }
 

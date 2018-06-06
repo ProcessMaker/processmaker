@@ -48,7 +48,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
         ]);
 
         self::$process = factory(Process::class)->create([
-            'creator_user_id' => self::$user->id
+            'user_id' => self::$user->id
         ]);
 
         self::$activity = factory(Task::class)->create([

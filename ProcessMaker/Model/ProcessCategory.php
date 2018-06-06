@@ -5,6 +5,7 @@ namespace ProcessMaker\Model;
 use Illuminate\Database\Eloquent\Model;
 use Watson\Validating\ValidatingTrait;
 use ProcessMaker\Model\Traits\Uuid;
+
 /**
  * Categories are used to classify and group similar processes within different
  * categories. Only one category may be assigned by process.
@@ -18,8 +19,8 @@ use ProcessMaker\Model\Traits\Uuid;
 class ProcessCategory extends Model
 {
 
-  use ValidatingTrait;
-  use Uuid;
+    use ValidatingTrait;
+    use Uuid;
 
     /**
      * Validation rules.

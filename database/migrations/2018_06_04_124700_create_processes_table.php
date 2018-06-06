@@ -17,7 +17,7 @@ class CreateProcessesTable extends Migration
             $table->increments('id')->unsigned();
             $table->uuid('uid')->unique();
             $table->string('name');
-            $table->text('description', 16777215)->nullable();
+            $table->text('description')->nullable();
             // Null value means no parent
             $table->unsignedInteger('parent_process_id')->nullable();
             $table->float('time', 10, 0)->default(1);
@@ -36,9 +36,9 @@ class CreateProcessesTable extends Migration
             $table->enum('visibility', ['PUBLIC', 'PRIVATE'])->default('PUBLIC');
             $table->boolean('show_delegate')->default(true);
             $table->boolean('show_dynaform')->default(0);
-            $table->integer('category_id')->nullable();
+            $table->unsignedInteger('process_category_id')->nullable();
             $table->timestamps();
-            $table->unsignedInteger('creator_user_id');
+            $table->unsignedInteger('user_id');
             $table->integer('height')->default(5000);
             $table->integer('width')->default(10000);
             $table->integer('title_x')->default(0);
@@ -72,7 +72,10 @@ class CreateProcessesTable extends Migration
             $table->foreign('parent_process_id')->references('id')->on('processes')->ondelete('cascade');
 
             // setup relationship for User we belong to
-            $table->foreign('creator_user_id')->references('id')->on('users')->ondelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->ondelete('cascade');
+
+            // setup relationship for Process Category we belong to
+            $table->foreign('process_category_id')->references('id')->on('process_categories')->ondelete('cascade');
 
         });
 
