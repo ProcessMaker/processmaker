@@ -2,14 +2,14 @@
   <b-modal ref="modal" size="md" @hidden="onHidden" centered title="Create Permission">
       <form>
         <div class="form-group">
-          <label for="groupOrUser" v-model="groupOrUser">{{groupOrUser}}</label>
-          <input type="text" class="form-control" id="groupOrUser">
+          <label for="name" v-model="name">{{name}}</label>
+          <input type="text" class="form-control" id="name">
         </div>
 
         <div class="form-group">
-        <label for="originTask" v-model="originTask">{{originTask}}</label>
-        <select class="form-control" id="originTask" v-model="originSelect">
-          <option v-for="select in targetSelectOptions">{{select}}</option>
+        <label for="type" v-model="type">{{type}}</label>
+        <select class="form-control" id="type" v-model="typeSelect">
+          <option v-for="select in typeSelectOptions">{{select}}</option>
         </select>
         </div>
 
@@ -24,6 +24,13 @@
         <div class="form-group">
         <label for="PermissionsSelect" v-model="permission">{{permission}}</label>
           <textarea class="form-control"></textarea>
+        </div>
+
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+          <label class="form-check-label" for="defaultCheck1">
+            Default checkbox
+          </label>
         </div>
     </form>
 
@@ -44,23 +51,12 @@ export default {
   data() {
     return {
       // form models here
-      'casesStatus': "Cases Status",
-      'casesSelect': "All",
-      'casesSelectOptions':[
-        'All','Assigned','Unassigned','Completed','Paused'
-      ],
-      'targetTask': "Target Task",
-      'targetSelect': 'All',
-      'targetSelectOptions':[
+      'name':"Name",
+      'type':"Type",
+      'typeSelect': "All",
+      'typeSelectOptions':[
         'All','Task 1', 'Task 2'
       ],
-      'groupOrUser':"Group Or User",
-      'originTask':"Origin Task",
-      'originSelect': "All",
-      'originSelectOptions':[
-        'All','Task 1', 'Task 2'
-      ],
-      'participationRequired':"Participation Required?",
       'type':"Type",
       'typeSelect': 'Form',
       'typeSelectOptions':[
