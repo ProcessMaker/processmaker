@@ -100,7 +100,7 @@ class EmailServer extends Model
      *
      * @return void
      */
-    public function setPasswordAttribute($value): void
+    public function setPasswordAttribute($value)
     {
         $this->attributes['password'] = empty($value) ? null : bcrypt($value);
     }

@@ -132,7 +132,7 @@ class OutputDocument extends Model
      *
      * @return void
      */
-    public function setPropertiesAttribute($value): void
+    public function setPropertiesAttribute($value)
     {
         $value['pdf_security_open_password'] = !empty($value['pdf_security_open_password']) ? encrypt($value['pdf_security_open_password']) : '';
         $value['pdf_security_owner_password'] = !empty($value['pdf_security_owner_password']) ? encrypt($value['pdf_security_owner_password']) : '';

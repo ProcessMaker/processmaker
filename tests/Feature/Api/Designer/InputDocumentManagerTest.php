@@ -15,168 +15,182 @@ class InputDocumentManagerTest extends ApiTestCase
 {
     use DatabaseTransactions;
 
-    const API_ROUTE = '/api/1.0/project/';
+    const API_TEST_INPUT_DOCUMENT = '/api/1.0/process/';
     const DEFAULT_PASS = 'password';
 
-    protected static $user;
-    protected static $process;
+    protected $user;
+    protected $process;
+
+    const STRUCTURE = [
+        'uid',
+        'title',
+        'description',
+        'form_needed',
+        'original',
+        'published',
+        'versioning',
+        'destination_path',
+        'tags',
+    ];
 
     /**
-     * Init variables User and Process
+     * Create user and process
      */
-    private function initProcess(): void
+    protected function setUp()
     {
-        self::$user = factory(User::class)->create([
+        parent::setUp();
+        $this->user = factory(User::class)->create([
             'password' => Hash::make(self::DEFAULT_PASS),
             'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
 
-        self::$process = factory(Process::class)->create([
-            'creator_user_id' => self::$user->id
+        $this->process = factory(Process::class)->create([
+            'creator_user_id' => $this->user->id
         ]);
+
+        $this->auth($this->user->username, self::DEFAULT_PASS);
+    }
+
+    /**
+     * Test verify the parameter required for create InputDocument
+     */
+    public function testNotCreatedForParameterRequired()
+    {
+        //Post should have the parameter required
+        $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-document';
+        $response = $this->api('POST', $url, []);
+
+        //validating the answer is an error
+        $response->assertStatus(422);
+        $this->assertArrayHasKey('message', $response->json());
+    }
+
+    /**
+     * Test verify the constants required for create InputDocument
+     */
+    public function testNotCreatedForConstantsParameterRequired()
+    {
+        //Post should have the parameter required
+        $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-document';
+        $response = $this->api('POST', $url, [
+            'title' => 'Title Test Input Document',
+            'form_needed' => 'other type'
+        ]);
+
+        //validating the answer is an error
+        $response->assertStatus(422);
+        $this->assertArrayHasKey('message', $response->json('error'));
     }
 
     /**
      * Create new Input Document in process
-     *
-     * @return InputDocument
      */
-    public function testCreateInputDocument(): InputDocument
+    public function testCreateInputDocument()
     {
-        $this->markTestSkipped('These tests need to be refactored to deal with database transactions');
-        $this->initProcess();
-        $this->auth(self::$user->username, self::DEFAULT_PASS);
-
-        //The post must have the required parameters
-        $url = self::API_ROUTE . self::$process->uid . '/input-document';
-        $response = $this->api('POST', $url, []);
-        //validating the answer is an error
-        $response->assertStatus(422);
-
-        //Post should have the parameter FORM_NEEDED only types InputDocument::FORM_NEEDED_TYPE
         $faker = Faker::create();
-        $data['form_needed'] = $faker->sentence(2);
-        $url = self::API_ROUTE . self::$process->uid . '/input-document';
-        $response = $this->api('POST', $url, $data);
-        //validating the answer is an error
-        $response->assertStatus(422);
-
         //Post saved correctly
-        $data['title'] = $faker->sentence(3);
-        $data['form_needed'] = $faker->randomElement(array_keys(InputDocument::FORM_NEEDED_TYPE));
-        $url = self::API_ROUTE . self::$process->uid . '/input-document';
-        $response = $this->api('POST', $url, $data);
+        $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-document';
+        $response = $this->api('POST', $url, [
+            'title' => 'Title Test Input Document',
+            'form_needed' => $faker->randomElement(array_keys(InputDocument::FORM_NEEDED_TYPE))
+        ]);
         //validating the answer is correct.
         $response->assertStatus(201);
-        $document = $response->original;
         //Check structure of response.
-        $response->assertJsonStructure([
-            'uid',
-            'title',
-            'description',
-            'form_needed',
-            'original',
-            'published',
-            'versioning',
-            'destination_path',
-            'tags',
+        $response->assertJsonStructure(self::STRUCTURE);
+    }
+
+    /**
+     * Can not create a Input Document with an existing title
+     */
+    public function testNotCreateInputDocumentWithTitleExists()
+    {
+        factory(InputDocument::class)->create([
+            'title' => 'Title Test Input Document',
+            'process_id' => $this->process->id
         ]);
 
-        //Duplicate titles are not allowed
-        $url = self::API_ROUTE . self::$process->uid . '/input-document';
-        $response = $this->api('POST', $url, $data);
-        //validating the answer is correct.
+        //Post title duplicated
+        $faker = Faker::create();
+        $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-document';
+        $response = $this->api('POST', $url, [
+            'title' => 'Title Test Input Document',
+            'form_needed' => $faker->randomElement(array_keys(InputDocument::FORM_NEEDED_TYPE))
+        ]);
         $response->assertStatus(422);
-        return InputDocument::where('uid', $document->uid)->first();
+        $this->assertArrayHasKey('message', $response->json());
     }
 
     /**
      * Get a list of Input Document in a project.
-     *
-     * @depends testCreateInputDocument
      */
-    public function testListInputDocuments(): void
+    public function testListInputDocuments()
     {
-        $this->markTestSkipped('These tests need to be refactored to deal with database transactions');
-        $this->auth(self::$user->username, self::DEFAULT_PASS);
-
+        $total = Faker::create()->randomDigitNotNull;
         //add Input Document to process
-        factory(InputDocument::class, 10)->create([
-            'process_id' => self::$process->id
+        factory(InputDocument::class, $total)->create([
+            'process_id' => $this->process->id
         ]);
 
         //List Input Document
-        $url = self::API_ROUTE . self::$process->uid . '/input-documents';
+        $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-documents';
         $response = $this->api('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
         //verify count of data
-        $this->assertEquals(11, $response->original->meta->total);
+        $this->assertEquals($total, $response->original->meta->total);
 
         //verify structure paginate
         $response->assertJsonStructure([
             'data',
             'meta',
         ]);
+        //Verify the structure
+        $response->assertJsonStructure(['*' => self::STRUCTURE], $response->json('data'));
 
     }
 
     /**
      * Get a Input Document of a project.
-     *
-     * @param InputDocument $inputDocument
-     *
-     * @depends testCreateInputDocument
      */
-    public function testGetInputDocument(InputDocument $inputDocument): void
+    public function testGetInputDocument()
     {
-        $this->markTestSkipped('These tests need to be refactored to deal with database transactions');
-
-        $this->auth(self::$user->username, self::DEFAULT_PASS);
-
         //load InputDocument
-        $url = self::API_ROUTE . self::$process->uid . '/input-document/' . $inputDocument->uid;
+        $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-document/' . factory(InputDocument::class)->create([
+                'process_id' => $this->process->id
+            ])->uid;
         $response = $this->api('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
 
         //verify structure paginate
-        $response->assertJsonStructure([
-            'uid',
-            'title',
-            'description',
-            'form_needed',
-            'original',
-            'published',
-            'versioning',
-            'destination_path',
-            'tags',
-        ]);
-
-        //InputDocument not belong to process.
-        $inputDocument = factory(InputDocument::class)->create();
-        $url = self::API_ROUTE . self::$process->uid . '/input-document/' . $inputDocument->uid;
-        $response = $this->api('GET', $url);
-        //Validate the answer is incorrect
-        $response->assertStatus(404);
-
+        $response->assertJsonStructure(self::STRUCTURE);
     }
 
     /**
-     * Update Input Document in process
-     *
-     * @param InputDocument $inputDocument
-     *
-     * @depends testCreateInputDocument
+     * The InputDocument not belongs to process.
      */
-    public function testUpdateInputDocument(InputDocument $inputDocument): void
+    public function testGetInputDocumentNotBelongToProcess()
     {
-        $this->markTestSkipped('These tests need to be refactored to deal with database transactions');
+        //load Input Document
+        $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-document/' . factory(InputDocument::class)->create()->uid;
+        $response = $this->api('GET', $url);
+        //Validate the answer is incorrect
+        $response->assertStatus(404);
+        $this->assertArrayHasKey('message', $response->json());
+    }
 
-        $this->auth(self::$user->username, self::DEFAULT_PASS);
-
+    /**
+     * Parameters required for update of input Document
+     */
+    public function testUpdateInputDocumentParametersRequired()
+    {
         $faker = Faker::create();
-        $data = [
+        //The post must have the required parameters
+        $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-document/' . factory(InputDocument::class)->create([
+                'process_id' => $this->process->id
+            ])->uid;
+        $response = $this->api('PUT', $url, [
             'title' => '',
             'description' => $faker->sentence(6),
             'form_needed' => $faker->randomElement(array_keys(InputDocument::FORM_NEEDED_TYPE)),
@@ -184,44 +198,53 @@ class InputDocumentManagerTest extends ApiTestCase
             'published' => $faker->randomElement(InputDocument::DOC_PUBLISHED_TYPE),
             'versioning' => $faker->randomElement([0, 1]),
             'tags' => $faker->randomElement(InputDocument::DOC_TAGS_TYPE),
-        ];
-        //Post should have the parameter tri_title
-        $url = self::API_ROUTE . self::$process->uid . '/input-document/' . $inputDocument->uid;
-        $response = $this->api('PUT', $url, $data);
+        ]);
         //Validate the answer is incorrect
         $response->assertStatus(422);
+    }
 
+    /**
+     * Update Input Document in process
+     */
+    public function testUpdateInputDocument()
+    {
+        $faker = Faker::create();
         //Post saved success
-        $data['title'] = $faker->sentence(2);
-        $url = self::API_ROUTE . self::$process->uid . '/input-document/' . $inputDocument->uid;
-        $response = $this->api('PUT', $url, $data);
+        $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-document/' . factory(InputDocument::class)->create([
+                'process_id' => $this->process->id
+            ])->uid;
+        $response = $this->api('PUT', $url, [
+            'title' => $faker->sentence(2),
+            'description' => $faker->sentence(6),
+            'form_needed' => $faker->randomElement(array_keys(InputDocument::FORM_NEEDED_TYPE)),
+            'original' => $faker->randomElement(InputDocument::DOC_ORIGINAL_TYPE),
+            'published' => $faker->randomElement(InputDocument::DOC_PUBLISHED_TYPE),
+            'versioning' => $faker->randomElement([0, 1]),
+            'tags' => $faker->randomElement(InputDocument::DOC_TAGS_TYPE),
+        ]);
         //Validate the answer is correct
         $response->assertStatus(200);
     }
 
     /**
      * Delete Input Document in process
-     *
-     * @param InputDocument $inputDocument
-     *
-     * @depends testCreateInputDocument
      */
-    public function testDeleteInputDocument(InputDocument $inputDocument): void
+    public function testDeleteInputDocument()
     {
-        $this->markTestSkipped('These tests need to be refactored to deal with database transactions');
-
-        $this->auth(self::$user->username, self::DEFAULT_PASS);
-
         //Remove InputDocument
-        $url = self::API_ROUTE . self::$process->uid . '/input-document/' . $inputDocument->uid;
+        $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-document/' . factory(InputDocument::class)->create(['process_id' => $this->process->id])->uid;
         $response = $this->api('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(204);
+    }
 
-        $inputDocument = factory(InputDocument::class)->make();
-
+    /**
+     * The Input Document does not exist in process
+     */
+    public function testDeleteInputDocumentNotExist()
+    {
         //InputDocument not exist
-        $url = self::API_ROUTE . self::$process->uid . '/input-document/' . $inputDocument->uid;
+        $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-document/' . factory(InputDocument::class)->make()->uid;
         $response = $this->api('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(404);

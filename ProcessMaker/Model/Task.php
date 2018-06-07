@@ -166,7 +166,7 @@ class Task extends Model
      *
      * @return void
      */
-    public function setTimingControlConfigurationAttribute($value): void
+    public function setTimingControlConfigurationAttribute($value)
     {
         $value['duration'] = isset($value['duration']) ? $value['duration'] : 0;
         $value['delay_type'] = isset($value['delay_type']) ? $value['delay_type'] : 'DAYS';
@@ -200,7 +200,7 @@ class Task extends Model
      *
      * @return void
      */
-    public function setSelfServiceTimeoutConfigurationAttribute($value): void
+    public function setSelfServiceTimeoutConfigurationAttribute($value)
     {
         $value['self_service_timeout'] = isset($value['self_service_timeout']) ? $value['self_service_timeout'] : 0;
         $value['self_service_time'] = isset($value['self_service_time']) ? $value['self_service_time'] : 0;

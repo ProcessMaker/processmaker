@@ -15,7 +15,7 @@ class InputDocumentTransformer extends TransformerAbstract
 {
 
     /**
-     * Transform the activity.
+     * Transform the Input Document.
      *
      * @param InputDocument $inputDocument
      *

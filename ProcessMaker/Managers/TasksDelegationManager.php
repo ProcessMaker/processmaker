@@ -12,7 +12,7 @@ use ProcessMaker\Model\User;
 class TasksDelegationManager
 {
     /**
-     * Get a list of All Output Documents in a project.
+     * Get a list of All Output Documents in a process.
      *
      * @param array $options
      *

@@ -107,7 +107,7 @@ class Trigger extends Model
      *
      * @return void
      */
-    public function setParamAttribute($value): void
+    public function setParamAttribute($value)
     {
         $this->attributes['param'] = empty($value) ? null : json_encode($value);
     }

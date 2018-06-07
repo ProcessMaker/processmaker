@@ -78,7 +78,7 @@ class Form extends Model
      *
      * @return void
      */
-    public function setContentAttribute($value): void
+    public function setContentAttribute($value)
     {
         $this->attributes['content'] = empty($value) ? null : json_encode($value);
     }
@@ -100,7 +100,7 @@ class Form extends Model
      *
      * @param $value
      */
-    public function setLabelAttribute($value): void
+    public function setLabelAttribute($value)
     {
         $this->attributes['label'] = empty($value) ? null : json_encode($value);
     }

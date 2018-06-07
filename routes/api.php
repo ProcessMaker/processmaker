@@ -85,17 +85,17 @@ Router::group([
         ], function() {
             Router::get('processes', 'Designer\ProcessesController@index');
             Router::get('processes/{process}', 'Designer\ProcessesController@show');
-            Router::delete('project/{process}', 'Designer\ProcessManagerController@remove');
+            Router::delete('processes/{process}', 'Designer\ProcessesController@remove');
         });
 
         //Report Tables endpoints
-        Router::get('project/{process}/report-tables', 'Project\ReportTableController@index')->middleware('can:read,ProcessMaker\Model\ReportTable');
-        Router::get('project/{process}/report-table/{reportTable}', 'Project\ReportTableController@show')->middleware('can:read,reportTable');
-        Router::post('project/{process}/report-table', 'Project\ReportTableController@store')->middleware('can:write,ProcessMaker\Model\ReportTable');
-        Router::put('project/{process}/report-table/{reportTable}', 'Project\ReportTableController@update')->middleware('can:write,reportTable');
-        Router::delete('project/{process}/report-table/{reportTable}', 'Project\ReportTableController@remove')->middleware('can:delete,reportTable');
-        Router::get('project/{process}/report-table/{reportTable}/populate', 'Project\ReportTableController@populate')->middleware('can:write,reportTable');
-        Router::get('project/{process}/report-table/{reportTable}/data', 'Project\ReportTableController@getAllDataRows')->middleware('can:read,reportTable');
+        Router::get('process/{process}/report-tables', 'Project\ReportTableController@index')->middleware('can:read,ProcessMaker\Model\ReportTable');
+        Router::get('process/{process}/report-table/{reportTable}', 'Project\ReportTableController@show')->middleware('can:read,reportTable');
+        Router::post('process/{process}/report-table', 'Project\ReportTableController@store')->middleware('can:write,ProcessMaker\Model\ReportTable');
+        Router::put('process/{process}/report-table/{reportTable}', 'Project\ReportTableController@update')->middleware('can:write,reportTable');
+        Router::delete('process/{process}/report-table/{reportTable}', 'Project\ReportTableController@remove')->middleware('can:delete,reportTable');
+        Router::get('process/{process}/report-table/{reportTable}/populate', 'Project\ReportTableController@populate')->middleware('can:write,reportTable');
+        Router::get('process/{process}/report-table/{reportTable}/data', 'Project\ReportTableController@getAllDataRows')->middleware('can:read,reportTable');
 
         //DynaForm endpoints
         Router::get('process/{process}/forms', 'Designer\FormController@index')->middleware('can:read,ProcessMaker\Model\Form');
@@ -107,21 +107,19 @@ Router::group([
         Router::delete('process/{process}/form/{form}', 'Designer\FormController@remove')->middleware('can:delete,ProcessMaker\Model\Form');
 
         //Trigger endpoints
-        Router::get('project/{process}/triggers', 'Designer\TriggerController@index')->middleware('can:read,ProcessMaker\Model\Trigger');
-        Router::get('project/{process}/trigger/{trigger}', 'Designer\TriggerController@show')->middleware('can:read,ProcessMaker\Model\Trigger');
-        Router::post('project/{process}/trigger', 'Designer\TriggerController@store')->middleware('can:write,ProcessMaker\Model\Trigger');
-        Router::put('project/{process}/trigger/{trigger}', 'Designer\TriggerController@update')->middleware('can:write,ProcessMaker\Model\Trigger');
-        Router::delete('project/{process}/trigger/{trigger}', 'Designer\TriggerController@remove')->middleware('can:delete,ProcessMaker\Model\Trigger');
+        Router::get('process/{process}/triggers', 'Designer\TriggerController@index')->middleware('can:read,ProcessMaker\Model\Trigger');
+        Router::get('process/{process}/trigger/{trigger}', 'Designer\TriggerController@show')->middleware('can:read,ProcessMaker\Model\Trigger');
+        Router::post('process/{process}/trigger', 'Designer\TriggerController@store')->middleware('can:write,ProcessMaker\Model\Trigger');
+        Router::put('process/{process}/trigger/{trigger}', 'Designer\TriggerController@update')->middleware('can:write,ProcessMaker\Model\Trigger');
+        Router::delete('process/{process}/trigger/{trigger}', 'Designer\TriggerController@remove')->middleware('can:delete,ProcessMaker\Model\Trigger');
 
         //Assignee users o groups to Activity endpoints
         Router::get('process/{process}/activity/{activity}/assignee', 'Designer\AssigneeController@getActivityAssignees')->middleware('can:read,ProcessMaker\Model\TaskUser');
-        Router::get('process/{process}/activity/{activity}/assignee/paged', 'Designer\AssigneeController@getActivityAssigneesPaged')->middleware('can:read,ProcessMaker\Model\TaskUser');
         Router::get('process/{process}/activity/{activity}/assignee/all', 'Designer\AssigneeController@getActivityAssigneesAll')->middleware('can:read,ProcessMaker\Model\TaskUser');
         Router::get('process/{process}/activity/{activity}/assignee/{assignee}', 'Designer\AssigneeController@getActivityAssignee')->middleware('can:read,ProcessMaker\Model\TaskUser');
         Router::post('process/{process}/activity/{activity}/assignee', 'Designer\AssigneeController@store')->middleware('can:write,ProcessMaker\Model\TaskUser');
         Router::delete('process/{process}/activity/{activity}/assignee/{assignee}', 'Designer\AssigneeController@remove')->middleware('can:delete,ProcessMaker\Model\TaskUser');
         Router::get('process/{process}/activity/{activity}/available-assignee', 'Designer\AssigneeController@getActivityAvailable')->middleware('can:read,ProcessMaker\Model\TaskUser');
-        Router::get('process/{process}/activity/{activity}/available-assignee/paged', 'Designer\AssigneeController@getActivityAvailablePaged')->middleware('can:read,ProcessMaker\Model\TaskUser');
 
         //Output Document endpoints
         Router::get('process/{process}/output-documents', 'Designer\OutputDocumentController@index')->middleware('can:read,ProcessMaker\Model\OutputDocument');
@@ -131,11 +129,11 @@ Router::group([
         Router::delete('process/{process}/output-document/{outputDocument}', 'Designer\OutputDocumentController@remove')->middleware('can:delete,ProcessMaker\Model\OutputDocument');
 
         //Input Document endpoints
-        Router::get('project/{process}/input-documents', 'Designer\InputDocumentController@index')->middleware('can:read,ProcessMaker\Model\InputDocument');
-        Router::get('project/{process}/input-document/{inputDocument}', 'Designer\InputDocumentController@show')->middleware('can:read,ProcessMaker\Model\InputDocument');
-        Router::post('project/{process}/input-document', 'Designer\InputDocumentController@store')->middleware('can:write,ProcessMaker\Model\InputDocument');
-        Router::put('project/{process}/input-document/{inputDocument}', 'Designer\InputDocumentController@update')->middleware('can:write,ProcessMaker\Model\InputDocument');
-        Router::delete('project/{process}/input-document/{inputDocument}', 'Designer\InputDocumentController@remove')->middleware('can:delete,ProcessMaker\Model\InputDocument');
+        Router::get('process/{process}/input-documents', 'Designer\InputDocumentController@index')->middleware('can:read,ProcessMaker\Model\InputDocument');
+        Router::get('process/{process}/input-document/{inputDocument}', 'Designer\InputDocumentController@show')->middleware('can:read,ProcessMaker\Model\InputDocument');
+        Router::post('process/{process}/input-document', 'Designer\InputDocumentController@store')->middleware('can:write,ProcessMaker\Model\InputDocument');
+        Router::put('process/{process}/input-document/{inputDocument}', 'Designer\InputDocumentController@update')->middleware('can:write,ProcessMaker\Model\InputDocument');
+        Router::delete('process/{process}/input-document/{inputDocument}', 'Designer\InputDocumentController@remove')->middleware('can:delete,ProcessMaker\Model\InputDocument');
 
         //Cases endpoints
         Router::get('cases/{application}/variables', 'Cases\VariableController@get')->middleware('can:read,application');
