@@ -1,61 +1,81 @@
-import {EventShape} from "./eventShape";
-
+import joint from "jointjs"
+import actions from "../../actions"
+import EventBus from "../../lib/event-bus"
 /**
- * End Event Class
+ * EndEvent class
  */
-export class EndEvent extends EventShape {
-    constructor(options, svg) {
-        super(svg);
+export class EndEvent {
+    constructor(options, graph, paper) {
         this.options = {
             id: null,
-            marker: "EMPTY",
-            name: null,
-            x: 100,
-            y: 100,
-            scale: 40
-        };
-        this.config(options);
-    }
-
-    /**
-     * Get shape base to render
-     * @param type
-     * @param marker
-     */
-    getBase(type, marker) {
-        const x = this.options.x + this.options.x * 0.043;
-        const y = this.options.y + this.options.y * 0.043;
-        const bases = {
-            "bpmn:EndEvent": {
-                EMPTY: {
-                    path: "m496 48c-203-1-394 153-437 351-41 174 33 368 181 470 143 103 348 111 497 15 150-91 238-275 210-449-26-181-170-339-350-376-33-7-67-11-101-11z m10 142c150-1 287 123 302 271 19 142-72 291-210 334-134 45-296-13-366-138-77-129-45-313 78-403 56-43 126-66 196-64z",
-                    options: {
-                        x,
-                        y,
-                        scale: "s0.04",
-                        attr: {
-                            stroke: "#000",
-                            strokeWidth: 0
-                        }
-                    }
-                }
-            }
-        };
-        return bases[type][marker];
-    }
-
-    /**
-     * Get shape fill to render in SVG
-     * @returns {{x: number, y, attr: {fill: string}}}
-     */
-    getBaseFill() {
-        const baseFill = {
-            x: this.options.x,
-            y: this.options.y,
+            x: null,
+            y: null,
+            width: 38,
+            height: 38,
+            rounded: 10,
             attr: {
-                fill: "#FFFFFF"
+                fill: "#FFF",
+                stroke: "#000",
+                strokeWidth: 2
             }
-        };
-        return baseFill;
+        }
+        this.config(options)
+        this.graph = graph
+        this.paper = paper
+        this.shape = null
+    }
+
+    /**
+     * Merge options default with options from arguments
+     * @param options
+     * @returns {TaskShape}
+     */
+    config(options) {
+        this.options = Object.assign({}, this.options, options);
+        return this;
+    }
+
+    /**
+     * Render the End Event
+     */
+    render() {
+        this.shape = new joint.shapes.standard.Circle();
+        this.shape.position(this.options.x, this.options.y);
+        this.shape.resize(this.options.width, this.options.height);
+        this.shape.attr({
+            body: {
+                strokeWidth: 5
+            }
+        });
+        this.shape.addTo(this.graph);
+    }
+
+    /**
+     * Emit a message to crown to display
+     */
+    showCrown() {
+        let diffDy = -6
+        let diffDx = 3
+        let action = actions.designer.crown.show({
+            y: this.options.y + diffDy,
+            x: this.options.x + this.options.width + diffDx
+        })
+        EventBus.$emit(action.type, action.payload)
+    }
+
+    /**
+     * This method hides the crown of shape
+     */
+    hideCrown() {
+        let action = actions.designer.crown.hide()
+        EventBus.$emit(action.type, action.payload)
+    }
+
+    /**
+     * Return the object jointjs
+     * @returns {*}
+     */
+    getShape() {
+        return this.shape;
     }
 }

@@ -192,9 +192,13 @@ body {
   font-size: 14px;
   color: #333333;
   border-color: #b6bfc6;
-  border-radius: 2px !important;
-  height: 32px !important;
+  border-radius: 2px;
 }
+
+select.form-control:not([size]):not([multiple]) {
+  height: 32px;
+}
+
 .modal-body{
   padding: 0 32px;
 }
@@ -203,8 +207,6 @@ body {
   padding-top: 2px;
 }
 .btn{
-  min-width: 90px;
-  padding: 3px;
   font-size: 14px;
 }
 

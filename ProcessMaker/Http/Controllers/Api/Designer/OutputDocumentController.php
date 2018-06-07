@@ -14,7 +14,7 @@ use ProcessMaker\Transformers\OutputDocumentTransformer;
 class OutputDocumentController
 {
     /**
-     * Get a list of Output Documents in a project.
+     * Get a list of Output Documents in a process.
      *
      * @param Process $process
      * @param Request $request
@@ -35,7 +35,7 @@ class OutputDocumentController
     }
 
     /**
-     * Get a single Output Document in a project.
+     * Get a single Output Document in a process.
      *
      * @param Process $process
      * @param OutputDocument $outputDocument
@@ -50,7 +50,7 @@ class OutputDocumentController
     }
 
     /**
-     * Create a new Output Document in a project.
+     * Create a new Output Document in a process.
      *
      * @param Process $process
      * @param Request $request
@@ -77,7 +77,7 @@ class OutputDocumentController
     }
 
     /**
-     * Update a Output Document in a project.
+     * Update a Output Document in a process.
      *
      * @param Process $process
      * @param OutputDocument $outputDocument
@@ -99,7 +99,7 @@ class OutputDocumentController
     }
 
     /**
-     * Delete a Output Document in a project.
+     * Delete a Output Document in a process.
      *
      * @param Process $process
      * @param OutputDocument $outputDocument
@@ -122,7 +122,7 @@ class OutputDocumentController
      *
      * @throws DoesNotBelongToProcessException|void
      */
-    private function belongsToProcess(Process $process, OutputDocument $outputDocument): void
+    private function belongsToProcess(Process $process, OutputDocument $outputDocument)
     {
         if ($process->id !== $outputDocument->process_id) {
             Throw new DoesNotBelongToProcessException(__('The Output Document does not belong to this process.'));

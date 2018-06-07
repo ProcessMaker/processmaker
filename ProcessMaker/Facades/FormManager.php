@@ -16,8 +16,8 @@ use ProcessMaker\Model\Process;
  * @method static Paginator index(Process $process, array $options)
  * @method static Form copyImport(Process $process, array $data)
  * @method static Form createBasedPmTable(Process $process, array $data)
- * @method static array update(Process $process, Form $dynaform, array $data)
- * @method static boolean|null remove(Form $dynaform)
+ * @method static array update(Process $process, Form $form, array $data)
+ * @method static boolean|null remove(Form $form)
  *
  */
 class FormManager extends Facade

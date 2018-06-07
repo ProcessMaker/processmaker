@@ -1,7 +1,9 @@
 <?php
 namespace ProcessMaker\Transformers;
 
+use League\Fractal\Resource\Collection;
 use League\Fractal\TransformerAbstract;
+use ProcessMaker\Model\DbSource;
 use ProcessMaker\Model\ReportTable;
 
 /**
@@ -26,12 +28,13 @@ class ReportTableTransformer extends TransformerAbstract
     }
 
     /**
-     * Fractal includer to add the fields of the report table in the transformation
+     * Fractal include to add the fields of the report table in the transformation
      *
      * @param ReportTable $report
-     * @return \League\Fractal\Resource\Collection
+     *
+     * @return Collection
      */
-    public function includeFields(ReportTable $report)
+    public function includeFields(ReportTable $report): Collection
     {
         return $this->collection($report->fields, new PmTableColumnTransformer(), false);
     }

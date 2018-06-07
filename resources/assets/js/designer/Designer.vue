@@ -36,6 +36,9 @@ import modalPermissionsAdd from "./components/modals/modal-permissions-add";
 
 import modalVariablesAdd from "./components/modals/modal-variables-add";
 
+//
+import modalFormsAdd from "./components/modals/modal-forms-add";
+
 // This is out Cron for every shape
 import crown from "./components/crown";
 
@@ -46,7 +49,9 @@ export default {
     toptoolbar,
     designerobjectsmenu,
     modalPermissionsAdd,
-    modalVariablesAdd
+    modalVariablesAdd,
+    modalFormsAdd,
+    crown
   },
   data() {
     return {
@@ -61,12 +66,16 @@ export default {
     openAddDialog(key) {
       // Replace this with dynamic modal generation once we have all modals in place
       // We're not doing this now so we can have visual alert feedback when a modal isn't implemented
+      console.log(key)
       switch(key) {
         case 'permissions':
           this.modalComponent = 'modal-permissions-add'
           break;
         case 'variables':
           this.modalComponent = 'modal-variables-add'
+          break;
+        case 'forms':
+          this.modalComponent = 'modal-forms-add'
           break;
         default:
           alert(key + ' add modal not yet implemented.')

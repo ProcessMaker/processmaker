@@ -49,7 +49,7 @@ class TaskManagerTest extends ApiTestCase
     /**
      * Create user and process
      */
-    protected function setUp(): void
+    protected function setUp()
     {
         parent::setUp();
         $this->user = factory(User::class)->create([
@@ -67,7 +67,7 @@ class TaskManagerTest extends ApiTestCase
     /**
      * Test verify the parameter required for create Task
      */
-    public function testNotCreatedForParameterRequired(): void
+    public function testNotCreatedForParameterRequired()
     {
         //Post should have the parameter required
         $url = self::API_TEST_TASK . $this->process->uid . '/task';
@@ -81,7 +81,7 @@ class TaskManagerTest extends ApiTestCase
     /**
      * Create new Task correctly
      */
-    public function testCreateTask(): void
+    public function testCreateTask()
     {
         //Post saved correctly
         $faker = Faker::create();
@@ -109,7 +109,7 @@ class TaskManagerTest extends ApiTestCase
     /**
      * Can not create a Task with an existing title
      */
-    public function testNotCreateTaskWithTitleExists(): Void
+    public function testNotCreateTaskWithTitleExists()
     {
         $title = 'Title Task';
         factory(Task::class)->create([
@@ -135,7 +135,7 @@ class TaskManagerTest extends ApiTestCase
     /**
      * Get a list of Task in process without query parameters.
      */
-    public function testListTask(): void
+    public function testListTask()
     {
         //add Task to process
         factory(Task::class, 10)->create([
@@ -163,7 +163,7 @@ class TaskManagerTest extends ApiTestCase
     /**
      * Get a list of Task with parameters
      */
-    public function testListTaskWithQueryParameter(): void
+    public function testListTaskWithQueryParameter()
     {
         $title = 'search Title Task';
         factory(Task::class)->create([
@@ -199,7 +199,7 @@ class TaskManagerTest extends ApiTestCase
     /**
      * Get a Task of a project.
      */
-    public function testGetTask(): void
+    public function testGetTask()
     {
         //load Task
         $url = self::API_TEST_TASK . $this->process->uid . '/task/' . factory(Task::class)->create(['process_id' => $this->process->id])->uid;
@@ -214,7 +214,7 @@ class TaskManagerTest extends ApiTestCase
     /**
      * Task not belong to process.
      */
-    public function testGetTaskNotBelongProcess(): void
+    public function testGetTaskNotBelongProcess()
     {
         $task = factory(Task::class)->create();
         $url = self::API_TEST_TASK . $this->process->uid . '/task/' . $task->uid;
@@ -225,7 +225,7 @@ class TaskManagerTest extends ApiTestCase
     /**
      * Update Task parameter are required
      */
-    public function testUpdateTaskParametersRequired(): void
+    public function testUpdateTaskParametersRequired()
     {
         //Post should have the parameter title
         $url = self::API_TEST_TASK . $this->process->uid . '/task/' . factory(Task::class)->create(['process_id' => $this->process->id])->uid;
@@ -241,7 +241,7 @@ class TaskManagerTest extends ApiTestCase
     /**
      * Update Task in process successfully
      */
-    public function testUpdateTask(): void
+    public function testUpdateTask()
     {
         //Post saved success
         $faker = Faker::create();
@@ -260,7 +260,7 @@ class TaskManagerTest extends ApiTestCase
     /**
      * Delete Task in process
      */
-    public function testDeleteTask(): void
+    public function testDeleteTask()
     {
         //Remove Task
         $url = self::API_TEST_TASK . $this->process->uid . '/task/' . factory(Task::class)->create(['process_id' => $this->process->id])->uid;
@@ -272,7 +272,7 @@ class TaskManagerTest extends ApiTestCase
     /**
      * Delete Task in process
      */
-    public function testDeleteTaskNotExist(): void
+    public function testDeleteTaskNotExist()
     {
         //task not exist
         $url = self::API_TEST_TASK . $this->process->uid . '/task/' . factory(Task::class)->make()->uid;

@@ -11,7 +11,19 @@ use Watson\Validating\ValidatingTrait;
 
 /**
  * Represents an Eloquent model of pmTable
+ *
  * @package ProcessMaker\Model
+ *
+ * @property int id
+ * @property string uid
+ * @property string name
+ * @property string description
+ * @property string type
+ * @property string grid
+ * @property string tags
+ * @property string fields
+ * @property integer db_source_id
+ * @property integer process_id
  */
 class PmTable extends Model
 {
@@ -42,6 +54,7 @@ class PmTable extends Model
     protected $rules = [
         'name' => 'required',
         'db_source_id' => 'nullable|exists:db_sources,id',
+        'process_id' => 'nullable|exists:processes,id',
     ];
 
     //stores the metadata of the columns and keys of the physical table

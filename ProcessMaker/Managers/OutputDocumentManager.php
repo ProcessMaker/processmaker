@@ -12,7 +12,7 @@ use ProcessMaker\Model\Process;
 class OutputDocumentManager
 {
     /**
-     * Get a list of All Output Documents in a project.
+     * Get a list of All Output Documents in a process.
      *
      * @param Process $process
      * @param array $options
@@ -46,7 +46,7 @@ class OutputDocumentManager
     }
 
     /**
-     * Create a new Output Document in a project.
+     * Create a new Output Document in a process.
      *
      * @param Process $process
      * @param array $data
@@ -69,7 +69,7 @@ class OutputDocumentManager
     }
 
     /**
-     * Update Output Document in a project.
+     * Update Output Document in a process.
      *
      * @param Process $process
      * @param OutputDocument $outputDocument
@@ -92,7 +92,7 @@ class OutputDocumentManager
 
 
     /**
-     * Remove Output Document in a project.
+     * Remove Output Document in a process.
      *
      * @param OutputDocument $outputDocument
      *
@@ -111,7 +111,7 @@ class OutputDocumentManager
      *
      * @throws ValidationException
      */
-    private function validate($data): void
+    private function validate($data)
     {
         /**
          * @var $validator \Illuminate\Validation\Validator
