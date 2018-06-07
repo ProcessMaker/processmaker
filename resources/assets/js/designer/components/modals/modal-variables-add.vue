@@ -8,28 +8,28 @@
 
         <div class="form-group">
         <label for="type" v-model="type">{{type}}</label>
-        <select class="form-control" id="type" v-model="typeSelect">
+        <select class="form-control bottom-label-form" id="type" v-model="typeSelect">
           <option v-for="select in typeSelectOptions">{{select}}</option>
         </select>
-        </div>
-
-        </div>
-        <div class="form-group">
-        <label for="typeSelect" v-model="type">{{type}}</label>
-        <select class="form-control" id="typeSelect" v-model="typeSelect">
-          <option v-for="select in typeSelectOptions">{{select}}</option>
-        </select>
+        <label class="bottom-label" for="supportedcontrolls" v-model="supportedcontrolls">{{supportedcontrolls}}</label>
         </div>
 
         <div class="form-group">
-        <label for="PermissionsSelect" v-model="permission">{{permission}}</label>
+          <label for="databaseConnection" v-model="databaseConnection">{{databaseConnection}}</label>
+          <select class="form-control" id="databaseConnection" v-model="database">
+          <option v-for="select in databaseOptions">{{select}}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+        <label for="sql" v-model="sql">{{sql}}</label>
           <textarea class="form-control"></textarea>
         </div>
 
         <div class="form-check">
           <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
           <label class="form-check-label" for="defaultCheck1">
-            Default checkbox
+            Define accepted variable values.
           </label>
         </div>
     </form>
@@ -53,20 +53,17 @@ export default {
       // form models here
       'name':"Name",
       'type':"Type",
-      'typeSelect': "All",
+      'supportedcontrolls': 'Supported Controls: text, textarea, dropdown',
+      'typeSelect': "",
       'typeSelectOptions':[
         'All','Task 1', 'Task 2'
       ],
-      'type':"Type",
-      'typeSelect': 'Form',
-      'typeSelectOptions':[
+      'databaseConnection':"Database Connection",
+      'database': 'Form',
+      'databaseOptions':[
         'Form', 'Attachment', 'Status', 'Summary', 'Comments','Input Document', 'Output Document'
       ],
-      'permission':"Permission",
-      'permissionSelect': 'View',
-      'permissionSelectOptions':[
-        'View', 'Block'
-      ]
+      'sql': "SQL"
     }
   },
   methods:{
@@ -81,5 +78,13 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-
+  .form-check-input{
+    margin-top: 8px;
+  }
+  .bottom-label{
+    font-size: 10px;
+  }
+  .bottom-label-form{
+    margin-bottom: -6px;
+  }
 </style>
