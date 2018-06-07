@@ -38,6 +38,8 @@ import modalPublicFileAdd from "./components/modals/modal-public-file-add";
 //
 import modalFormsAdd from "./components/modals/modal-forms-add";
 
+import modalCreateTemplateAdd from "./components/modals/modal-create-template-add";
+
 // This is out Cron for every shape
 import crown from "./components/crown";
 
@@ -48,9 +50,9 @@ export default {
     toptoolbar,
     designerobjectsmenu,
     modalPermissionsAdd,
-    ///camel case because vue will transform it into dash's
     modalPublicFileAdd,
     modalFormsAdd,
+    modalCreateTemplateAdd,
     crown
   },
   data() {
@@ -75,6 +77,9 @@ export default {
           break;
         case 'forms':
           this.modalComponent = 'modal-forms-add'
+          break;
+        case 'templates':
+          this.modalComponent = 'modal-create-template-add'
           break;
         default:
           alert(key + ' add modal not yet implemented.')
