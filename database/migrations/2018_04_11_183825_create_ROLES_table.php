@@ -18,7 +18,7 @@ class CreateROLESTable extends Migration {
 			$table->uuid('uid')->unique();
 			$table->string('name');
 			$table->string('description');
-			$table->string('code');
+			$table->string('code')->unique();
 			$table->timestamps();
 			$table->enum('status', ['ACTIVE', 'DISABLED'])->default('ACTIVE');
 		});

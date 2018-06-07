@@ -68,10 +68,14 @@ class RolesController extends Controller
 
     public function create(Request $request)
     {
-        $validatedData = $request->validate([
-            'title' => 'required|unique:posts|max:255',
-            'body' => 'required',
+        $data = $request->validate([
+            'name' => 'required|max:255',
+            'code' => 'unique:roles,code|required|max:255',
+            'description' => 'max:255',
+            'status' => 'required|in:ACTIVE,DISABLED'
         ]);
+        $role = Role::create($data);
+        return fractal($role, new RoleTransformer())->respond();
     }
 
 }

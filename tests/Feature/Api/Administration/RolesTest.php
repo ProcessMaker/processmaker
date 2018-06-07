@@ -165,8 +165,75 @@ class RolesTest extends ApiTestCase
         $response->assertJson(['total_users' => 1]);
     }
 
+    public function testRoleCreateWithValidationFailure()
+    {
+        $user = factory(User::class)->create([
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+        ]);
+        $this->auth($user->username, 'password');
+        $response = $this->api('post', self::API_TEST_ROLES, [
+            
+        ]);
+        // Empty, we should receive validation errors
+        $response->assertJson([
+            'message' => 'The given data was invalid.',
+            'errors' => [
+                'name' => ['The name field is required.'],
+                'code' => ['The code field is required.'],
+                'status' => ['The status field is required.']
+            ]
+        ]);
+        // Ensure out of bounds checks on validation
+        $response = $this->api('post', self::API_TEST_ROLES, [
+            'name' => app()->make('Faker\Generator')->text(500),
+            'code' => app()->make('Faker\Generator')->text(500),
+            'status' => 'DERP'
+        ]);
+         $response->assertJson([
+            'message' => 'The given data was invalid.',
+            'errors' => [
+                'name' => ['The name may not be greater than 255 characters.'],
+                'code' => ['The code may not be greater than 255 characters.'],
+                'status' => ['The selected status is invalid.']
+            ]
+        ]);
+        // Test for duplicate
+        $existingRole = factory(\ProcessMaker\Model\Role::class)->create([
+            'code' => 'TESTROLE'
+        ]);
+        $response = $this->api('post', self::API_TEST_ROLES, [
+            'name' => 'Test Conflict Role',
+            'code' => 'TESTROLE',
+            'status' => 'ACTIVE'
+        ]);
+        $response->assertJson([
+            'message' => 'The given data was invalid.',
+            'errors' => [
+                'code' => ['The code has already been taken.'],
+            ]
+        ]);
+    }
 
-
+    public function testSuccessfulRoleCreate()
+    {
+        $user = factory(User::class)->create([
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+        ]);
+        $this->auth($user->username, 'password');
+        $response = $this->api('post', self::API_TEST_ROLES, [
+            'name' => 'Test Role',
+            'code' => 'TESTROLE',
+            'description' => 'This is a test role',
+            'status' => 'ACTIVE'
+        ]);
+        $response->assertStatus(200);
+        // Okay, grab our role from the DB
+        $role = Role::where('code', 'TESTROLE')->first();
+        $transformed = (new RoleTransformer())->transform($role);
+        $response->assertJson($transformed);
+    }
 }
 
 

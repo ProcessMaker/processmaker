@@ -33,6 +33,7 @@ Router::group([
 
             // Roles API Endpoints
             Router::get('roles', 'Administration\RolesController@index');
+            Router::post('roles', 'Administration\RolesController@create');
             Router::get('roles/{role}', 'Administration\RolesController@get');
         });
 

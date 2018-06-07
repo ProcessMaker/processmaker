@@ -33,7 +33,8 @@ class Role extends Model
     const STATUS_ACTIVE = 'ACTIVE';
 
     protected $fillable = [
-        'parent_role_id',
+        'name',
+        'description',
         'code',
         'created_at',
         'updated_at',
