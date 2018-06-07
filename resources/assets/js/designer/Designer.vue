@@ -38,6 +38,8 @@ import modalPublicFileAdd from "./components/modals/modal-public-file-add";
 //
 import modalFormsAdd from "./components/modals/modal-forms-add";
 
+import modalMessageTypes from "./components/modals/modal-message-types";
+
 // This is out Cron for every shape
 import crown from "./components/crown";
 
@@ -51,7 +53,8 @@ export default {
     ///camel case because vue will transform it into dash's
     modalPublicFileAdd,
     modalFormsAdd,
-    crown
+    crown,
+    modalMessageTypes
   },
   data() {
     return {
@@ -75,6 +78,9 @@ export default {
           break;
         case 'forms':
           this.modalComponent = 'modal-forms-add'
+          break;
+        case 'message-types':
+          this.modalComponent = 'modal-message-types'
           break;
         default:
           alert(key + ' add modal not yet implemented.')
