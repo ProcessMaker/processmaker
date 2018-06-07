@@ -2,20 +2,6 @@
   <b-modal ref="modal" size="md" @hidden="onHidden" centered title="Create Permission">
       <form>
         <div class="form-group">
-          <label for="casesStatus" v-model="casesStatus">{{casesStatus}}</label>
-          <select class="form-control" id="casesStatus" v-model="casesSelect">
-          <option  v-for="select in casesSelectOptions">{{select}}</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="targetTask" v-model="targetTask">{{targetTask}}</label>
-          <select class="form-control" id="targetTask" v-model="targetSelect">
-          <option v-for="select in targetSelectOptions">{{select}}</option>
-          </select>
-        </div>
-
-        <div class="form-group">
           <label for="groupOrUser" v-model="groupOrUser">{{groupOrUser}}</label>
           <input type="text" class="form-control" id="groupOrUser">
         </div>
@@ -26,19 +12,7 @@
           <option v-for="select in targetSelectOptions">{{select}}</option>
         </select>
         </div>
-        <div class="form-group">
-          <label v-model="participationRequired">{{participationRequired}}</label>
-          <div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
-            <label class="form-check-label" for="inlineRadio1">Yes</label>
-          </div>
 
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
-            <label class="form-check-label" for="inlineRadio2">No</label>
-          </div>
-          </div>
         </div>
         <div class="form-group">
         <label for="typeSelect" v-model="type">{{type}}</label>
@@ -49,9 +23,7 @@
 
         <div class="form-group">
         <label for="PermissionsSelect" v-model="permission">{{permission}}</label>
-        <select class="form-control" id="PermissionsSelect" v-model="permissionSelect">
-          <option v-for="select in permissionSelectOptions">{{select}}</option>
-        </select>
+          <textarea class="form-control"></textarea>
         </div>
     </form>
 
