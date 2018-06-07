@@ -68,10 +68,13 @@ export default {
 }
 .sub-header {
   background-color: rgb(190, 190, 190);
+  margin-top: 10px;
 }
 .field-name {
   color: black;
   font-weight: bold;
+  padding: 10px;
+  margin-bottom: 0px;
 }
 
 </style>
