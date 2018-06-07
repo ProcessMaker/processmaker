@@ -5,7 +5,22 @@ import RolesListing from './components/RolesListing'
 new Vue({
   el: '#roles-listing',
   data: {
-      filter: '' 
+      filter: '' ,
+      addRoleCode: '',
+      addRoleName: '',
+      addRoleDescription: '',
+      addRoleStatus: 'ACTIVE'
   },
-  components: { RolesListing }
+  components: { RolesListing },
+  methods: {
+    showAddModal() {
+      this.$refs.addModal.show();
+    },
+    hideAddModal() {
+      this.$refs.addModal.hide();
+    },
+    submitAdd() {
+      // todo
+    }
+  }
 })

@@ -526,3 +526,6 @@ table.vuetable {
       background-color: white;
     }
 }
+
+// Hide vue content while vue is mounting
+[v-cloak] {display: none}

@@ -66,4 +66,12 @@ class RolesController extends Controller
         return fractal($role, new RoleTransformer())->respond();
     }
 
+    public function create(Request $request)
+    {
+        $validatedData = $request->validate([
+            'title' => 'required|unique:posts|max:255',
+            'body' => 'required',
+        ]);
+    }
+
 }
