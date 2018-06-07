@@ -35,6 +35,8 @@ import designerobjectsmenu from "./components/designer-objects-menu";
 import modalPermissionsAdd from "./components/modals/modal-permissions-add";
 
 import modalPublicFileAdd from "./components/modals/modal-public-file-add";
+
+import modalInputDocumentAdd from "./components/modals/modal-input-document-add";
 //
 import modalFormsAdd from "./components/modals/modal-forms-add";
 
@@ -50,6 +52,7 @@ export default {
     modalPermissionsAdd,
     ///camel case because vue will transform it into dash's
     modalPublicFileAdd,
+    modalInputDocumentAdd,
     modalFormsAdd,
     crown
   },
@@ -75,6 +78,9 @@ export default {
           break;
         case 'forms':
           this.modalComponent = 'modal-forms-add'
+          break;
+        case 'input-documents':
+          this.modalComponent = 'modal-input-document-add'
           break;
         default:
           alert(key + ' add modal not yet implemented.')
