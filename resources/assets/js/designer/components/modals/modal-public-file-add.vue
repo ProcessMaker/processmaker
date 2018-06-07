@@ -61,6 +61,6 @@ export default {
     border: solid 1px #b6bfc6;
     border-radius: 2px;
     padding-left: 12px;
-    padding-top: 10px;
+    padding-top: 5px;
   }
 </style>
