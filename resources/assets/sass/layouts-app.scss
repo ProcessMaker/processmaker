@@ -161,6 +161,7 @@ body {
 .modal-header{
   border: none;
   padding-top: 16px;
+  margin-bottom: 15px;
 
   .close{
     padding: 20px;
@@ -176,7 +177,7 @@ body {
 .modal-footer{
   border: none;
   padding: 38px 32px;
-  padding-top: 16px;
+  padding-top: 10px;
 }
 .form-group label{
   font-size: 12px;
@@ -201,8 +202,14 @@ select.form-control:not([size]):not([multiple]) {
   margin-bottom:7px;
   padding-top: 2px;
 }
-.btn{
+
+.btn {
+  border-radius: 0.12rem;
+  padding: 7px 16px ;
+  line-height: 1;
   font-size: 14px;
+  text-transform: uppercase;
+  font-weight: 400;
 }
 
 /* Sidebar Styles */
