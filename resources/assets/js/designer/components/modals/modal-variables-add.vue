@@ -1,5 +1,5 @@
 <template>
-  <b-modal ref="modal" size="md" @hidden="onHidden" centered title="Create Permission">
+  <b-modal ref="modal" size="md" @hidden="onHidden" centered title="Create Variable">
       <form>
         <div class="form-group">
           <label for="name" v-model="name">{{name}}</label>
@@ -35,7 +35,7 @@
     </form>
 
     <template slot="modal-footer">
-      <b-button class="btn-outline-secondary btn-md">
+      <b-button @click="onCancel" class="btn-outline-secondary btn-md">
         CANCEL
       </b-button>
       <b-button class="btn-secondary text-light btn-md">
@@ -69,6 +69,9 @@ export default {
   methods:{
     onHidden() {
       this.$emit('hidden')
+    },
+    onCancel() {
+      this.$refs.modal.hide()
     }
   },
   mounted() {
