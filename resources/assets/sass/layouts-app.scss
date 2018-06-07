@@ -201,8 +201,14 @@ select.form-control:not([size]):not([multiple]) {
   margin-bottom:7px;
   padding-top: 2px;
 }
-.btn{
+
+.btn {
+  border-radius: 0.12rem;
+  padding: 7px 16px ;
+  line-height: 1;
   font-size: 14px;
+  text-transform: uppercase;
+  font-weight: 400;
 }
 
 /* Sidebar Styles */
