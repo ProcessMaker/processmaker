@@ -37,6 +37,8 @@ import modalPermissionsAdd from "./components/modals/modal-permissions-add";
 import modalVariablesAdd from "./components/modals/modal-variables-add";
 
 import modalPublicFileAdd from "./components/modals/modal-public-file-add";
+
+import modalCreateTriggerAdd from "./components/modals/modal-create-trigger-add";
 //
 import modalFormsAdd from "./components/modals/modal-forms-add";
 
@@ -50,6 +52,7 @@ export default {
     crown,
     designerobjectsmenu,
     modalCreateTemplateAdd,
+    modalCreateTriggerAdd,
     modalFormsAdd,
     modalPermissionsAdd,
     modalPublicFileAdd,
@@ -83,6 +86,9 @@ export default {
           break;
         case 'forms':
           this.modalComponent = 'modal-forms-add'
+          break;
+        case 'triggers':
+          this.modalComponent = 'modal-create-trigger-add'
           break;
         case 'templates':
           this.modalComponent = 'modal-create-template-add'
