@@ -45,7 +45,7 @@ class InputDocumentManagerTest extends ApiTestCase
         ]);
 
         $this->process = factory(Process::class)->create([
-            'creator_user_id' => $this->user->id
+            'user_id' => $this->user->id
         ]);
 
         $this->auth($this->user->username, self::DEFAULT_PASS);

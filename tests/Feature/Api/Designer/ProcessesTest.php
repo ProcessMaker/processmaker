@@ -45,7 +45,7 @@ class ProcessesTest extends ApiTestCase
         'show_dynaform',
         'created_at',
         'updated_at',
-        'creator_user_id',
+        'user_id',
         'height',
         'width',
         'title_x',
@@ -99,7 +99,7 @@ class ProcessesTest extends ApiTestCase
     /**
      * Test to verify our processes listing api endpoint works without any filters
      */
-    public function testProcessesListing()
+    public function testProcessesListing(): void
     {
         $user = $this->authenticateAsAdmin();
         // Create some processes
@@ -190,7 +190,7 @@ class ProcessesTest extends ApiTestCase
         ]);
         // Create process with that category defined
         $process = factory(Process::class)->create([
-            'category_id' => $category->id
+            'process_category_id' => $category->id
         ]);
         $response = $this->api('GET', self::API_TEST_PROCESS . '?filter=' . urlencode('Test Cat'));
         $response->assertStatus(200);
@@ -232,7 +232,7 @@ class ProcessesTest extends ApiTestCase
         $category = factory(ProcessCategory::class)->create();
         $user = $this->authenticateAsAdmin();
         $process = factory(Process::class)->create([
-            'category_id' => $category->id
+            'process_category_id' => $category->id
         ]);
         // Fetch from DB to ensure we're getting all columns
         $process = Process::find($process->id);
@@ -253,7 +253,7 @@ class ProcessesTest extends ApiTestCase
 
         //Create a test process using factories
         factory(Process::class)->create([
-            'creator_user_id' => $this->authenticateAsAdmin()->id
+            'user_id' => $this->authenticateAsAdmin()->id
         ]);
         $response = $this->api('GET', self::API_TEST_PROCESS);
         $response->assertStatus(200);
@@ -270,7 +270,7 @@ class ProcessesTest extends ApiTestCase
 
         //Create a test process using factories
         $process = factory(Process::class)->create([
-            'creator_user_id' => $this->authenticateAsAdmin()->id
+            'user_id' => $this->authenticateAsAdmin()->id
         ]);
         $response = $this->api('GET', self::API_TEST_PROCESS. '?filter=' . urlencode($process->name));
         $response->assertStatus(200);
@@ -287,7 +287,7 @@ class ProcessesTest extends ApiTestCase
 
         //Create a test process using factories
         $process = factory(Process::class)->create([
-            'creator_user_id' => $this->authenticateAsAdmin()->id
+            'user_id' => $this->authenticateAsAdmin()->id
         ]);
         $perPage = Faker::create()->randomDigitNotNull;
         $query = '?current_page=1&per_page=' . $perPage . '&sort_by=description&sort_order=DESC&filter=' . urlencode($process->name);
@@ -313,7 +313,7 @@ class ProcessesTest extends ApiTestCase
         $admin = $this->authenticateAsAdmin();
 
         $process = factory(Process::class)->create([
-            'creator_user_id' => $admin->id
+            'user_id' => $admin->id
         ]);
 
 
@@ -332,7 +332,7 @@ class ProcessesTest extends ApiTestCase
         $admin = $this->authenticateAsAdmin();
         // We need a process
         $process = factory(Process::class)->create([
-            'creator_user_id' => $admin->id
+            'user_id' => $admin->id
         ]);
 
         //Delete process

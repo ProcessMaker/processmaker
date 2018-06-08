@@ -59,7 +59,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
         $this->auth($this->user->username, self::DEFAULT_PASS);
 
         $this->process = factory(Process::class)->create([
-            'creator_user_id' => $this->user->id
+            'user_id' => $this->user->id
         ]);
 
         $this->activity = factory(Task::class)->create([

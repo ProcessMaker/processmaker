@@ -43,6 +43,7 @@ class EmailServer extends Model
     protected $fillable = [
         'id',
         'uid',
+        'process_id',
         'engine',
         'server',
         'port',
@@ -61,6 +62,7 @@ class EmailServer extends Model
 
     protected $rules = [
         'uid' => 'max:36',
+        'process_id' => 'exists:processes,id',
         'rauth' => 'required|boolean',
         'account' => 'required',
         'password' => 'required',
