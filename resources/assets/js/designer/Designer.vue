@@ -32,29 +32,33 @@ import toptoolbar from "./components/toptoolbar";
 import designerobjectsmenu from "./components/designer-objects-menu";
 
 // @todo Figure out a way to add these modals to the properties of components
-import modalPermissionsAdd from "./components/modals/modal-permissions-add";
-
-import modalPublicFileAdd from "./components/modals/modal-public-file-add";
-
-import modalInputDocumentAdd from "./components/modals/modal-input-document-add";
-//
+import modalCreateOutputAdd from "./components/modals/modal-create-output-add";
+import modalCreateTemplateAdd from "./components/modals/modal-create-template-add";
+import modalCreateTriggerAdd from "./components/modals/modal-create-trigger-add";
 import modalFormsAdd from "./components/modals/modal-forms-add";
+import modalInputDocumentAdd from "./components/modals/modal-input-document-add";
+import modalPermissionsAdd from "./components/modals/modal-permissions-add";
+import modalPublicFileAdd from "./components/modals/modal-public-file-add";
+import modalVariablesAdd from "./components/modals/modal-variables-add";
 
 // This is out Cron for every shape
 import crown from "./components/crown";
 
 export default {
   components: {
+    crown,
+    designerobjectsmenu,
+    modalCreateOutputAdd,
+    modalCreateTemplateAdd,
+    modalCreateTriggerAdd,
+    modalFormsAdd,
+    modalInputDocumentAdd,
+    modalPermissionsAdd,
+    modalPublicFileAdd,
+    modalVariablesAdd,
     svgcanvas,
     toolbar,
-    toptoolbar,
-    designerobjectsmenu,
-    modalPermissionsAdd,
-    ///camel case because vue will transform it into dash's
-    modalPublicFileAdd,
-    modalInputDocumentAdd,
-    modalFormsAdd,
-    crown
+    toptoolbar
   },
   data() {
     return {
@@ -73,6 +77,9 @@ export default {
         case 'permissions':
           this.modalComponent = 'modal-permissions-add'
           break;
+        case 'variables':
+          this.modalComponent = 'modal-variables-add'
+          break;
         case 'public-files':
           this.modalComponent = 'modal-public-file-add'
           break;
@@ -81,6 +88,15 @@ export default {
           break;
         case 'input-documents':
           this.modalComponent = 'modal-input-document-add'
+          break;
+        case 'output-documents':
+          this.modalComponent = 'modal-create-output-add'
+          break;
+        case 'triggers':
+          this.modalComponent = 'modal-create-trigger-add'
+          break;
+        case 'templates':
+          this.modalComponent = 'modal-create-template-add'
           break;
         default:
           alert(key + ' add modal not yet implemented.')
