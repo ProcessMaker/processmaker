@@ -12,7 +12,7 @@
             <div class="row">
                 <div class="col-md-8 d-flex align-items-center col-sm-12">
                 <h1 class="page-title">Tasks</h1>
-                <input v-model="filter" class="form-control col-sm-3" placeholder="{{__('Search')}}...">
+                <input id="tasks-listing-search" v-model="filter" class="form-control col-sm-3" placeholder="{{__('Search')}}...">
                 </div>
             </div>
             <tasks-listing :filter="filter"></tasks-listing>

@@ -44,14 +44,14 @@ class TasksListTest extends DuskTestCase
         $this->browse(function (Browser $browser) use ($user, $process, $tasks, $items, $titleSearch) {
 
             $tableId = '#tasks-listing';
-            $selectTableRows = $tableId . ' tbody tr';
-            $inputSearch = 'input.form-control.col-sm-3';
+            $tableRowsSelector = $tableId . ' tbody tr';
+            $inputSearch = '#tasks-listing-search';
 
             $elements = $browser->loginAs($user)
                 ->visit('/process/' . $process->uid . '/tasks')
                 ->waitFor($tableId)
                 ->assertSee('Tasks')
-                ->elements($selectTableRows);
+                ->elements($tableRowsSelector);
 
             //Rows(Tasks introduced)
             $this->assertCount($items, $elements);
@@ -72,7 +72,7 @@ class TasksListTest extends DuskTestCase
             //validating result of search
             $elements =  $browser->waitFor($tableId)
                 ->assertSee('Tasks')
-                ->elements($selectTableRows);
+                ->elements($tableRowsSelector);
 
             //rows in search
             $this->assertCount(1, $elements);
