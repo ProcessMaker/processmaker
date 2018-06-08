@@ -41,7 +41,6 @@ import modalInputDocumentAdd from "./components/modals/modal-input-document-add"
 import modalPermissionsAdd from "./components/modals/modal-permissions-add";
 import modalPublicFileAdd from "./components/modals/modal-public-file-add";
 import modalVariablesAdd from "./components/modals/modal-variables-add";
-
 import modalMessageTypes from "./components/modals/modal-message-types";
 
 // This is out Cron for every shape
@@ -56,6 +55,7 @@ export default {
     modalCreateTemplateAdd,
     modalCreateTriggerAdd,
     modalFormsAdd,
+    modalMessageTypes,
     modalInputDocumentAdd,
     modalPermissionsAdd,
     modalPublicFileAdd,
@@ -92,6 +92,7 @@ export default {
           break;
         case 'message-types':
           this.modalComponent = 'modal-message-types'
+          break;
         case 'database-connections':
           this.modalComponent = 'modal-create-database-add'
           break;
