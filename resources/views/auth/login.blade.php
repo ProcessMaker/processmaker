@@ -9,7 +9,7 @@
 
     <div class="col-6">
       <div align="center">
-        <img class="p-5" src="/img/processmaker-login-logo.png">
+        <img class="p-5" src="/img/md-blue-logo.png">
       </div>
 
       <form method="POST" action="{{ route('login') }}" class="bg-light p-5">
