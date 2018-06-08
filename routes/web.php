@@ -49,7 +49,7 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
     Router::group([
         'middleware' => ['permission:PM_CASES']
     ], function() {
-        $this->get('/process/{process}/tasks', 'Designer\TaskController@index')->name('management-task-index');
+        $this->get('/process/{process}/tasks', 'Designer\TaskController@index')->name('processes-task-index');
     });
 });
 
