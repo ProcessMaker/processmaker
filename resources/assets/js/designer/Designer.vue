@@ -34,6 +34,8 @@ import designerobjectsmenu from "./components/designer-objects-menu";
 // @todo Figure out a way to add these modals to the properties of components
 import modalPermissionsAdd from "./components/modals/modal-permissions-add";
 
+import modalVariablesAdd from "./components/modals/modal-variables-add";
+
 import modalPublicFileAdd from "./components/modals/modal-public-file-add";
 //
 import modalFormsAdd from "./components/modals/modal-forms-add";
@@ -45,15 +47,16 @@ import crown from "./components/crown";
 
 export default {
   components: {
-    svgcanvas,
-    toolbar,
-    toptoolbar,
+    crown,
     designerobjectsmenu,
+    modalCreateTemplateAdd,
+    modalFormsAdd,
     modalPermissionsAdd,
     modalPublicFileAdd,
-    modalFormsAdd,
-    modalCreateTemplateAdd,
-    crown
+    modalVariablesAdd,
+    svgcanvas,
+    toolbar,
+    toptoolbar
   },
   data() {
     return {
@@ -71,6 +74,9 @@ export default {
       switch(key) {
         case 'permissions':
           this.modalComponent = 'modal-permissions-add'
+          break;
+        case 'variables':
+          this.modalComponent = 'modal-variables-add'
           break;
         case 'public-files':
           this.modalComponent = 'modal-public-file-add'
