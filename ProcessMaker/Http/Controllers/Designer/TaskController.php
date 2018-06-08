@@ -14,6 +14,6 @@ class TaskController extends Controller
      */
     public function index()
     {
-        return view('management.tasks.index');
+        return view('processes.tasks.index');
     }
 }

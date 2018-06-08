@@ -23,8 +23,6 @@
 </template>
 
 <script>
-    import Vuetable from "vuetable-2/src/components/Vuetable";
-    import Pagination from "../../../components/common/Pagination";
     import datatableMixin from "../../../components/common/mixins/datatable";
 
     export default {
