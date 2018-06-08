@@ -98,7 +98,7 @@ export default {
 .field-name-li { 
   display: flex;
   justify-content: space-between;
-  padding: 16px;
+  padding: 10px 16px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
   color: rgb(109,124,136);
   font-size: 12px;
