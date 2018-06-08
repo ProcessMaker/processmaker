@@ -32,6 +32,7 @@ import toptoolbar from "./components/toptoolbar";
 import designerobjectsmenu from "./components/designer-objects-menu";
 
 // @todo Figure out a way to add these modals to the properties of components
+import modalCreateDatabaseAdd from "./components/modals/modal-create-database-add";
 import modalCreateOutputAdd from "./components/modals/modal-create-output-add";
 import modalCreateTemplateAdd from "./components/modals/modal-create-template-add";
 import modalCreateTriggerAdd from "./components/modals/modal-create-trigger-add";
@@ -48,6 +49,7 @@ export default {
   components: {
     crown,
     designerobjectsmenu,
+    modalCreateDatabaseAdd,
     modalCreateOutputAdd,
     modalCreateTemplateAdd,
     modalCreateTriggerAdd,
@@ -85,6 +87,9 @@ export default {
           break;
         case 'forms':
           this.modalComponent = 'modal-forms-add'
+          break;
+        case 'database-connections':
+          this.modalComponent = 'modal-create-database-add'
           break;
         case 'input-documents':
           this.modalComponent = 'modal-input-document-add'
