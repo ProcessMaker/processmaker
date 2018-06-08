@@ -1,5 +1,5 @@
 <template>
-  <b-modal ref="modal" size="md" @hidden="onHidden" centered title="Create Public File">
+  <b-modal ref="modal" size="md" @hidden="onHidden" centered title="Create Template">
       <form>
         <div class="form-group">
           <label for="publicFile" v-model="publicFile">{{publicFile}}</label>
