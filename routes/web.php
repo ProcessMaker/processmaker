@@ -45,6 +45,12 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
     })->name('userprofile');
 
     $this->get('/manage/users', 'Management\UsersController@index')->name('management-users-index');
+
+    Router::group([
+        'middleware' => ['permission:PM_CASES']
+    ], function() {
+        $this->get('/process/{process}/tasks', 'Designer\TaskController@index')->name('processes-task-index');
+    });
 });
 
 
