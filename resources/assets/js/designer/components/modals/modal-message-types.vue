@@ -20,7 +20,7 @@
               <li v-for="item in items" class="field-name-li">
                 {{ item.message }} 
                 <div>
-                  <i class="fas fa-pencil-alt"></i>
+                  <i class="fas fa-pencil-alt mr-3"></i>
                   <i class="fas fa-trash-alt"></i>
                 </div>
 
@@ -85,7 +85,7 @@ export default {
   width:212px;
 }
 .sub-header {
-  background-color: rgb(190, 190, 190);
+  background-color: rgb(234, 236, 241);
   margin-top: 10px;
   border-radius: 2px;
 }
@@ -98,7 +98,7 @@ export default {
 .field-name-li { 
   display: flex;
   justify-content: space-between;
-  padding-left: 10px;
+  padding: 10px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
   color: rgb(109,124,136);
 }
