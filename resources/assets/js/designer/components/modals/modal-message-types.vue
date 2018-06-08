@@ -7,14 +7,27 @@
         </div>
 
         <div class="form-group">
-          <label for="fieldName">{{fieldName}}</label>
+          <label for="messageFieldName">{{messageFieldName}}</label>
           <div class="d-flex">
             <input type="text" class="form-control inline-input" id="destinationPath">
             <button type="submit" class="btn inline-button text-light">Create</button>
           </div>
-          <div class="sub-header rounded">
+          <div class="sub-header">
             <label for="messageFieldName" class="field-name text-uppercase">{{messageFieldName}}</label>
           </div>
+
+            <ul class="p-0">
+              <li v-for="item in items" class="field-name-li">
+                {{ item.message }} 
+                <div>
+                  <i class="fas fa-pencil-alt"></i>
+                  <i class="fas fa-trash-alt"></i>
+                </div>
+
+              </li>
+
+            </ul>
+
         </div>
 
     </form>
@@ -38,7 +51,10 @@ export default {
       // form models here
       'messageName': "Name",
       'messageFieldName': "Message Field Name",
-      'fieldName':"Message Field Name",
+          items: [
+      { message: 'Foo' },
+      { message: 'Bar' }
+    ]
     }
   },
   methods:{
@@ -54,6 +70,8 @@ export default {
     this.$refs.modal.show();
   }
 };
+
+
 </script>
 <style lang="scss" scoped>
 .inline-input{
@@ -69,12 +87,20 @@ export default {
 .sub-header {
   background-color: rgb(190, 190, 190);
   margin-top: 10px;
+  border-radius: 2px;
 }
 .field-name {
   color: black;
   font-weight: bold;
   padding: 10px;
   margin-bottom: 0px;
+}
+.field-name-li { 
+  display: flex;
+  justify-content: space-between;
+  padding-left: 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  color: rgba(0, 0, 0, 0.2);
 }
 
 </style>
