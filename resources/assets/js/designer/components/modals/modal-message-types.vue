@@ -100,7 +100,7 @@ export default {
   justify-content: space-between;
   padding-left: 10px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-  color: rgba(0, 0, 0, 0.2);
+  color: rgb(109,124,136);
 }
 
 </style>
