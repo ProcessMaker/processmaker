@@ -59,16 +59,10 @@ export default {
     modalInputDocumentAdd,
     modalPermissionsAdd,
     modalPublicFileAdd,
-<<<<<<< HEAD
-    modalFormsAdd,
-    crown,
-    modalMessageTypes
-=======
     modalVariablesAdd,
     svgcanvas,
     toolbar,
     toptoolbar
->>>>>>> develop
   },
   data() {
     return {
@@ -96,10 +90,8 @@ export default {
         case 'forms':
           this.modalComponent = 'modal-forms-add'
           break;
-<<<<<<< HEAD
         case 'message-types':
           this.modalComponent = 'modal-message-types'
-=======
         case 'database-connections':
           this.modalComponent = 'modal-create-database-add'
           break;
@@ -114,7 +106,6 @@ export default {
           break;
         case 'templates':
           this.modalComponent = 'modal-create-template-add'
->>>>>>> develop
           break;
         default:
           alert(key + ' add modal not yet implemented.')
