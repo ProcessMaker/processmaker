@@ -1,5 +1,5 @@
 <template>
-  <b-modal ref="modal" size="md" @hidden="onHidden" centered title="Create Permission">
+  <b-modal ref="modal" size="md" @hidden="onHidden" centered title="Create Database Connection">
       <form>
         <div class="form-group">
           <label for="engine" v-model="engine">{{engine}}</label>
