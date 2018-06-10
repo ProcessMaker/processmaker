@@ -9,7 +9,7 @@ class RoleTransformer extends TransformerAbstract
 {
 
     /**
-     * Transform a User model to an api consumable
+     * Transform a Role model to an api consumable
      */
     public function transform(Role $role)
     {

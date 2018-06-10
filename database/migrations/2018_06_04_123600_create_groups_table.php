@@ -17,10 +17,11 @@ class CreateGroupsTable extends Migration
         Schema::create('groups', function (Blueprint $table) {
             $table->increments('id');
             $table->uuid('uid')->unique();
-            $table->string('title', 1000);
+            $table->string('title')->unique();
             $table->char('status', 8)->default(Group::STATUS_ACTIVE);
+            // @todo Determine if following two columns are needed anymore
             $table->string('ldap_dn')->default('');
-            $table->string('ux', 128)->nullable()->default(GROUP::UX_NORMAL);
+            $table->string('ux', 128)->nullable()->default(Group::UX_NORMAL);
             $table->timestamps();
         });
     }

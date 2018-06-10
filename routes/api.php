@@ -35,6 +35,12 @@ Router::group([
             Router::get('roles', 'Administration\RolesController@index');
             Router::post('roles', 'Administration\RolesController@create');
             Router::get('roles/{role}', 'Administration\RolesController@get');
+
+            // Roles API Endpoints
+            Router::get('groups', 'Administration\GroupsController@index');
+            Router::post('groups', 'Administration\GroupsController@create');
+            Router::get('groups/{group}', 'Administration\GroupsController@get');
+ 
         });
 
 
