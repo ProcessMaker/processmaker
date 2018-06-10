@@ -62,7 +62,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
         $processCategory = factory(ProcessCategory::class)->create();
         factory(ProcessCategory::class)->create();
         factory(Process::class)->create([
-            'category_id' => $processCategory->id
+            'process_category_id' => $processCategory->id
         ]);
 
         $response = $this->api('GET', self::API_TEST_CATEGORIES);
@@ -91,7 +91,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
         $processCategory = factory(ProcessCategory::class)->create();
         factory(ProcessCategory::class)->create();
         factory(Process::class)->create([
-            'category_id' => $processCategory->id
+            'process_category_id' => $processCategory->id
         ]);
         //Test filter
         $response = $this->api('GET', self::API_TEST_CATEGORIES . '?filter=' . urlencode($processCategory->name));
@@ -122,7 +122,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
         $processCategory = factory(ProcessCategory::class)->create();
         factory(ProcessCategory::class)->create();
         factory(Process::class)->create([
-            'category_id' => $processCategory->id
+            'process_category_id' => $processCategory->id
         ]);
         //Test filter not found
         $response = $this->api('GET', self::API_TEST_CATEGORIES . '?filter=NOT_FOUND_TEXT');
@@ -145,7 +145,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
         $processCategory = factory(ProcessCategory::class)->create();
         factory(ProcessCategory::class)->create();
         factory(Process::class)->create([
-            'category_id' => $processCategory->id
+            'process_category_id' => $processCategory->id
         ]);
         $response = $this->api('GET', self::API_TEST_CATEGORIES . '?start=INVALID');
         $response->assertStatus(422);
@@ -168,7 +168,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
         $processCategory = factory(ProcessCategory::class)->create();
         factory(ProcessCategory::class)->create();
         factory(Process::class)->create([
-            'category_id' => $processCategory->id
+            'process_category_id' => $processCategory->id
         ]);
         $response = $this->api('GET', self::API_TEST_CATEGORIES . '?limit=INVALID');
         $response->assertStatus(422);
@@ -191,7 +191,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
         $processCategory = factory(ProcessCategory::class)->create();
         factory(ProcessCategory::class)->create();
         factory(Process::class)->create([
-            'category_id' => $processCategory->id
+            'process_category_id' => $processCategory->id
         ]);
 
         //Test start and limit
@@ -349,7 +349,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
         $processCategory = factory(ProcessCategory::class)->create();
         $catUid = $processCategory->uid;
         factory(Process::class)->create([
-            'category_id' => $processCategory->id
+            'process_category_id' => $processCategory->id
         ]);
 
     }

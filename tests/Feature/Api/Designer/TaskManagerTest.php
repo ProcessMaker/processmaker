@@ -40,7 +40,7 @@ class TaskManagerTest extends ApiTestCase
         'is_start_task',
         'routing_screen_template',
         'timing_control_configuration',
-        'self_service_trigger_id',
+        'trigger_id',
         'self_service_timeout_configuration',
         'custom_title',
         'custom_description',
@@ -58,7 +58,7 @@ class TaskManagerTest extends ApiTestCase
         ]);
 
         $this->process = factory(Process::class)->create([
-            'creator_user_id' => $this->user->id
+            'user_id' => $this->user->id
         ]);
 
         $this->auth($this->user->username, self::DEFAULT_PASS);

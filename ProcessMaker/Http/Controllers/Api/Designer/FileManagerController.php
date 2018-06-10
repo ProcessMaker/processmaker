@@ -107,7 +107,7 @@ class FileManagerController extends \ProcessMaker\Http\Controllers\Controller
      */
     public function upload(Request $request, Process $process, ProcessFile $processFile)
     {
-        $file = $request->file('prf_file');
+        $file = $request->file('file');
         $response = ProcessFileManager::putUploadedFileIntoProcessFile($file, $processFile);
         return response($response, 201);
     }

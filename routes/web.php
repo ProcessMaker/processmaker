@@ -51,6 +51,12 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
       $this->get('/manage/roles', 'Management\RolesController@index')->name('management-roles-index');
       $this->get('/manage/roles/add', 'Management\RolesController@add')->name('management-roles-add');
     });
+
+    Router::group([
+        'middleware' => ['permission:PM_CASES']
+    ], function() {
+        $this->get('/process/{process}/tasks', 'Designer\TaskController@index')->name('processes-task-index');
+    });
 });
 
 
