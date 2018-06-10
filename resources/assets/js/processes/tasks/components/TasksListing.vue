@@ -27,7 +27,7 @@
 
     export default {
         mixins: [datatableMixin],
-        props: ["filter"],
+        props: ["filter", "uid"],
         data() {
             return {
                 orderBy: "code",
@@ -104,7 +104,7 @@
                 ProcessMaker.apiClient
                     .get(
                         "process/" +
-                        path[2] +
+                        this.uid +
                         "/tasks?page=" +
                         this.page +
                         "&per_page=" +

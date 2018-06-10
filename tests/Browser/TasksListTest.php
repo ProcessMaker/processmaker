@@ -27,11 +27,11 @@ class TasksListTest extends DuskTestCase
 
         $user = User::find(1);
         $process = factory(Process::class)->create([
-            'creator_user_id' => $user->id
+            'user_id' => $user->id
         ]);
 
-        $items = Faker::create()->numberBetween(1,9);
-        $tasks = factory(Task::class, $items)->create([
+        // Create 5 random tasks for the user
+        $tasks = factory(Task::class, 5)->create([
             'process_id' => $process->id
         ]);
         $titleSearch = 'Task title of Search...';
@@ -39,22 +39,26 @@ class TasksListTest extends DuskTestCase
             'title' => $titleSearch,
             'process_id' => $process->id
         ]);
-        $items++;
+        // Now we have six tasks in the system
 
-        $this->browse(function (Browser $browser) use ($user, $process, $tasks, $items, $titleSearch) {
+        $this->browse(function (Browser $browser) use ($user, $process, $tasks, $titleSearch) {
 
             $tableId = '#tasks-listing';
             $tableRowsSelector = $tableId . ' tbody tr';
             $inputSearch = '#tasks-listing-search';
 
+            // Make sure we have six tasks in the database
+
             $elements = $browser->loginAs($user)
-                ->visit('/process/' . $process->uid . '/tasks')
+                ->visit('/process/' . $process->uid->toString() . '/tasks')
                 ->waitFor($tableId)
                 ->assertSee('Tasks')
+                // Wait until the no data available message is gone (meaning we received results)
+                ->waitUntilMissing('.vuetable-empty-result')
                 ->elements($tableRowsSelector);
 
             //Rows(Tasks introduced)
-            $this->assertCount($items, $elements);
+            $this->assertCount(6, $elements);
 
             //name of columns
             $browser->whenAvailable($tableId, function ($grid) {
@@ -65,9 +69,11 @@ class TasksListTest extends DuskTestCase
                 $grid->assertSee('UPDATED AT');
             });
 
+            $inputField = $browser->elements($inputSearch);
+
             //Set input search
             $browser->type($inputSearch, $titleSearch)
-                ->pause(500);
+                ->pause(5000);
 
             //validating result of search
             $elements =  $browser->waitFor($tableId)

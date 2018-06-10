@@ -23,6 +23,7 @@ class ApiTestCase extends TestCase
             'password' => $password
         ]);
         $data = json_decode($response->getContent(), true);
+        $this->assertArrayHasKey('access_token', $data);
         $this->token = $data['access_token'];
     }
 
