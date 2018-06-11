@@ -2,8 +2,8 @@
     <div id="designer-container">
         <component :is="modalComponent" :if="modalComponent" @hidden="onHidden"></component>
         <toptoolbar ref="toptoolbar"></toptoolbar>
+        <toolbar ref="toolbar"></toolbar>
         <div id="designer-subcontainer">
-            <toolbar ref="toolbar"></toolbar>
             <div class="canvas-container">
                 <crown ref="crown"></crown>
                 <svgcanvas ref="svgcanvas"></svgcanvas>

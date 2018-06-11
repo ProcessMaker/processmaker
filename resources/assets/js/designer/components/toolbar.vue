@@ -1,11 +1,11 @@
 <template>
     <div class="pmdesigner-toolbar">
-        <ul class="side-menu">
+        <ul class="nav flex-column flex-md-row mt--1 text-light">
             <li class="bpmn-item-menu">
-                <img id="bpmn:Task" src="../img/task.svg" height="20"
+                <img id="bpmn:Task" src="../img/task.svg" height="18"
                      draggable="true" @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:Subprocess" src="../img/sub-process.svg" height="20"
+                <img id="bpmn:Subprocess" src="../img/sub-process.svg" height="18"
                      draggable="true" @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
                 <img id="bpmn:ExclusiveGateway" src="../img/exclusive-gateway.svg" height="25" draggable="true"
@@ -34,22 +34,22 @@
                 <img id="bpmn:EndEmailEvent" src="../img/end-email-event.svg" height="25" draggable="true"
                      @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:DataObjectReference" src="../img/data-object.svg" height="20" draggable="true"
+                <img id="bpmn:DataObjectReference" src="../img/data-object.svg" height="23" draggable="true"
                      @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:DataStoreReference" src="../img/data-store.svg" height="20" draggable="true"
+                <img id="bpmn:DataStoreReference" src="../img/data-store.svg" height="23" draggable="true"
                      @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:DataStoreReference" src="../img/black-box-pool.svg" height="20" draggable="true"
+                <img id="bpmn:DataStoreReference" src="../img/black-box-pool.svg" height="18" draggable="true"
                      @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:DataStoreReference" src="../img/pool.svg" height="20" draggable="true"
+                <img id="bpmn:DataStoreReference" src="../img/pool.svg" height="18" draggable="true"
                      @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:Lane" src="../img/lane.svg" height="20" draggable="true"
+                <img id="bpmn:Lane" src="../img/lane.svg" height="18" draggable="true"
                      @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:Group" src="../img/group.svg" height="20" draggable="true"
+                <img id="bpmn:Group" src="../img/group.svg" height="18" draggable="true"
                      @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
                 <img id="bpmn:TextAnnotation" src="../img/text-annotation.svg" height="15" draggable="true"
@@ -77,23 +77,16 @@
     };
 </script>
 <style lang="scss" scoped>
-.pmdesigner-toolbar {
-    background-color: white;
-    border-right: 2px solid #e1dbd9;
-    min-height: 100%;
-    max-height: 100%;
-    overflow: auto;
-
-    .side-menu {
-        list-style-type: none;
-        padding: 0;
-        text-align: center;
-        width: 56px;
-
+    .pmdesigner-toolbar {
+        background-color: white;
+        border-right: 2px solid #e1dbd9;
 
         .bpmn-item-menu {
-            padding: 7px 13px
+            padding: 7px 7px
+        }
+
+        .bpmn-item-menu:hover {
+            background-color: #eff2ed;
         }
     }
-}
 </style>
