@@ -141,7 +141,7 @@ export default {
 }
 
 /deep/ th#_description {
-  width: 250px;
+  width: 225px;
 }
 
 /deep/ i.fa-circle {

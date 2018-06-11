@@ -4,12 +4,14 @@ namespace Tests\Browser;
 
 use Tests\DuskTestCase;
 use Laravel\Dusk\Browser;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Tests\Traits\DatabaseMigrationsWithSeeds;
 
 class ExampleTest extends DuskTestCase
 {
     // Wipes database each run
-    use DatabaseMigrations;
+    use DatabaseMigrationsWithSeeds;
+
+
 
     /**
      * A basic browser test example.

@@ -52,7 +52,7 @@
                     <button @click="showAddModal" class="btn btn-action"><i class="fas fa-plus"></i> {{__('Role')}}</button>
                 </div>
             </div>
-            <roles-listing :filter="filter"></roles-listing>
+            <roles-listing ref="rolesListing" :filter="filter"></roles-listing>
         </div>
     </div>
     </div>
