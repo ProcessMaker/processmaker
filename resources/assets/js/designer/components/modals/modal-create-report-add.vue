@@ -2,8 +2,8 @@
   <b-modal ref="modal" size="lg" @hidden="onHidden" centered title="Create Input Document">
       <form>
         <div class="form-group">
-          <label for="allowedFileExtensions" v-model="allowedFileExtensions">{{allowedFileExtensions}}</label>
-          <input type="text" class="form-control" id="allowedFileExtensions">
+          <label for="tableName" v-model="tableName">{{tableName}}</label>
+          <input type="text" class="form-control" id="tableName">
         </div>
 
         <div class="form-group">
@@ -13,26 +13,26 @@
 
         <div class="d-flex justify-content-between">
           <div class="form-group">
-            <label for="maximumFileSize" v-model="maximumFileSize">{{maximumFileSize}}</label>
-            <input type="text" class="form-control input-and-select" id="maximumFileSize">
+            <label for="type" v-model="type">{{type}}</label>
+            <input type="text" class="form-control input-and-select" id="type">
           </div>
 
           <div class="form-group">
-            <label for="unit" v-model="unit">{{unit}}</label>
-            <select class="form-control input-and-select" id="unit" v-model="unitSelect">
-            <option v-for="select in unitSelectOptions">{{select}}</option>
+            <label for="dbConnection" v-model="dbConnection">{{dbConnection}}</label>
+            <select class="form-control input-and-select" id="dbConnection" v-model="dbConnectionSelect">
+            <option v-for="select in dbConnectionSelectOptions">{{select}}</option>
             </select>
           </div>
         </div>
 
         <div class="d-flex justify-content-between">
           <div class="form-group">
-            <label for="maximumFileSize" v-model="maximumFileSize">{{maximumFileSize}}</label>
-            <input type="text" class="form-control search-and-add" id="maximumFileSize">
+            <label for="formFields" v-model="formFields">{{formFields}}</label>
+            <input type="text" class="form-control search-and-add" id="formFields">
           </div>
 
           <div class="form-group">
-            <label for="unit" v-model="unit">{{unit}}</label>
+            <label for="reportTable" v-model="reportTable">{{reportTable}}</label>
             <div>
               <button class="btn btn-gray text-light"><i class="fas fa-plus"></i> FIELD </button>
             </div>
@@ -75,31 +75,14 @@ export default {
   data() {
     return {
       // form models here
-      'documentType': "Document Type",
-      'documentSelect': "All",
-      'documentSelectOptions':[
-        'All','Assigned','Unassigned','Completed','Paused'
-      ],
-      'enableVersioning': "Enable Versioning",
-      'enableVersioningSelect': "All",
-      'enableVersioningSelectOptions':[
-        'All','Assigned','Unassigned','Completed','Paused'
-      ],
       'description':"Description",
-      'originTask':"Origin Task",
-      'originSelect': "All",
-      'originSelectOptions':[
-        'All','Task 1', 'Task 2'
-      ],
-      'destinationPath': "Destination Path",
-      "tags":'Tags',
-      'participationRequired':"Participation Required?",
-      "allowedFileExtensions": 'Allowed File Extensions',
+      'reportTable': "Report Table",
+      'formFields': "Form Fields",
+      "tableName": 'Table Name',
       "type": 'Type',
-      "maximumFileSize": 'Maximum File Size',
-      'unit':"Unit",
-      'unitSelect': 'View',
-      'unitSelectOptions':[
+      'dbConnection':"DB Connection",
+      'dbConnectionSelect': 'View',
+      'dbConnectionSelectOptions':[
         'View', 'Block'
       ],
       list: [{
