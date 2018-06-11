@@ -39,6 +39,17 @@
           </div>
         </div>
 
+        <div>
+          <div class="d-flex justify-content-between">
+            <draggable v-model="list" :options="{group:'people'}">
+              <div v-for="person in list">{{person.name}}</div>
+            </draggable>
+
+            <draggable v-model="list2" :options="{group:'people'}">
+              <div v-for="person in list2">{{person.name}}</div>
+            </draggable>
+          </div>
+        </div>
 
     </form>
 
@@ -90,7 +101,21 @@ export default {
       'unitSelect': 'View',
       'unitSelectOptions':[
         'View', 'Block'
-      ]
+      ],
+      list: [{
+        name: "Mila"
+      }, {
+        name: "Taylor"
+      }, {
+        name: "Ben"
+      }],
+      list2: [{
+        name: "Alan"
+      }, {
+        name: "Matt"
+      }, {
+        name: "Leah"
+      }]
     }
   },
   methods:{
@@ -99,7 +124,17 @@ export default {
     },
     onCancel() {
       this.$refs.modal.hide()
-    }
+    },
+    add: function() {
+     this.list.push({
+       name: 'Mila'
+     });
+   },
+   replace: function() {
+     this.list = [{
+       name: 'Taylor'
+     }]
+   }
   },
   mounted() {
     // Show our modal as soon as we're created
