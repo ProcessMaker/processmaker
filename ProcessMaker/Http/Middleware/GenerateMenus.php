@@ -263,6 +263,19 @@ class GenerateMenus
                 }
             }
         });
+        Menu::make('sidebar_designer', function ($menu) {
+            $task_items = [
+
+          ];
+            $tasks = $menu;
+            foreach ($task_items as $item) {
+                if ($item['header'] === false) {
+                    $tasks->add($item['label'], ['route'  => $item['route'], 'id' => $item['id'], 'icon' => $item['icon']]);
+                } else {
+                    $tasks->add($item['label'], ['class' => 'h5 text-muted font-weight-light']);
+                }
+            }
+        });
         Menu::make('build', function ($menu) {
             $execute = $menu;
             $tasks = $execute->add('Build', ['class' => 'sidebar-header'])
