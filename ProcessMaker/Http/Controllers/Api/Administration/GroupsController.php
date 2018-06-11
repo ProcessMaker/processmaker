@@ -71,6 +71,7 @@ class GroupsController extends Controller
             'status' => 'required|in:ACTIVE,DISABLED'
         ]);
         $group = Group::create($data);
+        //$group->refresh();
         return fractal($group, new GroupTransformer())->respond();
     }
 

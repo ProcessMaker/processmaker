@@ -75,6 +75,7 @@ class RolesController extends Controller
             'status' => 'required|in:ACTIVE,DISABLED'
         ]);
         $role = Role::create($data);
+        $role->refresh();
         return fractal($role, new RoleTransformer())->respond();
     }
 

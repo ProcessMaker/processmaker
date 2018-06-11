@@ -233,6 +233,51 @@ class GroupsTest extends ApiTestCase
         $transformed = (new GroupTransformer())->transform($group);
         $response->assertJson($transformed);
     }
+
+
+    public function testSortGroupsByTotalUsers()
+    {
+        $user = factory(User::class)->create([
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+        ]);
+        $this->auth($user->username, 'password');
+        // Now, let's create 5 groups
+        factory(\ProcessMaker\Model\Group::class, 5)->create();
+        // Now create a single group that we'll add to our user
+        $group = factory(\ProcessMaker\Model\Group::class)->create([
+            'title' => 'Test Group'
+        ]);
+        // Now, let's attach the group to the user
+        $user->groups()->attach($group);
+        // Fetch via API
+        $response = $this->api('GET', self::API_TEST_GROUPS, [
+            'order_by' => 'total_users',
+            'order_direction' => 'desc'
+        ]);
+        // Verify 200 status code
+        $response->assertStatus(200);
+        // Grab users
+        $data = json_decode($response->getContent(), true);
+        // Verify we have a total of 6 results
+        $this->assertCount(6, $data['data']);
+        $this->assertEquals(6, $data['meta']['total']);
+        $this->assertEquals('Test Group', $data['data'][0]['title']);
+        // Test the other direction
+        $response = $this->api('GET', self::API_TEST_GROUPS, [
+            'order_by' => 'total_users',
+            'order_direction' => 'asc'
+        ]);
+        // Verify 200 status code
+        $response->assertStatus(200);
+        // Grab users
+        $data = json_decode($response->getContent(), true);
+        // Verify we have a total of 6 results
+        $this->assertCount(6, $data['data']);
+        $this->assertEquals(6, $data['meta']['total']);
+        $this->assertEquals('Test Group', $data['data'][5]['title']);
+  
+    }
 }
 
 

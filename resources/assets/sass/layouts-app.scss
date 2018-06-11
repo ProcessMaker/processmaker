@@ -541,3 +541,7 @@ table.vuetable {
     background-color: white;
   }
 }
+
+[v-cloak] {
+  display: none;
+}
