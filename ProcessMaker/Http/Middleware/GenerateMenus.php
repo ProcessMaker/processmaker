@@ -263,6 +263,8 @@ class GenerateMenus
                 }
             }
         });
+        Menu::make('sidebar_designer', function ($menu) {});
+          
         Menu::make('build', function ($menu) {
             $execute = $menu;
             $tasks = $execute->add('Build', ['class' => 'sidebar-header'])
