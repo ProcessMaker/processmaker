@@ -34,6 +34,7 @@ import designerobjectsmenu from "./components/designer-objects-menu";
 // @todo Figure out a way to add these modals to the properties of components
 import modalCreateDatabaseAdd from "./components/modals/modal-create-database-add";
 import modalCreateOutputAdd from "./components/modals/modal-create-output-add";
+import modalCreateReportAdd from "./components/modals/modal-create-report-add";
 import modalCreateTemplateAdd from "./components/modals/modal-create-template-add";
 import modalCreateTriggerAdd from "./components/modals/modal-create-trigger-add";
 import modalFormsAdd from "./components/modals/modal-forms-add";
@@ -52,6 +53,7 @@ export default {
     designerobjectsmenu,
     modalCreateDatabaseAdd,
     modalCreateOutputAdd,
+    modalCreateReportAdd,
     modalCreateTemplateAdd,
     modalCreateTriggerAdd,
     modalFormsAdd,
@@ -107,6 +109,9 @@ export default {
           break;
         case 'templates':
           this.modalComponent = 'modal-create-template-add'
+          break;
+        case 'report-tables':
+          this.modalComponent = 'modal-create-report-add'
           break;
         default:
           alert(key + ' add modal not yet implemented.')
