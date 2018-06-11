@@ -38,6 +38,8 @@
             </div>
           </div>
         </div>
+
+
     </form>
 
     <template slot="modal-footer">
@@ -53,7 +55,12 @@
 </template>
 
 <script>
+import draggable from 'vuedraggable'
+
 export default {
+  components:{
+    draggable
+  },
   data() {
     return {
       // form models here
