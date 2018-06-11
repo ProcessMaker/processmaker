@@ -16,7 +16,7 @@
                                placeholder="{{__('Search')}}...">
                     </div>
                 </div>
-                <tasks-listing :filter="filter"></tasks-listing>
+                <tasks-listing uid="{{$process->uid}}" :filter="filter"></tasks-listing>
             </div>
         </div>
     </div>
