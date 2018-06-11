@@ -9,21 +9,28 @@
                 <img id="bpmn:ExclusiveGateway" src="../img/exclusive-gateway.svg" height="25"
                      @click="createAction($event)">
             </div>
-        </div>
-        <div class="d-flex flex-row">
             <div class="item-crown">
                 <img id="bpmn:IntermediateEmailEvent" name="IntermediateEmailEvent"
                      src="../img/intermediate-email-event.svg" height="25" @click="createAction($event)">
+            </div>
+        </div>
+        <div class="d-flex flex-row">
+            <div class="item-crown">
+                <img id="bpmn:EndEvent" name="EndEvent"
+                     src="../img/end-event.svg" height="25" @click="createAction($event)">
             </div>
             <div class="item-crown">
                 <img id="bpmn:EndEvent" src="../img/corona-flow.png" height="25"
                      @click="createFlow($event)">
             </div>
+            <div class="item-crown">
+                <i id="settings" class="fas fa-cog icon-crown" @click="createFlow($event)" draggable="true"></i>
+            </div>
         </div>
         <div class="d-flex flex-row">
             <div class="item-crown">
-                <img id="bpmn:Task" class="delete-crown" src="../img/corona-delete.png" height="20"
-                     draggable="true" @click="remove($event)">
+                <i id="settings" class="fas fa-trash-alt icon-crown" @click="createFlow($event)"
+                   draggable="true"></i>
             </div>
         </div>
     </div>
@@ -87,6 +94,11 @@
         display: table-cell;
         padding: 3px;
         text-align: center;
+        font-size: 19px;
+    }
+
+    .icon-crown {
+        padding: 3px;
     }
 
     .delete-crown {
@@ -95,6 +107,6 @@
     }
 
     .item-crown:hover {
-        background-color: #e7e0e0;
+        background-color: #eff2ed;
     }
 </style>
