@@ -14,7 +14,9 @@
         <div class="d-flex justify-content-between">
           <div class="form-group">
             <label for="type" v-model="type">{{type}}</label>
-            <input type="text" class="form-control input-and-select" id="type">
+            <select class="form-control input-and-select" id="type" v-model="typeSelect">
+            <option v-for="select in typeSelectOptions">{{select}}</option>
+            </select>
           </div>
 
           <div class="form-group">
@@ -22,20 +24,6 @@
             <select class="form-control input-and-select" id="dbConnection" v-model="dbConnectionSelect">
             <option v-for="select in dbConnectionSelectOptions">{{select}}</option>
             </select>
-          </div>
-        </div>
-
-        <div class="d-flex justify-content-between">
-          <div class="form-group">
-            <label for="formFields" v-model="formFields">{{formFields}}</label>
-            <input type="text" class="form-control search-and-add" id="formFields">
-          </div>
-
-          <div class="form-group">
-            <label for="reportTable" v-model="reportTable">{{reportTable}}</label>
-            <div>
-              <button class="btn btn-gray text-light"><i class="fas fa-plus"></i> FIELD </button>
-            </div>
           </div>
         </div>
 
@@ -47,6 +35,8 @@
                   {{form.form_field_full}}
                 </div>
             </draggable>
+
+            <i class="seperator fas fa-arrow-right"></i>
 
             <div class="table-wrapper">
               <div class="d-flex head-wrapper">
@@ -114,8 +104,12 @@ export default {
       'description':"Description",
       'reportTable': "Report Table",
       'formFields': "Form Fields",
-      "tableName": 'Table Name',
-      "type": 'Type',
+      'tableName': 'Table Name',
+      'type': 'Type',
+      'typeSelect': "View",
+      'typeSelectOptions':[
+        'View', 'Block'
+      ],
       'dbConnection':"DB Connection",
       'dbConnectionSelect': 'View',
       'dbConnectionSelectOptions':[
@@ -228,9 +222,9 @@ export default {
 }
 .btn-gray{
   background-color: rgb(109, 124, 136);
+  margin-top: 31px;
+  text-transform: uppercase;
 }
-
-
 .drag-to-table-wrapper{
   margin-top: 16px;
   border: 6px solid #f7f9fa;
@@ -264,13 +258,13 @@ export default {
   }
 }
 .table-target{
-  min-height: 164px;
+  min-height: 100px;
 }
 .table-wrapper{
   width: 475px;
   border: 6px solid #f7f9fa;
   margin-top: 15px;
-  margin-left: 24px;
+  margin-left: 3px;
 
   .head-wrapper{
     background-color: #e9edf1;
@@ -323,10 +317,14 @@ export default {
   width: 45px;
 }
 .increment-field{
-  width: 115px;
+  width: 124px;
 }
 .index-field{
   width: 35px;
 }
-
+.seperator{
+  margin-top: 85px;
+  margin-left: 5px;
+  color: #28d1ab;
+}
 </style>
