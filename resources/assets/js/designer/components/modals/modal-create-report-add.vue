@@ -1,5 +1,5 @@
 <template>
-  <b-modal ref="modal" size="lg" @hidden="onHidden" centered title="Create Input Document">
+  <b-modal ref="modal" size="lg" @hidden="onHidden" centered title="Create Report Table">
       <form>
         <div class="form-group">
           <label for="tableName" v-model="tableName">{{tableName}}</label>
@@ -41,16 +41,52 @@
 
         <div>
           <div class="d-flex justify-content-between">
-            <draggable v-model="list" :options="{group:'people'}">
-              <div v-for="person in list">{{person.name}}</div>
+            <draggable class="drag-to-table-wrapper" v-model="list" :options="{group:'forms'}">
+                <div class="drag-to-table" v-for="form in list">
+                    <i class="fas fa-ellipsis-v fa-sm"></i><i class="fas fa-ellipsis-v fa-sm"></i>
+                  {{form.form_field_full}}
+                </div>
             </draggable>
 
-            <draggable v-model="list2" :options="{group:'people'}">
-              <div v-for="person in list2">{{person.name}}</div>
-            </draggable>
+            <div class="table-wrapper">
+              <div class="d-flex head-wrapper">
+                <div class="table-head form-field">form FIELD</div>
+                <div class="table-head name-field">NAME</div>
+                <div class="table-head label-field">LABEL</div>
+                <div class="table-head type-field">TYPE</div>
+                <div class="table-head size-field">size</div>
+                <div class="table-head increment-field">AUTO INCREMENT</div>
+                <div class="table-head index-field">index</div>
+              </div>
+              <draggable class="table-target" v-model="list2" :options="{group:'forms'}">
+                <div class="d-flex row-wrapper" v-for="form in list2">
+                  <div class="form-field">
+                      <i class="fas fa-ellipsis-v fa-sm"></i><i class="fas fa-ellipsis-v fa-sm"></i>
+                    {{form.form_field}}
+                  </div>
+                  <div class="name-field">
+                    {{form.name}}
+                  </div>
+                  <div class="label-field">
+                    {{form.label}}
+                  </div>
+                  <div class="type-field">
+                    {{form.type}}
+                  </div>
+                  <div class="size-field">
+                    {{form.size}}
+                  </div>
+                  <div class="increment-field">
+                    {{form.auto_increment}}
+                  </div>
+                  <div class="index-field">
+                    {{form.index}}
+                  </div>
+                </div>
+              </draggable>
+            </div>
           </div>
         </div>
-
     </form>
 
     <template slot="modal-footer">
@@ -85,20 +121,71 @@ export default {
       'dbConnectionSelectOptions':[
         'View', 'Block'
       ],
-      list: [{
-        name: "Mila"
-      }, {
-        name: "Taylor"
-      }, {
-        name: "Ben"
-      }],
-      list2: [{
-        name: "Alan"
-      }, {
-        name: "Matt"
-      }, {
-        name: "Leah"
-      }]
+      list: [
+        {
+          form_field: "F3",
+          form_field_full: "Form Field Name 1",
+          name: "MilaRene",
+          label: "human",
+          type: "yes",
+          size: 16,
+          auto_increment: "nah",
+          index: "cha"
+        },
+        {
+          form_field: "F3",
+          form_field_full: "Form Field Name 1",
+          name: "MilaRene",
+          label: "hello",
+          type: "yes",
+          size: 16,
+          auto_increment: "nah",
+          index: "cha"
+        },
+        {
+          form_field: "F3",
+          form_field_full: "Form Field Name 1",
+          name: "MilaRene",
+          label: "hello",
+          type: "yes",
+          size: 16,
+          auto_increment: "nah",
+          index: "cha"
+        },
+      ],
+
+      list2: [
+        {
+          form_field: "F3",
+          form_field_full: "Form Field Name 1",
+          name: "MilaRene",
+          label: "hello",
+          type: "yes",
+          size: 16,
+          auto_increment: "nah",
+          index: "cha"
+        },
+        {
+          form_field: "F3",
+          form_field_full: "Form Field Name 1",
+          name: "MilaRene",
+          label: "hello",
+          type: "yes",
+          size: 16,
+          auto_increment: "nah",
+          index: "cha"
+        },
+        {
+          form_field: "F3",
+          form_field_full: "Form Field Name 1",
+          name: "MilaRene",
+          label: "hello",
+          type: "yes",
+          size: 16,
+          auto_increment: "nah",
+          index: "cha"
+        }
+      ]
     }
   },
   methods:{
@@ -142,4 +229,104 @@ export default {
 .btn-gray{
   background-color: rgb(109, 124, 136);
 }
+
+
+.drag-to-table-wrapper{
+  margin-top: 16px;
+  border: 6px solid #f7f9fa;
+
+  .drag-to-table{
+    border: 1px solid #e9edf1;
+    padding: 0 10px;
+    font-size: 12px;
+    font-weight: 300;
+    width: 225px;
+    height: 32px;
+    line-height: 32px;
+
+      i {
+        color: #788793;
+      }
+  }
+
+  .row-wrapper.sortable-ghost {
+      border: 1px solid #e9edf1;
+      padding: 0 10px;
+      font-size: 12px;
+      font-weight: 300;
+      width: 225px;
+      height: 32px;
+      line-height: 32px;
+
+        i {
+          color: #788793;
+        }
+  }
+}
+.table-target{
+  min-height: 164px;
+}
+.table-wrapper{
+  width: 475px;
+  border: 6px solid #f7f9fa;
+  margin-top: 15px;
+  margin-left: 24px;
+
+  .head-wrapper{
+    background-color: #e9edf1;
+    padding:10px;
+    font-size: 12px;
+  }
+  .row-wrapper{
+    border: 1px solid #e9edf1;
+    font-size: 12px;
+    font-weight: 300;
+    padding: 10px;
+
+    &.sortable-chosen {
+      border: 1px solid #e9edf1;
+      padding: 0 10px;
+      font-size: 12px;
+      font-weight: 300;
+      width: 225px;
+      height: 32px;
+      line-height: 32px;
+
+        i {
+          color: #788793;
+        }
+    }
+  }
+  .table-head{
+    text-transform: uppercase;
+    font-size: 12px;
+    color: #788793;
+    font-weight: 600;
+  }
+  i {
+    color: #788793;
+  }
+}
+.form-field{
+  width: 90px;
+}
+.name-field{
+  width: 75px;
+}
+.label-field{
+  width: 55px;
+}
+.type-field{
+  width: 55px;
+}
+.size-field{
+  width: 45px;
+}
+.increment-field{
+  width: 115px;
+}
+.index-field{
+  width: 35px;
+}
+
 </style>
