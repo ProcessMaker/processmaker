@@ -13,6 +13,13 @@
         </select>
         <label class="bottom-label" for="supportedcontrolls" v-model="supportedcontrolls">{{supportedcontrolls}}</label>
         </div>
+        
+        <div class="form-group">
+        <label for="variableType">{{variableType}}</label>
+        <select class="form-control" id="variableType">
+          <option v-for="select in variableOptions">{{select}}</option>
+        </select>
+        </div>
 
         <div class="form-group">
           <label for="databaseConnection" v-model="databaseConnection">{{databaseConnection}}</label>
@@ -57,6 +64,10 @@ export default {
       'typeSelect': "",
       'typeSelectOptions':[
         'All','Task 1', 'Task 2'
+      ],
+      'variableType':"Variable Type",
+      'variableOptions': [
+        'String', 'Integer', 'Float', 'Boolean', 'Datetime', 'Grid', 'Array', 'File', 'Multiple File', 'Object'
       ],
       'databaseConnection':"Database Connection",
       'database': 'Form',
