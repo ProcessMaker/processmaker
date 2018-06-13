@@ -40,12 +40,12 @@
 
             <div class="table-wrapper">
               <div class="d-flex head-wrapper">
-                <div class="table-head form-field">form FIELD</div>
-                <div class="table-head name-field">NAME</div>
-                <div class="table-head label-field">LABEL</div>
-                <div class="table-head type-field">TYPE</div>
+                <div class="table-head form-field">form field</div>
+                <div class="table-head name-field">name</div>
+                <div class="table-head label-field">label</div>
+                <div class="table-head type-field">type</div>
                 <div class="table-head size-field">size</div>
-                <div class="table-head increment-field">AUTO INCREMENT</div>
+                <div class="table-head increment-field">auto increment</div>
                 <div class="table-head index-field">index</div>
               </div>
               <draggable class="table-target" v-model="list2" :options="{group:'forms'}">
@@ -115,71 +115,6 @@ export default {
       'dbConnectionSelectOptions':[
         'View', 'Block'
       ],
-      list: [
-        {
-          form_field: "F3",
-          form_field_full: "Form Field Name 1",
-          name: "MilaRene",
-          label: "human",
-          type: "yes",
-          size: 16,
-          auto_increment: "nah",
-          index: "cha"
-        },
-        {
-          form_field: "F3",
-          form_field_full: "Form Field Name 1",
-          name: "MilaRene",
-          label: "hello",
-          type: "yes",
-          size: 16,
-          auto_increment: "nah",
-          index: "cha"
-        },
-        {
-          form_field: "F3",
-          form_field_full: "Form Field Name 1",
-          name: "MilaRene",
-          label: "hello",
-          type: "yes",
-          size: 16,
-          auto_increment: "nah",
-          index: "cha"
-        },
-      ],
-
-      list2: [
-        {
-          form_field: "F3",
-          form_field_full: "Form Field Name 1",
-          name: "MilaRene",
-          label: "hello",
-          type: "yes",
-          size: 16,
-          auto_increment: "nah",
-          index: "cha"
-        },
-        {
-          form_field: "F3",
-          form_field_full: "Form Field Name 1",
-          name: "MilaRene",
-          label: "hello",
-          type: "yes",
-          size: 16,
-          auto_increment: "nah",
-          index: "cha"
-        },
-        {
-          form_field: "F3",
-          form_field_full: "Form Field Name 1",
-          name: "MilaRene",
-          label: "hello",
-          type: "yes",
-          size: 16,
-          auto_increment: "nah",
-          index: "cha"
-        }
-      ]
     }
   },
   methods:{
