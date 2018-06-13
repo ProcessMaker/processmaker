@@ -40,7 +40,7 @@ class EmailEvent extends Model
         'EMAIL_EVENT_FROM',
         'EMAIL_EVENT_TO',
         'EMAIL_EVENT_SUBJECT',
-        'PRF_UID',
+        'process_file_id',
         'EMAIL_SERVER_UID',
         'EMAIL_EVENT_CREATE',
         'EMAIL_EVENT_UPDATE',
@@ -51,7 +51,7 @@ class EmailEvent extends Model
         'EMAIL_EVENT_FROM'    => '',
         'EMAIL_EVENT_TO'      => null,
         'EMAIL_EVENT_SUBJECT' => '',
-        'PRF_UID'             => '',
+        'process_file_id'     => null,
         'EMAIL_SERVER_UID'    => '',
         'EMAIL_EVENT_CREATE'  => null,
         'EMAIL_EVENT_UPDATE'  => null,
@@ -62,7 +62,7 @@ class EmailEvent extends Model
         'EMAIL_EVENT_FROM'    => 'string',
         'EMAIL_EVENT_TO'      => 'text',
         'EMAIL_EVENT_SUBJECT' => 'string',
-        'PRF_UID'             => 'string',
+        'process_file_id'             => 'integer',
         'EMAIL_SERVER_UID'    => 'string',
         'EMAIL_EVENT_CREATE'  => 'datetime',
         'EMAIL_EVENT_UPDATE'  => 'datetime',
@@ -87,8 +87,8 @@ class EmailEvent extends Model
     {
         return $this->belongsTo(
             ProcessFile::class,
-            "PRF_UID",
-            "PRF_UID"
+            'id',
+            'process_file_id'
         );
     }
 }

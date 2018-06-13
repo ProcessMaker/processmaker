@@ -3,6 +3,7 @@
 namespace ProcessMaker\Model;
 
 use Illuminate\Database\Eloquent\Model;
+use ProcessMaker\Model\Traits\Uuid;
 use Watson\Validating\ValidatingTrait;
 
 /**
@@ -12,7 +13,8 @@ use Watson\Validating\ValidatingTrait;
  */
 class ProcessVariable extends Model
 {
-    use ValidatingTrait;
+    use ValidatingTrait,
+        Uuid;
 
     const DEFAULT_DB_SOURCE_NAME = 'workflow';
 
@@ -21,18 +23,17 @@ class ProcessVariable extends Model
 
     // We do not store timestamps
     public $timestamps = false;
-    protected $table = 'PROCESS_VARIABLES';
-    protected $primaryKey = 'VAR_ID';
-    public $incrementing = false;
 
     protected $rules = [
-        'VAR_NAME' => 'required|string|max:255',
-        'VAR_FIELD_TYPE' => 'required|in:string,integer,float,boolean,datetime,grid,array,file,multiplefile,object',
-        'VAR_FIELD_SIZE' => 'integer',
-        'VAR_LABEL' => 'required|string',
-        'VAR_DBCONNECTION' => 'nullable|exists:db_sources,uid',
-        'VAR_SQL' => 'string|nullable',
-        'VAR_NULL' => 'boolean|nullable'
+        'name' => 'required|string|max:255',
+        'field_type' => 'required|in:string,integer,float,boolean,datetime,grid,array,file,multiplefile,object',
+        'field_size' => 'integer',
+        'label' => 'required|string',
+        'process_id' => 'nullable|exists:processes,id',
+        'input_document_id' => 'nullable|exists:input_documents,id',
+        'db_source_id' => 'nullable|exists:db_sources,id',
+        'sql' => 'string|nullable',
+        'null' => 'boolean|nullable'
     ];
 
     protected $appends = [
@@ -62,7 +63,7 @@ class ProcessVariable extends Model
      */
     public function getRouteKeyName()
     {
-        return 'VAR_UID';
+        return 'uid';
     }
 
     /**
@@ -72,7 +73,7 @@ class ProcessVariable extends Model
      */
     public function process()
     {
-        return $this->belongsTo(Process::class, 'PRO_ID', 'id');
+        return $this->belongsTo(Process::class, 'process_id', 'id');
     }
 
     /**
@@ -82,6 +83,6 @@ class ProcessVariable extends Model
      */
     public function dbSource()
     {
-        return $this->hasOne(DbSource::class, 'uid', 'VAR_DBCONNECTION');
+        return $this->hasOne(DbSource::class, 'id', 'db_source_id');
     }
 }

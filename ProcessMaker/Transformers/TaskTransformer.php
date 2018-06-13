@@ -24,7 +24,7 @@ class TaskTransformer extends TransformerAbstract
     public function transform(Task $item)
     {
         $data = $item->toArray();
-        unset($data['id'], $data['process_id'], $data['created_at'], $data['updated_at']);
+        unset($data['id'], $data['process_id']);
         return $data;
     }
 }

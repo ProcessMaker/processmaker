@@ -1,10 +1,12 @@
 <?php
 namespace ProcessMaker\Model;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use ProcessMaker\Model\Traits\Uuid;
 
 /**
  * Process files stores templates or public files that could be used in
@@ -12,48 +14,26 @@ use Illuminate\Support\Facades\Storage;
  *
  * @package ProcessMaker\Model
  *
- * @property int $PRF_ID
- * @property string $PRF_UID
+ * @property int $id
+ * @property string $uid
  * @property integer $process_id
- * @property string $USR_UID
- * @property string $PRF_UPDATE_USR_UID
- * @property string $PRF_PATH
- * @property string $PRF_TYPE
- * @property boolean $PRF_EDITABLE
- * @property string $PRF_DRIVE
- * @property string $PRF_PATH_FOR_CLIENT
- * @property \Carbon\Carbon $PRF_CREATE_DATE
- * @property \Carbon\Carbon $PRF_UPDATE_DATE
- * @property boolean $IS_USED_AS_ROUTING_SCREEN
- * @property \Illuminate\Database\Eloquent\Collection $emailEvents
- * @method \Illuminate\Database\Eloquent\Builder static withPath($path)
+ * @property integer $user_id
+ * @property integer $update_user_id
+ * @property string $path
+ * @property string $type
+ * @property boolean $editable
+ * @property string $drive
+ * @property string $path_for_client
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property boolean $is_used_as_routing_screen
+ * @property \illuminate\database\eloquent\collection $emailevents
+ * @method \illuminate\database\eloquent\builder static withPath($path)
  */
 class ProcessFile extends Model
 {
-    use Notifiable;
-
-    /**
-     * The table associated with the model.
-     * @var string $table
-     */
-    protected $table = 'PROCESS_FILES';
-
-    /**
-     * The primary key for the model.
-     *
-     * @var string
-     */
-    protected $primaryKey = 'PRF_ID';
-
-    /**
-     * The name of the "created at" column.
-     */
-    const CREATED_AT = 'PRF_CREATE_DATE';
-
-    /**
-     * The name of the "updated at" column.
-     */
-    const UPDATED_AT = 'PRF_UPDATE_DATE';
+    use Notifiable,
+        Uuid;
 
     /**
      * The attributes that are mass assignable.
@@ -61,17 +41,17 @@ class ProcessFile extends Model
      * @var array
      */
     protected $fillable = [
-        'PRF_UID',
+        'uid',
         'process_id',
-        'USR_UID',
-        'PRF_UPDATE_USR_UID',
-        'PRF_PATH',
-        'PRF_TYPE',
-        'PRF_EDITABLE',
-        'PRF_DRIVE',
-        'PRF_PATH_FOR_CLIENT',
-        'PRF_CREATE_DATE',
-        'PRF_UPDATE_DATE',
+        'user_id',
+        'update_user_id',
+        'path',
+        'type',
+        'editable',
+        'drive',
+        'path_for_client',
+        'created_at',
+        'updated_at',
     ];
 
     /**
@@ -80,17 +60,17 @@ class ProcessFile extends Model
      * @var array
      */
     protected $attributes = [
-        'PRF_UID' => null,
+        'uid' => null,
         'process_id' => null,
-        'USR_UID' => null,
-        'PRF_UPDATE_USR_UID' => null,
-        'PRF_PATH' => '',
-        'PRF_TYPE' => '',
-        'PRF_EDITABLE' => '1',
-        'PRF_DRIVE' => '',
-        'PRF_PATH_FOR_CLIENT' => '',
-        'PRF_CREATE_DATE' => null,
-        'PRF_UPDATE_DATE' => null,
+        'user_id' => null,
+        'update_user_id' => null,
+        'path' => '',
+        'type' => '',
+        'editable' => '1',
+        'drive' => '',
+        'path_for_client' => '',
+        'created_at' => null,
+        'updated_at' => null,
     ];
 
     /**
@@ -99,17 +79,15 @@ class ProcessFile extends Model
      * @var array
      */
     protected $casts = [
-        'PRF_UID' => 'string',
+        'uid' => 'string',
         'process_id' => 'int',
-        'USR_UID' => 'string',
-        'PRF_UPDATE_USR_UID' => 'string',
-        'PRF_PATH' => 'string',
-        'PRF_TYPE' => 'string',
-        'PRF_EDITABLE' => 'boolean',
-        'PRF_DRIVE' => 'string',
-        'PRF_PATH_FOR_CLIENT' => 'string',
-        'PRF_CREATE_DATE' => 'datetime',
-        'PRF_UPDATE_DATE' => 'datetime',
+        'user_id' => 'int',
+        'update_user_id' => 'int',
+        'path' => 'string',
+        'type' => 'string',
+        'editable' => 'boolean',
+        'drive' => 'string',
+        'path_for_client' => 'string'
     ];
 
     /**
@@ -118,7 +96,7 @@ class ProcessFile extends Model
      * @var array
      */
     protected $appends = [
-        'IS_USED_AS_ROUTING_SCREEN',
+        'is_used_as_routing_screen',
     ];
 
     /**
@@ -145,7 +123,7 @@ class ProcessFile extends Model
      */
     public function getRouteKeyName()
     {
-        return 'PRF_UID';
+        return 'uid';
     }
 
     /**
@@ -156,7 +134,7 @@ class ProcessFile extends Model
      */
     public function getIsUsedAsRoutingScreenAttribute()
     {
-        $filename = basename($this->PRF_PATH);
+        $filename = basename($this->path);
         return $this->process->derivation_screen_template === $filename
             || $this->process->tasks()
                 ->where('routing_screen_template', $filename)
@@ -170,9 +148,9 @@ class ProcessFile extends Model
      */
     public function setPrfEditableAttribute()
     {
-        $extension = File::extension($this->PRF_PATH);
+        $extension = File::extension($this->path);
         $value =  array_search($extension, self::EDITABLE_FILE_EXTENSIONS) !== false;
-        $this->attributes['PRF_EDITABLE'] = $value ? 1 : 0;
+        $this->attributes['EDITABLE'] = $value ? 1 : 0;
     }
 
     /**
@@ -182,7 +160,7 @@ class ProcessFile extends Model
      */
     public function getPathInDisk()
     {
-        return $this->process->uid . '/' . ltrim($this->PRF_PATH_FOR_CLIENT, '/');
+        return $this->process->uid . '/' . ltrim($this->path_for_client, '/');
     }
 
     /**
@@ -192,7 +170,7 @@ class ProcessFile extends Model
      */
     public function getPath()
     {
-        return $this->PRF_DRIVE . '/' . ltrim($this->PRF_PATH_FOR_CLIENT, '/');
+        return $this->drive . '/' . ltrim($this->path_for_client, '/');
     }
 
     /**
@@ -224,7 +202,7 @@ class ProcessFile extends Model
      */
     public function disk()
     {
-        return Storage::disk(static::DISKS[$this->PRF_DRIVE]);
+        return Storage::disk(static::DISKS[$this->drive]);
     }
 
     /**
@@ -244,7 +222,7 @@ class ProcessFile extends Model
      */
     public function user()
     {
-        return $this->belongsTo( User::class, "USR_UID", "uid");
+        return $this->belongsTo( User::class, "user_id", "uid");
     }
 
     /**
@@ -256,8 +234,8 @@ class ProcessFile extends Model
     {
         return $this->hasMany(
             EmailEvent::class,
-            "PRF_UID",
-            "PRF_UID"
+            "process_file_id",
+            "id"
         );
     }
 
@@ -277,7 +255,7 @@ class ProcessFile extends Model
     {
         list($processUid, $pathForClient) = explode('/', ltrim($pathInDisk, '/'), 2);
         return $query->where('process_id', Process::where('uid', $processUid)->first()->id)
-            ->where('PRF_PATH_FOR_CLIENT', 'like', '%' . $pathForClient . '%');
+            ->where('path_for_client', 'like', '%' . $pathForClient . '%');
     }
 
     /**
@@ -289,7 +267,7 @@ class ProcessFile extends Model
     {
         parent::boot();
         static::deleted(function (ProcessFile $model) {
-            if ($model->PRF_TYPE === 'folder') {
+            if ($model->TYPE === 'folder') {
                 $model->disk()->deleteDirectory($model->getPathInDisk());
             } else {
                 $model->disk()->delete($model->getPathInDisk());
