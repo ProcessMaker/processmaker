@@ -2,7 +2,7 @@
 
 @section('content')
 
-  <h1>Manage</h1>
+  <h1>Process</h1>
 
   <div class="container">
     <my-vuetable api-url="/test"></my-vuetable>

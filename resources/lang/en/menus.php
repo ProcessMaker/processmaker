@@ -8,12 +8,12 @@ return[
     'completed' => 'Completed',
     'paused' => 'Paused'
   ],
-  'build' => [
-    'applications' => 'Applications',
-    'processes' => 'Processes',
-    'tables' => 'Tables',
-    'forms' => 'Forms',
-    'scripts' => 'Scripts',
+  'sidebar_request' => [
+    'request' => 'Requests',
+    'in_progress' => 'In Progress',
+    'draft' => 'Draft',
+    'completed' => 'Completed',
+    'paused' => 'Paused',
   ],
   'sidebar_admin' => [
     'organization' => 'organization',

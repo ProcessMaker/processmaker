@@ -15,14 +15,6 @@ class PmTableColumnTransformer extends TransformerAbstract
      */
     public function transform($field)
     {
-        return [
-            'name' => $field->name,
-            'description' => $field->description,
-            'type' => $field->type,
-            'size' => $field->size,
-            'null' => $field->null,
-            'auto_increment' => $field->auto_increment,
-            'key' => $field->key
-        ];
+        return (array)$field;
     }
 }

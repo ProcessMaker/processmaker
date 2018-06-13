@@ -91,7 +91,7 @@ return [
         'path' => [
             'filemanager.drive_from_path' => 'Invalid value specified for: :attribute',
         ],
-        'prf_filename' => [
+        'filename' => [
             'filemanager' => [
                 'filename_is_valid' => 'Invalid value specified for: :attribute',
                 'store_only_html_to_templates' => 'The file has an incorrect extension. Please check the file and upload again.',

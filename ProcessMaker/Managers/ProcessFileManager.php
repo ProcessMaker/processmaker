@@ -22,7 +22,7 @@ class ProcessFileManager
     private $disk;
 
     /**
-     * Drive of the request.
+     * drive of the request.
      *
      * @var string $drive
      */
@@ -86,14 +86,14 @@ class ProcessFileManager
         $this->validate(
             $data,
             [
-                'prf_filename' => [
+                'filename' => [
                     'required',
                     'filemanager.filename_is_valid',
                     'filemanager.store_only_html_to_templates',
                     'filemanager.do_not_store_exe_in_public',
                     'filemanager.do_not_store_php_in_public',
                 ],
-                'prf_path' => 'required|filemanager.drive_from_path',
+                'path' => 'required|filemanager.drive_from_path',
             ],
             [],
             [
@@ -101,33 +101,33 @@ class ProcessFileManager
             ]
         );
         $processUid = $process->uid;
-        $userUid = $user->uid;
-        $this->initializeFromPath($data['prf_path'], $processUid);
+        $userId = $user->id;
+        $this->initializeFromPath($data['path'], $processUid);
         if (!ProcessFile::withPath($this->relativePath)->exists()) {
             ProcessFile::create([
-                'PRF_UID'             => str_replace('-', '', Uuid::uuid4()),
-                'process_id'             => $process->id,
-                'USR_UID'             => $userUid,
-                'PRF_UPDATE_USR_UID'  => '',
-                'PRF_PATH'            => $this->disk->path($this->relativePath) . '/',
-                'PRF_TYPE'            => 'folder',
-                'PRF_EDITABLE'        => false,
-                'PRF_DRIVE'           => $this->drive,
-                'PRF_PATH_FOR_CLIENT' => $this->pathForClient . '/',
+                'uid' => Uuid::uuid4(),
+                'process_id' => $process->id,
+                'user_id' => $userId,
+                'update_user_id' => null,
+                'path' => $this->disk->path($this->relativePath) . '/',
+                'type' => 'folder',
+                'editable' => false,
+                'drive' => $this->drive,
+                'path_for_client' => $this->pathForClient . '/',
             ]);
         }
-        $filename = $this->relativePath . '/' . $data['prf_filename'];
+        $filename = $this->relativePath . '/' . $data['filename'];
         $processFile = ProcessFile::create([
-                'PRF_UID'             => str_replace('-', '', Uuid::uuid4()),
-                'process_id'             => $process->id,
-                'USR_UID'             => $userUid,
-                'PRF_UPDATE_USR_UID'  => '',
-                'PRF_PATH'            => $this->disk->path($filename),
-                'PRF_TYPE'            => 'file',
-                'PRF_DRIVE'           => $this->drive,
-                'PRF_PATH_FOR_CLIENT' => $this->pathForClient . '/' . $data['prf_filename'],
+            'uid' => str_replace('-', '', Uuid::uuid4()),
+            'process_id' => $process->id,
+            'user_id' => $userId,
+            'update_user_id' => null,
+            'path' => $this->disk->path($filename),
+            'type' => 'file',
+            'drive' => $this->drive,
+            'path_for_client' => $this->pathForClient . '/' . $data['filename'],
         ]);
-        $this->disk->put($filename, $data['prf_content']);
+        $this->disk->put($filename, $data['content']);
         return $this->format($processFile, true, false);
     }
 
@@ -151,8 +151,8 @@ class ProcessFileManager
                 'processFile' => 'filemanager.file_is_editable'
             ]
         );
-        $processFile->PRF_UPDATE_USR_UID = $user->uid;
-        $processFile->setContent($data['prf_content']);
+        $processFile->update_user_id = $user->id;
+        $processFile->setContent($data['content']);
         $processFile->save();
         return $this->format($processFile, true, false);
     }
@@ -194,11 +194,12 @@ class ProcessFileManager
     {
         $processUid = $process->uid;
         $pathParts = explode('/', trim($path, '/'), 2);
-        $drivePath = $processUid . '/' .
-            (isset($pathParts[1]) ? $pathParts[1] : '');
+        $drivePath = $processUid . '/' . (isset($pathParts[1]) ? $pathParts[1] : '');
         ProcessFile::withPath($drivePath . DIRECTORY_SEPARATOR)->each(
             function (ProcessFile $processFile) {
-                $processFile->delete();
+                if ($processFile->type !== 'folder') {
+                    $processFile->delete();
+                }
             }
         );
     }
@@ -214,7 +215,7 @@ class ProcessFileManager
     public function putUploadedFileIntoProcessFile(UploadedFile $file, ProcessFile $processFile)
     {
         $path = dirname($processFile->getPathInDisk());
-        $name = basename($processFile->PRF_PATH_FOR_CLIENT);
+        $name = basename($processFile->path_for_client);
         $res = $processFile->disk()->putFileAs($path, $file, $name);
         return $res;
     }
@@ -224,7 +225,7 @@ class ProcessFileManager
      * and the owner process uid.
      *
      * @param string $publicPath Ex. templates/folder/file.html
-     * @param string $processUid UID of the owner process.
+     * @param string $processUid uid of the owner process.
      */
     private function initializeFromPath($publicPath, $processUid)
     {
@@ -244,15 +245,15 @@ class ProcessFileManager
     {
         return [
             [
-                'name'     => "templates",
-                'type'     => "folder",
-                'path'     => "/",
+                'name' => "templates",
+                'type' => "folder",
+                'path' => "/",
                 'editable' => false
             ],
             [
-                'name'     => "public",
-                'type'     => "folder",
-                'path'     => "/",
+                'name' => "public",
+                'type' => "folder",
+                'path' => "/",
                 'editable' => false
             ]
         ];
@@ -274,9 +275,9 @@ class ProcessFileManager
         $directories = $this->disk->directories($this->relativePath);
         foreach ($directories as $dir) {
             $list[] = [
-                'prf_name' => basename($dir),
-                'prf_type' => 'folder',
-                'prf_path' => $this->drive,
+                'name' => basename($dir),
+                'type' => 'folder',
+                'path' => $this->drive,
             ];
         }
         $files = $this->disk->files($this->relativePath);
@@ -284,14 +285,14 @@ class ProcessFileManager
             $processFile = ProcessFile::withPath($filepath)->firstOrNew(
                 [],
                 [
-                    'PRF_UID' => '',
+                    'uid' => '',
                     'process_id' => $process->id,
-                    'USR_UID' => '',
-                    'PRF_UPDATE_USR_UID' => '',
-                    'PRF_PATH' => $this->disk->path($filepath),
-                    'PRF_TYPE' => 'file',
-                    'PRF_DRIVE' => $this->drive,
-                    'PRF_PATH_FOR_CLIENT' => $this->pathForClient . '/' . basename($filepath),
+                    'user_id' => '',
+                    'update_user_id' => null,
+                    'path' => $this->disk->path($filepath),
+                    'type' => 'file',
+                    'drive' => $this->drive,
+                    'path_for_client' => $this->pathForClient . '/' . basename($filepath),
                 ]
             );
             $list[] = $this->format($processFile, $includeFileContent, true);
@@ -311,17 +312,14 @@ class ProcessFileManager
     public function format(ProcessFile $processFile, $includeContent = false, $editableAsString = false)
     {
         return [
-            'prf_uid'            => $processFile->PRF_UID,
-            'prf_filename'       => basename($processFile->PRF_PATH),
-            'usr_uid'            => $processFile->USR_UID,
-            'prf_update_usr_uid' => $processFile->PRF_UPDATE_USR_UID,
-            'prf_path'           => dirname($processFile->PRF_DRIVE . '/'
-                . $processFile->PRF_PATH_FOR_CLIENT) . '/',
-            'prf_type'           => $processFile->PRF_TYPE,
-            'prf_editable'       => $editableAsString ? json_encode($processFile->PRF_EDITABLE) : $processFile->PRF_EDITABLE,
-            'prf_create_date'    => empty($processFile->PRF_CREATE_DATE) ? '' : $processFile->PRF_CREATE_DATE->toIso8601String(),
-            'prf_update_date'    => empty($processFile->PRF_CREATE_DATE) ? '' : $processFile->PRF_UPDATE_DATE->toIso8601String(),
-            'prf_content'        => $includeContent ? $processFile->getContent() : '',
+            'uid' => $processFile->uid,
+            'filename' => basename($processFile->path),
+            'user_id' => $processFile->user_id,
+            'update_user_id' => $processFile->update_user_id,
+            'path' => dirname($processFile->drive . '/' . $processFile->path_for_client) . '/',
+            'type' => $processFile->type,
+            'editable' => $editableAsString ? json_encode($processFile->editable) : $processFile->editable,
+            'content' => $includeContent ? $processFile->getContent() : '',
         ];
     }
 
@@ -340,7 +338,8 @@ class ProcessFileManager
         array $rules,
         array $messages = [],
         array $customAttributes = []
-    ) {
+    )
+    {
         /* @var $validator \Illuminate\Validation\Validator */
         $validator = Validator::make($data, $rules, $messages, $customAttributes);
 
@@ -361,7 +360,7 @@ class ProcessFileManager
         $validator->addExtension(
             'filemanager.file_is_editable',
             function ($attribute, ProcessFile $processFile) {
-                return $processFile->PRF_EDITABLE;
+                return $processFile->editable;
             }
         );
         /**
@@ -398,7 +397,7 @@ class ProcessFileManager
             'filemanager.store_only_html_to_templates',
             function ($attribute, $filename, $parameters, \Illuminate\Validation\Validator $validator) {
                 $data = $validator->getData();
-                $pathParts = explode('/', ltrim($data['prf_path'], '/'), 2);
+                $pathParts = explode('/', ltrim($data['path'], '/'), 2);
                 $drive = $pathParts[0];
                 return !($drive === 'templates' && File::extension($filename) !== 'html');
             }
@@ -414,7 +413,7 @@ class ProcessFileManager
 
                 //Check if the file is being uploaded to the public drive.
                 $data = $validator->getData();
-                $pathParts = explode('/', ltrim($data['prf_path'], '/'), 2);
+                $pathParts = explode('/', ltrim($data['path'], '/'), 2);
                 $isPublic = $pathParts[0] === 'public';
 
                 return !($isPublic && $isExe);
@@ -434,7 +433,7 @@ class ProcessFileManager
 
                 //Check if the file is being uploaded to the public drive.
                 $data = $validator->getData();
-                $pathParts = explode('/', ltrim($data['prf_path'], '/'), 2);
+                $pathParts = explode('/', ltrim($data['path'], '/'), 2);
                 $isPublic = $pathParts[0] === 'public';
 
                 //Check if the file is uploaded from an import process.

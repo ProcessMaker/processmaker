@@ -5,184 +5,129 @@ namespace ProcessMaker\Model;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use ProcessMaker\Model\Traits\Uuid;
+use Watson\Validating\ValidatingTrait;
 
 /**
  * Represents an Eloquent model of a task
  *
- * @property int id
+ * @property integer id
  * @property string uid
- * @property int process_id
- * @property text title
- * @property text priority_variable
- * @property string delay_type
- * @property string stg_uid
- * @property string boundary
- * @property string color
- * @property string evn_uid
- * @property string owner_app
- * @property text def_description
- * @property text def_message
- * @property text def_proc_code
- * @property text def_subject_message
- * @property text def_title
- * @property text description
- * @property text receive_message
- * @property text receive_subject_message
- * @property string group_variable
- * @property string derivation_screen_tpl
- * @property string selfservice_time_unit
- * @property string email_server_uid
- * @property string receive_server_uid
- * @property string selfservice_trigger_uid
- * @property float duration
- * @property float temporizer
- * @property string posx
- * @property string posy
- * @property int last_assigned
- * @property int user
- * @property int not_email_from_format
- * @property int receive_email_from_format
- * @property int selfservice_time
- * @property int selfservice_timeout
- * @property int type_day
- * @property int width
- * @property int height
- * @property string receive_message_template
- * @property string assign_type
- * @property string timeunit
- * @property string selfservice_execution
- * @property string alert
- * @property string assign_location
- * @property string assign_location_adhoc
- * @property string auto_root
- * @property string can_cancel
- * @property string can_delete_docs
- * @property string can_pause
- * @property string can_upload
- * @property string offline
- * @property string receive_last_email
- * @property string self_service
- * @property string start
- * @property string to_last_user
- * @property string transfer_fly
- * @property string view_additional_documentation
- * @property string view_upload
- * @property string derivation
+ * @property integer process_id
+ * @property string title
+ * @property string description
  * @property string type
+ * @property string assign_type
+ * @property string routing_type
+ * @property string priority_variable
  * @property string assign_variable
- * @property string mi_instance_variable
- * @property string mi_complete_variable
- * @property string receive_message_type
- * @property string can_send_message
- * @property string send_last_email
+ * @property string group_variable
+ * @property boolean is_start_task
+ * @property string routing_screen_template
+ * @property array timing_control_configuration
+ * @property integer trigger_id
+ * @property array self_service_timeout_configuration
+ * @property string custom_title
+ * @property string custom_description
  *
  */
 class Task extends Model
 {
 
-    use Notifiable, Uuid;
+    use Notifiable,
+        ValidatingTrait,
+        Uuid;
 
-    /**
-     * The table associated with the model.
-     * @var string $table
-     */
-    protected $table = 'tasks';
+    //Task types
+    const TYPE_NORMAL = 'NORMAL';
+    const TYPE_ADHOC = 'ADHOC';
+    const TYPE_SUB_PROCESS = 'SUB_PROCESS';
+    const TYPE_HIDDEN = 'HIDDEN';
+    const TYPE_GATEWAY = 'GATEWAY_TO_GATEWAY';
+    const TYPE_WEB_ENTRY_EVENT = 'WEB_ENTRY_EVENT';
+    const TYPE_END_MESSAGE_EVENT = 'END_MESSAGE_EVENT';
+    const TYPE_START_MESSAGE_EVENT = 'START_MESSAGE_EVENT';
+    const TYPE_INTERMEDIATE_THROW_MESSAGE_EVENT = 'INTERMEDIATE_THROW_MESSAGE_EVENT';
+    const TYPE_INTERMEDIATE_CATCH_MESSAGE_EVENT = 'INTERMEDIATE_CATCH_MESSAGE_EVENT';
+    const TYPE_SCRIPT_TASK = 'SCRIPT_TASK';
+    const TYPE_START_TIMER_EVENT = 'START_TIMER_EVENT';
+    const TYPE_INTERMEDIATE_CATCH_TIMER_EVENT = 'INTERMEDIATE_CATCH_TIMER_EVENT';
+    const TYPE_END_EMAIL_EVENT = 'END_EMAIL_EVENT';
+    const TYPE_INTERMEDIATE_THROW_EMAIL_EVENT = 'INTERMEDIATE_THROW_EMAIL_EVENT';
+    const TYPE_SERVICE_TASK = 'SERVICE_TASK';
+
+    //Assign types
+    const ASSIGN_TYPE_BALANCED = 'BALANCED';
+    const ASSIGN_TYPE_MANUAL = 'MANUAL';
+    const ASSIGN_TYPE_EVALUATE = 'EVALUATE';
+    const ASSIGN_TYPE_REPORT_TO = 'REPORT_TO';
+    const ASSIGN_TYPE_SELF_SERVICE = 'SELF_SERVICE';
+    const ASSIGN_TYPE_STATIC_MI = 'STATIC_MI';
+    const ASSIGN_TYPE_CANCEL_MI = 'CANCEL_MI';
+    const ASSIGN_TYPE_MULTIPLE_INSTANCE = 'MULTIPLE_INSTANCE';
+    const ASSIGN_TYPE_MULTIPLE_INSTANCE_VALUE_BASED = 'MULTIPLE_INSTANCE_VALUE_BASED';
+
+    //Routing types
+    const ROUTE_TYPE_NORMAL = 'NORMAL';
+    const ROUTE_TYPE_FAST = 'FAST';
+    const ROUTE_TYPE_AUTOMATIC = 'AUTOMATIC';
+
+    //Day types
+    const WORK_DAYS = 'WORK_DAYS';
+    const CALENDAR_DAYS = 'CALENDAR_DAYS';
+
+    //Unit Time Types
+    const TIME_MINUTES = 'MINUTES';
+    const TIME_HOURS = 'HOURS';
+    const TIME_DAYS = 'DAYS';
+    const TIME_WEEKS = 'WEEKS';
+    const TIME_MONTHS = 'MONTHS';
+
+    //Service execution types
+    const EXECUTION_EVERY_TIME = 'EVERY_TIME';
+    const EXECUTION_ONCE = 'ONCE';
 
     protected $fillable = [
-        'id',
         'uid',
         'process_id',
         'title',
-        'priority_variable',
-        'delay_type',
-        'stg_uid',
-        'boundary',
-        'color',
-        'evn_uid',
-        'owner_app',
-        'uid',
-        'def_description',
-        'def_message',
-        'def_proc_code',
-        'def_subject_message',
-        'def_title',
         'description',
-        'receive_message',
-        'receive_subject_message',
-        'group_variable',
-        'derivation_screen_tpl',
-        'selfservice_time_unit',
-        'email_server_uid',
-        'receive_server_uid',
-        'selfservice_trigger_uid',
-        'duration',
-        'temporizer',
-        'posx',
-        'posy',
-        'last_assigned',
-        'user',
-        'not_email_from_format',
-        'receive_email_from_format',
-        'selfservice_time',
-        'selfservice_timeout',
-        'type_day',
-        'width',
-        'height',
-        'receive_message_template',
-        'assign_type',
-        'timeunit',
-        'selfservice_execution',
-        'alert',
-        'assign_location',
-        'assign_location_adhoc',
-        'auto_root',
-        'can_cancel',
-        'can_delete_docs',
-        'can_pause',
-        'can_upload',
-        'offline',
-        'receive_last_email',
-        'self_service',
-        'start',
-        'to_last_user',
-        'transfer_fly',
-        'view_additional_documentation',
-        'view_upload',
-        'derivation',
         'type',
+        'assign_type',
+        'routing_type',
+        'priority_variable',
         'assign_variable',
-        'mi_instance_variable',
-        'mi_complete_variable',
-        'receive_message_type',
-        'can_send_message',
-        'send_last_email'
-    ];
-    protected $attributes = [
-        'id' => null,
-        'uid' => '',
-        'process_id' => '',
-        'title' => '',
-        'description' => '',
-        'type' => 'normal',
-        'duration' => 0,
-    ];
-    protected $casts = [
-        'id' => 'int',
-        'process_id' => 'int',
-        'uid' => 'string',
-        'title' => 'string',
-        'description' => 'string',
-        'type' => 'string',
-        'duration' => 'float',
+        'group_variable',
+        'is_start_task',
+        'routing_screen_template',
+        'timing_control_configuration',
+        'trigger_id',
+        'self_service_timeout_configuration',
+        'custom_title',
+        'custom_description',
+        'created_at',
+        'updated_at'
     ];
 
     protected $rules = [
         'uid' => 'max:36',
-        'process_id' => 'exists:processes,id',
         'title' => 'required|unique:tasks,title',
         'description' => 'required',
-        'type' => 'required',
-        'duration' => 'required',
+        'process_id' => 'exists:processes,id',
+        'trigger_id' => 'nullable|exists:triggers,id',
+        'type' => 'required|in:' . self::TYPE_NORMAL . ',' . self::TYPE_ADHOC . ',' . self::TYPE_SUB_PROCESS . ',' . self::TYPE_HIDDEN . ',' . self::TYPE_GATEWAY . ',' . self::TYPE_WEB_ENTRY_EVENT . ',' . self::TYPE_END_MESSAGE_EVENT . ',' . self::TYPE_START_MESSAGE_EVENT . ',' . self::TYPE_INTERMEDIATE_THROW_MESSAGE_EVENT . ',' . self::TYPE_INTERMEDIATE_CATCH_MESSAGE_EVENT . ',' . self::TYPE_SCRIPT_TASK . ',' . self::TYPE_START_TIMER_EVENT . ',' . self::TYPE_INTERMEDIATE_CATCH_TIMER_EVENT . ',' . self::TYPE_END_EMAIL_EVENT . ',' . self::TYPE_INTERMEDIATE_THROW_EMAIL_EVENT . ',' . self::TYPE_SERVICE_TASK,
+        'assign_type' => 'required|in:' . self::ASSIGN_TYPE_BALANCED . ',' . self::ASSIGN_TYPE_MANUAL . ',' . self::ASSIGN_TYPE_EVALUATE . ',' . self::ASSIGN_TYPE_REPORT_TO . ',' . self::ASSIGN_TYPE_SELF_SERVICE . ',' . self::ASSIGN_TYPE_STATIC_MI . ',' . self::ASSIGN_TYPE_CANCEL_MI . ',' . self::ASSIGN_TYPE_MULTIPLE_INSTANCE . ',' . self::ASSIGN_TYPE_MULTIPLE_INSTANCE_VALUE_BASED,
+        'routing_type' => 'required|in:' . self::ROUTE_TYPE_NORMAL . ',' . self::ROUTE_TYPE_FAST . ',' . self::ROUTE_TYPE_AUTOMATIC,
+        'timing_control_configuration' => 'required|array',
+        'timing_control_configuration.duration' => 'required|min:0',
+        'timing_control_configuration.delay_type' => 'required|in:' . self::TIME_MINUTES . ',' . self::TIME_HOURS . ',' . self::TIME_DAYS,
+        'timing_control_configuration.temporizer' => 'required|min:0',
+        'timing_control_configuration.type_day' => 'required|in:' . self::WORK_DAYS . ',' . self::CALENDAR_DAYS,
+        'timing_control_configuration.time_unit' => 'required|in:' . self::TIME_MINUTES . ',' . self::TIME_HOURS . ',' . self::TIME_DAYS . ',' . self::TIME_WEEKS . ',' . self::TIME_MONTHS,
+        'self_service_timeout_configuration' => 'required|array',
+        'self_service_timeout_configuration.self_service_timeout' => 'required|min:0',
+        'self_service_timeout_configuration.self_service_time' => 'required|min:0',
+        'self_service_timeout_configuration.self_service_time_unit' => 'required|in:' . self::TIME_MINUTES . ',' . self::TIME_HOURS . ',' . self::TIME_DAYS . ',' . self::TIME_WEEKS . ',' . self::TIME_MONTHS,
+        'self_service_timeout_configuration.self_service_execution' => 'required|in:' . self::EXECUTION_EVERY_TIME . ',' . self::EXECUTION_ONCE,
     ];
 
     /**
@@ -195,24 +140,73 @@ class Task extends Model
         return 'uid';
     }
 
-    /**
-     * List of users assigned to task
-     *
-     * @return MorphToManyCustom
-     */
-    /*public function usersAssigned(): MorphToMany
-    {
-        return $this->morphedByManyCustom(User::class, 'assignee', 'task_user', 'id', 'USR_ID', null, null, 'TU_RELATION');
-    }*/
 
     /**
-     * List of groups assigned to task
+     * Accessor field timing_control_configuration
      *
-     * @return MorphToManyCustom
+     * @param $value
+     *
+     * @return array|null
      */
-    /*public function groupsAssigned():MorphToManyCustom
+    public function getTimingControlConfigurationAttribute($value): ?array
     {
-        return $this->morphedByManyCustom(Group::class, 'assignee', 'task_user', 'id', 'USR_ID', null, null, 'TU_RELATION');
-    }*/
+        $value = json_decode($value, true);
+        $value['duration'] = isset($value['duration']) ? $value['duration'] : 0;
+        $value['delay_type'] = isset($value['delay_type']) ? $value['delay_type'] : 'DAYS';
+        $value['temporizer'] = isset($value['temporizer']) ? $value['temporizer'] : 0;
+        $value['type_day'] = isset($value['type_day']) ? $value['type_day'] : 'WORK_DAYS';
+        $value['time_unit'] = isset($value['time_unit']) ? $value['time_unit'] : 'DAYS';
+        return $value;
+    }
+
+    /**
+     * Mutator field timing_control_configuration
+     *
+     * @param $value
+     *
+     * @return void
+     */
+    public function setTimingControlConfigurationAttribute($value)
+    {
+        $value['duration'] = isset($value['duration']) ? $value['duration'] : 0;
+        $value['delay_type'] = isset($value['delay_type']) ? $value['delay_type'] : 'DAYS';
+        $value['temporizer'] = isset($value['temporizer']) ? $value['temporizer'] : 0;
+        $value['type_day'] = isset($value['type_day']) ? $value['type_day'] : 'WORK_DAYS';
+        $value['time_unit'] = isset($value['time_unit']) ? $value['time_unit'] : 'DAYS';
+        $this->attributes['timing_control_configuration'] = empty($value) ? null : json_encode($value);
+    }
+
+    /**
+     * Accessor field self_service_timeout_configuration
+     *
+     * @param $value
+     *
+     * @return array|null
+     */
+    public function getSelfServiceTimeoutConfigurationAttribute($value): ?array
+    {
+        $value = json_decode($value, true);
+        $value['self_service_timeout'] = isset($value['self_service_timeout']) ? $value['self_service_timeout'] : 0;
+        $value['self_service_time'] = isset($value['self_service_time']) ? $value['self_service_time'] : 0;
+        $value['self_service_time_unit'] = isset($value['self_service_time_unit']) ? $value['self_service_time_unit'] : 'HOURS';
+        $value['self_service_execution'] = isset($value['self_service_execution']) ? $value['self_service_execution'] : 'EVERY_TIME';
+        return $value;
+    }
+
+    /**
+     * Mutator field self_service_timeout_configuration
+     *
+     * @param $value
+     *
+     * @return void
+     */
+    public function setSelfServiceTimeoutConfigurationAttribute($value)
+    {
+        $value['self_service_timeout'] = isset($value['self_service_timeout']) ? $value['self_service_timeout'] : 0;
+        $value['self_service_time'] = isset($value['self_service_time']) ? $value['self_service_time'] : 0;
+        $value['self_service_time_unit'] = isset($value['self_service_time_unit']) ? $value['self_service_time_unit'] : 'HOURS';
+        $value['self_service_execution'] = isset($value['self_service_execution']) ? $value['self_service_execution'] : 'EVERY_TIME';
+        $this->attributes['self_service_timeout_configuration'] = empty($value) ? null : json_encode($value);
+    }
 
 }

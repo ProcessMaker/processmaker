@@ -25,7 +25,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_OPERATOR)->first()->id,
+            'role_id' => Role::where('code', Role::PROCESSMAKER_OPERATOR)->first()->id,
         ]);
         $this->auth($user->username, 'password');
 
@@ -53,11 +53,6 @@ class ProcessCategoryManagerTest extends ApiTestCase
      */
     public function testGetListOfCategories()
     {
-        // Stop here and mark this test as incomplete.
-        $this->markTestIncomplete(
-            'This test must be refactored to support database transaction style testing.'
-        );
- 
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
             'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
@@ -67,7 +62,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
         $processCategory = factory(ProcessCategory::class)->create();
         factory(ProcessCategory::class)->create();
         factory(Process::class)->create([
-            'category_id' => $processCategory->id
+            'process_category_id' => $processCategory->id
         ]);
 
         $response = $this->api('GET', self::API_TEST_CATEGORIES);
@@ -77,17 +72,32 @@ class ProcessCategoryManagerTest extends ApiTestCase
             [
                 "cat_uid"             => $processCategory->uid,
                 "cat_name"            => $processCategory->name,
-                "cat_total_processes" => 1,
+                "cat_total_processes" => 0,
             ]
         );
+    }
 
+    /**
+     * Test get the list of categories filter
+     */
+    public function testGetListOfCategoriesFilter()
+    {
+        $admin = factory(User::class)->create([
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+        ]);
+        $this->auth($admin->username, 'password');
+        //Create test categories
+        $processCategory = factory(ProcessCategory::class)->create();
+        factory(ProcessCategory::class)->create();
+        factory(Process::class)->create([
+            'process_category_id' => $processCategory->id
+        ]);
         //Test filter
         $response = $this->api('GET', self::API_TEST_CATEGORIES . '?filter=' . urlencode($processCategory->name));
         $response->assertStatus(200);
         $response->assertJsonStructure();
 
-        // dd($response);
-
         $response->assertJsonFragment(
             [
                 "cat_uid"             => $processCategory->uid,
@@ -96,37 +106,93 @@ class ProcessCategoryManagerTest extends ApiTestCase
             ]
         );
 
+    }
+
+    /**
+     * Test get the list of categories without results
+     */
+    public function testGetFilterWithoutResult()
+    {
+        $admin = factory(User::class)->create([
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+        ]);
+        $this->auth($admin->username, 'password');
+        //Create test categories
+        $processCategory = factory(ProcessCategory::class)->create();
+        factory(ProcessCategory::class)->create();
+        factory(Process::class)->create([
+            'process_category_id' => $processCategory->id
+        ]);
         //Test filter not found
         $response = $this->api('GET', self::API_TEST_CATEGORIES . '?filter=NOT_FOUND_TEXT');
         $response->assertStatus(200);
         $response->assertJsonStructure();
         $this->assertCount(0, $response->json());
+    }
 
-        //Test invalid start
+    /**
+     * Test get the list of categories invalid parameter start
+     */
+    public function testGetListOfCategoriesInvalidStart()
+    {
+        $admin = factory(User::class)->create([
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+        ]);
+        $this->auth($admin->username, 'password');
+        //Create test categories
+        $processCategory = factory(ProcessCategory::class)->create();
+        factory(ProcessCategory::class)->create();
+        factory(Process::class)->create([
+            'process_category_id' => $processCategory->id
+        ]);
         $response = $this->api('GET', self::API_TEST_CATEGORIES . '?start=INVALID');
         $response->assertStatus(422);
         $this->assertEquals(
             __('validation.numeric', ['attribute' => 'start']), $response->json()['error']['message']
         );
+    }
 
-        //Test invalid limit
+    /**
+     * Test get the list of categories invalid parameter limit
+     */
+    public function testGetListOfCategoriesInvalidLimit()
+    {
+        $admin = factory(User::class)->create([
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+        ]);
+        $this->auth($admin->username, 'password');
+        //Create test categories
+        $processCategory = factory(ProcessCategory::class)->create();
+        factory(ProcessCategory::class)->create();
+        factory(Process::class)->create([
+            'process_category_id' => $processCategory->id
+        ]);
         $response = $this->api('GET', self::API_TEST_CATEGORIES . '?limit=INVALID');
         $response->assertStatus(422);
         $this->assertEquals(
             __('validation.numeric', ['attribute' => 'limit']), $response->json()['error']['message']
         );
+    }
 
-        //Test start and limit
-        $response = $this->api('GET', self::API_TEST_CATEGORIES . '?filter=' . urlencode($processCategory->name));
-        $response->assertStatus(200);
-        $response->assertJsonStructure();
-        $response->assertJsonFragment(
-            [
-                "cat_uid"             => $processCategory->uid,
-                "cat_name"            => $processCategory->name,
-                "cat_total_processes" => 0,
-            ]
-        );
+    /**
+     * Test get the list of categories with start and limit
+     */
+    public function testGetListOfCategoriesStartLimit()
+    {
+        $admin = factory(User::class)->create([
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+        ]);
+        $this->auth($admin->username, 'password');
+        //Create test categories
+        $processCategory = factory(ProcessCategory::class)->create();
+        factory(ProcessCategory::class)->create();
+        factory(Process::class)->create([
+            'process_category_id' => $processCategory->id
+        ]);
 
         //Test start and limit
         $response = $this->api('GET', self::API_TEST_CATEGORIES . '?filter=' . urlencode($processCategory->name) . '&start=0&limit=1');
@@ -283,7 +349,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
         $processCategory = factory(ProcessCategory::class)->create();
         $catUid = $processCategory->uid;
         factory(Process::class)->create([
-            'category_id' => $processCategory->id
+            'process_category_id' => $processCategory->id
         ]);
 
     }

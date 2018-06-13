@@ -18,6 +18,7 @@
     "laravel/tinker": "^1.0",
     "lavary/laravel-menu": "^1.7",
     "league/oauth2-server": "7.0.*",
+    "phing/phing": "^2.16",
     "predis/predis": "^1.1",
     "ralouphie/getallheaders": "^2.0",
     "ramsey/uuid": "^3.7",
@@ -29,6 +30,7 @@
   "require-dev": {
     "filp/whoops": "^2.0",
     "fzaninotto/faker": "^1.4",
+    "laravel/dusk": "^3.0",
     "mockery/mockery": "^1.0",
     "nunomaduro/collision": "^2.0",
     "phpunit/phpunit": "^7.0",

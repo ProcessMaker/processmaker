@@ -24,6 +24,10 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
       return view('process',['title' => 'Dashboard']);
     })->name('process');
 
+    $this->get('/request', function(){
+      return view('request.index',['title' => __('New Request')]);
+    })->name('request');
+
     $this->get('/admin', function(){
       return view('admin',['title' => 'Dashboard']);
     })->name('admin');
@@ -41,9 +45,15 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
     })->name('userprofile');
 
     $this->get('/manage/users', 'Management\UsersController@index')->name('management-users-index');
+
+    Router::group([
+        'middleware' => ['permission:PM_CASES']
+    ], function() {
+        $this->get('/process/{process}/tasks', 'Designer\TaskController@index')->name('processes-task-index');
+    });
 });
 
 
 $this->get('/designer', function() {
-    return view('designer', ['title' => 'Designer']);
+    return view('designer.designer', ['title' => 'Designer']);
 })->name('designer');

@@ -9,7 +9,7 @@ use ProcessMaker\Model\Trigger;
 class TriggerManager
 {
     /**
-     * Get a list of All triggers in a project.
+     * Get a list of All triggers in a process.
      *
      * @param Process $process
      *
@@ -21,7 +21,7 @@ class TriggerManager
     }
 
     /**
-     * Create a new trigger in a project.
+     * Create a new trigger in a process.
      *
      * @param Process $process
      * @param array $data
@@ -41,7 +41,7 @@ class TriggerManager
     }
 
     /**
-     * Update trigger in a project.
+     * Update trigger in a process.
      *
      * @param Process $process
      * @param Trigger $trigger
@@ -59,7 +59,7 @@ class TriggerManager
     }
 
     /**
-     * Remove trigger in a project.
+     * Remove trigger in a process.
      *
      * @param Trigger $trigger
      *

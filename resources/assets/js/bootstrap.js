@@ -27,7 +27,24 @@ window.Vue = require('vue');
 
 window.Vue.use(BootstrapVue);
 
-Vue.component('inbox', require('./components/inbox.vue'));
+window.ProcessMaker = {};
+
+/**
+ * Create a axios instance which any vue component can bring in to call 
+ * REST api endpoints through oauth authentication
+ * 
+ */
+window.ProcessMaker.apiClient = require('axios');
+// Have default endpoint and headers
+let token = document.head.querySelector('meta[name="api-token"]');
+
+if (token) {
+    window.ProcessMaker.apiClient.defaults.headers.common['Authorization'] = 'Bearer ' + token.content;
+} else {
+  console.error('ProcessMaker API Token not found in document. API requests via JavaScript may not function.');
+}
+window.ProcessMaker.apiClient.defaults.baseURL = '/api/1.0/';
+
 
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
@@ -35,7 +52,7 @@ Vue.component('inbox', require('./components/inbox.vue'));
  * CSRF token as a header based on the value of the "XSRF" token cookie.
  */
 
-window.axios = require('axios');
+//window.axios = require('axios');
 
 /*
 window.axios.defaults.headers.common['X-CSRF-TOKEN'] = window.Processmaker.csrfToken;
@@ -49,9 +66,11 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
  * allows your team to easily build robust real-time web applications.
  */
 
+ /*
 if (window.Processmaker.broadcaster == 'pusher') {
   window.Pusher = require('pusher-js');
 }
+*/
 /*
 
 window.Echo = new Echo({

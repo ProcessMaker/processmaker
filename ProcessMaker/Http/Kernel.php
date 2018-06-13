@@ -17,6 +17,7 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+        \ProcessMaker\Http\Middleware\TrustProxies::class,
     ];
     /**
      * The application's route middleware groups.
@@ -36,7 +37,9 @@ class Kernel extends HttpKernel
 
         ],
         'api' => [
-            'throttle:60,1'
+            // Empty middleware for api
+            // @todo Determine if we need throttling.  Currently it interrupts test suites
+            // However, we haven't had a product decision on utilizing throttling or not
         ],
     ];
     /**

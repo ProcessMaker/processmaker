@@ -1,25 +1,36 @@
 <?php
+
 use Ramsey\Uuid\Uuid;
 use Faker\Generator as Faker;
+use ProcessMaker\Model\Process;
+use ProcessMaker\Model\ProcessFile;
+use ProcessMaker\Model\Role;
+use ProcessMaker\Model\User;
 
 /**
  * Model factory for a process file.
  */
-$factory->define(\ProcessMaker\Model\ProcessFile::class, function (Faker $faker) {
-    $filepath = $faker->file('/tmp','tests/shared/public');
+$factory->define(ProcessFile::class, function (Faker $faker) {
+    //was need base_path for complete to relative path.
+    $filePath = $faker->file('/tmp', base_path('tests/shared/public'));
     return [
-        'PRF_UID'            => str_replace('-', '', Uuid::uuid4()),
-        'process_id'            => function () {
-            $pro = factory(\ProcessMaker\Model\Process::class)->create();
-            return $pro->id;
+        'uid' => Uuid::uuid4(),
+        'process_id' => function () {
+            return factory(Process::class)->create()->id;
         },
-        'USR_UID'            => str_replace('-', '', Uuid::uuid4()),
-        'PRF_UPDATE_USR_UID' => str_replace('-', '', Uuid::uuid4()),
-        'PRF_PATH'           => $filepath,
-        'PRF_TYPE'            => 'file',
-        'PRF_DRIVE'           => 'public',
-        'PRF_PATH_FOR_CLIENT' => basename($filepath),
-        'PRF_CREATE_DATE'    => $faker->date(),
-        'PRF_UPDATE_DATE'    => $faker->date(),
+        'user_id' => function () {
+            return factory(User::class)->create([
+                'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            ])->id;
+        },
+        'update_user_id' => function () {
+            return factory(User::class)->create([
+                'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            ])->id;
+        },
+        'path' => $filePath,
+        'type' => 'file',
+        'drive' => 'public',
+        'path_for_client' => basename($filePath),
     ];
 });

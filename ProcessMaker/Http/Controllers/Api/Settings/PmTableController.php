@@ -1,11 +1,17 @@
 <?php
+
 namespace ProcessMaker\Http\Controllers\Api\Settings;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use ProcessMaker\Facades\SchemaManager;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Model\DbSource;
+use ProcessMaker\Model\Form;
 use ProcessMaker\Model\PmTable;
+use ProcessMaker\Model\Process;
+use ProcessMaker\Transformers\PmTableTransformer;
 use Ramsey\Uuid\Uuid;
 
 /**
@@ -19,14 +25,42 @@ class PmTableController extends Controller
      *
      * @return array
      */
-    public function index()
+    /**
+     * Gets the list of PmTables of a workspace without report tables
+     *
+     * @param Request $request
+     *
+     * @return ResponseFactory|Response
+     */
+    public function index(Request $request)
     {
-        // Using a type of PMTABLE will fetch PMTables
-        return PmTable::where('type', 'PMTABLE')
-            ->get()
+        $options = [
+            'filter' => $request->input('filter', ''),
+            'current_page' => $request->input('current_page', 1),
+            'per_page' => $request->input('per_page', 10),
+            'sort_by' => $request->input('sort_by', 'name'),
+            'sort_order' => $request->input('sort_order', 'ASC'),
+        ];
+        $query = PmTable::where('type', 'PMTABLE');
+
+        if (!empty($options['filter'])) {
+            $filter = '%' . $options['filter'] . '%';
+            $query->where(function ($query) use ($filter) {
+                $query->Where('name', 'like', $filter)
+                    ->orWhere('description', 'like', $filter)
+                    ->orWhere('type', 'like', $filter);
+            });
+        }
+
+        $response = $query->paginate($options['per_page'])
+            ->appends($options)
             ->each(function (PmTable $pmTable) {
                 $pmTable->fields = SchemaManager::getMetadataFromSchema($pmTable)->columns;
-            })->toArray();
+            });
+
+        return fractal($response, new PmTableTransformer())
+            ->parseIncludes(['fields'])
+            ->respond();
     }
 
     /**
@@ -34,13 +68,14 @@ class PmTableController extends Controller
      *
      * @param PmTable $pmTable
      *
-     * @return array
+     * @return ResponseFactory|Response
      */
     public function show(PmTable $pmTable)
     {
-        $result = $this->lowerCaseModelAttributes($pmTable);
-        $result['fields'] = SchemaManager::getMetadataFromSchema($pmTable)->columns;
-        return $result;
+        $pmTable->fields = SchemaManager::getMetadataFromSchema($pmTable)->columns;
+        return fractal($pmTable, new PmTableTransformer())
+            ->parseIncludes(['fields'])
+            ->respond();
     }
 
     /**
@@ -48,7 +83,8 @@ class PmTableController extends Controller
      *
      * @param Request $request
      *
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * @return ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * @throws \Throwable
      */
     public function store(Request $request)
     {
@@ -67,10 +103,11 @@ class PmTableController extends Controller
             SchemaManager::updateOrCreateColumn($pmTable, $pmTableField);
         }
 
-        $result = $this->lowerCaseModelAttributes($pmTable);
-        $result['fields'] = SchemaManager::getMetadataFromSchema($pmTable)->columns;
+        $pmTable->fields = SchemaManager::getMetadataFromSchema($pmTable)->columns;
 
-        return response($result, 201);
+        return fractal($pmTable, new PmTableTransformer())
+            ->parseIncludes(['fields'])
+            ->respond(201);
     }
 
     /**
@@ -96,10 +133,11 @@ class PmTableController extends Controller
             }
         }
 
-        $result = $this->lowerCaseModelAttributes($pmTable);
-        $result['fields'] = SchemaManager::getMetadataFromSchema($pmTable)->columns;
+        $pmTable->fields = SchemaManager::getMetadataFromSchema($pmTable)->columns;
 
-        return response($result, 200);
+        return fractal($pmTable, new PmTableTransformer())
+            ->parseIncludes(['fields'])
+            ->respond();
     }
 
     /**
@@ -180,7 +218,8 @@ class PmTableController extends Controller
         $value2 = null,
         $key3 = null,
         $value3 = null
-    ) {
+    )
+    {
         // add the passed keys in the path to an array
         $keys = [$key1 => $value1];
 
@@ -221,26 +260,20 @@ class PmTableController extends Controller
         }
 
         // Add support for inserting with db_source_uid
-        if($request->has('db_source_uid')) {
+        if ($request->has('db_source_uid')) {
             // Fetch matching db source
             $dbs = DbSource::where('uid', $request->get('db_source_uid'))->first();
-            if($dbs) {
+            if ($dbs) {
                 $pmTable->db_source_id = $dbs->id;
-                return;
             }
-            // Throw exception
-            throw new Exception(__("DB Source Not Found"));
         }
         // Add support for inserting with process_uid
-        if($request->has('process_uid')) {
+        if ($request->has('process_uid')) {
             // fetch matching process
             $process = Process::where('uid', $request->get('process_uid'))->first();
-            if($process) {
+            if ($process) {
                 $pmTable->process_id = $process->id;
-                return;
             }
-            // Throw exception
-            throw new Exception(__("Process Not Found"));
         }
     }
 
@@ -268,6 +301,7 @@ class PmTableController extends Controller
             'key',
             'table_index',
             'dynaform_name',
+            'dynaform_uid',
             'filter'
         ];
 
@@ -279,36 +313,15 @@ class PmTableController extends Controller
         }
 
         // Handle Dynaform UID reference
-        if(array_key_exists('dynaform_uid', $field)) {
+        if (array_key_exists('dynaform_uid', $field)) {
             // Fetch matching dynaform
-            $dynaform = Dynaform::where('uid', $field['dynaform_uid'])->first();
-            if($dynaform) {
+            $dynaform = Form::where('uid', $field['dynaform_uid'])->first();
+            if ($dynaform) {
                 $pmTableField['dynaform_id'] = $dynaform->id;
-                return;
             }
-            // Throw exception
-            throw new Exception(__("Dynaform Not Found"));
         }
- 
+
 
         return $pmTableField;
-    }
-
-    /**
-     * Returns an array from a model where all the keys are in lower case
-     *
-     * @param Model $model
-     *
-     * @return array
-     */
-    private function lowerCaseModelAttributes(Model $model)
-    {
-        // with a null model an empty array is returned
-        if ($model === null) {
-            return [];
-        }
-
-        $attributeArray = $model->toArray();
-        return array_change_key_case($attributeArray, CASE_LOWER);
     }
 }
