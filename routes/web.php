@@ -1,5 +1,13 @@
 <?php
 
+$this->get('/test', function(){
+  return view('auth.passwords.reset',['token'=>'123']);
+})->name('test');
+
+$this->get('/postback', function(){
+  return view('auth.passwords.reset');
+})->name('password.request');
+
 
 // Authentication Routes...
 $this->get('login', 'Auth\LoginController@showLoginForm')->name('login');
