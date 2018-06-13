@@ -1,9 +1,9 @@
 import {JointElements} from "../jointElements"
 import {Shape} from "../Shape"
 /**
- * Task class
+ * SubProcess class
  */
-export class Task extends Shape {
+export class SubProcess extends Shape {
     constructor(options, graph, paper) {
         super(graph, paper)
         this.options = {
@@ -17,10 +17,10 @@ export class Task extends Shape {
     }
 
     /**
-     * Render the Task Based in options config
+     * Render the SubProcess Based in options config
      */
     render() {
-        this.shape = new JointElements.Task();
+        this.shape = new JointElements.SubProcess();
         this.shape.position(this.options.x, this.options.y);
         this.shape.resize(this.options.width, this.options.height);
         this.shape.addTo(this.graph);

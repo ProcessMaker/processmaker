@@ -1,26 +1,31 @@
 import {JointElements} from "../jointElements"
 import {Shape} from "../Shape"
 /**
- * Task class
+ * IntermediateTimerEvent class
  */
-export class Task extends Shape {
+export class IntermediateTimerEvent extends Shape {
     constructor(options, graph, paper) {
         super(graph, paper)
         this.options = {
             id: null,
             x: null,
             y: null,
-            width: 120,
-            height: 80
+            width: 40,
+            height: 40,
+            rounded: 10,
+            attr: {
+                fill: "#EDFFFC",
+                stroke: "#00BF9C"
+            }
         }
         this.config(options)
     }
 
     /**
-     * Render the Task Based in options config
+     * Render the IntermediateTimerEvent Based in options config
      */
     render() {
-        this.shape = new JointElements.Task();
+        this.shape = new JointElements.IntermediateTimerEvent();
         this.shape.position(this.options.x, this.options.y);
         this.shape.resize(this.options.width, this.options.height);
         this.shape.addTo(this.graph);
