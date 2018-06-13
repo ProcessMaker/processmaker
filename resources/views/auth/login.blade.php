@@ -88,5 +88,59 @@
     @endsection
 
     @section('css')
+    <style>
 
+        .p2rem{padding:2rem;}
+        .submit-log{font-size: 1rem;padding:0.5rem;}
+        .font-12{font-size: 12px;color:#788793;}
+        .font-14{font-size: 14px;}
+        .styled-checkbox {
+            position: absolute;
+            opacity: 0;
+        }
+        .styled-checkbox + label {
+            position: relative;
+            cursor: pointer;
+            padding: 0;
+            font-size: 14px;
+            color:#788793;
+        }
+        .styled-checkbox + label:before {
+            content: '';
+            *margin-right: 5px;
+            display: inline-block;
+            vertical-align: sub;
+            width: 15px;
+            height: 15px;
+            background: #788793;
+            border-radius: 2px;
+        }
+        .styled-checkbox:hover + label:before {
+            background: #788793;
+        }
+        .styled-checkbox:focus + label:before {
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.12);
+        }
+        .styled-checkbox:checked + label:before {
+            background: #788793;
+        }
+        .styled-checkbox:disabled + label {
+            color: #b8b8b8;
+            cursor: auto;
+        }
+        .styled-checkbox:disabled + label:before {
+            box-shadow: none;
+            background: #ddd;
+        }
+        .styled-checkbox:checked + label:after {
+            content: '\2714';
+            position: absolute;
+            left: 3px;
+            top: 3px;
+            font-size: 11px;
+            color: #fff;
+            -webkit-transform: rotate(18deg);
+            transform: rotate(18deg);
+        }
+    </style>
     @endsection
