@@ -42,6 +42,8 @@
     export default {
         data() {
             return {
+                dx: 3,
+                dy: 3,
                 x: null,
                 y: null,
                 visible: false
@@ -63,8 +65,8 @@
              * Method for show the crown
              */
             show(conf){
-                this.x = conf.x + document.getElementById('svgCanvas').getBoundingClientRect().left
-                this.y = conf.y + document.getElementById('svgCanvas').getBoundingClientRect().top
+                this.x = conf.x + document.getElementById('svgCanvas').getBoundingClientRect().left + this.dx
+                this.y = conf.y + document.getElementById('svgCanvas').getBoundingClientRect().top - this.dy
                 this.visible = true
             },
             /**
@@ -84,22 +86,31 @@
     }
 </script>
 
-<style>
+<style lang="scss" scoped>
     .designer-container-crown {
         position: fixed;
         z-index: 10;
+        display: flex;
+        flex-direction: column;
     }
 
     .item-crown {
-        display: table-cell;
-        padding: 3px;
         text-align: center;
-        font-size: 22px;
-        min-width: 35px;
+        min-width: 33px;
+        padding: 2px;
+
+        img:before {
+            content: '';
+            display: inline-block;
+            height: 100%;
+            vertical-align: middle;
+            margin-right: -0.25em; /* Adjusts for spacing */
+        }
     }
 
     .icon-crown {
         padding: 3px;
+        font-size: 22px;
     }
 
     .delete-crown {
