@@ -2,25 +2,25 @@
   <b-modal ref="modal" size="lg" @hidden="onHidden" centered title="Create Report Table">
       <form>
         <div class="form-group">
-          <label for="tableName" v-model="tableName">{{tableName}}</label>
+          <label for="tableName">Table Name</label>
           <input type="text" class="form-control" id="tableName">
         </div>
 
         <div class="form-group">
-          <label for="description">{{description}}</label>
+          <label for="description">Description</label>
           <textarea class="form-control" id="description" rows="3"></textarea>
         </div>
 
         <div class="d-flex justify-content-between">
           <div class="form-group">
-            <label for="type" v-model="type">{{type}}</label>
+            <label for="type">Type</label>
             <select class="form-control input-and-select" id="type" v-model="typeSelect">
             <option v-for="select in typeSelectOptions">{{select}}</option>
             </select>
           </div>
 
           <div class="form-group">
-            <label for="dbConnection" v-model="dbConnection">{{dbConnection}}</label>
+            <label for="dbConnection">DB Connection</label>
             <select class="form-control input-and-select" id="dbConnection" v-model="dbConnectionSelect">
             <option v-for="select in dbConnectionSelectOptions">{{select}}</option>
             </select>
@@ -101,16 +101,10 @@ export default {
   data() {
     return {
       // form models here
-      'description':"Description",
-      'reportTable': "Report Table",
-      'formFields': "Form Fields",
-      'tableName': 'Table Name',
-      'type': 'Type',
       'typeSelect': "View",
       'typeSelectOptions':[
         'View', 'Block'
       ],
-      'dbConnection':"DB Connection",
       'dbConnectionSelect': 'View',
       'dbConnectionSelectOptions':[
         'View', 'Block'
