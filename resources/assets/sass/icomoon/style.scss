@@ -1,0 +1,103 @@
+@import "variables";
+
+@font-face {
+  font-family: 'icomoon';
+  src:  url('#{$icomoon-font-path}/icomoon.eot?m61i2t');
+  src:  url('#{$icomoon-font-path}/icomoon.eot?m61i2t#iefix') format('embedded-opentype'),
+    url('#{$icomoon-font-path}/icomoon.ttf?m61i2t') format('truetype'),
+    url('#{$icomoon-font-path}/icomoon.woff?m61i2t') format('woff'),
+    url('#{$icomoon-font-path}/icomoon.svg?m61i2t#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icomoon' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@function unicode($str) {
+  @return unquote("\"") + $str + unquote("\"");
+}
+
+.icon-assigned {
+  &:before {
+    content: unicode($icon-assigned); 
+  }
+}
+.icon-completed-1 {
+  &:before {
+    content: unicode($icon-completed-1); 
+  }
+}
+.icon-completed-2 {
+  &:before {
+    content: unicode($icon-completed-2); 
+  }
+}
+.icon-draft {
+  &:before {
+    content: unicode($icon-draft); 
+  }
+}
+.icon-in-progress {
+  &:before {
+    content: unicode($icon-in-progress); 
+  }
+}
+.icon-paused-1 {
+  &:before {
+    content: unicode($icon-paused-1); 
+  }
+}
+.icon-paused-2 {
+  &:before {
+    content: unicode($icon-paused-2); 
+  }
+}
+.icon-unassigned {
+  &:before {
+    content: unicode($icon-unassigned); 
+  }
+}
+.icon-connectors {
+  &:before {
+    content: unicode($icon-connectors); 
+  }
+}
+.icon-custom-ui {
+  &:before {
+    content: unicode($icon-custom-ui); 
+  }
+}
+.icon-login {
+  &:before {
+    content: unicode($icon-login); 
+  }
+}
+.icon-process {
+  &:before {
+    content: unicode($icon-process); 
+  }
+}
+.icon-security-on {
+  &:before {
+    content: unicode($icon-security-on); 
+  }
+}
+.icon-workstation {
+  &:before {
+    content: unicode($icon-workstation); 
+  }
+}
+
