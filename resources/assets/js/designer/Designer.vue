@@ -2,8 +2,8 @@
     <div id="designer-container">
         <component :is="modalComponent" :if="modalComponent" @hidden="onHidden"></component>
         <toptoolbar ref="toptoolbar"></toptoolbar>
+        <toolbar ref="toolbar"></toolbar>
         <div id="designer-subcontainer">
-            <toolbar ref="toolbar"></toolbar>
             <div class="canvas-container">
                 <crown ref="crown"></crown>
                 <svgcanvas ref="svgcanvas"></svgcanvas>
@@ -32,23 +32,37 @@ import toptoolbar from "./components/toptoolbar";
 import designerobjectsmenu from "./components/designer-objects-menu";
 
 // @todo Figure out a way to add these modals to the properties of components
-import modalPermissionsAdd from "./components/modals/modal-permissions-add";
-
-//
+import modalCreateDatabaseAdd from "./components/modals/modal-create-database-add";
+import modalCreateOutputAdd from "./components/modals/modal-create-output-add";
+import modalCreateTemplateAdd from "./components/modals/modal-create-template-add";
+import modalCreateTriggerAdd from "./components/modals/modal-create-trigger-add";
 import modalFormsAdd from "./components/modals/modal-forms-add";
+import modalInputDocumentAdd from "./components/modals/modal-input-document-add";
+import modalPermissionsAdd from "./components/modals/modal-permissions-add";
+import modalPublicFileAdd from "./components/modals/modal-public-file-add";
+import modalVariablesAdd from "./components/modals/modal-variables-add";
+import modalMessageTypes from "./components/modals/modal-message-types";
 
 // This is out Cron for every shape
 import crown from "./components/crown";
 
 export default {
   components: {
+    crown,
+    designerobjectsmenu,
+    modalCreateDatabaseAdd,
+    modalCreateOutputAdd,
+    modalCreateTemplateAdd,
+    modalCreateTriggerAdd,
+    modalFormsAdd,
+    modalMessageTypes,
+    modalInputDocumentAdd,
+    modalPermissionsAdd,
+    modalPublicFileAdd,
+    modalVariablesAdd,
     svgcanvas,
     toolbar,
-    toptoolbar,
-    designerobjectsmenu,
-    modalPermissionsAdd,
-    modalFormsAdd,
-    crown
+    toptoolbar
   },
   data() {
     return {
@@ -61,15 +75,38 @@ export default {
   },
   methods: {
     openAddDialog(key) {
-      // Replace this with dynamic modal generation once we have all modals in place
+      // @todo Replace this with dynamic modal generation once we have all modals in place
       // We're not doing this now so we can have visual alert feedback when a modal isn't implemented
-      console.log(key)
       switch(key) {
         case 'permissions':
           this.modalComponent = 'modal-permissions-add'
           break;
+        case 'variables':
+          this.modalComponent = 'modal-variables-add'
+          break;
+        case 'public-files':
+          this.modalComponent = 'modal-public-file-add'
+          break;
         case 'forms':
           this.modalComponent = 'modal-forms-add'
+          break;
+        case 'message-types':
+          this.modalComponent = 'modal-message-types'
+          break;
+        case 'database-connections':
+          this.modalComponent = 'modal-create-database-add'
+          break;
+        case 'input-documents':
+          this.modalComponent = 'modal-input-document-add'
+          break;
+        case 'output-documents':
+          this.modalComponent = 'modal-create-output-add'
+          break;
+        case 'triggers':
+          this.modalComponent = 'modal-create-trigger-add'
+          break;
+        case 'templates':
+          this.modalComponent = 'modal-create-template-add'
           break;
         default:
           alert(key + ' add modal not yet implemented.')
@@ -77,7 +114,7 @@ export default {
     },
     onHidden(){
       this.modalComponent = null
-    }
+    },
   }
 };
 </script>

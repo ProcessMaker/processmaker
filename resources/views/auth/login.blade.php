@@ -3,10 +3,8 @@
 @section('content')
 <div class="container mt-4">
     <div class="row">
-
-        <div class="col">
-        </div>
-
+    <div class="col">
+    </div>
         <div class="col-md-4">
             <div align="center">
                 <img class="py-5" src="/img/lg-blue-logo.png" width="340">
@@ -20,23 +18,24 @@
                     <div>
                         <input id="username" type="text" class="form-control{{ $errors->has('username') ? ' is-invalid' : '' }}" name="username" value="{{ old('username') }}" required>
 
-                        @if ($errors->has('username'))
+          @if ($errors->has('username'))
 
-                        <span class="invalid-feedback">
+          <span class="invalid-feedback">
             <strong>{{ $errors->first('username') }}</strong>
           </span>
-                        @endif
-                    </div>
-                </div>
+          @endif
+        </div>
+      </div>
+
 
                 <div class="form-group">
                     <label class="text" for="password">{{ __('Password') }}</label>
                     <div class="">
-                        <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" required>
+                        <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" required
 
-                        @if ($errors->has('password'))
+          @if ($errors->has('password'))
 
-                        <span class="invalid-feedback">
+          <span class="invalid-feedback">
             <strong>{{ $errors->first('password') }}</strong>
           </span>
                         @endif
@@ -79,17 +78,7 @@
                 </div>
 
             </form>
-        </div>
-
-        <div class="col">
-        </div>
-
-    </div>
-    @endsection
-
-    @section('css')
-    <style>
-
+         
         .p2rem{padding:2rem;}
         .submit-log{font-size: 1rem;padding:0.5rem;}
         .font-12{font-size: 12px;color:#788793;}
@@ -144,3 +133,5 @@
         }
     </style>
     @endsection
+  </div>
+

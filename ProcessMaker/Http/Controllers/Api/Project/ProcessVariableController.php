@@ -22,7 +22,7 @@ class ProcessVariableController
      */
     public function index(Process $process)
     {
-        return ProcessVariable::where('PRO_ID', $process->id)
+        return ProcessVariable::where('process_id', $process->id)
             ->get()
             ->toArray();
     }
@@ -52,8 +52,7 @@ class ProcessVariableController
     public function store(Request $request, Process $process)
     {
         $variable = new ProcessVariable();
-        $variable->VAR_UID = str_replace('-', '', Uuid::uuid4());
-        $variable->PRO_ID = $process->id;
+        $variable->process_id = $process->id;
         $this->mapRequestToVariable($request, $variable);
 
         try {
@@ -63,10 +62,8 @@ class ProcessVariableController
         }
 
         // we get the saved variable
-        $lastEntity = ProcessVariable::whereVarUid($variable->VAR_UID)
-            ->first();
 
-        return response($lastEntity, 201);
+        return response($variable->refresh(), 201);
     }
 
     /**
@@ -87,11 +84,7 @@ class ProcessVariableController
 
         $variable->saveOrFail();
 
-        // we get the saved variable
-        $lastEntity = ProcessVariable::whereVarUid($variable->VAR_UID)
-            ->first();
-
-        return response($lastEntity, 200);
+        return response($variable->refresh(), 200);
     }
 
     /**
@@ -120,16 +113,16 @@ class ProcessVariableController
     private function mapRequestToVariable(Request $request, ProcessVariable $variable)
     {
         $fieldsList = [
-            'VAR_NAME',
-            'VAR_FIELD_TYPE',
-            'VAR_FIELD_SIZE',
-            'VAR_LABEL',
-            'VAR_DBCONNECTION',
-            'VAR_SQL',
-            'VAR_NULL',
-            'VAR_DEFAULT',
-            'VAR_ACCEPTED_VALUES',
-            'INP_DOC_UID'
+            'name',
+            'field_type',
+            'field_size',
+            'label',
+            'db_source_id',
+            'sql',
+            'null',
+            'default',
+            'accepted_values',
+            'input_document_id'
         ];
 
         $fieldsInRequest = array_keys($request->all());

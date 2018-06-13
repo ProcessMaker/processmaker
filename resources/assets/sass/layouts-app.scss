@@ -72,7 +72,8 @@ body {
 }
 
 .sidebaricon {
-  padding: 15px;
+  width: 26px;
+  margin: 14px;
 }
 
 .sidebarimage {
@@ -161,6 +162,7 @@ body {
 .modal-header{
   border: none;
   padding-top: 16px;
+  margin-bottom: 15px;
 
   .close{
     padding: 20px;
@@ -176,12 +178,17 @@ body {
 .modal-footer{
   border: none;
   padding: 38px 32px;
-  padding-top: 16px;
+  padding-top: 10px;
 }
 .form-group label{
   font-size: 12px;
   color: #788793;
   margin-bottom: 4px;
+}
+.form-check label {
+  font-size: 14px;
+  color: #788793;
+  margin-bottom: 0;
 }
 .form-control{
   font-size: 14px;
@@ -201,8 +208,14 @@ select.form-control:not([size]):not([multiple]) {
   margin-bottom:7px;
   padding-top: 2px;
 }
-.btn{
+
+.btn {
+  border-radius: 0.12rem;
+  padding: 7px 16px ;
+  line-height: 1;
   font-size: 14px;
+  text-transform: uppercase;
+  font-weight: 400;
 }
 
 /* Sidebar Styles */
@@ -417,4 +430,114 @@ select.form-control:not([size]):not([multiple]) {
   top: 4px;
   left: 50%;
   transform: translateX(-50%);
+}
+
+.btn-action {
+  background-color: #788793;
+  border-color: #788793;
+  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+a.btn-action {
+  color: white;
+
+  &:hover {
+    color: white;
+  }
+}
+
+h1.page-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 0px;
+  margin-right: 16px;
+}
+
+.page-content {
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+
+// Data table rules
+table.vuetable {
+  margin-top: 16px;
+  background-color: transparent;
+
+  tr:hover td {
+    background-color: #d8d8d8;
+  }
+
+  .vuetable-slot {
+    position: relative;
+  }
+
+  .actions {
+    cursor: pointer;
+
+    .popout {
+      display: none;
+      align-items: center;
+      position: absolute;
+      background-color: #d8d8d8;
+      right: 0px;
+      top: 0px;
+      font-size: 17px;
+      text-align: right;
+      height: 42px;
+
+      button.btn-action {
+        color: #212529;
+        height: 32px;
+        width: 32px;
+        margin-left: 4px;
+        margin-right: 4px;
+        background-color: #d8d8d8;
+        border-color: #d8d8d8;
+        text-align: center;
+        padding: 0px;
+
+        &:hover {
+          background-color: white;
+          border-radius: 2px;
+        }
+      }
+    }
+
+    &:hover {
+      .popout {
+        display: flex;
+      }
+    }
+  }
+
+
+
+  td {
+    border-top: 2px solid #f7f9fb;
+  }
+
+  th:first-child, td:first-child { border-radius: 2px 0px 0px 2px; }
+  th:last-child, td:last-child { border-radius: 0px 2px 2px 0px; }
+
+  tr {
+    margin-top: 2px;
+    margin-bottom: 2px;
+  }
+
+  th {
+    background-color: #e9edf1;
+    color: #788793;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    &.descending, &.ascending {
+      color: black;
+    }
+  }
+
+  td {
+    background-color: white;
+  }
 }

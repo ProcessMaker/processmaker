@@ -39,13 +39,13 @@ class ProcessesController extends Controller
             $categories = ProcessCategory::where('name', 'like', $filter)->get();
             $processes = Process::where('name', 'like', $filter)
                 ->orWhere('description', 'like', $filter)
-                ->orWhereIn('category_id', $categories->pluck('id'))
+                ->orWhereIn('process_category_id', $categories->pluck('id'))
                 // We need minus to ensure null categories are sorted AFTER
-                ->orderBy(DB::raw('-category_id'), 'desc')
+                ->orderBy(DB::raw('process_category_id'), 'desc')
                 ->orderBy('id')
                 ->paginate($perPage);
         } else {
-            $processes = Process::orderBy(DB::raw('-category_id'), 'desc')
+            $processes = Process::orderBy(DB::raw('process_category_id'), 'desc')
                 ->orderBy('id')
                 ->paginate($perPage);
         }
