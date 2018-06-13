@@ -135,6 +135,7 @@ export default {
   }
 };
 </script>
+
 <style lang="scss" scoped>
 .inline-input{
   margin-right: 6px;
