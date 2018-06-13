@@ -62,6 +62,7 @@
     "v-tooltip": "^2.0.0-rc.32",
     "vue-events": "^3.1.0",
     "vue-resource": "^1.5.1",
+    "vuedraggable": "^2.16.0",
     "vuetable-2": "^1.7.5"
   },
   "jest": {
