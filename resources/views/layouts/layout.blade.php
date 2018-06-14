@@ -61,8 +61,13 @@
                 @yield('content')
             </div>
             <div id="api-error">
-                <h1>AW CRAP</h1>
-                <p>Totes problem y'all</p>
+                <div class="">
+                </div>
+                <div>
+                    <h1>Sorry! API failed to load</h1>
+                    <p>Something went wrong. Try refreshing the application</p>
+                </div>
+                
             </div>
         </div>
     </div>
