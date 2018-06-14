@@ -60,6 +60,10 @@
             <div id="content-inner">
                 @yield('content')
             </div>
+            <div id="api-error">
+                <h1>AW CRAP</h1>
+                <p>Totes problem y'all</p>
+            </div>
         </div>
     </div>
 <!-- Scripts -->
