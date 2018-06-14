@@ -21,7 +21,12 @@ export const designer = {
             hide: x => x
         },
         shape: {
-            remove: x => x
+            remove: x => x,
+            drag: x => x,
+            click: x => x
+        },
+        canvas: {
+            click: x => x
         },
         flow: {
             create: x => x

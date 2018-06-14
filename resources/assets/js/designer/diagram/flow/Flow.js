@@ -26,12 +26,11 @@ export class Flow {
      * Render the Flow
      */
     render() {
-        debugger
         this.shape = new joint.shapes.standard.Link({
             router: {name: 'manhattan'}
         });
-        this.shape.source(this.options.source);
-        this.shape.target(this.options.target);
+        this.shape.source(this.options.source.getShape());
+        this.shape.target(this.options.target.getShape());
         this.shape.addTo(this.graph);
     }
 

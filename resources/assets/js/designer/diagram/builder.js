@@ -36,8 +36,6 @@ export class Builder {
             );
             element.render();
             this.collection.push(element)
-            this.paper.on('element:pointerclick', this.onClickShape())
-            this.paper.on('blank:pointerclick', this.onClickCanvas())
         }
     }
 
@@ -46,23 +44,20 @@ export class Builder {
      * @param element
      * @returns {function(*)}
      */
-    onClickShape() {
-        let that = this;
-        return (elJoint) => {
-            let el = that.findElementInCollection(elJoint)
-            if (el) {
-                debugger
-                if (that.sourceShape) {
-                    that.connect(this.sourceShape, el)
-                } else {
-                    that.hideCrown();
-                    el.showCrown()
-                    that.selection = [];
-                    that.selection.push(el);
-                }
+    onClickShape(elJoint) {
+        let el = this.findElementInCollection(elJoint)
+        if (el) {
+            debugger
+            if (this.sourceShape) {
+                this.connect(this.sourceShape, el)
+            } else {
+                this.hideCrown();
+                el.showCrown()
+                this.selection = [];
+                this.selection.push(el);
             }
-            return false;
-        };
+        }
+        return false;
     }
 
     /**
@@ -71,11 +66,7 @@ export class Builder {
      * @returns {function(*)}
      */
     onClickCanvas() {
-        let that = this;
-        return (element) => {
-            that.hideCrown()
-            return false;
-        };
+        this.hideCrown()
     }
 
 
@@ -129,25 +120,34 @@ export class Builder {
      * @param target
      */
     connect(source, target) {
-        let flow = new Elements["Flow"]({
-                source,
-                target
-            },
-            this.graph,
-            this.paper
-        );
-        flow.render()
-        source.hideCrown()
-        target.hideCrown()
-        this.sourceShape = null
+        if (source != target) {
+            let flow = new Elements["Flow"]({
+                    source,
+                    target
+                },
+                this.graph,
+                this.paper
+            );
+            flow.render()
+            source.hideCrown()
+            this.sourceShape = null
+        }
     }
 
+    /**
+     * This method find element joint js in collection
+     * @param element
+     */
     findElementInCollection(element) {
         return _.find(this.collection, (o) => {
             return element.model.id === o.shape.id
         })
     }
 
+    /**
+     * This method set source element to create flow
+     * @param element
+     */
     setSourceElement() {
         this.sourceShape = this.selection.pop()
     }
