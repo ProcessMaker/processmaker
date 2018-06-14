@@ -10,12 +10,22 @@
       <form class="bg-light mt-3"  method="POST" action="{{ route('login') }}">
         {{ csrf_field() }}
         <div class="form-group">
-          <label for="exampleInputEmail1">{{__('Username')}}</label>
-          <input type="text" class="form-control" id="exampleInputEmail1">
+          <label for="username">{{__('Username')}}</label>
+          <input type="text" class="form-control {{ $errors->has('username') ? ' is-invalid' : '' }}" id="username" name="username" value="{{ old('username') }}" required>
+            @if ($errors->has('username'))
+              <span class="invalid-feedback">
+                <strong>{{ $errors->first('username') }}</strong>
+              </span>
+            @endif
         </div>
         <div class="form-group">
-          <label for="exampleInputPassword1">{{__('Password')}}</label>
-          <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+          <label for="InputPassword1">{{__('Password')}}</label>
+          <input type="password" class="form-control" id="InputPassword1" placeholder="Password" {{ $errors->has('password') ? ' is-invalid' : '' }} name="password" required>
+          @if ($errors->has('password'))
+            <span class="invalid-feedback">
+              <strong>{{ $errors->first('password') }}</strong>
+            </span>
+          @endif
         </div>
         <div class="form-group">
           <label class="text" for="password">{{ __('Language') }}</label>
