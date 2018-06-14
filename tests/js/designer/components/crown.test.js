@@ -27,8 +27,8 @@ describe("crown.vue", () => {
             x: 1,
             y: 1
         })
-        expect(cmp.vm.x).toEqual(1)
-        expect(cmp.vm.y).toEqual(1)
+        expect(cmp.vm.x).toEqual(1 + cmp.vm.dx)
+        expect(cmp.vm.y).toEqual(1 - cmp.vm.dy)
     })
 
     it("hide - Verify if the Crown is not visible", () => {
