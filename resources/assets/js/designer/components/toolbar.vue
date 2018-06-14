@@ -5,7 +5,7 @@
                 <img id="bpmn:Task" src="../img/task.svg" height="18"
                      draggable="true" @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:Subprocess" src="../img/sub-process.svg" height="18"
+                <img id="bpmn:SubProcess" src="../img/sub-process.svg" height="18"
                      draggable="true" @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
                 <img id="bpmn:ExclusiveGateway" src="../img/exclusive-gateway.svg" height="25" draggable="true"
@@ -24,7 +24,7 @@
                      src="../img/intermediate-email-event.svg" height="25"
                      draggable="true" @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:IntermediateTimeEvent" name="IntermediateTimeEvent"
+                <img id="bpmn:IntermediateTimerEvent" name="IntermediateTimerEvent"
                      src="../img/intermediate-time-event.svg" height="25"
                      draggable="true" @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
@@ -34,16 +34,16 @@
                 <img id="bpmn:EndEmailEvent" src="../img/end-email-event.svg" height="25" draggable="true"
                      @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:DataObjectReference" src="../img/data-object.svg" height="23" draggable="true"
+                <img id="bpmn:DataObject" src="../img/data-object.svg" height="23" draggable="true"
                      @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:DataStoreReference" src="../img/data-store.svg" height="23" draggable="true"
+                <img id="bpmn:DataStore" src="../img/data-store.svg" height="23" draggable="true"
                      @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:DataStoreReference" src="../img/black-box-pool.svg" height="18" draggable="true"
+                <img id="bpmn:BlackBoxPool" src="../img/black-box-pool.svg" height="18" draggable="true"
                      @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:DataStoreReference" src="../img/pool.svg" height="18" draggable="true"
+                <img id="bpmn:Pool" src="../img/pool.svg" height="18" draggable="true"
                      @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
                 <img id="bpmn:Lane" src="../img/lane.svg" height="18" draggable="true"
