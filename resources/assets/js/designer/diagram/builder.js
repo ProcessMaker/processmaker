@@ -9,7 +9,8 @@ export class Builder {
         this.graph = graph
         this.paper = paper
         this.collection = []
-        this.creatingFlow = false
+        this.targetShape = null
+        this.sourceShape = null
     }
 
     /**
@@ -47,18 +48,19 @@ export class Builder {
      */
     onClickShape() {
         let that = this;
-        return (element) => {
-            let res = _.find(that.collection, (o) => {
-                return element.model.id === o.shape.id
-            })
-
-            if (res) {
-                that.hideCrown();
-                res.showCrown()
-                that.selection = [];
-                that.selection.push(res);
+        return (elJoint) => {
+            let el = that.findElementInCollection(elJoint)
+            if (el) {
+                debugger
+                if (that.sourceShape) {
+                    that.connect(this.sourceShape, el)
+                } else {
+                    that.hideCrown();
+                    el.showCrown()
+                    that.selection = [];
+                    that.selection.push(el);
+                }
             }
-
             return false;
         };
     }
@@ -107,6 +109,10 @@ export class Builder {
         });
     }
 
+    /**
+     * Update the position in Shapes
+     * @param element
+     */
     updatePosition(element) {
         this.hideCrown()
         let res = _.find(this.collection, (o) => {
@@ -115,5 +121,34 @@ export class Builder {
         if (res) {
             res.config(element.get("position"))
         }
+    }
+
+    /**
+     * Connect shapes
+     * @param source
+     * @param target
+     */
+    connect(source, target) {
+        let flow = new Elements["Flow"]({
+                source,
+                target
+            },
+            this.graph,
+            this.paper
+        );
+        flow.render()
+        source.hideCrown()
+        target.hideCrown()
+        this.sourceShape = null
+    }
+
+    findElementInCollection(element) {
+        return _.find(this.collection, (o) => {
+            return element.model.id === o.shape.id
+        })
+    }
+
+    setSourceElement() {
+        this.sourceShape = this.selection.pop()
     }
 }

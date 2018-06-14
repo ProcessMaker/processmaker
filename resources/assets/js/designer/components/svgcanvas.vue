@@ -84,7 +84,7 @@
                 this.builder.updatePosition(element)
             },
             createFlow(){
-                this.builder.creatingFlow = true
+                this.builder.setSourceElement()
             }
         },
         mounted() {
