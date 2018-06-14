@@ -60,6 +60,14 @@
             <div id="content-inner">
                 @yield('content')
             </div>
+            <div id="api-error" class="error-content">
+                <div></div>
+                <div>
+                    <h1>Sorry! API failed to load</h1>
+                    <p>Something went wrong. Try refreshing the application</p>
+                </div>
+                
+            </div>
         </div>
     </div>
 <!-- Scripts -->
