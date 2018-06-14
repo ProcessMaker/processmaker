@@ -541,3 +541,13 @@ table.vuetable {
     background-color: white;
   }
 }
+
+#404-error {
+  div:first-child {
+    height: 200px;
+    width: 260px;
+    margin: auto;
+    background-image: url('../img/robot.png');
+    background-repeat: no-repeat;
+  }
+}
