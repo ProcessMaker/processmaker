@@ -21,7 +21,15 @@
     </span>
       <ul class="navbar-nav">
         <li class="break"></li>
-        <li><img class="avatar" src="/img/avatar.png"></li>
+        <li class="dropdown">
+          <img class="avatar dropdown-toggle " id="navbarDropdown" src="/img/avatar.png" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+             <a class="dropdown-item" href="#"><i class="fas fa-user fa-fw"></i>{{__('Profile')}}</a>
+             <a class="dropdown-item" href="{{route('logout')}}"><i class="fas fa-sign-out-alt fa-fw"></i>{{__('Log Out')}}</a>
+             <a class="dropdown-item" href="#"><i class="fas fa-info fa-fw"></i>{{__('Help')}}</a>
+             <a class="dropdown-item" href="#"><i class="fas fa-comments fa-fw"></i>{{__('Send Feedback')}}</a>
+           </div>
+        </li>
       </li>
     </ul>
 </nav>

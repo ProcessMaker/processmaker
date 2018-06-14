@@ -13,25 +13,30 @@ body {
   background-color: $body-bg;
 }
 
+//topnav
 .navbar{
   height:60px;
 
-}
+  .dropdown-item i{
+    margin-right: 6px;
+  }
+  .dropdown-menu-right{
+    margin-top: 10px;
+  }
+  .nav_icon {
+    color: #7e8ba1;
+  }
+  .nav-link {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333333 ;
 
-.nav_icon {
-  color: #7e8ba1;
-}
-
-.nav-link {
-  font-size: 18px;
-  font-weight: 600;
-  color: #333333 !important;
-}
-
-.nav-link:hover {
-  color: $primary !important;
-  padding-bottom: 20px;
-  margin-bottom: -20px;
+    &:hover {
+      color: $primary !important;
+      padding-bottom: 20px;
+      margin-bottom: -20px;
+    }
+  }
 }
 
 .sidebarmenu {
