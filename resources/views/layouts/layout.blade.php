@@ -60,8 +60,8 @@
             <div id="content-inner">
                 @yield('content')
             </div>
-            <div id="api-error">
-                <div class="">
+            <div id="api-error" class="error-content">
+                <div>
                 </div>
                 <div>
                     <h1>Sorry! API failed to load</h1>
