@@ -8,13 +8,9 @@ use Tests\Browser\Pages\Management\Roles;
 use Tests\Browser\Pages\Auth\Login;
 use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
-use Tests\Traits\DatabaseMigrationsWithSeeds;
 
 class RolesTest extends DuskTestCase
 {
-    // Wipes database each run
-    use DatabaseMigrationsWithSeeds;
-
     /**
      * Tests that going to the roles page, we'll see our initial three roles
      *
@@ -26,7 +22,7 @@ class RolesTest extends DuskTestCase
         $this->browse(function (Browser $browser) use ($roles) {
             $browser->visit(new Login())
                 ->submitLogin('admin', 'admin')
-                ->on(new Roles());
+                ->visit(new Roles());
             // sleep a few seconds to make sure it loads data from the api
             sleep(4);
             // Now ensure we see all our roles

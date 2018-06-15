@@ -14,6 +14,7 @@ trait DatabaseMigrationsWithSeeds
      */
     public function runDatabaseMigrations()
     {
+        dd('RUNNING MIGRATE FRESH WITH THE SEED');
         $this->artisan('migrate:fresh --seed');
 
         $this->app[Kernel::class]->setArtisan(null);
