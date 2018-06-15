@@ -269,19 +269,13 @@ class GenerateMenus
         });
 
         Menu::make('dropdown_nav', function ($menu) {
-            $task_items = [
+          $task_items = [
           [
             'label' =>__('Profile'),
             'header' => false,
             'route' => 'home',
             'icon' => 'fa-user',
-            'id' => 'dropdownItem'
-          ],
-          [
-            'label' => __('Log Out'),
-            'header' => false,
-            'route' => 'logout',
-            'icon' => 'fa-sign-out-alt',
+            'img' => '',
             'id' => 'dropdownItem'
           ],
           [
@@ -289,13 +283,15 @@ class GenerateMenus
             'header' => false,
             'route' => 'home',
             'icon' => 'fa-info',
+            'img' => '',
             'id' => 'dropdownItem'
           ],
           [
-            'label' => __('Send Feedback'),
+            'label' => __('Log Out'),
             'header' => false,
-            'route' => 'home',
-            'icon' => 'fa-comments',
+            'route' => 'logout',
+            'icon' => 'fa-sign-out-alt',
+            'img' => '',
             'id' => 'dropdownItem'
           ],
         ];
@@ -304,7 +300,7 @@ class GenerateMenus
                 if ($item['header'] === false) {
                     $tasks->add($item['label'], ['route'  => $item['route'], 'id' => $item['id'], 'icon' => $item['icon']]);
                 } else {
-                    $tasks->add($item['label'], ['class' => 'h5 text-muted font-weight-light']);
+                    $tasks->add($item['label'], ['class' => 'dropdown-item drop-header']);
                 }
             }
         });
