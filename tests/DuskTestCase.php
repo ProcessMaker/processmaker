@@ -2,14 +2,27 @@
 
 namespace Tests;
 
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\TestCase as BaseTestCase;
 use Facebook\WebDriver\Chrome\ChromeOptions;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 
+/**
+ * The base of our dusk tests. Note it uses database migrations followed 
+ * by database seeding.  This is slow but ensures clean execution between 
+ * tests.
+ */
 abstract class DuskTestCase extends BaseTestCase
 {
     use CreatesApplication;
+    use DatabaseMigrations;
+
+    public function setUp()
+    {
+        parent::setUp();
+        $this->artisan('db:seed');
+    }
 
     /**
      * Prepare for Dusk test execution.

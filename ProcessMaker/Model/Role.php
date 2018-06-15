@@ -33,12 +33,36 @@ class Role extends Model
     const STATUS_ACTIVE = 'ACTIVE';
 
     protected $fillable = [
-        'parent_role_id',
+        'name',
+        'description',
         'code',
         'created_at',
         'updated_at',
         'status',
     ];
+
+    protected $hidden = [
+        'id'
+    ];
+
+
+
+    /**
+     * The key to use in routes to fetch a user
+     */
+    public function getRouteKeyName()
+    {
+        return 'uid';
+    }
+
+    /**
+     * Parent role, if provided
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function parent()
+    {
+        return $this->hasOne(Role::class, 'parent_role_id');
+    }
 
     /**
      * Users of the role.
