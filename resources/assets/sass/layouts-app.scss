@@ -573,6 +573,9 @@ table.vuetable {
   }
 }
 
+[v-cloak] {
+  display: none;
+}
 // API error template
 #api-error {
   display: none;

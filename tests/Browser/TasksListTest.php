@@ -3,7 +3,6 @@
 namespace Tests\Browser;
 
 use Faker\Factory as Faker;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\Task;
 use ProcessMaker\Model\User;
@@ -13,8 +12,6 @@ use Laravel\Dusk\Browser;
 
 class TasksListTest extends DuskTestCase
 {
-    use DatabaseMigrations;
-
     /**
      *  Render page task list.
      *
@@ -22,9 +19,6 @@ class TasksListTest extends DuskTestCase
      */
     public function testListTask()
     {
-        //populate data for test
-        $this->artisan('db:seed');
-
         $user = User::find(1);
         $process = factory(Process::class)->create([
             'user_id' => $user->id
