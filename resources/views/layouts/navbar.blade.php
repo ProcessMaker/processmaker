@@ -24,10 +24,10 @@
         <li class="dropdown">
           <img class="avatar dropdown-toggle " id="navbarDropdown" src="/img/avatar.png" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-             <a class="dropdown-item" href="#"><i class="fas fa-user fa-fw"></i>{{__('Profile')}}</a>
-             <a class="dropdown-item" href="{{route('logout')}}"><i class="fas fa-sign-out-alt fa-fw"></i>{{__('Log Out')}}</a>
-             <a class="dropdown-item" href="#"><i class="fas fa-info fa-fw"></i>{{__('Help')}}</a>
-             <a class="dropdown-item" href="#"><i class="fas fa-comments fa-fw"></i>{{__('Send Feedback')}}</a>
+             <a class="dropdown-item drop-header"><img class="avatar-small" src="/img/avatar.png">{{__('John Bunton')}}</a>
+             @foreach($dropdown_nav->items as $row)
+                <a class="dropdown-item" href="{{ url($row->link->path['route']) }}"><i class="fas {{$row->attr('icon')}} fa-fw fa-lg"></i>{{$row->title}}</a>
+             @endforeach
            </div>
         </li>
       </li>

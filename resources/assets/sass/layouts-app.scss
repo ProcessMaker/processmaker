@@ -17,8 +17,33 @@ body {
 .navbar{
   height:60px;
 
+  .dropdown-menu-right{
+    width: 200px;
+    border: none;
+  }
+  .drop-header{
+    background-color: #e9edf1;
+    margin-top: -8px;
+    font-weight: 600;
+  }
+  .dropdown a{
+    color: #333333;
+    font-size: 14px;
+    padding-top: 7px;
+    padding-bottom: 7px;
+
+    &:hover{
+      background-color: #e9edf1;
+    }
+  }
+  .avatar-small{
+    width: 46px;
+    height: 46px;
+    margin: 0px 8px 3px -10px;
+  }
   .dropdown-item i{
     margin-right: 6px;
+    margin-left: -13px;
     color: #788793;
   }
   .dropdown-menu-right{
