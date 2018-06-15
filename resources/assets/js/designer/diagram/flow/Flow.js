@@ -6,11 +6,10 @@ import EventBus from "../../lib/event-bus"
  */
 export class Flow {
     constructor(options, graph, paper) {
-        this.source = this.options.source
-        this.target = this.options.target
         this.graph = graph
         this.paper = paper
         this.shape = null
+        this.options = options
     }
 
     /**
@@ -30,13 +29,13 @@ export class Flow {
         this.shape = new joint.shapes.standard.Link({
             router: {name: 'manhattan'}
         });
-        link.source(this.options.source);
-        link.target(this.options.source);
-        link.addTo(this.graph);
+        this.shape.source(this.options.source.getShape());
+        this.shape.target(this.options.target.getShape());
+        this.shape.addTo(this.graph);
     }
 
     /**
-     * Return the object snapsvg
+     * Return the object joint
      * @returns {*}
      */
     getShape() {
