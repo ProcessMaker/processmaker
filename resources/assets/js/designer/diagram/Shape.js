@@ -1,25 +1,11 @@
-import joint from "jointjs"
-import actions from "../../actions"
-import EventBus from "../../lib/event-bus"
+import actions from "../actions"
+import EventBus from "../lib/event-bus"
+import {JointElements} from "./jointElements"
 /**
- * StartEvent class
+ * Shape class
  */
-export class StartEvent {
-    constructor(options, graph, paper) {
-        this.options = {
-            id: null,
-            x: null,
-            y: null,
-            width: 40,
-            height: 40,
-            rounded: 10,
-            attr: {
-                fill: "#FFF",
-                stroke: "#000",
-                strokeWidth: 2
-            }
-        }
-        this.config(options)
+export class Shape {
+    constructor(graph, paper) {
         this.graph = graph
         this.paper = paper
         this.shape = null
@@ -33,20 +19,6 @@ export class StartEvent {
     config(options) {
         this.options = Object.assign({}, this.options, options);
         return this;
-    }
-
-    /**
-     * Render the StartEvent Based in options config
-     */
-    render() {
-        this.shape = new joint.shapes.standard.Circle();
-        this.shape.position(this.options.x, this.options.y);
-        this.shape.resize(this.options.width, this.options.height);
-        this.shape.attr({
-            body: {},
-            label: {}
-        });
-        this.shape.addTo(this.graph);
     }
 
     /**
@@ -75,5 +47,9 @@ export class StartEvent {
      */
     getShape() {
         return this.shape;
+    }
+
+    unselect() {
+        this.hideCrown()
     }
 }
