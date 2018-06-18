@@ -32,6 +32,10 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
       return view('admin',['title' => 'Dashboard']);
     })->name('admin');
 
+    $this->get('/admin/profile', function(){
+      return view('profile',['title' => 'Dashboard']);
+    })->name('profile');
+
     $this->get('/', function() {
         return view('home', ['title' => 'Dashboard']);
     })->name('dash');
