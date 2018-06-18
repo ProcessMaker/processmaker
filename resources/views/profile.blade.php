@@ -5,7 +5,8 @@
   <h3 class="pl-5">Profile</h3>
   <div>
     <div class="custom-file">
-      <label for="customFile"><img id="profile-avatar" align="center" src="../img/avatar.png"/></label>
+      <label for="customFile"><img class="profile-avatar" align="center" src="../img/avatar.png"/></label>
+      <img class="profile-avatar" align="center" src="../img/avatar-profile-overlay.png"/>
       <input type="file" class="custom-file-input" id="customFile">
     </div>
   </div>
@@ -40,10 +41,11 @@
         <input type="text" class="form-control" placeholder="Last name">
       </div>
     </div>
+    <br>
     <div class="row form-group">
       <div class="col">
        <label for="inputAddress">Address</label>
-       <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St">
+       <input type="text" class="form-control" id="inputAddress" placeholder="1234  St">
      </div>
    </div>
    <div class="row form-group">
@@ -95,8 +97,8 @@
        <input type="text" class="form-control" placeholder="First name">
      </div>
     </div>
-    <div class="form-group float-right">
-      <div class="col ">
+    <div class="row form-group float-right mt-3">
+      <div class="col">
         <button type="button" class="btn btn-outline-secondary">Cancel</button>
         <button type="button" class="btn btn-secondary text-light">Save</button>
       </div>
@@ -110,10 +112,13 @@
   .form-wrap{
     max-width: 620px;
   }
-  #profile-avatar{
+  .profile-avatar{
     width: 82px;
     height: 82px;
     margin-left: 220px;
+  }
+  h3{
+    font-size: 24px;
   }
 </style>
 @endsection
