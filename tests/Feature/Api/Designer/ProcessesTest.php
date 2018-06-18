@@ -45,7 +45,7 @@ class ProcessesTest extends ApiTestCase
         'show_dynaform',
         'created_at',
         'updated_at',
-        'user_id',
+        'user',
         'height',
         'width',
         'title_x',
@@ -67,6 +67,7 @@ class ProcessesTest extends ApiTestCase
         'author',
         'author_version',
         'original_source',
+        'category'
     ];
 
     /**
@@ -218,7 +219,7 @@ class ProcessesTest extends ApiTestCase
         $user = $this->authenticateAsAdmin();
         $process = factory(Process::class)->create();
         // Fetch from DB to ensure we're getting all columns
-        $process = Process::find($process->id);
+        $process = Process::with(['category', 'user'])->find($process->id);
         $response = $this->api('GET', self::API_TEST_PROCESS . '/' . $process->uid);
         $response->assertStatus(200);
         $data = json_decode($response->getContent(), true);
@@ -235,7 +236,7 @@ class ProcessesTest extends ApiTestCase
             'process_category_id' => $category->id
         ]);
         // Fetch from DB to ensure we're getting all columns
-        $process = Process::find($process->id);
+        $process = Process::with(['category', 'user'])->find($process->id);
         $response = $this->api('GET', self::API_TEST_PROCESS . '/' . $process->uid);
         $response->assertStatus(200);
         $data = json_decode($response->getContent(), true);
