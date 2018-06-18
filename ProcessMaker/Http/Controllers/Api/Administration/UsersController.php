@@ -18,7 +18,7 @@ class UsersController extends Controller
 
     /**
      * Fetch a collection of users based on paged request and filter if provided
-     * 
+     *
      * @return JsonResponse A list of matched users and paging data
      */
     public function index(Request $request)
@@ -30,29 +30,29 @@ class UsersController extends Controller
         // Default order by
         $orderBy = $request->input('order_by', 'username');
         $orderDirection = $request->input('order_direction', 'asc');
- 
+
         // Note, the current page is automatically handled by Laravel's pagination feature
-        if($filter) {
+        if ($filter) {
             $filter = '%' . $filter . '%';
             $users = User::where('firstname', 'like', $filter)
                 ->orWhere('lastname', 'like', $filter)
                 ->orWhere('username', 'like', $filter)
                 ->orderBy($orderBy, $orderDirection);
-            if($orderBy == 'full_name') {
+            if ($orderBy == 'full_name') {
                 // Add a calculated row of their first name
                 $users = $users->select(DB::raw('users.*, CONCAT_WS(" ", firstname, lastname) as full_name'));
-            } else if($orderBy == 'role') {
+            } else if ($orderBy == 'role') {
                 // Need to join the role table and grab the code in role and order by it
                 $users = $users->leftJoin('roles', 'users.role_id', 'roles.id')
                     ->select(DB::raw('users.*, roles.code as role'));
             }
             $users = $users->paginate($perPage);
         } else {
-            if($orderBy == 'full_name') {
+            if ($orderBy == 'full_name') {
                 // Add calculated full_name column
                 $users = User::select(DB::raw('users.*, CONCAT_WS(" ", firstname, lastname) as full_name'))
                     ->orderBy($orderBy, $orderDirection)->paginate($perPage);
-            } else if($orderBy == 'role') {
+            } else if ($orderBy == 'role') {
                 // Join our role table if there is a role_id defined, and order by the role
                 $users = User::leftJoin('roles', 'users.role_id', 'roles.id')
                     ->select(DB::raw('users.*, roles.code as role'))
@@ -72,6 +72,23 @@ class UsersController extends Controller
     {
         return fractal($user, new UserTransformer())->respond();
 
+    }
+
+
+    public function update(User $user, Request $request)
+    {
+        $request->validate([
+            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        $avatarName = $user->id . '_avatar' . time() . '.' . request()->avatar->getClientOriginalExtension();
+
+        $request->avatar->storeAs('avatars', $avatarName);
+
+        $user->avatar = $avatarName;
+        $user->save();
+
+        return fractal($user, new UserTransformer())->respond();
     }
 
 }
