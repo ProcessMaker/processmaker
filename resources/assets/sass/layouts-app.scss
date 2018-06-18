@@ -369,8 +369,8 @@ select.form-control:not([size]):not([multiple]) {
     left: 0px;
     background-color: $light;
     background-repeat: no-repeat;
-    background-position: 6px 6px;
-    background-size: 48px 48px;
+    background-position: 24px 18px;
+    background-size: 26px 26px;
     display: flex;
     padding-left: 72px;
     padding-right: 16px;
@@ -570,6 +570,3 @@ table.vuetable {
     font-size: 23px;
   }
 }
-
-
-
