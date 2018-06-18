@@ -2,8 +2,14 @@
 
 @section('content')
 <div class="form-wrap container bg-light mt-4 p-5">
-  <h3>Profile</h3>
-  <form>
+  <h3 class="pl-5">Profile</h3>
+  <div>
+    <div class="custom-file">
+      <label for="customFile"><img id="profile-avatar" align="center" src="../img/avatar.png"/></label>
+      <input type="file" class="custom-file-input" id="customFile">
+    </div>
+  </div>
+  <form class="pl-5 pr-5">
     <div class="row form-group">
       <div class="col">
         <label for="inputAddress">Address</label>
@@ -91,8 +97,8 @@
     </div>
     <div class="form-group float-right">
       <div class="col ">
-        <button type="button" class="btn btn-outline-secondary">Secondary</button>
-        <button type="button" class="btn btn-secondary">Secondary</button>
+        <button type="button" class="btn btn-outline-secondary">Cancel</button>
+        <button type="button" class="btn btn-secondary text-light">Save</button>
       </div>
     </div>
   </form>
@@ -103,6 +109,11 @@
 <style lang="scss" scoped>
   .form-wrap{
     max-width: 620px;
+  }
+  #profile-avatar{
+    width: 82px;
+    height: 82px;
+    margin-left: 220px;
   }
 </style>
 @endsection
