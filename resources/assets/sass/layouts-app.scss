@@ -642,15 +642,15 @@ table.vuetable {
   display: none;
 }
 
-.error-content{
+.error-content {
   text-align: center;
   color: #788793;
-  margin-top: 50px;
+  margin-top: 40px;
   div:first-child{
     height: 200px;
     width: 260px;
     margin: auto;
-    background-image: url('../img/gears-big.png');
+    background-image: url('/img/gears-big.png');
     background-repeat: no-repeat;
   }
   h1 {
