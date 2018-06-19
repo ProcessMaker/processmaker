@@ -31,6 +31,10 @@ Router::group([
             Router::get('users', 'Administration\UsersController@index');
             Router::get('users/{user}', 'Administration\UsersController@get');
 
+            //User profile
+            Router::get('admin/{user}/profile', 'Administration\UsersController@profile');
+            Router::put('admin/{user}/profile', 'Administration\UsersController@update');
+
             // Roles API Endpoints
             Router::get('roles', 'Administration\RolesController@index');
             Router::post('roles', 'Administration\RolesController@create');

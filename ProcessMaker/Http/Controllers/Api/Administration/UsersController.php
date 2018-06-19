@@ -2,8 +2,10 @@
 
 namespace ProcessMaker\Http\Controllers\Api\Administration;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Model\User;
 use ProcessMaker\Transformers\UserTransformer;
@@ -74,21 +76,67 @@ class UsersController extends Controller
 
     }
 
+    /**
+     * Load profile user
+     *
+     * @param User $user
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    public function profile(User $user)
+    {
+        $url = '';
+        if (!empty($user->avatar) && Storage::disk('profile')->exists($user->avatar)) {
+            $url = Storage::disk('profile')->url($user->avatar);
+        }
+        $user->avatar = $url;
+        return fractal($user, new UserTransformer())->respond();
+    }
 
+    /**
+     * Update information user
+     *
+     * @param User $user
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
+     */
     public function update(User $user, Request $request)
+    {
+        $data = $request->all();
+        if (isset($data['avatar']) && !empty($data['avatar'])) {
+            $data['avatar'] = $this->uploadAvatar($user, $request);
+        }
+        $user->fill($data);
+        $user->saveOrFail();
+        return response([], 200);
+    }
+
+
+    /**
+     * Upload file avatar
+     *
+     * @param User $user
+     * @param Request $request
+     *
+     * @return string name of file
+     * @throws \Throwable
+     */
+    public function uploadAvatar(User $user, Request $request)
     {
         $request->validate([
             'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $avatarName = $user->id . '_avatar' . time() . '.' . request()->avatar->getClientOriginalExtension();
-
-        $request->avatar->storeAs('avatars', $avatarName);
+        $avatarName = $user->id . '_avatar' . Carbon::now()->timestamp . '.' . request()->avatar->getClientOriginalExtension();
+        $request->avatar->storeAs('', $avatarName, 'profile');
 
         $user->avatar = $avatarName;
-        $user->save();
+        $user->saveOrFail();
 
-        return fractal($user, new UserTransformer())->respond();
+        return $avatarName;
     }
 
 }

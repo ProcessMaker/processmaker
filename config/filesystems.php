@@ -70,7 +70,7 @@ return [
         ],
         'profile' => [
             'driver' => 'local',
-            'root' => storage_path('app/public/profile'),
+            'root' => storage_path('app/profile'),
             'url' => env('APP_URL').'/storage/profile',
             'visibility' => 'public',
         ],
