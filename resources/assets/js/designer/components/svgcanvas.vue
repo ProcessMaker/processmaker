@@ -77,14 +77,29 @@
             removeElement (e){
                 this.builder.removeSelection()
             },
-            addListeners(){
-                this.graph.on('change:position', this.changePosition);
-            },
-            changePosition(element){
+            /**
+             * Listener from Crown for update position in element
+             */
+            changeElementPosition(element){
                 this.builder.updatePosition(element)
             },
+            /**
+             * Listener from Crown for click in any element
+             */
+            clickElement(element){
+                this.builder.onClickShape(element)
+            },
+            /**
+             * Listener from Crown for click in canvas
+             */
+            clickCanvas(element){
+                this.builder.onClickCanvas(element)
+            },
+            /**
+             * Listener from Crown to create Flow
+             */
             createFlow(){
-                this.builder.creatingFlow = true
+                this.builder.setSourceElement()
             }
         },
         mounted() {
@@ -101,7 +116,9 @@
                 }
             });
             this.builder = new Builder(this.graph, this.paper)
-            this.addListeners()
+            this.graph.on('change:position', this.changeElementPosition);
+            this.paper.on('element:pointerclick', this.clickElement)
+            this.paper.on('blank:pointerclick', this.clickCanvas)
         }
     }
 </script>

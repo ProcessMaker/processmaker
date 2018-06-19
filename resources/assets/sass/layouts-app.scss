@@ -560,6 +560,7 @@ table.vuetable {
   }
 }
 
+
 ///icomoon
 @font-face {
   font-family: 'icomoon';
@@ -631,6 +632,10 @@ table.vuetable {
 }
 
 
+
+[v-cloak] {
+  display: none;
+}
 
 // API error template
 #api-error {

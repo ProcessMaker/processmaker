@@ -39,7 +39,7 @@
              :class="['pagination-nav-item', css.linkClass, isOnLastPage ? css.disabledClass : '']">
           <i class="fas fa-angle-double-right"></i>
         </div>
-        <select v-if="perPageSelectEnabled" v-model="perPage">
+        <select v-if="perPageSelectEnabled" v-model="perPage" class="pagination-nav-item pagination-nav-drop">
           <option value="10">10</option>
           <option value="25">25</option>
           <option value="50">50</option>
@@ -92,7 +92,12 @@
     color: #788793;
   }
 
-  .pagination-nav-item {
+.meta {
+  font-size: 12px;
+  color: #788793;
+}
+
+.pagination-nav-item {
     background-color: $body-bg;
     width: 29px;
     height: 29px;
@@ -116,6 +121,10 @@
       background-color: white;
     }
   }
+
+.pagination-nav-drop {
+  width: 40px;
+}
 
 
 

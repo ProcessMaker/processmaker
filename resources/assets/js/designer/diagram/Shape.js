@@ -48,4 +48,8 @@ export class Shape {
     getShape() {
         return this.shape;
     }
+
+    unselect() {
+        this.hideCrown()
+    }
 }

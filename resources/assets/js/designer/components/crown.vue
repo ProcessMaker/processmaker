@@ -2,28 +2,35 @@
     <div v-show="visible" class="designer-container-crown" v-bind:style="{ top: y+'px', left:x+'px' }">
         <div class="d-flex flex-row">
             <div class="item-crown">
-                <img id="bpmn:Task" src="../img/task.svg" height="18"
+                <img id="bpmn:Task" src="../img/task.svg" height="20"
                      @click="createAction($event)">
             </div>
             <div class="item-crown">
-                <img id="bpmn:ExclusiveGateway" src="../img/exclusive-gateway.svg" height="25"
+                <img id="bpmn:ExclusiveGateway" src="../img/exclusive-gateway.svg" height="27"
                      @click="createAction($event)">
             </div>
-        </div>
-        <div class="d-flex flex-row">
             <div class="item-crown">
                 <img id="bpmn:IntermediateEmailEvent" name="IntermediateEmailEvent"
-                     src="../img/intermediate-email-event.svg" height="25" @click="createAction($event)">
-            </div>
-            <div class="item-crown">
-                <img id="bpmn:EndEvent" src="../img/corona-flow.png" height="25"
-                     @click="createFlow($event)">
+                     src="../img/intermediate-email-event.svg" height="27" @click="createAction($event)">
             </div>
         </div>
         <div class="d-flex flex-row">
             <div class="item-crown">
-                <img id="bpmn:Task" class="delete-crown" src="../img/corona-delete.png" height="20"
-                     draggable="true" @click="remove($event)">
+                <img id="bpmn:EndEvent" name="EndEvent"
+                     src="../img/end-event.svg" height="27" @click="createAction($event)">
+            </div>
+            <div class="item-crown">
+                <img id="bpmn:EndEvent" src="../img/corona-flow.png" height="28"
+                     @click="createFlow($event)">
+            </div>
+            <div class="item-crown">
+                <i id="settings" class="fas fa-cog icon-crown" @click="createFlow($event)" draggable="true"></i>
+            </div>
+        </div>
+        <div class="d-flex flex-row">
+            <div class="item-crown">
+                <i id="settings" class="fas fa-trash-alt icon-crown" @click="createFlow($event)"
+                   draggable="true"></i>
             </div>
         </div>
     </div>
@@ -35,6 +42,8 @@
     export default {
         data() {
             return {
+                dx: 3,
+                dy: 3,
                 x: null,
                 y: null,
                 visible: false
@@ -56,8 +65,8 @@
              * Method for show the crown
              */
             show(conf){
-                this.x = conf.x + document.getElementById('svgCanvas').getBoundingClientRect().left
-                this.y = conf.y + document.getElementById('svgCanvas').getBoundingClientRect().top
+                this.x = conf.x + document.getElementById('svgCanvas').getBoundingClientRect().left + this.dx
+                this.y = conf.y + document.getElementById('svgCanvas').getBoundingClientRect().top - this.dy
                 this.visible = true
             },
             /**
@@ -77,16 +86,31 @@
     }
 </script>
 
-<style>
+<style lang="scss" scoped>
     .designer-container-crown {
         position: fixed;
         z-index: 10;
+        display: flex;
+        flex-direction: column;
     }
 
     .item-crown {
-        display: table-cell;
-        padding: 3px;
         text-align: center;
+        min-width: 33px;
+        padding: 2px;
+
+        img:before {
+            content: '';
+            display: inline-block;
+            height: 100%;
+            vertical-align: middle;
+            margin-right: -0.25em; /* Adjusts for spacing */
+        }
+    }
+
+    .icon-crown {
+        padding: 3px;
+        font-size: 22px;
     }
 
     .delete-crown {
@@ -95,6 +119,6 @@
     }
 
     .item-crown:hover {
-        background-color: #e7e0e0;
+        background-color: #eff2ed;
     }
 </style>

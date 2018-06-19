@@ -24,13 +24,25 @@ Router::group([
     Router::group([
         'middleware' => ['auth:api', 'bindings']
     ], function() {
-        // Users API Endpoints
         Router::group([
             'middleware' => ['permission:PM_USERS']
         ], function() {
+            // Users API Endpoints
             Router::get('users', 'Administration\UsersController@index');
             Router::get('users/{user}', 'Administration\UsersController@get');
+
+            // Roles API Endpoints
+            Router::get('roles', 'Administration\RolesController@index');
+            Router::post('roles', 'Administration\RolesController@create');
+            Router::get('roles/{role}', 'Administration\RolesController@get');
+
+            // Roles API Endpoints
+            Router::get('groups', 'Administration\GroupsController@index');
+            Router::post('groups', 'Administration\GroupsController@create');
+            Router::get('groups/{group}', 'Administration\GroupsController@get');
+ 
         });
+
 
         //File manager endpoints.
         Router::get('project/{process}/file-manager', 'Designer\FileManagerController@index')->middleware('can:readProcessFiles,process');

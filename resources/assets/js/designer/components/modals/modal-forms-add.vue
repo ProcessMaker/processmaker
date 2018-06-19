@@ -35,6 +35,8 @@ export default {
       // form models here
       'formTitle':"Title",
       'formDescription':"Description",
+
+      messageFields: []
     }
   },
   methods:{
