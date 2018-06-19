@@ -53,7 +53,9 @@
   },
   "extra": {
     "laravel": {
-      "dont-discover": []
+      "dont-discover": [
+        "laravel/dusk"
+      ]
     }
   },
   "scripts": {
