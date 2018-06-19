@@ -3,8 +3,8 @@
   <ul class="l-0 list-unstyled position-fixed text-light" id="sidebarscroll">
     @foreach($sidebar->items as $row)
       @if(array_key_exists('route',$row->link->path))
-        <li>
-          <a href="{{ url($row->link->path['route']) }}">
+        <li class="d-flex">
+          <a class="d-flex" href="{{ url($row->link->path['route']) }}">
             <i class="fas {{$row->attr('icon')}} fa-fw"></i> <span v-if="expanded">{{$row->title}}</span>
           </a>
         </li>
