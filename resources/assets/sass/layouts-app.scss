@@ -542,17 +542,15 @@ table.vuetable {
   }
 }
 
-<<<<<<< HEAD
+// 404 error
 #404-error {
-  div:first-child {
-    height: 200px;
-    width: 260px;
-    margin: auto;
-    background-image: url('../img/robot.png');
-    background-repeat: no-repeat;
-  }
+  height: 200px;
+  width: 260px;
+  margin: auto;
+  background-image: url('../img/Robot.png');
+  background-repeat: no-repeat;
 }
-=======
+
 [v-cloak] {
   display: none;
 }
@@ -561,7 +559,7 @@ table.vuetable {
   display: none;
 }
 
-.error-content{
+.error-content {
   text-align: center;
   color: #788793;
   margin-top: 50px;
@@ -582,6 +580,3 @@ table.vuetable {
   }
 }
 
-
-
->>>>>>> develop
