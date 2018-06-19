@@ -31,7 +31,8 @@ new Vue({
     }
 })
 
-// Setup our api client interceptor to handle errors and reflect the error 
+
+// Setup our api client interceptor to handle errors and reflect the error
 // in our skin.
 window.ProcessMaker.apiClient.interceptors.response.use(function (response) {
     // No need to handle success responses

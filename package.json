@@ -60,6 +60,7 @@
     "tinymce": "^4.7.13",
     "tooltip.js": "^1.2.0",
     "v-tooltip": "^2.0.0-rc.32",
+    "vue-croppie": "^1.3.12",
     "vue-events": "^3.1.0",
     "vue-resource": "^1.5.1",
     "vuetable-2": "^1.7.5"
