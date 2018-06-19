@@ -544,11 +544,13 @@ table.vuetable {
 
 // 404 error
 #404-error {
-  height: 200px;
-  width: 260px;
-  margin: auto;
-  background-image: url('../img/Robot.png');
-  background-repeat: no-repeat;
+  div:first-child {
+    height: 200px;
+    width: 260px;
+    margin: auto;
+    background-image: url('../../assets/img/robot.png');
+    background-repeat: no-repeat;
+  }
 }
 
 [v-cloak] {
