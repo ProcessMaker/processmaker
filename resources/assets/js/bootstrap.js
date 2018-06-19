@@ -44,6 +44,8 @@ if (token) {
   console.error('ProcessMaker API Token not found in document. API requests via JavaScript may not function.');
 }
 window.ProcessMaker.apiClient.defaults.baseURL = '/api/1.0/';
+// Default to a 5 second timeout, which is an eternity in web app terms
+window.ProcessMaker.apiClient.defaults.timeout = 5000;
 
 
 /**

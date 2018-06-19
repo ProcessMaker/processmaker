@@ -5,6 +5,7 @@ namespace ProcessMaker\Model;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use ProcessMaker\Model\Traits\Uuid;
 
 /**
  * Represents an Eloquent model of a Group
@@ -20,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  */
 class Group extends Model
 {
+    use Uuid;
 
     // Specify our table and our primary key
     protected $table = 'groups';
@@ -73,6 +75,14 @@ class Group extends Model
         'ux' => 'required|in:' . self::UX_NORMAL . ',' . self::UX_MOBILE . ',' . self::UX_SWITCHABLE . ',' . self::UX_SINGLE,
         'status' => 'required|in:' . self::STATUS_ACTIVE . ',' . self::STATUS_INACTIVE
     ];
+
+    /**
+     * The key to use in routes to fetch a group
+     */
+    public function getRouteKeyName()
+    {
+        return 'uid';
+    }
 
     /**
      * Returns the relationship of users that belong to this group

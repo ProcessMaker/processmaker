@@ -542,6 +542,7 @@ table.vuetable {
   }
 }
 
+<<<<<<< HEAD
 #404-error {
   div:first-child {
     height: 200px;
@@ -551,3 +552,36 @@ table.vuetable {
     background-repeat: no-repeat;
   }
 }
+=======
+[v-cloak] {
+  display: none;
+}
+// API error template
+#api-error {
+  display: none;
+}
+
+.error-content{
+  text-align: center;
+  color: #788793;
+  margin-top: 50px;
+  div:first-child{
+    height: 200px;
+    width: 260px;
+    margin: auto;
+    background-image: url('../img/gears-big.png');
+    background-repeat: no-repeat;
+  }
+  h1 {
+    font-weight: 600;
+    font-size: 31px;
+    line-height: 46px;
+  }
+  p {
+    font-size: 23px;
+  }
+}
+
+
+
+>>>>>>> develop

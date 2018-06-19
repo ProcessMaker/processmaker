@@ -9,7 +9,8 @@ export class Builder {
         this.graph = graph
         this.paper = paper
         this.collection = []
-        this.creatingFlow = false
+        this.targetShape = null
+        this.sourceShape = null
     }
 
     /**
@@ -35,8 +36,6 @@ export class Builder {
             );
             element.render();
             this.collection.push(element)
-            this.paper.on('element:pointerclick', this.onClickShape())
-            this.paper.on('blank:pointerclick', this.onClickCanvas())
         }
     }
 
@@ -45,22 +44,20 @@ export class Builder {
      * @param element
      * @returns {function(*)}
      */
-    onClickShape() {
-        let that = this;
-        return (element) => {
-            let res = _.find(that.collection, (o) => {
-                return element.model.id === o.shape.id
-            })
-
-            if (res) {
-                that.hideCrown();
-                res.showCrown()
-                that.selection = [];
-                that.selection.push(res);
+    onClickShape(elJoint) {
+        let el = this.findElementInCollection(elJoint)
+        if (el) {
+            debugger
+            if (this.sourceShape) {
+                this.connect(this.sourceShape, el)
+            } else {
+                this.hideCrown();
+                el.showCrown()
+                this.selection = [];
+                this.selection.push(el);
             }
-
-            return false;
-        };
+        }
+        return false;
     }
 
     /**
@@ -69,11 +66,7 @@ export class Builder {
      * @returns {function(*)}
      */
     onClickCanvas() {
-        let that = this;
-        return (element) => {
-            that.hideCrown()
-            return false;
-        };
+        this.hideCrown()
     }
 
 
@@ -107,6 +100,10 @@ export class Builder {
         });
     }
 
+    /**
+     * Update the position in Shapes
+     * @param element
+     */
     updatePosition(element) {
         this.hideCrown()
         let res = _.find(this.collection, (o) => {
@@ -115,5 +112,43 @@ export class Builder {
         if (res) {
             res.config(element.get("position"))
         }
+    }
+
+    /**
+     * Connect shapes
+     * @param source
+     * @param target
+     */
+    connect(source, target) {
+        if (source != target) {
+            let flow = new Elements["Flow"]({
+                    source,
+                    target
+                },
+                this.graph,
+                this.paper
+            );
+            flow.render()
+            source.hideCrown()
+            this.sourceShape = null
+        }
+    }
+
+    /**
+     * This method find element joint js in collection
+     * @param element
+     */
+    findElementInCollection(element) {
+        return _.find(this.collection, (o) => {
+            return element.model.id === o.shape.id
+        })
+    }
+
+    /**
+     * This method set source element to create flow
+     * @param element
+     */
+    setSourceElement() {
+        this.sourceShape = this.selection.pop()
     }
 }

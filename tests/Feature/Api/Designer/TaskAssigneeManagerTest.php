@@ -290,7 +290,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
      */
     public function testGetInformationGroupNoExists()
     {
-        $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee/' . factory(Group::class)->make()->uid;
+        $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee/invalidgroupid';
         $response = $this->api('GET', $url);
         //Validate the answer is incorrect
         $response->assertStatus(404);
