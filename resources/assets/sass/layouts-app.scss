@@ -563,11 +563,11 @@ table.vuetable {
 ///icomoon
 @font-face {
   font-family: 'icomoon';
-  src:  url('../fonts/icomoon.eot?oaplxz');
-  src:  url('../fonts/icomoon.eot?oaplxz#iefix') format('embedded-opentype'),
-    url('../fonts/icomoon.ttf?oaplxz') format('truetype'),
-    url('../fonts/icomoon.woff?oaplxz') format('woff'),
-    url('../fonts/icomoon.svg?oaplxz#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?9f4tqy');
+  src:  url('fonts/icomoon.eot?9f4tqy#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?9f4tqy') format('truetype'),
+    url('fonts/icomoon.woff?9f4tqy') format('woff'),
+    url('fonts/icomoon.svg?9f4tqy#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -587,50 +587,47 @@ table.vuetable {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-assigned-test:before {
-  content: "\e90e";
-}
 .icon-assigned:before {
-  content: "\e906";
-}
-.icon-completed-1:before {
-  content: "\e907";
-}
-.icon-completed-2:before {
-  content: "\e908";
-}
-.icon-draft:before {
-  content: "\e909";
-}
-.icon-in-progress:before {
-  content: "\e90a";
-}
-.icon-paused-1:before {
-  content: "\e90b";
-}
-.icon-paused-2:before {
-  content: "\e90c";
-}
-.icon-unassigned:before {
-  content: "\e90d";
-}
-.icon-connectors:before {
   content: "\e900";
 }
-.icon-custom-ui:before {
+.icon-completed-1:before {
   content: "\e901";
 }
-.icon-login:before {
+.icon-completed-2:before {
   content: "\e902";
 }
-.icon-process:before {
+.icon-connectors:before {
   content: "\e903";
 }
-.icon-security-on:before {
+.icon-custom-ui:before {
   content: "\e904";
 }
-.icon-workstation:before {
+.icon-draft:before {
   content: "\e905";
+}
+.icon-in-progress:before {
+  content: "\e906";
+}
+.icon-login:before {
+  content: "\e907";
+}
+.icon-paused-1:before {
+  content: "\e908";
+}
+.icon-paused-2:before {
+  content: "\e909";
+}
+.icon-process:before {
+  content: "\e90a";
+}
+.icon-security-on:before {
+  content: "\e90b";
+}
+.icon-unassigned:before {
+  content: "\e90c";
+}
+.icon-workstation:before {
+  content: "\e90d";
 }
 
 

@@ -5,7 +5,7 @@
       @if(array_key_exists('route',$row->link->path))
         <li class="d-flex">
           <a class="d-flex" href="{{ url($row->link->path['route']) }}">
-            <i class="{{$row->attr('icon')}}"></i> <span v-if="expanded">{{$row->title}}</span>
+            <i class="fas {{$row->attr('icon')}} fa-fw"></i> <span v-if="expanded">{{$row->title}}</span>
           </a>
         </li>
         @else

@@ -30,21 +30,21 @@ class GenerateMenus
               'label' => __('menus.sidebar_admin.users'),
               'header' => false,
               'route' => 'home',
-              'icon' => 'fas fa-user fa-fw',
+              'icon' => 'fa-user',
               'id' => 'homeid'
             ],
             [
               'label' => __('menus.sidebar_admin.groups'),
               'header' => false,
               'route' => 'home',
-              'icon' => 'fas fa-users fa-fw',
+              'icon' => 'fa-users',
               'id' => 'homeid'
             ],
             [
               'label' => __('menus.sidebar_admin.roles'),
               'header' => false,
               'route' => 'home',
-              'icon' => 'fas fa-user-plus fa-fw',
+              'icon' => 'fa-user-plus',
               'id' => 'homeid'
             ],
             [
@@ -58,14 +58,14 @@ class GenerateMenus
                 'label' => __('menus.sidebar_admin.login'),
                 'header' => false,
                 'route' => 'home',
-                'icon' => 'fas fa-key fa-fw',
+                'icon' => 'fa-key',
                 'id' => 'homeid'
               ],
               [
                 'label' => __('menus.sidebar_admin.authentication'),
                 'header' => false,
                 'route' => 'home',
-                'icon' => 'fas fa-user-secret fa-fw',
+                'icon' => 'fa-user-secret',
                 'id' => 'homeid'
               ],
               [
@@ -78,21 +78,21 @@ class GenerateMenus
               [
                 'label' => __('menus.sidebar_admin.localization'),
                 'route' => 'home',
-                'icon' => 'fas fa-globe fa-fw',
+                'icon' => 'fa-globe',
                 'header' => false,
                 'id' => 'homeid'
               ],
               [
                 'label' => __('menus.sidebar_admin.email_configuration'),
                 'route' => 'home',
-                'icon' => 'fas fa-envelope fa-fw',
+                'icon' => 'fa-envelope',
                 'header' => false,
                 'id' => 'homeid'
               ],
               [
                 'label' => __('menus.sidebar_admin.notifications'),
                 'route' => 'home',
-                'icon' => 'fas fa-bell fa-fw',
+                'icon' => 'fa-bell',
                 'header' => false,
                 'id' => 'homeid'
               ],
@@ -107,14 +107,14 @@ class GenerateMenus
                 'label' => __('menus.sidebar_admin.customize'),
                 'header' => false,
                 'route' => 'home',
-                'icon' => 'fas fa-cogs fa-fw',
+                'icon' => 'fa-cogs',
                 'id' => 'homeid'
               ],
               [
                 'label' => __('menus.sidebar_admin.themes'),
                 'header' => false,
                 'route' => 'home',
-                'icon' => 'fas fa-th fa-fw',
+                'icon' => 'fa-th',
                 'id' => 'homeid'
               ],
               [
@@ -128,14 +128,14 @@ class GenerateMenus
                 'label' => __('menus.sidebar_admin.software_requirements'),
                 'header' => false,
                 'route' => 'home',
-                'icon' => 'fas fa-laptop fa-fw',
+                'icon' => 'fa-laptop',
                 'id' => 'homeid'
               ],
               [
                 'label' => __('menus.sidebar_admin.plugins'),
                 'header' => false,
                 'route' => 'home',
-                'icon' => 'fas fa-puzzle-piece fa-fw',
+                'icon' => 'fa-puzzle-piece',
                 'id' => 'homeid'
               ],
               [
@@ -149,14 +149,14 @@ class GenerateMenus
                 'label' => __('menus.sidebar_admin.manage_cache'),
                 'header' => false,
                 'route' => 'home',
-                'icon' => 'fas fa-bolt fa-fw',
+                'icon' => 'fa-bolt',
                 'id' => 'homeid'
               ],
               [
                 'label' => __('menus.sidebar_admin.audit_log'),
                 'header' => false,
                 'route' => 'home',
-                'icon' => 'fas fa-list-ul fa-fw',
+                'icon' => 'fa-list-ul',
                 'id' => 'homeid'
               ],
             ];
