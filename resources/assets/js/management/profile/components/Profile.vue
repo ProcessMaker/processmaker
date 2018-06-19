@@ -3,9 +3,10 @@
     <h3 class="pl-5">Profile</h3>
     <div>
       <div class="custom-file">
-        <img class="profile-avatar" align="center" src="/img/avatar.png">
+        <div v-if="!image" class="profile-avatar-none text-light">JB</div>
+        <div v-else ><img :src="image" class="profile-avatar"></div>
         <label for="customFile"><img class="profile-overlay" align="center" src="/img/avatar-profile-overlay.png"></label>
-        <input type="file" class="custom-file-input" id="customFile">
+        <input type="file" class="custom-file-input" id="customFile" @change="onFileChange">
       </div>
     </div>
     <form class="pl-5 pr-5">
@@ -107,16 +108,33 @@
 
 <script>
 
-
+import VueCroppie from 'vue-croppie';
 export default{
   components:{
-    Profile,
     VueCroppie
   },
   data(){
     return{
-
+       image: '',
     }
+  },
+  methods: {
+    onFileChange(e) {
+      var files = e.target.files || e.dataTransfer.files;
+      if (!files.length)
+        return;
+      this.createImage(files[0]);
+    },
+    createImage(file) {
+      var image = new Image();
+      var reader = new FileReader();
+      var vm = this;
+
+      reader.onload = (e) => {
+        vm.image = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    },
   }
 }
 </script>
@@ -124,6 +142,13 @@ export default{
 <style lang="scss" scoped>
   .form-wrap{
     max-width: 620px;
+  }
+  .profile-avatar-none{
+    width: 82px;
+    height: 82px;
+    margin-left: 220px;
+    background-color: rgb(251,181,4);
+    text-align:center;
   }
   .profile-avatar{
     width: 82px;
@@ -135,7 +160,7 @@ export default{
   }
   .profile-overlay{
     position: absolute;
-    margin-left: -86px;
-    margin-top: -38px;
+    margin-left: 220px;
+    margin-top: -92px;
   }
 </style>
