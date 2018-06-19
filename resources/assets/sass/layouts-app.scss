@@ -542,17 +542,6 @@ table.vuetable {
   }
 }
 
-// 404 error
-#404-error {
-  div:first-child {
-    height: 200px;
-    width: 260px;
-    margin: auto;
-    background-image: url('../../assets/img/robot.png');
-    background-repeat: no-repeat;
-  }
-}
-
 [v-cloak] {
   display: none;
 }
@@ -564,12 +553,12 @@ table.vuetable {
 .error-content {
   text-align: center;
   color: #788793;
-  margin-top: 50px;
+  margin-top: 40px;
   div:first-child{
     height: 200px;
     width: 260px;
     margin: auto;
-    background-image: url('../img/gears-big.png');
+    background-image: url('/img/gears-big.png');
     background-repeat: no-repeat;
   }
   h1 {
