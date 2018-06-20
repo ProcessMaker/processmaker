@@ -16,6 +16,7 @@
         <div class="form-group">
           <label for="add-role-name">Name</label>
           <input id="add-role-name" class="form-control" v-model="addRoleName">
+          
         </div>
         <div class="form-group">
           <label for="add-role-name">Description</label>

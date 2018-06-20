@@ -37,13 +37,14 @@ window.ProcessMaker.apiClient.interceptors.response.use(function (response) {
     // No need to handle success responses
     return response;
   }, function (error) {
-      // Replace our content div with our error div
-      // Remove our #content-inner
-      let elem = document.getElementById('content-inner');
-      elem.parentNode.removeChild(elem);
-      // Now show our #api-error div
-      elem  = document.getElementById('api-error');
-      elem.setAttribute('style', 'display: block');
-
+      if (error.response.status != 422){
+        // Replace our content div with our error div
+        // Remove our #content-inner
+        let elem = document.getElementById('content-inner');
+        elem.parentNode.removeChild(elem);
+        // Now show our #api-error div
+        elem  = document.getElementById('api-error');
+        elem.setAttribute('style', 'display: block');  
+      }
     return Promise.reject(error);
   });
