@@ -125,7 +125,7 @@ export default{
       this.$refs.profileModal.openModal()
     },
     hideModal () {
-     this.$refs.profileModal.hide()
+     this.$refs.modalProfileAvatar.hide()
     },
     onFileChange(e) {
       let files = e.target.files || e.dataTransfer.files;
