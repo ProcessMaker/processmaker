@@ -3,7 +3,9 @@
 namespace ProcessMaker\Http\Controllers\Api\Administration;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Http\Controllers\Controller;
@@ -79,15 +81,12 @@ class UsersController extends Controller
     /**
      * Load profile user
      *
-     * @param User $user
-     * @param Request $request
-     *
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @return JsonResponse
      */
-    public function profile(User $user)
+    public function profile()
     {
         $url = '';
+        $user = User::find(Auth::id());
         if (!empty($user->avatar) && Storage::disk('profile')->exists($user->avatar)) {
             $url = Storage::disk('profile')->url($user->avatar);
         }
@@ -100,7 +99,8 @@ class UsersController extends Controller
      *
      * @param User $user
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     *
+     * @return JsonResponse
      * @throws \Throwable
      */
     public function update(User $user, Request $request)
@@ -114,6 +114,20 @@ class UsersController extends Controller
         return response([], 200);
     }
 
+    /**
+     * Update Profile user
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     * @throws \Throwable
+     */
+    public function updateProfile(Request $request)
+    {
+        $user = User::find(Auth::id());
+        $this->update($user, $request);
+        return response([], 200);
+    }
 
     /**
      * Upload file avatar
