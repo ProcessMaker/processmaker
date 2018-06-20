@@ -9,11 +9,17 @@
         <input type="file" class="custom-file-input" id="customFile" @change="onFileChange">
       </div>
     </div>
-    <b-modal ref="myModalRef" hide-footer title="Using Component Methods">
+    <b-modal ref="profileModal" hide-footer title="Profile Avatar">
       <div class="d-block text-center">
-        <h3>Hello From My Modal!</h3>
+        <div v-if="!image" class="modal-profile-avatar-none text-light">JB</div>
+        <div v-else ><img :src="image" class="modal-profile-avatar"></div>
+        <input type="file" class="custom-file-input" id="customFile" @change="onFileChange">
       </div>
-      <b-btn class="mt-3" variant="outline-danger" block @click="hideModal">Close Me</b-btn>
+      <div class="mb-5 mt-3 float-right">
+        <button type="button" class="btn btn-secondary text-light"><label id="browse" for="customFile"><i class="fas fa-upload"></i> Browse</label></button>
+        <button type="button" @click="hideModal" class="btn btn-outline-secondary">Cancel</button>
+        <button type="button" @click="hideModal" class="btn btn-secondary text-light">Save</button>
+      </div>
     </b-modal>
     <form class="pl-5 pr-5">
       <div class="row form-group">
@@ -124,10 +130,10 @@ export default{
   },
   methods: {
     openModal () {
-      this.$refs.myModalRef.show()
+      this.$refs.profileModal.show()
     },
     hideModal () {
-     this.$refs.myModalRef.hide()
+     this.$refs.profileModal.hide()
     },
     onFileChange(e) {
       var files = e.target.files || e.dataTransfer.files;
@@ -150,6 +156,10 @@ export default{
 </script>
 
 <style lang="scss" scoped>
+  #browse{
+    padding: 0;
+    margin-bottom: 0;
+  }
   form{
     margin-top: -34px;
   }
@@ -176,4 +186,5 @@ export default{
     margin-left: 220px;
     margin-top: -82px;
   }
+
 </style>
