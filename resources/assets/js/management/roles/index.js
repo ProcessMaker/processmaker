@@ -2,6 +2,21 @@ import Vue from 'vue'
 import RolesListing from './components/RolesListing'
 // import RolesTest from '/tests/Feature/Api/Administration/RolesTest'
 
+class Errors {
+  constructor() {
+    this.errors = {};
+  }
+  get(error_field) {
+    if (this.errors[error_field]) {
+      return this.errors[error_field][0];
+    }
+  }
+  record(errors) {
+    this.errors = errors;
+  }
+}
+
+
 // Bootstrap our Designer application
 new Vue({
   el: '#roles-listing',
@@ -11,7 +26,7 @@ new Vue({
       addRoleName: '',
       addRoleDescription: '',
       addRoleStatus: 'ACTIVE',
-      errors: {}
+      errors: new Errors()
   },
   components: { RolesListing },
   watch: {
@@ -53,7 +68,7 @@ new Vue({
       })
       .catch((err) => {
         console.log(err.response)
-        this.errors = err.response.data.errors
+        this.errors.record(err.response.data.errors)
         // @todo Replace with new flashy errors?
         // alert('There was a problem creating the role.')
       })

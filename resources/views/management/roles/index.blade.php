@@ -12,11 +12,12 @@
         <div class="form-group">
           <label for="add-role-code">Code</label>
           <input id="add-role-code" class="form-control" v-model="addRoleCode">
+          <p class="is-danger" v-text="errors.get('code')" ></p>
         </div>
         <div class="form-group">
           <label for="add-role-name">Name</label>
           <input id="add-role-name" class="form-control" v-model="addRoleName">
-          
+          <p class="is-danger" v-text="errors.get('name')" ></p>
         </div>
         <div class="form-group">
           <label for="add-role-name">Description</label>
@@ -57,6 +58,15 @@
         </div>
     </div>
     </div>
+@endsection
+
+@section('css')
+<style lang='css' scoped>
+  .is-danger {
+    font-size: 10px;
+    color: red;
+  }
+</style>
 @endsection
 
 @section('js')
