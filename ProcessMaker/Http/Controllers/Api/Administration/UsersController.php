@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Model\User;
@@ -108,6 +109,9 @@ class UsersController extends Controller
         $data = $request->all();
         if (isset($data['avatar']) && !empty($data['avatar'])) {
             $data['avatar'] = $this->uploadAvatar($user, $request);
+        }
+        if (isset($data['password']) && !empty($data['password'])) {
+            $data['password'] = Hash::make($data['password']);
         }
         $user->fill($data);
         $user->saveOrFail();

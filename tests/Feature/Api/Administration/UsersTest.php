@@ -204,7 +204,8 @@ class UsersTest extends ApiTestCase
         $response = $this->api('put', self::API_TEST_USERS . '/' . $user->uid->toString(), [
             'firstname' => 'User update',
             'lastname' => 'profile',
-            'avatar' => UploadedFile::fake()->image('avatar.jpg')
+            'avatar' => UploadedFile::fake()->image('avatar.jpg'),
+            'password' => 'password2'
         ]);
         $response->assertStatus(200);
     }
