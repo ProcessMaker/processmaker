@@ -8,7 +8,9 @@ export class Shape {
     constructor(graph, paper) {
         this.graph = graph
         this.paper = paper
+        this.isContainer = false
         this.shape = null
+        this.draggable = true
     }
 
     /**
@@ -49,7 +51,17 @@ export class Shape {
         return this.shape;
     }
 
+    /**
+     * Unselect the shape
+     */
     unselect() {
         this.hideCrown()
+    }
+
+    /**
+     * Select the shape
+     */
+    select() {
+
     }
 }

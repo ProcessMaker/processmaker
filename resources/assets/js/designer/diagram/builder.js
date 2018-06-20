@@ -10,7 +10,8 @@ export class Builder {
         this.paper = paper
         this.collection = []
         this.targetShape = null
-        this.sourceShape = null
+        this.creatingLane = false // Flag to create Lane in Pool
+        this.elementCurrentOfMouse = null
     }
 
     /**
@@ -26,16 +27,24 @@ export class Builder {
                 name: options.bpmnElement && options.bpmnElement.name ? options.bpmnElement.name : options.name ? options.name : "",
                 moddleElement: options
             };
-        defaultOptions = _.extend(defaultOptions, options);
-        // Type Example - bpmn:StartEvent
-        if (Elements[options.eClass]) {
-            element = new Elements[options.eClass](
-                defaultOptions,
-                this.graph,
-                this.paper
-            );
-            element.render();
-            this.collection.push(element)
+        defaultOptions = _.extend(defaultOptions, options)
+        if (!this.creatingLane) {
+            // Type Example - bpmn:StartEvent
+            if (Elements[options.eClass]) {
+                element = new Elements[options.eClass](
+                    defaultOptions,
+                    this.graph,
+                    this.paper
+                );
+                element.render();
+                this.collection.push(element)
+            }
+        } else {
+            if (this.elementCurrentOfMouse && this.elementCurrentOfMouse.isContainer) {
+                this.elementCurrentOfMouse.createLane()
+                this.creatingLane = false
+                this.elementCurrentOfMouse = null
+            }
         }
     }
 
@@ -45,14 +54,14 @@ export class Builder {
      * @returns {function(*)}
      */
     onClickShape(elJoint) {
-        let el = this.findElementInCollection(elJoint)
+        let el = this.findElementInCollection(elJoint, true)
         if (el) {
-            debugger
             if (this.sourceShape) {
                 this.connect(this.sourceShape, el)
             } else {
                 this.hideCrown();
                 el.showCrown()
+                el.select()
                 this.selection = [];
                 this.selection.push(el);
             }
@@ -138,9 +147,13 @@ export class Builder {
      * This method find element joint js in collection
      * @param element
      */
-    findElementInCollection(element) {
+    findElementInCollection(element, inModel = false) {
         return _.find(this.collection, (o) => {
-            return element.model.id === o.shape.id
+            if (inModel) {
+                return element.model.id === o.shape.id
+            } else {
+                return element.id === o.shape.id
+            }
         })
     }
 
@@ -150,5 +163,84 @@ export class Builder {
      */
     setSourceElement() {
         this.sourceShape = this.selection.pop()
+    }
+
+    /**
+     * This method process the interactive of element jointjs
+     * @param cellView
+     * @param method
+     * @returns {boolean}
+     */
+    interactive(cellView, method) {
+        return true
+    }
+
+    /**
+     * This method process the pointerdown event in paper jointjs
+     * @param cellView
+     * @param evt
+     * @param x
+     * @param y
+     */
+    pointerDown(cellView, evt, x, y) {
+        var cell = cellView.model;
+        if (!cell.get('embeds') || cell.get('embeds').length === 0) {
+            // Show the dragged element above all the other cells (except when the
+            // element is a parent).
+            cell.toFront();
+        }
+
+        if (cell.get('parent')) {
+            let el = this.findElementInCollection(cellView, true);
+            if (el && el.draggable) {
+                this.graph.getCell(cell.get('parent')).unembed(cell);
+            }
+        }
+    }
+
+    /**
+     * This method process the pointerup event in paper jointjs
+     * @param cellView
+     * @param evt
+     * @param x
+     * @param y
+     */
+    pointerUp(cellView, evt, x, y) {
+        let cell = cellView.model;
+        let cellViewsBelow = this.paper.findViewsFromPoint(cell.getBBox().center());
+        if (cellViewsBelow.length) {
+            // Note that the findViewsFromPoint() returns the view for the `cell` itself.
+            var cellViewBelow = _.find(cellViewsBelow, function (c) {
+                return c.model.id !== cell.id
+            });
+            // Prevent recursive embedding.
+            if (cellViewBelow && cellViewBelow.model.get('parent') !== cell.id) {
+                let el = this.findElementInCollection(cellViewBelow, true)
+                let elCell = this.findElementInCollection(cell)
+                if (el && el.isContainer && elCell && !elCell.isContainer) {
+                    cellViewBelow.model.embed(cell)
+                }
+            }
+        }
+    }
+
+    /**
+     * Process the mouseenter event in paper jointjs
+     * @param cellView
+     * @param evt
+     * @param x
+     * @param y
+     */
+    mouseEnter(cellView, evt, x, y) {
+        this.elementCurrentOfMouse = this.findElementInCollection(cellView, true)
+    }
+
+    /**
+     * Set the flag to create Lane
+     * @param val
+     */
+    setCreatingLane(val) {
+        this.creatingLane = val
+        return this
     }
 }

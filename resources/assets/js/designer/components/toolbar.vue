@@ -47,7 +47,7 @@
                      @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
                 <img id="bpmn:Lane" src="../img/lane.svg" height="18" draggable="true"
-                     @dragend="createElement($event)"></li>
+                     @dragstart="createLane($event)"  @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
                 <img id="bpmn:Group" src="../img/group.svg" height="18" draggable="true"
                      @dragend="createElement($event)"></li>
@@ -71,6 +71,10 @@
         methods: {
             createElement (value) {
                 let action = actions.designer.drag.toolbar.end(value)
+                EventBus.$emit(action.type, action.payload)
+            },
+            createLane (value) {
+                let action = actions.designer.lane.create(value)
                 EventBus.$emit(action.type, action.payload)
             }
         }
