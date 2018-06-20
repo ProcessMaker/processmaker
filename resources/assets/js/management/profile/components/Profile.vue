@@ -9,7 +9,7 @@
         <input type="file" class="custom-file-input" id="customFile" @change="onFileChange">
       </div>
     </div>
-    <modalProfileAvatar ref="profileModal">
+    <modalProfileAvatar ref="profileModal" @image-update="updateImage">
     </modalProfileAvatar>
     <form class="pl-5 pr-5">
       <div class="row form-group">
@@ -117,10 +117,14 @@ export default{
   },
   data(){
     return{
+      // Points to a url of the image
        image: '',
     }
   },
   methods: {
+    updateImage (newImage) {
+      this.image = newImage;
+    },
     openModal () {
       this.$refs.profileModal.openModal()
     },
@@ -133,16 +137,7 @@ export default{
         return;
       this.createImage(files[0]);
     },
-    createImage(file) {
-      let image = new Image();
-      let reader = new FileReader();
-      let vm = this;
 
-      reader.onload = (e) => {
-        vm.image = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    },
   }
 }
 </script>
