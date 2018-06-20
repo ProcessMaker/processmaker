@@ -22,10 +22,10 @@ export default{
   },
   methods:{
     openModal () {
-      this.$refs.BModal.show()
+      this.$refs.profileModal.show()
     },
     hideModal () {
-     this.$refs.BModal.hide()
+     this.$refs.profileModal.hide()
     },
     onFileChange(e) {
       let files = e.target.files || e.dataTransfer.files;

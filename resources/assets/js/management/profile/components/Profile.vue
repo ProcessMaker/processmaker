@@ -9,7 +9,7 @@
         <input type="file" class="custom-file-input" id="customFile" @change="onFileChange">
       </div>
     </div>
-    <modalProfileAvatar>
+    <modalProfileAvatar ref="profileModal">
     </modalProfileAvatar>
     <form class="pl-5 pr-5">
       <div class="row form-group">
@@ -122,7 +122,7 @@ export default{
   },
   methods: {
     openModal () {
-      this.$refs.profileModal.show()
+      this.$refs.profileModal.openModal()
     },
     hideModal () {
      this.$refs.profileModal.hide()
