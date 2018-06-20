@@ -30,6 +30,7 @@ Router::group([
             // Users API Endpoints
             Router::get('users', 'Administration\UsersController@index');
             Router::get('users/{user}', 'Administration\UsersController@get');
+            Router::get('users/{user}/avatar', 'Administration\UsersController@avatar');
 
             // Roles API Endpoints
             Router::get('roles', 'Administration\RolesController@index');

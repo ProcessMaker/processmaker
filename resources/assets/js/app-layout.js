@@ -1,6 +1,15 @@
 require('./bootstrap');
 let Vue = window.Vue;
 
+import avatar from './components/common/avatar';
+
+new Vue({
+    el: '#topnav-avatar',
+    components: {
+        avatar
+    }
+})
+
 new Vue({
     el: '#sidebarMenu',
     data: {

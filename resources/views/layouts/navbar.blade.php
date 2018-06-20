@@ -21,7 +21,7 @@
     </span>
       <ul class="navbar-nav">
         <li class="break"></li>
-        <li><img class="avatar" src="/img/avatar.png"></li>
+        <li><avatar id="topnav-avatar" uid="{{Auth::user()->uid}}"></avatar></li>
       </li>
     </ul>
 </nav>
