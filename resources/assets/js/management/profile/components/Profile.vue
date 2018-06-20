@@ -122,10 +122,10 @@ export default{
   },
   methods: {
     openModal () {
-      this.$refs.profileModal.show()
+      this.$refs.modalProfileAvatar.show()
     },
     hideModal () {
-     this.$refs.profileModal.hide()
+     this.$refs.modalProfileAvatar.hide()
     },
     onFileChange(e) {
       let files = e.target.files || e.dataTransfer.files;

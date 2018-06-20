@@ -36,3 +36,17 @@ export default{
   }
 }
 </script>
+<style>
+.profile-avatar-none{
+  width: 82px;
+  height: 82px;
+  margin-left: 220px;
+  background-color: rgb(251,181,4);
+  text-align:center;
+}
+.profile-avatar{
+  width: 82px;
+  height: 82px;
+  margin-left: 220px;
+}
+</style>
