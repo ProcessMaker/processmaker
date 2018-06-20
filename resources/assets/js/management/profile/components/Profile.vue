@@ -9,18 +9,8 @@
         <input type="file" class="custom-file-input" id="customFile" @change="onFileChange">
       </div>
     </div>
-    <b-modal ref="profileModal" hide-footer title="Profile Avatar">
-      <div class="d-block text-center">
-        <div v-if="!image" class="modal-profile-avatar-none text-light">JB</div>
-        <div v-else ><img :src="image" class="modal-profile-avatar"></div>
-        <input type="file" class="custom-file-input" id="customFile" @change="onFileChange">
-      </div>
-      <div class="mb-5 mt-3 float-right">
-        <button type="button" class="btn btn-secondary text-light"><label id="browse" for="customFile"><i class="fas fa-upload"></i> Browse</label></button>
-        <button type="button" @click="hideModal" class="btn btn-outline-secondary">Cancel</button>
-        <button type="button" @click="hideModal" class="btn btn-secondary text-light">Save</button>
-      </div>
-    </b-modal>
+    <modalProfileAvatar>
+    </modalProfileAvatar>
     <form class="pl-5 pr-5">
       <div class="row form-group">
         <div class="col">
@@ -118,10 +108,12 @@
 <script>
 
 import VueCroppie from 'vue-croppie';
+import modalProfileAvatar from './modal-profile-avatar.vue'
 
 export default{
   components:{
     VueCroppie,
+    modalProfileAvatar
   },
   data(){
     return{
@@ -136,15 +128,15 @@ export default{
      this.$refs.profileModal.hide()
     },
     onFileChange(e) {
-      var files = e.target.files || e.dataTransfer.files;
+      let files = e.target.files || e.dataTransfer.files;
       if (!files.length)
         return;
       this.createImage(files[0]);
     },
     createImage(file) {
-      var image = new Image();
-      var reader = new FileReader();
-      var vm = this;
+      let image = new Image();
+      let reader = new FileReader();
+      let vm = this;
 
       reader.onload = (e) => {
         vm.image = e.target.result;
