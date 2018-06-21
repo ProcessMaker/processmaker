@@ -43,6 +43,12 @@ class ProcessMakerServiceProvider extends ServiceProvider
      */
     public function register()
     {
+
+        // Dusk, if env is appropriate
+        if(!$this->app->environment('production')) {
+            $this->app->register(\Laravel\Dusk\DuskServiceProvider::class);
+        }
+
         $this->app->singleton('process_file.manager', function ($app) {
             return new ProcessFileManager();
         });
