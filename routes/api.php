@@ -45,8 +45,8 @@ Router::group([
         });
 
         //User profile
-        Router::get('admin/profile', 'Administration\UsersController@profile');
-        Router::put('admin/profile', 'Administration\UsersController@updateProfile');
+        Router::get('admin/profile', 'User\ProfileController@profile');
+        Router::put('admin/profile', 'User\ProfileController@updateProfile');
 
 
         //File manager endpoints.

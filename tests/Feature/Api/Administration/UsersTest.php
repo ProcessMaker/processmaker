@@ -145,7 +145,7 @@ class UsersTest extends ApiTestCase
         $response = $this->api('get', self::API_TEST_USERS . '/' . $user->uid->toString());
         $response->assertStatus(200);
         // Get our expected transformed user
-        $expected = (new UserTransformer())->transform($user);
+        $expected = (new UserTransformer())->transform($user->refresh());
         // Now verify that's what we got
         $response->assertJson($expected);
     }
