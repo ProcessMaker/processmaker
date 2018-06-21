@@ -68,6 +68,12 @@ return [
             'bucket' => env('AWS_BUCKET'),
             'url' => env('AWS_URL'),
         ],
+        'profile' => [
+            'driver' => 'local',
+            'root' => storage_path('app/profile'),
+            'url' => env('APP_URL').'/storage/profile',
+            'visibility' => 'public',
+        ],
     ]
 
 

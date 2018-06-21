@@ -2,8 +2,11 @@
 
 namespace Tests\Feature\Api\Administration;
 
+use Faker\Factory as Faker;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
 use ProcessMaker\Transformers\UserTransformer;
@@ -17,6 +20,7 @@ class UsersTest extends ApiTestCase
     use DatabaseTransactions;
 
     const API_TEST_USERS = '/api/1.0/users';
+    const API_TEST_PROFILE = '/api/1.0/admin/';
 
     /**
      * These api endpoints can only work if you are authenticated
@@ -49,7 +53,7 @@ class UsersTest extends ApiTestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
         ]);
         $this->auth($user->username, 'password');
         // Build a sample of 5 users into the system
@@ -77,12 +81,12 @@ class UsersTest extends ApiTestCase
             'firstname' => 'Joe',
             'lastname' => 'Biden',
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
         ]);
         $this->auth($user->username, 'password');
         $response = $this->api('GET', self::API_TEST_USERS . '?filter=' . urlencode('invalid'));
         $response->assertStatus(200);
-        $data = json_decode($response->getContent(),true);
+        $data = json_decode($response->getContent(), true);
         // Ensure we have empty results
         $this->assertCount(0, $data['data']);
         $this->assertEquals(0, $data['meta']['total']);
@@ -99,12 +103,12 @@ class UsersTest extends ApiTestCase
             'firstname' => 'Joe',
             'lastname' => 'Biden',
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
         ]);
         $this->auth($user->username, 'password');
         $response = $this->api('GET', self::API_TEST_USERS . '?filter=' . urlencode('joe'));
         $response->assertStatus(200);
-        $data = json_decode($response->getContent(),true);
+        $data = json_decode($response->getContent(), true);
         // Ensure we have empty results
         $this->assertCount(1, $data['data']);
         $this->assertEquals(1, $data['meta']['total']);
@@ -121,7 +125,7 @@ class UsersTest extends ApiTestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
         ]);
         $this->auth($user->username, 'password');
         $response = $this->api('get', self::API_TEST_USERS . '/invaliduid');
@@ -135,7 +139,7 @@ class UsersTest extends ApiTestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
         ]);
         $this->auth($user->username, 'password');
         $response = $this->api('get', self::API_TEST_USERS . '/' . $user->uid->toString());
@@ -146,5 +150,61 @@ class UsersTest extends ApiTestCase
         $response->assertJson($expected);
     }
 
+    /**
+     * Get Profile user
+     */
+    public function testGetProfile()
+    {
+        $avatar = Faker::create()->image(Storage::disk('profile')->getAdapter()->getPathPrefix(), 10, 10, null, true);
+        $user = factory(User::class)->create([
+            'password' => Hash::make('password'),
+            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'avatar' => basename($avatar)
+        ]);
+        $this->auth($user->username, 'password');
+
+        $response = $this->api('get', self::API_TEST_PROFILE . 'profile');
+        $response->assertStatus(200);
+    }
+
+    /**
+     * Upload file in profile user.
+     */
+    public function testUploadAvatarProfile()
+    {
+        $user = factory(User::class)->create([
+            'password' => Hash::make('password'),
+            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+        ]);
+        $this->auth($user->username, 'password');
+
+        $response = $this->api('put', self::API_TEST_PROFILE . 'profile', [
+            'avatar' => UploadedFile::fake()->image('avatar.jpg')
+        ]);
+        $response->assertStatus(200);
+
+        //verify exist file
+        Storage::disk('profile')->assertExists($user->refresh()->avatar);
+    }
+
+    /**
+     * Update information user
+     */
+    public function testUpdateUser()
+    {
+        $user = factory(User::class)->create([
+            'password' => Hash::make('password'),
+            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+        ]);
+        $this->auth($user->username, 'password');
+
+        $response = $this->api('put', self::API_TEST_USERS . '/' . $user->uid->toString(), [
+            'firstname' => 'User update',
+            'lastname' => 'profile',
+            'avatar' => UploadedFile::fake()->image('avatar.jpg'),
+            'password' => 'password2'
+        ]);
+        $response->assertStatus(200);
+    }
+
 }
- 

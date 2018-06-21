@@ -26,6 +26,34 @@ class User extends Authenticatable implements UserEntityInterface
         'password'
     ];
 
+    protected $fillable = [
+        'uid',
+        'username',
+        'password',
+        'firstname',
+        'lastname',
+        'email',
+        'expires_at',
+        'created_at',
+        'updated_at',
+        'status',
+        'country',
+        'city',
+        'location',
+        'address',
+        'phone',
+        'fax',
+        'cell',
+        'postal',
+        'title',
+        'birthdate',
+        'role_id',
+        'time_zone',
+        'lang',
+        'last_login',
+        'avatar'
+    ];
+
     /**
      * The key to use in routes to fetch a user
      */
