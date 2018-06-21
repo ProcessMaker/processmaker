@@ -7,7 +7,8 @@ class Errors {
     this.errors = {};
   }
   has(error_field) {
-    return this.errors.hasOwnProperty(error_field)
+    console.log(this.errors.hasOwnProperty(error_field))
+    return this.errors.hasOwnProperty(error_field);
   }
   get(error_field) {
     if (this.errors[error_field]) {
@@ -16,6 +17,10 @@ class Errors {
   }
   record(errors) {
     this.errors = errors;
+  }
+  clear(error_field) {
+    console.log(this.errors[error_field])
+    delete this.errors[error_field];
   }
 }
 
