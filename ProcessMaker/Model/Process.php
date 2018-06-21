@@ -272,7 +272,7 @@ class Process extends Model
      *
      * @return BelongsTo
      */
-    public function category(): BelongsTo
+    public function category()
     {
         return $this->belongsTo(ProcessCategory::class, 'process_category_id');
     }
@@ -282,7 +282,7 @@ class Process extends Model
      *
      * @return BelongsTo
      */
-    public function user(): BelongsTo
+    public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
