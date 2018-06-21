@@ -6,6 +6,9 @@ class Errors {
   constructor() {
     this.errors = {};
   }
+  has(error_field) {
+    return this.errors.hasOwnProperty(error_field)
+  }
   get(error_field) {
     if (this.errors[error_field]) {
       return this.errors[error_field][0];
