@@ -179,9 +179,9 @@ class RolesTest extends ApiTestCase
         $response->assertJson([
             'message' => 'The given data was invalid.',
             'errors' => [
-                'name' => 'The name field is required.',
-                'code' => 'The code field is required.',
-                'status' => 'The status field is required.'
+                'name' => ['The name field is required.'],
+                'code' => ['The code field is required.'],
+                'status' => ['The status field is required.']
             ]
         ]);
         // Ensure out of bounds checks on validation
