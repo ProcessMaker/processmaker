@@ -42,6 +42,7 @@ import modalPermissionsAdd from "./components/modals/modal-permissions-add";
 import modalPublicFileAdd from "./components/modals/modal-public-file-add";
 import modalVariablesAdd from "./components/modals/modal-variables-add";
 import modalMessageTypes from "./components/modals/modal-message-types";
+import modalOutputDocuments from "./components/modals/modal-output-documents"
 
 // This is out Cron for every shape
 import crown from "./components/crown";
@@ -60,6 +61,7 @@ export default {
     modalPermissionsAdd,
     modalPublicFileAdd,
     modalVariablesAdd,
+    modalOutputDocuments,
     svgcanvas,
     toolbar,
     toptoolbar
@@ -107,6 +109,9 @@ export default {
           break;
         case 'templates':
           this.modalComponent = 'modal-create-template-add'
+          break;
+        case 'templates':
+          this.modalComponent = 'modal-output-documents'
           break;
         default:
           alert(key + ' add modal not yet implemented.')
