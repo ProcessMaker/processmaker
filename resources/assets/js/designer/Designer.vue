@@ -110,7 +110,7 @@ export default {
         case 'templates':
           this.modalComponent = 'modal-create-template-add'
           break;
-        case 'templates':
+        case 'output-documents-one':
           this.modalComponent = 'modal-output-documents'
           break;
         default:

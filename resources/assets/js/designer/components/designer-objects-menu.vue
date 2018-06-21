@@ -2,7 +2,7 @@
   <div class="objects-menu">
     <div class="object-menu-title"><span class="menu-title-span">Process Objects</span></div>
     <div class="object-menu-items-container">
-    <designer-options-menu-item @title-click="handleItemClick(item)" @button-click="handleAddClick(item)" v-for="(item, index) in menuItems" :key="item.id" :title="item.title" :hasadd="item.hasadd"></designer-options-menu-item>
+    <designer-options-menu-item @title-click="handleItemClick(item)" @button-click="handleAddClick(item)" v-for="(item, index) in menuItems" :key="item.id" :title="item.title" :hasadd="item.hasadd" :hasmodal="item.hasmodal"></designer-options-menu-item>
     </div>
   </div>
 </template>
@@ -41,6 +41,7 @@ export default {
           title: "Output Documents",
           key: 'output-documents',
           hasadd: true,
+          hasmodal: true,
         },
         {
           title: "Triggers",
@@ -97,7 +98,14 @@ export default {
   },
   methods: {
     handleItemClick(item) {
-      alert('Behavior TBD');
+      if (item.hasmodal === true) {
+        EventBus.$emit('open-add-dialog', item.key)
+      }
+      //   // if item has modal, then display modal. if item.hasModal === true , then show {{modal}}
+        
+      else {
+        alert('Behavior TBD');
+      }
     },
     handleAddClick(item) {
       EventBus.$emit('open-add-dialog', item.key);
