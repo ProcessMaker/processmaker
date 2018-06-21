@@ -1,11 +1,9 @@
 <template>
   <div class="form-wrap container bg-light mt-3 p-5">
     <h3 class="pl-5">Profile</h3>
-    <div>
-      <div>
-        <avatar :uid="uid" class="avatar-wrapper"></avatar>
-        <img class="profile-overlay" align="center" src="/img/avatar-profile-overlay.png" @click="openModal()">
-      </div>
+    <div class="modal-wrapper">
+      <avatar :uid="uid" class="avatar-wrapper"></avatar>
+      <img class="profile-overlay" align="center" src="/img/avatar-profile-overlay.png" @click="openModal()">
     </div>
     <modalProfileAvatar ref="profileModal" @image-update="updateImage">
     </modalProfileAvatar>
@@ -146,26 +144,30 @@ export default{
 </script>
 
 <style lang="scss" scoped>
-  #browse{
+  #browse {
     padding: 0;
     margin-bottom: 0;
   }
-  form{
+  form {
     margin-top: 44px;
   }
-  .form-wrap{
+  .form-wrap {
     max-width: 620px;
   }
-  h3{
+  h3 {
     font-size: 24px;
   }
-  .profile-overlay{
+  .profile-overlay {
     position: absolute;
-    margin-left: -82px;
+    margin-top: -82px;
   }
-  .avatar-wrapper{
+  .avatar-wrapper {
     width: 82px;
     height: 82px;
-    margin-left: 220px;
+  }
+  .modal-wrapper {
+    width: 82px;
+    margin: auto;
+    position: relative;
   }
 </style>
