@@ -1,5 +1,5 @@
 <template>
-  <div class="form-wrap container bg-light mt-4 p-5">
+  <div class="form-wrap container bg-light mt-3 p-5">
     <h3 class="pl-5">Profile</h3>
     <div>
       <div>

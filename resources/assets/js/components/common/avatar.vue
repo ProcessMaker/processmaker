@@ -57,15 +57,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.avatar {
-    display: inline-block;
-    border-radius: 50%;
-    position: relative;
-}
-
-img {
-    max-width: 100%;
-}
+  .avatar {
+      display: inline-block;
+      border-radius: 50%;
+      position: relative;
+  }
+  img {
+      max-width: 100%;
+  }
   .profile-avatar-none{
       max-width: 100%;
       min-width: 100%;
@@ -86,6 +85,5 @@ img {
     min-width: 100%;
     min-height: 100%;
   }
-
 
 </style>
