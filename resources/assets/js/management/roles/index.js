@@ -1,5 +1,29 @@
 import Vue from 'vue'
 import RolesListing from './components/RolesListing'
+// import RolesTest from '/tests/Feature/Api/Administration/RolesTest'
+
+class Errors {
+  constructor() {
+    this.errors = {};
+  }
+  has(error_field) {
+    console.log(this.errors.hasOwnProperty(error_field))
+    return this.errors.hasOwnProperty(error_field);
+  }
+  get(error_field) {
+    if (this.errors[error_field]) {
+      return this.errors[error_field][0];
+    }
+  }
+  record(errors) {
+    this.errors = errors;
+  }
+  clear(error_field) {
+    console.log(this.errors[error_field])
+    delete this.errors[error_field];
+  }
+}
+
 
 // Bootstrap our Designer application
 new Vue({
@@ -9,15 +33,27 @@ new Vue({
       addRoleCode: '',
       addRoleName: '',
       addRoleDescription: '',
-      addRoleStatus: 'ACTIVE'
+      addRoleStatus: 'ACTIVE',
+      errors: new Errors()
   },
   components: { RolesListing },
+  watch: {
+    errors: function(val){
+      this.displayError(this.errors)
+    }
+  },
   methods: {
     showAddModal() {
       this.$refs.addModal.show();
     },
     hideAddModal() {
       this.$refs.addModal.hide();
+    },
+    displayError(errors){
+      for (var error_field in errors) {
+        console.log('Form Element ID: '+ error_field)
+        console.log('Error Message: '+ errors[error_field][0])
+     }
     },
     submitAdd() {
       window.ProcessMaker.apiClient.post('roles', {
@@ -39,8 +75,10 @@ new Vue({
 
       })
       .catch((err) => {
+        console.log(err.response)
+        this.errors.record(err.response.data.errors)
         // @todo Replace with new flashy errors?
-        alert('There was a problem creating the role.')
+        // alert('There was a problem creating the role.')
       })
     }
   }
