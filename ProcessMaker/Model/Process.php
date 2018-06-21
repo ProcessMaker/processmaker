@@ -3,11 +3,11 @@
 namespace ProcessMaker\Model;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
-use ProcessMaker\Model\ProcessCategory;
 use ProcessMaker\Model\Traits\Uuid;
-use ProcessMaker\Model\User;
 use Watson\Validating\ValidatingTrait;
+
 
 /**
  * Represents a business process definition.
@@ -210,7 +210,7 @@ class Process extends Model
     {
         if (!$this->isSupervisor($user)) {
             DB::table('process_users')->insert([
-                'uid'  => \Ramsey\Uuid\Uuid::uuid4(),
+                'uid' => \Ramsey\Uuid\Uuid::uuid4(),
                 'process_id' => $this->id,
                 'user_id' => $user->id,
                 'type' => 'SUPERVISOR'
@@ -229,7 +229,7 @@ class Process extends Model
             ->where('type', 'GROUP_SUPERVISOR')
             ->exists()) {
             DB::table('process_users')->insert([
-                'uid'  => \Ramsey\Uuid\Uuid::uuid4(),
+                'uid' => \Ramsey\Uuid\Uuid::uuid4(),
                 'process_id' => $this->id,
                 'user_id' => $group->id,
                 'type' => 'SUPERVISOR'
@@ -270,11 +270,21 @@ class Process extends Model
     /**
      * Category of the process.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function category()
     {
-        return $this->belongsTo(ProcessCategory::class, 'id');
+        return $this->belongsTo(ProcessCategory::class, 'process_category_id');
+    }
+
+    /**
+     * User of the process.
+     *
+     * @return BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**
@@ -374,7 +384,7 @@ class Process extends Model
      */
     public function variables()
     {
-        return $this->hasMany( ProcessVariable::class, 'PRO_ID', 'id');
+        return $this->hasMany(ProcessVariable::class, 'process_id', 'id');
     }
 
     /**
