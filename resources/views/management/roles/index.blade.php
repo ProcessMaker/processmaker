@@ -11,12 +11,12 @@
       <form>
         <div class="form-group">
           <label for="add-role-code">Code</label>
-          <input id="add-role-code" class="form-control" v-model="addRoleCode" v-bind:class="{redborder: errors.get('code')}" v-on:click="errors.clear('code')">
-          <p class="is-danger" v-text="errors.get('code')"  ></p>
+          <input id="add-role-code" class="form-control" v-model="addRoleCode">
+          <!-- <p class="is-danger" v-text="errors.get('code')"  ></p> -->
         </div>
         <div class="form-group">
           <label for="add-role-name">Name</label>
-          <input id="add-role-name" class="form-control" v-model="addRoleName" v-bind:class="{redborder: errors.get('name')}" v-on:click="errors.clear('name')">
+          <input id="add-role-name" class="form-control" v-model="addRoleName" v-bind:class="{redborder: errors.get('name')}" v-on:keydown="errors.clear('name')">
           <p class="is-danger" v-text="errors.get('name')" ></p>
         </div>
         <div class="form-group">
