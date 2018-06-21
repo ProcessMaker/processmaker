@@ -2,12 +2,14 @@
 
 namespace ProcessMaker\Http\Controllers\Api\Designer;
 
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Response;
 use ProcessMaker\Facades\ProcessManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\ProcessCategory;
+use ProcessMaker\Model\User;
 use ProcessMaker\Transformers\ProcessTransformer;
 
 /**
@@ -22,37 +24,67 @@ class ProcessesController extends Controller
      *
      * @param Request $request
      *
-     * @return array
+     * @return ResponseFactory|Response
      */
     public function index(Request $request)
     {
-        // Get parameters for our request with defaults
-        $filter = $request->input("filter", null);
-        $perPage = $request->input("per_page", 10);
+        $options = [
+            'filter' => $request->input('filter', ''),
+            'current_page' => $request->input('current_page', 1),
+            'per_page' => $request->input('per_page', 10),
+            'sort_by' => $request->input('sort_by', 'name'),
+            'sort_order' => $request->input('sort_order', 'ASC'),
+        ];
 
-        if($filter) {
+        $sortingField = [
+            'status' => 'status',
+            'user' => 'user_id',
+            'category' => 'process_category_id',
+            'due_date' => 'updated_at',
+            'name' => 'name',
+            'description' => 'description'
+        ];
+
+        $query = Process::with(['category', 'user']);
+
+
+        if (!empty($options['filter'])) {
             // We want to search off of name and description and category name
             // Cannot join on table because of Eloquent's lack of specific table column names in generated SQL
             // See: https://github.com/laravel/ideas/issues/347
-            $filter = '%' . $filter . '%';
-            // Find matching categories
-            $categories = ProcessCategory::where('name', 'like', $filter)->get();
-            $processes = Process::where('name', 'like', $filter)
-                ->orWhere('description', 'like', $filter)
-                ->orWhereIn('process_category_id', $categories->pluck('id'))
-                // We need minus to ensure null categories are sorted AFTER
-                ->orderBy(DB::raw('process_category_id'), 'desc')
-                ->orderBy('id')
-                ->paginate($perPage);
-        } else {
-            $processes = Process::orderBy(DB::raw('process_category_id'), 'desc')
-                ->orderBy('id')
-                ->paginate($perPage);
+            $filter = '%' . $options['filter'] . '%';
+            $category = new ProcessCategory();
+            $user = new User();
+            $query->where(function ($query) use ($filter, $category, $user) {
+                $query->Where('name', 'like', $filter)
+                    ->orWhere('description', 'like', $filter)
+                    ->orWhere('status', 'like', $filter)
+                    ->orWhere(function ($q) use ($filter, $category) {
+                        $q->whereHas('category', function ($query) use ($filter, $category) {
+                            $query->where($category->getTable() . '.name', 'like', $filter);
+                        });
+                    })
+                    ->orWhere(function ($q) use ($filter, $user) {
+                        $q->whereHas('user', function ($query) use ($filter, $user) {
+                            $query->where($user->getTable() . '.firstname', 'like', $filter)
+                                ->where($user->getTable() . '.lastname', 'like', $filter);
+                        });
+                    });
+            });
         }
 
-        // Now, let's return with fractal to standardize our api output
-        return fractal($processes, new ProcessTransformer())->respond(200);
-   }
+        $sort = 'name';
+        if (isset($sortingField[$options['sort_by']])) {
+            $sort = $sortingField[$options['sort_by']];
+        }
+
+        $query->orderBy($sort, $options['sort_order']);
+
+        $processes = $query->paginate($options['per_page'])
+            ->appends($options);
+
+        return fractal($processes, new ProcessTransformer())->respond();
+    }
 
     /**
      * Stores a new process.
@@ -101,10 +133,12 @@ class ProcessesController extends Controller
      *
      * @param \ProcessMaker\Model\Process $process
      *
-     * @return array
+     * @return ResponseFactory|Response
      */
     public function show(Process $process)
     {
+        $process->category = $process->category()->first();
+        $process->user = $process->user()->first();
         return fractal($process, new ProcessTransformer())->respond(200);
     }
 }
