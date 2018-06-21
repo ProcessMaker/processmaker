@@ -2,8 +2,8 @@
   <div class="form-wrap container bg-light mt-4 p-5">
     <h3 class="pl-5">Profile</h3>
     <div>
-      <div class="custom-file">
-        <avatar :uid="uid"></avatar>
+      <div>
+        <avatar :uid="uid" class="avatar-wrapper"></avatar>
         <img class="profile-overlay" align="center" src="/img/avatar-profile-overlay.png" @click="openModal()">
       </div>
     </div>
@@ -156,25 +156,16 @@ export default{
   .form-wrap{
     max-width: 620px;
   }
-  .profile-avatar-none{
-    width: 82px;
-    height: 82px;
-    margin-left: 220px;
-    background-color: rgb(251,181,4);
-    text-align:center;
-  }
-  .profile-avatar{
-    width: 82px;
-    height: 82px;
-    margin-left: 220px;
-  }
   h3{
     font-size: 24px;
   }
   .profile-overlay{
     position: absolute;
-    margin-left: 220px;
-    margin-top: -82px;
+    margin-left: -82px;
   }
-
+  .avatar-wrapper{
+    width: 82px;
+    height: 82px;
+    margin-left: 220px;
+  }
 </style>
