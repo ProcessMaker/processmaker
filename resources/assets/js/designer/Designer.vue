@@ -74,6 +74,7 @@ export default {
   created() {
     // Listen for opening an add dialog
     EventBus.$on("open-add-dialog", this.openAddDialog);
+    EventBus.$on("open-title-dialog", this.openTitleDialog);
   },
   methods: {
     openAddDialog(key) {
@@ -110,11 +111,17 @@ export default {
         case 'templates':
           this.modalComponent = 'modal-create-template-add'
           break;
-        case 'output-documents-one':
+        default:
+          alert(key + ' add modal not yet implemented.')
+      }
+    },
+    openTitleDialog(key){
+      switch(key){
+        case 'output-documents':
           this.modalComponent = 'modal-output-documents'
           break;
         default:
-          alert(key + ' add modal not yet implemented.')
+          alert(key + ' Behavior TBD')
       }
     },
     onHidden(){

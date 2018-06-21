@@ -41,7 +41,6 @@ export default {
           title: "Output Documents",
           key: 'output-documents',
           hasadd: true,
-          hasmodal: true,
         },
         {
           title: "Triggers",
@@ -98,14 +97,7 @@ export default {
   },
   methods: {
     handleItemClick(item) {
-      if (item.hasmodal === true) {
-        EventBus.$emit('open-add-dialog', item.key)
-      }
-      //   // if item has modal, then display modal. if item.hasModal === true , then show {{modal}}
-        
-      else {
-        alert('Behavior TBD');
-      }
+      EventBus.$emit('open-title-dialog', item.key)
     },
     handleAddClick(item) {
       EventBus.$emit('open-add-dialog', item.key);
