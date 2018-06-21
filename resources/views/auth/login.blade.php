@@ -54,8 +54,9 @@
       </div>
 
       <div class="form-check mb-2">
+          <label class="form-check-label">
         <input class="form-check-input" type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}>
-        <label class="form-check-label">{{ __('Remember me') }}</label>
+        {{ __('Remember me') }}</label>
       </div>
 
       <button type="submit" class="btn btn-secondary btn-block mb-2 text-light text-uppercase">
