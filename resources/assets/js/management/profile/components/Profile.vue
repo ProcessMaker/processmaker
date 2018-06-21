@@ -159,7 +159,7 @@ export default{
   }
   .profile-overlay {
     position: absolute;
-    margin-top: -82px;
+    margin-top: -83px;
   }
   .avatar-wrapper {
     width: 82px;

@@ -1,7 +1,7 @@
 <template>
   <b-modal ref="profileModal" hide-footer title="Profile Avatar">
     <div>
-      <div v-if="!image"><avatar :uid="uid" class="avatar-wrapper"></avatar></div>
+      <div v-if="!image" class="no-avatar">Click the browse button below to get started</div>
         <vue-croppie :style="{display: (image) ? 'block' : 'none' }" ref="croppie" :viewport="{ width: 200, height: 200, type: 'circle' }" :enableOrientation="false">
         </vue-croppie>
     </div>
@@ -82,9 +82,10 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.avatar-wrapper{
-  width: 82px;
-  height: 82px;
-  margin-left: 176px;
+.no-avatar {
+  width:  320px;
+  height: 454px;
+  line-height: 454px;
+  margin: auto;
 }
 </style>

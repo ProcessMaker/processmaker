@@ -70,8 +70,8 @@ export default {
       min-width: 100%;
       min-height: 100%;
       max-height: 100%;
-    background-color: rgb(251,181,4);
-    text-align:center;
+      background-color: rgb(251,181,4);
+      text-align:center;
   }
   .profile-avatar{
     max-width: 100%;
