@@ -155,7 +155,7 @@ class UsersTest extends ApiTestCase
      */
     public function testGetProfile()
     {
-        $avatar = Faker::create()->image(Storage::disk('profile')->getAdapter()->getPathPrefix(), 10, 10);
+        $avatar = Faker::create()->image(Storage::disk('profile')->getAdapter()->getPathPrefix(), 10, 10, null, true);
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
             'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
@@ -165,9 +165,6 @@ class UsersTest extends ApiTestCase
 
         $response = $this->api('get', self::API_TEST_PROFILE . 'profile');
         $response->assertStatus(200);
-
-        //verify exist file
-        Storage::disk('profile')->assertExists($user->refresh()->avatar);
     }
 
     /**
