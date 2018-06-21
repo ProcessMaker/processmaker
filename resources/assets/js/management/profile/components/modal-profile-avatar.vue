@@ -4,7 +4,6 @@
       <div v-if="!image" class="profile-avatar-none text-light">JB</div>
         <vue-croppie :style="{display: (image) ? 'block' : 'none' }" ref="croppie" :viewport="{ width: 200, height: 200, type: 'circle' }" :enableOrientation="false">
         </vue-croppie>
-        <!-- <img :src="image" class="modal-profile-avatar"> -->
       </div>
       <input type="file" class="custom-file-input" ref="customFile" @change="onFileChange">
     </div>

@@ -9,6 +9,10 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- API Token -->
     <meta name="api-token" content="{{ session('apiToken')['access_token']}}">
+    <!--User UID -->
+    @if (Auth::user())
+      <meta name="user-uid" content="{{Auth::user()->uid}}">
+    @endif
 
     @if(isset($title))
         <title>{{__('ProcessMaker')}}: {{$title}}</title>
@@ -66,7 +70,7 @@
                     <h1>Sorry! API failed to load</h1>
                     <p>Something went wrong. Try refreshing the application</p>
                 </div>
-                
+
             </div>
         </div>
     </div>
