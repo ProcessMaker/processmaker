@@ -8,6 +8,9 @@
     <div class="mt-5">
       <img class="py-5" src="/img/lg-blue-logo.png" width="320">
       <form class="bg-light mt-3"  method="POST" action="{{ route('login') }}">
+      @if (session()->has('login-error'))
+      <div class="alert alert-danger">{{ session()->get('login-error')}}</div>
+      @endif
         {{ csrf_field() }}
         <div class="form-group">
           <label for="username">{{__('Username')}}</label>
@@ -48,16 +51,14 @@
         <a class="btn-link text-primary pl-0" href="{{ route('password.request') }}">
           {{ __('Forgot Password?') }}
         </a>
-        <div class="center mt-5">
-          <p class="text-center mb-0">{{__('Dont have an account?')}}</p>
-        </div>
-        <div class="text-center">
-          <a class="btn-link text-primary pl-0" href="">
-            {{__('Start your free trial now!')}}
-          </a>
-        </div>
-      </form>
+        <div class="mt-3">
+     @if($footer)
+      {!! $footer !!}
+     @endif
     </div>
+ 
+     </form>
+   </div>
     <div class="col">
     </div>
   </div>

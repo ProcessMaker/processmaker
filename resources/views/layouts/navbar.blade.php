@@ -1,18 +1,15 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light p-0">
     <ul class="navbar-nav mr-auto">
+    @php
+    $menu = Menu::get('topnav');
+    @endphp
+    @foreach($menu->items as $item)
       <li class="nav-item">
-        <a class="nav-link" href="{{ url('request') }}">{{__('Requests')}}</a>
+        <a class="nav-link" href="{{ $item->url() }}">{{$item->title}}</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{{ url('task') }}">{{__('Tasks')}}</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{{ url('process') }}">{{__('Processes')}}</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{{ url('admin') }}">Admin</a>
-      </li>
+    @endforeach
     </ul>
+
 
     <component id="navbar-request-button" v-bind:is="'request-modal'"></component>
 
