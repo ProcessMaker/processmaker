@@ -2,7 +2,7 @@
     <div class="avatar">
         <div v-if="!image" class="profile-avatar-none text-light" :style="{backgroundColor: backgroundColor}">{{label}}</div>
         <img v-else :src="image">
-        <img class="profile-overlay" align="center" src="/img/avatar-profile-overlay.png" @click="openModal()">
+        <img class="profile-overlay" align="center" src="/img/avatar-overlay-blank.png" @click="openModal()">
     </div>
 </template>
 
@@ -52,27 +52,26 @@ export default {
             label: ''
         }
     }
-    
+
 }
 </script>
 
 <style lang="scss" scoped>
-.avatar {
-    display: inline-block;
-    border-radius: 50%;
-    position: relative;
-}
-
-img {
-    max-width: 100%;
-}
+  .avatar {
+      display: inline-block;
+      border-radius: 50%;
+      position: relative;
+  }
+  img {
+      max-width: 100%;
+  }
   .profile-avatar-none{
       max-width: 100%;
       min-width: 100%;
       min-height: 100%;
       max-height: 100%;
-    background-color: rgb(251,181,4);
-    text-align:center;
+      background-color: rgb(251,181,4);
+      text-align:center;
   }
   .profile-avatar{
     max-width: 100%;
@@ -87,7 +86,4 @@ img {
     min-height: 100%;
   }
 
- 
 </style>
-
-

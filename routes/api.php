@@ -32,6 +32,9 @@ Route::group([
             Route::get('users/{user}', 'Administration\UsersController@get');
             Route::get('users/{user}/avatar', 'Administration\UsersController@avatar');
 
+            Route::put('users/{user}', 'Administration\UsersController@update');
+
+
             // Roles API Endpoints
             Route::get('roles', 'Administration\RolesController@index');
             Route::post('roles', 'Administration\RolesController@create');
@@ -43,6 +46,10 @@ Route::group([
             Route::get('groups/{group}', 'Administration\GroupsController@get');
  
         });
+
+        //User profile
+        Route::get('admin/profile', 'User\ProfileController@profile');
+        Route::put('admin/profile', 'User\ProfileController@updateProfile');
 
 
         //File manager endpoints.

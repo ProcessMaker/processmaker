@@ -5,8 +5,8 @@
       {{-- The first level are the sections --}}
       <li class="sidebarheader" v-if="expanded"><small>{{$section->title}}</small></li>
       @foreach($section->children() as $item)
-        <li>
-          <a href="{{ $item->url() }}">
+        <li class="d-flex">
+          <a class="d-flex" href="{{ $item->url() }}">
             <i class="fas {{$item->attr('icon')}} fa-fw"></i> <span v-if="expanded">{{$item->title}}</span>
           </a>
         </li>

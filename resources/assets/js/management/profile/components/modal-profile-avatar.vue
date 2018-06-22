@@ -1,12 +1,11 @@
 <template>
   <b-modal ref="profileModal" hide-footer title="Profile Avatar">
-    <div class="d-block text-center">
-      <div v-if="!image" class="profile-avatar-none text-light">JB</div>
+    <div>
+      <div v-if="!image" class="no-avatar">Click the browse button below to get started</div>
         <vue-croppie :style="{display: (image) ? 'block' : 'none' }" ref="croppie" :viewport="{ width: 200, height: 200, type: 'circle' }" :enableOrientation="false">
         </vue-croppie>
-        <!-- <img :src="image" class="modal-profile-avatar"> -->
-      </div>
-      <input type="file" class="custom-file-input" ref="customFile" @change="onFileChange">
+    </div>
+    <input type="file" class="custom-file-input" ref="customFile" @change="onFileChange">
     </div>
     <div class="mb-5 mt-3 float-right">
       <button type="button" @click="browse" class="btn btn-secondary text-light">
@@ -19,14 +18,19 @@
 
 <script>
 import VueCroppie from "vue-croppie";
+import avatar from '../../../../js/components/common/avatar.vue'
 
 // No likey
 Vue.use(VueCroppie);
 
 export default {
+  components:{
+      avatar
+  },
   data() {
     return {
-      image: ""
+      image: "",
+      uid: window.ProcessMaker.user.uid
     };
   },
   methods: {
@@ -78,20 +82,10 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.profile-avatar-none {
-  width: 82px;
-  height: 82px;
-  margin-left: 220px;
-  background-color: rgb(251, 181, 4);
-  text-align: center;
-}
-.modal-profile-avatar {
-  max-width: 100%;
-}
-
-.profile-avatar {
-  width: 82px;
-  height: 82px;
-  margin-left: 220px;
+.no-avatar {
+  width:  320px;
+  height: 454px;
+  line-height: 454px;
+  margin: auto;
 }
 </style>

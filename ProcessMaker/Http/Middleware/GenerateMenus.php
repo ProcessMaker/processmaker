@@ -132,28 +132,28 @@ class GenerateMenus
               'label' => __('menus.sidebar_task.assigned'),
               'header' => false,
               'route' => 'home',
-              'icon' => 'fa-user',
+              'icon' => 'icon-assigned',
               'id' => 'homeid'
             ],
             [
               'label' => __('menus.sidebar_task.unassigned'),
               'header' => false,
               'route' => 'home',
-              'icon' => 'fa-users',
+              'icon' => 'icon-unassigned',
               'id' => 'homeid'
             ],
             [
               'label' => __('menus.sidebar_task.completed'),
               'header' => false,
               'route' => 'home',
-              'icon' => 'fa-user-plus',
+              'icon' => 'icon-completed-1',
               'id' => 'homeid'
             ],
             [
               'label' => __('menus.sidebar_task.paused'),
               'header' => false,
               'route' => 'home',
-              'icon' => 'fa-user-plus',
+              'icon' => 'icon-paused-2',
               'id' => 'homeid'
             ]
           ];
@@ -213,9 +213,8 @@ class GenerateMenus
                 }
             }
         });
-        Menu::make('sidebar_designer', function ($menu) {
-        });
-          
+        Menu::make('sidebar_designer', function ($menu) {});
+
         Menu::make('build', function ($menu) {
             $execute = $menu;
             $tasks = $execute->add('Build', ['class' => 'sidebar-header'])

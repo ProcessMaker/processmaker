@@ -17,9 +17,9 @@ use ProcessMaker\Managers\TaskAssigneeManager;
 use ProcessMaker\Managers\TaskManager;
 use ProcessMaker\Managers\TasksDelegationManager;
 use ProcessMaker\Managers\TriggerManager;
+use ProcessMaker\Managers\UserManager;
 use ProcessMaker\Model\Group;
 use ProcessMaker\Model\User;
-
 
 /**
  * Provide our ProcessMaker specific services
@@ -43,6 +43,15 @@ class ProcessMakerServiceProvider extends ServiceProvider
      */
     public function register()
     {
+
+        // Dusk, if env is appropriate
+        if(!$this->app->environment('production')) {
+            $this->app->register(\Laravel\Dusk\DuskServiceProvider::class);
+        }
+        $this->app->singleton('user.manager', function ($app) {
+            return new UserManager();
+        });
+
         $this->app->singleton('process_file.manager', function ($app) {
             return new ProcessFileManager();
         });

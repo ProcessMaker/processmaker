@@ -30,9 +30,9 @@ window.Vue.use(BootstrapVue);
 window.ProcessMaker = {};
 
 /**
- * Create a axios instance which any vue component can bring in to call 
+ * Create a axios instance which any vue component can bring in to call
  * REST api endpoints through oauth authentication
- * 
+ *
  */
 window.ProcessMaker.apiClient = require('axios');
 // Have default endpoint and headers
@@ -47,7 +47,13 @@ window.ProcessMaker.apiClient.defaults.baseURL = '/api/1.0/';
 // Default to a 5 second timeout, which is an eternity in web app terms
 window.ProcessMaker.apiClient.defaults.timeout = 5000;
 
+let userUID = document.head.querySelector('meta[name="user-uid"]');
 
+if(userUID) {
+  window.ProcessMaker.user = {
+    uid: userUID.content
+  }
+}
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
  * to our Laravel back-end. This library automatically handles sending the
