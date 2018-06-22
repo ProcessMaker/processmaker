@@ -30,6 +30,7 @@ Router::group([
             // Users API Endpoints
             Router::get('users', 'Administration\UsersController@index');
             Router::get('users/{user}', 'Administration\UsersController@get');
+            Router::put('users/{user}', 'Administration\UsersController@update');
 
             // Roles API Endpoints
             Router::get('roles', 'Administration\RolesController@index');
@@ -42,6 +43,10 @@ Router::group([
             Router::get('groups/{group}', 'Administration\GroupsController@get');
  
         });
+
+        //User profile
+        Router::get('admin/profile', 'User\ProfileController@profile');
+        Router::put('admin/profile', 'User\ProfileController@updateProfile');
 
 
         //File manager endpoints.
