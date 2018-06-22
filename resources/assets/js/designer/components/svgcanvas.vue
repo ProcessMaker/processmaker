@@ -24,7 +24,6 @@
             EventBus.$on(actions.designer.drag.toolbar.end().type, (value) => this.createElement(value))
             EventBus.$on(actions.designer.flow.create().type, (value) => this.createFlow(value))
             EventBus.$on(actions.designer.shape.remove().type, (value) => this.removeElement(value))
-            EventBus.$on(actions.designer.lane.create().type, (value) => this.creatingLane(value))
         },
         methods: {
             loadXML(xml = null) {
@@ -84,12 +83,6 @@
                 this.builder.setSourceElement()
             },
             /**
-             * Listener to dragstart in Lane
-             */
-            creatingLane(){
-                this.builder.setCreatingLane(true)
-            },
-            /**
              * Listener in pointerDown event
              */
             pointerDown(cellView, evt, x, y){
@@ -100,18 +93,6 @@
              */
             pointerUp(cellView, evt, x, y){
                 this.builder.pointerUp(cellView, evt, x, y)
-            },
-            /**
-             * Listener in mouseenter event
-             */
-            mouseEnter(cellView, evt, x, y){
-                this.builder.mouseEnter(cellView, evt, x, y)
-            },
-            /**
-             * Listener in interactive event
-             */
-            interactive(cellView, method){
-                return this.builder.interactive(cellView, method)
             }
         },
         mounted() {
@@ -125,8 +106,7 @@
                 drawGrid: true,
                 background: {
                     color: 'white'
-                },
-                interactive: this.interactive
+                }
             });
             this.builder = new Builder(this.graph, this.paper)
             this.graph.on('change:position', this.changeElementPosition)
@@ -134,8 +114,6 @@
             this.paper.on('blank:pointerclick', this.clickCanvas)
             this.paper.on('cell:pointerdown', this.pointerDown)
             this.paper.on('cell:pointerup', this.pointerUp)
-            this.paper.on('element:mouseenter', this.mouseEnter)
-            this.paper.on('element:mouseleave', this.mouseLeave)
         }
     }
 </script>

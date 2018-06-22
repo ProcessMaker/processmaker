@@ -62,7 +62,8 @@ export class Pool extends Shape {
                 height: options.height
             },
             this.graph,
-            this.paper
+            this.paper,
+            this
         );
         this.lanes.push(lane)
         return lane
@@ -81,10 +82,16 @@ export class Pool extends Shape {
             y: this.options.y + this.lanes.length * this.heightLane,
             width: this.options.width - dx,
             height: this.heightLane
-
         })
         lane.render()
         this.shape.embed(lane.shape)
         return lane
+    }
+
+    /**
+     * Emit a message to crown to display
+     */
+    showCrown() {
+
     }
 }

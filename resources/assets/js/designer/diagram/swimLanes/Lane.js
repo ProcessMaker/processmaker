@@ -4,10 +4,9 @@ import {Shape} from "../Shape"
  * Pool class
  */
 export class Lane extends Shape {
-    constructor(options, graph, paper) {
+    constructor(options, graph, paper, parent) {
         super(graph, paper)
         this.isContainer = true
-        this.draggable = false
         this.options = {
             type: "Lane",
             id: null,
@@ -16,6 +15,7 @@ export class Lane extends Shape {
             width: 600,
             height: 150
         }
+        this.setParent(parent)
         this.config(options)
     }
 

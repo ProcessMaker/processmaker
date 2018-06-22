@@ -9,9 +9,6 @@ export class Builder {
         this.graph = graph
         this.paper = paper
         this.collection = []
-        this.targetShape = null
-        this.creatingLane = false // Flag to create Lane in Pool
-        this.elementCurrentOfMouse = null
     }
 
     /**
@@ -28,23 +25,21 @@ export class Builder {
                 moddleElement: options
             };
         defaultOptions = _.extend(defaultOptions, options)
-        if (!this.creatingLane) {
-            // Type Example - bpmn:StartEvent
-            if (Elements[options.eClass]) {
-                element = new Elements[options.eClass](
-                    defaultOptions,
-                    this.graph,
-                    this.paper
-                );
-                element.render();
-                this.collection.push(element)
+        // Type Example - bpmn:StartEvent
+        if (Elements[options.eClass] && options.eClass != "Lane") {
+            element = new Elements[options.eClass](
+                defaultOptions,
+                this.graph,
+                this.paper
+            );
+            element.render();
+            this.collection.push(element)
+            if (options.eClass === "Pool") {
+                this.collection = _.concat(element.lanes, this.collection);
             }
         } else {
-            if (this.elementCurrentOfMouse && this.elementCurrentOfMouse.isContainer) {
-                this.elementCurrentOfMouse.createLane()
-                this.creatingLane = false
-                this.elementCurrentOfMouse = null
-            }
+            let pool = this.verifyElementFromPoint({x: defaultOptions.x, y: defaultOptions.y}, "Pool")
+            pool ? this.collection.push(pool.createLane()) : null
         }
     }
 
@@ -166,16 +161,6 @@ export class Builder {
     }
 
     /**
-     * This method process the interactive of element jointjs
-     * @param cellView
-     * @param method
-     * @returns {boolean}
-     */
-    interactive(cellView, method) {
-        return true
-    }
-
-    /**
      * This method process the pointerdown event in paper jointjs
      * @param cellView
      * @param evt
@@ -191,10 +176,7 @@ export class Builder {
         }
 
         if (cell.get('parent')) {
-            let el = this.findElementInCollection(cellView, true);
-            if (el && el.draggable) {
-                this.graph.getCell(cell.get('parent')).unembed(cell);
-            }
+            this.graph.getCell(cell.get('parent')).unembed(cell);
         }
     }
 
@@ -224,23 +206,19 @@ export class Builder {
         }
     }
 
-    /**
-     * Process the mouseenter event in paper jointjs
-     * @param cellView
-     * @param evt
-     * @param x
-     * @param y
-     */
-    mouseEnter(cellView, evt, x, y) {
-        this.elementCurrentOfMouse = this.findElementInCollection(cellView, true)
-    }
-
-    /**
-     * Set the flag to create Lane
-     * @param val
-     */
-    setCreatingLane(val) {
-        this.creatingLane = val
-        return this
+    verifyElementFromPoint(point, type) {
+        let that = this
+        let response = null
+        let elements = this.graph.findModelsFromPoint({x: point.x, y: point.y})
+        if (elements.length > 0) {
+            _.each(elements, (o) => {
+                let el = that.findElementInCollection(o)
+                if (el instanceof Elements[type]) {
+                    response = el
+                }
+                return el instanceof Elements[type]
+            })
+        }
+        return response
     }
 }

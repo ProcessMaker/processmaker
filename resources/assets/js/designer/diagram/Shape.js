@@ -10,7 +10,7 @@ export class Shape {
         this.paper = paper
         this.isContainer = false
         this.shape = null
-        this.draggable = true
+        this.parent = null
     }
 
     /**
@@ -63,5 +63,10 @@ export class Shape {
      */
     select() {
 
+    }
+
+    setParent(parent) {
+        this.parent = parent
+        return this
     }
 }
