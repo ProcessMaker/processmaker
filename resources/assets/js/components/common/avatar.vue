@@ -3,6 +3,9 @@
         <div v-if="!image" class="profile-avatar-none text-light" :style="{backgroundColor: backgroundColor}">{{label}}</div>
         <img v-else :src="image">
         <img class="profile-overlay" align="center" src="/img/avatar-overlay-blank.png" @click="openModal()">
+        <slot name="optional">
+
+        </slot>
     </div>
 </template>
 

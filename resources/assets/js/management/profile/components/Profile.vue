@@ -2,8 +2,11 @@
   <div class="form-wrap container bg-light mt-3 p-5">
     <h3 class="pl-5">Profile</h3>
     <div class="modal-wrapper">
-      <avatar :uid="uid" class="avatar-wrapper"></avatar>
-      <img class="profile-overlay" align="center" src="/img/avatar-profile-overlay.png" @click="openModal()">
+      <avatar :uid="uid" class="avatar-wrapper">
+        <template slot="optional">
+          <img class="profile-overlay" align="center" src="/img/avatar-profile-overlay.png" @click="openModal()">
+        </template>
+      </avatar>
     </div>
     <modalProfileAvatar ref="profileModal" @image-update="updateImage">
     </modalProfileAvatar>
@@ -159,7 +162,8 @@ export default{
   }
   .profile-overlay {
     position: absolute;
-    margin-top: -83px;
+    top: 0px;
+    left: 0px;
   }
   .avatar-wrapper {
     width: 82px;
