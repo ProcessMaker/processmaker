@@ -26,7 +26,7 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
 
     $this->get('/request', function(){
       return view('request.index',['title' => __('New Request')]);
-    })->name('request');
+    })->name('request-index');
 
     $this->get('/admin', function(){
       return view('admin',['title' => 'Dashboard']);
