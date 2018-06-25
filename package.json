@@ -37,7 +37,8 @@
     "lodash": "^4.17.10",
     "moment": "^2.21.0",
     "vue": "^2.5.16",
-    "vue-jest": "^2.6.0"
+    "vue-jest": "^2.6.0",
+    "vue-uniq-ids": "^1.0.0"
   },
   "dependencies": {
     "@fortawesome/fontawesome": "^1.1.8",
