@@ -51,6 +51,7 @@ export class Builder {
     onClickShape(elJoint) {
         let el = this.findElementInCollection(elJoint, true)
         if (el) {
+            debugger
             if (this.sourceShape) {
                 this.connect(this.sourceShape, el)
             } else {
@@ -169,12 +170,6 @@ export class Builder {
      */
     pointerDown(cellView, evt, x, y) {
         var cell = cellView.model;
-        if (!cell.get('embeds') || cell.get('embeds').length === 0) {
-            // Show the dragged element above all the other cells (except when the
-            // element is a parent).
-            cell.toFront();
-        }
-
         if (cell.get('parent')) {
             this.graph.getCell(cell.get('parent')).unembed(cell);
         }
