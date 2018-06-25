@@ -1,8 +1,10 @@
 <?php
 namespace ProcessMaker\Http\Middleware;
+
 use Closure;
 use Illuminate\Http\Request;
 use Lavary\Menu\Facade as Menu;
+
 class GenerateMenus
 {
     /**
@@ -263,21 +265,44 @@ class GenerateMenus
                 }
             }
         });
-        Menu::make('sidebar_designer', function ($menu) {});
+        Menu::make('sidebar_designer', function ($menu) {
+        });
 
-        Menu::make('build', function ($menu) {
-            $execute = $menu;
-            $tasks = $execute->add('Build', ['class' => 'sidebar-header'])
-            ->prepend('<i class="fa fa-list-ul"></i> ');
-            $tasks->add('Pending', ['route'  => 'home', 'id' => 'home']);
-            $tasks->add('Unclaimed', ['route'  => 'home', 'id' => 'home']);
-            $tasks->add('Completed', ['route'  => 'home', 'id' => 'home']);
-            $cases = $execute->add('Cases', ['class' => 'sidebar-header'])
-            ->prepend('<i class="fa fa-briefcase"></i> ');
-            $cases->add('New');
-            $cases->add('Drafts');
-            $cases->add('Mine');
-            $cases->add('Find');
+        Menu::make('dropdown_nav', function ($menu) {
+          $task_items = [
+          [
+            'label' =>__('Profile'),
+            'header' => false,
+            'route' => 'home',
+            'icon' => 'fa-user',
+            'img' => '',
+            'id' => 'dropdownItem'
+          ],
+          [
+            'label' => __('Help'),
+            'header' => false,
+            'route' => 'home',
+            'icon' => 'fa-info',
+            'img' => '',
+            'id' => 'dropdownItem'
+          ],
+          [
+            'label' => __('Log Out'),
+            'header' => false,
+            'route' => 'logout',
+            'icon' => 'fa-sign-out-alt',
+            'img' => '',
+            'id' => 'dropdownItem'
+          ],
+        ];
+            $tasks = $menu;
+            foreach ($task_items as $item) {
+                if ($item['header'] === false) {
+                    $tasks->add($item['label'], ['route'  => $item['route'], 'id' => $item['id'], 'icon' => $item['icon']]);
+                } else {
+                    $tasks->add($item['label'], ['class' => 'dropdown-item drop-header']);
+                }
+            }
         });
         return $next($request);
     }
