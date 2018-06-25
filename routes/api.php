@@ -49,8 +49,8 @@ Route::group([
 
         //User profile
 
-        Route::get('admin/profile', 'User\ProfileController@profile');
-        Route::put('admin/profile', 'User\ProfileController@updateProfile');
+        Route::get('admin/profile', 'Users\ProfileController@profile');
+        Route::put('admin/profile', 'Users\ProfileController@updateProfile');
 
         //File manager endpoints.
         Route::get('project/{process}/file-manager', 'Designer\FileManagerController@index')->middleware('can:readProcessFiles,process');
