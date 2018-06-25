@@ -1,8 +1,8 @@
 <template>
   <div class="form-group">
     <label v-uni-for="label">{{label}}</label>
-    <select v-uni-id="label" class="form-control" :class="{'is-invalid': error}" @input="updateValue">
-        <option :selected="selected" v-for="option in options">{{option}}</option>
+    <select v-uni-id="label" class="form-control" :class="{'is-invalid': error}" @change="updateValue">
+        <option :selected="option == value" :key="index" v-for="(option, index) in options">{{option}}</option>
     </select>
     <div v-if="error" class="invalid-feedback">{{error}}</div>
   </div>
