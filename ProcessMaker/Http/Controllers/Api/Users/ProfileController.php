@@ -1,6 +1,6 @@
 <?php
 
-namespace ProcessMaker\Http\Controllers\Api\User;
+namespace ProcessMaker\Http\Controllers\Api\Users;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Contracts\Routing\ResponseFactory;
