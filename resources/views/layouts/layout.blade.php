@@ -57,9 +57,6 @@
     @endif
     @yield('sidebar')
     <div id="app-container">
-        <div id="top-navbar" style="background-image: url('/img/logo.png')">
-            @include('layouts.navbar')
-        </div>
         <div id="content" class="{{isset($contentClass) ? $contentClass : ''}}">
             <div id="content-inner">
                 @yield('content')
@@ -73,6 +70,10 @@
 
             </div>
         </div>
+        <div id="top-navbar" style="background-image: url('/img/logo.png')">
+            @include('layouts.navbar')
+        </div>
+
     </div>
 <!-- Scripts -->
 <script src="{{ mix('js/manifest.js') }}"></script>
