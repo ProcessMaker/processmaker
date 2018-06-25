@@ -4,6 +4,7 @@ namespace ProcessMaker\Config;
 use Illuminate\Support\Arr;
 use Illuminate\Config\Repository as BaseRepository;
 use Illuminate\Support\Facades\Cache;
+use ProcessMaker\Model\Configuration;
 
 /**
  * A Configuration Repository which extends the base Laravel Config Repository
@@ -39,6 +40,12 @@ class Repository extends BaseRepository
             $value = Cache::get('config:' . $key, $default);
             if ($value !== null) {
                 return $value;
+            } else {
+                // Last ditch effort, look in the database.
+                $value = Configuration::where('parameter', $key)->first();
+                if($value !== null) {
+                    return $value;
+                }
             }
             return $default;
         }
@@ -67,6 +74,12 @@ class Repository extends BaseRepository
                 $value = Cache::get('config:' . $key, $default);
                 if ($value !== null) {
                     $config[$key] = $value;
+                } else {
+                    // Last ditch effort, look in the database.
+                    $value = Configuration::where('parameter', $key)->first();
+                    if($value !== null) {
+                        $config[$key] = $value;
+                    }
                 }
                 $config[$key] = $default;
             }
@@ -91,7 +104,24 @@ class Repository extends BaseRepository
             Arr::set($this->items, $key, $value);
             // Also set it in cache
             Cache::forever('config:' . $key, $value);
+            // As well as save in database
+            Configuration::create([
+                'parameter' => $key,
+                'value' => $value
+            ]);
+            
         }
+    }
+
+    /**
+     * Removes a configuration value from in-memory as well as persistence
+     * @param  array|string  $key
+     */
+    public function forget($key)
+    {
+        Arr::forget($this->items, $key);
+        Cache::forget('config:' . $key);
+        Configuration::where('parameter', $key)->delete();
     }
 
 }
