@@ -231,28 +231,28 @@ class GenerateMenus
                 'label' => __('menus.sidebar_request.in_progress'),
                 'header' => false,
                 'route' => 'home',
-                'icon' => 'fa-user',
+                'icon' => 'icon-in-progress',
                 'id' => 'homeid'
               ],
             [
               'label' => __('menus.sidebar_request.draft'),
               'header' => false,
               'route' => 'home',
-              'icon' => 'fa-user',
+              'icon' => 'icon-draft',
               'id' => 'homeid'
             ],
             [
               'label' => __('menus.sidebar_request.completed'),
               'header' => false,
               'route' => 'home',
-              'icon' => 'fa-users',
+              'icon' => 'icon-completed-1',
               'id' => 'homeid'
             ],
             [
               'label' => __('menus.sidebar_request.paused'),
               'header' => false,
               'route' => 'home',
-              'icon' => 'fa-user-plus',
+              'icon' => 'icon-paused-1',
               'id' => 'homeid'
             ],
           ];
