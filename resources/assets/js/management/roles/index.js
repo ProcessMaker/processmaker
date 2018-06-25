@@ -1,17 +1,21 @@
 import Vue from 'vue'
 import RolesListing from './components/RolesListing'
+import ValidationErrors from './../../components/common/mixins/ValidationErrors'
+import FormInput from './../../components/common/forms/FormInput'
+import FormSelect from './../../components/common/forms/FormSelect'
 
 // Bootstrap our Designer application
 new Vue({
+  mixins: [ValidationErrors],
   el: '#roles-listing',
   data: {
       filter: '' ,
       addRoleCode: '',
       addRoleName: '',
       addRoleDescription: '',
-      addRoleStatus: 'ACTIVE'
+      addRoleStatus: 'ACTIVE',
   },
-  components: { RolesListing },
+  components: { RolesListing, FormInput, FormSelect },
   methods: {
     showAddModal() {
       this.$refs.addModal.show();
@@ -40,7 +44,7 @@ new Vue({
       })
       .catch((err) => {
         // @todo Replace with new flashy errors?
-        alert('There was a problem creating the role.')
+        this.updateValidationErrors(err.response.data.errors);
       })
     }
   }
