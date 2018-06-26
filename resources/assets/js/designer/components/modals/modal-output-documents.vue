@@ -68,7 +68,7 @@ export default {
       ],
       fields: [
         {
-          title: "ID",
+          title: "Date Uploaded",
           name: "id",
           sortField: "id"
         },
@@ -89,10 +89,25 @@ export default {
       ],
       data: [
         {
-          field: "ID",
-          
+        id: "TEST",
+        title: "song",
+        type: "HTML"
+        },
+        {
+        id: "numbers",
+        title: "testing",
+        type: "HTML"
         }
-      ]
+      ],
+      // OutputDocumentData: [
+      //   {
+      //     id: this.data.created_at
+      // //     {
+      // //       created_at: "",
+      // //       title: "",
+      // //       type: ""
+      // //     },
+      // }]
     };
   },
   methods:{
@@ -107,49 +122,42 @@ export default {
     // Show our modal as soon as we're created
     this.$refs.modal.show();
   },
-    //   formatActiveUsers(value) {
-    //   return '<div class="text-center">' + value + "</div>";
-    // },
-    // formatStatus(value) {
-    //   value = value.toLowerCase();
-    //   let response = '<i class="fas fa-circle ' + value + '"></i> ';
-    //   value = value.charAt(0).toUpperCase() + value.slice(1);
-    //   return response + value;
-    // },
-    // fetch() {
-    //   this.loading = true;
-    //   if (this.cancelToken) {
-    //     this.cancelToken();
-    //     this.cancelToken = null;
-    //   }
-    //   const CancelToken = ProcessMaker.apiClient.CancelToken;
-    //   // Load from our api client
-    //   ProcessMaker.apiClient
-    //     .get(
-    //       "roles?page=" +
-    //         this.page +
-    //         "&per_page=" +
-    //         this.perPage +
-    //         "&filter=" +
-    //         this.filter +
-    //         "&order_by=" +
-    //         this.orderBy +
-    //         "&order_direction=" +
-    //         this.orderDirection,
-    //       {
-    //         cancelToken: new CancelToken(c => {
-    //           this.cancelToken = c;
-    //         })
-    //       }
-    //     )
-    //     .then(response => {
-    //       this.data = this.transform(response.data);
-    //       this.loading = false;
-    //     })
-    //     .catch(error => {
-    //       // Undefined behavior currently, show modal?
-    //     });
-    // }
+    fetch() {
+      // this.loading = true;
+      // if (this.outputDocumentData) {
+      //   this.outputDocumentData();
+      //   this.outputDocumentData = null;
+      // }
+      const OutputDocument = ProcessMaker.apiClient.OutputDocument;
+      // Load from our api client
+      ProcessMaker.apiClient
+        .get('process/OutputDocument/output-documents',
+          // "roles?page=" +
+          //   this.page +
+          //   "&per_page=" +
+          //   this.perPage +
+          //   "&filter=" +
+          //   this.filter +
+          //   "&order_by=" +
+          //   this.orderBy +
+          //   "&order_direction=" +
+          //   this.orderDirection,
+          {
+            OutputDocument: new OutputDocumentData(c => {
+              this.outputDocumentData = c;
+            })
+          }
+        )
+                    console.log(this.outputDocumentData)
+        .then(response => {
+          console.log(response.data)
+          this.data = this.transform(response.data);
+          // this.loading = false;
+        })
+        .catch(error => {
+          // Undefined behavior currently, show modal?
+        });
+    }
 };
 
 
@@ -157,6 +165,9 @@ export default {
 <style lang="scss" scoped>
 table.vuetable .actions {
   text-align: right;
+}
+table.vuetable th:last-child {
+  width: 100px;
 }
 .inline-input{
   margin-right: 6px;
