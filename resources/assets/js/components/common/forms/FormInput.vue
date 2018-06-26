@@ -1,7 +1,7 @@
 <template>
   <div class="form-group">
     <label v-uni-for="label">{{label}}</label>
-    <input v-uni-id="label" :placeholder="placeholder" class="form-control" :class="{'is-invalid': error}" @input="updateValue">
+    <input v-uni-id="label" :placeholder="placeholder" class="form-control" :class="{'is-invalid': error, classList}" @input="updateValue">
     <div v-if="error" class="invalid-feedback">{{error}}</div>
   </div>
 </template>
@@ -20,7 +20,17 @@ export default {
     'error',
     'placeholder',
     'value',
+    'controlClass'
   ],
+  computed:{
+    classList(){
+      let classList = {}
+      if(this.controlClass){
+        classList[this.controlClass] = true
+      }
+      return classList
+    }
+  },
   data() {
     return {
       content: ''

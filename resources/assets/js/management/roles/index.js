@@ -4,6 +4,7 @@ import ValidationErrors from './../../components/common/mixins/ValidationErrors'
 import FormInput from './../../components/common/forms/FormInput'
 import FormSelect from './../../components/common/forms/FormSelect'
 
+
 // Bootstrap our Designer application
 new Vue({
   mixins: [ValidationErrors],

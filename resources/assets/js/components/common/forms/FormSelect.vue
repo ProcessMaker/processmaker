@@ -1,7 +1,7 @@
 <template>
   <div class="form-group">
     <label v-uni-for="label">{{label}}</label>
-    <select v-uni-id="label" class="form-control" :class="[{'is-invalid': error}, {elementClass}]" @change="updateValue">
+    <select v-uni-id="label" class="form-control" :class="{'is-invalid': error, classList}" @change="updateValue">
         <option :selected="option == value" :key="index" v-for="(option, index) in options">{{option}}</option>
     </select>
     <div v-if="error" class="invalid-feedback">{{error}}</div>
@@ -23,11 +23,20 @@ export default {
     'selected',
     'value',
     'options',
-    'elementClass'
+    'controlClass'
   ],
+  computed:{
+    classList(){
+      let classList = {}
+      if(this.controlClass){
+        classList[this.controlClass] = true
+      }
+      return classList
+    }
+  },
   data() {
     return {
-      content: ''
+      content: '',
     }
   },
   methods: {

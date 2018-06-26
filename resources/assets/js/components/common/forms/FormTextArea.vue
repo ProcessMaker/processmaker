@@ -1,9 +1,7 @@
 <template>
   <div class="form-group">
-    <label v-uni-for="label">{{label}}</label>
-    <select v-uni-id="label" :class="{'is-invalid': error}" @change="updateValue">
-        <option :selected="option == value" :key="index" v-for="(option, index) in options">{{option}}</option>
-    </select>
+  <label v-uni-for="label">{{label}}</label>
+    <textarea v-uni-id="label" :placeholder="placeholder" class="form-control" :class="{'is-invalid': error, classList}" @input="updateValue"></textarea>
     <div v-if="error" class="invalid-feedback">{{error}}</div>
   </div>
 </template>
@@ -20,13 +18,22 @@ export default {
   props: [
     'label',
     'error',
-    'selected',
+    'placeholder',
     'value',
-    'options',
+    'controlClass'
   ],
+  computed:{
+    classList(){
+      let classList = {}
+      if(this.controlClass){
+        classList[this.controlClass] = true
+      }
+      return classList
+    }
+  },
   data() {
     return {
-      content: ''
+      content: '',
     }
   },
   methods: {
