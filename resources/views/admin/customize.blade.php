@@ -10,7 +10,8 @@
     <div>
         <p>Add your company logo</p>
         <div>
-            <p>Search Bar</p>
+        <input id="tasks-listing-search" v-model="filter" class="form-control col-sm-3"
+                               placeholder="{{__('Search')}}...">
             <p>Search Bar</p>
         </div>
     </div>
@@ -22,6 +23,8 @@
         </div>
     </div>
 </div>
+
+
 
 @endsection
 
