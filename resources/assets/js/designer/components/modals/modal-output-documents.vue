@@ -18,7 +18,7 @@
                         </div>
                     </template>  
                 </vuetable> 
-                <pagination single="Documents" plural="Roles" :perPageSelectEnabled="true" @changePerPage="changePerPage" @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
+                <!-- <pagination single="Documents" plural="Roles" :perPageSelectEnabled="true" @changePerPage="changePerPage" @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination> -->
             </div>
         </div>
 
@@ -40,7 +40,7 @@
 import FilterBar from "../../../components/FilterBar";
 Vue.component('filter-bar', FilterBar);
 import Vuetable from "vuetable-2/src/components/Vuetable";
-import Pagination from "../../../components/common/Pagination";
+// import Pagination from "../../../components/common/Pagination";
 import datatableMixin from "../../../components/common/mixins/datatable";
 
 export default {
