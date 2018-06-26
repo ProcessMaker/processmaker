@@ -107,40 +107,7 @@ class Repository extends BaseRepository
             if (is_numeric($key)) {
                 list($key, $default) = [$default, null];
             }
-
-            $value = Arr::get($this->items, $key, $default);
-            if ($value === null) {
-                // It wasn't found, so let's attempt from cache
-                $index = explode('.', $key)[0];
-                $data = Cache::get('config:' . $index, null);
-                $data = $data ? json_decode($data, true) : [];
-                $value = Arr::get($data, $key);
-                if ($value === null) {
-                    // It wasn't found, so let's try the database
-                    // Now check database
-                    $record = Configuration::where('parameter', $index)->first();
-                    if ($record) {
-                        $data = json_decode($record->value, true);
-                        $value = Arr::get($data, $key);
-                        if ($value !== null) {
-                            // It was found in the database, let's return
-                            $config[$key] = $value;
-                        } else {
-                            // Not found in the section record in database, return null
-                            $config[$key] = null;
-                        }
-                    } else {
-                        // No matching record in database
-                        $config[$key] = null;
-                    }
-                } else {
-                    // Found in cache, let's return it
-                    $config[$key] = $value;
-                }
-            } else {
-                // Found in our local memory, let's return
-                $config[$key] = $value;
-            }
+            $config[$key] = $this->get($key, $default);
         }
         return $config;
     }
