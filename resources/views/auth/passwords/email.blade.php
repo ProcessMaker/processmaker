@@ -6,7 +6,7 @@
     <img src="/img/md-blue-logo.png">
     <h3>{{__('Forgot Your Password?')}}</h3>
     <small>{{__("Enter your email address and we'll send you a reset link.")}}</small>
-<form method="POST" action="{{ route('password.email') }}">
+<form method="POST" class="form" action="{{ route('password.email') }}">
       @if (session('status'))
       <div class="alert alert-success">
         {{ session('status') }}
@@ -42,8 +42,9 @@
     width:400px;
   }
 
-  .formContainer form {
+  .formContainer .form {
     margin-top:50px;
+    text-align: left;
   }
 
   .formContainer  h3 {

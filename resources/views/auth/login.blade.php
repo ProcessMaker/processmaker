@@ -3,7 +3,7 @@
 <div align="center">
   <div class="formContainer">
     <img src="/img/md-blue-logo.png">
-    <form method="POST" action="{{ route('login') }}">
+    <form method="POST" class="form" action="{{ route('login') }}">
       {{ csrf_field() }}
       <div class="form-group">
         <label for="username">{{ __('Username') }}</label>
@@ -51,8 +51,9 @@
   .formContainer {
       width:504px;
   }
-  .formContainer form {
+  .formContainer .form {
     margin-top:85px;
+    text-align: left
   }
   </style>
 
