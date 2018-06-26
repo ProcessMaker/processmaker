@@ -1,13 +1,13 @@
 <template>
-  <div class="form-group">
-    <label v-uni-for="label">{{label}}</label>
-    <select v-uni-id="label" class="form-control" :class="{'is-invalid': error, classList}" @change="updateValue">
-        <option :selected="option == value" :key="index" v-for="(option, index) in options">{{option}}</option>
-    </select>
-    <div v-if="error" class="invalid-feedback">{{error}}</div>
+<div class="form-group">
+  <label>{{label}}</label>
+  <div class="form-check" v-for="(option) in options">
+    <label class="form-check-label" v-uni-for="option.label">
+    <input class="form-check-input" :class="{'is-invalid': error, classList}" type="radio" :name="name" v-uni-id="option.label" :value="option.value" @change="updateValue" :selected="options.value == this.value">
+    {{option.label}}</label>
   </div>
+</div>
 </template>
-
 
 <script>
 import { createUniqIdsMixin } from 'vue-uniq-ids'
@@ -18,11 +18,12 @@ const uniqIdsMixin = createUniqIdsMixin()
 export default {
   mixins: [uniqIdsMixin],
   props: [
-    'label',
     'error',
     'selected',
     'value',
     'options',
+    'label',
+    'name',
     'controlClass'
   ],
   computed:{

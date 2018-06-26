@@ -12,7 +12,7 @@
         <form-input v-model="addRoleCode" label="Code" :error="getFirstValidationError('code')"></form-input>
         <form-input v-model="addRoleName" label="Name" :error="getFirstValidationError('name')"></form-input>
         <form-input v-model="addRoleDescription" label="Description" :error="getFirstValidationError('description')"></form-input>
-        <form-select v-model="addRoleStatus" label="Status" :options="['Active','Disabled']"></form-select>
+        <form-select v-model="addRoleStatus" label="Status" :options="[{label: 'Active', value:'ACTIVE' },{label: 'Disabled', value:'DISABLED' }]"></form-select>
       </form>
 
     <template slot="modal-footer">

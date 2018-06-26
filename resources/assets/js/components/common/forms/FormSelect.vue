@@ -2,7 +2,7 @@
   <div class="form-group">
     <label v-uni-for="label">{{label}}</label>
     <select v-uni-id="label" class="form-control" :class="{'is-invalid': error, classList}" @change="updateValue">
-        <option :selected="option == value" :key="index" v-for="(option, index) in options">{{option}}</option>
+        <option :selected="option == value" :value="option.value" :key="index" v-for="(option, index) in options">{{option.label}}</option>
     </select>
     <div v-if="error" class="invalid-feedback">{{error}}</div>
   </div>

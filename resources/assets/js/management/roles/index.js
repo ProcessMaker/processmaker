@@ -5,6 +5,7 @@ import FormInput from './../../components/common/forms/FormInput'
 import FormSelect from './../../components/common/forms/FormSelect'
 
 
+
 // Bootstrap our Designer application
 new Vue({
   mixins: [ValidationErrors],
@@ -15,6 +16,7 @@ new Vue({
       addRoleName: '',
       addRoleDescription: '',
       addRoleStatus: 'ACTIVE',
+      test: ''
   },
   components: { RolesListing, FormInput, FormSelect },
   methods: {
