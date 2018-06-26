@@ -42,7 +42,36 @@
             },
             dropHandler(e) {
                 e.preventDefault()
-                debugger
+
+                function errorHandler(evt) {
+                    switch(evt.target.error.code) {
+                        case evt.target.error.NOT_FOUND_ERR:
+                            alert(__('File Not Found!'));
+                            break;
+                        case evt.target.error.NOT_READABLE_ERR:
+                            alert(__('File is not readable'));
+                            break;
+                        case evt.target.error.ABORT_ERR:
+                            break; // noop
+                        default:
+                            alert(__('An error occurred reading this file.'));
+                    };
+                }
+
+                let file = e.dataTransfer.files[0] || e.target.files[0];
+                let that = this;
+                let reader = new FileReader();
+                reader.onerror = errorHandler;
+                reader.onabort = function(e) {
+                    alert(__('File read cancelled'));
+                };
+
+
+                reader.onload = function (ev) {
+                    that.xml = ev.target.result;
+                    that.loadXML();
+                };
+                reader.readAsText(file);
             },
             /**
              * Create the element
