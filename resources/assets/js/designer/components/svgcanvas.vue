@@ -38,7 +38,7 @@
                 let options = {ignoreComment: true, alwaysChildren: true}
                 let result = parser.xml2js(this.xml, options)
                 this.bpmnHandler = new BPMNHandler(result)
-                this.bpmnHandler.findBPMNDiagram()
+                this.createFromBPMN(this.bpmnHandler.buildModel())
             },
             dropHandler(e) {
                 e.preventDefault()
@@ -87,9 +87,19 @@
                     id: name[1] + '_' + Math.floor((Math.random() * 100) + 1),
                     x: event.x - this.diagramCoordinates.x,
                     y: event.y - this.diagramCoordinates.y,
-                    eClass: name[1]
                 };
-                this.builder.createShape(event.target.id, defaultOptions);
+                this.builder.createShape(defaultOptions, event.target.id);
+            },
+
+            /**
+             * Create the element
+             * @param event
+             */
+            createFromBPMN(elements) {
+                let that = this
+                _.each(elements, (element) => {
+                    this.builder.createShape(element);
+                })
             },
             /**
              * Listener for remove element of the canvas

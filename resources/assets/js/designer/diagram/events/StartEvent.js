@@ -3,7 +3,7 @@ import {Shape} from "../Shape"
 /**
  * StartEvent class
  */
-export class StartEvent extends Shape {
+export default class extends Shape {
     constructor(options, graph, paper) {
         super(graph, paper)
         this.options = {

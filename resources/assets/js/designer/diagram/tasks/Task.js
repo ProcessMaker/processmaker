@@ -3,7 +3,7 @@ import {Shape} from "../Shape"
 /**
  * Task class
  */
-export class Task extends Shape {
+export default class extends Shape {
     constructor(options, graph, paper) {
         super(graph, paper)
         this.options = {
@@ -20,6 +20,7 @@ export class Task extends Shape {
      * Render the Task Based in options config
      */
     render() {
+        debugger
         this.shape = new JointElements.Task();
         this.shape.position(this.options.x, this.options.y);
         this.shape.resize(this.options.width, this.options.height);

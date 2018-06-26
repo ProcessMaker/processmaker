@@ -17,13 +17,13 @@ export class Builder {
      * @param type
      * @param options
      */
-    createShape(type, options) {
+    createShape(options, type = null) {
+        debugger
         let element,
             defaultOptions = {
-                $type: type,
+                type: type,
                 id: options.id,
-                name: options.bpmnElement && options.bpmnElement.name ? options.bpmnElement.name : options.name ? options.name : "",
-                moddleElement: options
+                name: options.name ? options.name : ""
             };
         defaultOptions = _.extend(defaultOptions, options)
         // Type Example - bpmn:StartEvent

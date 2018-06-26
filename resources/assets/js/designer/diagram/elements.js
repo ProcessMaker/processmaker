@@ -1,6 +1,6 @@
-import {StartEvent} from "./events/StartEvent"
-import {EndEvent} from "./events/EndEvent"
-import {Task} from "./tasks/Task"
+import startevent from "./events/StartEvent"
+import endevent from "./events/EndEvent"
+import task from "./tasks/Task"
 import {InclusiveGateway} from "./gateways/InclusiveGateway"
 import {ParallelGateway} from "./gateways/ParallelGateway"
 import {ExclusiveGateway} from "./gateways/ExclusiveGateway"
@@ -17,12 +17,12 @@ import {BlackBoxPool} from "./swimLanes/BlackBoxPool"
 import {SubProcess} from "./tasks/SubProcess"
 
 export const Elements = Object.assign({}, {
-    StartEvent,
+    startevent,
     IntermediateEmailEvent,
     IntermediateTimerEvent,
-    EndEvent,
+    endevent,
     EndEmailEvent,
-    Task,
+    task,
     Flow,
     InclusiveGateway,
     ParallelGateway,
