@@ -3,6 +3,7 @@
 namespace ProcessMaker\Model;
 
 use Illuminate\Database\Eloquent\Model;
+use ProcessMaker\Model\Traits\Uuid;
 
 /**
  * Represents a configuration parameter in the system for persistence.
@@ -10,6 +11,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Configuration extends Model
 {
+    use Uuid; 
+
     protected $fillable = [
         'parameter',
         'value'

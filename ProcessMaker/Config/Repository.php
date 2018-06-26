@@ -1,6 +1,7 @@
 <?php
 namespace ProcessMaker\Config;
 
+use Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Config\Repository as BaseRepository;
 use Illuminate\Support\Facades\Cache;
@@ -22,7 +23,31 @@ class Repository extends BaseRepository
      */
     public function has($key)
     {
-        return Arr::has($this->items, $key) ? true : Cache::has('config:' . $key);
+        // First check our local array
+        if (Arr::has($this->items, $key)) {
+            return true;
+        }
+        // Now check cache
+        // First, get the first "part" of the key
+        $index = explode('.', $key)[0];
+        $data = Cache::get('config:' . $index, null);
+        $data = $data ? json_decode($data, true) : [];
+        if (Arr::has($data, $key)) {
+            return true;
+        }
+        // Now check database
+        try {
+            $record = Configuration::where('parameter', $index)->first();
+            if ($record) {
+                $data = json_decode($record->value, true);
+                return(Arr::has($data, $key));
+            }
+        } catch(Exception $e) {
+            // If this exception is thrown, then the database is not available
+            return false;
+        }
+        // Default, return false
+        return false;
     }
 
     /**
@@ -36,21 +61,36 @@ class Repository extends BaseRepository
     {
         $value =  parent::get($key, $default);
         if ($value === null) {
-            // Return from Cache
-            $value = Cache::get('config:' . $key, $default);
-            if ($value !== null) {
-                return $value;
-            } else {
-                // Last ditch effort, look in the database.
-                $value = Configuration::where('parameter', $key)->first();
-                if($value !== null) {
-                    return $value;
+            // It wasn't found, so let's attempt from cache
+            $index = explode('.', $key)[0];
+            $data = Cache::get('config:' . $index, null);
+            $data = $data ? json_decode($data, true) : [];
+            $value = Arr::get($data, $key);
+            if ($value === null) {
+                // It wasn't found, so let's try the database
+                // Now check database
+                $record = Configuration::where('parameter', $index)->first();
+                if ($record) {
+                    $data = json_decode($record->value, true);
+                    $value = Arr::get($data, $key);
+                    if ($value !== null) {
+                        // It was found in the database, let's return
+                        return $value;
+                    } else {
+                        // Not found in the section record in database, return null
+                        return null;
+                    }
                 }
+                // No matching record in database
+                return null;
+            } else {
+                // Found in cache, let's return it
+                return $value;
             }
-            return $default;
+        } else {
+            // Found in our local memory, let's return
+            return $value;
         }
-        // It was not null, therefore let's return the value
-        return $value;
     }
 
     /**
@@ -70,21 +110,37 @@ class Repository extends BaseRepository
 
             $value = Arr::get($this->items, $key, $default);
             if ($value === null) {
-                // Return from Cache
-                $value = Cache::get('config:' . $key, $default);
-                if ($value !== null) {
-                    $config[$key] = $value;
-                } else {
-                    // Last ditch effort, look in the database.
-                    $value = Configuration::where('parameter', $key)->first();
-                    if($value !== null) {
-                        $config[$key] = $value;
+                // It wasn't found, so let's attempt from cache
+                $index = explode('.', $key)[0];
+                $data = Cache::get('config:' . $index, null);
+                $data = $data ? json_decode($data, true) : [];
+                $value = Arr::get($data, $key);
+                if ($value === null) {
+                    // It wasn't found, so let's try the database
+                    // Now check database
+                    $record = Configuration::where('parameter', $index)->first();
+                    if ($record) {
+                        $data = json_decode($record->value, true);
+                        $value = Arr::get($data, $key);
+                        if ($value !== null) {
+                            // It was found in the database, let's return
+                            $config[$key] = $value;
+                        } else {
+                            // Not found in the section record in database, return null
+                            $config[$key] = null;
+                        }
+                    } else {
+                        // No matching record in database
+                        $config[$key] = null;
                     }
+                } else {
+                    // Found in cache, let's return it
+                    $config[$key] = $value;
                 }
-                $config[$key] = $default;
+            } else {
+                // Found in our local memory, let's return
+                $config[$key] = $value;
             }
-            // It was not null, therefore let's return the value
-            $config[$key] = $value;
         }
         return $config;
     }
@@ -103,13 +159,37 @@ class Repository extends BaseRepository
         foreach ($keys as $key => $value) {
             Arr::set($this->items, $key, $value);
             // Also set it in cache
-            Cache::forever('config:' . $key, $value);
-            // As well as save in database
-            Configuration::create([
-                'parameter' => $key,
-                'value' => $value
-            ]);
             
+            // First, get the first "part" of the key
+            $index = explode('.', $key)[0];
+
+
+            // Now fetch from database, store it, and then update our cache
+            try {
+                $record = Configuration::where('parameter', $index)->first();
+            } catch(Exception $e) {
+                // Database not available, so just continue
+                continue;
+            }
+            // Data represents the updated array with configuration values
+            $data = [];
+            if ($record) {
+                // Update it
+                $data = json_decode($record->value, true);
+                Arr::set($data, $key, $value);
+                $record->value = json_encode($data);
+                $record->save();
+            } else {
+                // Create record in database
+                $data = [];
+                Arr::set($data, $key, $value);
+                Configuration::create([
+                    'parameter' => $index,
+                    'value' => json_encode($data)
+                ]);
+            }
+            // Now set it in our cache
+            Cache::forever('config:' . $index, json_encode($data));
         }
     }
 
@@ -120,8 +200,32 @@ class Repository extends BaseRepository
     public function forget($key)
     {
         Arr::forget($this->items, $key);
-        Cache::forget('config:' . $key);
-        Configuration::where('parameter', $key)->delete();
-    }
 
+        $index = explode('.', $key)[0];
+
+
+        $data = [];
+        // Update database
+        // Update database
+        $record = Configuration::where('parameter', $index)->first();
+        if ($record) {
+            // Only do it if we have a value
+            $data = json_decode($record->value, true);
+            Arr::forget($data, $key);
+            if ($data[$index]) {
+                // There's still something in data, so update the record
+                $record->value = json_encode($data);
+                $record->save();
+                // Update cache
+                Cache::forever('config:' . $index, json_encode($data));
+            } else {
+                // The data is empty, so let's delete the record
+                $record->delete();
+                Cache::forget('config:' . $index);
+            }
+        } else {
+            // Do nothing to database. Be sure to clear cache
+            Cache::forget('config:' . $index);
+        }
+    }
 }
