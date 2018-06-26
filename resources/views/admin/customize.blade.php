@@ -6,7 +6,21 @@
 
 @section('content')
 <div>
-    <p>test</p>
+    <h1 class="page-title">{{__('UI Customization')}}</h1>
+    <div>
+        <p>Add your company logo</p>
+        <div>
+            <p>Search Bar</p>
+            <p>Search Bar</p>
+        </div>
+    </div>
+    <div>
+        <p>Create a color scheme to customize your UI</p>
+        <div>
+            <p>search bar</p>
+            <p>Search Bar</p>
+        </div>
+    </div>
 </div>
 
 @endsection
