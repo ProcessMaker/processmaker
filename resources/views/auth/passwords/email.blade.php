@@ -6,7 +6,7 @@
     <img src="/img/md-blue-logo.png">
     <h3>{{__('Forgot Your Password?')}}</h3>
     <small>{{__("Enter your email address and we'll send you a reset link.")}}</small>
-<form method="POST" class="form" action="{{ route('password.email') }}">
+    <form method="POST" class="form" action="{{ route('password.email') }}">
       @if (session('status'))
       <div class="alert alert-success">
         {{ session('status') }}
@@ -29,7 +29,6 @@
         <small>
             <a href="/login">{{__("Back to Login")}}</a>
         </small>
-
       </div>
     </form>
   </div>
