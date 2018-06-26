@@ -3,6 +3,7 @@
     <label v-uni-for="label">{{label}}</label>
     <input v-uni-id="label" :placeholder="placeholder" class="form-control" :class="{'is-invalid': error, classList}" @input="updateValue">
     <div v-if="error" class="invalid-feedback">{{error}}</div>
+    <small v-if="helper" class="form-text text-muted">{{helper}}</small>
   </div>
 </template>
 
@@ -18,6 +19,7 @@ export default {
   props: [
     'label',
     'error',
+    'helper',
     'placeholder',
     'value',
     'controlClass'

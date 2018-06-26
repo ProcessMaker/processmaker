@@ -5,6 +5,7 @@
         <option :selected="option == value" :value="option.value" :key="index" v-for="(option, index) in options">{{option.label}}</option>
     </select>
     <div v-if="error" class="invalid-feedback">{{error}}</div>
+    <small v-if="helper" class="form-text text-muted">{{helper}}</small>
   </div>
 </template>
 
@@ -23,6 +24,7 @@ export default {
     'selected',
     'value',
     'options',
+    'helper',
     'controlClass'
   ],
   computed:{

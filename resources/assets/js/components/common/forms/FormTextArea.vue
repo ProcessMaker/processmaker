@@ -3,6 +3,7 @@
   <label v-uni-for="label">{{label}}</label>
     <textarea v-uni-id="label" :placeholder="placeholder" class="form-control" :class="{'is-invalid': error, classList}" @input="updateValue"></textarea>
     <div v-if="error" class="invalid-feedback">{{error}}</div>
+    <small v-if="helper" class="form-text text-muted">{{helper}}</small>
   </div>
 </template>
 
@@ -20,6 +21,7 @@ export default {
     'error',
     'placeholder',
     'value',
+    'helper',
     'controlClass'
   ],
   computed:{

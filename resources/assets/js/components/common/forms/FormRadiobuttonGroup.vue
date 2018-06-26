@@ -6,6 +6,7 @@
     <input class="form-check-input" :class="{'is-invalid': error, classList}" type="radio" :name="name" v-uni-id="option.label" :value="option.value" @change="updateValue" :selected="options.value == this.value">
     {{option.label}}</label>
   </div>
+  <small v-if="helper" class="form-text text-muted">{{helper}}</small>
 </div>
 </template>
 
@@ -24,6 +25,7 @@ export default {
     'options',
     'label',
     'name',
+    'helper',
     'controlClass'
   ],
   computed:{
