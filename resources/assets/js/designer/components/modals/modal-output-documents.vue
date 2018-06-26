@@ -3,7 +3,6 @@
       <form>
         <div class="form-group">
           <div class="d-flex justify-content-between">
-            <!-- <input type="text" class="form-control inline-input" id="destinationPath" placeholder="Search..."> -->
             <filter-bar></filter-bar>
             <button type="submit" class="btn inline-button text-light"><i class="fas fa-plus fa-md"></i> Create</button>
           </div>
@@ -15,13 +14,11 @@
                             <div class="popout">
                             <b-btn variant="action" @click="onAction('edit-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="Edit"><i class="fas fa-edit"></i></b-btn>
                             <b-btn variant="action" @click="onAction('remove-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="Remove"><i class="fas fa-trash-alt"></i></b-btn>
-                            <!-- <b-btn variant="action" @click="onAction('users-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="Users"><i class="fas fa-users"></i></b-btn>
-                            <b-btn variant="action" @click="onAction('permissions-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="Permissions"><i class="fas fa-user-lock"></i></b-btn> -->
                             </div>
                         </div>
                     </template>  
                 </vuetable> 
-                <pagination single="Role" plural="Roles" :perPageSelectEnabled="true" @changePerPage="changePerPage" @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
+                <pagination single="Documents" plural="Roles" :perPageSelectEnabled="true" @changePerPage="changePerPage" @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
             </div>
         </div>
 
@@ -69,8 +66,8 @@ export default {
       fields: [
         {
           title: "Date Uploaded",
-          name: "id",
-          sortField: "id"
+          name: "created_at",
+          sortField: "created_at"
         },
         {
           title: "Title",
@@ -88,26 +85,8 @@ export default {
         }
       ],
       data: [
-        {
-        id: "TEST",
-        title: "song",
-        type: "HTML"
-        },
-        {
-        id: "numbers",
-        title: "testing",
-        type: "HTML"
-        }
-      ],
-      // OutputDocumentData: [
-      //   {
-      //     id: this.data.created_at
-      // //     {
-      // //       created_at: "",
-      // //       title: "",
-      // //       type: ""
-      // //     },
-      // }]
+
+      ]
     };
   },
   methods:{
@@ -116,39 +95,33 @@ export default {
     },
     onCancel() {
       this.$refs.modal.hide()
-    }
-  },
-  mounted() {
-    // Show our modal as soon as we're created
-    this.$refs.modal.show();
-  },
-    fetch() {
-      // this.loading = true;
-      // if (this.outputDocumentData) {
-      //   this.outputDocumentData();
-      //   this.outputDocumentData = null;
-      // }
-      const OutputDocument = ProcessMaker.apiClient.OutputDocument;
+    },
+        fetch() {
+      this.loading = true;
+      if (this.cancelToken) {
+        this.cancelToken();
+        this.cancelToken = null;
+      }
+      const CancelToken = ProcessMaker.apiClient.CancelToken;
       // Load from our api client
       ProcessMaker.apiClient
-        .get('process/OutputDocument/output-documents',
-          // "roles?page=" +
-          //   this.page +
-          //   "&per_page=" +
-          //   this.perPage +
-          //   "&filter=" +
-          //   this.filter +
-          //   "&order_by=" +
-          //   this.orderBy +
-          //   "&order_direction=" +
-          //   this.orderDirection,
+        .get('process/e4e3a48e-fec7-4ce0-8f68-1ae68e7e316c/output-documents',
+          "roles?page=" +
+            this.page +
+            "&per_page=" +
+            this.perPage +
+            "&filter=" +
+            this.filter +
+            "&order_by=" +
+            this.orderBy +
+            "&order_direction=" +
+            this.orderDirection,
           {
-            OutputDocument: new OutputDocumentData(c => {
-              this.outputDocumentData = c;
+            cancelToken: new CancelToken(c => {
+              this.cancelToken = c;
             })
           }
         )
-                    console.log(this.outputDocumentData)
         .then(response => {
           console.log(response.data)
           this.data = this.transform(response.data);
@@ -158,6 +131,12 @@ export default {
           // Undefined behavior currently, show modal?
         });
     }
+  },
+  mounted() {
+    // Show our modal as soon as we're created
+    this.$refs.modal.show();
+  },
+
 };
 
 
