@@ -11,7 +11,7 @@
                 <vuetable :dataManager="dataManager" :sortOrder="sortOrder" :css="css" :api-mode="false"  @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data" pagination-path="meta">
                     <template slot="actions" slot-scope="props"> 
                         <div class="actions">
-                            <i class="fas fa-ellipsis-h text-right"></i>
+                            <i class="fas fa-ellipsis-h"></i>
                             <div class="popout">
                             <b-btn variant="action" @click="onAction('edit-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="Edit"><i class="fas fa-edit"></i></b-btn>
                             <b-btn variant="action" @click="onAction('remove-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="Remove"><i class="fas fa-trash-alt"></i></b-btn>
@@ -68,7 +68,7 @@ export default {
       ],
       fields: [
         {
-          title: "Date Uploaded",
+          title: "ID",
           name: "id",
           sortField: "id"
         },
@@ -89,7 +89,8 @@ export default {
       ],
       data: [
         {
-
+          field: "ID",
+          
         }
       ]
     };
@@ -106,55 +107,57 @@ export default {
     // Show our modal as soon as we're created
     this.$refs.modal.show();
   },
-      formatActiveUsers(value) {
-      return '<div class="text-center">' + value + "</div>";
-    },
-    formatStatus(value) {
-      value = value.toLowerCase();
-      let response = '<i class="fas fa-circle ' + value + '"></i> ';
-      value = value.charAt(0).toUpperCase() + value.slice(1);
-      return response + value;
-    },
-    fetch() {
-      this.loading = true;
-      if (this.cancelToken) {
-        this.cancelToken();
-        this.cancelToken = null;
-      }
-      const CancelToken = ProcessMaker.apiClient.CancelToken;
-      // Load from our api client
-      ProcessMaker.apiClient
-        .get(
-          "roles?page=" +
-            this.page +
-            "&per_page=" +
-            this.perPage +
-            "&filter=" +
-            this.filter +
-            "&order_by=" +
-            this.orderBy +
-            "&order_direction=" +
-            this.orderDirection,
-          {
-            cancelToken: new CancelToken(c => {
-              this.cancelToken = c;
-            })
-          }
-        )
-        .then(response => {
-          this.data = this.transform(response.data);
-          this.loading = false;
-        })
-        .catch(error => {
-          // Undefined behavior currently, show modal?
-        });
-    }
+    //   formatActiveUsers(value) {
+    //   return '<div class="text-center">' + value + "</div>";
+    // },
+    // formatStatus(value) {
+    //   value = value.toLowerCase();
+    //   let response = '<i class="fas fa-circle ' + value + '"></i> ';
+    //   value = value.charAt(0).toUpperCase() + value.slice(1);
+    //   return response + value;
+    // },
+    // fetch() {
+    //   this.loading = true;
+    //   if (this.cancelToken) {
+    //     this.cancelToken();
+    //     this.cancelToken = null;
+    //   }
+    //   const CancelToken = ProcessMaker.apiClient.CancelToken;
+    //   // Load from our api client
+    //   ProcessMaker.apiClient
+    //     .get(
+    //       "roles?page=" +
+    //         this.page +
+    //         "&per_page=" +
+    //         this.perPage +
+    //         "&filter=" +
+    //         this.filter +
+    //         "&order_by=" +
+    //         this.orderBy +
+    //         "&order_direction=" +
+    //         this.orderDirection,
+    //       {
+    //         cancelToken: new CancelToken(c => {
+    //           this.cancelToken = c;
+    //         })
+    //       }
+    //     )
+    //     .then(response => {
+    //       this.data = this.transform(response.data);
+    //       this.loading = false;
+    //     })
+    //     .catch(error => {
+    //       // Undefined behavior currently, show modal?
+    //     });
+    // }
 };
 
 
 </script>
 <style lang="scss" scoped>
-
+table.vuetable .actions {
+  text-align: right;
+}
 .inline-input{
   margin-right: 6px;
 }
@@ -186,5 +189,8 @@ export default {
 }
 .form-control {
   width: 200px;
+}
+.vuetable-slot {
+  text-align: right;
 }
 </style>
