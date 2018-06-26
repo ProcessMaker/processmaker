@@ -9,6 +9,9 @@ $this->get('logout', 'Auth\LoginController@logout')->name('logout');
 $this->get('password/newpass', function(){
   return view('auth.passwords.reset',['title' => __('Reset Your Password')]);
 })->name('password-reset');
+$this->get('password/success', function(){
+  return view('auth.passwords.success',['title' => __('Success Your Password')]);
+})->name('password-success');
 
 // Password Reset Routes...
 // $this->get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
