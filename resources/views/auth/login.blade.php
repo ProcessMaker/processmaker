@@ -67,9 +67,7 @@
         <a class="btn-link text-primary pl-0" href="{{ route('password.request') }}">
           {{ __('Forgot Password?') }}
         </a>
-     @if($footer)
-      {!! $footer !!}
-     @endif
+
     </div>
  
      </form>
