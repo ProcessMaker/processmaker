@@ -4,7 +4,7 @@
 <div align="center">
   <div class="formContainer">
     <img src="/img/md-blue-logo.png">
-    <h3>{{__('Forgot Your Password?')}}</h3>
+    <h3>{{__('Reset Your Password')}}</h3>
     <form role="form" method="POST" action="{{ url('/password/reset') }}">
       {{ csrf_field() }} {{-- Needs to be enable when we hook up Controllers <input type="hidden" name="token" value="{{ $token }}"> --}}
       <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
