@@ -47,21 +47,13 @@
 </div>
 @endsection
 @section('css')
-<style lang="scss" scoped>
+  <style media="screen">
   .formContainer {
-    width: 520px;
-    margin-top: 98px
+      width:504px;
   }
-
   .formContainer form {
-    background-color: white;
-    padding: 20px 30px;
-    margin-top: 85px;
-    text-align: left
+    margin-top:85px;
   }
+  </style>
 
-  .form-check {
-    margin-bottom: 10px
-  }
-</style>
 @endsection
