@@ -6,7 +6,7 @@
         <div id="designer-subcontainer">
             <div class="canvas-container">
                 <crown ref="crown"></crown>
-                <svgcanvas ref="svgcanvas"></svgcanvas>
+                <svgcanvas :bpmn="bpmn" ref="svgcanvas"></svgcanvas>
             </div>
             <designerobjectsmenu></designerobjectsmenu>
         </div>
@@ -68,7 +68,8 @@ export default {
   },
   data() {
     return {
-      modalComponent: null
+      modalComponent: null,
+      bpmn: {}
     }
   },
   created() {

@@ -1,22 +1,30 @@
 <template>
-    <div id="svgCanvas" ref="canvas"></div>
+    <div id="svgCanvas" ref="canvas" @dragover="$event.preventDefault()" @drop="dropHandler($event)"></div>
 </template>
 
 <script>
-    import bpmn from "bpmn-moddle"
     import {Builder} from "../diagram/builder"
     import actions from "../actions"
     import EventBus from "../lib/event-bus"
     import _ from "lodash"
     import joint from 'jointjs'
+    import parser from 'xml-js'
+    import BPMNHandler from '../lib/BPMNHandler'
 
-    let moddle = new bpmn()
     export default {
-        // Set our own static components but also bring in our dynamic list of modals from above
+        props: [
+            'bpmn'
+        ],
         data() {
             return {
                 graph: null,
-                paper: null
+                paper: null,
+                bpmnHandler: null,
+                xml: null
+            }
+        },
+        watch: {
+            bpmn() {
             }
         },
         computed: {},
@@ -26,12 +34,15 @@
             EventBus.$on(actions.designer.shape.remove().type, (value) => this.removeElement(value))
         },
         methods: {
-            loadXML(xml = null) {
-                let that = this;
-                if (xml) this.xml = xml;
-                moddle.fromXML(that.xml, function (err, def) {
-                    that.definitions = def;
-                });
+            loadXML() {
+                let options = {ignoreComment: true, alwaysChildren: true}
+                let result = parser.xml2js(this.xml, options)
+                this.bpmnHandler = new BPMNHandler(result)
+                this.bpmnHandler.findBPMNDiagram()
+            },
+            dropHandler(e) {
+                e.preventDefault()
+                debugger
             },
             /**
              * Create the element
