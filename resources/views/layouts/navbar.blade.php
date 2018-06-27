@@ -13,36 +13,22 @@
         <a class="nav-link" href="{{ url('admin') }}">Admin</a>
       </li>
       <li>
-        @if(Session::has('message_error'))
-          <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="fas fa-times-circle"></i> {{Session::get('message_error')}}
+        @if(Session::has('_alert'))
+          @php
+          $icons = [
+            'danger' =>  'fa-times-circle',
+            'info' =>  'fa-info-circle',
+            'warning' =>  'fa-exclamation-triangle',
+            'success' =>  'fa-check'
+          ];
+
+          list($type,$message) = json_decode(Session::get('_alert'));
+          @endphp
+          <div class="alert alert-{{$type}} alert-dismissible fade show" role="alert">
+            <i class="fas fa-{{$icons[$type]}}"></i> {{$message}}
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
-          </div>
-        @endif
-        @if(Session::has('message_info'))
-          <div class="alert alert-info alert-dismissible fade show" role="alert">
-            <i class="fas fa-info-circle"></i> {{Session::get('message_info')}}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-        @endif
-        @if(Session::has('message_success'))
-          <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-            <i class="fas fa-check"></i> {{Session::get('message_success')}}
-          </div>
-        @endif
-        @if(Session::has('message_warning'))
-          <div class="alert alert-warning alert-dismissible fade show" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-            <i class="fas fa-exclamation-triangle"></i> {{Session::get('message_warning')}}
           </div>
         @endif
       </li>

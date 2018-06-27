@@ -31,7 +31,7 @@ class FlashMessageTest extends TestCase
       // Create a fake route that flashes a message with a successful alert
       Router::get('/_tests/alert_success_test', function () {
         // Flash a message
-          request()->session()->flash('message_success', 'Test Successful Message');
+          request()->session()->flash('_alert', ['type'=>'success','message'=>'Test Successful Message']);
           return view('layouts.layout');
       })->middleware('web');
       $response = $this->get('/_tests/alert_success_test');
@@ -58,7 +58,7 @@ class FlashMessageTest extends TestCase
       // Create a fake route that flashes a message with a error alert
       Router::get('/_tests/alert_failure_test', function () {
         // Flash a message
-          request()->session()->flash('message_error', 'Test Error Message');
+        request()->session()->flash('_alert', ['type'=>'danger','message'=>'Test Error Message']);          
           return view('layouts.layout');
       })->middleware('web');
       $response = $this->get('/_tests/alert_failure_test');
