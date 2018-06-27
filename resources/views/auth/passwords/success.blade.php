@@ -11,7 +11,7 @@
         </small>
       </div>
       <div class="form-group">
-        <a href="/login" class="btn btn-success">{{__('Return to Login')}}</a>
+        <a href="{{route('logout')}}" class="btn btn-success">{{__('Return to Login')}}</a>
       </div>
     </div>
   </div>

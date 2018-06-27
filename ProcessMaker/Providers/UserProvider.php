@@ -47,12 +47,19 @@ class UserProvider extends EloquentUserProvider
     }
 
     /**
-     * Retrieve a user by passed in credentials (which only needs username)
+     * Retrieve a user by passed in credentials
+     * If it's by email address, let's try to first get by email
      * @param array $credentials
      * @return UserContract|\Illuminate\Database\Eloquent\Model|null|static
      */
     public function retrieveByCredentials(array $credentials)
     {
-        return User::where('username', $credentials['username'])->first();
+        if(isset($credentials['email'])) {
+            return User::where('email', $credentials['email'])->first();
+        } else if(isset($crendentials['username'])) {
+            return User::where('username', $credentials['username'])->first();
+        }
+        // No valid credential to find, let's return nothing
+        return null;
     }
 }
