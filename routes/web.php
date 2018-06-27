@@ -13,6 +13,10 @@ $this->get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm
 $this->post('password/reset', 'Auth\ResetPasswordController@reset');
 
 $this->middleware(['auth', 'apitoken'])->group(function() {
+    // Test Process Routes for Nayra
+    $this->get('/nayra/start', function() {
+        return view('nayra.start');
+    });
 
   // All the routes in this group and below are for testing purposes only
 

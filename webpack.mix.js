@@ -17,6 +17,10 @@ mix.js('resources/assets/js/app-layout.js', 'public/js')
     .js('resources/assets/js/management/roles/index.js', 'public/js/management/roles')
     .js('resources/assets/js/management/groups/index.js', 'public/js/management/groups')
     .js('resources/assets/js/processes/tasks/index.js', 'public/js/processes/tasks')
+
+    .js('resources/assets/js/nayra/start.js', 'public/js/nayra')
+
+
     // Note, that this should go last for the extract to properly put the manifest and vendor in the right location
     // See: https://github.com/JeffreyWay/laravel-mix/issues/1118
     .js('resources/assets/js/app.js', 'public/js')
