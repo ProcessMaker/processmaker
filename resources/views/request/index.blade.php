@@ -14,14 +14,13 @@
     <div class="col-sm">
       <h3>Test Category</h3>
       <process-card title="Lorem Ipsum" description="This is a test description of an example process"></process-card>
-
     </div>
   </div>
 </div>
 @endsection
 
 @section('sidebar')
-  @include('sidebars.request')
+  @include('sidebars.default', ['sidebar'=> $sidebar_request])
 @endsection
 
 @section('js')

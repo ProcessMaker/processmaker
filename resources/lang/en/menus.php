@@ -9,6 +9,8 @@ return[
     'paused' => 'Paused'
   ],
   'sidebar_request' => [
+    'process' => 'Process',
+    'all_processes' => 'All Processes',
     'request' => 'Requests',
     'in_progress' => 'In Progress',
     'draft' => 'Draft',
