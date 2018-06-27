@@ -148,13 +148,17 @@ export default {
       ProcessMaker.apiClient.put('admin/profile', this.data)
         .then((response) => {
           // @todo Show success alert/modal
-          console.log(response)
+          console.log('submitted',response)
           alert("saved")
 
         });
     },
     updateImage (newImage) {
       this.image = newImage;
+      ProcessMaker.apiClient.put('admin/profile', this.image)
+        .then((response) => {
+          console.log('image',response)
+        })
     },
     openModal () {
       this.$refs.profileModal.openModal()
