@@ -35,7 +35,7 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
       return view('process',['title' => 'Dashboard']);
     })->name('process');
 
-    $this->get('/request', function(){
+    $this->get('/requests', function(){
       return view('request.index',['title' => __('New Request')]);
     })->name('request-index');
 

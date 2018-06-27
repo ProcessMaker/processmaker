@@ -221,6 +221,20 @@ class GenerateMenus
         Menu::make('sidebar_request', function ($menu) {
             $task_items = [
               [
+                'label' => __('menus.sidebar_request.process'),
+                'header' => true,
+                'route' => '',
+                'icon' => '',
+                'id' => ''
+              ],
+              [
+                'label' => __('menus.sidebar_request.all_processes'),
+                'header' => false,
+                'route' => 'home',
+                'icon' => 'icon-process',
+                'id' => 'homeid'
+              ],
+              [
                 'label' => __('menus.sidebar_request.request'),
                 'header' => true,
                 'route' => '',
