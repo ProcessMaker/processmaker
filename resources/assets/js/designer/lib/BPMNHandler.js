@@ -21,6 +21,7 @@ export default class BPMNHandler {
         this.processes = this.findProcess()
         this.collaborations = this.findCollaboration()
         this.buildElementsDiagram(this.elementsDiagram)
+        console.log(this.buildElements)
         return this.buildElements
     }
 
@@ -34,21 +35,21 @@ export default class BPMNHandler {
 
     findCollaboration() {
         let collaboration = _.find(this.bpmn.elements[0].elements, (value) => {
-            return value.name == "bpmn:collaboration" ? true : false
+            return value.name.indexOf("collaboration") >= 0 ? true : false
         })
         return collaboration ? collaboration.elements : null
     }
 
     findBPMNDiagram() {
         let BPMNDiagram = _.find(this.bpmn.elements[0].elements, (value) => {
-            return value.name == "bpmndi:BPMNDiagram" ? true : false
+            return value.name.indexOf("BPMNDiagram") >= 0 ? true : false
         })
         return BPMNDiagram.elements[0].elements
     }
 
     findProcess() {
         return _.filter(this.bpmn.elements[0].elements, (value) => {
-            return value.name == "bpmn:process" ? true : false
+            return value.name.indexOf("process") >= 0 ? true : false
         })
     }
 
@@ -61,7 +62,7 @@ export default class BPMNHandler {
             bpmnEl = !bpmnEl ? that.findElementInProcess(this.processes, idBpmnElement) : bpmnEl
 
             if (bpmnEl && value.name != "bpmn:sequenceFlow" && value.name != "bpmndi:BPMNEdge") {
-                console.log(bpmnEl, idBpmnElement)
+                //console.log(bpmnEl, idBpmnElement)
                 that.elements[idBpmnElement] = {
                     diagram: value,
                     process: bpmnEl
@@ -85,7 +86,9 @@ export default class BPMNHandler {
     findElementInCollaboration(colls, idbpmn) {
         let element
         _.each(colls, (coll) => {
-            element = coll.attributes.id == idbpmn ? coll : element
+            if (coll.attributes && coll.attributes.id && coll.attributes.id == idbpmn) {
+                element = coll
+            }
         })
         return element
     }
@@ -97,7 +100,7 @@ export default class BPMNHandler {
         _.forEach(attr, (value, key, obj) => {
             obj[key] = parseInt(value)
         })
-        return Object.assign({}, attr, {type: name[1], id: di.attributes.bpmnElement})
+        return Object.assign({}, attr, {type: name.length == 1 ? name[0] : name[1], id: di.attributes.bpmnElement})
     }
 
     getAttributes(di, property) {

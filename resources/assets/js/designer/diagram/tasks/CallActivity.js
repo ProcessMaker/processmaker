@@ -3,7 +3,7 @@ import {Shape} from "../Shape"
 /**
  * SubProcess class
  */
-export class SubProcess extends Shape {
+export default class extends Shape {
     constructor(options, graph, paper) {
         super(graph, paper)
         this.options = {
