@@ -1,7 +1,8 @@
 import {InclusiveGateway} from "./InclusiveGateway"
 import {ParallelGateway} from "./ParallelGateway"
 import {ExclusiveGateway} from "./ExclusiveGateway"
-import {IntermediateEmailEvent} from "./IntermediateEmailEvent"
+import {IntermediateCatchEvent} from "./IntermediateCatchEvent"
+import {IntermediateThrowEvent} from "./IntermediateThrowEvent"
 import {IntermediateTimerEvent} from "./IntermediateTimerEvent"
 import {EndEmailEvent} from "./EndEmailEvent"
 import {StartEvent} from "./StartEvent"
@@ -19,7 +20,8 @@ export const JointElements = Object.assign({}, {
     InclusiveGateway,
     ParallelGateway,
     ExclusiveGateway,
-    IntermediateEmailEvent,
+    IntermediateCatchEvent,
+    IntermediateThrowEvent,
     IntermediateTimerEvent,
     EndEmailEvent,
     StartEvent,

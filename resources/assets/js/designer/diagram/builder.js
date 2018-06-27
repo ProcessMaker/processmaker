@@ -18,7 +18,6 @@ export class Builder {
      * @param options
      */
     createShape(options, type = null) {
-        debugger
         let element,
             defaultOptions = {
                 type: type,

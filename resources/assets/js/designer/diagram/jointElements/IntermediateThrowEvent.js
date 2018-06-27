@@ -1,5 +1,5 @@
 import joint from "jointjs"
-export const IntermediateEmailEvent = joint.dia.Element.define('bpmn.IntermediateEmailEvent',
+export const IntermediateThrowEvent = joint.dia.Element.define('bpmn.IntermediateThrowEvent',
     {
         attrs: {
             c: {

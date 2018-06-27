@@ -9,11 +9,13 @@ export default class extends Shape {
         this.options = {
             id: null,
             x: null,
-            y: null,
-            width: 40,
-            height: 40
+            y: null
         }
         this.config(options)
+        this.config({
+            width: 40,
+            height: 40
+        })
     }
 
     /**

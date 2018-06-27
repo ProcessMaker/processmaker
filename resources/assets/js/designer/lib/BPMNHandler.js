@@ -44,7 +44,8 @@ export default class BPMNHandler {
         _.find(els, (value) => {
             let idBpmnElement = value.attributes.bpmnElement
             let bpmnEl = that.findElementInProcess(this.process, idBpmnElement)
-            if (value.name == "bpmndi:BPMNShape") {
+            if (bpmnEl && value.name != "bpmn:sequenceFlow" && value.name != "bpmndi:BPMNEdge") {
+                console.log(bpmnEl, idBpmnElement)
                 that.elements[idBpmnElement] = {
                     diagram: value,
                     process: bpmnEl

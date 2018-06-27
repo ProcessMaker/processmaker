@@ -10,8 +10,6 @@ export class IntermediateTimerEvent extends Shape {
             id: null,
             x: null,
             y: null,
-            width: 40,
-            height: 40,
             rounded: 10,
             attr: {
                 fill: "#EDFFFC",
@@ -19,6 +17,10 @@ export class IntermediateTimerEvent extends Shape {
             }
         }
         this.config(options)
+        this.config({
+            width: 40,
+            height: 40
+        })
     }
 
     /**

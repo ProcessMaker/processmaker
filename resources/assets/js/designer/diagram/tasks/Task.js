@@ -20,7 +20,6 @@ export default class extends Shape {
      * Render the Task Based in options config
      */
     render() {
-        debugger
         this.shape = new JointElements.Task();
         this.shape.position(this.options.x, this.options.y);
         this.shape.resize(this.options.width, this.options.height);

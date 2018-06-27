@@ -3,17 +3,20 @@ import {Shape} from "../Shape"
 /**
  * ExclusiveGateway class
  */
-export class ExclusiveGateway extends Shape {
+export default class extends Shape {
     constructor(options, graph, paper) {
         super(graph, paper)
         this.options = {
             id: null,
             x: null,
-            y: null,
-            width: 40,
-            height: 40
+            y: null
         }
         this.config(options)
+        //Force in width & height
+        this.config({
+            width: 40,
+            height: 40
+        })
     }
 
     /**

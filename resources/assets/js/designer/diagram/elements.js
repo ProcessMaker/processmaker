@@ -1,10 +1,12 @@
 import startevent from "./events/StartEvent"
 import endevent from "./events/EndEvent"
 import task from "./tasks/Task"
+import servicetask from "./tasks/ServiceTask"
 import {InclusiveGateway} from "./gateways/InclusiveGateway"
 import {ParallelGateway} from "./gateways/ParallelGateway"
-import {ExclusiveGateway} from "./gateways/ExclusiveGateway"
-import {IntermediateEmailEvent} from "./events/IntermediateEmailEvent"
+import exclusivegateway from "./gateways/ExclusiveGateway"
+import intermediatecatchevent from "./events/IntermediateCatchEvent"
+import intermediatethrowevent from "./events/IntermediateThrowEvent"
 import {IntermediateTimerEvent} from "./events/IntermediateTimerEvent"
 import {EndEmailEvent} from "./events/EndEmailEvent"
 import {Flow} from "./flow/Flow"
@@ -18,15 +20,17 @@ import {SubProcess} from "./tasks/SubProcess"
 
 export const Elements = Object.assign({}, {
     startevent,
-    IntermediateEmailEvent,
+    intermediatecatchevent,
+    intermediatethrowevent,
     IntermediateTimerEvent,
     endevent,
     EndEmailEvent,
     task,
+    servicetask,
     Flow,
     InclusiveGateway,
     ParallelGateway,
-    ExclusiveGateway,
+    exclusivegateway,
     DataObject,
     DataStore,
     Pool,

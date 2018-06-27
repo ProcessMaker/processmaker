@@ -44,7 +44,7 @@
                 e.preventDefault()
 
                 function errorHandler(evt) {
-                    switch(evt.target.error.code) {
+                    switch (evt.target.error.code) {
                         case evt.target.error.NOT_FOUND_ERR:
                             alert(__('File Not Found!'));
                             break;
@@ -55,17 +55,17 @@
                             break; // noop
                         default:
                             alert(__('An error occurred reading this file.'));
-                    };
+                    }
+                    ;
                 }
 
                 let file = e.dataTransfer.files[0] || e.target.files[0];
                 let that = this;
                 let reader = new FileReader();
                 reader.onerror = errorHandler;
-                reader.onabort = function(e) {
+                reader.onabort = function (e) {
                     alert(__('File read cancelled'));
                 };
-
 
                 reader.onload = function (ev) {
                     that.xml = ev.target.result;
