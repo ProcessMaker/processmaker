@@ -47,7 +47,7 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
         return view('home', ['title' => 'Dashboard']);
     })->name('dash');
 
-    $this->get('/home', function() {        
+    $this->get('/home', function() {
         return view('home', ['title' => 'Dashboard']);
     })->name('home');
 
