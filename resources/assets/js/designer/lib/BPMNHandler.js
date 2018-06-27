@@ -7,23 +7,36 @@ export default class BPMNHandler {
     constructor(bpmn) {
         this.bpmn = bpmn
         //Elements for update
-        this.elements = {}
-        this.buildElements = []
-        this.elementsDiagram = []
-        this.process = []
+        this.elements = {} // Models from Elements
+        this.buildElements = [] // Builded elements to Process Designer
+
+        this.elementsDiagram = [] // diagrams
+        this.processes = [] // processes definition
+        this.collaborations = [] // collaborations objects
     }
 
 
     buildModel() {
         this.elementsDiagram = this.findBPMNDiagram()
-        this.process = this.findProcess()
+        this.processes = this.findProcess()
+        this.collaborations = this.findCollaboration()
         this.buildElementsDiagram(this.elementsDiagram)
         return this.buildElements
     }
 
+    findDefinition(type) {
+        let BPMNDiagram = _.find(this.bpmn.elements[0].elements, (value) => {
+            return value.name == type ? true : false
+        })
+        return BPMNDiagram.elements[0].elements
+
+    }
 
     findCollaboration() {
-
+        let collaboration = _.find(this.bpmn.elements[0].elements, (value) => {
+            return value.name == "bpmn:collaboration" ? true : false
+        })
+        return collaboration.elements
     }
 
     findBPMNDiagram() {
@@ -43,7 +56,10 @@ export default class BPMNHandler {
         let that = this
         _.find(els, (value) => {
             let idBpmnElement = value.attributes.bpmnElement
-            let bpmnEl = that.findElementInProcess(this.process, idBpmnElement)
+            let bpmnEl
+            bpmnEl = that.findElementInCollaboration(this.collaborations, idBpmnElement)
+            bpmnEl = !bpmnEl ? that.findElementInProcess(this.processes, idBpmnElement) : bpmnEl
+
             if (bpmnEl && value.name != "bpmn:sequenceFlow" && value.name != "bpmndi:BPMNEdge") {
                 console.log(bpmnEl, idBpmnElement)
                 that.elements[idBpmnElement] = {
@@ -66,6 +82,14 @@ export default class BPMNHandler {
         return element
     }
 
+    findElementInCollaboration(colls, idbpmn) {
+        let element
+        _.each(colls, (coll) => {
+            element = coll.attributes.id == idbpmn ? coll : element
+        })
+        return element
+    }
+
     formatElement(di, bpmn) {
         let Element = {}
         let attr = this.getAttributes(di, "dc:Bounds")
@@ -76,7 +100,6 @@ export default class BPMNHandler {
         return Object.assign({}, attr, {type: name[1], id: di.attributes.bpmnElement})
     }
 
-
     getAttributes(di, property) {
         if (di.name && di.name == property) {
             return di.attributes
@@ -84,10 +107,4 @@ export default class BPMNHandler {
             return this.getAttributes(di.elements[0] ? di.elements[0] : {}, property)
         }
     }
-
-    getElements(di, property) {
-        return di.name == property ? di.elements : null
-    }
-
-
 }

@@ -4,7 +4,7 @@ import {Elements} from "../elements"
 /**
  * Pool class
  */
-export class Pool extends Shape {
+export default class extends Shape {
     constructor(options, graph, paper) {
         super(graph, paper)
         this.isContainer = true
@@ -25,7 +25,7 @@ export class Pool extends Shape {
      * Render the Pool Based in options config
      */
     render() {
-        this.shape = new JointElements.Pool();
+        this.shape = new JointElements.Participant();
         this.shape.position(this.options.x, this.options.y);
         this.shape.resize(this.options.width, this.options.height);
         this.shape.addTo(this.graph);
