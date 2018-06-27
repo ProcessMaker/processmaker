@@ -41,8 +41,6 @@
                 this.createFromBPMN(this.bpmnHandler.buildModel())
             },
             dropHandler(e) {
-                e.preventDefault()
-
                 function errorHandler(evt) {
                     switch (evt.target.error.code) {
                         case evt.target.error.NOT_FOUND_ERR:
@@ -56,22 +54,24 @@
                         default:
                             alert(__('An error occurred reading this file.'));
                     }
-                    ;
                 }
 
-                let file = e.dataTransfer.files[0] || e.target.files[0];
-                let that = this;
-                let reader = new FileReader();
-                reader.onerror = errorHandler;
-                reader.onabort = function (e) {
-                    alert(__('File read cancelled'));
-                };
+                let file = e && e.dataTransfer ? e.dataTransfer.files[0] : null
+                if (file) {
+                    let that = this;
+                    let reader = new FileReader();
+                    reader.onerror = errorHandler;
+                    reader.onabort = function (e) {
+                        alert(__('File read cancelled'));
+                    };
 
-                reader.onload = function (ev) {
-                    that.xml = ev.target.result;
-                    that.loadXML();
-                };
-                reader.readAsText(file);
+                    reader.onload = function (ev) {
+                        that.xml = ev.target.result;
+                        that.loadXML();
+                    };
+                    reader.readAsText(file);
+                    e.preventDefault()
+                }
             },
             /**
              * Create the element
@@ -87,6 +87,7 @@
                     id: name[1] + '_' + Math.floor((Math.random() * 100) + 1),
                     x: event.x - this.diagramCoordinates.x,
                     y: event.y - this.diagramCoordinates.y,
+                    type: name[1]
                 };
                 this.builder.createShape(defaultOptions, event.target.id);
             },
@@ -97,6 +98,7 @@
              */
             createFromBPMN(elements) {
                 let that = this
+                this.builder.clear()
                 _.each(elements, (element) => {
                     this.builder.createShape(element);
                 })

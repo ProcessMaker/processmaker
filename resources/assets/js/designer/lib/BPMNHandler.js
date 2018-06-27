@@ -36,7 +36,7 @@ export default class BPMNHandler {
         let collaboration = _.find(this.bpmn.elements[0].elements, (value) => {
             return value.name == "bpmn:collaboration" ? true : false
         })
-        return collaboration.elements
+        return collaboration ? collaboration.elements : null
     }
 
     findBPMNDiagram() {

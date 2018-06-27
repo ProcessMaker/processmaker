@@ -10,6 +10,9 @@ export class Builder {
         this.graph = graph
         this.paper = paper
         this.collection = []
+        this.selection = []
+        this.targetShape = null
+        this.sourceShape = null
     }
 
     /**
@@ -17,18 +20,13 @@ export class Builder {
      * @param type
      * @param options
      */
-    createShape(options, type = null) {
-        let element,
-            defaultOptions = {
-                type: type,
-                id: options.id,
-                name: options.name ? options.name : ""
-            };
-        defaultOptions = _.extend(defaultOptions, options)
+
+    createShape(options) {
+        let element
         // Type Example - bpmn:StartEvent
-        if (Elements[options.eClass] && options.eClass != "Lane") {
-            element = new Elements[options.eClass](
-                defaultOptions,
+        if (Elements[options.type.toLowerCase()]) {
+            element = new Elements[options.type.toLowerCase()](
+                options,
                 this.graph,
                 this.paper
             );
@@ -161,58 +159,12 @@ export class Builder {
     }
 
     /**
-     * This method process the pointerdown event in paper jointjs
-     * @param cellView
-     * @param evt
-     * @param x
-     * @param y
+     * Reset the builder
      */
-    pointerDown(cellView, evt, x, y) {
-        var cell = cellView.model;
-        if (cell.get('parent')) {
-            this.graph.getCell(cell.get('parent')).unembed(cell);
-        }
+    clear() {
+        this.graph.clear()
+        this.collection = []
+        this.selection = []
     }
 
-    /**
-     * This method process the pointerup event in paper jointjs
-     * @param cellView
-     * @param evt
-     * @param x
-     * @param y
-     */
-    pointerUp(cellView, evt, x, y) {
-        let cell = cellView.model;
-        let cellViewsBelow = this.paper.findViewsFromPoint(cell.getBBox().center());
-        if (cellViewsBelow.length) {
-            // Note that the findViewsFromPoint() returns the view for the `cell` itself.
-            var cellViewBelow = _.find(cellViewsBelow, function (c) {
-                return c.model.id !== cell.id
-            });
-            // Prevent recursive embedding.
-            if (cellViewBelow && cellViewBelow.model.get('parent') !== cell.id) {
-                let el = this.findElementInCollection(cellViewBelow, true)
-                let elCell = this.findElementInCollection(cell)
-                if (el && el.isContainer && elCell && !elCell.isContainer) {
-                    cellViewBelow.model.embed(cell)
-                }
-            }
-        }
-    }
-
-    verifyElementFromPoint(point, type) {
-        let that = this
-        let response = null
-        let elements = this.graph.findModelsFromPoint({x: point.x, y: point.y})
-        if (elements.length > 0) {
-            _.each(elements, (o) => {
-                let el = that.findElementInCollection(o)
-                if (el instanceof Elements[type]) {
-                    response = el
-                }
-                return el instanceof Elements[type]
-            })
-        }
-        return response
-    }
 }
