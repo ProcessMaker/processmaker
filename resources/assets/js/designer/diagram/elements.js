@@ -8,25 +8,23 @@ import parallelgateway from "./gateways/ParallelGateway"
 import exclusivegateway from "./gateways/ExclusiveGateway"
 import intermediatecatchevent from "./events/IntermediateCatchEvent"
 import intermediatethrowevent from "./events/IntermediateThrowEvent"
-import {IntermediateTimerEvent} from "./events/IntermediateTimerEvent"
-import {EndEmailEvent} from "./events/EndEmailEvent"
+import intermediatetimerevent from "./events/IntermediateTimerEvent"
+import endemailevent from "./events/EndEmailEvent"
 import {Flow} from "./flow/Flow"
-import {DataObject} from "./data/DataObject"
-import {DataStore} from "./data/DataStore"
-import {Pool} from "./swimLanes/Pool"
-import {Lane} from "./swimLanes/Lane"
+import dataobject from "./data/DataObject"
+import datastore from "./data/DataStore"
 import participant from "./swimLanes/Participant"
-import {Group} from "./artifacts/Group"
-import {BlackBoxPool} from "./swimLanes/BlackBoxPool"
+import group from "./artifacts/Group"
+import blackboxpool from "./swimLanes/BlackBoxPool"
 import callactivity from "./tasks/CallActivity"
 
 export const Elements = Object.assign({}, {
     startevent,
     intermediatecatchevent,
     intermediatethrowevent,
-    IntermediateTimerEvent,
+    intermediatetimerevent,
     endevent,
-    EndEmailEvent,
+    endemailevent,
     task,
     servicetask,
     scripttask,
@@ -34,12 +32,10 @@ export const Elements = Object.assign({}, {
     inclusivegateway,
     parallelgateway,
     exclusivegateway,
-    DataObject,
-    DataStore,
-    Pool,
-    Lane,
+    dataobject,
+    datastore,
     participant,
-    Group,
-    BlackBoxPool,
+    group,
+    blackboxpool,
     callactivity
 })
