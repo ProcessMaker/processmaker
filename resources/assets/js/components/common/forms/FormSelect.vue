@@ -1,8 +1,23 @@
 <template>
   <div class="form-group">
-    <label v-uni-for="label">{{label}}</label>
-    <select v-uni-id="label" class="form-control" :class="{'is-invalid': error, classList}" @change="updateValue">
-        <option :selected="option == value" :value="option.value" :key="index" v-for="(option, index) in options">{{option.label}}</option>
+    <label v-uni-for="name">{{label}}</label>
+    <select
+    v-uni-id="name"
+    class="form-control"
+    :class="{'is-invalid': error, classList}"
+    :multiple='multiple'
+    :disabled='disabled'
+    :required='required'
+    :name='name'
+    :size='size'
+    @change="updateValue">
+        <option
+        :selected="option.value == selected"
+        :value="option.value"
+        :key="index"
+        v-for="(option, index) in options">
+        {{option.content}}
+        </option>
     </select>
     <div v-if="error" class="invalid-feedback">{{error}}</div>
     <small v-if="helper" class="form-text text-muted">{{helper}}</small>
@@ -25,7 +40,12 @@ export default {
     'value',
     'options',
     'helper',
-    'controlClass'
+    'disabled',
+    'required',
+    'size',
+    'name',
+    'controlClass',
+    'multiple'
   ],
   computed:{
     classList(){

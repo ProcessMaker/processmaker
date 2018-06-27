@@ -1,9 +1,21 @@
 <template>
-  <div class="form-group">
-  <label v-uni-for="label">{{label}}</label>
-    <textarea v-uni-id="label" :placeholder="placeholder" class="form-control" :class="{'is-invalid': error, classList}" @input="updateValue"></textarea>
-    <div v-if="error" class="invalid-feedback">{{error}}</div>
-    <small v-if="helper" class="form-text text-muted">{{helper}}</small>
+  <div class='form-group'>
+  <label v-uni-for='label'>{{label}}</label>
+    <textarea
+    v-uni-id='label'
+    :placeholder='placeholder'
+    class='form-control'
+    :class="{'is-invalid': error, classList}"
+    :rows='rows'
+    :cols='cols'
+    :required='required'
+    :maxlength='maxlength'
+    :name='name'
+    :wrap='wrap'
+    :disabled="disabled"
+    @input='updateValue'></textarea>
+    <div v-if='error' class='invalid-feedback'>{{error}}</div>
+    <small v-if='helper' class='form-text text-muted'>{{helper}}</small>
   </div>
 </template>
 
@@ -19,9 +31,16 @@ export default {
   props: [
     'label',
     'error',
+    'rows',
+    'cols',
+    'name',
+    'wrap',
+    'required',
     'placeholder',
+    'maxlength',
     'value',
     'helper',
+    'disabled',
     'controlClass'
   ],
   computed:{
@@ -47,6 +66,6 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang='scss' scoped>
 
 </style>

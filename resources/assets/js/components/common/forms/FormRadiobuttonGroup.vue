@@ -2,9 +2,18 @@
 <div class="form-group">
   <label>{{label}}</label>
   <div class="form-check" v-for="(option) in options">
-    <label class="form-check-label" v-uni-for="option.label">
-    <input class="form-check-input" :class="{'is-invalid': error, classList}" type="radio" :name="name" v-uni-id="option.label" :value="option.value" @change="updateValue" :selected="options.value == this.value">
-    {{option.label}}</label>
+    <label class="form-check-label" v-uni-for="name">
+    <input class="form-check-input"
+    :class="{'is-invalid': error, classList}"
+    type="radio"
+    :name="name"
+    :disabled="disabled"
+    :required='required'
+    v-uni-id="name"
+    :value="option.value"
+    @change="updateValue"
+    :checked="options.value = checked">
+    {{option.content}}</label>
   </div>
   <small v-if="helper" class="form-text text-muted">{{helper}}</small>
 </div>
@@ -20,9 +29,11 @@ export default {
   mixins: [uniqIdsMixin],
   props: [
     'error',
-    'selected',
+    'checked',
     'value',
     'options',
+    'disabled',
+    'required',
     'label',
     'name',
     'helper',

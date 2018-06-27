@@ -3,6 +3,7 @@ import RolesListing from './components/RolesListing'
 import ValidationErrors from './../../components/common/mixins/ValidationErrors'
 import FormInput from './../../components/common/forms/FormInput'
 import FormSelect from './../../components/common/forms/FormSelect'
+import FormRadiobuttonGroup from './../../components/common/forms/FormRadiobuttonGroup'
 
 
 
@@ -18,7 +19,7 @@ new Vue({
       addRoleStatus: 'ACTIVE',
       test: ''
   },
-  components: { RolesListing, FormInput, FormSelect },
+  components: { RolesListing, FormInput, FormSelect, FormRadiobuttonGroup },
   methods: {
     showAddModal() {
       this.$refs.addModal.show();

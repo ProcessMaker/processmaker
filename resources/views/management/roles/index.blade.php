@@ -9,10 +9,11 @@
         <!-- Role Add Dialog -->
           <b-modal ref="addModal" size="md" centered title="Create New Role">
       <form>
-        <form-input v-model="addRoleCode" label="Code" :error="getFirstValidationError('code')"></form-input>
+        <form-input v-model="addRoleCode" label="Code" type="email" name="code" :error="getFirstValidationError('code')"></form-input>
         <form-input v-model="addRoleName" label="Name" :error="getFirstValidationError('name')"></form-input>
         <form-input v-model="addRoleDescription" label="Description" :error="getFirstValidationError('description')"></form-input>
-        <form-select v-model="addRoleStatus" label="Status" :options="[{label: 'Active', value:'ACTIVE' },{label: 'Disabled', value:'DISABLED' }]"></form-select>
+        <form-select v-model="addRoleStatus" label="Status" selected="DISABLED" :options="[{content: 'Active', value:'ACTIVE' },{content: 'Disabled', value:'DISABLED' }]"></form-select>
+        <form-radiobutton-group v-model="test" label="ur mom" name="yeet" checked="DISABLED" :options="[{content: 'Active', value:'ACTIVE' },{content: 'Disabled', value:'DISABLED' }]"></form-radiobutton-group>
       </form>
 
     <template slot="modal-footer">
@@ -33,7 +34,7 @@
                 <input v-model="filter" class="form-control col-sm-3" placeholder="{{__('Search')}}...">
                 </div>
                 <div class="col-md-4 d-flex justify-content-end align-items-center col-sm-12 actions">
-                    <button @click="showAddModal" class="btn btn-action"><i class="fas fa-plus"></i> {{__('Role')}}</button>
+                    <button @click="showAddModal" class="btn btn-secondary"><i class="fas fa-plus"></i> {{__('Role')}}</button>
                 </div>
             </div>
             <roles-listing ref="rolesListing" :filter="filter"></roles-listing>
