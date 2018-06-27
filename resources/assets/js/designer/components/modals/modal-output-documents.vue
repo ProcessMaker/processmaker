@@ -1,5 +1,5 @@
 <template>
-  <b-modal class="output-docs" ref="modal" size="lg" @hidden="onHidden" title="Output Documents">
+  <b-modal class="output-docs" ref="modal" size="lg" @hidden="onHidden" title="Output Documents" hide-footer>
     <div class="form-group">
       <div class="d-flex justify-content-between">
         <filter-bar></filter-bar>
@@ -19,10 +19,6 @@
         </vuetable> 
       </div>
     </div>
-    <template slot="modal-footer" class="p-0">
-      &nbsp;
-    </template>
-
   </b-modal>
 </template>
 
@@ -131,6 +127,7 @@ export default {
 
 </script>
 <style lang="scss" scoped>
+
 .output-docs .actions {
   text-align: right;
 }
