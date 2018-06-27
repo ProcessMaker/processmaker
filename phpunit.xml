@@ -30,6 +30,9 @@
       <env name="TESTING_VERBOSE" value="false" />
       <env name="POPULATE_DATABASE" value="true" />
 
+      <!-- Caching config -->
+      <env name="CACHE_DRIVER" value="array" />
+
 
       <!-- Workflow Database -->
       <env name="DB_ADAPTER" value="mysql" />
