@@ -28,6 +28,11 @@ body {
   font-style: normal;
   background-color: $body-bg;
 }
+
+#app-container .main {
+  margin-left: 32px;
+}
+
 //topnav
 .navbar{
   height:60px;
@@ -720,3 +725,10 @@ table.vuetable {
 .form-check {
   margin-bottom: 10px
 }
+
+.navbar .alert {
+  padding: 5px 15px; margin-bottom: 0; margin-top:3px; min-width: 300px
+   button {
+     margin-top: -7px
+   }
+ }

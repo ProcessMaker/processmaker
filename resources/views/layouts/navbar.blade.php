@@ -68,7 +68,3 @@
     </li>
   </ul>
 </nav>
-<style media="screen">
-  .alert { padding: 5px 15px; margin-bottom: 0; margin-top:3px; min-width: 300px}
-  .alert button { margin-top: -7px }
-</style>
