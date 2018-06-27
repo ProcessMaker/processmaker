@@ -1,36 +1,26 @@
 <template>
-  <b-modal ref="modal" size="lg" @hidden="onHidden" centered title="Output Documents">
-      <form>
-        <div class="form-group">
-          <div class="d-flex justify-content-between">
-            <filter-bar></filter-bar>
-            <button type="submit" class="btn inline-button text-light"><i class="fas fa-plus fa-md"></i> Create</button>
-          </div>
-            <div class="data-table">
-                <vuetable :dataManager="dataManager" :sortOrder="sortOrder" :css="css" :api-mode="false"  @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data" pagination-path="meta">
-                    <template slot="actions" slot-scope="props"> 
-                        <div class="actions">
-                            <i class="fas fa-ellipsis-h"></i>
-                            <div class="popout">
-                            <b-btn variant="action" @click="onAction('edit-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="Edit"><i class="fas fa-edit"></i></b-btn>
-                            <b-btn variant="action" @click="onAction('remove-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="Remove"><i class="fas fa-trash-alt"></i></b-btn>
-                            </div>
-                        </div>
-                    </template>  
-                </vuetable> 
-                <!-- <pagination single="Documents" plural="Roles" :perPageSelectEnabled="true" @changePerPage="changePerPage" @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination> -->
+  <b-modal class="output-docs" ref="modal" size="lg" @hidden="onHidden" title="Output Documents">
+    <div class="form-group">
+      <div class="d-flex justify-content-between">
+        <filter-bar></filter-bar>
+        <button type="submit" class="btn btn-secondary"><i class="fas fa-plus fa-md"></i> Create</button>
+      </div>
+      <div class="data-table">
+        <vuetable :dataManager="dataManager" :sortOrder="sortOrder" :css="css" :api-mode="false" :fields="fields" :data="data" data-path="data" pagination-path="meta">
+          <template slot="actions" slot-scope="props"> 
+            <div class="actions">
+              <i class="fas fa-ellipsis-h"></i>
+              <div class="popout">
+                <b-btn variant="action" @click="onAction('edit-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="Edit"><i class="fas fa-edit"></i></b-btn>
+                <b-btn variant="action" @click="onAction('remove-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="Remove"><i class="fas fa-trash-alt"></i></b-btn>
+              </div>
             </div>
-        </div>
-
-    </form>
-
-    <template slot="modal-footer">
-      <b-button @click="onCancel" class="btn-outline-secondary btn-md">
-        CANCEL
-      </b-button>
-      <b-button class="btn-secondary text-light btn-md">
-        SAVE
-      </b-button>
+          </template>  
+        </vuetable> 
+      </div>
+    </div>
+    <template slot="modal-footer" class="p-0">
+      &nbsp;
     </template>
 
   </b-modal>
@@ -40,7 +30,6 @@
 import FilterBar from "../../../components/FilterBar";
 Vue.component('filter-bar', FilterBar);
 import Vuetable from "vuetable-2/src/components/Vuetable";
-// import Pagination from "../../../components/common/Pagination";
 import datatableMixin from "../../../components/common/mixins/datatable";
 
 export default {
@@ -142,45 +131,11 @@ export default {
 
 </script>
 <style lang="scss" scoped>
-table.vuetable .actions {
+.output-docs .actions {
   text-align: right;
 }
-table.vuetable th:last-child {
-  width: 100px;
+.output-docs.modal-footer {
+  display: none;
 }
-.inline-input{
-  margin-right: 6px;
-}
-.inline-button{
-  background-color: rgb(109,124,136);
-  font-weight: 100;
-}
-.input-and-select{
-  width:212px;
-}
-.sub-header {
-  background-color: rgb(234, 236, 241);
-  margin-top: 10px;
-  border-radius: 2px;
-}
-.field-name {
-  color: black;
-  font-weight: bold;
-  padding: 10px;
-  margin-bottom: 0px;
-}
-.field-name-li { 
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 16px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-  color: rgb(109,124,136);
-  font-size: 12px;
-}
-.form-control {
-  width: 200px;
-}
-.vuetable-slot {
-  text-align: right;
-}
+
 </style>

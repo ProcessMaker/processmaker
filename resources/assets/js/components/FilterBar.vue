@@ -2,7 +2,6 @@
     <div class="filter-bar justify-content-between">
       <form class="form-inline ">
         <div class="form-group ">
-          <!-- <label class="table-header"><strong>Completed Tasks<small class="font-weight-light">(100)</small></strong></label> -->
           <input type="text" v-model="filterText" class="form-control" @keyup="doFilter" placeholder="Search...">
           <i @click.prevent="doFilter"></i>
         </div>
@@ -27,7 +26,5 @@
   }
 </script>
 <style>
-/* .filter-bar {
-  padding: 10px;
-} */
+
 </style>
