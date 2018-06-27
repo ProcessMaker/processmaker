@@ -273,7 +273,7 @@ class GenerateMenus
           [
             'label' =>__('Profile'),
             'header' => false,
-            'route' => 'home',
+            'route' => 'userprofile',
             'icon' => 'fa-user',
             'img' => '',
             'id' => 'dropdownItem'
