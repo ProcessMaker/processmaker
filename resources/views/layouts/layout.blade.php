@@ -14,12 +14,13 @@
 <body>
 @yield('sidebar')
 <div class="container-fluid" id="app-container">
-  <div id="top-navbar" style="background-image: url('/img/logo.png')">
-      @include('layouts.navbar')
-  </div>
-  <main role="main" class="main">
-    @yield('content')
-  </main>
+
+    <div class="main">
+@yield('content')
+    </div>
+    <div id="top-navbar" style="background-image: url('/img/logo.png')">
+        @include('layouts.navbar')
+    </div>
 </div>
 <div id="api-error" class="error-content">
     <div>
