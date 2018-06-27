@@ -13,7 +13,7 @@
 </head>
 <body>
 @yield('sidebar')
-<div class="container-fluid" id="app-container">
+<div id="app-container">
 
     <div class="main">
 @yield('content')
