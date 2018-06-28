@@ -17,10 +17,11 @@ class CreateDelegationsTable extends Migration
             $table->increments('id');
             $table->uuid('uid')->unique();
             $table->unsignedInteger('application_id');
+            $table->string('element_ref');
             $table->integer('index')->default(0);
             $table->integer('previous')->default(0);
             $table->integer('last_index')->default(0);
-            $table->unsignedInteger('task_id');
+            $table->unsignedInteger('task_id')->nullable();
             $table->string('type', 32)->default('normal');
             $table->integer('thread')->default(0);
             $table->string('thread_status', 32)->default('open');
