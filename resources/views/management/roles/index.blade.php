@@ -13,7 +13,6 @@
         <form-input v-model="addRoleName" label="Name" :error="getFirstValidationError('name')"></form-input>
         <form-input v-model="addRoleDescription" label="Description" :error="getFirstValidationError('description')"></form-input>
         <form-select v-model="addRoleStatus" label="Status" selected="DISABLED" :options="[{content: 'Active', value:'ACTIVE' },{content: 'Disabled', value:'DISABLED' }]"></form-select>
-        <form-radiobutton-group v-model="test" label="ur mom" name="yeet" checked="DISABLED" :options="[{content: 'Active', value:'ACTIVE' },{content: 'Disabled', value:'DISABLED' }]"></form-radiobutton-group>
       </form>
 
     <template slot="modal-footer">
