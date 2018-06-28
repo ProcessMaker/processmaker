@@ -20,7 +20,6 @@ export class Builder {
      * @param type
      * @param options
      */
-
     createShape(options) {
         let element
         // Type Example - bpmn:StartEvent
@@ -32,12 +31,6 @@ export class Builder {
             );
             element.render();
             this.collection.push(element)
-            if (options.eClass === "Pool") {
-                this.collection = _.concat(element.lanes, this.collection);
-            }
-        } else {
-            let pool = this.verifyElementFromPoint({x: defaultOptions.x, y: defaultOptions.y}, "Pool")
-            pool ? this.collection.push(pool.createLane()) : null
         }
     }
 
@@ -47,14 +40,13 @@ export class Builder {
      * @returns {function(*)}
      */
     onClickShape(elJoint) {
-        let el = this.findElementInCollection(elJoint, true)
+        let el = this.findElementInCollection(elJoint)
         if (el) {
             if (this.sourceShape) {
                 this.connect(this.sourceShape, el)
             } else {
                 this.hideCrown();
                 el.showCrown()
-                el.select()
                 this.selection = [];
                 this.selection.push(el);
             }
@@ -140,13 +132,9 @@ export class Builder {
      * This method find element joint js in collection
      * @param element
      */
-    findElementInCollection(element, inModel = false) {
+    findElementInCollection(element) {
         return _.find(this.collection, (o) => {
-            if (inModel) {
-                return element.model.id === o.shape.id
-            } else {
-                return element.id === o.shape.id
-            }
+            return element.model.id === o.shape.id
         })
     }
 

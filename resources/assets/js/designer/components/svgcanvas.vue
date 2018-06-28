@@ -10,7 +10,6 @@
     import joint from 'jointjs'
     import parser from 'xml-js'
     import BPMNHandler from '../lib/BPMNHandler'
-
     export default {
         props: [
             'bpmn'
@@ -60,7 +59,6 @@
                             alert(__('An error occurred reading this file.'));
                     }
                 }
-
                 let file = e && e.dataTransfer ? e.dataTransfer.files[0] : null
                 if (file) {
                     let that = this;
@@ -69,7 +67,6 @@
                     reader.onabort = function (e) {
                         alert(__('File read cancelled'));
                     };
-
                     reader.onload = function (ev) {
                         that.validateXML(ev.target.result);
                     };
@@ -95,7 +92,6 @@
                 };
                 this.builder.createShape(defaultOptions, event.target.id);
             },
-
             /**
              * Create the element
              * @param event
@@ -137,18 +133,6 @@
              */
             createFlow(){
                 this.builder.setSourceElement()
-            },
-            /**
-             * Listener in pointerDown event
-             */
-            pointerDown(cellView, evt, x, y){
-                this.builder.pointerDown(cellView, evt, x, y)
-            },
-            /**
-             * Listener in pointerup event
-             */
-            pointerUp(cellView, evt, x, y){
-                this.builder.pointerUp(cellView, evt, x, y)
             }
         },
         mounted() {
@@ -165,11 +149,9 @@
                 }
             });
             this.builder = new Builder(this.graph, this.paper)
-            this.graph.on('change:position', this.changeElementPosition)
+            this.graph.on('change:position', this.changeElementPosition);
             this.paper.on('element:pointerclick', this.clickElement)
             this.paper.on('blank:pointerclick', this.clickCanvas)
-            this.paper.on('cell:pointerdown', this.pointerDown)
-            this.paper.on('cell:pointerup', this.pointerUp)
         }
     }
 </script>
