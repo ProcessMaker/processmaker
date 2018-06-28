@@ -105,10 +105,11 @@ class WorkflowTest extends ApiTestCase
 
         //Assertion: Verifica que el primer token esta CLOSED
         $tokens = $instance->delegations()->orderBy('id')->get();
-        $this->assertEquals('CLOSED', $tokens[0]->status);
+        
+        $this->assertEquals('CLOSED', $tokens[0]->thread_status);
 
         //Assertion: Verifica que el segundo token esta ACTIVE
-        $this->assertEquals('ACTIVE', $tokens[1]->status);
+        $this->assertEquals('ACTIVE', $tokens[1]->thread_status);
     }
     
     private function login()

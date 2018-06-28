@@ -100,7 +100,10 @@ Router::group([
             Router::delete('processes/{process}', 'Designer\ProcessesController@remove');
         });
 
-        Router::post('processes/{process}/events/{event}/trigger', 'Workflow\EventController@trigger'); 
+        //Workflow end points
+        Router::post('processes/{process}/events/{event}/trigger_start', 'Workflow\EventController@triggerStart');
+        Router::post('processes/{process}/instances/{instance}/tokens/{token}/complete', 'Workflow\ActivityController@complete');
+
         //Report Tables endpoints
         Router::get('process/{process}/report-tables', 'Project\ReportTableController@index')->middleware('can:read,ProcessMaker\Model\ReportTable');
         Router::get('process/{process}/report-table/{reportTable}', 'Project\ReportTableController@show')->middleware('can:read,reportTable');
