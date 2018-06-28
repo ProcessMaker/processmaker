@@ -126,13 +126,3 @@ export default {
 
 
 </script>
-<style lang="scss" scoped>
-
-.output-docs .actions {
-  text-align: right;
-}
-.output-docs.modal-footer {
-  display: none;
-}
-
-</style>
