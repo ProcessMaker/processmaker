@@ -100,7 +100,7 @@ class Delegation extends Model implements TokenInterface
     protected $rules = [
         'uid' => 'max:36',
         'application_id' => 'exists:APPLICATION,id',
-        'task_id' => 'exists:tasks,id',
+        //'task_id' => 'exists:tasks,id',
         'user_id' => 'exists:users,id',
         'delegate_date' => 'required',
         'started' => 'required|boolean',
@@ -117,7 +117,7 @@ class Delegation extends Model implements TokenInterface
     {
         parent::__construct($arguments);
         $this->bootElement([
-            $this->instance()
+            $this->application()
         ]);
         $this->setId(UuidGenerator::uuid4());
     }
@@ -150,5 +150,15 @@ class Delegation extends Model implements TokenInterface
     public function task(): BelongsTo
     {
         return $this->belongsTo(Task::class);
+    }
+
+    /*
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uid';
     }
 }

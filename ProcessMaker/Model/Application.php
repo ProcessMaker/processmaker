@@ -89,7 +89,7 @@ class Application extends Model implements ExecutionInstanceInterface
      */
     public function delegations()
     {
-        return $this->hasMany(Delegation::class, 'APP_UID', 'APP_UID');
+        return $this->hasMany(Delegation::class, 'application_id', 'id');
     }
 
     /**

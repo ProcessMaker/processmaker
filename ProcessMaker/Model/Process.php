@@ -404,8 +404,9 @@ class Process extends Model
     public function getDefinitions()
     {
         if (empty($this->bpmnDefinitions)) {
-            $this->bpmnDefinitions = app(BpmnDocumentInterface::class);
+            $this->bpmnDefinitions = app(BpmnDocumentInterface::class, ['process' => $this]);
             $this->bpmnDefinitions->loadXML($this->bpmn);
+            $this->bpmnDefinitions;
         }
         return $this->bpmnDefinitions;
     }
