@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 use ProcessMaker\Model\Traits\Uuid;
+use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use Watson\Validating\ValidatingTrait;
-
 
 /**
  * Represents a business process definition.
@@ -396,4 +396,17 @@ class Process extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    /**
+     * Get the process definitions from BPMN field.
+     *
+     * @return ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface
+     */
+    public function getDefinitions()
+    {
+        if (empty($this->bpmnDefinitions)) {
+            $this->bpmnDefinitions = app(BpmnDocumentInterface::class);
+            $this->bpmnDefinitions->loadXML($this->bpmn);
+        }
+        return $this->bpmnDefinitions;
+    }
 }

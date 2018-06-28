@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "208f69c744855cec75acd919d444a5a1",
+    "content-hash": "8733f9b29d1709fb4d9dda2365b2a49a",
     "packages": [
         {
             "name": "defuse/php-encryption",
@@ -1890,6 +1890,39 @@
                 "redis"
             ],
             "time": "2016-06-16T16:22:20+00:00"
+        },
+        {
+            "name": "processmaker/nayra",
+            "version": "dev-feature/92",
+            "dist": {
+                "type": "path",
+                "url": "/opt/nayra",
+                "reference": "ff30bda8639823480cae49aeca6598a7edea751c",
+                "shasum": null
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^5.7"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "ProcessMaker\\": "src/ProcessMaker/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Tests\\Feature\\": "tests/Feature/",
+                    "ProcessMaker\\": [
+                        "src/ProcessMaker/",
+                        "tests/unit/ProcessMaker/",
+                        "tests/ProcessMaker/"
+                    ]
+                }
+            },
+            "description": "BPMN compliant engine",
+            "transport-options": {
+                "symlink": true
+            }
         },
         {
             "name": "psr/container",
@@ -5568,7 +5601,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "processmaker/nayra": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

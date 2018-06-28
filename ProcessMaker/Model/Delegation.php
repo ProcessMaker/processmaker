@@ -6,6 +6,9 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use ProcessMaker\Model\Traits\Uuid;
+use ProcessMaker\Nayra\Bpmn\TokenTrait;
+use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
+use Ramsey\Uuid\Uuid as UuidGenerator;
 use Watson\Validating\ValidatingTrait;
 
 /**
@@ -39,11 +42,11 @@ use Watson\Validating\ValidatingTrait;
  * @param integer user_id
  * 
  */
-class Delegation extends Model
+class Delegation extends Model implements TokenInterface
 {
     use ValidatingTrait,
-        Uuid;
-
+        Uuid,
+        TokenTrait;
 
     // We do not store timestamps for these tables
     public $timestamps = false;
@@ -104,6 +107,20 @@ class Delegation extends Model
         'finished' => 'required|boolean',
         'delayed' => 'required|boolean',
     ];
+
+    /**
+     * Boot delegation as a token instance.
+     *
+     * @param array $arguments
+     */
+    public function __construct(array $arguments=[])
+    {
+        parent::__construct($arguments);
+        $this->bootElement([
+            $this->instance()
+        ]);
+        $this->setId(UuidGenerator::uuid4());
+    }
 
     /**
      * Returns the relationship of the parent application
