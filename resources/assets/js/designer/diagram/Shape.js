@@ -11,6 +11,7 @@ export class Shape {
         this.isContainer = false
         this.shape = null
         this.parent = null
+        this.type = "Shape"
     }
 
     /**
@@ -65,8 +66,22 @@ export class Shape {
 
     }
 
+    /**
+     * Set the parent in this Shape
+     * @param parent
+     * @returns {Shape}
+     */
     setParent(parent) {
         this.parent = parent
         return this
+    }
+
+    /**
+     * Return the type of shape
+     * @param parent
+     * @returns {string}
+     */
+    getType() {
+        return this.type
     }
 }

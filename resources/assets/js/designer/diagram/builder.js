@@ -3,6 +3,7 @@ import _ from "lodash";
 import actions from "../actions/index"
 import joint from "jointjs"
 import EventBus from "../lib/event-bus"
+import {Validators} from './flow/Validators'
 
 export class Builder {
     constructor(graph, paper) {
@@ -51,7 +52,6 @@ export class Builder {
     onClickShape(elJoint) {
         let el = this.findElementInCollection(elJoint, true)
         if (el) {
-            debugger
             if (this.sourceShape) {
                 this.connect(this.sourceShape, el)
             } else {
@@ -125,7 +125,7 @@ export class Builder {
      * @param target
      */
     connect(source, target) {
-        if (source != target) {
+        if (source != target && Validators.verifyConnectWith(source.getType(), target.getType())) {
             let flow = new Elements["Flow"]({
                     source,
                     target

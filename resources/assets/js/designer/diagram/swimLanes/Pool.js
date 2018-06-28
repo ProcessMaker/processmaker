@@ -9,6 +9,7 @@ export class Pool extends Shape {
         super(graph, paper)
         this.isContainer = true
         this.lanes = []
+        this.type = "Pool"
         this.options = {
             id: null,
             x: null,

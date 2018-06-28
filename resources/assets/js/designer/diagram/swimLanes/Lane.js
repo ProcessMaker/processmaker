@@ -7,6 +7,7 @@ export class Lane extends Shape {
     constructor(options, graph, paper, parent) {
         super(graph, paper)
         this.isContainer = true
+        this.type = "Lane"
         this.options = {
             type: "Lane",
             id: null,
