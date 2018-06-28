@@ -56,7 +56,7 @@ class UserProvider extends EloquentUserProvider
     {
         if(isset($credentials['email'])) {
             return User::where('email', $credentials['email'])->first();
-        } else if(isset($crendentials['username'])) {
+        } else if(isset($credentials['username'])) {
             return User::where('username', $credentials['username'])->first();
         }
         // No valid credential to find, let's return nothing
