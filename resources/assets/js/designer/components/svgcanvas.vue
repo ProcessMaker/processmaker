@@ -40,6 +40,11 @@
                 this.bpmnHandler = new BPMNHandler(result)
                 this.createFromBPMN(this.bpmnHandler.buildModel())
             },
+            validateXML(xml) {
+                //todo add method for validate xml with xsd BPMN
+                this.xml = xml
+                this.loadXML()
+            },
             dropHandler(e) {
                 function errorHandler(evt) {
                     switch (evt.target.error.code) {
@@ -66,8 +71,7 @@
                     };
 
                     reader.onload = function (ev) {
-                        that.xml = ev.target.result;
-                        that.loadXML();
+                        that.validateXML(ev.target.result);
                     };
                     reader.readAsText(file);
                     e.preventDefault()
