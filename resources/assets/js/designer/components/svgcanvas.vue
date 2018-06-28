@@ -10,6 +10,8 @@
     import joint from 'jointjs'
     import parser from 'xml-js'
     import BPMNHandler from '../lib/BPMNHandler'
+    1
+    import {Elements} from "../diagram/elements";
     export default {
         props: [
             'bpmn'
@@ -91,7 +93,11 @@
                     y: event.y - this.diagramCoordinates.y,
                     type: name[1].toLowerCase()
                 };
-                this.builder.createShape(defaultOptions, event.target.id);
+                if (Elements[name[1].toLowerCase()]) {
+                    this.builder.createShape(defaultOptions, event.target.id);
+                } else {
+                    console.error(name[1].toLowerCase() + "is not support")
+                }
             },
             /**
              * Create the element
@@ -101,7 +107,11 @@
                 let that = this
                 this.builder.clear()
                 _.each(elements, (element) => {
-                    this.builder.createShape(element);
+                    if (Elements[element.type]) {
+                        this.builder.createShape(element);
+                    } else {
+                        console.error(element.type + "is not support")
+                    }
                 })
             },
             /**
