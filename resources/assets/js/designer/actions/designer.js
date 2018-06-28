@@ -18,7 +18,7 @@ export const designer = {
         },
         crown: {
             show: x => x,
-            hide: x => x
+            hide: x => x,
         },
         shape: {
             remove: x => x,
@@ -29,6 +29,9 @@ export const designer = {
             click: x => x
         },
         flow: {
+            create: x => x
+        },
+        lane: {
             create: x => x
         }
     }

@@ -46,7 +46,7 @@
                 <img id="bpmn:Pool" src="../img/pool.svg" height="18" draggable="true"
                      @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:Lane" src="../img/lane.svg" height="18" draggable="true"
+                <img id="bpmn:Lane" src="../img/lane.svg" height="18"
                      @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
                 <img id="bpmn:Group" src="../img/group.svg" height="18" draggable="true"

@@ -16,7 +16,6 @@ export const Pool = joint.dia.Element.define('bpmn.Pool',
                 refWidth: '100%',
                 refHeight: '100%'
             }
-
         }
     }, {
         markup: [{

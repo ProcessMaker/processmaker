@@ -11,6 +11,7 @@ import {Flow} from "./flow/Flow"
 import {DataObject} from "./data/DataObject"
 import {DataStore} from "./data/DataStore"
 import {Pool} from "./swimLanes/Pool"
+import {Lane} from "./swimLanes/Lane"
 import {Group} from "./artifacts/Group"
 import {BlackBoxPool} from "./swimLanes/BlackBoxPool"
 import {SubProcess} from "./tasks/SubProcess"
@@ -29,6 +30,7 @@ export const Elements = Object.assign({}, {
     DataObject,
     DataStore,
     Pool,
+    Lane,
     Group,
     BlackBoxPool,
     SubProcess

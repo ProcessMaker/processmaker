@@ -23,14 +23,13 @@
                 <img id="bpmn:EndEvent" src="../img/corona-flow.png" height="28"
                      @click="createFlow($event)">
             </div>
-            <div class="item-crown">
-                <i id="settings" class="fas fa-cog icon-crown" @click="createFlow($event)" draggable="true"></i>
+            <div class="item-crown" @click="createFlow($event)">
+                <i id="cog" class="fas fa-cog icon-crown" draggable="true"></i>
             </div>
         </div>
         <div class="d-flex flex-row">
             <div class="item-crown">
-                <i id="settings" class="fas fa-trash-alt icon-crown" @click="createFlow($event)"
-                   draggable="true"></i>
+                <i id="trash" class="fas fa-trash-alt icon-crown" draggable="true"></i>
             </div>
         </div>
     </div>

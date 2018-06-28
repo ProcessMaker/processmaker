@@ -3,14 +3,13 @@ import _ from "lodash";
 import actions from "../actions/index"
 import joint from "jointjs"
 import EventBus from "../lib/event-bus"
+import {Validators} from './flow/Validators'
 
 export class Builder {
     constructor(graph, paper) {
         this.graph = graph
         this.paper = paper
         this.collection = []
-        this.targetShape = null
-        this.sourceShape = null
     }
 
     /**
@@ -26,9 +25,9 @@ export class Builder {
                 name: options.bpmnElement && options.bpmnElement.name ? options.bpmnElement.name : options.name ? options.name : "",
                 moddleElement: options
             };
-        defaultOptions = _.extend(defaultOptions, options);
+        defaultOptions = _.extend(defaultOptions, options)
         // Type Example - bpmn:StartEvent
-        if (Elements[options.eClass]) {
+        if (Elements[options.eClass] && options.eClass != "Lane") {
             element = new Elements[options.eClass](
                 defaultOptions,
                 this.graph,
@@ -36,6 +35,12 @@ export class Builder {
             );
             element.render();
             this.collection.push(element)
+            if (options.eClass === "Pool") {
+                this.collection = _.concat(element.lanes, this.collection);
+            }
+        } else {
+            let pool = this.verifyElementFromPoint({x: defaultOptions.x, y: defaultOptions.y}, "Pool")
+            pool ? this.collection.push(pool.createLane()) : null
         }
     }
 
@@ -45,14 +50,14 @@ export class Builder {
      * @returns {function(*)}
      */
     onClickShape(elJoint) {
-        let el = this.findElementInCollection(elJoint)
+        let el = this.findElementInCollection(elJoint, true)
         if (el) {
-            debugger
             if (this.sourceShape) {
                 this.connect(this.sourceShape, el)
             } else {
                 this.hideCrown();
                 el.showCrown()
+                el.select()
                 this.selection = [];
                 this.selection.push(el);
             }
@@ -120,7 +125,7 @@ export class Builder {
      * @param target
      */
     connect(source, target) {
-        if (source != target) {
+        if (source != target && Validators.verifyConnectWith(source.getType(), target.getType())) {
             let flow = new Elements["Flow"]({
                     source,
                     target
@@ -138,9 +143,13 @@ export class Builder {
      * This method find element joint js in collection
      * @param element
      */
-    findElementInCollection(element) {
+    findElementInCollection(element, inModel = false) {
         return _.find(this.collection, (o) => {
-            return element.model.id === o.shape.id
+            if (inModel) {
+                return element.model.id === o.shape.id
+            } else {
+                return element.id === o.shape.id
+            }
         })
     }
 
@@ -150,5 +159,61 @@ export class Builder {
      */
     setSourceElement() {
         this.sourceShape = this.selection.pop()
+    }
+
+    /**
+     * This method process the pointerdown event in paper jointjs
+     * @param cellView
+     * @param evt
+     * @param x
+     * @param y
+     */
+    pointerDown(cellView, evt, x, y) {
+        var cell = cellView.model;
+        if (cell.get('parent')) {
+            this.graph.getCell(cell.get('parent')).unembed(cell);
+        }
+    }
+
+    /**
+     * This method process the pointerup event in paper jointjs
+     * @param cellView
+     * @param evt
+     * @param x
+     * @param y
+     */
+    pointerUp(cellView, evt, x, y) {
+        let cell = cellView.model;
+        let cellViewsBelow = this.paper.findViewsFromPoint(cell.getBBox().center());
+        if (cellViewsBelow.length) {
+            // Note that the findViewsFromPoint() returns the view for the `cell` itself.
+            var cellViewBelow = _.find(cellViewsBelow, function (c) {
+                return c.model.id !== cell.id
+            });
+            // Prevent recursive embedding.
+            if (cellViewBelow && cellViewBelow.model.get('parent') !== cell.id) {
+                let el = this.findElementInCollection(cellViewBelow, true)
+                let elCell = this.findElementInCollection(cell)
+                if (el && el.isContainer && elCell && !elCell.isContainer) {
+                    cellViewBelow.model.embed(cell)
+                }
+            }
+        }
+    }
+
+    verifyElementFromPoint(point, type) {
+        let that = this
+        let response = null
+        let elements = this.graph.findModelsFromPoint({x: point.x, y: point.y})
+        if (elements.length > 0) {
+            _.each(elements, (o) => {
+                let el = that.findElementInCollection(o)
+                if (el instanceof Elements[type]) {
+                    response = el
+                }
+                return el instanceof Elements[type]
+            })
+        }
+        return response
     }
 }
