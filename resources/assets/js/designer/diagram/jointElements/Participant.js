@@ -6,7 +6,7 @@ export const Participant = joint.dia.Element.define('bpmn.Participant',
                 stroke: "#000",
                 strokeWidth: 2,
                 fill: "#fff",
-                refWidth: '4%',
+                width: '25',
                 refHeight: '100%'
             },
             d: {

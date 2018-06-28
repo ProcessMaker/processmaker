@@ -6,7 +6,7 @@ export const BlackBoxPool = joint.dia.Element.define('bpmn.BlackBoxPool',
                 stroke: "#000",
                 strokeWidth: 2,
                 fill: "#94a6b5",
-                refWidth: '4%',
+                width: '25',
                 refHeight: '100%'
             },
             d: {
