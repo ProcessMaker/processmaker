@@ -17,7 +17,7 @@ class CreateDelegationsTable extends Migration
             $table->increments('id');
             $table->uuid('uid')->unique();
             $table->unsignedInteger('application_id');
-            $table->string('element_ref');
+            $table->string('element_ref')->nullable();
             $table->integer('index')->default(0);
             $table->integer('previous')->default(0);
             $table->integer('last_index')->default(0);
