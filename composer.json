@@ -21,7 +21,7 @@
     "league/oauth2-server": "7.0.*",
     "phing/phing": "^2.16",
     "predis/predis": "^1.1",
-    "processmaker/nayra": "dev-feature/92",
+    "processmaker/nayra": "dev-master",
     "ralouphie/getallheaders": "^2.0",
     "ramsey/uuid": "^3.7",
     "spatie/laravel-fractal": "^5.3",

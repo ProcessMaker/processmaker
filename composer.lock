@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "8733f9b29d1709fb4d9dda2365b2a49a",
+    "content-hash": "7db915cc19690c32124e247828d9371d",
     "packages": [
         {
             "name": "defuse/php-encryption",
@@ -1893,11 +1893,11 @@
         },
         {
             "name": "processmaker/nayra",
-            "version": "dev-feature/92",
+            "version": "9999999-dev",
             "dist": {
                 "type": "path",
                 "url": "/opt/nayra",
-                "reference": "ff30bda8639823480cae49aeca6598a7edea751c",
+                "reference": "1c03f6e60693db781ae5262b88114b6398cfafc0",
                 "shasum": null
             },
             "require-dev": {
