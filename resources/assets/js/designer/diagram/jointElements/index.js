@@ -9,6 +9,7 @@ import {EndEvent} from "./EndEvent"
 import {DataObject} from "./DataObject"
 import {DataStore} from "./DataStore"
 import {Pool} from "./Pool"
+import {Lane} from "./Lane"
 import {Group} from "./Group"
 import {BlackBoxPool} from "./BlackBoxPool"
 import {SubProcess} from "./SubProcess"
@@ -26,6 +27,7 @@ export const JointElements = Object.assign({}, {
     DataObject,
     DataStore,
     Pool,
+    Lane,
     Group,
     BlackBoxPool,
     SubProcess,

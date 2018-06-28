@@ -16,26 +16,7 @@
         data() {
             return {
                 graph: null,
-                paper: null,
-
-                xml: null, // BPMN XML string
-                $svg: null, //scg Object Jquery
-                svg: null, //svg Canvas Snap Object
-                definitions: null,  // Definitions parse of XML
-                diagramCoordinates: null, // Coordinates for svg tag
-                builder: null,
-                scale: 1,
-                pan: {
-                    panStartX: null,
-                    panStartY: null,
-                    mouseDown: null,
-                    pageTop: null,
-                    pageLeft: null,
-                    panEndX: null,
-                    panEndY: null,
-                    panTop: null,
-                    panLeft: null
-                } // Options for panning in the designer
+                paper: null
             }
         },
         computed: {},
@@ -100,6 +81,18 @@
              */
             createFlow(){
                 this.builder.setSourceElement()
+            },
+            /**
+             * Listener in pointerDown event
+             */
+            pointerDown(cellView, evt, x, y){
+                this.builder.pointerDown(cellView, evt, x, y)
+            },
+            /**
+             * Listener in pointerup event
+             */
+            pointerUp(cellView, evt, x, y){
+                this.builder.pointerUp(cellView, evt, x, y)
             }
         },
         mounted() {
@@ -116,9 +109,11 @@
                 }
             });
             this.builder = new Builder(this.graph, this.paper)
-            this.graph.on('change:position', this.changeElementPosition);
+            this.graph.on('change:position', this.changeElementPosition)
             this.paper.on('element:pointerclick', this.clickElement)
             this.paper.on('blank:pointerclick', this.clickCanvas)
+            this.paper.on('cell:pointerdown', this.pointerDown)
+            this.paper.on('cell:pointerup', this.pointerUp)
         }
     }
 </script>
