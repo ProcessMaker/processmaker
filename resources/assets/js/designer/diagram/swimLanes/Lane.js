@@ -3,13 +3,12 @@ import {Shape} from "../Shape"
 /**
  * Pool class
  */
-export class Lane extends Shape {
+export default class extends Shape {
     constructor(options, graph, paper, parent) {
         super(graph, paper)
         this.isContainer = true
-        this.type = "Lane"
+        this.type = "lane"
         this.options = {
-            type: "Lane",
             id: null,
             x: null,
             y: null,

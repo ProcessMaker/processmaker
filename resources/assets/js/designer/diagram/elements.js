@@ -14,6 +14,7 @@ import {Flow} from "./flow/Flow"
 import dataobject from "./data/DataObject"
 import datastore from "./data/DataStore"
 import participant from "./swimLanes/Participant"
+import lane from "./swimLanes/Lane"
 import group from "./artifacts/Group"
 import blackboxpool from "./swimLanes/BlackBoxPool"
 import callactivity from "./tasks/CallActivity"
@@ -35,6 +36,7 @@ export const Elements = Object.assign({}, {
     dataobject,
     datastore,
     participant,
+    lane,
     group,
     blackboxpool,
     callactivity

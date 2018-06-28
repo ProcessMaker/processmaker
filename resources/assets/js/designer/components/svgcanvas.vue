@@ -59,6 +59,7 @@
                             alert(__('An error occurred reading this file.'));
                     }
                 }
+
                 let file = e && e.dataTransfer ? e.dataTransfer.files[0] : null
                 if (file) {
                     let that = this;
@@ -88,7 +89,7 @@
                     id: name[1] + '_' + Math.floor((Math.random() * 100) + 1),
                     x: event.x - this.diagramCoordinates.x,
                     y: event.y - this.diagramCoordinates.y,
-                    type: name[1]
+                    type: name[1].toLowerCase()
                 };
                 this.builder.createShape(defaultOptions, event.target.id);
             },
@@ -133,6 +134,18 @@
              */
             createFlow(){
                 this.builder.setSourceElement()
+            },
+            /**
+             * Listener in pointerDown event
+             */
+            pointerDown(cellView, evt, x, y){
+                this.builder.pointerDown(cellView, evt, x, y)
+            },
+            /**
+             * Listener in pointerup event
+             */
+            pointerUp(cellView, evt, x, y){
+                this.builder.pointerUp(cellView, evt, x, y)
             }
         },
         mounted() {
@@ -152,6 +165,8 @@
             this.graph.on('change:position', this.changeElementPosition);
             this.paper.on('element:pointerclick', this.clickElement)
             this.paper.on('blank:pointerclick', this.clickCanvas)
+            this.paper.on('cell:pointerdown', this.pointerDown)
+            this.paper.on('cell:pointerup', this.pointerUp)
         }
     }
 </script>

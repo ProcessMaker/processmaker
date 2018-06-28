@@ -22,15 +22,23 @@ export class Builder {
      */
     createShape(options) {
         let element
-        // Type Example - bpmn:StartEvent
-        if (Elements[options.type.toLowerCase()]) {
-            element = new Elements[options.type.toLowerCase()](
-                options,
-                this.graph,
-                this.paper
-            );
-            element.render();
-            this.collection.push(element)
+        if (Elements[options.type] && options.type != "lane") {
+            // Type Example - bpmn:StartEvent
+            if (Elements[options.type.toLowerCase()]) {
+                element = new Elements[options.type.toLowerCase()](
+                    options,
+                    this.graph,
+                    this.paper
+                );
+                element.render();
+                this.collection.push(element)
+            }
+            if (options.type === "participant") {
+                this.collection = _.concat(element.lanes, this.collection);
+            }
+        } else {
+            let participant = this.verifyElementFromPoint({x: options.x, y: options.y}, "participant")
+            participant ? this.collection.push(participant.createLane()) : null
         }
     }
 
@@ -40,7 +48,7 @@ export class Builder {
      * @returns {function(*)}
      */
     onClickShape(elJoint) {
-        let el = this.findElementInCollection(elJoint)
+        let el = this.findElementInCollection(elJoint, true)
         if (el) {
             if (this.sourceShape) {
                 this.connect(this.sourceShape, el)
@@ -132,9 +140,13 @@ export class Builder {
      * This method find element joint js in collection
      * @param element
      */
-    findElementInCollection(element) {
+    findElementInCollection(element, inModel = false) {
         return _.find(this.collection, (o) => {
-            return element.model.id === o.shape.id
+            if (inModel) {
+                return element.model.id === o.shape.id
+            } else {
+                return element.id === o.shape.id
+            }
         })
     }
 
@@ -155,4 +167,60 @@ export class Builder {
         this.selection = []
     }
 
+
+    /**
+     * This method process the pointerdown event in paper jointjs
+     * @param cellView
+     * @param evt
+     * @param x
+     * @param y
+     */
+    pointerDown(cellView, evt, x, y) {
+        var cell = cellView.model;
+        if (cell.get('parent')) {
+            this.graph.getCell(cell.get('parent')).unembed(cell);
+        }
+    }
+
+    /**
+     * This method process the pointerup event in paper jointjs
+     * @param cellView
+     * @param evt
+     * @param x
+     * @param y
+     */
+    pointerUp(cellView, evt, x, y) {
+        let cell = cellView.model;
+        let cellViewsBelow = this.paper.findViewsFromPoint(cell.getBBox().center());
+        if (cellViewsBelow.length) {
+            // Note that the findViewsFromPoint() returns the view for the `cell` itself.
+            let cellViewBelow = _.find(cellViewsBelow, function (c) {
+                return c.model.id !== cell.id
+            });
+            // Prevent recursive embedding.
+            if (cellViewBelow && cellViewBelow.model.get('parent') !== cell.id) {
+                let el = this.findElementInCollection(cellViewBelow, true)
+                let elCell = this.findElementInCollection(cell)
+                if (el && el.type == "participant" && elCell && !elCell.type != "participant") {
+                    cellViewBelow.model.embed(cell)
+                }
+            }
+        }
+    }
+
+    verifyElementFromPoint(point, type) {
+        let that = this
+        let response = null
+        let elements = this.graph.findModelsFromPoint({x: point.x, y: point.y})
+        if (elements.length > 0) {
+            _.each(elements, (o) => {
+                let el = that.findElementInCollection(o)
+                if (el instanceof Elements[type]) {
+                    response = el
+                }
+                return el instanceof Elements[type]
+            })
+        }
+        return response
+    }
 }

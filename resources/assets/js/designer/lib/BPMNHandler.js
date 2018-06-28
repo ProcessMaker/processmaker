@@ -15,7 +15,9 @@ export default class BPMNHandler {
         this.collaborations = [] // collaborations objects
     }
 
-
+    /**
+     * this method build objects to process the BPMN
+     */
     buildModel() {
         this.elementsDiagram = this.findBPMNDiagram()
         this.processes = this.findProcess()
@@ -25,14 +27,21 @@ export default class BPMNHandler {
         return this.buildElements
     }
 
+    /**
+     * This method find a type definition in BPMN
+     * @param type
+     */
     findDefinition(type) {
         let BPMNDiagram = _.find(this.bpmn.elements[0].elements, (value) => {
             return value.name == type ? true : false
         })
         return BPMNDiagram.elements[0].elements
-
     }
 
+    /**
+     * This method find a object collaboration in BPMN
+     * @returns {null}
+     */
     findCollaboration() {
         let collaboration = _.find(this.bpmn.elements[0].elements, (value) => {
             return value.name.indexOf("collaboration") >= 0 ? true : false
@@ -40,6 +49,9 @@ export default class BPMNHandler {
         return collaboration ? collaboration.elements : null
     }
 
+    /**
+     * This method find a object BPMNDiagram in BPMN
+     */
     findBPMNDiagram() {
         let BPMNDiagram = _.find(this.bpmn.elements[0].elements, (value) => {
             return value.name.indexOf("BPMNDiagram") >= 0 ? true : false
@@ -47,12 +59,19 @@ export default class BPMNHandler {
         return BPMNDiagram.elements[0].elements
     }
 
+    /**
+     * This method find a object Process in BPMN
+     */
     findProcess() {
         return _.filter(this.bpmn.elements[0].elements, (value) => {
             return value.name.indexOf("process") >= 0 ? true : false
         })
     }
 
+    /**
+     * This method build a elements map from diagram
+     * @param els
+     */
     buildElementsDiagram(els) {
         let that = this
         _.find(els, (value) => {
@@ -72,6 +91,12 @@ export default class BPMNHandler {
         })
     }
 
+    /**
+     * Find elements in ProcessObject
+     * @param processes
+     * @param idbpmn
+     * @returns {*}
+     */
     findElementInProcess(processes, idbpmn) {
         let element
         _.each(processes, (process) => {
@@ -83,6 +108,12 @@ export default class BPMNHandler {
         return element
     }
 
+    /**
+     * Find element in object Collaboration
+     * @param colls
+     * @param idbpmn
+     * @returns {*}
+     */
     findElementInCollaboration(colls, idbpmn) {
         let element
         _.each(colls, (coll) => {
@@ -93,6 +124,12 @@ export default class BPMNHandler {
         return element
     }
 
+    /**
+     * Format a diagram element for send to process designer
+     * @param di
+     * @param bpmn
+     * @returns {*}
+     */
     formatElement(di, bpmn) {
         let Element = {}
         let attr = this.getAttributes(di, "dc:Bounds")
@@ -100,9 +137,18 @@ export default class BPMNHandler {
         _.forEach(attr, (value, key, obj) => {
             obj[key] = parseInt(value)
         })
-        return Object.assign({}, attr, {type: name.length == 1 ? name[0] : name[1], id: di.attributes.bpmnElement})
+        return Object.assign({}, attr, {
+            type: name.length == 1 ? name[0].toLowerCase() : name[1].toLowerCase(),
+            id: di.attributes.bpmnElement
+        })
     }
 
+    /**
+     * Get the attributes from element
+     * @param di
+     * @param property
+     * @returns {*}
+     */
     getAttributes(di, property) {
         if (di.name && di.name == property) {
             return di.attributes
