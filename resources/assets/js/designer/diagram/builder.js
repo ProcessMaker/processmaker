@@ -177,6 +177,9 @@ export class Builder {
      */
     pointerDown(cellView, evt, x, y) {
         var cell = cellView.model;
+        if (!cell.get('embeds') || cell.get('embeds').length === 0) {
+            cell.toFront();
+        }
         if (cell.get('parent')) {
             this.graph.getCell(cell.get('parent')).unembed(cell);
         }
