@@ -55,7 +55,7 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
         return view('userprofile', ['title' => 'Dashboard']);
     })->name('userprofile');
 
-    Router::group([
+    Route::group([
         'middleware' => ['permission:PM_USERS']
     ], function() {
       $this->get('/manage/users', 'Management\UsersController@index')->name('management-users-index');
@@ -63,7 +63,7 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
       $this->get('/manage/groups', 'Management\GroupsController@index')->name('management-groups-index');
     });
 
-    Router::group([
+    Route::group([
         'middleware' => ['permission:PM_CASES']
     ], function() {
         $this->get('/process/{process}/tasks', 'Designer\TaskController@index')->name('processes-task-index');

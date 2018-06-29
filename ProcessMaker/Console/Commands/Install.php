@@ -114,6 +114,7 @@ class Install extends Command
 
         // Create database
         // Now install migrations
+        config(['database.default' => 'install']);
         $this->call('migrate:fresh', ['--seed' => true]);
 
         // Generate the required oauth private/public keys
@@ -183,7 +184,7 @@ class Install extends Command
     private function testDatabaseConnection()
     {
         // Setup Laravel Database Configuration
-        config(['database.connections.workflow' => [
+        config(['database.connections.install' => [
             'driver' => 'mysql',
             'host' => $this->env['DB_HOSTNAME'],
             'port' => $this->env['DB_PORT'],
@@ -193,8 +194,9 @@ class Install extends Command
         ]]);
         // Attempt to connect
         try {
-            $pdo = DB::connection('workflow')->getPdo();
+            $pdo = DB::connection('install')->getPdo();
         } catch(Exception $e) {
+            dd($e);
             $this->error(__("Failed to connect to MySQL database. Check your credentials and try again. Note, the database must also exist."));
             return false;
         }
