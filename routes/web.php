@@ -68,9 +68,8 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
     ], function() {
         $this->get('/process/{process}/tasks', 'Designer\TaskController@index')->name('processes-task-index');
     });
+
+    $this->get('/designer', function() {
+        return view('designer.designer', ['title' => 'Designer']);
+    })->name('designer');
 });
-
-
-$this->get('/designer', function() {
-    return view('designer.designer', ['title' => 'Designer']);
-})->name('designer');

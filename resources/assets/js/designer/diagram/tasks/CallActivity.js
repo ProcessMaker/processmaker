@@ -1,29 +1,26 @@
 import {JointElements} from "../jointElements"
 import {Shape} from "../Shape"
 /**
- * Pool class
+ * SubProcess class
  */
 export default class extends Shape {
-    constructor(options, graph, paper, parent) {
+    constructor(options, graph, paper) {
         super(graph, paper)
-        this.isContainer = true
-        this.type = "lane"
         this.options = {
             id: null,
             x: null,
             y: null,
-            width: 600,
-            height: 150
+            width: 120,
+            height: 80
         }
-        this.setParent(parent)
         this.config(options)
     }
 
     /**
-     * Render the Pool Based in options config
+     * Render the SubProcess Based in options config
      */
     render() {
-        this.shape = new JointElements.Lane();
+        this.shape = new JointElements.SubProcess();
         this.shape.position(this.options.x, this.options.y);
         this.shape.resize(this.options.width, this.options.height);
         this.shape.addTo(this.graph);

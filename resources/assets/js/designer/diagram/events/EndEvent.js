@@ -3,17 +3,19 @@ import {Shape} from "../Shape"
 /**
  * EndEvent class
  */
-export class EndEvent extends Shape {
+export default class extends Shape {
     constructor(options, graph, paper) {
         super(graph, paper)
         this.options = {
             id: null,
             x: null,
-            y: null,
-            width: 40,
-            height: 40
+            y: null
         }
         this.config(options)
+        this.config({
+            width: 40,
+            height: 40
+        })
     }
 
     /**

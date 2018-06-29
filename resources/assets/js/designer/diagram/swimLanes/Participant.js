@@ -1,15 +1,14 @@
 import {JointElements} from "../jointElements"
 import {Shape} from "../Shape"
-import {Elements} from "../elements"
+import {Elements} from '../elements'
 /**
  * Pool class
  */
-export class Pool extends Shape {
+export default class extends Shape {
     constructor(options, graph, paper) {
         super(graph, paper)
-        this.isContainer = true
         this.lanes = []
-        this.type = "Pool"
+        this.type = "participant"
         this.options = {
             id: null,
             x: null,
@@ -17,15 +16,15 @@ export class Pool extends Shape {
             width: 700,
             height: 250
         }
-        this.heightLane = 250
         this.config(options)
+        this.heightLane = this.options.height
     }
 
     /**
      * Render the Pool Based in options config
      */
     render() {
-        this.shape = new JointElements.Pool();
+        this.shape = new JointElements.Participant();
         this.shape.position(this.options.x, this.options.y);
         this.shape.resize(this.options.width, this.options.height);
         this.shape.addTo(this.graph);
@@ -39,7 +38,7 @@ export class Pool extends Shape {
      * @returns {*}
      */
     firstLane() {
-        let dx = this.options.width * 0.07
+        let dx = 25
         let lane = this.createShapeLane({
             x: this.options.x + dx,
             y: this.options.y,
@@ -55,8 +54,7 @@ export class Pool extends Shape {
      * @param options
      */
     createShapeLane(options) {
-        let lane = new Elements["Lane"](
-            {
+        let lane = new Elements["lane"]({
                 x: options.x,
                 y: options.y,
                 width: options.width,
@@ -77,7 +75,7 @@ export class Pool extends Shape {
     createLane() {
         this.options.height += this.heightLane
         this.shape.resize(this.options.width, this.options.height)
-        let dx = this.options.width * 0.07
+        let dx = 25
         let lane = this.createShapeLane({
             x: this.options.x + dx,
             y: this.options.y + this.lanes.length * this.heightLane,

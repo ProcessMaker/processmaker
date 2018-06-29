@@ -2,7 +2,7 @@
 import _ from "lodash"
 
 export const Validators = {
-    all: ["Pool", "Lane"],
+    all: ["participant"],
     verifyConnectWith: (source, target) => {
         let res = Validators.all
         if (source && this[source]) {

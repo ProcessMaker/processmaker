@@ -3,18 +3,20 @@ import {Shape} from "../Shape"
 /**
  * InclusiveGateway class
  */
-export class InclusiveGateway extends Shape {
+export default class extends Shape {
     constructor(options, graph, paper) {
         super(graph, paper)
         this.options = {
             id: null,
             x: null,
             y: null,
-            width: 40,
-            height: 40,
             rounded: 10
         }
         this.config(options)
+        this.config({
+            width: 40,
+            height: 40
+        })
     }
 
     /**

@@ -5,7 +5,7 @@
                 <img id="bpmn:Task" src="../img/task.svg" height="18"
                      draggable="true" @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:SubProcess" src="../img/sub-process.svg" height="18"
+                <img id="bpmn:CallActivity" src="../img/sub-process.svg" height="18"
                      draggable="true" @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
                 <img id="bpmn:ExclusiveGateway" src="../img/exclusive-gateway.svg" height="25" draggable="true"
@@ -20,7 +20,7 @@
                 <img id="bpmn:StartEvent" name="StartEvent" src="../img/start-event.svg" height="25"
                      draggable="true" @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:IntermediateEmailEvent" name="IntermediateEmailEvent"
+                <img id="bpmn:IntermediateThrowEvent" name="IntermediateEmailEvent"
                      src="../img/intermediate-email-event.svg" height="25"
                      draggable="true" @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
@@ -43,7 +43,7 @@
                 <img id="bpmn:BlackBoxPool" src="../img/black-box-pool.svg" height="18" draggable="true"
                      @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:Pool" src="../img/pool.svg" height="18" draggable="true"
+                <img id="bpmn:Participant" src="../img/pool.svg" height="18" draggable="true"
                      @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
                 <img id="bpmn:Lane" src="../img/lane.svg" height="18"

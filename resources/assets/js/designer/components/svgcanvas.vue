@@ -1,22 +1,31 @@
 <template>
-    <div id="svgCanvas" ref="canvas"></div>
+    <div id="svgCanvas" ref="canvas" @dragover="$event.preventDefault()" @drop="dropHandler($event)"></div>
 </template>
 
 <script>
-    import bpmn from "bpmn-moddle"
     import {Builder} from "../diagram/builder"
     import actions from "../actions"
     import EventBus from "../lib/event-bus"
     import _ from "lodash"
     import joint from 'jointjs'
-
-    let moddle = new bpmn()
+    import parser from 'xml-js'
+    import BPMNHandler from '../lib/BPMNHandler'
+    1
+    import {Elements} from "../diagram/elements";
     export default {
-        // Set our own static components but also bring in our dynamic list of modals from above
+        props: [
+            'bpmn'
+        ],
         data() {
             return {
                 graph: null,
-                paper: null
+                paper: null,
+                bpmnHandler: null,
+                xml: null
+            }
+        },
+        watch: {
+            bpmn() {
             }
         },
         computed: {},
@@ -26,12 +35,47 @@
             EventBus.$on(actions.designer.shape.remove().type, (value) => this.removeElement(value))
         },
         methods: {
-            loadXML(xml = null) {
-                let that = this;
-                if (xml) this.xml = xml;
-                moddle.fromXML(that.xml, function (err, def) {
-                    that.definitions = def;
-                });
+            loadXML() {
+                let options = {ignoreComment: true, alwaysChildren: true}
+                let result = parser.xml2js(this.xml, options)
+                this.bpmnHandler = new BPMNHandler(result)
+                this.createFromBPMN(this.bpmnHandler.buildModel())
+            },
+            validateXML(xml) {
+                //todo add method for validate xml with xsd BPMN
+                this.xml = xml
+                this.loadXML()
+            },
+            dropHandler(e) {
+                function errorHandler(evt) {
+                    switch (evt.target.error.code) {
+                        case evt.target.error.NOT_FOUND_ERR:
+                            alert(__('File Not Found!'));
+                            break;
+                        case evt.target.error.NOT_READABLE_ERR:
+                            alert(__('File is not readable'));
+                            break;
+                        case evt.target.error.ABORT_ERR:
+                            break; // noop
+                        default:
+                            alert(__('An error occurred reading this file.'));
+                    }
+                }
+
+                let file = e && e.dataTransfer ? e.dataTransfer.files[0] : null
+                if (file) {
+                    let that = this;
+                    let reader = new FileReader();
+                    reader.onerror = errorHandler;
+                    reader.onabort = function (e) {
+                        alert(__('File read cancelled'));
+                    };
+                    reader.onload = function (ev) {
+                        that.validateXML(ev.target.result);
+                    };
+                    reader.readAsText(file);
+                    e.preventDefault()
+                }
             },
             /**
              * Create the element
@@ -47,9 +91,28 @@
                     id: name[1] + '_' + Math.floor((Math.random() * 100) + 1),
                     x: event.x - this.diagramCoordinates.x,
                     y: event.y - this.diagramCoordinates.y,
-                    eClass: name[1]
+                    type: name[1].toLowerCase()
                 };
-                this.builder.createShape(event.target.id, defaultOptions);
+                if (Elements[name[1].toLowerCase()]) {
+                    this.builder.createShape(defaultOptions, event.target.id);
+                } else {
+                    console.error(name[1].toLowerCase() + "is not support")
+                }
+            },
+            /**
+             * Create the element
+             * @param event
+             */
+            createFromBPMN(elements) {
+                let that = this
+                this.builder.clear()
+                _.each(elements, (element) => {
+                    if (Elements[element.type]) {
+                        this.builder.createShape(element);
+                    } else {
+                        console.error(element.type + "is not support")
+                    }
+                })
             },
             /**
              * Listener for remove element of the canvas
@@ -109,7 +172,7 @@
                 }
             });
             this.builder = new Builder(this.graph, this.paper)
-            this.graph.on('change:position', this.changeElementPosition)
+            this.graph.on('change:position', this.changeElementPosition);
             this.paper.on('element:pointerclick', this.clickElement)
             this.paper.on('blank:pointerclick', this.clickCanvas)
             this.paper.on('cell:pointerdown', this.pointerDown)

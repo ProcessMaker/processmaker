@@ -1,37 +1,43 @@
-import {StartEvent} from "./events/StartEvent"
-import {EndEvent} from "./events/EndEvent"
-import {Task} from "./tasks/Task"
-import {InclusiveGateway} from "./gateways/InclusiveGateway"
-import {ParallelGateway} from "./gateways/ParallelGateway"
-import {ExclusiveGateway} from "./gateways/ExclusiveGateway"
-import {IntermediateEmailEvent} from "./events/IntermediateEmailEvent"
-import {IntermediateTimerEvent} from "./events/IntermediateTimerEvent"
-import {EndEmailEvent} from "./events/EndEmailEvent"
+import startevent from "./events/StartEvent"
+import endevent from "./events/EndEvent"
+import task from "./tasks/Task"
+import servicetask from "./tasks/ServiceTask"
+import scripttask from "./tasks/ScriptTask"
+import inclusivegateway from "./gateways/InclusiveGateway"
+import parallelgateway from "./gateways/ParallelGateway"
+import exclusivegateway from "./gateways/ExclusiveGateway"
+import intermediatecatchevent from "./events/IntermediateCatchEvent"
+import intermediatethrowevent from "./events/IntermediateThrowEvent"
+import intermediatetimerevent from "./events/IntermediateTimerEvent"
+import endemailevent from "./events/EndEmailEvent"
 import {Flow} from "./flow/Flow"
-import {DataObject} from "./data/DataObject"
-import {DataStore} from "./data/DataStore"
-import {Pool} from "./swimLanes/Pool"
-import {Lane} from "./swimLanes/Lane"
-import {Group} from "./artifacts/Group"
-import {BlackBoxPool} from "./swimLanes/BlackBoxPool"
-import {SubProcess} from "./tasks/SubProcess"
+import dataobject from "./data/DataObject"
+import datastore from "./data/DataStore"
+import participant from "./swimLanes/Participant"
+import lane from "./swimLanes/Lane"
+import group from "./artifacts/Group"
+import blackboxpool from "./swimLanes/BlackBoxPool"
+import callactivity from "./tasks/CallActivity"
 
 export const Elements = Object.assign({}, {
-    StartEvent,
-    IntermediateEmailEvent,
-    IntermediateTimerEvent,
-    EndEvent,
-    EndEmailEvent,
-    Task,
+    startevent,
+    intermediatecatchevent,
+    intermediatethrowevent,
+    intermediatetimerevent,
+    endevent,
+    endemailevent,
+    task,
+    servicetask,
+    scripttask,
     Flow,
-    InclusiveGateway,
-    ParallelGateway,
-    ExclusiveGateway,
-    DataObject,
-    DataStore,
-    Pool,
-    Lane,
-    Group,
-    BlackBoxPool,
-    SubProcess
+    inclusivegateway,
+    parallelgateway,
+    exclusivegateway,
+    dataobject,
+    datastore,
+    participant,
+    lane,
+    group,
+    blackboxpool,
+    callactivity
 })
