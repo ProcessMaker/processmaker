@@ -45,7 +45,7 @@
           </a>
         </small>
       </div>
-      @if($footer)
+      @if(isset($footer))
       {!! $footer !!}
      @endif
     </form>
