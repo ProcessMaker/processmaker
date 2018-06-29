@@ -5,6 +5,9 @@
   <div class="formContainer">
     <img src="/img/md-blue-logo.png">
     <form method="POST" class="form" action="{{ route('login') }}">
+    @if (session()->has('login-error'))
+      <div class="alert alert-danger">{{ session()->get('login-error')}}</div>
+      @endif
       <div class="form-group">
         <label for="username">{{ __('Username') }}</label>
         <div>
