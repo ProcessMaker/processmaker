@@ -5,7 +5,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use ProcessMaker\Http\Middleware\SetLocale;
 use Tests\TestCase;
 use Illuminate\Support\Facades\App;
-use Router;
+use Route;
 
 class SetLocaleMiddlewareTest extends TestCase
 {
@@ -17,7 +17,7 @@ class SetLocaleMiddlewareTest extends TestCase
      */
     public function testLocaleProperlySet()
     {
-        Router::get('/_tests/{lang}/test', function() {
+        Route::get('/_tests/{lang}/test', function() {
             // Print out our current locale
             return App::getLocale();
         })->middleware(SetLocale::class);
