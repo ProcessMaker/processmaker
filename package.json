@@ -63,7 +63,8 @@
     "v-tooltip": "^2.0.0-rc.33",
     "vue-events": "^3.1.0",
     "vue-resource": "^1.5.1",
-    "vuetable-2": "^1.7.5"
+    "vuetable-2": "^1.7.5",
+    "xml-js": "^1.6.4"
   },
   "jest": {
     "setupFiles": [

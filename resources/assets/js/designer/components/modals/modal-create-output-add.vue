@@ -1,5 +1,5 @@
 <template>
-  <b-modal ref="modal" size="md" @hidden="onHidden" centered title="Create Input Document">
+  <b-modal ref="modal" size="md" @hidden="onHidden" title="Create Output Document">
       <form>
         <div class="form-group">
           <label for="title" v-model="title">{{title}}</label>

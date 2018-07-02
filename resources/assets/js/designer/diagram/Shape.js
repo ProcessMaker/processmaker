@@ -8,7 +8,10 @@ export class Shape {
     constructor(graph, paper) {
         this.graph = graph
         this.paper = paper
+        this.isContainer = false
         this.shape = null
+        this.parent = null
+        this.type = "Shape"
     }
 
     /**
@@ -49,7 +52,36 @@ export class Shape {
         return this.shape;
     }
 
+    /**
+     * Unselect the shape
+     */
     unselect() {
         this.hideCrown()
+    }
+
+    /**
+     * Select the shape
+     */
+    select() {
+
+    }
+
+    /**
+     * Set the parent in this Shape
+     * @param parent
+     * @returns {Shape}
+     */
+    setParent(parent) {
+        this.parent = parent
+        return this
+    }
+
+    /**
+     * Return the type of shape
+     * @param parent
+     * @returns {string}
+     */
+    getType() {
+        return this.type
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+Auth::routes();
 
 // Authentication Routes...
 $this->get('login', 'Auth\LoginController@showLoginForm')->name('login');
@@ -11,6 +12,19 @@ $this->get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm'
 $this->post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
 $this->get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
 $this->post('password/reset', 'Auth\ResetPasswordController@reset');
+$this->get('password/success', function(){
+  return view('auth.passwords.success',['title' => __('Password Reset')]);
+})->name('password-success');
+
+// Password Reset Routes...
+// $this->get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
+// $this->post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
+// $this->get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
+// $this->post('password/reset', 'Auth\ResetPasswordController@reset');
+
+// $this->get('password/reset/{token?}', 'Auth\PasswordController@showResetForm');
+// $this->post('password/email', 'Auth\PasswordController@sendResetLinkEmail');
+// $this->post('password/reset', 'Auth\PasswordController@reset');
 
 $this->middleware(['auth', 'apitoken'])->group(function() {
 
@@ -44,7 +58,7 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
         return view('userprofile', ['title' => 'Dashboard']);
     })->name('userprofile');
 
-    Router::group([
+    Route::group([
         'middleware' => ['permission:PM_USERS']
     ], function() {
       $this->get('/manage/users', 'Management\UsersController@index')->name('management-users-index');
@@ -52,14 +66,13 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
       $this->get('/manage/groups', 'Management\GroupsController@index')->name('management-groups-index');
     });
 
-    Router::group([
+    Route::group([
         'middleware' => ['permission:PM_CASES']
     ], function() {
         $this->get('/process/{process}/tasks', 'Designer\TaskController@index')->name('processes-task-index');
     });
+
+    $this->get('/designer', function() {
+        return view('designer.designer', ['title' => 'Designer']);
+    })->name('designer');
 });
-
-
-$this->get('/designer', function() {
-    return view('designer.designer', ['title' => 'Designer']);
-})->name('designer');
