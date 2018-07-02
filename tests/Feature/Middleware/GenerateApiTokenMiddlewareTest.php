@@ -7,7 +7,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use ProcessMaker\Http\Middleware\GenerateApiToken;
 use ProcessMaker\Model\User;
 use Tests\TestCase;
-use Router;
+use Route;
 
 class GenerateApiTokenMiddlewareTest extends TestCase
 {
@@ -22,7 +22,7 @@ class GenerateApiTokenMiddlewareTest extends TestCase
         $user = factory(User::class)->create();
         // Set our user
         Auth::login($user);
-        Router::get('/_tests/test', function() {
+        Route::get('/_tests/test', function() {
             return 'completed';
         })->middleware([
             StartSession::class,
