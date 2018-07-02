@@ -10,10 +10,23 @@ export class Builder {
         this.graph = graph
         this.paper = paper
         this.collection = []
+
         this.selection = []
         this.targetShape = null
         this.sourceShape = null
     }
+
+    createFromBPMN(bpmn) {
+        let that = this
+        _.forEach(bpmn.shapes, (el) => {
+            that.createShape(el)
+        });
+        debugger
+        _.forEach(bpmn.links, (el) => {
+            that.createFlow(el)
+        });
+    }
+
 
     /**
      * Create a shape based in type
@@ -22,7 +35,11 @@ export class Builder {
      */
     createShape(options) {
         let element
-        if (Elements[options.type] && options.type != "lane") {
+
+        if (Elements[options.type] && options.type == "sequenceflow") {
+            debugger
+            this.createFlow(options)
+        } else if (Elements[options.type] && options.type != "lane") {
             // Type Example - bpmn:StartEvent
             if (Elements[options.type.toLowerCase()]) {
                 element = new Elements[options.type.toLowerCase()](
@@ -123,7 +140,7 @@ export class Builder {
      */
     connect(source, target) {
         if (source != target && Validators.verifyConnectWith(source.getType(), target.getType())) {
-            let flow = new Elements["Flow"]({
+            let flow = new Elements["sequenceflow"]({
                     source,
                     target
                 },
@@ -134,6 +151,12 @@ export class Builder {
             source.hideCrown()
             this.sourceShape = null
         }
+    }
+
+    createFlow(flowBpmn) {
+        let source = this.findInCollectionById(flowBpmn.sourceRef)
+        let target = this.findInCollectionById(flowBpmn.targetRef)
+        this.connect(source, target)
     }
 
     /**
@@ -147,6 +170,16 @@ export class Builder {
             } else {
                 return element.id === o.shape.id
             }
+        })
+    }
+
+    /**
+     *
+     * @param element
+     */
+    findInCollectionById(id) {
+        return _.find(this.collection, (o) => {
+            return id === o.options.id
         })
     }
 

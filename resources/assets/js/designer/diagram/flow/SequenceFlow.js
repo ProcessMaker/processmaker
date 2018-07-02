@@ -4,7 +4,7 @@ import EventBus from "../../lib/event-bus"
 /**
  * Flow class
  */
-export class Flow {
+export default class {
     constructor(options, graph, paper) {
         this.graph = graph
         this.paper = paper

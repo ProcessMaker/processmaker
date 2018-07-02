@@ -39,7 +39,7 @@
                 let options = {ignoreComment: true, alwaysChildren: true}
                 let result = parser.xml2js(this.xml, options)
                 this.bpmnHandler = new BPMNHandler(result)
-                this.createFromBPMN(this.bpmnHandler.buildModel())
+                this.builder.createFromBPMN(this.bpmnHandler.buildModel())
             },
             validateXML(xml) {
                 //todo add method for validate xml with xsd BPMN
@@ -98,21 +98,6 @@
                 } else {
                     console.error(name[1].toLowerCase() + "is not support")
                 }
-            },
-            /**
-             * Create the element
-             * @param event
-             */
-            createFromBPMN(elements) {
-                let that = this
-                this.builder.clear()
-                _.each(elements, (element) => {
-                    if (Elements[element.type]) {
-                        this.builder.createShape(element);
-                    } else {
-                        console.error(element.type + "is not support")
-                    }
-                })
             },
             /**
              * Listener for remove element of the canvas
