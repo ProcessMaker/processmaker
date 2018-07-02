@@ -1,21 +1,45 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light p-0">
     <ul class="navbar-nav mr-auto">
-    @php
-    $menu = Menu::get('topnav');
-    @endphp
-    @foreach($menu->items as $item)
       <li class="nav-item">
-        <a class="nav-link" href="{{ $item->url() }}">{{$item->title}}</a>
+        <a class="nav-link" href="{{ url('request') }}">{{__('Requests')}}</a>
       </li>
-    @endforeach
-    </ul>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url('task') }}">{{__('Tasks')}}</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url('process') }}">{{__('Processes')}}</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url('admin') }}">Admin</a>
+      </li>
+      <li>
+        @if(Session::has('_alert'))
+          @php
+          $icons = [
+            'danger' =>  'fa-times-circle',
+            'info' =>  'fa-info-circle',
+            'warning' =>  'fa-exclamation-triangle',
+            'success' =>  'fa-check'
+          ];
 
+          list($type,$message) = json_decode(Session::get('_alert'));
+          @endphp
+          <div class="alert alert-{{$type}} alert-dismissible fade show" role="alert">
+            <i class="fas fa-{{$icons[$type]}}"></i> {{$message}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        @endif
+      </li>
+    </ul>
 
     <component id="navbar-request-button" v-bind:is="'request-modal'"></component>
 
     <span class="navbar-text notifications">
       <i class="fas fa-bell" aria-hidden="true"></i>
     </span>
+
     <ul class="navbar-nav">
       <li class="break"></li>
       <li class="dropdown">
@@ -23,7 +47,7 @@
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
            <a class="dropdown-item drop-header"><img class="avatar-small" src="/img/avatar.png">{{\Auth::user()->firstname}} {{\Auth::user()->lastname}}</a>
            @foreach($dropdown_nav->items as $row)
-              <a class="dropdown-item" href="{{ $row->url() }}"><i class="fas {{$row->attr('icon')}} fa-fw fa-lg"></i>{{$row->title}}</a>
+              <a class="dropdown-item" href="{{ url($row->link->path['route']) }}"><i class="fas {{$row->attr('icon')}} fa-fw fa-lg"></i>{{$row->title}}</a>
            @endforeach
          </div>
       </li>
