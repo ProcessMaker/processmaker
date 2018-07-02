@@ -173,6 +173,8 @@ class Install extends Command
 
     private function fetchDatabaseCredentials()
     {
+        $this->info(__("ProcessMaker requires a MySQL database created with appropriate credentials configured."));
+        $this->info(__("Refer to the Installation Guide for more information on database best practices."));
         $this->env['DB_HOSTNAME'] = $this->anticipate(__("Enter your MySQL host"), ['localhost']);
         $this->env['DB_PORT'] = $this->anticipate(__("Enter your MySQL port (Usually 3306)"), [3306]);
         $this->env['DB_DATABASE'] = $this->anticipate(__("Enter your MySQL Database name"), ['workflow']);
