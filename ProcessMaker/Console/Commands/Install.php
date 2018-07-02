@@ -112,9 +112,8 @@ class Install extends Command
 
         $this->info(__("Installing ProcessMaker Database, OAuth SSL Keys and configuration file"));
 
-        // Create database
-        // Now install migrations
-        config(['database.default' => 'install']);
+        // The database should already exist and is tested by the fetchDatabaseCredentials call
+        // Install migrations
         $this->call('migrate:fresh', ['--seed' => true]);
 
         // Generate the required oauth private/public keys
@@ -174,6 +173,8 @@ class Install extends Command
 
     private function fetchDatabaseCredentials()
     {
+        $this->info(__("ProcessMaker requires a MySQL database created with appropriate credentials configured."));
+        $this->info(__("Refer to the Installation Guide for more information on database best practices."));
         $this->env['DB_HOSTNAME'] = $this->anticipate(__("Enter your MySQL host"), ['localhost']);
         $this->env['DB_PORT'] = $this->anticipate(__("Enter your MySQL port (Usually 3306)"), [3306]);
         $this->env['DB_DATABASE'] = $this->anticipate(__("Enter your MySQL Database name"), ['workflow']);

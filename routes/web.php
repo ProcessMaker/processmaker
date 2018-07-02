@@ -6,11 +6,14 @@ Auth::routes();
 $this->get('login', 'Auth\LoginController@showLoginForm')->name('login');
 $this->post('login', 'Auth\LoginController@login');
 $this->get('logout', 'Auth\LoginController@logout')->name('logout');
-$this->get('password/newpass', function(){
-  return view('auth.passwords.reset',['title' => __('Reset Your Password')]);
-})->name('password-reset');
+
+// Password Reset Routes...
+$this->get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
+$this->post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
+$this->get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
+$this->post('password/reset', 'Auth\ResetPasswordController@reset');
 $this->get('password/success', function(){
-  return view('auth.passwords.success',['title' => __('Success Your Password')]);
+  return view('auth.passwords.success',['title' => __('Password Reset')]);
 })->name('password-success');
 
 // Password Reset Routes...
