@@ -10,8 +10,6 @@ use ProcessMaker\Model\Role;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Auth;
-use ProcessMaker\Model\User;
 
 class FlashMessageTest extends TestCase
 {
@@ -64,7 +62,7 @@ class FlashMessageTest extends TestCase
       // Create a fake route that flashes a message with a error alert
       Route::get('/_tests/alert_failure_test', function () {
         // Flash a message
-        request()->session()->flash('_alert', ['type'=>'danger','message'=>'Test Error Message']);          
+        request()->session()->flash('_alert', ['type'=>'danger','message'=>'Test Error Message']);
           return view('layouts.layout');
       })->middleware('web');
       $response = $this->get('/_tests/alert_failure_test');
