@@ -112,8 +112,8 @@ class Install extends Command
 
         $this->info(__("Installing ProcessMaker Database, OAuth SSL Keys and configuration file"));
 
-        // Create database
-        // Now install migrations
+        // The database should already exist and is tested by the fetchDatabaseCredentials call
+        // Install migrations
         $this->call('migrate:fresh', ['--seed' => true]);
 
         // Generate the required oauth private/public keys
