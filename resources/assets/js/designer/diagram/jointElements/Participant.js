@@ -1,12 +1,12 @@
 import joint from "jointjs"
-export const Pool = joint.dia.Element.define('bpmn.Pool',
+export const Participant = joint.dia.Element.define('bpmn.Participant',
     {
         attrs: {
             r: {
                 stroke: "#000",
                 strokeWidth: 2,
                 fill: "#fff",
-                refWidth: '7%',
+                width: '25',
                 refHeight: '100%'
             },
             d: {
@@ -16,7 +16,6 @@ export const Pool = joint.dia.Element.define('bpmn.Pool',
                 refWidth: '100%',
                 refHeight: '100%'
             }
-
         }
     }, {
         markup: [{

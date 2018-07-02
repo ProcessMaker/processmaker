@@ -31,9 +31,7 @@ Route::group([
             Route::get('users', 'Administration\UsersController@index');
             Route::get('users/{user}', 'Administration\UsersController@get');
             Route::get('users/{user}/avatar', 'Administration\UsersController@avatar');
-
             Route::put('users/{user}', 'Administration\UsersController@update');
-
 
             // Roles API Endpoints
             Route::get('roles', 'Administration\RolesController@index');
@@ -44,7 +42,7 @@ Route::group([
             Route::get('groups', 'Administration\GroupsController@index');
             Route::post('groups', 'Administration\GroupsController@create');
             Route::get('groups/{group}', 'Administration\GroupsController@get');
- 
+
         });
 
         //User profile

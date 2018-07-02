@@ -1,7 +1,7 @@
 import {JointElements} from "../jointElements"
 import {Shape} from "../Shape"
 /**
- * ExclusiveGateway class
+ * SubProcess class
  */
 export default class extends Shape {
     constructor(options, graph, paper) {
@@ -9,21 +9,18 @@ export default class extends Shape {
         this.options = {
             id: null,
             x: null,
-            y: null
+            y: null,
+            width: 120,
+            height: 80
         }
         this.config(options)
-        //Force in width & height
-        this.config({
-            width: 40,
-            height: 40
-        })
     }
 
     /**
-     * Render the ExclusiveGateway Based in options config
+     * Render the SubProcess Based in options config
      */
     render() {
-        this.shape = new JointElements.ExclusiveGateway();
+        this.shape = new JointElements.SubProcess();
         this.shape.position(this.options.x, this.options.y);
         this.shape.resize(this.options.width, this.options.height);
         this.shape.addTo(this.graph);

@@ -21,7 +21,7 @@
       <li class="dropdown">
         <img class="avatar dropdown-toggle " id="navbarDropdown" src="/img/avatar.png" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-           <a class="dropdown-item drop-header"><img class="avatar-small" src="/img/avatar.png">{{__('John Bunton')}}</a>
+           <a class="dropdown-item drop-header"><img class="avatar-small" src="/img/avatar.png">{{\Auth::user()->firstname}} {{\Auth::user()->lastname}}</a>
            @foreach($dropdown_nav->items as $row)
               <a class="dropdown-item" href="{{ $row->url() }}"><i class="fas {{$row->attr('icon')}} fa-fw fa-lg"></i>{{$row->title}}</a>
            @endforeach

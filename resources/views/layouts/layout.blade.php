@@ -4,83 +4,49 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <!-- API Token -->
     <meta name="api-token" content="{{ session('apiToken')['access_token']}}">
-    <!--User UID -->
-    @if (Auth::user())
-      <meta name="user-uid" content="{{Auth::user()->uid}}">
-    @endif
-
-    @if(isset($title))
-        <title>{{__('ProcessMaker')}}: {{$title}}</title>
-    @else
-        <title>{{__('ProcessMaker')}}</title>
-    @endif
-
+    <title>{{ $title or __('Welcome') }} - {{__('ProcessMaker')}}</title>
     <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico" />
-    <!-- Styles -->
-
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
-    <link href="{{ mix('css/layouts-app.css') }}" rel="stylesheet">
-
-    <script>
-        window.Processmaker = {
-            csrfToken: "{{csrf_token()}}",
-            userId: "{{Auth::id()}}",
-            broadcasting: {
-                broadcaster: "{{config('broadcasting.broadcaster')}}",
-                host: "{{config('broadcasting.host')}}",
-                key: "{{config('broadcasting.key')}}"
-            }
-        }
-    </script>
-    @if(config('broadcasting.broadcaster') == 'socket.io')
-        <script src="//{{config('broadcasting.host')}}/socket.io/socket.io.js"></script>
-    @endif
     @yield('css')
 </head>
 <body>
-    @if(session('alert'))
-        @if(session('alert')['success'])
-            <div id="app-alert" class="alert alert-success alert-dismissible fade show" role="alert">
-        @else
-            <div id="app-alert" class="alert alert-danger alert-dismissible fade show" role="alert">
-        @endif
-        <strong>{{session('alert')['message']}}</strong>
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-    @endif
-    @yield('sidebar')
-    <div id="app-container">
-        <div id="content" class="{{isset($contentClass) ? $contentClass : ''}}">
-            <div id="content-inner">
-                @yield('content')
-            </div>
-            <div id="api-error" class="error-content">
-                <div></div>
-                <div>
-                    <h1>Sorry! API failed to load</h1>
-                    <p>Something went wrong. Try refreshing the application</p>
-                </div>
+@yield('sidebar')
+<div id="app-container">
 
-            </div>
-        </div>
-        <div id="top-navbar" style="background-image: url('/img/logo.png')">
-            @include('layouts.navbar')
-        </div>
-
+    <div class="main">
+@yield('content')
     </div>
+    <div id="top-navbar" style="background-image: url('/img/logo.png')">
+        @include('layouts.navbar')
+    </div>
+</div>
+<div id="api-error" class="error-content">
+    <div>
+        <h1>Sorry! API failed to load</h1>
+        <p>Something went wrong. Try refreshing the application</p>
+    </div>
+</div>
 <!-- Scripts -->
 <script src="{{ mix('js/manifest.js') }}"></script>
 <script src="{{ mix('js/vendor.js') }}"></script>
 <script src="{{ mix('js/app.js') }}"></script>
 <script src="{{ mix('js/app-layout.js') }}"></script>
-<!-- Menu Toggle Script -->
+@if(config('broadcasting.broadcaster') == 'socket.io' && config('broadcasting.host') <> '')
+    <script src="{{config('broadcasting.host')}}/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+    window.Processmaker = {
+        csrfToken: "{{csrf_token()}}",
+        userId: "{{Auth::id()}}",
+        broadcasting: {
+            broadcaster: "{{config('broadcasting.broadcaster')}}",
+            host: "{{config('broadcasting.host')}}",
+            key: "{{config('broadcasting.key')}}"
+        }
+    }
+    </script>
+@endif
 <script>
     $("#menu-toggle").click(function (e) {
         e.preventDefault();
