@@ -1,10 +1,10 @@
 import Vue from 'vue'
 import RolesListing from './components/RolesListing'
 import ValidationErrors from './../../components/common/mixins/ValidationErrors'
-import FormInput from './../../components/common/forms/FormInput'
-import FormSelect from './../../components/common/forms/FormSelect'
-import FormCheckbox from './../../components/common/forms/FormCheckbox'
 
+// Bring in our form elements
+import FormElements from '@processmaker/vue-form-elements'
+Vue.use(FormElements);
 
 
 // Bootstrap our Designer application
@@ -19,7 +19,9 @@ new Vue({
       addRoleStatus: 'ACTIVE',
       test: ''
   },
-  components: { RolesListing, FormInput, FormSelect, FormCheckbox },
+  components: { 
+    RolesListing, 
+  },
   methods: {
     showAddModal() {
       this.$refs.addModal.show();
