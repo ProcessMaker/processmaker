@@ -47,10 +47,12 @@ class StartEvent extends BpmnAction
             $event = $workflow->getEvent($this->eventId);
 
             //Do the action
-            App::call([$this, 'action'], compact('workflow', 'process', 'event'));
+            $response = App::call([$this, 'action'], compact('workflow', 'process', 'event'));
 
             //Run engine to the next state
             $workflow->getEngine()->runToNextState();
+            
+            return $response;
         } catch (\Throwable $t) {
             dd($t);
         }
@@ -66,7 +68,10 @@ class StartEvent extends BpmnAction
         //Create a new data store
         $dataStorage = $process->getRepository()->createDataStore();
         $dataStorage->setData($this->data);
-        $process->getEngine()->createExecutionInstance($process, $dataStorage);
+        $instance = $process->getEngine()->createExecutionInstance($process, $dataStorage);
         $event->start();
+        
+        //Sending message
+        return $instance;
     }
 }

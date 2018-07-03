@@ -18,8 +18,8 @@ class EventController extends Controller
         $data = (array) $request->json();
 
         //Call the manager to trigger the start event
-        WorkflowManager::triggerStartEvent($process, $event, $data);
-        return ['message' => 'OK'];
+        $instance = WorkflowManager::triggerStartEvent($process, $event, $data);
+        return ['instance' => $instance->uid];
     }
 
     public function triggerIntermediate(Process $process, Task $event)

@@ -32,8 +32,11 @@ $this->get('password/success', function(){
 
 $this->middleware(['auth', 'apitoken'])->group(function() {
     // Test Process Routes for Nayra
-    $this->get('/nayra/start', function() {
-        return view('nayra.start');
+    $this->get('/nayra/request/{process}/{event}', function(ProcessMaker\Model\Process $process, $event) {
+        return view('nayra.start', compact('process', 'event'));
+    });
+    $this->get('/nayra/{view}/{process}/{instance}/{token}', function($view, ProcessMaker\Model\Process $process, ProcessMaker\Model\Application $instance, ProcessMaker\Model\Delegation $token) {
+        return view('nayra.' . $view, compact('process', 'instance', 'token'));
     });
 
   // All the routes in this group and below are for testing purposes only

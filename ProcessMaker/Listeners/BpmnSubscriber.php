@@ -11,12 +11,25 @@ use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
+use ProcessMaker\Notifications\ActivityActivatedNotification;
+
 /**
  * Description of BpmnSubscriber
  *
  */
 class BpmnSubscriber
 {
+
+    public function ActivityActivated(ActivityActivatedEvent $event)
+    {
+        $token = $event->token;
+        Log::info('Nofity activity activated: ' . json_encode($token->getProperties()));
+
+        //client events
+        $user = Auth::user();
+        $notification = new ActivityActivatedNotification($event->token);
+        $user->notify($notification);
+    }
 
     /**
      * When a process instance is created.
@@ -64,6 +77,7 @@ class BpmnSubscriber
         $token->save();
 
         Log::info('ActivityActivated: ' . json_encode($token->getProperties()));
+        $this->ActivityActivated($event);
     }
 
     /**
@@ -113,8 +127,9 @@ class BpmnSubscriber
         $events->listen(ProcessInterface::EVENT_PROCESS_INSTANCE_CREATED, static::class . '@onProcessCreated');
         $events->listen(ProcessInterface::EVENT_PROCESS_INSTANCE_COMPLETED, static::class . '@onProcessCompleted');
 
-        $events->listen(ActivityInterface::EVENT_ACTIVITY_ACTIVATED, static::class . '@onActivityActivated');
         $events->listen(ActivityInterface::EVENT_ACTIVITY_COMPLETED, static::class . '@onActivityCompleted');
         $events->listen(ActivityInterface::EVENT_ACTIVITY_CLOSED, static::class . '@onActivityClosed');
+
+        $events->listen(ActivityInterface::EVENT_ACTIVITY_ACTIVATED, static::class . '@onActivityActivated');
     }
 }

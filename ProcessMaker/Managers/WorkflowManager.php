@@ -32,7 +32,7 @@ class WorkflowManager
         //Log BPMN actions
         Log::info(sprintf('Schedule start "%s" at "%s"', $event->getId(), $definitions->title));
         //Schedule BPMN Action
-        return StartEvent::dispatch($definitions, $event, $data);
+        return StartEvent::dispatchNow($definitions, $event, $data);
     }
 
     public function triggerIntermediateEvent()
