@@ -31,15 +31,15 @@
       <outgoing>_3</outgoing>
       <outputSet/>
     </startEvent>
-    <userTask completionQuantity="1" id="approve" implementation="nayra.approve" isForCompensation="false" name="Approve" startQuantity="1">
+    <task completionQuantity="1" id="approve" implementation="nayra.approve" isForCompensation="false" name="Approve" startQuantity="1">
       <incoming>_2</incoming>
       <outgoing>_15</outgoing>
-    </userTask>
+    </task>
     <sequenceFlow id="_15" sourceRef="approve" targetRef="_14"/>
-    <userTask completionQuantity="1" id="register" implementation="nayra.register" isForCompensation="false" name="Validate" startQuantity="1">
+    <task completionQuantity="1" id="register" implementation="nayra.register" isForCompensation="false" name="Validate" startQuantity="1">
       <incoming>_17</incoming>
       <outgoing>_19</outgoing>
-    </userTask>
+    </task>
     <sequenceFlow id="_17" sourceRef="_14" targetRef="register"/>
     <sequenceFlow id="_19" sourceRef="register" targetRef="_18"/>
     <exclusiveGateway gatewayDirection="Diverging" id="_18" name="valid?">
@@ -49,10 +49,10 @@
       <incoming>_19</incoming>
       <outgoing>_9</outgoing>
     </exclusiveGateway>
-    <userTask completionQuantity="1" id="request" implementation="nayra.request" isForCompensation="false" name="Request" startQuantity="1">
+    <task completionQuantity="1" id="request" implementation="nayra.request" isForCompensation="false" name="Request" startQuantity="1">
       <incoming>_3</incoming>
       <outgoing>_2</outgoing>
-    </userTask>
+    </task>
     <sequenceFlow id="_2" sourceRef="request" targetRef="approve"/>
     <sequenceFlow id="_3" sourceRef="start" targetRef="request"/>
     <sequenceFlow id="_9" sourceRef="_18" targetRef="_4"/>
