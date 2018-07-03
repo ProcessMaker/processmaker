@@ -31,7 +31,7 @@ export default class {
         this.shape.target(this.options.target.getShape())
         this.shape.attr('line/stroke-dasharray', '3,5');
         this.shape.router('orthogonal', {
-            elementPadding: 2
+            elementPadding: 4
         })
         this.shape.vertices(this.formatWayPoints(this.options.wayPoints))
         this.shape.addTo(this.graph)

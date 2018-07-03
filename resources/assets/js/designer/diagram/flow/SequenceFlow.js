@@ -30,7 +30,7 @@ export default class {
         this.shape.source(this.options.source.getShape())
         this.shape.target(this.options.target.getShape())
         this.shape.router('orthogonal', {
-            elementPadding: 2
+            elementPadding: 4
         })
         this.shape.vertices(this.formatWayPoints(this.options.wayPoints))
         this.shape.addTo(this.graph)
