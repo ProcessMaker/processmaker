@@ -101,8 +101,8 @@ Route::group([
         });
 
         //Workflow end points
-        Router::post('processes/{process}/events/{event}/trigger_start', 'Workflow\EventController@triggerStart');
-        Router::post('processes/{process}/instances/{instance}/tokens/{token}/complete', 'Workflow\ActivityController@complete');
+        Route::post('processes/{process}/events/{event}/trigger_start', 'Workflow\EventController@triggerStart');
+        Route::post('processes/{process}/instances/{instance}/tokens/{token}/complete', 'Workflow\ActivityController@complete');
 
         //Report Tables endpoints
         Route::get('process/{process}/report-tables', 'Project\ReportTableController@index')->middleware('can:read,ProcessMaker\Model\ReportTable');

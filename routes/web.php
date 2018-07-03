@@ -1,6 +1,10 @@
 <?php
 
+// Routes related to Authentication (password reset, etc)
 Auth::routes();
+
+// Add our broadcasting routes
+Broadcast::routes();
 
 // Authentication Routes...
 $this->get('login', 'Auth\LoginController@showLoginForm')->name('login');

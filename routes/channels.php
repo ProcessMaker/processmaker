@@ -10,6 +10,6 @@
 |
 */
 Broadcast::channel('ProcessMaker.Model.User.{id}', function ($user, $id) {
-    return (int) $user->USR_ID === (int) $id;
+    return (int)$user->id === (int)$id;
 });
 

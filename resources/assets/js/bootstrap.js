@@ -73,11 +73,14 @@ if (window.Processmaker.broadcaster == 'pusher') {
   window.Pusher = require('pusher-js');
 }
 */
-/*
+
+let broadcaster = document.head.querySelector('meta[name="broadcaster"]');
+let key = document.head.querySelector('meta[name="broadcasting-key"]');
+let host = document.head.querySelector('meta[name="broadcasting-host"]');
+
 
 window.Echo = new Echo({
-  broadcaster: window.Processmaker.broadcasting.broadcaster,
-  key: window.Processmaker.broadcasting.key,
-  host: window.Processmaker.broadcasting.host
+  broadcaster: broadcaster.content,
+  key: key.content,
+  host:host.content 
 });
-*/
