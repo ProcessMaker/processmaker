@@ -24,7 +24,7 @@ class CreateDelegationsTable extends Migration
             $table->unsignedInteger('task_id')->nullable();
             $table->string('type', 32)->default('normal');
             $table->integer('thread')->default(0);
-            $table->string('thread_status', 32)->default('open');
+            $table->enum('thread_status', ['ACTIVE', 'COMPLETED', 'CLOSED'])->default('ACTIVE');
             $table->string('priority', 32)->default('3');
             $table->dateTime('delegate_date');
             $table->dateTime('init_date')->nullable();
