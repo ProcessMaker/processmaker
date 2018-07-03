@@ -23,11 +23,13 @@ class GroupsTest extends ApiTestCase
      * 
      * These api endpoints can only work if you are authenticated
      */
+    /*
     public function testUnauthenticated()
     {
         $response = $this->api('GET', self::API_TEST_GROUPS);
         $response->assertStatus(401);
     }
+    */
 
     /**
      * Ensure our API endpoint is protected by required permission

@@ -4,7 +4,7 @@ namespace Tests\Feature\Middleware;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use ProcessMaker\Http\Middleware\SetSkin;
 use Tests\TestCase;
-use Router;
+use Route;
 use Igaster\LaravelTheme\Facades\Theme;
 
 class SetSkinMiddlewareTest extends TestCase
@@ -17,7 +17,7 @@ class SetSkinMiddlewareTest extends TestCase
      */
     public function testSkinProperlySet()
     {
-        Router::get('/_tests/{skin}/test', function() {
+        Route::get('/_tests/{skin}/test', function() {
             // Print out our current locale
             return Theme::get();
         })->middleware(SetSkin::class);
