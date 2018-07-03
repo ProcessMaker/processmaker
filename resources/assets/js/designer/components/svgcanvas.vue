@@ -150,7 +150,7 @@
                 model: this.graph,
                 width: 7000,
                 height: 7000,
-                gridSize: 10,
+                gridSize: 2,
                 drawGrid: true,
                 background: {
                     color: 'white'

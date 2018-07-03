@@ -175,7 +175,9 @@ export default class BPMNHandler {
             _.forEach(el.attributes, (value, key, obj) => {
                 obj[key] = parseInt(value)
             })
-            wayPoints.push(el.attributes)
+            if (el.name == "di:waypoint") {
+                wayPoints.push(el.attributes)
+            }
         })
 
         return Object.assign({}, attr, {

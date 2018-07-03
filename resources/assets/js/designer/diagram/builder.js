@@ -21,7 +21,6 @@ export class Builder {
         _.forEach(bpmn.shapes, (el) => {
             that.createShape(el)
         });
-        debugger
         _.forEach(bpmn.links, (el) => {
             that.createFlow(el)
         });
@@ -37,7 +36,6 @@ export class Builder {
         let element
 
         if (Elements[options.type] && options.type == "sequenceflow") {
-            debugger
             this.createFlow(options)
         } else if (Elements[options.type] && options.type != "lane") {
             // Type Example - bpmn:StartEvent
@@ -68,12 +66,15 @@ export class Builder {
         let el = this.findElementInCollection(elJoint, true)
         if (el) {
             if (this.sourceShape) {
-                this.connect(this.sourceShape, el)
+                this.connect({
+                    source: this.sourceShape,
+                    target: el
+                })
             } else {
-                this.hideCrown();
+                this.hideCrown()
                 el.showCrown()
-                this.selection = [];
-                this.selection.push(el);
+                this.selection = []
+                this.selection.push(el)
             }
         }
         return false;
@@ -134,29 +135,24 @@ export class Builder {
     }
 
     /**
-     * Connect shapes
+     * Connect shapes source, target, and vertices
      * @param source
      * @param target
      */
-    connect(source, target) {
-        if (source != target && Validators.verifyConnectWith(source.getType(), target.getType())) {
-            let flow = new Elements["sequenceflow"]({
-                    source,
-                    target
-                },
+    connect(options) {
+        if (options.source != options.target && Validators.verifyConnectWith(options.source.getType(), options.target.getType())) {
+            let flow = new Elements[options.type](options,
                 this.graph,
                 this.paper
             );
             flow.render()
-            source.hideCrown()
-            this.sourceShape = null
         }
     }
 
     createFlow(flowBpmn) {
         let source = this.findInCollectionById(flowBpmn.sourceRef)
         let target = this.findInCollectionById(flowBpmn.targetRef)
-        this.connect(source, target)
+        this.connect(Object.assign({}, {source, target}, flowBpmn))
     }
 
     /**

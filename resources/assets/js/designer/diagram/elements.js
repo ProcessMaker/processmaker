@@ -10,8 +10,8 @@ import intermediatecatchevent from "./events/IntermediateCatchEvent"
 import intermediatethrowevent from "./events/IntermediateThrowEvent"
 import intermediatetimerevent from "./events/IntermediateTimerEvent"
 import endemailevent from "./events/EndEmailEvent"
-import {Flow} from "./flow/Flow"
 import sequenceflow from "./flow/SequenceFlow"
+import messageflow from "./flow/MessageFlow"
 import dataobject from "./data/DataObject"
 import datastore from "./data/DataStore"
 import participant from "./swimLanes/Participant"
@@ -31,11 +31,12 @@ export const Elements = Object.assign({}, {
     servicetask,
     scripttask,
     sequenceflow,
+    messageflow,
     inclusivegateway,
     parallelgateway,
     exclusivegateway,
     dataobject,
-    datastore,s
+    datastore,
     participant,
     lane,
     group,
