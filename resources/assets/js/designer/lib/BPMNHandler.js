@@ -147,7 +147,7 @@ export default class BPMNHandler {
         let attr = this.getAttributes(di, "dc:Bounds")
         let name = bpmn.name.split(':')
         _.forEach(attr, (value, key, obj) => {
-            obj[key] = parseInt(value)
+            obj[key] = parseFloat(value)
         })
         return Object.assign({}, attr, {
             type: name.length == 1 ? name[0].toLowerCase() : name[1].toLowerCase(),
@@ -173,7 +173,7 @@ export default class BPMNHandler {
         //From diagram
         _.each(di.elements, (el) => {
             _.forEach(el.attributes, (value, key, obj) => {
-                obj[key] = parseInt(value)
+                obj[key] = parseFloat(value)
             })
             if (el.name == "di:waypoint") {
                 wayPoints.push(el.attributes)

@@ -10,7 +10,6 @@
     import joint from 'jointjs'
     import parser from 'xml-js'
     import BPMNHandler from '../lib/BPMNHandler'
-    1
     import {Elements} from "../diagram/elements";
     export default {
         props: [
@@ -150,7 +149,7 @@
                 model: this.graph,
                 width: 7000,
                 height: 7000,
-                gridSize: 4,
+                gridSize: 10,
                 drawGrid: true,
                 background: {
                     color: 'white'

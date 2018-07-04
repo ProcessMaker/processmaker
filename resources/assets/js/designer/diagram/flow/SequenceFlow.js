@@ -1,11 +1,11 @@
 import joint from "jointjs"
-import actions from "../../actions"
-import EventBus from "../../lib/event-bus"
+import Flow from "./Flow"
 /**
  * Flow class
  */
-export default class {
+export default class extends Flow {
     constructor(options, graph, paper) {
+        super(graph, paper)
         this.graph = graph
         this.paper = paper
         this.shape = null
@@ -13,43 +13,16 @@ export default class {
     }
 
     /**
-     * Merge options default with options from arguments
-     * @param options
-     * @returns {TaskShape}
-     */
-    config(options) {
-        this.options = Object.assign({}, this.options, options);
-        return this;
-    }
-
-    /**
      * Render the Flow
      */
     render() {
         this.shape = new joint.shapes.standard.Link()
+        this.shape.vertices(this.formatWayPoints(this.options.wayPoints))
         this.shape.source(this.options.source.getShape())
         this.shape.target(this.options.target.getShape())
-        this.shape.router('orthogonal', {
+        this.shape.router('manhattan', {
             elementPadding: 4
         })
-        this.shape.vertices(this.formatWayPoints(this.options.wayPoints))
         this.shape.addTo(this.graph)
-    }
-
-    /**
-     * Return the object joint
-     * @returns {*}
-     */
-    getShape() {
-        return this.shape
-    }
-
-    formatWayPoints(wayPoints) {
-        let res = []
-        if (wayPoints.length > 2) {
-            res = _.initial(wayPoints)
-            res = _.drop(wayPoints);
-        }
-        return res
     }
 }

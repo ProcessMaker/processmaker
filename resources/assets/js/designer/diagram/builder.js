@@ -68,8 +68,12 @@ export class Builder {
             if (this.sourceShape) {
                 this.connect({
                     source: this.sourceShape,
-                    target: el
+                    target: el,
+                    type: "sequenceflow"
+
                 })
+                this.sourceShape.hideCrown()
+                this.sourceShape = null
             } else {
                 this.hideCrown()
                 el.showCrown()
@@ -131,6 +135,7 @@ export class Builder {
         })
         if (res) {
             res.config(element.get("position"))
+            res.resetFlows()
         }
     }
 
