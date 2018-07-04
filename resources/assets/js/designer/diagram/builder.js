@@ -26,7 +26,6 @@ export class Builder {
         });
     }
 
-
     /**
      * Create a shape based in type
      * @param type
@@ -35,25 +34,32 @@ export class Builder {
     createShape(options) {
         let element
 
-        if (Elements[options.type] && options.type == "sequenceflow") {
-            this.createFlow(options)
-        } else if (Elements[options.type] && options.type != "lane") {
-            // Type Example - bpmn:StartEvent
-            if (Elements[options.type.toLowerCase()]) {
-                element = new Elements[options.type.toLowerCase()](
-                    options,
-                    this.graph,
-                    this.paper
-                );
-                element.render();
-                this.collection.push(element)
+        if (Elements[options.type]) {
+            switch (options.type) {
+                case "sequenceflow":
+                    this.createFlow(options)
+                    break;
+                case "lane":
+                    let participant = this.verifyElementFromPoint({x: options.x, y: options.y}, "participant")
+                    participant ? this.collection.push(participant.createLane()) : null
+                    break;
+                case "textannotation":
+                    break;
+                default:
+                    if (Elements[options.type.toLowerCase()]) {
+                        element = new Elements[options.type.toLowerCase()](
+                            options,
+                            this.graph,
+                            this.paper
+                        );
+                        element.render();
+                        this.collection.push(element)
+                    }
+                    if (options.type === "participant") {
+                        this.collection = _.concat(element.lanes, this.collection);
+                    }
+                    break;
             }
-            if (options.type === "participant") {
-                this.collection = _.concat(element.lanes, this.collection);
-            }
-        } else {
-            let participant = this.verifyElementFromPoint({x: options.x, y: options.y}, "participant")
-            participant ? this.collection.push(participant.createLane()) : null
         }
     }
 

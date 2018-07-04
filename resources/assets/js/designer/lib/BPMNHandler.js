@@ -193,10 +193,12 @@ export default class BPMNHandler {
      * @returns {*}
      */
     getAttributes(di, property) {
-        if (di.name && di.name.indexOf(property) >= 0) {
+        if (di && di.name && di.name.indexOf(property) >= 0) {
             return di.attributes
+        } else if (di) {
+            return this.getAttributes(di.elements[0] ? di.elements[0] : null, property)
         } else {
-            return this.getAttributes(di.elements[0] ? di.elements[0] : {}, property)
+            return null
         }
     }
 }

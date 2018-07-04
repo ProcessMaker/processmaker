@@ -1,5 +1,5 @@
 <template>
-    <div id="svgCanvas" ref="canvas" @dragover="$event.preventDefault()" @drop="dropHandler($event)"></div>
+    <div id="svgCanvas" ref="canvas"></div>
 </template>
 
 <script>
@@ -12,70 +12,32 @@
     import BPMNHandler from '../lib/BPMNHandler'
     import {Elements} from "../diagram/elements";
     export default {
-        props: [
-            'bpmn'
-        ],
         data() {
             return {
                 graph: null,
                 paper: null,
                 bpmnHandler: null,
-                xml: null
+                bpmn: null,
+                builder: null
             }
         },
         watch: {
             bpmn() {
+                this.builder.clear()
+                let options = {ignoreComment: true, alwaysChildren: true}
+                let result = parser.xml2js(this.bpmn, options)
+                this.bpmnHandler = new BPMNHandler(result)
+                this.builder.createFromBPMN(this.bpmnHandler.buildModel())
             }
         },
         computed: {},
         created() {
             EventBus.$on(actions.designer.drag.toolbar.end().type, (value) => this.createElement(value))
+            EventBus.$on(actions.designer.bpmn.update().type, (value) => this.bpmn = value)
             EventBus.$on(actions.designer.flow.create().type, (value) => this.createFlow(value))
             EventBus.$on(actions.designer.shape.remove().type, (value) => this.removeElement(value))
         },
         methods: {
-            loadXML() {
-                let options = {ignoreComment: true, alwaysChildren: true}
-                let result = parser.xml2js(this.xml, options)
-                this.bpmnHandler = new BPMNHandler(result)
-                this.builder.createFromBPMN(this.bpmnHandler.buildModel())
-            },
-            validateXML(xml) {
-                //todo add method for validate xml with xsd BPMN
-                this.xml = xml
-                this.loadXML()
-            },
-            dropHandler(e) {
-                function errorHandler(evt) {
-                    switch (evt.target.error.code) {
-                        case evt.target.error.NOT_FOUND_ERR:
-                            alert(__('File Not Found!'));
-                            break;
-                        case evt.target.error.NOT_READABLE_ERR:
-                            alert(__('File is not readable'));
-                            break;
-                        case evt.target.error.ABORT_ERR:
-                            break; // noop
-                        default:
-                            alert(__('An error occurred reading this file.'));
-                    }
-                }
-
-                let file = e && e.dataTransfer ? e.dataTransfer.files[0] : null
-                if (file) {
-                    let that = this;
-                    let reader = new FileReader();
-                    reader.onerror = errorHandler;
-                    reader.onabort = function (e) {
-                        alert(__('File read cancelled'));
-                    };
-                    reader.onload = function (ev) {
-                        that.validateXML(ev.target.result);
-                    };
-                    reader.readAsText(file);
-                    e.preventDefault()
-                }
-            },
             /**
              * Create the element
              * @param event
