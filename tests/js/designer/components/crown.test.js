@@ -1,6 +1,6 @@
 import {mount, shallow, shallowMount} from "@vue/test-utils"
 import crown from "../../../../resources/assets/js/designer/components/crown.vue"
-
+import EventBus from "../../../../resources/assets/js/designer/lib/event-bus"
 
 document.body.innerHTML =
     '<div id ="svgCanvas">' +
@@ -34,6 +34,13 @@ describe("crown.vue", () => {
     it("hide - Verify if the Crown is not visible", () => {
         cmp.vm.hide()
         expect(cmp.vm.visible).toEqual(false)
+    })
+
+    it("createFlow", () => {
+        EventBus.$on("flow/create", (value) => {
+            expect(value).toEqual({prop: "test"})
+        })
+        cmp.vm.createFlow({prop: "test"})
     })
 
 })
