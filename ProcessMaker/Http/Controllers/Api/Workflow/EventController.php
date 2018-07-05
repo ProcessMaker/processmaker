@@ -15,7 +15,7 @@ class EventController extends Controller
         //Get required references
         $definitions = $process->getDefinitions();
         $event = $definitions->getEvent($eventId);
-        $data = (array) $request->json();
+        $data = $request->input();
 
         //Call the manager to trigger the start event
         $instance = WorkflowManager::triggerStartEvent($process, $event, $data);
@@ -27,7 +27,7 @@ class EventController extends Controller
         //Get required references
         $definitions = $process->getDefinitions();
         $calledProcess = $definitions->getProcess($processId);
-        $data = (array) $request->json();
+        $data = $request->input();
 
         //Call the manager to trigger the start event
         $instance = WorkflowManager::callProcess($process, $calledProcess, $data);

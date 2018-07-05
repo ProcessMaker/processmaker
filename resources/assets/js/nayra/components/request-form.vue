@@ -1,24 +1,34 @@
 <template>
-    <div>
-        <div class="alert alert-success">Process UID: {{processUid}}</div>
-        <div class="alert alert-success">Using Event: {{event}}</div>
-        <div class="card">
-            <div class="card-body">
-                <button type="submit" class="btn btn-primary" @click="submit">Request a Vacation</button>
-            </div>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Request</h5>
+            <form>
+                <input type="hidden" v-model="processUid" placeholder="Process UID">
+                <div class="form-group">
+                    <label for="startDate">Start date</label>
+                    <input id ="startDate" aria-describedby="startDateHelp" type="datetime" class="form-control" v-model="startDate" placeholder="Start Date">
+                </div>
+                <div class="form-group">
+                    <label for="endDate">End date</label>
+                    <input id ="endDate" aria-describedby="endDateHelp" type="datetime-local" class="form-control" v-model="endDate" placeholder="End Date">
+                </div>
+                <div class="form-group">
+                    <label for="endDate">Reason</label>
+                    <textarea id ="reason" class="form-control" v-model="reason" placeholder="Reason" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" @click="submit">Continue</button>
+            </form>
         </div>
-        <div class="alert alert-success" v-for="instance in instances">Instance created: {{instance}}</div>
-        <div class="alert alert-success" v-for="token in tokens">Task created: <a v-bind:href="token.url" target="_blank">{{token.uid}}</a></div>
     </div>
-
 </template>
 
 <script>
     
     export default {
         props: [
-            'processUid',
-            'event'
+            'startDate',
+            'endDate',
+            'reason',
         ],
         data() {
             return {

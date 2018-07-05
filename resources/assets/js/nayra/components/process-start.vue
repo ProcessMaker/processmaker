@@ -37,8 +37,8 @@
         methods: {
             submit() {
                 ProcessMaker.apiClient.post('processes/' + this.processUid + '/events/' + this.event + '/trigger', {
-                    start: new Date().toISOString(),
-                    end: '',
+                    startDate: new Date().toISOString(),
+                    endDate: '',
                     reason: ''
                 })
                 .then((response) => {

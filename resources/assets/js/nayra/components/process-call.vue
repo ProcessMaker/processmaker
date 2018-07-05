@@ -37,8 +37,8 @@
         methods: {
             submit() {
                 ProcessMaker.apiClient.post('processes/' + this.processUid + '/' + this.processId + '/call', {
-                    start: new Date().toISOString(),
-                    end: '',
+                    startDate: new Date().toISOString(),
+                    endDate: '',
                     reason: ''
                 })
                 .then((response) => {

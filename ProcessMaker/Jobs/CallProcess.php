@@ -10,6 +10,7 @@ class CallProcess extends BpmnAction
 
     public $definitionsId;
     public $processId;
+    public $data;
 
     /**
      * Create a new job instance.
@@ -20,6 +21,7 @@ class CallProcess extends BpmnAction
     {
         $this->definitionsId = $definitions->id;
         $this->processId = $process->getId();
+        $this->data = $data;
     }
 
     /**
@@ -56,6 +58,12 @@ class CallProcess extends BpmnAction
      */
     public function action(ProcessInterface $process)
     {
-        return $process->call();
+        //Create an initial data store for the process instance
+        $dataStorage = $process->getRepository()->createDataStore();
+        $dataStorage->setData($this->data);
+
+        //Call the process
+        $instance = $process->call($dataStorage);
+        return $instance;
     }
 }
