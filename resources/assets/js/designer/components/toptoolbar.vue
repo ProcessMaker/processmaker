@@ -49,6 +49,7 @@
                 if (inputFile) {
                     inputFile.click()
                 }
+                return inputFile
             },
             handleFileChange(e){
                 let file = e && e.target ? e.target.files[0] : null
@@ -57,7 +58,7 @@
                     let reader = new FileReader()
                     reader.onerror = this.errorFileHandler
                     reader.onabort = function (e) {
-                        alert(__('File read cancelled'));
+                        console.error(__('File read cancelled'));
                     }
                     reader.onload = function (ev) {
                         let action = actions.designer.bpmn.update(ev.target.result)

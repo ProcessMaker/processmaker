@@ -27,6 +27,11 @@ export default class {
         return this.shape
     }
 
+    /**
+     * Get the way for load in link vertices
+     * @param wayPoints
+     * @returns {Array}
+     */
     formatWayPoints(wayPoints) {
         let res = []
         if (wayPoints && wayPoints.length > 2) {
@@ -36,14 +41,24 @@ export default class {
         return res
     }
 
+    /**
+     * Get first point of waypoints
+     */
     getSourcePoint(wayPoints) {
         return _.head(wayPoints)
     }
 
+    /**
+     * Get last point of waypoints
+     * @param wayPoints
+     */
     getTargetPoint(wayPoints) {
         return _.last(wayPoints)
     }
 
+    /**
+     * Reset vertices of link
+     */
     resetVertices() {
         if (this.shape) {
             this.shape.vertices([])
