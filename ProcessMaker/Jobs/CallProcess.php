@@ -16,7 +16,7 @@ class CallProcess extends BpmnAction
      *
      * @return void
      */
-    public function __construct(Definitions $definitions, ProcessInterface $process)
+    public function __construct(Definitions $definitions, ProcessInterface $process, array $data)
     {
         $this->definitionsId = $definitions->id;
         $this->processId = $process->getId();
@@ -38,10 +38,12 @@ class CallProcess extends BpmnAction
             $process = $workflow->getProcess($this->processId);
 
             //Do the action
-            App::call([$this, 'action'], compact('workflow', 'process'));
+            $response = App::call([$this, 'action'], compact('workflow', 'process'));
 
             //Run engine to the next state
             $workflow->getEngine()->runToNextState();
+            
+            return $response;
         } catch (\Throwable $t) {
             dd($t);
         }
@@ -54,6 +56,6 @@ class CallProcess extends BpmnAction
      */
     public function action(ProcessInterface $process)
     {
-        $process->call();
+        return $process->call();
     }
 }

@@ -32,6 +32,15 @@ $this->get('password/success', function(){
 
 $this->middleware(['auth', 'apitoken'])->group(function() {
     // Test Process Routes for Nayra
+    $this->get('/requests/{process}/new', function(ProcessMaker\Model\Process $process) {
+        //Find the process
+        $processes = $process->getDefinitions()->getElementsByTagName('process');
+        if ($processes->item(0)) {
+            $processDefinition = $processes->item(0)->getBpmnElementInstance();
+            $processId = $processDefinition->getId();
+            return view('nayra.process', compact('process', 'processId'));
+        }
+    });
     $this->get('/nayra/request/{process}/{event}', function(ProcessMaker\Model\Process $process, $event) {
         return view('nayra.start', compact('process', 'event'));
     });

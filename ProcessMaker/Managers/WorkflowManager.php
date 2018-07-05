@@ -40,13 +40,13 @@ class WorkflowManager
 
     }
 
-    public function callProcess(Definitions $definitions, ProcessInterface $process)
+    public function callProcess(Definitions $definitions, ProcessInterface $process, array $data)
     {
         //Validate user permissions
         //Validate BPMN rules
         //Log BPMN actions
         //Schedule BPMN Action
-        return CallProcess::dispatch($definitions, $process);
+        return CallProcess::dispatchNow($definitions, $process, $data);
     }
 
     public function runScripTask($filename, $processId, $instanceId, $tokenId)

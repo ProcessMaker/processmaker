@@ -179,6 +179,8 @@ class Process extends Model
         'process_category_id' => 'exists:process_categories,id',
         'user_id' => 'exists:users,id',
     ];
+    
+    private $bpmnDefinitions;
 
     /**
      * Determines if the provided user is a supervisor for this process

@@ -6,11 +6,11 @@
       <yaoqiang:pageFormat height="841.8897637795276" imageableHeight="831.8897637795276" imageableWidth="588.1102362204724" imageableX="5.0" imageableY="5.0" orientation="0" width="598.1102362204724"/>
       <yaoqiang:page background="#FFFFFF" horizontalCount="1" verticalCount="1"/>
     </extensionElements>
-    <participant id="_5" name="Participant" processRef="PROCESS_1">
+    <participant id="_5" name="Participant" processRef="VacationRequest">
       <participantMultiplicity maximum="1" minimum="0"/>
     </participant>
   </collaboration>
-  <process id="PROCESS_1" isClosed="false" isExecutable="true" processType="None">
+  <process id="VacationRequest" isClosed="false" isExecutable="true" processType="None" name="Vacation Request">
     <laneSet>
       <lane id="_6" name="Employee">
         <flowNodeRef>start</flowNodeRef>
@@ -31,12 +31,12 @@
       <outgoing>_3</outgoing>
       <outputSet/>
     </startEvent>
-    <task completionQuantity="1" id="approve" implementation="nayra.approve" isForCompensation="false" name="Approve" startQuantity="1">
+    <task completionQuantity="1" id="approve" isForCompensation="false" name="Approve" startQuantity="1">
       <incoming>_2</incoming>
       <outgoing>_15</outgoing>
     </task>
     <sequenceFlow id="_15" sourceRef="approve" targetRef="_14"/>
-    <task completionQuantity="1" id="register" implementation="nayra.register" isForCompensation="false" name="Validate" startQuantity="1">
+    <task completionQuantity="1" id="register" isForCompensation="false" name="Validate" startQuantity="1">
       <incoming>_17</incoming>
       <outgoing>_19</outgoing>
     </task>
@@ -49,7 +49,7 @@
       <incoming>_19</incoming>
       <outgoing>_9</outgoing>
     </exclusiveGateway>
-    <task completionQuantity="1" id="request" implementation="nayra.request" isForCompensation="false" name="Request" startQuantity="1">
+    <task completionQuantity="1" id="request" isForCompensation="false" name="Request" startQuantity="1">
       <incoming>_3</incoming>
       <outgoing>_2</outgoing>
     </task>
