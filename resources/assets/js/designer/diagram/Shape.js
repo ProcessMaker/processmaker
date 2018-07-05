@@ -95,4 +95,9 @@ export class Shape {
             })
         }
     }
+
+    remove() {
+        this.shape.remove()
+        return this
+    }
 }

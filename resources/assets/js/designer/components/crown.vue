@@ -28,7 +28,7 @@
             </div>
         </div>
         <div class="d-flex flex-row">
-            <div class="item-crown">
+            <div class="item-crown" @click="remove($event)">
                 <i id="trash" class="fas fa-trash-alt icrown" draggable="true"></i>
             </div>
         </div>
