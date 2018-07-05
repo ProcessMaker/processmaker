@@ -39,22 +39,27 @@ class BpmnSubscriber
     public function onProcessCreated(ProcessInstanceCreatedEvent $event)
     {
         //Get references
-        $event->instance->uid = $event->instance->getId();
-        $callable = $event->instance->getProcess();
 
-        //Get application data from engine
-        $data = $event->instance->getDataStore()->getData();
-        
-        //Save the row
-        $event->instance->callable = $callable->getId();
-        $event->instance->process_id = $callable->getEngine()->getProcess()->id;
-        $event->instance->APP_TITLE = '';
-        $event->instance->creator_user_id = 1;
-        $event->instance->APP_INIT_DATE = Carbon::now();
-        $event->instance->APP_DATA = json_encode($data);
-        $event->instance->save();
+        $this->saveProcessInstance($event->instance);
 
         Log::info('ProcessCreated: ' . json_encode($event->instance->getProperties()));
+    }
+    
+    private function saveProcessInstance(\ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface $instance)
+    {
+        $instance->uid = $instance->getId();
+        $callable = $instance->getProcess();
+        //Get application data from engine
+        $data = $instance->getDataStore()->getData();
+        
+        //Save the row
+        $instance->callable = $callable->getId();
+        $instance->process_id = $callable->getEngine()->getProcess()->id;
+        $instance->APP_TITLE = '';
+        $instance->creator_user_id = 1;
+        $instance->APP_INIT_DATE = Carbon::now();
+        $instance->APP_DATA = json_encode($data);
+        $instance->save();
     }
 
     /**
@@ -75,6 +80,7 @@ class BpmnSubscriber
         $token->finished = false;
         $token->delayed = false;
         $token->save();
+        $this->saveProcessInstance($token->getInstance());
 
         Log::info('ActivityActivated: ' . json_encode($token->getProperties()));
         $this->ActivityActivated($event);
@@ -96,6 +102,7 @@ class BpmnSubscriber
         $token->started = true;
         $token->finished = true;
         $token->save();
+        $this->saveProcessInstance($token->getInstance());
 
         Log::info('ActivityCompleted: ' . json_encode($token->getProperties()));
     }
@@ -113,6 +120,7 @@ class BpmnSubscriber
         $token->element_ref = $event->activity->getId();
         $token->application_id = $token->getInstance()->id;
         $token->save();
+        $this->saveProcessInstance($token->getInstance());
 
         Log::info('ActivityClosed: ' . json_encode($token->getProperties()));
     }
@@ -125,7 +133,6 @@ class BpmnSubscriber
     public function subscribe($events)
     {
         $events->listen(ProcessInterface::EVENT_PROCESS_INSTANCE_CREATED, static::class . '@onProcessCreated');
-        $events->listen(ProcessInterface::EVENT_PROCESS_INSTANCE_COMPLETED, static::class . '@onProcessCompleted');
 
         $events->listen(ActivityInterface::EVENT_ACTIVITY_COMPLETED, static::class . '@onActivityCompleted');
         $events->listen(ActivityInterface::EVENT_ACTIVITY_CLOSED, static::class . '@onActivityClosed');

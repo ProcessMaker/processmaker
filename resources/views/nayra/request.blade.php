@@ -2,8 +2,9 @@
 
 @section('content')
 <div class="container" id="start">
-    {{$startDate}}
-    <request-form start-date="{{$startDate}}" end-date="{{$endDate}}" reason="{{$reason}}"></request-form>
+    <request-form 
+        process-uid="{{$process->uid}}" instance-uid="{{$instance->uid}}" token-uid="{{$token->uid}}"
+        start-date="{{$startDate}}" end-date="{{$endDate}}" reason="{{$reason}}"></request-form>
 </div>
 @endsection
 

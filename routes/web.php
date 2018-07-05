@@ -44,13 +44,7 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
     $this->get('/nayra/request/{process}/{event}', function(ProcessMaker\Model\Process $process, $event) {
         return view('nayra.start', compact('process', 'event'));
     });
-    $this->get('/nayra/{view}/{process}/{instance}/{token}', function($view, ProcessMaker\Model\Process $process, ProcessMaker\Model\Application $instance, ProcessMaker\Model\Delegation $token) {
-        $instance = $process->getDefinitions()->getEngine()->loadExecutionInstance($instance->uid);
-        $startDate = $instance->getDataStore()->getData('startDate');
-        $endDate = $instance->getDataStore()->getData('endDate');
-        $reason = $instance->getDataStore()->getData('reason');
-        return view('nayra.' . $view, compact('process', 'instance', 'token', 'startDate', 'endDate', 'reason'));
-    });
+    $this->get('/nayra/{view}/{process}/{instance}/{token}', 'Request\TokenController@openTask');
 
   // All the routes in this group and below are for testing purposes only
 

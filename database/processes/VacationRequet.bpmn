@@ -10,7 +10,7 @@
       <participantMultiplicity maximum="1" minimum="0"/>
     </participant>
   </collaboration>
-  <process id="VacationRequest" isClosed="false" isExecutable="true" processType="None" name="Vacation Request">
+  <process id="VacationRequest" isClosed="false" isExecutable="true" name="Vacation Request" processType="None">
     <laneSet>
       <lane id="_6" name="Employee">
         <flowNodeRef>start</flowNodeRef>
@@ -40,7 +40,9 @@
       <incoming>_17</incoming>
       <outgoing>_19</outgoing>
     </task>
-    <sequenceFlow id="_17" sourceRef="_14" targetRef="register"/>
+    <sequenceFlow id="_17" sourceRef="_14" targetRef="register">
+      <conditionExpression><![CDATA[$approved]]></conditionExpression>
+    </sequenceFlow>
     <sequenceFlow id="_19" sourceRef="register" targetRef="_18"/>
     <exclusiveGateway gatewayDirection="Diverging" id="_18" name="valid?">
       <extensionElements>
@@ -64,7 +66,12 @@
       <outgoing>_17</outgoing>
       <outgoing>_11</outgoing>
     </exclusiveGateway>
-    <sequenceFlow id="_11" sourceRef="_14" targetRef="_10"/>
+    <sequenceFlow id="_11" sourceRef="_14" targetRef="_10">
+      <extensionElements>
+        <yaoqiang:label offset-x="0.0" offset-y="-2.0" x="0.0" y="41.0"/>
+      </extensionElements>
+      <conditionExpression><![CDATA[!$approved]]></conditionExpression>
+    </sequenceFlow>
     <endEvent id="_10" name="End Event">
       <incoming>_11</incoming>
       <inputSet/>
@@ -159,7 +166,7 @@
         <di:waypoint x="407.5294117647059" y="312.14705882352945"/>
         <di:waypoint x="554.0" y="311.44117647058823"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.96" width="6.0" x="477.75" y="302.3"/>
+          <dc:Bounds height="18.96" width="64.0" x="448.75" y="302.3"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_15" id="Yaoqiang-_15">
@@ -180,7 +187,7 @@
         <di:waypoint x="387.0" y="333.61764705882354"/>
         <di:waypoint x="387.0" y="389.61764705882354"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.96" width="6.0" x="384.0" y="352.14"/>
+          <dc:Bounds height="18.96" width="67.0" x="394.5" y="350.14"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_3" id="Yaoqiang-_3">

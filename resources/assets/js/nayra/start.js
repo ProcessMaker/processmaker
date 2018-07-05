@@ -4,6 +4,7 @@
 import ProcessStart from './components/process-start.vue'
 import ProcessCall from './components/process-call.vue'
 import RequestForm from './components/request-form.vue'
+import ApproveForm from './components/approve-form.vue'
 
 // Boot up our vue instance
 new Vue({
@@ -11,6 +12,7 @@ new Vue({
     components: {
         ProcessStart,
         ProcessCall,
-        RequestForm
+        RequestForm,
+        ApproveForm
     }
 })

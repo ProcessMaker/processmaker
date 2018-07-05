@@ -2,11 +2,12 @@
 namespace ProcessMaker\Repositories;
 
 use ProcessMaker\Model\Application as Instance;
-use ProcessMaker\Repositories\ExecutionInstanceRepository;
 use ProcessMaker\Model\Delegation as Token;
+use ProcessMaker\Model\FormalExpression;
 use ProcessMaker\Nayra\Contracts\Repositories\StorageInterface;
 use ProcessMaker\Nayra\Contracts\RepositoryInterface;
 use ProcessMaker\Nayra\RepositoryTrait;
+use ProcessMaker\Repositories\ExecutionInstanceRepository;
 
 /**
  * Definitions Repository
@@ -39,6 +40,6 @@ class DefinitionsRepository implements RepositoryInterface
 
     public function createFormalExpression()
     {
-        
+        return new FormalExpression();
     }
 }

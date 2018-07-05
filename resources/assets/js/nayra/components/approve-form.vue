@@ -1,21 +1,24 @@
 <template>
     <div class="card">
         <div class="card-body">
-            <h5 class="card-title">Request</h5>
+            <h5 class="card-title">Approve</h5>
             <form>
+                <legend>Request</legend>
                 <div class="form-group">
                     <label for="startDate">Start date</label>
-                    <input id ="startDate" aria-describedby="startDateHelp" type="datetime" class="form-control" v-model="localStartDate" placeholder="Start Date">
+                    <input disabled id ="startDate" aria-describedby="startDateHelp" type="datetime" class="form-control" v-model="startDate" placeholder="Start Date">
                 </div>
                 <div class="form-group">
                     <label for="endDate">End date</label>
-                    <input id ="endDate" aria-describedby="endDateHelp" type="datetime" class="form-control" v-model="localEndDate" placeholder="End Date">
+                    <input disabled id ="endDate" aria-describedby="endDateHelp" type="datetime" class="form-control" v-model="endDate" placeholder="End Date">
                 </div>
                 <div class="form-group">
                     <label for="endDate">Reason</label>
-                    <textarea id ="reason" class="form-control" v-model="localReason" placeholder="Reason" rows="3"></textarea>
+                    <textarea disabled id ="reason" class="form-control" v-model="reason" placeholder="Reason" rows="3"></textarea>
                 </div>
-                <button type="button" class="btn btn-primary" @click="submit">Continue</button>
+                <legend>Request</legend>
+                <button type="button" class="btn btn-primary" @click="approve">Approve</button>
+                <button type="button" class="btn btn-primary" @click="reject">Reject</button>
                 <div class="alert alert-success" v-for="token in tokens">Task created: <a v-bind:href="token.url" target="_blank">{{token.uid}}</a></div>
             </form>
         </div>
@@ -36,9 +39,7 @@
         ],
         data() {
             return {
-                localStartDate: this.startDate,
-                localEndDate: this.endDate,
-                localReason: this.reason,
+                approved: '0',
                 instances: [],
                 tokens: [],
             };
@@ -52,16 +53,27 @@
                 });
         },
         methods: {
-            submit() {
+            approve() {
                 ProcessMaker.apiClient.post(
                         'processes/' + this.processUid +
                         '/instances/' + this.instanceUid +
                         '/tokens/' + this.tokenUid +
                         '/complete', 
                 {
-                    startDate: this.localStartDate,
-                    endDate: this.localEndDate,
-                    reason: this.localReason
+                    approved: true,
+                })
+                .then((response) => {
+                    this.instances.push(response);
+                })
+            },
+            reject() {
+                ProcessMaker.apiClient.post(
+                        'processes/' + this.processUid +
+                        '/instances/' + this.instanceUid +
+                        '/tokens/' + this.tokenUid +
+                        '/complete', 
+                {
+                    approved: false,
                 })
                 .then((response) => {
                     this.instances.push(response);

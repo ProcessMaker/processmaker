@@ -4,9 +4,11 @@ namespace ProcessMaker\Jobs;
 
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-class CompleteActivity extends TokenAction
+class CompleteActivity extends TokenAction implements ShouldQueue
 {
+
     /**
      * Execute the job.
      *
@@ -14,8 +16,11 @@ class CompleteActivity extends TokenAction
      */
     public function action(TokenInterface $token, ActivityInterface $activity, array $data)
     {
+        $dataStore = $token->getInstance()->getDataStore();
         //@todo requires a class to manage the data access and control the updates
-        $token->getInstance()->getDataStore()->setData($data);
+        foreach ($data as $key => $value) {
+            $dataStore->putData($key, $value);
+        }
 
         $activity->complete($token);
     }
