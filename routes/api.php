@@ -102,6 +102,7 @@ Route::group([
 
         //Workflow end points
         Route::post('processes/{process}/events/{event}/trigger', 'Workflow\EventController@triggerStart');
+        Route::get('processes/{process}/instances/{instance}/tokens', 'Workflow\TokenController@index');
         Route::post('processes/{process}/instances/{instance}/tokens/{token}/complete', 'Workflow\ActivityController@complete');
 
         //Report Tables endpoints

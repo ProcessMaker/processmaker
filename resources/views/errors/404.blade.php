@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.minimal')
 @section('content')
 <div class="error-404">
     <div class="error-404-icon">
