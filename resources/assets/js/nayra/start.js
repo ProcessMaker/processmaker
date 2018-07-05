@@ -1,13 +1,12 @@
 /**
- * Test POC of Nayra for Request form
+ * Process start component
  */
-import RequestForm from './components/request-form.vue'
+import ProcessStart from './components/process-start.vue'
 
-// Boot up our vue instance, creating a child Request Form, populated via blade for 
-// process and event data
+// Boot up our vue instance
 new Vue({
     el: '#start',
     components: {
-        RequestForm
+        ProcessStart
     }
 })

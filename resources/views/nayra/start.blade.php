@@ -2,9 +2,8 @@
 
 @section('content')
 <div class="container" id="start">
-    <request-form process-uid="{{$process->uid}}" event="{{$event}}">
-
-    </request-form>
+    <process-start process-uid="{{$process->uid}}" event="{{$event}}">
+    </process-start>
 </div>
 @endsection
 

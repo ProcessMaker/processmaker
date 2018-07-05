@@ -35,7 +35,7 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
     $this->get('/nayra/request/{process}/{event}', function(ProcessMaker\Model\Process $process, $event) {
         return view('nayra.start', compact('process', 'event'));
     });
-    $this->get('/nayra/request/{view}/{process}/{instance}/{token}', function($view, ProcessMaker\Model\Process $process, ProcessMaker\Model\Application $instance, ProcessMaker\Model\Delegation $token) {
+    $this->get('/nayra/{view}/{process}/{instance}/{token}', function($view, ProcessMaker\Model\Process $process, ProcessMaker\Model\Application $instance, ProcessMaker\Model\Delegation $token) {
         return view('nayra.' . $view, compact('process', 'instance', 'token'));
     });
 

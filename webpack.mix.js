@@ -19,6 +19,7 @@ mix.js('resources/assets/js/app-layout.js', 'public/js')
     .js('resources/assets/js/processes/tasks/index.js', 'public/js/processes/tasks')
 
     .js('resources/assets/js/nayra/start.js', 'public/js/nayra')
+    .js('resources/assets/js/nayra/request.js', 'public/js/nayra')
 
 
     // Note, that this should go last for the extract to properly put the manifest and vendor in the right location

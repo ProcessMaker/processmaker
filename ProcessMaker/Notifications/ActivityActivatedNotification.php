@@ -7,12 +7,16 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
+use Illuminate\Support\Facades\Log;
 
 class ActivityActivatedNotification extends Notification
 {
     use Queueable;
 
+    private $processUid;
+    private $instanceUid;
     private $tokenUid;
+    private $tokenElement;
     private $tokenStatus;
 
     /**
@@ -22,8 +26,11 @@ class ActivityActivatedNotification extends Notification
      */
     public function __construct(TokenInterface $token)
     {
+        $this->processUid = $token->application->process->uid;
+        $this->instanceUid = $token->application->uid;
         $this->tokenUid = $token->uid;
-        $this->tokenStatus = $token->getStatus();
+        $this->tokenElement = $token->element_ref;
+        $this->tokenStatus = $token->thread_status;
     }
 
     /**
@@ -68,6 +75,14 @@ class ActivityActivatedNotification extends Notification
     {
         return new BroadcastMessage([
             'message' => sprintf('TOKEN[uid: %s, status: %s]', $this->tokenUid, $this->tokenStatus),
+            'uid' => $this->tokenUid,
+            'url' => sprintf(
+                '/nayra/%s/%s/%s/%s',
+                $this->tokenElement,
+                $this->processUid,
+                $this->instanceUid,
+                $this->tokenUid
+            ),
         ]);
 
     }
