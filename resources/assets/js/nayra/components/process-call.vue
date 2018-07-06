@@ -1,19 +1,12 @@
 <template>
     <div>
-        <div class="alert alert-success">Process UID: {{processUid}}</div>
-        <div class="alert alert-success">Process: {{processId}}</div>
-        <div class="card">
-            <div class="card-body">
-                <button type="submit" class="btn btn-primary" @click="submit">Request a Vacation</button>
-            </div>
-        </div>
-        <div class="alert alert-success" v-for="token in tokens">Task created: <a v-bind:href="token.url" target="_blank">{{token.uid}}</a></div>
+        <button type="submit" class="btn btn-primary" @click="submit">Request a Vacation</button>
     </div>
 
 </template>
 
 <script>
-    
+
     export default {
         props: [
             'processUid',
@@ -21,16 +14,15 @@
         ],
         data() {
             return {
-                tokens: [],
             };
         },
         mounted() {
             // Listen for our notifications
             let userId = document.head.querySelector('meta[name="user-id"]').content;
             Echo.private(`ProcessMaker.Model.User.${userId}`)
-            .notification((token) => {
-                this.tokens.push(token);
-            });
+                    .notification((token) => {
+                        this.$parent.messages.push(token);
+                    });
         },
         methods: {
             submit() {
@@ -40,8 +32,8 @@
                     reason: '',
                     approved: false
                 })
-                .then((response) => {
-                })
+                        .then((response) => {
+                        })
             }
         }
 

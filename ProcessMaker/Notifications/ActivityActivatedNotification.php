@@ -7,7 +7,6 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
-use Illuminate\Support\Facades\Log;
 
 class ActivityActivatedNotification extends Notification
 {
@@ -74,7 +73,7 @@ class ActivityActivatedNotification extends Notification
     public function toBroadcast($notifiable)
     {
         return new BroadcastMessage([
-            'message' => sprintf('TOKEN[uid: %s, status: %s]', $this->tokenUid, $this->tokenStatus),
+            'message' => 'Task created',
             'uid' => $this->tokenUid,
             'url' => sprintf(
                 '/nayra/%s/%s/%s/%s',

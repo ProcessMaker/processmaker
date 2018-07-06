@@ -16,5 +16,10 @@ new Vue({
         RequestForm,
         ApproveForm,
         ValidateForm,
+    },
+    data() {
+        return {
+            messages: []
+        }
     }
 })

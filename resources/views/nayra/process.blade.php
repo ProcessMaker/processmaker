@@ -2,8 +2,37 @@
 
 @section('content')
 <div class="container" id="start">
-    <process-call process-uid="{{$process->uid}}" process-id="{{$processId}}">
-    </process-call>
+    <div class="card">
+        <div class="card-body">
+            <h1>{{$process->name}}</h1>
+            <p>{{$process->description}}</p>
+            <div class="row">
+                <div class="col-sm-6 col-md-3">
+                    <p class="font-weight-bold text-right">Status:</p>
+                </div>
+                <div class="col-sm-6 col-md-3">
+                    <b-badge variant="{{$process->status===\ProcessMaker\Model\Process::STATUS_ACTIVE ? 'primary' : 'secondary'}}">{{$process->status}}</b-badge>
+                </div>
+
+                <div class="col-sm-6 col-md-3">
+                    <p class="font-weight-bold text-right">Created by:</p>
+                </div>
+                <div class="col-sm-6 col-md-3">
+                    {{$process->creator->getFullName()}}
+                </div>
+
+                <div class="col-sm-6 col-md-3">
+                    <p class="font-weight-bold text-right">Last Updated:</p>
+                </div>
+                <div class="col-sm-6 col-md-3">
+                    {{$process->updated_at}}
+                </div>
+            </div>
+            <process-call process-uid="{{$process->uid}}" process-id="{{$processId}}">
+            </process-call>
+            <div class="alert alert-success" v-for="message in messages">@{{message.message}}: <a v-bind:href="message.url" target="_blank">@{{message.uid}}</a></div>
+        </div>
+    </div>
 </div>
 @endsection
 
