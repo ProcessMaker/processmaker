@@ -2,7 +2,7 @@
   <b-modal ref="profileModal" hide-footer title="Profile Avatar">
     <div>
       <div v-if="!image" class="no-avatar">Click the browse button below to get started</div>
-        <vue-croppie :style="{display: (image) ? 'block' : 'none' }" ref="croppie" :viewport="{ width: 200, height: 200, type: 'circle' }" :boundary="{ width: 400, height: 400 }" :enableOrientation="false">
+        <vue-croppie :style="{display: (image) ? 'block' : 'none' }" ref="croppie" :viewport="{ width: 200, height: 200, type: 'circle' }" :boundary="{ width: 400, height: 400 }" :enableOrientation="false" :enableResize="false">
         </vue-croppie>
     </div>
     <input type="file" class="custom-file-input" ref="customFile" @change="onFileChange">
