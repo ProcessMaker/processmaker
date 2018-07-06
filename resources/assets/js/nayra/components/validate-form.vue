@@ -16,9 +16,12 @@
                     <label for="endDate">Reason</label>
                     <textarea disabled id ="reason" class="form-control" v-model="reason" placeholder="Reason" rows="3"></textarea>
                 </div>
-                <legend>Approve?</legend>
-                <button type="button" class="btn btn-primary" @click="approve">Approve</button>
-                <button type="button" class="btn btn-primary" @click="reject">Reject</button>
+                <legend>Approved?</legend>
+                <div class="form-group">
+                    <i class="fa fa-check"></i>
+                </div>
+                <legend>Human Resources</legend>
+                <button type="button" class="btn btn-primary" @click="submit">Complete</button>
                 <div class="alert alert-success" v-for="token in tokens">Task created: <a v-bind:href="token.url" target="_blank">{{token.uid}}</a></div>
             </form>
         </div>
@@ -40,7 +43,6 @@
         data() {
             return {
                 approved: '0',
-                instances: [],
                 tokens: [],
             };
         },
@@ -53,30 +55,15 @@
                 });
         },
         methods: {
-            approve() {
+            submit() {
                 ProcessMaker.apiClient.post(
                         'processes/' + this.processUid +
                         '/instances/' + this.instanceUid +
                         '/tokens/' + this.tokenUid +
                         '/complete', 
                 {
-                    approved: true,
                 })
                 .then((response) => {
-                    this.instances.push(response);
-                })
-            },
-            reject() {
-                ProcessMaker.apiClient.post(
-                        'processes/' + this.processUid +
-                        '/instances/' + this.instanceUid +
-                        '/tokens/' + this.tokenUid +
-                        '/complete', 
-                {
-                    approved: false,
-                })
-                .then((response) => {
-                    this.instances.push(response);
                 })
             }
         }

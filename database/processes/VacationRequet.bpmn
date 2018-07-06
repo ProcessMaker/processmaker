@@ -22,7 +22,7 @@
         <flowNodeRef>_10</flowNodeRef>
       </lane>
       <lane id="_8" name="HR">
-        <flowNodeRef>register</flowNodeRef>
+        <flowNodeRef>validate</flowNodeRef>
         <flowNodeRef>_18</flowNodeRef>
         <flowNodeRef>_4</flowNodeRef>
       </lane>
@@ -36,14 +36,14 @@
       <outgoing>_15</outgoing>
     </task>
     <sequenceFlow id="_15" sourceRef="approve" targetRef="_14"/>
-    <task completionQuantity="1" id="register" isForCompensation="false" name="Validate" startQuantity="1">
+    <task completionQuantity="1" id="validate" isForCompensation="false" name="Validate" startQuantity="1">
       <incoming>_17</incoming>
       <outgoing>_19</outgoing>
     </task>
-    <sequenceFlow id="_17" sourceRef="_14" targetRef="register">
+    <sequenceFlow id="_17" sourceRef="_14" targetRef="validate">
       <conditionExpression><![CDATA[$approved]]></conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="_19" sourceRef="register" targetRef="_18"/>
+    <sequenceFlow id="_19" sourceRef="validate" targetRef="_18"/>
     <exclusiveGateway gatewayDirection="Diverging" id="_18" name="valid?">
       <extensionElements>
         <yaoqiang:label offset-x="-41.0" offset-y="-31.0"/>
@@ -137,7 +137,7 @@
           <dc:Bounds height="18.96" width="58.0" x="358.0" y="430.26"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="register" id="Yaoqiang-register">
+      <bpmndi:BPMNShape bpmnElement="validate" id="Yaoqiang-validate">
         <dc:Bounds height="55.0" width="85.0" x="553.5" y="283.94117647058823"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="18.96" width="48.0" x="572.0" y="303.96"/>

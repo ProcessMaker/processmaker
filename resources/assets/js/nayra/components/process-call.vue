@@ -7,7 +7,6 @@
                 <button type="submit" class="btn btn-primary" @click="submit">Request a Vacation</button>
             </div>
         </div>
-        <div class="alert alert-success" v-for="instance in instances">Instance created: {{instance}}</div>
         <div class="alert alert-success" v-for="token in tokens">Task created: <a v-bind:href="token.url" target="_blank">{{token.uid}}</a></div>
     </div>
 
@@ -22,7 +21,6 @@
         ],
         data() {
             return {
-                instances: [],
                 tokens: [],
             };
         },
@@ -39,13 +37,10 @@
                 ProcessMaker.apiClient.post('processes/' + this.processUid + '/' + this.processId + '/call', {
                     startDate: new Date().toISOString(),
                     endDate: '',
-                    reason: ''
+                    reason: '',
+                    approved: false
                 })
                 .then((response) => {
-                    this.instances.push({
-                        uid: response.data.instance,
-                        tokens: []
-                    });
                 })
             }
         }
