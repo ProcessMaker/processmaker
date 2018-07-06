@@ -16,7 +16,6 @@
                     <textarea id ="reason" class="form-control" v-model="localReason" placeholder="Reason" rows="3"></textarea>
                 </div>
                 <button type="button" class="btn btn-primary" @click="submit">Continue</button>
-                <div class="alert alert-success" v-for="token in tokens">Task created: <a v-bind:href="token.url" target="_blank">{{token.uid}}</a></div>
             </form>
         </div>
     </div>
@@ -48,7 +47,7 @@
             let userId = document.head.querySelector('meta[name="user-id"]').content;
             Echo.private(`ProcessMaker.Model.User.${userId}`)
                 .notification((token) => {
-                    this.tokens.push(token);
+                    this.$parent.messages.push(token);
                 });
         },
         methods: {
@@ -64,7 +63,6 @@
                     reason: this.localReason
                 })
                 .then((response) => {
-                    this.instances.push(response);
                 })
             }
         }

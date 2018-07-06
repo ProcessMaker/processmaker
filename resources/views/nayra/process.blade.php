@@ -15,6 +15,13 @@
                 </div>
 
                 <div class="col-sm-6 col-md-3">
+                    <p class="font-weight-bold text-right">Created:</p>
+                </div>
+                <div class="col-sm-6 col-md-3">
+                    {{$process->created_at}}
+                </div>
+
+                <div class="col-sm-6 col-md-3">
                     <p class="font-weight-bold text-right">Created by:</p>
                 </div>
                 <div class="col-sm-6 col-md-3">
@@ -26,6 +33,13 @@
                 </div>
                 <div class="col-sm-6 col-md-3">
                     {{$process->updated_at}}
+                </div>
+
+                <div class="col-sm-6 col-md-3">
+                    <p class="font-weight-bold text-right">Category:</p>
+                </div>
+                <div class="col-sm-6 col-md-3">
+                    {{$process->category->name}}
                 </div>
             </div>
             <process-call process-uid="{{$process->uid}}" process-id="{{$processId}}">

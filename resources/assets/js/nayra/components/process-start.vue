@@ -7,7 +7,6 @@
                 <button type="submit" class="btn btn-primary" @click="submit">Request a Vacation</button>
             </div>
         </div>
-        <div class="alert alert-success" v-for="token in tokens">Task created: <a v-bind:href="token.url" target="_blank">{{token.uid}}</a></div>
     </div>
 
 </template>
@@ -21,7 +20,6 @@
         ],
         data() {
             return {
-                tokens: [],
             };
         },
         mounted() {
@@ -29,7 +27,7 @@
             let userId = document.head.querySelector('meta[name="user-id"]').content;
             Echo.private(`ProcessMaker.Model.User.${userId}`)
             .notification((token) => {
-                this.tokens.push(token);
+                this.$parent.messages.push(token);
             });
         },
         methods: {
