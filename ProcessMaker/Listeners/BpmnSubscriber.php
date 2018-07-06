@@ -12,6 +12,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 use ProcessMaker\Notifications\ActivityActivatedNotification;
+use ProcessMaker\Nayra\Bpmn\Events\ProcessInstanceCompletedEvent;
+use ProcessMaker\Notifications\ProcessCompletedNotification;
 
 /**
  * Description of BpmnSubscriber
@@ -20,6 +22,11 @@ use ProcessMaker\Notifications\ActivityActivatedNotification;
 class BpmnSubscriber
 {
 
+    /**
+     * When a new activity is Activated
+     *
+     * @param ActivityActivatedEvent $event
+     */
     public function ActivityActivated(ActivityActivatedEvent $event)
     {
         $token = $event->token;
@@ -29,6 +36,21 @@ class BpmnSubscriber
         $user = Auth::user();
         $notification = new ActivityActivatedNotification($event->token);
         $user->notify($notification);
+    }
+
+    /**
+     * When a process instance is completed.
+     *
+     * @param ProcessInstanceCreatedEvent $event
+     */
+    public function ProcessCompleted(ProcessInstanceCompletedEvent $event)
+    {
+        //client events
+        $user = $event->instance->creator;
+        $notification = new ProcessCompletedNotification($event->instance);
+        $user->notify($notification);
+
+        Log::info('ProcessCompleted: ' . json_encode($event->instance->getProperties()));
     }
 
     /**
@@ -133,6 +155,7 @@ class BpmnSubscriber
     public function subscribe($events)
     {
         $events->listen(ProcessInterface::EVENT_PROCESS_INSTANCE_CREATED, static::class . '@onProcessCreated');
+        $events->listen(ProcessInterface::EVENT_PROCESS_INSTANCE_COMPLETED, static::class . '@ProcessCompleted');
 
         $events->listen(ActivityInterface::EVENT_ACTIVITY_COMPLETED, static::class . '@onActivityCompleted');
         $events->listen(ActivityInterface::EVENT_ACTIVITY_CLOSED, static::class . '@onActivityClosed');

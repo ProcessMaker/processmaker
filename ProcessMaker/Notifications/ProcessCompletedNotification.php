@@ -6,30 +6,26 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Messages\BroadcastMessage;
-use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
+use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 
-class ActivityActivatedNotification extends Notification
+class ProcessCompletedNotification extends Notification
 {
     use Queueable;
 
     private $processUid;
+    private $processName;
     private $instanceUid;
-    private $tokenUid;
-    private $tokenElement;
-    private $tokenStatus;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct(TokenInterface $token)
+    public function __construct(ExecutionInstanceInterface $instance)
     {
-        $this->processUid = $token->application->process->uid;
-        $this->instanceUid = $token->application->uid;
-        $this->tokenUid = $token->uid;
-        $this->tokenElement = $token->element_ref;
-        $this->tokenStatus = $token->thread_status;
+        $this->processUid = $instance->process->uid;
+        $this->processName = $instance->process->name;
+        $this->instanceUid = $instance->uid;
     }
 
     /**
@@ -73,15 +69,9 @@ class ActivityActivatedNotification extends Notification
     public function toBroadcast($notifiable)
     {
         return new BroadcastMessage([
-            'message' => 'Task created',
-            'uid' => $this->tokenUid,
-            'url' => sprintf(
-                '/nayra/%s/%s/%s/%s',
-                $this->tokenElement,
-                $this->processUid,
-                $this->instanceUid,
-                $this->tokenUid
-            ),
+            'message' => 'Completed',
+            'uid' => $this->processName,
+            'url' => '#',
         ]);
 
     }
