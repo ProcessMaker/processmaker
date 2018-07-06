@@ -30,6 +30,7 @@ Route::group([
             // Users API Endpoints
             Route::get('users', 'Administration\UsersController@index');
             Route::get('users/{user}', 'Administration\UsersController@get');
+            Route::get('users/{user}/avatar', 'Administration\UsersController@avatar');
             Route::put('users/{user}', 'Administration\UsersController@update');
 
             // Roles API Endpoints
@@ -41,13 +42,13 @@ Route::group([
             Route::get('groups', 'Administration\GroupsController@index');
             Route::post('groups', 'Administration\GroupsController@create');
             Route::get('groups/{group}', 'Administration\GroupsController@get');
- 
+
         });
 
         //User profile
+
         Route::get('admin/profile', 'Users\ProfileController@profile');
         Route::put('admin/profile', 'Users\ProfileController@updateProfile');
-
 
         //File manager endpoints.
         Route::get('project/{process}/file-manager', 'Designer\FileManagerController@index')->middleware('can:readProcessFiles,process');
