@@ -11,7 +11,7 @@
 @endsection
 
 @section('sidebar')
-  @include('sidebars.default', ['sidebar'=> $sidebar_request])
+  @include('sidebars.default', ['sidebar' => Menu::get('sidebar_request')])
 @endsection
 
 @section('js')
