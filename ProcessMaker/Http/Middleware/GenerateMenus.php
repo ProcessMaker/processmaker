@@ -61,7 +61,7 @@ class GenerateMenus
                 'header' => false,
                 'route' => 'login',
                 'icon' => 'fa-key',
-                'id' => 'homeid'
+                'id' => 'loginid'
               ],
               [
                 'label' => __('menus.sidebar_admin.authentication'),
