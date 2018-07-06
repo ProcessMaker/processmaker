@@ -31,21 +31,21 @@ class GenerateMenus
             [
               'label' => __('menus.sidebar_admin.users'),
               'header' => false,
-              'route' => 'home',
+              'route' => 'management-users-index',
               'icon' => 'fa-user',
-              'id' => 'homeid'
+              'id' => 'usersid'
             ],
             [
               'label' => __('menus.sidebar_admin.groups'),
               'header' => false,
-              'route' => 'home',
+              'route' => 'management-groups-index',
               'icon' => 'fa-users',
               'id' => 'homeid'
             ],
             [
               'label' => __('menus.sidebar_admin.roles'),
               'header' => false,
-              'route' => 'home',
+              'route' => 'management-roles-index',
               'icon' => 'fa-user-plus',
               'id' => 'homeid'
             ],
