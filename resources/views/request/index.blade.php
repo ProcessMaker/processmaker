@@ -21,7 +21,7 @@
 @endsection
 
 @section('sidebar')
-  @include('sidebars.request')
+  @include('sidebars.default', ['sidebar'=> $sidebar_request])
 @endsection
 
 @section('js')
