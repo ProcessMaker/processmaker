@@ -4,7 +4,7 @@
     @foreach($sidebar->items as $row)
       @if(array_key_exists('route',$row->link->path))
         <li class="d-flex">
-          <a class="d-flex" href="{{ url($row->link->path['route']) }}">
+          <a class="d-flex" href="{{ route($row->link->path['route']) }}">
             <i class="fas {{$row->attr('icon')}} fa-fw"></i> <span v-if="expanded">{{$row->title}}</span>
           </a>
         </li>
