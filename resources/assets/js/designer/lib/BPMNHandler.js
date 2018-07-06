@@ -8,7 +8,11 @@ export default class BPMNHandler {
         this.bpmn = bpmn
         //Elements for update
         this.elements = {} // Models from Elements
-        this.buildElements = [] // Builded elements to Process Designer
+
+        this.bpmnDesigner = {
+            shapes: [],
+            links: []
+        } // Builded elements to Process Designer
 
         this.elementsDiagram = [] // diagrams
         this.processes = [] // processes definition
@@ -22,9 +26,10 @@ export default class BPMNHandler {
         this.elementsDiagram = this.findBPMNDiagram()
         this.processes = this.findProcess()
         this.collaborations = this.findCollaboration()
+
         this.buildElementsDiagram(this.elementsDiagram)
-        console.log(this.buildElements)
-        return this.buildElements
+        console.log(this.bpmnDesigner)
+        return this.bpmnDesigner
     }
 
     /**
@@ -80,13 +85,20 @@ export default class BPMNHandler {
             bpmnEl = that.findElementInCollaboration(this.collaborations, idBpmnElement)
             bpmnEl = !bpmnEl ? that.findElementInProcess(this.processes, idBpmnElement) : bpmnEl
 
-            if (bpmnEl && value.name != "bpmn:sequenceFlow" && value.name != "bpmndi:BPMNEdge") {
+            if (bpmnEl && value.name == "bpmndi:BPMNEdge") {
+                that.elements[idBpmnElement] = {
+                    diagram: value,
+                    process: bpmnEl
+                }
+                that.bpmnDesigner.links.push(that.formatEdge(value, bpmnEl))
+
+            } else if (bpmnEl) {
                 //console.log(bpmnEl, idBpmnElement)
                 that.elements[idBpmnElement] = {
                     diagram: value,
                     process: bpmnEl
                 }
-                that.buildElements.push(this.formatElement(value, bpmnEl))
+                that.bpmnDesigner.shapes.push(this.formatElement(value, bpmnEl))
             }
         })
     }
@@ -135,12 +147,43 @@ export default class BPMNHandler {
         let attr = this.getAttributes(di, "dc:Bounds")
         let name = bpmn.name.split(':')
         _.forEach(attr, (value, key, obj) => {
-            obj[key] = parseInt(value)
+            obj[key] = parseFloat(value)
         })
         return Object.assign({}, attr, {
             type: name.length == 1 ? name[0].toLowerCase() : name[1].toLowerCase(),
             id: di.attributes.bpmnElement
         })
+    }
+
+    /**
+     * Format a diagram element for send to process designer
+     * @param di
+     * @param bpmn
+     * @returns {*}
+     */
+    formatEdge(di, bpmn) {
+        let Element = {}
+        let attr = this.getAttributes(di, "bpmndi:BPMNEdge")
+        let name = bpmn.name.split(':')
+        let wayPoints = []
+
+        //From BPMN Element
+        let destTarget = this.getAttributes(bpmn, "Flow")
+
+        //From diagram
+        _.each(di.elements, (el) => {
+            _.forEach(el.attributes, (value, key, obj) => {
+                obj[key] = parseFloat(value)
+            })
+            if (el.name == "di:waypoint") {
+                wayPoints.push(el.attributes)
+            }
+        })
+
+        return Object.assign({}, attr, {
+            type: name.length == 1 ? name[0].toLowerCase() : name[1].toLowerCase(),
+            id: di.attributes.bpmnElement
+        }, destTarget, {wayPoints})
     }
 
     /**
@@ -150,10 +193,12 @@ export default class BPMNHandler {
      * @returns {*}
      */
     getAttributes(di, property) {
-        if (di.name && di.name == property) {
+        if (di && di.name && di.name.indexOf(property) >= 0) {
             return di.attributes
+        } else if (di) {
+            return this.getAttributes(di.elements[0] ? di.elements[0] : null, property)
         } else {
-            return this.getAttributes(di.elements[0] ? di.elements[0] : {}, property)
+            return null
         }
     }
 }

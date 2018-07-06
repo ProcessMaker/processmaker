@@ -24,12 +24,12 @@
                      @click="createFlow($event)">
             </div>
             <div class="item-crown" @click="createFlow($event)">
-                <i id="cog" class="fas fa-cog icon-crown" draggable="true"></i>
+                <i id="cog" class="fas fa-cog icrown" draggable="true"></i>
             </div>
         </div>
         <div class="d-flex flex-row">
-            <div class="item-crown">
-                <i id="trash" class="fas fa-trash-alt icon-crown" draggable="true"></i>
+            <div class="item-crown" @click="remove($event)">
+                <i id="trash" class="fas fa-trash-alt icrown" draggable="true"></i>
             </div>
         </div>
     </div>
@@ -107,7 +107,7 @@
         }
     }
 
-    .icon-crown {
+    .icrown {
         padding: 3px;
         font-size: 22px;
     }

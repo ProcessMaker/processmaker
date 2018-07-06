@@ -10,9 +10,20 @@ export class Builder {
         this.graph = graph
         this.paper = paper
         this.collection = []
+
         this.selection = []
         this.targetShape = null
         this.sourceShape = null
+    }
+
+    createFromBPMN(bpmn) {
+        let that = this
+        _.forEach(bpmn.shapes, (el) => {
+            that.createShape(el)
+        });
+        _.forEach(bpmn.links, (el) => {
+            that.createFlow(el)
+        });
     }
 
     /**
@@ -22,23 +33,33 @@ export class Builder {
      */
     createShape(options) {
         let element
-        if (Elements[options.type] && options.type != "lane") {
-            // Type Example - bpmn:StartEvent
-            if (Elements[options.type.toLowerCase()]) {
-                element = new Elements[options.type.toLowerCase()](
-                    options,
-                    this.graph,
-                    this.paper
-                );
-                element.render();
-                this.collection.push(element)
+
+        if (Elements[options.type]) {
+            switch (options.type) {
+                case "sequenceflow":
+                    this.createFlow(options)
+                    break;
+                case "lane":
+                    let participant = this.verifyElementFromPoint({x: options.x, y: options.y}, "participant")
+                    participant ? this.collection.push(participant.createLane()) : null
+                    break;
+                case "textannotation":
+                    break;
+                default:
+                    if (Elements[options.type.toLowerCase()]) {
+                        element = new Elements[options.type.toLowerCase()](
+                            options,
+                            this.graph,
+                            this.paper
+                        );
+                        element.render();
+                        this.collection.push(element)
+                    }
+                    if (options.type === "participant") {
+                        this.collection = _.concat(element.lanes, this.collection);
+                    }
+                    break;
             }
-            if (options.type === "participant") {
-                this.collection = _.concat(element.lanes, this.collection);
-            }
-        } else {
-            let participant = this.verifyElementFromPoint({x: options.x, y: options.y}, "participant")
-            participant ? this.collection.push(participant.createLane()) : null
         }
     }
 
@@ -51,12 +72,19 @@ export class Builder {
         let el = this.findElementInCollection(elJoint, true)
         if (el) {
             if (this.sourceShape) {
-                this.connect(this.sourceShape, el)
+                this.connect({
+                    source: this.sourceShape,
+                    target: el,
+                    type: "sequenceflow"
+
+                })
+                this.sourceShape.hideCrown()
+                this.sourceShape = null
             } else {
-                this.hideCrown();
+                this.hideCrown()
                 el.showCrown()
-                this.selection = [];
-                this.selection.push(el);
+                this.selection = []
+                this.selection.push(el)
             }
         }
         return false;
@@ -113,27 +141,29 @@ export class Builder {
         })
         if (res) {
             res.config(element.get("position"))
+            res.resetFlows()
         }
     }
 
     /**
-     * Connect shapes
+     * Connect shapes source, target, and vertices
      * @param source
      * @param target
      */
-    connect(source, target) {
-        if (source != target && Validators.verifyConnectWith(source.getType(), target.getType())) {
-            let flow = new Elements["Flow"]({
-                    source,
-                    target
-                },
+    connect(options) {
+        if (options.source != options.target && Validators.verifyConnectWith(options.source.getType(), options.target.getType())) {
+            let flow = new Elements[options.type](options,
                 this.graph,
                 this.paper
             );
             flow.render()
-            source.hideCrown()
-            this.sourceShape = null
         }
+    }
+
+    createFlow(flowBpmn) {
+        let source = this.findInCollectionById(flowBpmn.sourceRef)
+        let target = this.findInCollectionById(flowBpmn.targetRef)
+        this.connect(Object.assign({}, {source, target}, flowBpmn))
     }
 
     /**
@@ -147,6 +177,16 @@ export class Builder {
             } else {
                 return element.id === o.shape.id
             }
+        })
+    }
+
+    /**
+     *
+     * @param element
+     */
+    findInCollectionById(id) {
+        return _.find(this.collection, (o) => {
+            return id === o.options.id
         })
     }
 

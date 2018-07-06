@@ -33,6 +33,9 @@ export const designer = {
         },
         lane: {
             create: x => x
+        },
+        bpmn: {
+            update: x => x
         }
     }
 };
