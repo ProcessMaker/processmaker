@@ -59,7 +59,7 @@ class GenerateMenus
               [
                 'label' => __('menus.sidebar_admin.login'),
                 'header' => false,
-                'route' => 'home',
+                'route' => 'login',
                 'icon' => 'fa-key',
                 'id' => 'homeid'
               ],
