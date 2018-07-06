@@ -19,6 +19,7 @@ $factory->define(\ProcessMaker\Model\User::class, function (Faker $faker) {
         'firstname' => $faker->firstName,
         'lastname' => $faker->lastName,
         'password' => Hash::make($faker->password),
-        'time_zone' => $faker->timezone
+        'time_zone' => $faker->timezone,
+        'lang' => 'en'
     ];
 });
