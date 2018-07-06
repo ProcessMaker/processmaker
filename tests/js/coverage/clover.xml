@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1528604587025" clover="3.2.0">
-  <project timestamp="1528604587025" name="All files">
-    <metrics statements="56" coveredstatements="51" conditionals="8" coveredconditionals="8" methods="22" coveredmethods="16" elements="86" coveredelements="75" complexity="0" loc="56" ncloc="56" packages="6" files="7" classes="7">
+<coverage generated="1529702394800" clover="3.2.0">
+  <project timestamp="1529702394800" name="All files">
+    <metrics statements="59" coveredstatements="51" conditionals="8" coveredconditionals="8" methods="25" coveredmethods="16" elements="92" coveredelements="75" complexity="0" loc="59" ncloc="59" packages="6" files="7" classes="7">
       <package name="jest">
         <metrics statements="6" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
-        <file name="globals.js" path="E:\dev\bpm\jest\globals.js">
+        <file name="globals.js" path="/opt/processmaker/jest/globals.js">
           <metrics statements="6" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
           <line num="1" count="3" type="stmt"/>
           <line num="2" count="0" type="stmt"/>
@@ -16,7 +16,7 @@
       </package>
       <package name="resources.assets.js.components">
         <metrics statements="4" coveredstatements="4" conditionals="2" coveredconditionals="2" methods="0" coveredmethods="0"/>
-        <file name="FilterBar.vue" path="E:\dev\bpm\resources\assets\js\components\FilterBar.vue">
+        <file name="FilterBar.vue" path="/opt/processmaker/resources/assets/js/components/FilterBar.vue">
           <metrics statements="4" coveredstatements="4" conditionals="2" coveredconditionals="2" methods="0" coveredmethods="0"/>
           <line num="15" count="3" type="stmt"/>
           <line num="21" count="2" type="cond" truecount="2" falsecount="0"/>
@@ -25,9 +25,9 @@
         </file>
       </package>
       <package name="resources.assets.js.designer.actions">
-        <metrics statements="12" coveredstatements="11" conditionals="0" coveredconditionals="0" methods="11" coveredmethods="10"/>
-        <file name="designer.js" path="E:\dev\bpm\resources\assets\js\designer\actions\designer.js">
-          <metrics statements="12" coveredstatements="11" conditionals="0" coveredconditionals="0" methods="11" coveredmethods="10"/>
+        <metrics statements="15" coveredstatements="11" conditionals="0" coveredconditionals="0" methods="14" coveredmethods="10"/>
+        <file name="designer.js" path="/opt/processmaker/resources/assets/js/designer/actions/designer.js">
+          <metrics statements="15" coveredstatements="11" conditionals="0" coveredconditionals="0" methods="14" coveredmethods="10"/>
           <line num="2" count="2" type="stmt"/>
           <line num="6" count="1" type="stmt"/>
           <line num="7" count="1" type="stmt"/>
@@ -39,60 +39,63 @@
           <line num="20" count="4" type="stmt"/>
           <line num="21" count="4" type="stmt"/>
           <line num="24" count="2" type="stmt"/>
-          <line num="27" count="0" type="stmt"/>
+          <line num="25" count="0" type="stmt"/>
+          <line num="26" count="0" type="stmt"/>
+          <line num="29" count="0" type="stmt"/>
+          <line num="32" count="0" type="stmt"/>
         </file>
-        <file name="index.js" path="E:\dev\bpm\resources\assets\js\designer\actions\index.js">
+        <file name="index.js" path="/opt/processmaker/resources/assets/js/designer/actions/index.js">
           <metrics statements="0" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         </file>
       </package>
       <package name="resources.assets.js.designer.base">
         <metrics statements="20" coveredstatements="20" conditionals="6" coveredconditionals="6" methods="7" coveredmethods="6"/>
-        <file name="actionsCreator.js" path="E:\dev\bpm\resources\assets\js\designer\base\actionsCreator.js">
+        <file name="actionsCreator.js" path="/opt/processmaker/resources/assets/js/designer/base/actionsCreator.js">
           <metrics statements="20" coveredstatements="20" conditionals="6" coveredconditionals="6" methods="7" coveredmethods="6"/>
           <line num="8" count="2" type="stmt"/>
           <line num="9" count="2" type="stmt"/>
           <line num="10" count="2" type="stmt"/>
           <line num="12" count="2" type="stmt"/>
-          <line num="24" count="38" type="cond" truecount="2" falsecount="0"/>
-          <line num="25" count="22" type="stmt"/>
-          <line num="27" count="16" type="stmt"/>
-          <line num="28" count="36" type="stmt"/>
-          <line num="41" count="22" type="stmt"/>
-          <line num="42" count="22" type="stmt"/>
-          <line num="44" count="22" type="stmt"/>
-          <line num="45" count="74" type="stmt"/>
-          <line num="46" count="74" type="cond" truecount="2" falsecount="0"/>
-          <line num="47" count="38" type="stmt"/>
-          <line num="49" count="74" type="stmt"/>
-          <line num="50" count="74" type="cond" truecount="2" falsecount="0"/>
-          <line num="51" count="22" type="stmt"/>
-          <line num="55" count="22" type="stmt"/>
-          <line num="57" count="74" type="stmt"/>
-          <line num="59" count="22" type="stmt"/>
+          <line num="24" count="46" type="cond" truecount="2" falsecount="0"/>
+          <line num="25" count="28" type="stmt"/>
+          <line num="27" count="18" type="stmt"/>
+          <line num="28" count="44" type="stmt"/>
+          <line num="41" count="28" type="stmt"/>
+          <line num="42" count="28" type="stmt"/>
+          <line num="44" count="28" type="stmt"/>
+          <line num="45" count="92" type="stmt"/>
+          <line num="46" count="92" type="cond" truecount="2" falsecount="0"/>
+          <line num="47" count="46" type="stmt"/>
+          <line num="49" count="92" type="stmt"/>
+          <line num="50" count="92" type="cond" truecount="2" falsecount="0"/>
+          <line num="51" count="28" type="stmt"/>
+          <line num="55" count="28" type="stmt"/>
+          <line num="57" count="92" type="stmt"/>
+          <line num="59" count="28" type="stmt"/>
         </file>
       </package>
       <package name="resources.assets.js.designer.components">
         <metrics statements="13" coveredstatements="11" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
-        <file name="crown.vue" path="E:\dev\bpm\resources\assets\js\designer\components\crown.vue">
+        <file name="crown.vue" path="/opt/processmaker/resources/assets/js/designer/components/crown.vue">
           <metrics statements="13" coveredstatements="11" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
-          <line num="33" count="1" type="stmt"/>
-          <line num="34" count="1" type="stmt"/>
-          <line num="37" count="4" type="stmt"/>
+          <line num="40" count="1" type="stmt"/>
+          <line num="41" count="1" type="stmt"/>
           <line num="44" count="4" type="stmt"/>
-          <line num="45" count="4" type="stmt"/>
-          <line num="52" count="1" type="stmt"/>
-          <line num="53" count="1" type="stmt"/>
-          <line num="59" count="1" type="stmt"/>
-          <line num="60" count="1" type="stmt"/>
+          <line num="53" count="4" type="stmt"/>
+          <line num="54" count="4" type="stmt"/>
           <line num="61" count="1" type="stmt"/>
-          <line num="67" count="1" type="stmt"/>
-          <line num="70" count="0" type="stmt"/>
-          <line num="71" count="0" type="stmt"/>
+          <line num="62" count="1" type="stmt"/>
+          <line num="68" count="1" type="stmt"/>
+          <line num="69" count="1" type="stmt"/>
+          <line num="70" count="1" type="stmt"/>
+          <line num="76" count="1" type="stmt"/>
+          <line num="79" count="0" type="stmt"/>
+          <line num="80" count="0" type="stmt"/>
         </file>
       </package>
       <package name="resources.assets.js.designer.lib">
         <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-        <file name="event-bus.js" path="E:\dev\bpm\resources\assets\js\designer\lib\event-bus.js">
+        <file name="event-bus.js" path="/opt/processmaker/resources/assets/js/designer/lib/event-bus.js">
           <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
           <line num="8" count="1" type="stmt"/>
         </file>

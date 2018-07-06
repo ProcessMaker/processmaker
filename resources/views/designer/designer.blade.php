@@ -4,7 +4,7 @@
 @endsection
 
 @section('sidebar')
-    @include('sidebars.default', ['sidebar'=> $sidebar_designer])
+    @include('sidebars.default', ['sidebar'=> Menu::get('sidebar_designer')])
 @endsection
 
 @section('js')
