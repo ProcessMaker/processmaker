@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Feature;
 
-use Router;
+use Route;
 use Tests\TestCase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -28,8 +28,9 @@ class FlashMessageTest extends TestCase
     /*one for success_message*/
     public function testSuccessMessage()
     {
+      Auth::login(User::first());
       // Create a fake route that flashes a message with a successful alert
-      Router::get('/_tests/alert_success_test', function () {
+      Route::get('/_tests/alert_success_test', function () {
         // Flash a message
           request()->session()->flash('_alert', ['type'=>'success','message'=>'Test Successful Message']);
           return view('layouts.layout');
@@ -45,8 +46,9 @@ class FlashMessageTest extends TestCase
      */
     public function testNoFlashNoSuccessAlert()
     {
+      Auth::login(User::first());
       // But we need to ensure we're loading a different route that doesn't reflash
-      Router::get('/_tests/alert_success_clear', function () {
+      Route::get('/_tests/alert_success_clear', function () {
          return view('layouts.layout');
       })->middleware('web');
       $response = $this->get('/_tests/alert_success_clear');
@@ -55,10 +57,12 @@ class FlashMessageTest extends TestCase
 
     public function testErrorMessage()
     {
+      // Login
+      Auth::login(User::first());
       // Create a fake route that flashes a message with a error alert
-      Router::get('/_tests/alert_failure_test', function () {
+      Route::get('/_tests/alert_failure_test', function () {
         // Flash a message
-        request()->session()->flash('_alert', ['type'=>'danger','message'=>'Test Error Message']);          
+        request()->session()->flash('_alert', ['type'=>'danger','message'=>'Test Error Message']);
           return view('layouts.layout');
       })->middleware('web');
       $response = $this->get('/_tests/alert_failure_test');
@@ -72,8 +76,10 @@ class FlashMessageTest extends TestCase
      */
     public function testNoFlashNoFailureAlert()
     {
+      // Login
+      Auth::login(User::first());
       // But we need to ensure we're loading a different route that doesn't reflash
-      Router::get('/_tests/alert_failure_clear', function () {
+      Route::get('/_tests/alert_failure_clear', function () {
          return view('layouts.layout');
       })->middleware('web');
       $response = $this->get('/_tests/alert_failure_clear');

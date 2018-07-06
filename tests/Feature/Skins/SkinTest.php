@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Feature;
 
-use Router;
+use Route;
 use Tests\TestCase;
 
 /**
@@ -19,7 +19,7 @@ class SkinTest extends TestCase
         parent::setUp();
 
         // We will always use this route in our tests
-        Router::get('/_tests/{skin}/test', function () {
+        Route::get('/_tests/{skin}/test', function () {
             return view('version');
         })->middleware('setskin');
     }
@@ -61,7 +61,7 @@ class SkinTest extends TestCase
      */
     public function testCustomSkinOverrideMissingUseBaseSkin()
     {
-        Router::get('/_tests/{skin}/testproduct', function () {
+        Route::get('/_tests/{skin}/testproduct', function () {
             return view('product');
         })->middleware('setskin');
 

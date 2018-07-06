@@ -1,10 +1,13 @@
 @extends('layouts.minimal')
 @section('content')
+
 <div align="center">
   <div class="formContainer">
     <img src="/img/md-blue-logo.png">
     <form method="POST" class="form" action="{{ route('login') }}">
-      {{ csrf_field() }}
+    @if (session()->has('login-error'))
+      <div class="alert alert-danger">{{ session()->get('login-error')}}</div>
+      @endif
       <div class="form-group">
         <label for="username">{{ __('Username') }}</label>
         <div>
@@ -42,6 +45,9 @@
           </a>
         </small>
       </div>
+      @if(isset($footer))
+      {!! $footer !!}
+     @endif
     </form>
   </div>
 </div>
