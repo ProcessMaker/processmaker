@@ -30,17 +30,17 @@ class GenerateMenus
         Menu::make('sidebar_admin', function ($menu) {
             $submenu = $menu->add(__('menus.sidebar_admin.organization'));
             $submenu->add(__('menus.sidebar_admin.users'), [
-              'route' => 'home',
+              'route' => 'management-users-index',
               'icon' => 'fa-user',
               'id' => 'homeid'
           ]);
             $submenu->add(__('menus.sidebar_admin.groups'), [
-              'route' => 'home',
+              'route' => 'management-groups-index',
               'icon' => 'fa-users',
               'id' => 'homeid'
           ]);
             $submenu->add(__('menus.sidebar_admin.roles'), [
-              'route' => 'home',
+              'route' => 'management-roles-index',
               'icon' => 'fa-user-plus',
               'id' => 'homeid'
           ]);
