@@ -9,27 +9,11 @@
         <!-- Role Add Dialog -->
           <b-modal ref="addModal" size="md" centered title="Create New Role">
       <form>
-        <div class="form-group">
-          <label for="add-role-code">Code</label>
-          <input id="add-role-code" class="form-control" v-model="addRoleCode">
-        </div>
-        <div class="form-group">
-          <label for="add-role-name">Name</label>
-          <input id="add-role-name" class="form-control" v-model="addRoleName">
-        </div>
-        <div class="form-group">
-          <label for="add-role-name">Description</label>
-          <input id="add-role-name" class="form-control" v-model="addRoleDescription">
-        </div>
-        <div class="form-group">
-          <label for="add-role-status">Status</label>
-          <select class="form-control" id="add-role-status" v-model="addRoleStatus">
-              <option value="ACTIVE">Active</option>
-              <option value="DISABLED">Disabled</option>
-
-          </select>
-        </div>
-   </form>
+        <form-input v-model="addRoleCode" label="Code" type="email" name="code" :error="getFirstValidationError('code')"></form-input>
+        <form-input v-model="addRoleName" label="Name" :error="getFirstValidationError('name')"></form-input>
+        <form-input v-model="addRoleDescription" label="Description" :error="getFirstValidationError('description')"></form-input>
+        <form-select v-model="addRoleStatus" label="Status" selected="DISABLED" :options="[{content: 'Active', value:'ACTIVE' },{content: 'Disabled', value:'DISABLED' }]"></form-select>
+      </form>
 
     <template slot="modal-footer">
       <b-button @click="hideAddModal" class="btn-outline-secondary btn-md">
@@ -49,7 +33,7 @@
                 <input v-model="filter" class="form-control col-sm-3" placeholder="{{__('Search')}}...">
                 </div>
                 <div class="col-md-4 d-flex justify-content-end align-items-center col-sm-12 actions">
-                    <button @click="showAddModal" class="btn btn-action"><i class="fas fa-plus"></i> {{__('Role')}}</button>
+                    <button @click="showAddModal" class="btn btn-secondary"><i class="fas fa-plus"></i> {{__('Role')}}</button>
                 </div>
             </div>
             <roles-listing ref="rolesListing" :filter="filter"></roles-listing>
