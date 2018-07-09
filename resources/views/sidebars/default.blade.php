@@ -1,30 +1,20 @@
-<div id="sidebar-app-container">
+<div id="sidebar-wrapper">
     <ul class="sidebar-nav">
         <li class="sidebar-brand">
-            <a href="#">
-                Start Bootstrap
-            </a>
-        </li>
-        <li>
-            <a href="#">Dashboard</a>
-        </li>
-        <li>
-            <a href="#">Shortcuts</a>
-        </li>
-        <li>
-            <a href="#">Overview</a>
-        </li>
-        <li>
-            <a href="#">Events</a>
-        </li>
-        <li>
-            <a href="#">About</a>
-        </li>
-        <li>
-            <a href="#">Services</a>
-        </li>
-        <li>
-            <a href="#">Contact</a>
-        </li>
+      <a class="logo" href="/home">
+        <img src="/img/processmaker-logo-white-sm.png" alt="">
+    </a>
+  </li>
+
+        @foreach($sidebar->topMenu()->items as $section)
+          <li class="section">{{$section->title}}</li>
+          @foreach($section->children() as $item)
+            <li href="#">
+              <a  href="{{ $item->url() }}">
+                <i class="fas {{$item->attr('icon')}}"></i> <span class="nav-text">{{$item->title}}</span>
+              </a>
+            </li>
+          @endforeach
+        @endforeach
     </ul>
-</div>
+  </div>

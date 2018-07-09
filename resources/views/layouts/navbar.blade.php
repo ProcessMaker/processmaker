@@ -41,9 +41,10 @@
       </li>
     </ul>
     <ul class="navbar-nav ml-auto">
+      <li class="nav-item" style="padding:12px"><component id="navbar-request-button" v-bind:is="'request-modal'"></component></li>
     <li class="nav-item">
       <a class="nav-link"><i class="fas fa-bell" aria-hidden="true" style="padding:10px"></i></a>
-    </li>    
+    </li>
     <li class="dropdown">
       <img class="avatar dropdown-toggle" style="width:55px; padding:10px" id="topnav-avatar" src="/img/avatar.png" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">

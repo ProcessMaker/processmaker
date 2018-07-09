@@ -4,11 +4,13 @@
  * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-simple-sidebar/blob/master/LICENSE)
  */
 
+@import "../variables";
+
 body {
   overflow-x: hidden;
 }
 
-#app-container {
+#wrapper {
   padding-left: 0;
   -webkit-transition: all 0.5s ease;
   -moz-transition: all 0.5s ease;
@@ -16,11 +18,11 @@ body {
   transition: all 0.5s ease;
 }
 
-#app-container.toggled {
+#wrapper.toggled {
   padding-left: 250px;
 }
 
-#sidebar-app-container {
+#sidebar-wrapper {
   z-index: 1000;
   position: fixed;
   left: 250px;
@@ -35,17 +37,17 @@ body {
   transition: all 0.5s ease;
 }
 
-#app-container.toggled #sidebar-app-container {
+#wrapper.toggled #sidebar-wrapper {
   width: 250px;
 }
 
-#page-content-app-container {
+#page-content-wrapper {
   width: 100%;
   position: absolute;
   padding: 15px;
 }
 
-#app-container.toggled #page-content-app-container {
+#wrapper.toggled #page-content-wrapper {
   position: absolute;
   margin-right: -250px;
 }
@@ -99,23 +101,23 @@ body {
 }
 
 @media(min-width:768px) {
-  #app-container {
+  #wrapper {
     padding-left: 0;
   }
-  #app-container.toggled {
+  #wrapper.toggled {
     padding-left: 250px;
   }
-  #sidebar-app-container {
+  #sidebar-wrapper {
     width: 0;
   }
-  #app-container.toggled #sidebar-app-container {
+  #wrapper.toggled #sidebar-wrapper {
     width: 250px;
   }
-  #page-content-app-container {
+  #page-content-wrapper {
     padding: 20px;
     position: relative;
   }
-  #app-container.toggled #page-content-app-container {
+  #wrapper.toggled #page-content-wrapper {
     position: relative;
     margin-right: 0;
   }

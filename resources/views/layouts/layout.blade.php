@@ -29,6 +29,7 @@
   <div id="wrapper">
     @yield('sidebar')
     @include('layouts.navbar')
+
     <div id="app-container">
 
       <div class="main">
