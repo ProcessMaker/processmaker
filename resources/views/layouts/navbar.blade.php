@@ -1,5 +1,12 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light p-0">
-    <ul class="navbar-nav mr-auto">
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#menu-toggle" id="menu-toggle">
+  <img src="/img/logo.png" width="30" height="30" alt="">
+</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNavDropdown">
+    <ul class="navbar-nav">
       <li class="nav-item">
         <a class="nav-link" href="{{ url('request') }}">{{__('Requests')}}</a>
       </li>
@@ -33,24 +40,20 @@
         @endif
       </li>
     </ul>
-
-    <component id="navbar-request-button" v-bind:is="'request-modal'"></component>
-
-    <span class="navbar-text notifications">
-      <i class="fas fa-bell" aria-hidden="true"></i>
-    </span>
-
-    <ul class="navbar-nav">
-      <li class="break"></li>
-      <li class="dropdown">
-        <img class="avatar dropdown-toggle " id="topnav-avatar" src="/img/avatar.png" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-           <a class="dropdown-item drop-header"><img class="avatar-small" src="/img/avatar.png">{{\Auth::user()->firstname}} {{\Auth::user()->lastname}}</a>
-           @foreach($dropdown_nav->items as $row)
-              <a class="dropdown-item" href="{{ $row->url() }}"><i class="fas {{$row->attr('icon')}} fa-fw fa-lg"></i>{{$row->title}}</a>
-           @endforeach
-         </div>
-      </li>
+    <ul class="navbar-nav ml-auto">
+    <li class="nav-item">
+      <a class="nav-link"><i class="fas fa-bell" aria-hidden="true" style="padding:10px"></i></a>
+    </li>    
+    <li class="dropdown">
+      <img class="avatar dropdown-toggle" style="width:55px; padding:10px" id="topnav-avatar" src="/img/avatar.png" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+         <a class="dropdown-item drop-header"><img class="avatar-small" src="/img/avatar.png">{{\Auth::user()->firstname}} {{\Auth::user()->lastname}}</a>
+         @foreach($dropdown_nav->items as $row)
+            <a class="dropdown-item" href="{{ $row->url() }}"><i class="fas {{$row->attr('icon')}} fa-fw fa-lg"></i>{{$row->title}}</a>
+         @endforeach
+       </div>
     </li>
+  </li>
   </ul>
+  </div>
 </nav>
