@@ -54,6 +54,12 @@ if(userUID) {
     uid: userUID.content
   }
 }
+
+$("#menu-toggle").click(function(e) {
+    e.preventDefault();
+    $("#app-container").toggleClass("toggled");
+});
+
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
  * to our Laravel back-end. This library automatically handles sending the

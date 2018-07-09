@@ -10,6 +10,7 @@
     <title>{{ $title or __('Welcome') }} - {{__('ProcessMaker')}}</title>
     <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico" />
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+    <link href="{{ mix('css/sidebar.css') }}" rel="stylesheet">
     @yield('css')
     <script type="text/javascript">
     window.Processmaker = {
@@ -24,13 +25,14 @@
     </script>
 </head>
 <body>
-@yield('sidebar')
-<div id="app-container">
 
+<div id="app-container">
+@yield('sidebar')
     <div class="main">
 @yield('content')
     </div>
     <div id="top-navbar" style="background-image: url('/img/logo.png')">
+      <a href="#menu-toggle" class="btn btn-secondary" id="menu-toggle"><i class="fas fa-bars"></i> Holo</a>
         @include('layouts.navbar')
     </div>
 </div>

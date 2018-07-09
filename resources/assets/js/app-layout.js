@@ -10,24 +10,7 @@ new Vue({
     }
 })
 
-new Vue({
-    el: '#sidebarMenu',
-    data: {
-        expanded: false,
-        icon: '/img/sm-wht-icon.png',
-        logo: '/img/sm-wht-logo.png'
-    },
-    methods: {
-        toggleVisibility() {
-            this.expanded = !this.expanded;
-        }
-    }
-})
 
-$("#menu-toggle").click(function (e) {
-    e.preventDefault();
-    $("#wrapper").toggleClass("toggled");
-});
 
 // Import our requests modal
 import requestModal from './components/requests/modal'

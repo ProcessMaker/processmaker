@@ -13,7 +13,7 @@
 @endsection
 
 @section('sidebar')
-  @include('sidebars.default', ['sidebar'=> $sidebar_admin])
+  @include('sidebars.default', ['sidebar'=> Menu::get('sidebar_admin')])
 @endsection
 
 @section('js')
