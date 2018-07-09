@@ -1,15 +1,12 @@
-import joint from "jointjs"
-import actions from "../../actions"
-import EventBus from "../../lib/event-bus"
+import _ from "lodash"
 /**
  * Flow class
  */
-export class Flow {
-    constructor(options, graph, paper) {
+export default class {
+    constructor(graph, paper) {
         this.graph = graph
         this.paper = paper
         this.shape = null
-        this.options = options
     }
 
     /**
@@ -23,22 +20,48 @@ export class Flow {
     }
 
     /**
-     * Render the Flow
-     */
-    render() {
-        this.shape = new joint.shapes.standard.Link({
-            router: {name: 'manhattan'}
-        });
-        this.shape.source(this.options.source.getShape());
-        this.shape.target(this.options.target.getShape());
-        this.shape.addTo(this.graph);
-    }
-
-    /**
      * Return the object joint
      * @returns {*}
      */
     getShape() {
-        return this.shape;
+        return this.shape
+    }
+
+    /**
+     * Get the way for load in link vertices
+     * @param wayPoints
+     * @returns {Array}
+     */
+    formatWayPoints(wayPoints) {
+        let res = []
+        if (wayPoints && wayPoints.length > 2) {
+            res = _.initial(wayPoints)
+            res = _.drop(wayPoints);
+        }
+        return res
+    }
+
+    /**
+     * Get first point of waypoints
+     */
+    getSourcePoint(wayPoints) {
+        return _.head(wayPoints)
+    }
+
+    /**
+     * Get last point of waypoints
+     * @param wayPoints
+     */
+    getTargetPoint(wayPoints) {
+        return _.last(wayPoints)
+    }
+
+    /**
+     * Reset vertices of link
+     */
+    resetVertices() {
+        if (this.shape) {
+            this.shape.vertices([])
+        }
     }
 }

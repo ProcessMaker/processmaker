@@ -23,7 +23,6 @@
       </lane>
       <lane id="_8" name="HR">
         <flowNodeRef>validate</flowNodeRef>
-        <flowNodeRef>_18</flowNodeRef>
         <flowNodeRef>_4</flowNodeRef>
       </lane>
     </laneSet>
@@ -31,33 +30,24 @@
       <outgoing>_3</outgoing>
       <outputSet/>
     </startEvent>
-    <task completionQuantity="1" id="approve" isForCompensation="false" name="Approve" startQuantity="1">
+    <task completionQuantity="1" id="approve" isForCompensation="false" name="Request approval" startQuantity="1">
       <incoming>_2</incoming>
       <outgoing>_15</outgoing>
     </task>
     <sequenceFlow id="_15" sourceRef="approve" targetRef="_14"/>
-    <task completionQuantity="1" id="validate" isForCompensation="false" name="Validate" startQuantity="1">
+    <task completionQuantity="1" id="validate" isForCompensation="false" name="Registration in HR" startQuantity="1">
       <incoming>_17</incoming>
-      <outgoing>_19</outgoing>
+      <outgoing>_9</outgoing>
     </task>
     <sequenceFlow id="_17" sourceRef="_14" targetRef="validate">
       <conditionExpression><![CDATA[$approved]]></conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="_19" sourceRef="validate" targetRef="_18"/>
-    <exclusiveGateway gatewayDirection="Diverging" id="_18" name="valid?">
-      <extensionElements>
-        <yaoqiang:label offset-x="-41.0" offset-y="-31.0"/>
-      </extensionElements>
-      <incoming>_19</incoming>
-      <outgoing>_9</outgoing>
-    </exclusiveGateway>
-    <task completionQuantity="1" id="request" isForCompensation="false" name="Request" startQuantity="1">
+    <task completionQuantity="1" id="request" isForCompensation="false" name="Fill a request" startQuantity="1">
       <incoming>_3</incoming>
       <outgoing>_2</outgoing>
     </task>
     <sequenceFlow id="_2" sourceRef="request" targetRef="approve"/>
     <sequenceFlow id="_3" sourceRef="start" targetRef="request"/>
-    <sequenceFlow id="_9" sourceRef="_18" targetRef="_4"/>
     <exclusiveGateway gatewayDirection="Diverging" id="_14" name="approved?">
       <extensionElements>
         <yaoqiang:label offset-x="-52.0" offset-y="-30.0"/>
@@ -80,6 +70,7 @@
       <incoming>_9</incoming>
       <inputSet/>
     </endEvent>
+    <sequenceFlow id="_9" sourceRef="validate" targetRef="_4"/>
   </process>
   <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-COLLABORATION_1" name="Untitled Diagram" resolution="96.0">
     <bpmndi:BPMNPlane bpmnElement="COLLABORATION_1">
@@ -110,7 +101,7 @@
       <bpmndi:BPMNShape bpmnElement="request" id="Yaoqiang-request">
         <dc:Bounds height="55.0" width="85.0" x="138.47058823529412" y="200.58823529411765"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.96" width="49.0" x="156.47" y="220.61"/>
+          <dc:Bounds height="18.96" width="74.0" x="143.97" y="220.61"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="start" id="Yaoqiang-start">
@@ -122,7 +113,7 @@
       <bpmndi:BPMNShape bpmnElement="approve" id="Yaoqiang-approve">
         <dc:Bounds height="55.0" width="85.0" x="344.5" y="200.41176470588238"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.96" width="52.0" x="361.0" y="220.43"/>
+          <dc:Bounds height="32.96" width="53.0" x="360.5" y="213.43"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_14" id="Yaoqiang-_14" isMarkerVisible="true">
@@ -140,13 +131,7 @@
       <bpmndi:BPMNShape bpmnElement="validate" id="Yaoqiang-validate">
         <dc:Bounds height="55.0" width="85.0" x="553.5" y="283.94117647058823"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.96" width="48.0" x="572.0" y="303.96"/>
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="_18" id="Yaoqiang-_18" isMarkerVisible="true">
-        <dc:Bounds height="42.0" width="42.0" x="575.0" y="380.2058823529412"/>
-        <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.96" width="36.0" x="537.0" y="393.21"/>
+          <dc:Bounds height="32.96" width="71.0" x="560.5" y="296.96"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_4" id="Yaoqiang-_4">
@@ -155,13 +140,6 @@
           <dc:Bounds height="18.96" width="58.0" x="567.0" y="503.43"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge bpmnElement="_19" id="Yaoqiang-_19">
-        <di:waypoint x="596.0" y="338.61764705882354"/>
-        <di:waypoint x="596.0" y="380.61764705882354"/>
-        <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.96" width="6.0" x="593.0" y="350.14"/>
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_17" id="Yaoqiang-_17">
         <di:waypoint x="407.5294117647059" y="312.14705882352945"/>
         <di:waypoint x="554.0" y="311.44117647058823"/>
@@ -177,10 +155,10 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_9" id="Yaoqiang-_9">
-        <di:waypoint x="596.0" y="422.61764705882354"/>
+        <di:waypoint x="596.0" y="338.61764705882354"/>
         <di:waypoint x="596.0" y="462.61764705882354"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.96" width="6.0" x="593.0" y="433.14"/>
+          <dc:Bounds height="18.96" width="6.0" x="593.0" y="391.14"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_11" id="Yaoqiang-_11">

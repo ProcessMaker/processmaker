@@ -47,7 +47,7 @@
             let userId = document.head.querySelector('meta[name="user-id"]').content;
             Echo.private(`ProcessMaker.Model.User.${userId}`)
                 .notification((token) => {
-                    this.$parent.messages.push(token);
+                    ProcessMaker.pushNotification(token.message, token.url, 'fa fa-tasks');
                 });
         },
         methods: {

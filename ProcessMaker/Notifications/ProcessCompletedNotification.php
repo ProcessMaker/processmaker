@@ -69,9 +69,9 @@ class ProcessCompletedNotification extends Notification
     public function toBroadcast($notifiable)
     {
         return new BroadcastMessage([
-            'message' => 'Completed',
+            'message' => sprintf('Process Completed: %s', $this->processName),
             'uid' => $this->processName,
-            'url' => '#',
+            'url' => '/process',
         ]);
 
     }

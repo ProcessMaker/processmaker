@@ -44,7 +44,6 @@
             </div>
             <process-call process-uid="{{$process->uid}}" process-id="{{$processId}}">
             </process-call>
-            <div class="alert alert-success" v-for="message in messages">@{{message.message}}: <a v-bind:href="message.url" target="_blank">@{{message.uid}}</a></div>
         </div>
     </div>
 </div>

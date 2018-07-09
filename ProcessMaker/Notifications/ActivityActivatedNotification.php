@@ -7,6 +7,7 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
+use ProcessMaker\Model\Process;
 
 class ActivityActivatedNotification extends Notification
 {
@@ -72,8 +73,11 @@ class ActivityActivatedNotification extends Notification
 
     public function toBroadcast($notifiable)
     {
+        $process = Process::where('uid', $this->processUid)->first();
+        $definitions = $process->getDefinitions();
+        $activity = $definitions->getActivity($this->tokenElement);
         return new BroadcastMessage([
-            'message' => 'Task created',
+            'message' => sprintf('Task created: %s', $activity->getName()),
             'uid' => $this->tokenUid,
             'url' => sprintf(
                 '/nayra/%s/%s/%s/%s',

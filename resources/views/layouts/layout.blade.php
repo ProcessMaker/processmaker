@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="user-uid" content="{{\Auth::user()->uid}}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @if(Auth::user())
     <meta name="user-uid" content="{{ Auth::user()->uid }}">
@@ -18,6 +19,17 @@
     <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico" />
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     @yield('css')
+    <script type="text/javascript">
+    window.Processmaker = {
+        csrfToken: "{{csrf_token()}}",
+        userId: "{{\Auth::user()->uid}}",
+        broadcasting: {
+            broadcaster: "{{config('broadcasting.broadcaster')}}",
+            host: "{{config('broadcasting.host')}}",
+            key: "{{config('broadcasting.key')}}"
+        }
+    }
+    </script>
 </head>
 <body>
 @yield('sidebar')
@@ -44,9 +56,6 @@
 <script src="{{ mix('js/vendor.js') }}"></script>
 <script src="{{ mix('js/app.js') }}"></script>
 <script src="{{ mix('js/app-layout.js') }}"></script>
-<!-- Include socket.io if broadcaster is set to socket.io -->
-
-
 <script>
     $("#menu-toggle").click(function (e) {
         e.preventDefault();

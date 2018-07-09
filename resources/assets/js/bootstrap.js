@@ -27,12 +27,29 @@ window.Vue = require('vue');
 
 window.Vue.use(BootstrapVue);
 
-window.ProcessMaker = {};
+window.ProcessMaker = {
+    /**
+     * ProcessMaker Notifications
+     */
+    notifications: [],
+    /**
+     * Push a notification.
+     *
+     * @param {string} text Text of the notification
+     * @param {string} href Target URL
+     * @param {string} icon Icon class like "fa fa-envelope"
+     *
+     * @returns {void}
+     */
+    pushNotification(text, href, icon) {
+        this.notifications.push({text, href, icon});
+    }
+};
 
 /**
- * Create a axios instance which any vue component can bring in to call 
+ * Create a axios instance which any vue component can bring in to call
  * REST api endpoints through oauth authentication
- * 
+ *
  */
 window.ProcessMaker.apiClient = require('axios');
 // Have default endpoint and headers
@@ -47,17 +64,13 @@ window.ProcessMaker.apiClient.defaults.baseURL = '/api/1.0/';
 // Default to a 5 second timeout, which is an eternity in web app terms
 window.ProcessMaker.apiClient.defaults.timeout = 5000;
 
-/**
- * Echo exposes an expressive API for subscribing to channels and listening
- * for events that are broadcast by Laravel. Echo and event broadcasting
- * allows your team to easily build robust real-time web applications.
- */
+let userUID = document.head.querySelector('meta[name="user-uid"]');
 
- /*
-if (window.Processmaker.broadcaster == 'pusher') {
-  window.Pusher = require('pusher-js');
+if(userUID) {
+  window.ProcessMaker.user = {
+    uid: userUID.content
+  }
 }
-*/
 
 let broadcaster = document.head.querySelector('meta[name="broadcaster"]');
 let key = document.head.querySelector('meta[name="broadcasting-key"]');

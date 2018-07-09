@@ -1,6 +1,7 @@
 import actions from "../actions"
 import EventBus from "../lib/event-bus"
 import {JointElements} from "./jointElements"
+import _ from "lodash"
 /**
  * Shape class
  */
@@ -83,5 +84,20 @@ export class Shape {
      */
     getType() {
         return this.type
+    }
+
+    resetFlows() {
+        let links
+        if (this.shape) {
+            links = this.graph.getConnectedLinks(this.shape)
+            _.each(links, (link) => {
+                link.vertices([])
+            })
+        }
+    }
+
+    remove() {
+        this.shape.remove()
+        return this
     }
 }

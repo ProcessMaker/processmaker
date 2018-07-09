@@ -19,7 +19,6 @@ new Vue({
     },
     data() {
         return {
-            messages: []
         }
     }
 })
