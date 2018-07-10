@@ -41,67 +41,57 @@ class GenerateMenus
           ]);
             $submenu->add(__('menus.sidebar_admin.roles'), [
               'route' => 'management-roles-index',
-              'icon' => 'fa-user-plus',
+              'icon' => 'fa-key',
               'id' => 'homeid'
           ]);
           $submenu = $menu->add(__('menus.sidebar_admin.security'));
-          $submenu->add(__('menus.sidebar_admin.login'), [
-                'route' => 'home',
-                'icon' => 'fa-key',
-                'id' => 'homeid'
-          ]);
           $submenu->add(__('menus.sidebar_admin.authentication'), [
                 'route' => 'home',
-                'icon' => 'fa-user-secret',
+                'icon' => 'fa-shield-alt',
                 'id' => 'homeid'
           ]);
-          $submenu = $menu->add(__('menus.sidebar_admin.system_preferences'));
-          $submenu->add(__('menus.sidebar_admin.localization'), [
+
+          $submenu = $menu->add(__('menus.sidebar_admin.localization'));
+          $submenu->add(__('menus.sidebar_admin.preferences'), [
                 'route' => 'home',
                 'icon' => 'fa-globe',
                 'id' => 'homeid'
           ]);
-          $submenu->add(__('menus.sidebar_admin.email_configuration'), [
+          $submenu->add(__('menus.sidebar_admin.languages'), [
                 'route' => 'home',
-                'icon' => 'fa-envelope',
+                'icon' => 'fa-language',
                 'id' => 'homeid'
           ]);
-          $submenu->add(__('menus.sidebar_admin.notifications'), [
+
+          $submenu = $menu->add(__('menus.sidebar_admin.configuration'));
+          $submenu->add(__('menus.sidebar_admin.notifications_configuration'), [
                 'route' => 'home',
                 'icon' => 'fa-bell',
                 'id' => 'homeid'
           ]);
-          $submenu = $menu->add(__('menus.sidebar_admin.apperance'));
-          $submenu->add(__('menus.sidebar_admin.customize'), [
+          $submenu->add(__('menus.sidebar_admin.inbox_configuration'), [
                 'route' => 'home',
-                'icon' => 'fa-cogs',
+                'icon' => 'fa-inbox',
                 'id' => 'homeid'
           ]);
-          $submenu->add(__('menus.sidebar_admin.themes'), [
+
+
+          $submenu = $menu->add(__('menus.sidebar_admin.appearance'));
+          $submenu->add(__('menus.sidebar_admin.inbox_customization'), [
                 'route' => 'home',
-                'icon' => 'fa-th',
+                'icon' => 'fa-columns',
                 'id' => 'homeid'
           ]);
+          $submenu->add(__('menus.sidebar_admin.ui_customization'), [
+                'route' => 'home',
+                'icon' => 'fa-palette',
+                'id' => 'homeid'
+          ]);
+
           $submenu = $menu->add(__('menus.sidebar_admin.system_information'));
-          $submenu->add(__('menus.sidebar_admin.software_requirements'), [
+          $submenu->add(__('menus.sidebar_admin.app_version_details'), [
                 'route' => 'home',
-                'icon' => 'fa-laptop',
-                'id' => 'homeid'
-          ]);
-          $submenu->add(__('menus.sidebar_admin.plugins'), [
-                'route' => 'home',
-                'icon' => 'fa-puzzle-piece',
-                'id' => 'homeid'
-          ]);
-            $submenu = $menu->add(__('menus.sidebar_admin.tools'));
-            $submenu->add(__('menus.sidebar_admin.manage_cache'), [
-                'route' => 'home',
-                'icon' => 'fa-bolt',
-                'id' => 'homeid'
-          ]);
-            $submenu->add(__('menus.sidebar_admin.audit_log'), [
-                'route' => 'home',
-                'icon' => 'fa-list-ul',
+                'icon' => 'fa-desktop',
                 'id' => 'homeid'
           ]);
         });
