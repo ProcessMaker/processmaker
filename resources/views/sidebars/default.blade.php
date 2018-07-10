@@ -17,7 +17,7 @@
       <li class="section">{{$section->title}}</li>
       @foreach($section->children() as $item)
         <li class="nav-item">
-          <a href="{{ $item->url() }}" class="nav-link">
+          <a href="{{ $item->url() }}" class="nav-link" title="{{$item->title}}">
                 <i class="fas {{$item->attr('icon')}}"></i> <span class="nav-text">{{$item->title}}</span>
               </a>
         </li>
