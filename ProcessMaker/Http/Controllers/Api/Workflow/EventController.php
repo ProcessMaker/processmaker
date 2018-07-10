@@ -1,24 +1,41 @@
 <?php
-
 namespace ProcessMaker\Http\Controllers\Api\Workflow;
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\Task;
+use ProcessMaker\Facades\WorkflowManager;
 
-
-/**
- *
- */
 class EventController extends Controller
 {
-    public function trigger(Process $process, Task $event)
+
+    public function triggerStart(Request $request, Process $process, $eventId)
     {
-        return [
-            'process' => $process,
-            'start_event' => $event
-        ];
+        //Get required references
+        $definitions = $process->getDefinitions();
+        $event = $definitions->getEvent($eventId);
+        $data = $request->input();
+
+        //Call the manager to trigger the start event
+        $instance = WorkflowManager::triggerStartEvent($process, $event, $data);
+        return ['instance' => $instance->uid];
+    }
+
+    public function callProcess(Request $request, Process $process, $processId)
+    {
+        //Get required references
+        $definitions = $process->getDefinitions();
+        $calledProcess = $definitions->getProcess($processId);
+        $data = $request->input();
+
+        //Call the manager to trigger the start event
+        $instance = WorkflowManager::callProcess($process, $calledProcess, $data);
+        return ['instance' => $instance->uid];
+    }
+
+    public function triggerIntermediate(Process $process, Task $event)
+    {
+        return ['message' => 'OK'];
     }
 }

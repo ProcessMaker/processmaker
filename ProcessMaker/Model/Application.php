@@ -4,15 +4,18 @@ namespace ProcessMaker\Model;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use ProcessMaker\Model\Traits\Uuid;
+use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
+use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
+use Ramsey\Uuid\Uuid as UuidGenerator;
 
 /**
  * Represents an Eloquent model of an Case which is an instance of a Process. It's called Application because of the
  * case keyword in php being unavailable for use
  * @package ProcessMaker\Model
  */
-class Application extends Model
+class Application extends Model implements ExecutionInstanceInterface
 {
-    use Uuid;
+    use Uuid, ExecutionInstanceTrait;
 
     // Specify our table and our primary key
     protected $table = 'APPLICATION';
@@ -30,6 +33,26 @@ class Application extends Model
     const STATUS_TO_DO = 2;
     const STATUS_COMPLETED = 3;
     const STATUS_CANCELLED = 4;
+
+    /**
+     * The attributes that should be mutated to dates.
+     */
+    protected $dates = [
+        'APP_INIT_DATE',
+        'APP_FINISH_DATE',
+    ];
+
+    /**
+     * Boot application as a process instance.
+     *
+     * @param array $argument
+     */
+    public function __construct(array $argument=[])
+    {
+        parent::__construct($argument);
+        $this->bootElement([]);
+        $this->setId(UuidGenerator::uuid4());
+    }
 
     /*
      * Get the route key for the model.
@@ -74,7 +97,7 @@ class Application extends Model
      */
     public function delegations()
     {
-        return $this->hasMany(Delegation::class, 'APP_UID', 'APP_UID');
+        return $this->hasMany(Delegation::class, 'application_id', 'id');
     }
 
     /**

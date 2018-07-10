@@ -35,10 +35,7 @@
     </ul>
 
     <component id="navbar-request-button" v-bind:is="'request-modal'"></component>
-
-    <span class="navbar-text notifications">
-      <i class="fas fa-bell" aria-hidden="true"></i>
-    </span>
+    <notifications id="navbar-notifications-button" ref="hola" v-bind:is="'notifications'" v-bind:messages="messages"></notifications>
 
     <ul class="navbar-nav">
       <li class="break"></li>

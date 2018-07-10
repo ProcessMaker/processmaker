@@ -16,3 +16,4 @@ yarn-error.log
 /public
 tests/js/coverage
 .DS_Store
+/nbproject

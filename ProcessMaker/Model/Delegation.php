@@ -6,6 +6,9 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use ProcessMaker\Model\Traits\Uuid;
+use ProcessMaker\Nayra\Bpmn\TokenTrait;
+use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
+use Ramsey\Uuid\Uuid as UuidGenerator;
 use Watson\Validating\ValidatingTrait;
 
 /**
@@ -39,11 +42,11 @@ use Watson\Validating\ValidatingTrait;
  * @param integer user_id
  * 
  */
-class Delegation extends Model
+class Delegation extends Model implements TokenInterface
 {
     use ValidatingTrait,
-        Uuid;
-
+        Uuid,
+        TokenTrait;
 
     // We do not store timestamps for these tables
     public $timestamps = false;
@@ -51,7 +54,7 @@ class Delegation extends Model
     /**
      * Thread status types
      */
-    const THREAD_STATUS_OPEN = 'OPEN';
+    const THREAD_STATUS_OPEN = 'ACTIVE';
     const THREAD_STATUS_CLOSED = 'CLOSED';
 
     const TYPE_NORMAL = 'NORMAL';
@@ -97,13 +100,27 @@ class Delegation extends Model
     protected $rules = [
         'uid' => 'max:36',
         'application_id' => 'exists:APPLICATION,id',
-        'task_id' => 'exists:tasks,id',
+        //'task_id' => 'exists:tasks,id',
         'user_id' => 'exists:users,id',
         'delegate_date' => 'required',
         'started' => 'required|boolean',
         'finished' => 'required|boolean',
         'delayed' => 'required|boolean',
     ];
+
+    /**
+     * Boot delegation as a token instance.
+     *
+     * @param array $arguments
+     */
+    public function __construct(array $arguments=[])
+    {
+        parent::__construct($arguments);
+        $this->bootElement([
+            $this->application()
+        ]);
+        $this->setId(UuidGenerator::uuid4());
+    }
 
     /**
      * Returns the relationship of the parent application
@@ -133,5 +150,15 @@ class Delegation extends Model
     public function task(): BelongsTo
     {
         return $this->belongsTo(Task::class);
+    }
+
+    /*
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uid';
     }
 }

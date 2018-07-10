@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 use ProcessMaker\Model\Traits\Uuid;
+use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use Watson\Validating\ValidatingTrait;
-
 
 /**
  * Represents a business process definition.
@@ -179,6 +179,8 @@ class Process extends Model
         'process_category_id' => 'exists:process_categories,id',
         'user_id' => 'exists:users,id',
     ];
+    
+    private $bpmnDefinitions;
 
     /**
      * Determines if the provided user is a supervisor for this process
@@ -396,4 +398,18 @@ class Process extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    /**
+     * Get the process definitions from BPMN field.
+     *
+     * @return ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface
+     */
+    public function getDefinitions()
+    {
+        if (empty($this->bpmnDefinitions)) {
+            $this->bpmnDefinitions = app(BpmnDocumentInterface::class, ['process' => $this]);
+            $this->bpmnDefinitions->loadXML($this->bpmn);
+            $this->bpmnDefinitions;
+        }
+        return $this->bpmnDefinitions;
+    }
 }
