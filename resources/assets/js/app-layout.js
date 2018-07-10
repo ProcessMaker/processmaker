@@ -39,7 +39,7 @@ new Vue({
     }
 })
 
-// Setup our api client interceptor to handle errors and reflect the error 
+// Setup our api client interceptor to handle errors and reflect the error
 // in our skin.
 window.ProcessMaker.apiClient.interceptors.response.use(function (response) {
     // No need to handle success responses
@@ -55,4 +55,24 @@ window.ProcessMaker.apiClient.interceptors.response.use(function (response) {
         elem.setAttribute('style', 'display: block');
       }
     return Promise.reject(error);
+  });
+
+// Use this method to trigger the sidebar menu to open and closed
+$("#menu-toggle").click(function (e) {
+    e.preventDefault();
+
+    if(document.getElementById("sidebar-inner").classList.contains("closed")){
+
+    document.getElementById("sidebar").style.maxWidth = "250px";
+    document.getElementById("sidebar").classList.remove('closed');
+    document.getElementById("sidebar-inner").classList.remove('closed');
+
+  } else {
+
+    document.getElementById("sidebar").style.maxWidth = "58px";
+    document.getElementById("sidebar").classList.add('closed');
+    document.getElementById("sidebar-inner").classList.add('closed');
+    document.getElementById("mainbody").style.maxWidth = "100%";
+
+  }
   });

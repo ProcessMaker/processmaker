@@ -64,27 +64,6 @@
 <script src="{{ mix('js/vendor.js') }}"></script>
 <script src="{{ mix('js/app.js') }}"></script>
 <script src="{{ mix('js/app-layout.js') }}"></script>
-<script>
-    $("#menu-toggle").click(function (e) {
-        e.preventDefault();
-
-        if(document.getElementById("sidebar-inner").classList.contains("closed")){
-
-        document.getElementById("sidebar").style.maxWidth = "250px";
-        document.getElementById("sidebar").classList.remove('closed');
-        document.getElementById("sidebar-inner").classList.remove('closed');
-
-      } else {
-
-        document.getElementById("sidebar").style.maxWidth = "58px";
-        document.getElementById("sidebar").classList.add('closed');
-        document.getElementById("sidebar-inner").classList.add('closed');
-        document.getElementById("mainbody").style.maxWidth = "100%";
-
-      }
-      });
-
-    </script>
     <!--javascript!-->
     @yield('js')
 </body>
