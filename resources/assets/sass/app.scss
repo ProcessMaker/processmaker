@@ -24,7 +24,7 @@ html {
   font-family: "Open Sans";
 }
 
-body {  
+body {
   font-weight: 300;
   font-style: normal;
   background-color: $body-bg;
@@ -34,6 +34,10 @@ body {
 #app-container .main {
   // padding-left: 58px;
   // width:100%;
+}
+
+.main {
+  position: absolute;
 }
 
 .row.no-gutters {
