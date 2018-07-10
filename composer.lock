@@ -1897,7 +1897,7 @@
             "dist": {
                 "type": "path",
                 "url": "/opt/nayra",
-                "reference": "6e12dbcaa357bb33e07645014dd236e5c59f040c",
+                "reference": "9c7560e2442c423cc8175e908750944bfbc10fb0",
                 "shasum": null
             },
             "require-dev": {
