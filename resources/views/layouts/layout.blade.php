@@ -26,23 +26,27 @@
 </head>
 
 <body>
-  <div id="wrapper">
-    @yield('sidebar')
-    @include('layouts.navbar')
-
-    <div id="app-container">
-
+<div class="container-fluid" id="app-container">
+  <div class="row no-gutters">
+    <div id="sidebar">
+        @yield('sidebar')
+    </div>
+    <div class="col" id="mainbody">
+      @include('layouts.navbar')
       <div class="main">
         @yield('content')
       </div>
     </div>
-    <div id="api-error" class="error-content">
-      <div>
-        <h1>Sorry! API failed to load</h1>
-        <p>Something went wrong. Try refreshing the application</p>
-      </div>
-    </div>
   </div>
+</div>
+
+<div id="api-error" class="error-content">
+  <div>
+    <h1>Sorry! API failed to load</h1>
+    <p>Something went wrong. Try refreshing the application</p>
+  </div>
+</div>
+
 
   <!-- Scripts -->
   <script src="{{ mix('js/manifest.js') }}"></script>
@@ -56,8 +60,23 @@
     <script>
       $("#menu-toggle").click(function(e) {
         e.preventDefault();
-        $("#wrapper").toggleClass("toggled");
+
+        if(document.getElementById("sidebar-inner").classList.contains("closed")){
+
+        document.getElementById("sidebar").style.maxWidth = "250px";
+        document.getElementById("sidebar").classList.remove('closed');
+        document.getElementById("sidebar-inner").classList.remove('closed');
+
+      } else {
+
+        document.getElementById("sidebar").style.maxWidth = "58px";
+        document.getElementById("sidebar").classList.add('closed');
+        document.getElementById("sidebar-inner").classList.add('closed');
+        document.getElementById("mainbody").style.maxWidth = "100%";
+
+      }
       });
+
     </script>
     <!--javascript!-->
     @yield('js')
