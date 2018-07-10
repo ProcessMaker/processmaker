@@ -2,17 +2,27 @@
 <html lang="{{ app()->getLocale() }}">
 
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="user-uid" content="{{\Auth::user()->uid}}">
-  <meta name="csrf-token" content="{{ csrf_token() }}">
-  <meta name="api-token" content="{{ session('apiToken')['access_token']}}">
-  <title>{{ $title or __('Welcome') }} - {{__('ProcessMaker')}}</title>
-  <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico" />
-  <link href="{{ mix('css/app.css') }}" rel="stylesheet">
-  <link href="{{ mix('css/sidebar.css') }}" rel="stylesheet"> @yield('css')
-  <script type="text/javascript">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    @if(Auth::user())
+    <meta name="user-uid" content="{{ Auth::user()->uid }}">
+    <meta name="user-id" content="{{ Auth::user()->id }}">
+    @endif
+    <meta name="api-token" content="{{ session('apiToken')['access_token']}}">
+    @if(config('broadcasting.broadcaster') == 'socket.io')
+    <meta name="broadcaster" content="{{config('broadcasting.broadcaster')}}">
+    <meta name="broadcasting-host" content="{{config('broadcasting.host')}}">
+    <meta name="broadcasting-key" content="{{config('broadcasting.key')}}">
+    @endif
+
+    <title>{{ $title or __('Welcome') }} - {{__('ProcessMaker')}}</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico" />
+    <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+    <link href="{{ mix('css/sidebar.css') }}" rel="stylesheet">
+    @yield('css')
+    <script type="text/javascript">
     window.Processmaker = {
       csrfToken: "{{csrf_token()}}",
       userId: "{{\Auth::user()->uid}}",
@@ -46,19 +56,16 @@
     <p>Something went wrong. Try refreshing the application</p>
   </div>
 </div>
-
-
-  <!-- Scripts -->
-  <script src="{{ mix('js/manifest.js') }}"></script>
-  <script src="{{ mix('js/vendor.js') }}"></script>
-  <script src="{{ mix('js/app.js') }}"></script>
-  <script src="{{ mix('js/app-layout.js') }}"></script>
-  @if(config('broadcasting.broadcaster') == 'socket.io' && config('broadcasting.host')
-  <> '')
-    <script src="{{config('broadcasting.host')}}/socket.io/socket.io.js"></script>
-    @endif
-    <script>
-      $("#menu-toggle").click(function(e) {
+<!-- Scripts -->
+@if(config('broadcasting.broadcaster') == 'socket.io')
+<script src="{{config('broadcasting.host')}}/socket.io/socket.io.js"></script>
+@endif
+<script src="{{ mix('js/manifest.js') }}"></script>
+<script src="{{ mix('js/vendor.js') }}"></script>
+<script src="{{ mix('js/app.js') }}"></script>
+<script src="{{ mix('js/app-layout.js') }}"></script>
+<script>
+    $("#menu-toggle").click(function (e) {
         e.preventDefault();
 
         if(document.getElementById("sidebar-inner").classList.contains("closed")){

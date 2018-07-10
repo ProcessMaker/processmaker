@@ -1,13 +1,9 @@
 @extends('layouts.layout')
 
 @section('content')
-<div class="container" id="start" v-cloak>
-    <div class="row">
-        <div class="col-sm">
-        <h1>Test Vacation Request Entry Form</h1>
-        <p>@{{message}}</p>
-        </div>
-    </div>
+<div class="container" id="start">
+    <process-start process-uid="{{$process->uid}}" event="{{$event}}">
+    </process-start>
 </div>
 @endsection
 

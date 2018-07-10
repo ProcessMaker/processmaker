@@ -5,6 +5,7 @@ namespace ProcessMaker\Model;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use ProcessMaker\Model\Traits\Uuid;
+use ProcessMaker\Model\Process;
 use Watson\Validating\ValidatingTrait;
 
 /**
@@ -207,6 +208,11 @@ class Task extends Model
         $value['self_service_time_unit'] = isset($value['self_service_time_unit']) ? $value['self_service_time_unit'] : 'HOURS';
         $value['self_service_execution'] = isset($value['self_service_execution']) ? $value['self_service_execution'] : 'EVERY_TIME';
         $this->attributes['self_service_timeout_configuration'] = empty($value) ? null : json_encode($value);
+    }
+
+    public function process()
+    {
+        return $this->belongsTo(Process::class);
     }
 
 }

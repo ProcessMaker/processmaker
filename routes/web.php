@@ -1,6 +1,10 @@
 <?php
 
+// Routes related to Authentication (password reset, etc)
 Auth::routes();
+
+// Add our broadcasting routes
+Broadcast::routes();
 
 // Authentication Routes...
 $this->get('login', 'Auth\LoginController@showLoginForm')->name('login');
@@ -27,6 +31,20 @@ $this->get('password/success', function(){
 // $this->post('password/reset', 'Auth\PasswordController@reset');
 
 $this->middleware(['auth', 'apitoken'])->group(function() {
+    // Test Process Routes for Nayra
+    $this->get('/requests/{process}/new', function(ProcessMaker\Model\Process $process) {
+        //Find the process
+        $processes = $process->getDefinitions()->getElementsByTagName('process');
+        if ($processes->item(0)) {
+            $processDefinition = $processes->item(0)->getBpmnElementInstance();
+            $processId = $processDefinition->getId();
+            return view('nayra.process', compact('process', 'processId'));
+        }
+    });
+    $this->get('/nayra/request/{process}/{event}', function(ProcessMaker\Model\Process $process, $event) {
+        return view('nayra.start', compact('process', 'event'));
+    });
+    $this->get('/nayra/{view}/{process}/{instance}/{token}', 'Request\TokenController@openTask');
 
   // All the routes in this group and below are for testing purposes only
 
@@ -41,6 +59,9 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
     $this->get('/request', function(){
       return view('request.index',['title' => __('New Request')]);
     })->name('request');
+
+    // For fetching the status of an open case/request
+    $this->get('/request/{instance}/status', ['uses' => 'Request\StatusController@status'])->name('request-status');
 
     $this->get('/admin', function(){
       return view('admin',['title' => 'Dashboard']);

@@ -14,6 +14,7 @@ new Vue({
 
 // Import our requests modal
 import requestModal from './components/requests/modal'
+import notifications from './components/requests/notifications'
 
 // Setup our request modal and wire it to our button in the navbar
 new Vue({
@@ -23,8 +24,22 @@ new Vue({
     }
 })
 
+/**
+ * Setup the notifications block
+ */
+new Vue({
+    el: '#navbar-notifications-button',
+    components: {
+        notifications
+    },
+    data() {
+        return {
+            messages: ProcessMaker.notifications
+        }
+    }
+})
 
-// Setup our api client interceptor to handle errors and reflect the error
+// Setup our api client interceptor to handle errors and reflect the error 
 // in our skin.
 window.ProcessMaker.apiClient.interceptors.response.use(function (response) {
     // No need to handle success responses

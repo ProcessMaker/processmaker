@@ -58,7 +58,9 @@ class Install extends Command
             'APP_DEBUG' => 'FALSE',
             'APP_NAME' => 'ProcessMaker',
             'APP_ENV' => 'production',
-            'APP_KEY' => 'base64:'.base64_encode(Encrypter::generateKey($this->laravel['config']['app.cipher']))
+            'APP_KEY' => 'base64:'.base64_encode(Encrypter::generateKey($this->laravel['config']['app.cipher'])),
+            'BROADCAST_DRIVER' => 'redis',
+            'BROADCASTER_KEY' => '21a795019957dde6bcd96142e05d4b10'
         ];
 
     }
@@ -106,6 +108,8 @@ class Install extends Command
                                         FILTER_FLAG_HOST_REQUIRED) 
                     || ($this->env['APP_URL'][strlen($this->env['APP_URL']) - 1] == '/'))
         );
+        // Set broadcaster url
+        $this->env['BROADCASTER_HOST'] = $this->env['APP_URL'] . ':6001';
 
         // Set it as our url in our config
         config(['app.url' => $this->env['APP_URL']]);
