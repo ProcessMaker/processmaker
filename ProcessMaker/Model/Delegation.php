@@ -54,7 +54,7 @@ class Delegation extends Model implements TokenInterface
     /**
      * Thread status types
      */
-    const THREAD_STATUS_OPEN = 'OPEN';
+    const THREAD_STATUS_OPEN = 'ACTIVE';
     const THREAD_STATUS_CLOSED = 'CLOSED';
 
     const TYPE_NORMAL = 'NORMAL';

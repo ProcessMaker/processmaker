@@ -35,6 +35,14 @@ class Application extends Model implements ExecutionInstanceInterface
     const STATUS_CANCELLED = 4;
 
     /**
+     * The attributes that should be mutated to dates.
+     */
+    protected $dates = [
+        'APP_INIT_DATE',
+        'APP_FINISH_DATE',
+    ];
+
+    /**
      * Boot application as a process instance.
      *
      * @param array $argument

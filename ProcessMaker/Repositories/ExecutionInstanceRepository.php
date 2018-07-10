@@ -9,6 +9,7 @@ use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Contracts\Repositories\ExecutionInstanceRepositoryInterface;
 use ProcessMaker\Nayra\Contracts\Repositories\StorageInterface;
 use ProcessMaker\Nayra\RepositoryTrait;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Execution Instance Repository.
@@ -126,6 +127,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
      */
     public function persistInstanceCompleted(ExecutionInstanceInterface $instance)
     {
+        Log::info("persistInstanceCompleted");
         $instance->APP_STATUS = Instance::STATUS_COMPLETED;
         $instance->APP_FINISH_DATE = Carbon::now();
         $instance->save();
