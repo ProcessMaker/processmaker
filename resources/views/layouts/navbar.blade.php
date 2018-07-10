@@ -38,8 +38,10 @@
       </li>
     </ul>
     <ul class="navbar-nav ml-auto">
-      <li class="nav-item" style="padding:12px"><component id="navbar-request-button" v-bind:is="'request-modal'"></component></li>
-    <li class="nav-item">
+      <li class="nav-item" style="padding:12px">
+        <component id="navbar-request-button" v-bind:is="'request-modal'"></component>
+      </li>
+    <li class="nav-item" style="padding:16px">
       <notifications id="navbar-notifications-button" ref="hola" v-bind:is="'notifications'" v-bind:messages="messages"></notifications>
     </li>
     <li class="dropdown">
