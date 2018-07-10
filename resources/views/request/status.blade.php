@@ -12,6 +12,10 @@
 </div>
 @endsection
 
+@section('sidebar')
+  @include('sidebars.default', ['sidebar' => Menu::get('sidebar_request')])
+@endsection
+
 @section('js')
 <script src="{{mix('js/request/status.js')}}"></script>
 @endsection
