@@ -49,7 +49,7 @@
                 <input v-model="filter" class="form-control col-sm-3" placeholder="{{__('Search')}}...">
                 </div>
                 <div class="col-md-4 d-flex justify-content-end align-items-center col-sm-12 actions">
-                    <button @click="showAddModal" class="btn btn-action"><i class="fas fa-plus"></i> {{__('Role')}}</button>
+                    <button @click="showAddModal" class="btn btn-secondary"><i class="fas fa-plus"></i> {{__('Role')}}</button>
                 </div>
             </div>
             <roles-listing ref="rolesListing" :filter="filter"></roles-listing>
