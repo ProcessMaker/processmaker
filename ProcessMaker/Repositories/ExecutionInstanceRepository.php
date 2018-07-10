@@ -41,8 +41,9 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
     public function loadExecutionInstanceByUid($uid, StorageInterface $storage)
     {
         $instance = Instance::where('uid', $uid)->first();
-        if (!$instance)
-            return;
+        if (!$instance) {
+            abort(404, 'Instance not found');
+        }
         $callableId = $instance->callable;
         $process = $storage->getProcess($callableId);
         $dataStore = $storage->getFactory()->createDataStore();
