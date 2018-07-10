@@ -7,7 +7,7 @@
 @endsection
 
 @section('sidebar')
-    @include('sidebars.default', ['sidebar'=> $sidebar_designer])
+    @include('layouts.sidebar', ['sidebar'=> $sidebar_designer])
 @endsection
 
 @section('js')

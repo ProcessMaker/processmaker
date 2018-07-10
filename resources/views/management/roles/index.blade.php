@@ -1,7 +1,7 @@
 @extends('layouts.layout', ['title' => 'Role Management'])
 
 @section('sidebar')
-  @include('sidebars.default', ['sidebar'=> Menu::get('sidebar_admin')])
+  @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
 @endsection
 
 @section('content')

@@ -53,5 +53,5 @@
 <script src="{{mix('js/nayra/start.js')}}"></script>
 @endsection
 @section('sidebar')
-  @include('sidebars.default', ['sidebar' => Menu::get('sidebar_request')])
+  @include('layouts.sidebar', ['sidebar' => Menu::get('sidebar_request')])
 @endsection

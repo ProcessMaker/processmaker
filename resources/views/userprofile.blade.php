@@ -82,7 +82,7 @@
 @endsection
 
 @section('sidebar')
-  @include('sidebars.default', ['sidebar'=> $sidebar_admin])
+  @include('layouts.sidebar', ['sidebar'=> $sidebar_admin])
 @endsection
 
 @section('css')
