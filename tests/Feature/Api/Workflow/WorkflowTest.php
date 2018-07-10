@@ -18,7 +18,7 @@ class WorkflowTest extends ApiTestCase
 
     use DatabaseTransactions;
 
-    const API_TRIGGER_START_EVENT = '/api/1.0/processes/%s/events/%s/trigger_start';
+    const API_TRIGGER_START_EVENT = '/api/1.0/processes/%s/events/%s/trigger';
     const API_COMPLETE_DELEGATION = '/api/1.0/processes/%s/instances/%s/tokens/%s/complete';
 
     /**

@@ -1,9 +1,11 @@
 <?php
 namespace ProcessMaker\Jobs;
 
-use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
-use ProcessMaker\Model\Process as Definitions;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
+use ProcessMaker\Model\Process as Definitions;
+use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
+use Throwable;
 
 class CallProcess extends BpmnAction
 {
@@ -46,8 +48,8 @@ class CallProcess extends BpmnAction
             $workflow->getEngine()->runToNextState();
             
             return $response;
-        } catch (\Throwable $t) {
-            dd($t);
+        } catch (Throwable $t) {
+            Log::error($t->getMessage());
         }
     }
 

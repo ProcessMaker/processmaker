@@ -2,10 +2,12 @@
 namespace ProcessMaker\Jobs;
 
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
+use ProcessMaker\Model\Process as Definitions;
 use ProcessMaker\Nayra\Contracts\Bpmn\EventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
-use ProcessMaker\Model\Process as Definitions;
 use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
+use Throwable;
 
 class StartEvent extends BpmnAction
 {
@@ -53,8 +55,8 @@ class StartEvent extends BpmnAction
             $workflow->getEngine()->runToNextState();
             
             return $response;
-        } catch (\Throwable $t) {
-            dd($t);
+        } catch (Throwable $t) {
+            Log::error($t->getMessage());
         }
     }
 

@@ -5,6 +5,8 @@ use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use Illuminate\Support\Facades\App;
 use ProcessMaker\Model\Process as Definitions;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 abstract class TokenAction extends BpmnAction
 {
@@ -63,8 +65,8 @@ abstract class TokenAction extends BpmnAction
 
             //Run engine to the next state
             $workflow->getEngine()->runToNextState();
-        } catch (\Throwable $t) {
-            dd($t);
+        } catch (Throwable $t) {
+            Log::error($t->getMessage());
         }
     }
 }

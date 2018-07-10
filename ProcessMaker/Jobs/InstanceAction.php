@@ -1,9 +1,11 @@
 <?php
 namespace ProcessMaker\Jobs;
 
-use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\Model\Process as Definitions;
 use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
+use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
+use Throwable;
 
 abstract class InstanceAction extends BpmnAction
 {
@@ -44,8 +46,8 @@ abstract class InstanceAction extends BpmnAction
 
             //Run engine to the next state
             $workflow->getEngine()->runToNextState();
-        } catch (\Throwable $t) {
-            dd($t);
+        } catch (Throwable $t) {
+            Log::error($t->getMessage());
         }
     }
 }
