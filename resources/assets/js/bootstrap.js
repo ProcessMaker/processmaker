@@ -35,14 +35,12 @@ window.ProcessMaker = {
     /**
      * Push a notification.
      *
-     * @param {string} text Text of the notification
-     * @param {string} href Target URL
-     * @param {string} icon Icon class like "fa fa-envelope"
+     * @param {object} notification
      *
      * @returns {void}
      */
-    pushNotification(text, href, icon) {
-        this.notifications.push({text, href, icon});
+    pushNotification(notification) {
+        this.notifications.push(notification);
     }
 };
 

@@ -1,8 +1,10 @@
 /**
- * Process start component
+ * Process start components
  */
 import ProcessStart from './components/process-start.vue'
 import ProcessCall from './components/process-call.vue'
+
+//Vacation request form components:
 import RequestForm from './components/request-form.vue'
 import ApproveForm from './components/approve-form.vue'
 import ValidateForm from './components/validate-form.vue'
@@ -16,9 +18,5 @@ new Vue({
         RequestForm,
         ApproveForm,
         ValidateForm,
-    },
-    data() {
-        return {
-        }
     }
 })

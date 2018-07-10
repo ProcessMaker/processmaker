@@ -16,7 +16,7 @@
                     <label for="endDate">Reason</label>
                     <textarea disabled id ="reason" class="form-control" v-model="reason" placeholder="Reason" rows="3"></textarea>
                 </div>
-                <legend>Approved?</legend>
+                <legend>Supervisor approval?</legend>
                 <div class="form-group">
                     <i class="fa fa-check"></i>
                 </div>
@@ -50,7 +50,7 @@
             let userId = document.head.querySelector('meta[name="user-id"]').content;
             Echo.private(`ProcessMaker.Model.User.${userId}`)
                 .notification((token) => {
-                    ProcessMaker.pushNotification(token.message, token.url, 'fa fa-tasks');
+                    ProcessMaker.pushNotification(token);
                 });
         },
         methods: {

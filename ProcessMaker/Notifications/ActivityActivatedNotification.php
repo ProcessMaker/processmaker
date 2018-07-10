@@ -3,11 +3,12 @@
 namespace ProcessMaker\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Messages\BroadcastMessage;
-use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
+use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
+use ProcessMaker\Model\Delegation as Token;
 use ProcessMaker\Model\Process;
+use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 
 class ActivityActivatedNotification extends Notification
 {
@@ -76,8 +77,13 @@ class ActivityActivatedNotification extends Notification
         $process = Process::where('uid', $this->processUid)->first();
         $definitions = $process->getDefinitions();
         $activity = $definitions->getActivity($this->tokenElement);
+        $token = Token::where('uid', $this->tokenUid)->first();
         return new BroadcastMessage([
             'message' => sprintf('Task created: %s', $activity->getName()),
+            'name' => $activity->getName(),
+            'processName' => $process->name,
+            'userName' => $token->user->getFullName(),
+            'dateTime' => $token->delegate_date->toIso8601String(),
             'uid' => $this->tokenUid,
             'url' => sprintf(
                 '/nayra/%s/%s/%s/%s',
