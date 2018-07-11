@@ -10,7 +10,7 @@
 @endsection
 
 @section('sidebar')
-  @include('layouts.sidebar', ['sidebar'=> $sidebar_admin])
+  @include('layouts.sidebar', ['sidebar' => Menu::get('sidebar_admin')])
 @endsection
 
 @section('js')
