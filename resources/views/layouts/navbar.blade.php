@@ -4,18 +4,11 @@
   </button>
   <div class="collapse navbar-collapse" id="navbarNavDropdown">
     <ul class="navbar-nav">
+      @foreach(Menu::get('topnav')->items as $item)
       <li class="nav-item">
-        <a class="nav-link" href="{{ url('request') }}">{{__('Requests')}}</a>
+        <a class="nav-link" href="{{ $item->url() }}">{{$item->title}}</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{{ url('task') }}">{{__('Tasks')}}</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{{ url('process') }}">{{__('Processes')}}</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{{ url('admin') }}">Admin</a>
-      </li>
+    @endforeach
       <li>
         @if(Session::has('_alert'))
           @php
