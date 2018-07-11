@@ -20,7 +20,7 @@ class TokenController extends Controller
         $orderBy = $request->input('order_by', 'title');
         $orderDirection = $request->input('order_direction', 'asc');
 
-        $delegations = Delegation::where('application_id', $instance->id)
+        $delegations = Delegation::with('user')->where('application_id', $instance->id)
             ->where('thread_status', $request->get('thread_status'))
             ->paginate($perPage);
 

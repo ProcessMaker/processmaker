@@ -21,7 +21,6 @@
             let userId = document.head.querySelector('meta[name="user-id"]').content;
             Echo.private(`ProcessMaker.Model.User.${userId}`)
                     .notification((token) => {
-                        console.log(token);
                         ProcessMaker.pushNotification(token);
                     });
         },
