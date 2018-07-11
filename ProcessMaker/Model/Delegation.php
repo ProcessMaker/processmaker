@@ -96,6 +96,9 @@ class Delegation extends Model implements TokenInterface
         'app_overdue_percentage',
         'user_id'
     ];
+    protected $appends = [
+        'definition'
+    ];
 
     protected $rules = [
         'uid' => 'max:36',
@@ -160,5 +163,11 @@ class Delegation extends Model implements TokenInterface
     public function getRouteKeyName()
     {
         return 'uid';
+    }
+    
+    public function getDefinitionAttribute()
+    {
+        $definitions = $this->application->process->getDefinitions();
+        return $definitions->getActivity($this->element_ref)->getProperties();
     }
 }
