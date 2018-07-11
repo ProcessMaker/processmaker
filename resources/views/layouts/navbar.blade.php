@@ -8,7 +8,7 @@
       <li class="nav-item">
         <a class="nav-link" href="{{ $item->url() }}">{{$item->title}}</a>
       </li>
-    @endforeach
+      @endforeach
       <li>
         @if(Session::has('_alert'))
           @php
