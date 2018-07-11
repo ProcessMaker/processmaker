@@ -2,10 +2,12 @@
 namespace ProcessMaker\Http\Controllers\Api\Workflow;
 
 use Illuminate\Http\Request;
+use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Model\Application;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\Task;
-use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Transformers\ApplicationTransformer;
 
 class EventController extends Controller
 {
@@ -19,7 +21,7 @@ class EventController extends Controller
 
         //Call the manager to trigger the start event
         $instance = WorkflowManager::triggerStartEvent($process, $event, $data);
-        return ['instance' => $instance->uid];
+        return fractal($instance, new ApplicationTransformer())->respond();
     }
 
     public function callProcess(Request $request, Process $process, $processId)
@@ -31,7 +33,7 @@ class EventController extends Controller
 
         //Call the manager to trigger the start event
         $instance = WorkflowManager::callProcess($process, $calledProcess, $data);
-        return ['instance' => $instance->uid];
+        return fractal($instance, new ApplicationTransformer())->respond();
     }
 
     public function triggerIntermediate(Process $process, Task $event)
