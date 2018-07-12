@@ -4,7 +4,7 @@
         <toptoolbar ref="toptoolbar"></toptoolbar>
         <toolbar ref="toolbar"></toolbar>
         <div id="designer-subcontainer">
-            <div class="canvas-container">
+            <div class="canvas-container" @scroll="onScroll">
                 <crown ref="crown"></crown>
                 <svgcanvas :bpmn="bpmn" ref="svgcanvas"></svgcanvas>
             </div>
@@ -45,7 +45,8 @@ import modalMessageTypes from "./components/modals/modal-message-types";
 import modalOutputDocuments from "./components/modals/modal-output-documents"
 
 // This is out Cron for every shape
-import crown from "./components/crown";
+import crown from "./components/crown"
+import actions from "./actions"
 
 export default {
   components: {
@@ -128,6 +129,10 @@ export default {
     onHidden(){
       this.modalComponent = null
     },
+    onScroll(){
+        let action = actions.designer.crown.hide()
+        EventBus.$emit(action.type, action.payload)
+    }
   }
 };
 </script>

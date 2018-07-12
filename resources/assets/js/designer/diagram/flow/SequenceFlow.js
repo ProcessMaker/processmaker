@@ -18,11 +18,12 @@ export default class extends Flow {
     render() {
         this.shape = new joint.shapes.standard.Link()
         this.shape.vertices(this.formatWayPoints(this.options.wayPoints))
-        this.shape.source(this.options.source.getShape())
-        this.shape.target(this.options.target.getShape())
-        this.shape.router('manhattan', {
-            elementPadding: 4
+        this.setSource(this.options.source)
+        this.setTarget(this.options.target)
+        this.shape.router('orthogonal', {
+            elementPadding: 10
         })
         this.shape.addTo(this.graph)
+        this.createTools()
     }
 }
