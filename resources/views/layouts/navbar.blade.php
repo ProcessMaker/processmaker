@@ -34,8 +34,8 @@
       <li class="nav-item" style="padding:12px">
         <component id="navbar-request-button" v-bind:is="'request-modal'"></component>
       </li>
-    <li class="nav-item" style="padding:16px">
-      <notifications id="navbar-notifications-button" ref="hola" v-bind:is="'notifications'" v-bind:messages="messages"></notifications>
+    <li class="nav-item">
+      <notifications id="navbar-notifications-button" v-bind:is="'notifications'" v-bind:messages="messages"></notifications>
     </li>
     <li class="dropdown">
       <img class="avatar dropdown-toggle" style="width:55px; padding:10px" id="topnav-avatar" src="/img/avatar.png" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
