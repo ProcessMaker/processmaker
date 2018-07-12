@@ -16,6 +16,14 @@ new Vue({
 import requestModal from './components/requests/modal'
 import notifications from './components/requests/notifications'
 
+import { Navbar } from 'bootstrap-vue/es/components';
+new Vue({
+    el: '#navbar',
+    components: {
+        Navbar
+    }
+})
+
 // Setup our request modal and wire it to our button in the navbar
 new Vue({
     el: '#navbar-request-button',
