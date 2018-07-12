@@ -78,5 +78,5 @@ let host = document.head.querySelector('meta[name="broadcasting-host"]');
 window.Echo = new Echo({
   broadcaster: broadcaster.content,
   key: key.content,
-  host:host.content 
+  host:host.content
 });
