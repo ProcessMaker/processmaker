@@ -96,7 +96,7 @@
              * Listener from Crown to create Flow
              */
             createFlow(ev){
-                this.builder.connecting({
+                this.builder.createFlow({
                     x: ev.x - this.diagramCoordinates.x,
                     y: ev.y - this.diagramCoordinates.y
                 })

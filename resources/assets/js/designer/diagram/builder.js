@@ -23,7 +23,9 @@ export class Builder {
             that.createShape(el)
         });
         _.forEach(bpmn.links, (el) => {
-            that.createFlow(el)
+            let source = this.findInCollectionById(el.sourceRef)
+            let target = this.findInCollectionById(el.targetRef)
+            this.connect(Object.assign({}, {source, target}, el))
         });
     }
 
@@ -34,7 +36,6 @@ export class Builder {
      */
     createShape(options) {
         let element
-
         if (Elements[options.type]) {
             switch (options.type) {
                 case "sequenceflow":
@@ -48,6 +49,7 @@ export class Builder {
                     break;
                 default:
                     if (Elements[options.type.toLowerCase()]) {
+                        let participant = this.verifyElementFromPoint({x: options.x, y: options.y}, "participant")
                         element = new Elements[options.type.toLowerCase()](
                             options,
                             this.graph,
@@ -55,6 +57,7 @@ export class Builder {
                         );
                         element.render();
                         this.collection.push(element)
+                        participant ? participant.shape.embed(element.shape) : null
                     }
                     if (options.type === "participant") {
                         this.collection = _.concat(element.lanes, this.collection);
@@ -151,7 +154,12 @@ export class Builder {
         }
     }
 
-    connecting(ev) {
+
+    /**
+     * Create flow from Crown
+     * @param ev
+     */
+    createFlow(ev) {
         let elements = this.graph.findModelsFromPoint(ev)
         if (elements.length > 0) {
             let element = elements.pop()
@@ -166,13 +174,6 @@ export class Builder {
         this.connectingFlow.remove()
         this.connectingFlow = null
         this.sourceShape = null
-
-    }
-
-    createFlow(flowBpmn) {
-        let source = this.findInCollectionById(flowBpmn.sourceRef)
-        let target = this.findInCollectionById(flowBpmn.targetRef)
-        this.connect(Object.assign({}, {source, target}, flowBpmn))
     }
 
     /**
