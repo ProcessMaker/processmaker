@@ -8,7 +8,7 @@
 @endsection
 
 @section('sidebar')
-  @include('sidebars.default', ['sidebar'=> $sidebar_task])
+  @include('layouts.sidebar', ['sidebar' => Menu::get('sidebar_task')])
 @endsection
 
 @section('js')

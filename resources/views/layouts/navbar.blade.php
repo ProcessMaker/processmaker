@@ -1,17 +1,14 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light p-0">
-    <ul class="navbar-nav mr-auto">
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNavDropdown">
+    <ul class="navbar-nav">
+      @foreach(Menu::get('topnav')->items as $item)
       <li class="nav-item">
-        <a class="nav-link" href="{{ url('request') }}">{{__('Requests')}}</a>
+        <a class="nav-link" href="{{ $item->url() }}">{{$item->title}}</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{{ url('task') }}">{{__('Tasks')}}</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{{ url('process') }}">{{__('Processes')}}</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{{ url('admin') }}">Admin</a>
-      </li>
+      @endforeach
       <li>
         @if(Session::has('_alert'))
           @php
@@ -33,21 +30,24 @@
         @endif
       </li>
     </ul>
-
-    <component id="navbar-request-button" v-bind:is="'request-modal'"></component>
-    <notifications id="navbar-notifications-button" ref="hola" v-bind:is="'notifications'" v-bind:messages="messages"></notifications>
-
-    <ul class="navbar-nav">
-      <li class="break"></li>
-      <li class="dropdown">
-        <img class="avatar dropdown-toggle " id="topnav-avatar" src="/img/avatar.png" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-           <a class="dropdown-item drop-header"><img class="avatar-small" src="/img/avatar.png">{{\Auth::user()->firstname}} {{\Auth::user()->lastname}}</a>
-           @foreach($dropdown_nav->items as $row)
-              <a class="dropdown-item" href="{{ $row->url() }}"><i class="fas {{$row->attr('icon')}} fa-fw fa-lg"></i>{{$row->title}}</a>
-           @endforeach
-         </div>
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <component id="navbar-request-button" v-bind:is="'request-modal'"></component>
       </li>
+
+    <li class="nav-item">
+      <notifications id="navbar-notifications-button" v-bind:is="'notifications'" v-bind:messages="messages"></notifications>
     </li>
+    <li class="dropdown">
+      <img class="avatar dropdown-toggle" id="topnav-avatar" src="/img/avatar.png" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+         <a class="dropdown-item drop-header"><img class="avatar-small" src="/img/avatar.png">{{\Auth::user()->firstname}} {{\Auth::user()->lastname}}</a>
+         @foreach($dropdown_nav->items as $row)
+            <a class="dropdown-item" href="{{ $row->url() }}"><i class="fas {{$row->attr('icon')}} fa-fw fa-lg"></i>{{$row->title}}</a>
+         @endforeach
+       </div>
+    </li>
+  </li>
   </ul>
+  </div>
 </nav>
