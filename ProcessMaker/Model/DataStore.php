@@ -64,7 +64,7 @@ class DataStore implements DataStoreInterface
      */
     public function getData($name = null, $default = null)
     {
-        return $name === null ? $this->data : isset($this->data[$name]) ? $this->data[$name] : $default;
+        return $name === null ? $this->data : (isset($this->data[$name]) ? $this->data[$name] : $default);
     }
 
     /**
