@@ -1,5 +1,5 @@
 <template>
-    <div class="notifications" style="position: relative">
+    <div class="notifications">
         <a class="count-info" data-toggle="dropdown" href="#" aria-expanded="false">
             <i class="fa fa-bell"></i>
             <b-badge pill variant="success" v-show="messages.length>0">{{messages.length}}</b-badge>
@@ -39,7 +39,7 @@
 
 <script>
     import moment from "moment"
-    
+
     export default {
         props: {
             messages: Array
@@ -100,7 +100,7 @@
         position: absolute;
         top: 8px;
         background-color: white;
-        right: 24px;
+        right: 38px;
     }
     .arrow-container {
         position: absolute;
@@ -109,5 +109,10 @@
         width: 64px;
         right: 0px;
         top: -16px;
+    }
+
+    .notifications {
+      position: relative;
+      padding:16px;
     }
 </style>
