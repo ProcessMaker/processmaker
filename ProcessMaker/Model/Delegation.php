@@ -167,7 +167,14 @@ class Delegation extends Model implements TokenInterface
     
     public function getDefinitionAttribute()
     {
+        if (!$this->application) {
+            return [];
+        }
         $definitions = $this->application->process->getDefinitions();
-        return $definitions->getActivity($this->element_ref)->getProperties();
+        if (!$definitions->findElementById($this->element_ref)) {
+            return [];
+        }
+        $definition = $definitions->getActivity($this->element_ref);
+        return $definition->getProperties();
     }
 }
