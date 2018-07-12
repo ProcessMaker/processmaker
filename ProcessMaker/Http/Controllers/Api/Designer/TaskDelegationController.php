@@ -28,6 +28,7 @@ class TaskDelegationController
             'per_page' => $request->input('per_page', 10),
             'sort_by' => $request->input('sort_by', 'id'),
             'sort_order' => $request->input('sort_order', 'ASC'),
+            'include' => $request->input('include', ''),
         ];
         $response = TasksDelegationManager::index($options);
         return fractal($response, new TaskDelegationTransformer())
