@@ -63,7 +63,11 @@ class TaskDelegationTransformer extends TransformerAbstract
      */
     public function includeTask(Delegation $item): Item
     {
-        return $this->item($item->task, new TaskTransformer());
+        //Returns an empty array if there is not task definition
+        return $item->task ? $this->item($item->task, new TaskTransformer())
+            : $this->item($item->task, function ($item) {
+                return [];
+            });
     }
 
     /**
