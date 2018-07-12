@@ -1,9 +1,9 @@
 <template>
     <div>
-        <button id="navbar-request-button" class="btn btn-success  btn-sm" @click="toggleRequestModal"><i class="fas fa-plus"></i> Request</button>
+        <button id="navbar-request-button" class="btn btn-success btn-sm" @click="toggleRequestModal"><i class="fas fa-plus"></i> Request</button>
         <div class="arrow" :class="{show: show}" :style="arrowStyle"></div>
         <div id="requests-modal" class="requests-modal" :class="{show: show}">
-            <div class="header"> 
+            <div class="header">
                 <div class="title">
                 We've made it easy for you to make the following requests
                 </div>
@@ -234,5 +234,3 @@ export default {
   }
 }
 </style>
-
-
