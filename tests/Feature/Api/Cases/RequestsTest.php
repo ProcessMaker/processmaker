@@ -55,22 +55,11 @@ class RequestsTest extends ApiTestCase
         $response->assertStatus(200);
 
         $response->assertJsonStructure([
-            'total',
-            'per_page',
-            'current_page',
-            'last_page',
-            'first_page_url',
-            'last_page_url',
-            'next_page_url',
-            'prev_page_url',
-            'path',
-            'from',
-            'to',
-            'data'
+            'data',
+            'meta'
       ]);
       
         $data = json_decode($response->getContent());
-        $this->assertEquals($data->current_page, 1);
         $this->assertTrue(count($data->data) > 0);
 
     }
