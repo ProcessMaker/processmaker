@@ -1,4 +1,4 @@
-<div id="navbar">
+<div id="navbar" v-cloak>
   <b-navbar toggleable="md" type="light" variant="light">
     <b-navbar-nav>
       @foreach(Menu::get('topnav')->items as $item)
