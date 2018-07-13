@@ -50,7 +50,7 @@ class RequestsTest extends ApiTestCase
             'application_id' => 10
         ]);
 
-        $response = $this->api('GET', '/api/1.0/requests');
+        $response = $this->api('GET', '/api/1.0/requests?delay=overdue');
 
         $response->assertStatus(200);
 

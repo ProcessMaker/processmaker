@@ -1,4 +1,4 @@
-@extends('layouts.layout', ['title' => 'User Management'])
+@extends('layouts.layout', ['title' => 'Requests'])
 
 @section('sidebar')
     @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
@@ -11,10 +11,14 @@
             <div class="row">
                 <div class="col-md-8 d-flex align-items-center col-sm-12">
                     <h1 class="page-title">Requests</h1>
-                    <a href="#" class="btn btn-action"> OVERDUE </a>
-                    <a href="#" class="btn btn-action"> AT RISK </a>
-                    <a href="#" class="btn btn-action"> ON TIME </a>
-                    <input v-model="filter" class="form-control col-sm-3" placeholder="{{__('Search')}}...">
+                    <a href="#" class="btn btn-action" @click="loadRequestsOverdue"> OVERDUE </a>
+                    &nbsp;
+                    <a href="#" class="btn btn-action" @click="loadRequestsAtRisk"> AT RISK </a>
+                    &nbsp;
+                    <a href="#" class="btn btn-action" @click="loadRequestsOnTime"> ON TIME </a>
+                </div>
+                <div class="col-md-4 d-flex justify-content-end align-items-center col-sm-12 actions">
+                    <input v-model="filter" class="form-control" placeholder="{{__('Search')}}...">
                 </div>
             </div>
             <requests-listing :filter="filter"></requests-listing>

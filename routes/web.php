@@ -91,7 +91,7 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
         'middleware' => ['permission:PM_CASES']
     ], function() {
         $this->get('/process/{process}/tasks', 'Designer\TaskController@index')->name('processes-task-index');
-        $this->get('/cases/requests', 'Cases\RequestsController@index')->name('cases-requests-index');
+        $this->get('/cases/requests', 'Cases\RequestsController@index')->name('request');
     });
 
     $this->get('/designer', function() {
