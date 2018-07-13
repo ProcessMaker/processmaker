@@ -2,7 +2,7 @@
     <div class="notifications">
         <a class="count-info" data-toggle="dropdown" href="#" aria-expanded="false">
             <i class="fa fa-bell"></i>
-            <b-badge pill variant="success" v-show="messages.length>0">{{messages.length}}</b-badge>
+            <b-badge pill variant="danger" v-show="messages.length>0">{{messages.length}}</b-badge>
         </a>
         <ul class="dropdown-menu dropdown-alerts">
             <li>
@@ -80,13 +80,14 @@
         box-shadow: 0px 2px 4px 1px rgba(150,150,150,1);
     }
     .count-info {
+      color:#788793
     }
     .count-info .badge {
         font-size: 0.6em;
         padding: 2px 5px;
         position: absolute;
-        right: -0.5em;
-        top: -0.5em;
+        right: 0.5em;
+        top: 1em;
     }
     .arrow {
         -webkit-transform: rotate(45deg);

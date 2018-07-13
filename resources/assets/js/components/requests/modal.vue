@@ -111,7 +111,7 @@ export default {
     }
   },
   mounted() {
-    this.arrowStyle.top = $("#navbar-request-button").offset().top + 45 + "px";
+    this.arrowStyle.top = $("#navbar-request-button").offset().top + 57 + "px";
     this.arrowStyle.left =
       $("#navbar-request-button").offset().left + 32 + "px";
 
