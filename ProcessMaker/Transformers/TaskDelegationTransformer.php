@@ -6,6 +6,7 @@ use League\Fractal\Resource\Item;
 use League\Fractal\TransformerAbstract;
 use ProcessMaker\Application;
 use ProcessMaker\Model\Delegation;
+use League\Fractal\Resource\NullResource;
 
 /**
  * Delegation transformer, used to prepare the JSON response returned in the
@@ -62,7 +63,11 @@ class TaskDelegationTransformer extends TransformerAbstract
      */
     public function includeTask(Delegation $item): Item
     {
-        return $this->item($item->task, new TaskTransformer());
+        //Returns an empty array if there is not task definition
+        return $item->task ? $this->item($item->task, new TaskTransformer())
+            : $this->item($item->task, function ($item) {
+                return [];
+            });
     }
 
     /**

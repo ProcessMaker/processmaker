@@ -23,9 +23,7 @@
             <div v-if="Object.keys(processes).length && !loading" class="process-list">
                 <div class="category" v-for="(processList, index) in processes" :key="index">
                     <h3 class="name">{{index}}</h3>
-                    <div class="processes">
-                        <process-card v-for="(process,index) in processList" :filter="filter" :key="index" :name="process.name" :description="process.description" :uid="process.uid"></process-card>
-                    </div>
+                    <process-card v-for="(process,index) in processList" :filter="filter" :key="index" :process="process"></process-card>
                 </div>
             </div>
             <div class="no-requests" v-if="!Object.keys(processes).length && !loading">

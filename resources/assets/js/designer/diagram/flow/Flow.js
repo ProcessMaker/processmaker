@@ -1,4 +1,5 @@
 import _ from "lodash"
+import joint from "jointjs"
 /**
  * Flow class
  */
@@ -36,7 +37,7 @@ export default class {
         let res = []
         if (wayPoints && wayPoints.length > 2) {
             res = _.initial(wayPoints)
-            res = _.drop(wayPoints);
+            res = _.drop(res)
         }
         return res
     }
@@ -63,5 +64,74 @@ export default class {
         if (this.shape) {
             this.shape.vertices([])
         }
+    }
+
+    /**
+     * Set target to link
+     * @param target
+     */
+    setTarget(target) {
+        this.shape.target(target.getShape(), {
+            connectionPoint: {
+                name: 'anchor',
+                args: {
+                    offset: 0
+                }
+            },
+            anchor: {
+                name: 'midSide',
+                args: {
+                    rotate: false,
+                    padding: 0
+                }
+            }
+        })
+    }
+
+    /**
+     * Set target to link
+     * @param target
+     */
+    setSource(source) {
+        this.shape.source(source.getShape(), {
+            connectionPoint: {
+                name: 'anchor',
+                args: {
+                    offset: 0
+                }
+            },
+            anchor: {
+                name: 'midSide',
+                args: {
+                    rotate: false,
+                    padding: 0
+                }
+            }
+        })
+    }
+
+    /**
+     * Create tools from link
+     */
+    createTools() {
+        let verticesTool = new joint.linkTools.Vertices()
+        let segmentsTool = new joint.linkTools.Segments()
+        let sourceArrowheadTool = new joint.linkTools.SourceArrowhead()
+        let targetArrowheadTool = new joint.linkTools.TargetArrowhead()
+        let sourceAnchorTool = new joint.linkTools.SourceAnchor()
+        let targetAnchorTool = new joint.linkTools.TargetAnchor()
+        let boundaryTool = new joint.linkTools.Boundary()
+        let removeButton = new joint.linkTools.Remove()
+        let toolsView = new joint.dia.ToolsView({
+            tools: [
+                verticesTool, segmentsTool,
+                sourceArrowheadTool, targetArrowheadTool,
+                sourceAnchorTool, targetAnchorTool,
+                boundaryTool, removeButton
+            ]
+        })
+        let linkView = this.shape.findView(this.paper)
+        linkView.addTools(toolsView);
+        linkView.hideTools()
     }
 }

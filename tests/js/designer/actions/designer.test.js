@@ -45,5 +45,40 @@ describe('designer.vue', () => {
             type: "designer/shape/remove",
             payload: {}
         })
+
+        expect(actions.designer.shape.drag({})).toEqual({
+            type: "designer/shape/drag",
+            payload: {}
+        })
+
+        expect(actions.designer.shape.click({})).toEqual({
+            type: "designer/shape/click",
+            payload: {}
+        })
+
+        expect(actions.designer.bpmn.update({})).toEqual({
+            type: "designer/bpmn/update",
+            payload: {}
+        })
+
+        expect(actions.designer.lane.create({})).toEqual({
+            type: "designer/lane/create",
+            payload: {}
+        })
+
+        expect(actions.designer.flow.create({})).toEqual({
+            type: "designer/flow/create",
+            payload: {}
+        })
+
+        expect(actions.designer.flow.creating({})).toEqual({
+            type: "designer/flow/creating",
+            payload: {}
+        })
+
+        expect(actions.designer.canvas.click({})).toEqual({
+            type: "designer/canvas/click",
+            payload: {}
+        })
     })
 })

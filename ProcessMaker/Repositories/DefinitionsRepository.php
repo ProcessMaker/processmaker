@@ -8,6 +8,7 @@ use ProcessMaker\Nayra\Contracts\RepositoryInterface;
 use ProcessMaker\Nayra\RepositoryTrait;
 use ProcessMaker\Repositories\ExecutionInstanceRepository;
 use ProcessMaker\Repositories\TokenRepository;
+use ProcessMaker\Model\DataStore;
 
 /**
  * Definitions Repository
@@ -46,5 +47,9 @@ class DefinitionsRepository implements RepositoryInterface
             $this->tokenRepository = new TokenRepository($this->createExecutionInstanceRepository());
         }
         return $this->tokenRepository;
+    }
+    
+    public function createDataStore() {
+        return new DataStore();
     }
 }

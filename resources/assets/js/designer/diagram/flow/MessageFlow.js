@@ -21,9 +21,10 @@ export default class extends Flow {
         this.shape.source(this.options.source.getShape())
         this.shape.target(this.options.target.getShape())
         this.shape.attr('line/stroke-dasharray', '3,5');
-        this.shape.router('manhattan', {
-            elementPadding: 4
+        this.shape.router('orthogonal', {
+            elementPadding: 10
         })
         this.shape.addTo(this.graph)
+        this.createTools()
     }
 }

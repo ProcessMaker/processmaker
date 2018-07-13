@@ -29,7 +29,8 @@ export const designer = {
             click: x => x
         },
         flow: {
-            create: x => x
+            create: x => x,
+            creating: x => x
         },
         lane: {
             create: x => x
