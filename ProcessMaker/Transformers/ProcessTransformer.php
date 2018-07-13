@@ -37,6 +37,22 @@ class ProcessTransformer extends TransformerAbstract
         }
         // Unset category_id, user_id we don't need it anymore
         unset($data['process_category_id'], $data['user_id']);
+        
+        //Get start events from process definition
+        $processes = $process->getDefinitions()->getElementsByTagName('process');
+        $data['definitions'] = [];
+        foreach ($processes as $innerProcess) {
+            $startEvents = $innerProcess->getElementsByTagName('startEvent');
+            $definition = [
+                'id' => $innerProcess->getAttribute('id'),
+            ];
+            foreach ($startEvents as $startEvent) {
+                $definition['starEvents'][] = [
+                    'id' => $startEvent->getAttribute('id')
+                ];
+            }
+            $data['definitions'][] = $definition;
+        }
         return $data;
     }
 

@@ -58,6 +58,10 @@ class User extends Authenticatable implements UserEntityInterface, CanResetPassw
         'avatar'
     ];
 
+    protected $appends = [
+        'fullname'
+    ];
+
     /**
      * The key to use in routes to fetch a user
      */
@@ -176,5 +180,14 @@ class User extends Authenticatable implements UserEntityInterface, CanResetPassw
     public function role()
     {
         return $this->belongsTo(Role::class);
+    }
+
+    /**
+     * Get the full name as an attribute.
+     *
+     * @return string
+     */
+    public function getFullnameAttribute() {
+        return $this->getFullName();
     }
 }

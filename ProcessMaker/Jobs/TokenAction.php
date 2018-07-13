@@ -66,7 +66,7 @@ abstract class TokenAction extends BpmnAction
             //Run engine to the next state
             $workflow->getEngine()->runToNextState();
         } catch (Throwable $t) {
-            Log::error($t->getMessage());
+            Log::error($t->getTraceAsString());
         }
     }
 }

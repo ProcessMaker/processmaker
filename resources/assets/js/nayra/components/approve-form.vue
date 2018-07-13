@@ -60,7 +60,6 @@
                     approved: true,
                 })
                 .then((response) => {
-                    this.instances.push(response);
                 })
             },
             reject() {

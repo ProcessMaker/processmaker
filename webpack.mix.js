@@ -22,6 +22,7 @@ mix.js('resources/assets/js/app-layout.js', 'public/js')
     .js('resources/assets/js/nayra/start.js', 'public/js/nayra')
 
     .js('resources/assets/js/request/status.js', 'public/js/request')
+    .js('resources/assets/js/tasks/index.js', 'public/js/tasks')
 
 
 
