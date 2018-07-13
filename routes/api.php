@@ -168,5 +168,7 @@ Route::group([
         Route::put('process/{process}/task/{task}', 'Designer\TaskController@update')->middleware('can:write,ProcessMaker\Model\Task');
         Route::delete('process/{process}/task/{task}', 'Designer\TaskController@remove')->middleware('can:delete,ProcessMaker\Model\Task');
 
+        //Requests endpoints
+        Route::get('requests','Cases\RequestsController@index')->middleware('auth');
     });
 });
