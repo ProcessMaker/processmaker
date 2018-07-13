@@ -2,35 +2,17 @@ require('./bootstrap');
 let Vue = window.Vue;
 
 import avatar from './components/common/avatar';
-
-new Vue({
-    el: '#topnav-avatar',
-    components: {
-        avatar
-    }
-})
-
-
-
-// Import our requests modal
 import requestModal from './components/requests/modal'
 import notifications from './components/requests/notifications'
+import { Navbar } from 'bootstrap-vue/es/components';
 
-// Setup our request modal and wire it to our button in the navbar
 new Vue({
-    el: '#navbar-request-button',
+    el: '#navbar',
     components: {
-        requestModal
-    }
-})
-
-/**
- * Setup the notifications block
- */
-new Vue({
-    el: '#navbar-notifications-button',
-    components: {
-        notifications
+        Navbar,
+        requestModal,
+        notifications,
+        avatar
     },
     data() {
         return {
@@ -38,6 +20,7 @@ new Vue({
         }
     }
 })
+
 
 // Setup our api client interceptor to handle errors and reflect the error
 // in our skin.

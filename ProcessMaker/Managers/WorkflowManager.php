@@ -17,7 +17,7 @@ class WorkflowManager
 
     public function completeTask(Definitions $definitions, ExecutionInstanceInterface $instance, TokenInterface $token, array $data)
     {
-        return CompleteActivity::dispatch($definitions, $instance, $token, $data);
+        return CompleteActivity::dispatchNow($definitions, $instance, $token, $data);
     }
 
     /**

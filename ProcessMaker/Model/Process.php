@@ -407,8 +407,9 @@ class Process extends Model
     {
         if (empty($this->bpmnDefinitions)) {
             $this->bpmnDefinitions = app(BpmnDocumentInterface::class, ['process' => $this]);
-            $this->bpmnDefinitions->loadXML($this->bpmn);
-            $this->bpmnDefinitions;
+            if ($this->bpmn) {
+                $this->bpmnDefinitions->loadXML($this->bpmn);
+            }
         }
         return $this->bpmnDefinitions;
     }

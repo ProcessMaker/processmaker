@@ -65,6 +65,8 @@ class TokenRepository implements TokenRepositoryInterface
         $token->application_id = $token->getInstance()->id;
         $token->user_id = Auth::id();
         $token->delegate_date = Carbon::now();
+        //@todo calculate the due date
+        $token->task_due_date = Carbon::now()->addDays(3);
         $token->started = false;
         $token->finished = false;
         $token->delayed = false;

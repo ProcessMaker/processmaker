@@ -20,10 +20,10 @@
                      src="../img/end-event.svg" height="27" @click="createAction($event)">
             </div>
             <div class="item-crown">
-                <img id="bpmn:EndEvent" src="../img/corona-flow.png" height="28"
-                     @click="createFlow($event)">
+                <img id="bpmn:Flow" src="../img/corona-flow.png" height="28"
+                     @dragstart="creatingFlow($event)" @dragend="createFlow($event)">
             </div>
-            <div class="item-crown" @click="createFlow($event)">
+            <div class="item-crown">
                 <i id="cog" class="fas fa-cog icrown" draggable="true"></i>
             </div>
         </div>
@@ -74,13 +74,20 @@
             hide(){
                 this.visible = false
             },
-            createFlow(ev){
-                let action = actions.designer.flow.create()
+            creatingFlow(ev){
+                let action = actions.designer.crown.hide()
                 EventBus.$emit(action.type, action.payload)
-            }
-        },
-        mounted() {
+                let action1 = actions.designer.flow.creating(ev)
+                EventBus.$emit(action1.type, action1.payload)
+            },
+            createFlow(ev){
+                debugger
+                let action = actions.designer.flow.create(ev)
+                EventBus.$emit(action.type, action.payload)
+            },
+            mounted() {
 
+            }
         }
     }
 </script>
@@ -97,6 +104,7 @@
         text-align: center;
         min-width: 33px;
         padding: 2px;
+        background: white;
 
         img:before {
             content: '';
