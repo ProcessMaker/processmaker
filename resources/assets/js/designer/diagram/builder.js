@@ -14,6 +14,7 @@ export class Builder {
         this.selection = []
         this.targetShape = null
         this.sourceShape = null
+        this.connectingFlow = null
     }
 
     createFromBPMN(bpmn) {
@@ -22,7 +23,9 @@ export class Builder {
             that.createShape(el)
         });
         _.forEach(bpmn.links, (el) => {
-            that.createFlow(el)
+            let source = this.findInCollectionById(el.sourceRef)
+            let target = this.findInCollectionById(el.targetRef)
+            this.connect(Object.assign({}, {source, target}, el))
         });
     }
 
@@ -33,7 +36,6 @@ export class Builder {
      */
     createShape(options) {
         let element
-
         if (Elements[options.type]) {
             switch (options.type) {
                 case "sequenceflow":
@@ -47,6 +49,7 @@ export class Builder {
                     break;
                 default:
                     if (Elements[options.type.toLowerCase()]) {
+                        let participant = this.verifyElementFromPoint({x: options.x, y: options.y}, "participant")
                         element = new Elements[options.type.toLowerCase()](
                             options,
                             this.graph,
@@ -54,6 +57,7 @@ export class Builder {
                         );
                         element.render();
                         this.collection.push(element)
+                        participant ? participant.shape.embed(element.shape) : null
                     }
                     if (options.type === "participant") {
                         this.collection = _.concat(element.lanes, this.collection);
@@ -71,21 +75,11 @@ export class Builder {
     onClickShape(elJoint) {
         let el = this.findElementInCollection(elJoint, true)
         if (el) {
-            if (this.sourceShape) {
-                this.connect({
-                    source: this.sourceShape,
-                    target: el,
-                    type: "sequenceflow"
+            this.hideCrown()
+            el.showCrown()
+            this.selection = []
+            this.selection.push(el)
 
-                })
-                this.sourceShape.hideCrown()
-                this.sourceShape = null
-            } else {
-                this.hideCrown()
-                el.showCrown()
-                this.selection = []
-                this.selection.push(el)
-            }
         }
         return false;
     }
@@ -160,10 +154,26 @@ export class Builder {
         }
     }
 
-    createFlow(flowBpmn) {
-        let source = this.findInCollectionById(flowBpmn.sourceRef)
-        let target = this.findInCollectionById(flowBpmn.targetRef)
-        this.connect(Object.assign({}, {source, target}, flowBpmn))
+
+    /**
+     * Create flow from Crown
+     * @param ev
+     */
+    createFlow(ev) {
+        let elements = this.graph.findModelsFromPoint(ev)
+        if (elements.length > 0) {
+            let element = elements.pop()
+            let target = this.findElementInCollection(element)
+            this.connect({
+                source: this.sourceShape,
+                target,
+                type: "sequenceflow"
+            })
+
+        }
+        this.connectingFlow.remove()
+        this.connectingFlow = null
+        this.sourceShape = null
     }
 
     /**
@@ -194,8 +204,21 @@ export class Builder {
      * This method set source element to create flow
      * @param element
      */
-    setSourceElement() {
+    setSourceElement(ev) {
         this.sourceShape = this.selection.pop()
+        this.connectingFlow = true
+        this.connectingFlow = new joint.shapes.standard.Link()
+        this.connectingFlow.source(this.sourceShape.getShape())
+        this.connectingFlow.target(ev)
+        this.connectingFlow.attr('line/stroke-dasharray', '3,5');
+        this.connectingFlow.router('normal')
+        this.connectingFlow.addTo(this.graph)
+    }
+
+    updateConnectingFlow(ev) {
+        if (this.connectingFlow) {
+            this.connectingFlow.target(ev)
+        }
     }
 
     /**
@@ -234,7 +257,7 @@ export class Builder {
      */
     pointerUp(cellView, evt, x, y) {
         let cell = cellView.model;
-        let cellViewsBelow = this.paper.findViewsFromPoint(cell.getBBox().center());
+        let cellViewsBelow = this.paper.findViewsFromPoint(cellView.getBBox ? cellView.getBBox().center() : cell.getBBox().center());
         if (cellViewsBelow.length) {
             // Note that the findViewsFromPoint() returns the view for the `cell` itself.
             let cellViewBelow = _.find(cellViewsBelow, function (c) {

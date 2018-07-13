@@ -70,6 +70,7 @@
     export default {
         methods: {
             createElement (value) {
+                debugger
                 let action = actions.designer.drag.toolbar.end(value)
                 EventBus.$emit(action.type, action.payload)
             }

@@ -86,6 +86,9 @@ export class Shape {
         return this.type
     }
 
+    /**
+     * Reset the vertices in link
+     */
     resetFlows() {
         let links
         if (this.shape) {
