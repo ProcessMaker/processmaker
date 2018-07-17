@@ -1,7 +1,7 @@
 <template>
   <div class="data-table">
     <vuetable :dataManager="dataManager" :sortOrder="sortOrder" :css="css" :api-mode="false"  @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data" pagination-path="meta">
-        <template slot="actions" slot-scope="props"> 
+        <template slot="actions" slot-scope="props">
           <div class="actions">
             <i class="fas fa-ellipsis-h"></i>
             <div class="popout">
@@ -11,10 +11,10 @@
               <b-btn variant="action" @click="onAction('permissions-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="Permissions"><i class="fas fa-user-lock"></i></b-btn>
             </div>
           </div>
-    </template>  
-    </vuetable> 
+        </template>
+    </vuetable>
     <pagination single="Group" plural="Groups" :perPageSelectEnabled="true" @changePerPage="changePerPage" @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
-   </div>
+  </div>
 </template>
 
 <script>
@@ -139,4 +139,3 @@ export default {
   }
 }
 </style>
-

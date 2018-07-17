@@ -1,7 +1,7 @@
 <template>
   <div class="data-table">
     <vuetable :dataManager="dataManager" :sortOrder="sortOrder" :css="css" :api-mode="false"  @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data" pagination-path="meta">
-        <template slot="actions" slot-scope="props"> 
+        <template slot="actions" slot-scope="props">
           <div class="actions">
             <i class="fas fa-ellipsis-h"></i>
             <div class="popout">
@@ -11,9 +11,15 @@
               <b-btn variant="action" @click="onAction('permissions-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="Permissions"><i class="fas fa-user-lock"></i></b-btn>
             </div>
           </div>
-      </template>  
-    </vuetable> 
+      </template>
+    </vuetable>
     <pagination single="Role" plural="Roles" :perPageSelectEnabled="true" @changePerPage="changePerPage" @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
+    <b-modal ref="editItem" hide-footer title="Using Component Methods">
+     <div class="d-block text-center">
+       <h3>Hello From My Modal!</h3>
+     </div>
+     <b-btn class="mt-3" variant="outline-danger" block @click="hideModal">Close Me</b-btn>
+   </b-modal>
    </div>
 </template>
 
@@ -87,6 +93,16 @@ export default {
     };
   },
   methods: {
+    onAction(key) {
+      switch(key) {
+        case 'edit-item' :
+          this.$refs.editItem.show()
+          break;
+      }
+    },
+    hideModal() {
+      this.$refs.editItem.hide()
+    },
     formatActiveUsers(value) {
       return '<div class="text-center">' + value + "</div>";
     },
@@ -153,4 +169,3 @@ export default {
   }
 }
 </style>
-
