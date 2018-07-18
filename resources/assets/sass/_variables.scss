@@ -1,6 +1,26 @@
 // Changing the body background and text
 $body-bg: #f7f9fb;
 
+// Fonts
+
+$font-family-sans-serif:  "Open Sans", Helvetica, Arial, sans-serif !default;
+$font-family-serif:       Georgia, "Times New Roman", Times, serif !default;
+
+//** Default monospace fonts for `<code>`, `<kbd>`, and `<pre>`.
+$font-family-monospace:   Menlo, Monaco, Consolas, "Courier New", monospace !default;
+$font-family-base:        $font-family-sans-serif !default;
+
+$font-size-base:          0.75rem !default;
+$font-size-large:         ceil(($font-size-base * 1.25)) !default; // ~18px
+$font-size-small:         ceil(($font-size-base * 0.85)) !default; // ~12px
+
+$font-size-h1:            floor(($font-size-base * 2.6)) !default; // ~36px
+$font-size-h2:            floor(($font-size-base * 2.15)) !default; // ~30px
+$font-size-h3:            ceil(($font-size-base * 1.7)) !default; // ~24px
+$font-size-h4:            ceil(($font-size-base * 1.25)) !default; // ~18px
+$font-size-h5:            $font-size-base !default;
+$font-size-h6:            ceil(($font-size-base * 0.85)) !default; // ~12px
+
 // Changing the theme colors
 $primary: #3397e1;
 $secondary: #788793;
@@ -9,6 +29,8 @@ $info: #17a2b8;
 $warning: #fbbe02;
 $danger: #ed4757;
 $light: #ffffff;
+
+$grey-bg: #e9edf1;
 
 $input-bg: #ffffff;
 $input-border-color: #dddfe4;
@@ -36,9 +58,23 @@ $breadcrumb-divider-color: $primary;
 $breadcrumb-item: $secondary;
 
 //table
-$table-head-bg: #f7f9fb;
-$table-bg: #ffffff;
-$table-hover-bg: #f0f3f6;
+// $table-head-bg: #f7f9fb;
+// $table-bg: #ffffff;
+// $table-hover-bg: #f0f3f6;
+
+//
+
+$table-cell-padding:            8px !default;
+$table-condensed-cell-padding:  5px !default;
+$table-bg:                      $light !default;
+$table-bg-accent:               #f9f9f9 !default;
+$table-bg-hover:                #f0f3f6 !default;
+$table-bg-active:               $table-bg-hover !default;
+
+//** Border color for table and cell borders.
+$table-border-color:            #ddd !default;
+
+//
 
 ////checkbox
 $custom-checkbox-indicator-indeterminate-bg: #788793;
