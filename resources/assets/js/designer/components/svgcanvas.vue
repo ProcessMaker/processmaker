@@ -9,7 +9,7 @@
     import _ from "lodash"
     import joint from 'jointjs'
     import parser from 'xml-js'
-    import BPMNHandler from '../lib/BPMNHandler'
+    import BPMNHandler from '../BPMNHandler/BPMNHandler'
     import {Elements} from "../diagram/elements";
     export default {
         data() {
@@ -37,6 +37,7 @@
             EventBus.$on(actions.designer.flow.creating().type, (value) => this.creatingFlow(value))
             EventBus.$on(actions.designer.flow.create().type, (value) => this.createFlow(value))
             EventBus.$on(actions.designer.shape.remove().type, (value) => this.removeElement(value))
+            EventBus.$on(actions.bpmn.toXML().type, (value) => this.toXML(value))
         },
         methods: {
             /**
@@ -64,6 +65,9 @@
              */
             removeElement (e){
                 this.builder.removeSelection()
+            },
+            toXML (e){
+                this.bpmnHandler.toXML()
             },
             /**
              * Listener from Crown for update position in element

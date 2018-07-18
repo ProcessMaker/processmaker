@@ -1,5 +1,6 @@
 import _ from "lodash"
-
+import Mutations from "./Mutations"
+import EventBus from "../lib/event-bus"
 /**
  * BPMNHandler class
  */
@@ -17,6 +18,7 @@ export default class BPMNHandler {
         this.elementsDiagram = [] // diagrams
         this.processes = [] // processes definition
         this.collaborations = [] // collaborations objects
+        this.addMutations()
     }
 
     /**
@@ -200,5 +202,37 @@ export default class BPMNHandler {
         } else {
             return null
         }
+    }
+
+    addMutations() {
+        let that = this
+        _.flatMap(Mutations, (mutation, type) => {
+            EventBus.$on(type, (payload) => {
+                mutation(that.elements, payload)
+            })
+        })
+    }
+
+    toXML() {
+        debugger
+        var convert = require('xml-js');
+        var options = {
+            compact: false,
+            ignoreComment: true,
+            ignoreDeclaration: true,
+            spaces: 4
+        };
+        var result = convert.js2xml(this.bpmn, options);
+        console.log(result);
+        let textFile
+        var data = new Blob([result], {type: 'text/plain'});
+        if (textFile !== null) {
+            window.URL.revokeObjectURL(textFile);
+        }
+        textFile = window.URL.createObjectURL(data);
+
+        let window2 = window.open(textFile, 'log.' + new Date() + '.txt');
+        window2.onload = e => window.URL.revokeObjectURL(textFile);
+        return textFile
     }
 }

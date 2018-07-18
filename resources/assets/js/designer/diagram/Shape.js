@@ -103,4 +103,17 @@ export class Shape {
         this.shape.remove()
         return this
     }
+
+    updateProps() {
+        let action = actions.bpmn.shape.update({
+            id: this.options.id,
+            bounds: {
+                x: this.options.x,
+                y: this.options.y,
+                width: this.options.width,
+                height: this.options.height
+            }
+        })
+        EventBus.$emit(action.type, action.payload)
+    }
 }

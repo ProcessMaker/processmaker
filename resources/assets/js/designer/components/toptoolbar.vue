@@ -21,7 +21,7 @@
                         <a href="#" title="Zoom In"><i class="fas fa-search-minus"></i></a>
                     </li>
                     <li class="nav-item ">
-                        <a href="#" title="Save Process"><i class="fas fa-save"></i></a>
+                        <a href="#" title="Save Process" @click="saveBPMN($event)"><i class="fas fa-save"></i></a>
                     </li>
                     <li class="nav-item ">
                         <a @click="uploadBPMN($event)" title="Upload BPMN"><i class="fas fa-upload"></i></a>
@@ -50,6 +50,10 @@
                     inputFile.click()
                 }
                 return inputFile
+            },
+            saveBPMN (value) {
+                let action = actions.bpmn.toXML(value)
+                EventBus.$emit(action.type, action.payload)
             },
             handleFileChange(e){
                 let file = e && e.target ? e.target.files[0] : null
