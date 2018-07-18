@@ -58,21 +58,15 @@ $breadcrumb-divider-color: $primary;
 $breadcrumb-item: $secondary;
 
 //table
-// $table-head-bg: #f7f9fb;
-// $table-bg: #ffffff;
-// $table-hover-bg: #f0f3f6;
-
-//
-
-$table-cell-padding:            8px !default;
+$table-cell-padding:            10px !default;
 $table-condensed-cell-padding:  5px !default;
 $table-bg:                      $light !default;
 $table-bg-accent:               #f9f9f9 !default;
-$table-bg-hover:                #f0f3f6 !default;
+$table-bg-hover:                $grey-bg !default;
 $table-bg-active:               $table-bg-hover !default;
 
 //** Border color for table and cell borders.
-$table-border-color:            #ddd !default;
+$table-border-color:            $grey-bg !default;
 
 //
 
