@@ -236,17 +236,16 @@ h1.page-title {
 // Data table rules
 table.vuetable {
   margin-top: 16px;
-  font-size: $font-size-base px;
-//   background-color: transparent;
-//
-//   tr:hover td {
-//     background-color: #d8d8d8;
-//   }
-//
+  font-size: $font-size-base;
+
+  tr:hover td {
+    background-color: $grey-bg;
+  }
+
   .vuetable-slot {
     position: relative;
   }
-//
+
   .actions {
     cursor: pointer;
     text-align: right;
@@ -255,12 +254,11 @@ table.vuetable {
       display: none;
       align-items: center;
       position: absolute;
-      background-color: #d8d8d8;
+      background-color: $grey-bg;
       right: 0;
       top: 0;
-      font-size: 17px;
-      text-align: right;
-      height: 42px;
+      margin:3px;
+      font-size: $font-size-large;
 
       button.btn-action {
         color: #212529;
@@ -268,8 +266,8 @@ table.vuetable {
         width: 32px;
         margin-left: 4px;
         margin-right: 4px;
-        background-color: #d8d8d8;
-        border-color: #d8d8d8;
+        background-color: $grey-bg;
+        border:0;
         text-align: center;
         padding: 0;
 
@@ -286,26 +284,7 @@ table.vuetable {
       }
     }
   }
-//
-//   td {
-//     border-top: 2px solid #f7f9fb;
-//   }
-//
-//   td:first-child,
-//   th:first-child {
-//     border-radius: 2px 0 0 2px;
-//   }
-//
-//   td:last-child,
-//   th:last-child {
-//     border-radius: 0 2px 2px 0;
-//   }
-//
-//   tr {
-//     margin-top: 2px;
-//     margin-bottom: 2px;
-//   }
-//
+
   th {
     background-color: $grey-bg;
     color: $secondary;
@@ -316,29 +295,11 @@ table.vuetable {
       color: black;
     }
   }
-//
-//   td {
-//     background-color: white;
-//   }
-// }
 
-// .vuetable-pagination {
-//   color: #788793;
-//   font-size: 12px;
-// }
+.vuetable-pagination {
+  color: $secondary;
+}
 
-// .table thead th {
-//   border: 0;
-//   background-color: $body-bg;
-//   font-size: 12px;
-// }
-//
-// .table td {
-//   font-size: 12px;
-// }
-//
-// .table-header {
-//   font-size: 18px;
 }
 
 ///icomoon
