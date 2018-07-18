@@ -36,6 +36,7 @@ Route::group([
             // Roles API Endpoints
             Route::get('roles', 'Administration\RolesController@index');
             Route::post('roles', 'Administration\RolesController@create');
+            Route::post('roles/update/{uid}', 'Administration\RolesController@update');
             Route::get('roles/{role}', 'Administration\RolesController@get');
 
             // Roles API Endpoints
