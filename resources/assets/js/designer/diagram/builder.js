@@ -135,6 +135,7 @@ export class Builder {
         })
         if (res) {
             res.config(element.get("position"))
+            res.updateProps()
             res.resetFlows()
         }
     }
