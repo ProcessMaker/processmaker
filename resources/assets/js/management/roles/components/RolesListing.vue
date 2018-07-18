@@ -14,13 +14,37 @@
       </template>
     </vuetable>
     <pagination single="Role" plural="Roles" :perPageSelectEnabled="true" @changePerPage="changePerPage" @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
-    <b-modal ref="editItem" hide-footer title="Using Component Methods">
-     <div class="d-block text-center">
-       <h3>Hello From My Modal!</h3>
-     </div>
-     <b-btn class="mt-3" variant="outline-danger" block @click="hideModal">Close Me</b-btn>
-   </b-modal>
-   </div>
+    <b-modal ref="editItem" size="md" centered title="Create New Role">
+    <form v-if="editData">
+      <div class="form-group">
+        <label for="add-role-code">Code</label>
+        <input id="add-role-code" class="form-control" :placeholder="editData.code" >
+      </div>
+      <div class="form-group">
+        <label for="add-role-name">Name</label>
+        <input id="add-role-name" class="form-control" :placeholder="editData.name">
+      </div>
+      <div class="form-group">
+        <label for="add-role-name">Description</label>
+        <input id="add-role-name" class="form-control" :placeholder="editData.description">
+      </div>
+      <div class="form-group">
+        <label for="add-role-status">Status</label>
+        <select class="form-control" id="add-role-status">
+          <option :value="editData.status">{{editData.status}}</option>
+        </select>
+      </div>
+    </form>
+    <template slot="modal-footer">
+      <b-button @click="hideEditModal" class="btn-outline-secondary btn-md">
+        Cancel
+      </b-button>
+      <b-button class="btn-secondary text-light btn-md">
+        Save
+      </b-button>
+      </template>
+    </b-modal>
+  </div>
 </template>
 
 <script>
@@ -34,7 +58,7 @@ export default {
   data() {
     return {
       orderBy: "code",
-
+      editData: null,
       sortOrder: [
         {
           field: "code",
@@ -93,14 +117,17 @@ export default {
     };
   },
   methods: {
-    onAction(key) {
-      switch(key) {
+    onAction(action, data, index) {
+      switch(action) {
         case 'edit-item' :
-          this.$refs.editItem.show()
-          break;
+          this.showEditModal(data)
       }
     },
-    hideModal() {
+    showEditModal(data) {
+      this.editData = JSON.parse(JSON.stringify(data));
+      this.$refs.editItem.show();
+    },
+    hideEditModal() {
       this.$refs.editItem.hide()
     },
     formatActiveUsers(value) {
