@@ -1,29 +1,10 @@
 <div id="navbar" v-cloak>
   <b-navbar toggleable="md" type="light" variant="light">
+    <b-alert :show="alertShow" id="alertBox" :variant="success" dismissible>@{{alertText}}</b-alert>
     <b-navbar-nav>
       @foreach(Menu::get('topnav')->items as $item)
       <b-nav-item href="{{ $item->url() }}">{{$item->title}}</b-nav-item>
       @endforeach
-      <li>
-        @if(Session::has('_alert'))
-          @php
-          $icons = [
-            'danger' =>  'fa-times-circle',
-            'info' =>  'fa-info-circle',
-            'warning' =>  'fa-exclamation-triangle',
-            'success' =>  'fa-check'
-          ];
-
-          list($type,$message) = json_decode(Session::get('_alert'));
-          @endphp
-          <div class="alert alert-{{$type}} alert-dismissible fade show" role="alert">
-            <i class="fas fa-{{$icons[$type]}}"></i> {{$message}}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-        @endif
-      </li>
       </b-navbar-nav>
       <b-navbar-nav class="ml-auto">
       <li class="nav-item">

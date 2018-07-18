@@ -16,9 +16,27 @@ new Vue({
     },
     data() {
         return {
-            messages: ProcessMaker.notifications
+            messages: ProcessMaker.notifications,
+            alertShow: false,
+            alertText: String,
+            alertVariant: String
         }
-    }
+    },
+    methods: {
+        showAlert(msg, variant){
+          this.alertText = msg;
+          this.alertShow = true;
+          this.alertVariant = variant;
+        }
+      },
+      mounted: function () {
+        if(document.querySelector("meta[name='alert']")){
+          this.showAlert(
+            document.querySelector("meta[name='alertMessage']").getAttribute("content"),
+            document.querySelector("meta[name='alertVariant']").getAttribute("content")
+          )
+        }
+      }
 })
 
 

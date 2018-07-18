@@ -194,15 +194,15 @@ select.form-control:not([size]):not([multiple]) {
 }
 // This is our top shelf notification panel
 
-#app-alert {
-  position: fixed;
-  width: auto;
-  // Needs to lay over the navbar that is fixed
-  z-index: 10000;
-  top: 4px;
-  left: 50%;
-  transform: translateX(-50%);
-}
+// #app-alert {
+//   position: fixed;
+//   width: auto;
+//   // Needs to lay over the navbar that is fixed
+//   z-index: 10000;
+//   top: 4px;
+//   left: 50%;
+//   transform: translateX(-50%);
+// }
 
 .btn-action {
   background-color: #788793;
@@ -414,12 +414,19 @@ table.vuetable {
 }
 
 .form-check {
-  margin-bottom: 10px
+  margin-bottom: 6px
 }
 
-.navbar .alert {
-  padding: 5px 15px; margin-bottom: 0; margin-top:3px; min-width: 300px
-   button {
-     margin-top: -7px
-   }
- }
+// .navbar .alert {
+//   padding: 5px 15px; margin-bottom: 0; margin-top:3px; min-width: 300px
+//    button {
+//      margin-top: -7px
+//    }
+//  }
+
+#alertBox {
+  position: fixed;  
+  left:30%;
+  right:30%;
+
+}
