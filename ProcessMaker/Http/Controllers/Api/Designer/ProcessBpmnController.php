@@ -8,6 +8,7 @@ use Illuminate\Http\Response;
 use ProcessMaker\Facades\ProcessManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Model\Process;
+use ProcessMaker\Transformers\ProcessBpmnTransformer;
 
 /**
  * Implements endpoints to manage the processes.
@@ -25,6 +26,8 @@ class ProcessBpmnController extends Controller
     public function show(Process $process)
     {
         $process->makeVisible(['bpmn']);
-        return response($process->bpmn);
+
+        //return fractal($process->bpmn, new ProcessBpmnTransformer())->respond();
+        return ($process->bpmn);
     }
 }

@@ -44,7 +44,8 @@ class ProcessesBpmnTest extends ApiTestCase
         $this->authenticateAsAdmin();
         // Create some processes
         factory(Process::class)->create([
-            'uid' => self::API_TEST_PROCESS_UID
+            'uid' => self::API_TEST_PROCESS_UID,
+            'bpmn' => '<?xml version="1.0" encoding="UTF-8"?><definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" ></definitions>>'
         ]);
 
         $uri = str_replace('{processUid}', self::API_TEST_PROCESS_UID, self::API_TEST_PROCESS_BPMN);
