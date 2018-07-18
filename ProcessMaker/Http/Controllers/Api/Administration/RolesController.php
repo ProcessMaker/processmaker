@@ -18,7 +18,7 @@ class RolesController extends Controller
 
     /**
      * Fetch a collection of roles based on paged request and filter if provided
-     * 
+     *
      * @return JsonResponse A list of matched roles and paging data
      */
     public function index(Request $request)
@@ -77,6 +77,17 @@ class RolesController extends Controller
         $role = Role::create($data);
         $role->refresh();
         return fractal($role, new RoleTransformer())->respond();
+    }
+
+    public function update(Request $request, $uid)
+    {
+      $role = Role::where('uid', $uid)->firstOrFail();
+      $role->name=$request->get('name');
+      $role->code=$request->get('code');
+      $role->description=$request->get('description');
+      $role->status=$request->get('status');
+      $role->save();
+      return fractal($role, new RoleTransformer())->respond();
     }
 
 }
