@@ -18,15 +18,15 @@ new Vue({
         return {
             messages: ProcessMaker.notifications,
             alertShow: false,
-            alertText: String,
-            alertVariant: String
+            alertText: '',
+            alertVariant: ''
         }
     },
     methods: {
         showAlert(msg, variant){
           this.alertText = msg;
           this.alertShow = true;
-          this.alertVariant = variant;
+          this.alertVariant = String(variant);
         }
       },
       mounted: function () {
