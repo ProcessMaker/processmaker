@@ -25,14 +25,23 @@ export class Shape {
         return this;
     }
 
+    configBounds(bounds) {
+        this.options.bounds = Object.assign({}, this.options.bounds, bounds);
+    }
+
+    updateBounds(bounds) {
+        this.options.bounds = Object.assign({}, this.options.bounds, bounds);
+        this.updateBpmn()
+    }
+
     /**
      * Emit a message to crown to display
      */
     showCrown() {
         let diffDy = -6
         let action = actions.designer.crown.show({
-            y: this.options.y + diffDy,
-            x: this.options.x + this.options.width
+            y: this.options.bounds.y + diffDy,
+            x: this.options.bounds.x + this.options.bounds.width
         })
         EventBus.$emit(action.type, action.payload)
     }
@@ -104,16 +113,13 @@ export class Shape {
         return this
     }
 
-    updateProps() {
-        let action = actions.bpmn.shape.update({
-            id: this.options.id,
-            bounds: {
-                x: this.options.x,
-                y: this.options.y,
-                width: this.options.width,
-                height: this.options.height
-            }
-        })
+    updateBpmn() {
+        let action = actions.bpmn.shape.update(this.options)
+        EventBus.$emit(action.type, action.payload)
+    }
+
+    createBpmn() {
+        let action = actions.bpmn.shape.create(this.options)
         EventBus.$emit(action.type, action.payload)
     }
 }

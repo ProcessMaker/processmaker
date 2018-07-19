@@ -34,31 +34,32 @@ export class Builder {
      * @param type
      * @param options
      */
-    createShape(options) {
+    createShape(options, createbpmn = false) {
         let element
-        if (Elements[options.type]) {
+        let participant
+        debugger
+        if (Elements[options.type.toLowerCase()]) {
             switch (options.type) {
                 case "sequenceflow":
                     this.createFlow(options)
                     break;
                 case "lane":
-                    let participant = this.verifyElementFromPoint({x: options.x, y: options.y}, "participant")
+                    participant = this.verifyElementFromPoint({x: options.x, y: options.y}, "participant")
                     participant ? this.collection.push(participant.createLane()) : null
                     break;
                 case "textannotation":
                     break;
                 default:
-                    if (Elements[options.type.toLowerCase()]) {
-                        let participant = this.verifyElementFromPoint({x: options.x, y: options.y}, "participant")
-                        element = new Elements[options.type.toLowerCase()](
-                            options,
-                            this.graph,
-                            this.paper
-                        );
-                        element.render();
-                        this.collection.push(element)
-                        participant ? participant.shape.embed(element.shape) : null
-                    }
+                    participant = this.verifyElementFromPoint({x: options.x, y: options.y}, "participant")
+                    element = new Elements[options.type.toLowerCase()](
+                        options,
+                        this.graph,
+                        this.paper
+                    );
+                    element.render()
+                    createbpmn ? element.createBpmn() : null
+                    this.collection.push(element)
+                    participant ? participant.shape.embed(element.shape) : null
                     if (options.type === "participant") {
                         this.collection = _.concat(element.lanes, this.collection);
                     }
@@ -134,8 +135,7 @@ export class Builder {
             return element.id === o.shape.id
         })
         if (res) {
-            res.config(element.get("position"))
-            res.updateProps()
+            res.updateBounds(element.get("position"))
             res.resetFlows()
         }
     }

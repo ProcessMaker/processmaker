@@ -8,12 +8,17 @@ export default class extends Shape {
         super(graph, paper)
         this.options = {
             id: null,
-            x: null,
-            y: null,
-            width: 120,
-            height: 80
+            type: "task",
+            bounds: {
+                x: null,
+                y: null
+            }
         }
         this.config(options)
+        this.configBounds({
+            width: 120,
+            height: 80
+        })
     }
 
     /**
@@ -21,8 +26,8 @@ export default class extends Shape {
      */
     render() {
         this.shape = new JointElements.SubProcess();
-        this.shape.position(this.options.x, this.options.y);
-        this.shape.resize(this.options.width, this.options.height);
-        this.shape.addTo(this.graph);
+        this.shape.position(this.options.bounds.x, this.options.bounds.y)
+        this.shape.resize(this.options.bounds.width, this.options.bounds.height)
+        this.shape.addTo(this.graph)
     }
 }

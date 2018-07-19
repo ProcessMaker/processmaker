@@ -8,11 +8,14 @@ export default class extends Shape {
         super(graph, paper)
         this.options = {
             id: null,
-            x: null,
-            y: null
+            type: "parallelGateway",
+            bounds: {
+                x: null,
+                y: null
+            }
         }
         this.config(options)
-        this.config({
+        this.configBounds({
             width: 40,
             height: 40
         })
@@ -23,8 +26,8 @@ export default class extends Shape {
      */
     render() {
         this.shape = new JointElements.ParallelGateway();
-        this.shape.position(this.options.x, this.options.y);
-        this.shape.resize(this.options.width, this.options.height);
-        this.shape.addTo(this.graph);
+        this.shape.position(this.options.bounds.x, this.options.bounds.y)
+        this.shape.resize(this.options.bounds.width, this.options.bounds.height)
+        this.shape.addTo(this.graph)
     }
 }
