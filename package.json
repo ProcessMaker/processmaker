@@ -13,6 +13,7 @@
     "lint": "eslint --fix --ignore-path .eslintignore resources/**"
   },
   "devDependencies": {
+    "@processmaker/vue-form-elements": "^0.1.4",
     "@vue/test-utils": "^1.0.0-beta.20",
     "accounting": "^0.4.1",
     "axios": "^0.15.3",
@@ -37,7 +38,8 @@
     "lodash": "^4.17.10",
     "moment": "^2.22.2",
     "vue": "^2.5.16",
-    "vue-jest": "^2.6.0"
+    "vue-jest": "^2.6.0",
+    "vue-uniq-ids": "^1.0.0"
   },
   "dependencies": {
     "@fortawesome/fontawesome": "^1.1.8",
