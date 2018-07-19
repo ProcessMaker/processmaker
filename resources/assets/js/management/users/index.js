@@ -15,11 +15,27 @@ new Vue({
       lastname: '',
       password: ''
     },
-    passwordConfirmation: ''
+    addUserValidationError: null,
+    addUserValidationErrors: {
+      username: null,
+      firstname: null,
+      lastname: null,
+      password: null
+    },
+    addUserPasswordConfirmation: '',
   },
   el: '#users-listing',
+  computed: {
+    addUserPasswordMismatch() {
+      if(this.addUser.password != this.addUserPasswordConfirmation) {
+        return 'Confirmation password must match'
+      } else {
+        return null
+      }
+    }
+  },
   methods: {
-    openAddUserModal() {
+   openAddUserModal() {
       this.$refs.addModal.show()
     },
     hideAddModal() {
@@ -32,15 +48,24 @@ new Vue({
       this.addUser.firstname = '';
       this.addUser.lastname = '';
       this.addUser.password = '';
-      this.passwordConfirmation = '';
+      this.addUserPasswordConfirmation = '';
+      this.addUserValidationError = null;
+      this.addUserValidationErrors.username = null;
+      this.addUserValidationErrors.firstname = null;
+      this.addUserValidationErrors.lastname = null;
+      this.addUserValidationErrors.password = null;
     },
     submitAdd() {
+      if(this.addUserPasswordMismatch) {
+        this.addUserValidationError = "You must correct the data before continuing"
+        return
+      }
+      this.addUserValidationError = null
       ProcessMaker.apiClient.post('users', this.addUser)
         .then((response) => {
-          // Add notification to the top
           this.$refs.addModal.hide()
           this.resetAddUser()
-          // @todo Use new notifications
+          ProcessMaker.alert('New User Successfully Created', 'success')
           // Refresh data grid
           this.$refs.listing.sortOrder = [
             {
@@ -49,7 +74,20 @@ new Vue({
               direction: "desc"
             }
           ];
+          this.$refs.listing.orderBy = 'created_at'
+          this.$refs.listing.orderDirection = 'desc'
           this.$refs.listing.fetch();
+        })
+        .catch((error) => {
+          if(error.response.status == 422) {
+            // Validation error
+            this.addUserValidationError = error.response.data.message;
+            let fields = Object.keys(error.response.data.errors);
+            for(var field of fields) {
+              this.addUserValidationErrors[field] = error.response.data.errors[field][0];
+
+            }
+          }
         });
     }
   },

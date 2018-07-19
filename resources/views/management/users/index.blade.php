@@ -20,12 +20,13 @@
             <users-listing ref="listing" :filter="filter"></users-listing>
         </div>
     </div>
-    <b-modal ref="addModal" size="md" centered title="Create New User" v-cloak>
-        <form-input v-model="addUser.username" label="Username" helper="Username must be distinct"></form-input>
-        <form-input v-model="addUser.firstname" label="First Name"></form-input>
-        <form-input v-model="addUser.lastname" label="Last Name"></form-input>
-        <form-input type="password" v-model="addUser.password" label="Password"></form-input>
-        <form-input type="password" v-model="passwordConfirmation" label="Confirm Password"></form-input>
+    <b-modal ref="addModal" size="md" @hidden="resetAddUser" centered title="Create New User" v-cloak>
+        <b-alert dismissable :show="addUserValidationError != null" variant="danger">@{{addUserValidationError}}</b-alert>
+        <form-input :error="addUserValidationErrors.username" v-model="addUser.username" label="Username" helper="Username must be distinct"></form-input>
+        <form-input :error="addUserValidationErrors.firstname" v-model="addUser.firstname" label="First Name"></form-input>
+        <form-input :error="addUserValidationErrors.lastname" v-model="addUser.lastname" label="Last Name"></form-input>
+        <form-input :error="addUserValidationErrors.password" type="password" v-model="addUser.password" label="Password"></form-input>
+        <form-input :error="addUserPasswordMismatch" type="password" v-model="addUserPasswordConfirmation" label="Confirm Password"></form-input>
 
         <template slot="modal-footer">
         <b-button @click="hideAddModal" class="btn-outline-secondary btn-md">
