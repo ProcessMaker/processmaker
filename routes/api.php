@@ -32,6 +32,7 @@ Route::group([
             Route::get('users/{user}', 'Administration\UsersController@get');
             Route::get('users/{user}/avatar', 'Administration\UsersController@avatar');
             Route::put('users/{user}', 'Administration\UsersController@update');
+            Route::post('users', 'Administration\UsersController@create');
 
             // Roles API Endpoints
             Route::get('roles', 'Administration\RolesController@index');
