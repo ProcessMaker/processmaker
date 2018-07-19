@@ -94,4 +94,6 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
     $this->get('/designer', function() {
         return view('designer.designer', ['title' => 'Designer']);
     })->name('designer');
+
+    $this->get('/designer/{process}', 'Designer\ProcessController@show')->name('designer-edit-process');
 });

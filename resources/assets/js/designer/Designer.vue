@@ -49,6 +49,9 @@ import crown from "./components/crown"
 import actions from "./actions"
 
 export default {
+  props: [
+    'processUid'
+  ],
   components: {
     crown,
     designerobjectsmenu,
