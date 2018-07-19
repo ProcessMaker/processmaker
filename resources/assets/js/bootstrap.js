@@ -62,6 +62,11 @@ window.ProcessMaker.apiClient.defaults.baseURL = '/api/1.0/';
 // Default to a 5 second timeout, which is an eternity in web app terms
 window.ProcessMaker.apiClient.defaults.timeout = 5000;
 
+// Default alert functionality
+window.ProcessMaker.alert = function(text, variant) {
+  window.alert(variant + ": " + text);
+}
+
 let userUID = document.head.querySelector('meta[name="user-uid"]');
 
 if(userUID) {
