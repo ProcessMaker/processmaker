@@ -10,13 +10,13 @@ new Vue({
   components: {RequestsListing},
   methods: {
     loadRequestsOverdue() {
-        window.location.href = '/cases/requests?delay=overdue';
+        window.location.href = '/requests?delay=overdue';
     },
       loadRequestsAtRisk() {
-      window.location.href = '/cases/requests?delay=at_risk';
+      window.location.href = '/requests?delay=at_risk';
     },
       loadRequestsOnTime() {
-      window.location.href = '/cases/requests?delay=on_time';
+      window.location.href = '/requests?delay=on_time';
     },
   }
 })

@@ -38,17 +38,17 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
 
   // All the routes in this group and below are for testing purposes only
 
-    $this->get('/task', function(){
-      return view('task',['title' => 'Dashboard']);
-    })->name('task');
+    $this->get('/tasks', function(){
+      return view('tasks',['title' => 'Dashboard']);
+    })->name('tasks');
 
-    $this->get('/process', function(){
-      return view('process',['title' => 'Dashboard']);
-    })->name('process');
+    $this->get('/processes', function(){
+      return view('processes',['title' => 'Dashboard']);
+    })->name('processes');
 
-    $this->get('/request', function(){
-      return view('request.index',['title' => __('New Request')]);
-    })->name('request');
+    $this->get('/requests', function(){
+      return view('requests.index',['title' => __('New Request')]);
+    })->name('requests');
 
     // For fetching the status of an open request
     $this->get('/request/{instance}/status', ['uses' => 'Request\StatusController@status'])->name('request-status');

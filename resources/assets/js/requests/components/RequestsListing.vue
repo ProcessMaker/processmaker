@@ -1,7 +1,7 @@
 <template>
   <div>
     <vuetable :dataManager="dataManager" :sortOrder="sortOrder" :css="css" :api-mode="false"  @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data" pagination-path="meta">
-        <template slot="actions" slot-scope="props"> 
+        <template slot="actions" slot-scope="props">
           <div class="actions">
             <i class="fas fa-ellipsis-h"></i>
             <div class="popout">
@@ -10,7 +10,7 @@
               </b-btn>
             </div>
           </div>
-      </template>  
+      </template>
     </vuetable>
     <pagination single="Request" plural="Requests" :perPageSelectEnabled="true" @changePerPage="changePerPage" @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
    </div>
@@ -18,8 +18,8 @@
 
 <script>
 import Vuetable from "vuetable-2/src/components/Vuetable";
-import datatableMixin from "../../../components/common/mixins/datatable";
-import Pagination from "../../../components/common/Pagination";
+import Pagination from "../../components/common/Pagination";
+import datatableMixin from "../../components/common/mixins/datatable";
 import moment from "moment"
 
 export default {

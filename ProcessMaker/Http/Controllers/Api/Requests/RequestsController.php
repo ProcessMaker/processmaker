@@ -1,6 +1,6 @@
 <?php
 
-namespace ProcessMaker\Http\Controllers\Api\Cases;
+namespace ProcessMaker\Http\Controllers\Api\Requests;
 
 use Auth;
 use Illuminate\Http\Request;
