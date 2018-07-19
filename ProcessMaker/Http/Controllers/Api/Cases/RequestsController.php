@@ -9,12 +9,12 @@ use ProcessMaker\Model\Application;
 use ProcessMaker\Transformers\ApplicationTransformer;
 
 /**
- * API endpoint for returning Cases
+ * API endpoint for returning Requests
  */
 class RequestsController extends Controller
 {
     /**
-     * Returns the list of cases that the current user has created
+     * Returns the list of requests that the current user has created
      *
      * @param Request $request
      * @return array $result result of the query
