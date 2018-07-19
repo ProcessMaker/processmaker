@@ -31,7 +31,10 @@
         computed: {},
         created() {
             EventBus.$on(actions.designer.drag.toolbar.end().type, (value) => this.createElement(value))
-            EventBus.$on(actions.designer.bpmn.update().type, (value) => this.bpmn = value)
+            EventBus.$on(actions.designer.bpmn.update().type, (value) => {
+                debugger
+                this.bpmn = value
+            })
             EventBus.$on(actions.designer.flow.creating().type, (value) => this.creatingFlow(value))
             EventBus.$on(actions.designer.flow.create().type, (value) => this.createFlow(value))
             EventBus.$on(actions.designer.shape.remove().type, (value) => this.removeElement(value))
@@ -169,8 +172,8 @@
 
 
             this.builder = new Builder(this.graph, this.paper)
-            this.bpmnHandler = new BPMNHandler(this.bpmn)
-            this.builder.createFromBPMN(this.bpmnHandler.getModel())
+            //this.bpmnHandler = new BPMNHandler()
+            //this.builder.createFromBPMN(this.bpmnHandler.getModel())
         }
     }
 </script>

@@ -15,7 +15,6 @@ export default class extends Shape {
                 width: null,
                 height: null
             }
-
         }
         this.config(Object.assign({}, options, {
             type: "intermediateThrowEvent",

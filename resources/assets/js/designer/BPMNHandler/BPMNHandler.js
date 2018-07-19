@@ -19,9 +19,11 @@ export default class BPMNHandler {
         this.elementsDiagram = [] // diagrams
         this.processes = [] // processes definition
         this.collaborations = [] // collaborations objects
-        this.xml2json(xml)
-        this.addMutations()
-        this.buildModel()
+        if (this.xml) {
+            this.xml2json(xml)
+            this.addMutations()
+            this.buildModel()
+        }
     }
 
     getModel() {
