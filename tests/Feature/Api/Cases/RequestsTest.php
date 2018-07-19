@@ -58,10 +58,6 @@ class RequestsTest extends ApiTestCase
             'data',
             'meta'
       ]);
-      
-        $data = json_decode($response->getContent());
-        $this->assertTrue(count($data->data) > 0);
-
     }
 
     private function login()

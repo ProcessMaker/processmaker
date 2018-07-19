@@ -3,10 +3,8 @@
 namespace ProcessMaker\Http\Controllers\Api\Cases;
 
 use Auth;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Model\Delegation;
 use ProcessMaker\Model\Application;
 use ProcessMaker\Transformers\ApplicationTransformer;
 
