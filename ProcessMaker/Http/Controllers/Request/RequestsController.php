@@ -13,6 +13,6 @@ class RequestsController extends Controller
      */
     public function index()
     {
-        return view('cases.requests.index');
+        return view('requests.index');
     }
 }
