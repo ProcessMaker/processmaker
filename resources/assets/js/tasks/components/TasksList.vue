@@ -95,11 +95,13 @@
                 let now = moment();
                 let diff = duedate.diff(now, 'hours');
                 let color = diff < 0 ? 'danger' : (diff <= 48 ? 'warning' : 'primary');
-                console.log(diff, color);
-                return '<b class="text-' + color + '">&#9679;</b> ' + value;
+                return '<b class="text-' + color + '">&#9679;</b> ' + duedate.format('YYYY-MM-DD hh:mm');
             },
             formatDue(value) {
                 return value ? moment(value).fromNow() : '';
+            },
+            formatDate(value) {
+                return moment(value).format('YYYY-MM-DD hh:mm');
             },
             formatStatus(value) {
                 value = value.toLowerCase();

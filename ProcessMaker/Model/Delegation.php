@@ -3,6 +3,7 @@
 namespace ProcessMaker\Model;
 
 use Carbon\Carbon;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use ProcessMaker\Model\Traits\Uuid;
@@ -176,5 +177,17 @@ class Delegation extends Model implements TokenInterface
         }
         $definition = $definitions->getActivity($this->element_ref);
         return $definition->getProperties();
+    }
+
+    /**
+     * Prepare a date for array / JSON serialization.
+     *
+     * @param  \DateTime  $date
+     *
+     * @return string
+     */
+    protected function serializeDate(DateTimeInterface $date)
+    {
+        return $date->toIso8601String();
     }
 }

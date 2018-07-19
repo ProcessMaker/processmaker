@@ -1,6 +1,7 @@
 <?php
 namespace ProcessMaker\Model;
 
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use ProcessMaker\Model\Traits\Uuid;
@@ -141,5 +142,17 @@ class Application extends Model implements ExecutionInstanceInterface
             ->where('application_id', $this->id)
             ->where('user_id', $user->id)
             ->exists();
-   }
+    }
+
+    /**
+     * Prepare a date for array / JSON serialization.
+     *
+     * @param  \DateTime  $date
+     *
+     * @return string
+     */
+    protected function serializeDate(DateTimeInterface $date)
+    {
+        return $date->toIso8601String();
+    }
 }

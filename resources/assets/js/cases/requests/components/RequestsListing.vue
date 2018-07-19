@@ -5,8 +5,9 @@
           <div class="actions">
             <i class="fas fa-ellipsis-h"></i>
             <div class="popout">
-              <b-btn variant="action" @click="onAction('edit-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="Edit"><i class="fas fa-edit"></i></b-btn>
-              <b-btn variant="action" @click="onAction('remove-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="Remove"><i class="fas fa-trash-alt"></i></b-btn>
+              <b-btn variant="action" @click="openRequest(props.rowData, props.rowIndex)" v-b-tooltip.hover title="Open">
+                  <i class="fas fa-folder-open"></i>
+              </b-btn>
             </div>
           </div>
       </template>  
@@ -19,46 +20,47 @@
 import Vuetable from "vuetable-2/src/components/Vuetable";
 import datatableMixin from "../../../components/common/mixins/datatable";
 import Pagination from "../../../components/common/Pagination";
+import moment from "moment"
 
 export default {
   mixins: [datatableMixin],
   props: ["filter"],
   data() {
     return {
-      orderBy: "instance_id",
+      orderBy: "id",
       sortOrder: [
         {
-          field: "instance_id",
-          sortField: "instance_id",
+          field: "id",
+          sortField: "id",
           direction: "asc"
         }
       ],
       fields: [
         {
           title: "Id",
-          name: "instance_id",
-          sortField: "instance_id"
+          name: "uid",
+          sortField: "uid",
+          callback: this.formatUid
         },
         {
           title: "Process",
-          name: "process_name",
-          sortField: "process_name"
+          name: "process.name",
+          sortField: "process.name"
         },
         {
           title: "Assigned to",
-          name: "full_name",
-          sortField: "full_name"
+          name: "delegations",
+          callback: this.assignedTo
         },
         {
           title: "Due date",
-          name: "due_date_delay",
-          sortField: "due_date_delay",
+          name: "delegations",
           callback: this.formatDueDate
         },
         {
           title: "Created on",
-          name: "instance_create_date",
-          sortField: "instance_create_date",
+          name: "APP_CREATE_DATE",
+          sortField: "APP_CREATE_DATE",
           callback: this.formatDate
         },
         {
@@ -69,32 +71,45 @@ export default {
     };
   },
   methods: {
-    formatDueDate(value, format) {
-      let parts = value.split('|');
-      let dueDate = value;
-      let delayType = 'on_time';
-
-      if (parts.length === 2) {
-        dueDate = parts[0];
-        delayType = parts[1];
+    openRequest(data, index) {
+      window.open('/request/' + data.uid + '/status');
+    },
+    formatUid(uid) {
+        return uid.split('-').pop();
+    },
+    assignedTo(delegations) {
+      let assignedTo = '';
+      if (!delegations) return assignedTo;
+      delegations.forEach(function (delegation) {
+        let user = delegation.user;
+        let avatar = user.avatar ? '<img class="avatar" src="' + user.avatar + '">'
+                : '<i class="fas fa-user"></i>';
+        assignedTo +=  avatar + ' ' + user.fullname + '<br>';
+      });
+      return assignedTo;
+    },
+    formatDateWithDot(value) {
+      if (!value) {
+          return '';
       }
-
-      let color = 'green';
-
-      switch (delayType) {
-        case 'on_time':
-            color = 'green';
-            break;
-        case 'at_risk':
-            color = 'yellow';
-            break;
-        case 'overdue':
-            color = 'red';
-            break;
-      }
-
-      let response = '<i class="fas fa-circle" style="color:'+color+'"></i> ';
-      return response + this.formatDate(dueDate);
+      let duedate = moment(value);
+      let now = moment();
+      let diff = duedate.diff(now, 'hours');
+      let color = diff < 0 ? 'text-danger' : (diff <= 48 ? 'text-warning' : 'text-primary');
+      return '<i class="fas fa-circle '+color+'"></i> ' + duedate.format('YYYY-MM-DD hh:mm');
+    },
+    formatDate(value) {
+      let date = moment(value);
+      return date.format('YYYY-MM-DD hh:mm');
+    },
+    formatDueDate(delegations) {
+      let dueDate = '';
+      let self = this;
+      if (!delegations) return dueDate;
+      delegations.forEach(function (delegation) {
+        dueDate += self.formatDateWithDot(delegation.task_due_date) + '<br>';
+      });
+      return dueDate;
     },
     transform(data) {
       // Clean up fields for meta pagination so vue table pagination can understand
@@ -124,6 +139,7 @@ export default {
             this.page +
             "&per_page=" +
             this.perPage +
+            "&include=process,delegations,delegations.user" +
             "&filter=" +
             this.filter +
             "&order_by=" +
