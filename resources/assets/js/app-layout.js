@@ -6,6 +6,7 @@ import requestModal from './components/requests/modal'
 import notifications from './components/requests/notifications'
 import { Navbar } from 'bootstrap-vue/es/components';
 
+
 // Assign our navbar component to our global ProcessMaker object
 window.ProcessMaker.navbar = new Vue({
   el: '#navbar',
@@ -24,16 +25,20 @@ window.ProcessMaker.navbar = new Vue({
     }
   },
   mounted: function () {
+    Vue.nextTick() // This is needed to override the default alert method.
+  .then(function () {
     if (document.querySelector("meta[name='alert']")) {
       ProcessMaker.alert(
         document.querySelector("meta[name='alertMessage']").getAttribute("content"),
         document.querySelector("meta[name='alertVariant']").getAttribute("content")
       )
     }
-  }
-})
+  })
 
-// Set our own specific alert function at the ProcessMaker global object that could 
+  }
+});
+
+// Set our own specific alert function at the ProcessMaker global object that could
 // potentially be overwritten by some custom theme support
 window.ProcessMaker.alert = function (msg, variant) {
   ProcessMaker.navbar.alertText = msg;
