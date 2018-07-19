@@ -1,6 +1,7 @@
 
 // Variables
 @import "variables";
+
 // @import '../sass/_variables.scss';
 @import "~bootstrap/scss/bootstrap";
 
@@ -15,16 +16,11 @@
 //Font Open sans
 @import '~npm-font-open-sans/open-sans';
 
-
-
 body,
 html {
   width: 100%;
   height: 100%;
-  font-family: "Open Sans";
-}
-
-body {
+  font-family: $font-family-sans-serif;
   font-weight: 300;
   font-style: normal;
   background-color: $body-bg;
@@ -144,7 +140,6 @@ body {
 }
 
 .form-group label {
-  font-size: 12px;
   color: #788793;
   margin-bottom: 4px;
 }
@@ -188,24 +183,9 @@ select.form-control:not([size]):not([multiple]) {
   font-weight: 400;
 }
 
-.table thead th {
-  border: 0;
-  background-color: $body-bg;
-  font-size: 12px;
-}
 
-.table td {
-  font-size: 12px;
-}
 
-.table-header {
-  font-size: 18px;
-}
 
-.vuetable-pagination {
-  color: #788793;
-  font-size: 12px;
-}
 
 
 
@@ -213,16 +193,6 @@ select.form-control:not([size]):not([multiple]) {
       margin-top: 6px;
 }
 // This is our top shelf notification panel
-
-#app-alert {
-  position: fixed;
-  width: auto;
-  // Needs to lay over the navbar that is fixed
-  z-index: 10000;
-  top: 4px;
-  left: 50%;
-  transform: translateX(-50%);
-}
 
 .btn-action {
   background-color: #788793;
@@ -251,13 +221,14 @@ h1.page-title {
   margin-top: 24px;
   margin-bottom: 24px;
 }
+
 // Data table rules
 table.vuetable {
   margin-top: 16px;
-  background-color: transparent;
+  font-size: $font-size-base;
 
   tr:hover td {
-    background-color: #d8d8d8;
+    background-color: $grey-bg;
   }
 
   .vuetable-slot {
@@ -272,12 +243,11 @@ table.vuetable {
       display: none;
       align-items: center;
       position: absolute;
-      background-color: #d8d8d8;
+      background-color: $grey-bg;
       right: 0;
       top: 0;
-      font-size: 17px;
-      text-align: right;
-      height: 42px;
+      margin:3px;
+      font-size: $font-size-large;
 
       button.btn-action {
         color: #212529;
@@ -285,8 +255,8 @@ table.vuetable {
         width: 32px;
         margin-left: 4px;
         margin-right: 4px;
-        background-color: #d8d8d8;
-        border-color: #d8d8d8;
+        background-color: $grey-bg;
+        border:0;
         text-align: center;
         padding: 0;
 
@@ -304,30 +274,9 @@ table.vuetable {
     }
   }
 
-  td {
-    border-top: 2px solid #f7f9fb;
-  }
-
-  td:first-child,
-  th:first-child {
-    border-radius: 2px 0 0 2px;
-  }
-
-  td:last-child,
-  th:last-child {
-    border-radius: 0 2px 2px 0;
-  }
-
-  tr {
-    margin-top: 2px;
-    margin-bottom: 2px;
-  }
-
   th {
-    background-color: #e9edf1;
-    color: #788793;
-    font-size: 12px;
-    font-weight: 600;
+    background-color: $grey-bg;
+    color: $secondary;
     text-transform: uppercase;
 
     &.ascending,
@@ -336,11 +285,11 @@ table.vuetable {
     }
   }
 
-  td {
-    background-color: white;
-  }
+.vuetable-pagination {
+  color: $secondary;
 }
 
+}
 
 ///icomoon
 @font-face {
@@ -455,12 +404,12 @@ table.vuetable {
 }
 
 .form-check {
-  margin-bottom: 10px
+  margin-bottom: 6px
 }
 
-.navbar .alert {
-  padding: 5px 15px; margin-bottom: 0; margin-top:3px; min-width: 300px
-   button {
-     margin-top: -7px
-   }
- }
+#alertBox {
+  position: fixed;  
+  left:30%;
+  right:30%;
+
+}

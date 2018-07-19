@@ -1,5 +1,5 @@
 <?php
-namespace Tests\Feature\Api\Cases;
+namespace Tests\Feature\Api\Requests;
 
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\Application;
@@ -14,7 +14,7 @@ class RequestsTest extends ApiTestCase
     use DatabaseTransactions;
 
     /**
-     * Test to check that the route is protected     
+     * Test to check that the route is protected
      */
 
     public function test_route_token_missing()
@@ -23,8 +23,8 @@ class RequestsTest extends ApiTestCase
     }
 
     /**
-     * Test to check that the route is protected     
-     */    
+     * Test to check that the route is protected
+     */
 
     public function test_api_result_failed()
     {
@@ -33,8 +33,8 @@ class RequestsTest extends ApiTestCase
     }
 
     /**
-     * Test to check that the route returns the correct response    
-     */    
+     * Test to check that the route returns the correct response
+     */
 
     public function test_api_access()
     {
