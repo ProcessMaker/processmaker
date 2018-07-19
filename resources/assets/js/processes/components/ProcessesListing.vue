@@ -9,10 +9,10 @@
                     <div class="popout">
                         <b-btn variant="action" @click="onAction('edit-item', props.rowData, props.rowIndex)"
                                v-b-tooltip.hover title="Edit"><i class="fas fa-edit"></i></b-btn>
+                        <b-btn variant="action" @click="onAction('permissions-item', props.rowData, props.rowIndex)"
+                               v-b-tooltip.hover title="Deactivate"><i class="fas fa-power-off"></i></b-btn>
                         <b-btn variant="action" @click="onAction('remove-item', props.rowData, props.rowIndex)"
                                v-b-tooltip.hover title="Remove"><i class="fas fa-trash-alt"></i></b-btn>
-                        <b-btn variant="action" @click="onAction('permissions-item', props.rowData, props.rowIndex)"
-                               v-b-tooltip.hover title="Permissions"><i class="fas fa-user-lock"></i></b-btn>
                     </div>
                 </div>
             </template>
@@ -34,8 +34,8 @@
 
                 sortOrder: [
                     {
-                        field: "title",
-                        sortField: "title",
+                        field: "name",
+                        sortField: "name",
                         direction: "asc"
                     }
                 ],
@@ -44,35 +44,35 @@
                         name: "__checkbox"
                     },
                     {
-                        title: "Code",
-                        name: "uid",
-                        sortField: "uid"
+                        title: "Process",
+                        name: "name",
+                        sortField: "name"
                     },
                     {
-                        title: "Title",
-                        name: "title",
-                        sortField: "title"
+                        title: "Category",
+                        name: "category",
+                        sortField: "category"
                     },
                     {
-                        title: "Description",
-                        name: "description",
-                        sortField: "description"
+                        title: "Status",
+                        name: "status",
+                        sortField: "status"
                     },
                     {
-                        title: "Type",
-                        name: "type",
-                        sortField: "type",
+                        title: "Modified By",
+                        name: "user",
+                        sortField: "user",
                     },
                     {
-                        title: "Created At",
-                        name: "created_at",
-                        sortField: "created_at",
+                        title: "Modified",
+                        name: "updated_at",
+                        sortField: "updated_at",
                         callback: this.formatDate
                     },
                     {
-                        title: "Updated At",
-                        name: "updated_at",
-                        sortField: "updated_at",
+                        title: "Created",
+                        name: "created_at",
+                        sortField: "created_at",
                         callback: this.formatDate
                     },
                     {

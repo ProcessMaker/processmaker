@@ -15,6 +15,9 @@
                         <input id="processes-listing-search" v-model="filter" class="form-control col-sm-3"
                                placeholder="{{__('Search')}}...">
                     </div>
+                    <div class="col-md-4 d-flex justify-content-end align-items-center col-sm-12 actions">
+                        <a href="#" class="btn btn-action"><i class="fas fa-plus"></i> {{__('Process')}}</a>
+                    </div>
                 </div>
                 <processes-listing :filter="filter"></processes-listing>
             </div>
