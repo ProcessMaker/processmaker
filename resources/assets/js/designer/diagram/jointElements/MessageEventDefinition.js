@@ -6,9 +6,9 @@ export const MessageEventDefinition = joint.dia.Element.define('bpmn.MessageEven
                 fill: "#FFF4D1",
                 stroke: "#FBBE02",
                 strokeWidth: 2,
-                cx: 20,
-                cy: 20,
-                r: 20
+                refCx: "100%",
+                refCy: "100%",
+                refR: "50%"
             },
             ci: {
                 fill: "#FFF4D1",
