@@ -1,15 +1,16 @@
 import _ from "lodash"
 import Mutations from "./Mutations"
 import EventBus from "../lib/event-bus"
+import convert from 'xml-js'
 /**
  * BPMNHandler class
  */
 export default class BPMNHandler {
-    constructor(bpmn) {
-        this.bpmn = bpmn
+    constructor(xml) {
+        this.xml = xml
+        this.bpmn = null
         //Elements for update
         this.elements = {} // Models from Elements
-
         this.bpmnDesigner = {
             shapes: [],
             links: []
@@ -18,7 +19,20 @@ export default class BPMNHandler {
         this.elementsDiagram = [] // diagrams
         this.processes = [] // processes definition
         this.collaborations = [] // collaborations objects
+        this.xml2json(xml)
         this.addMutations()
+        this.buildModel()
+    }
+
+    getModel() {
+        return this.bpmnDesigner
+    }
+
+    xml2json(xml) {
+        this.bpmn = convert.xml2js(xml, {
+            ignoreComment: true,
+            alwaysChildren: true
+        })
     }
 
     /**
@@ -31,7 +45,6 @@ export default class BPMNHandler {
 
         this.buildElementsDiagram(this.elementsDiagram)
         console.log(this.bpmnDesigner)
-        return this.bpmnDesigner
     }
 
     /**
@@ -151,10 +164,11 @@ export default class BPMNHandler {
         _.forEach(attr, (value, key, obj) => {
             obj[key] = parseFloat(value)
         })
-        return Object.assign({}, attr, {
+        return {
             type: name.length == 1 ? name[0].toLowerCase() : name[1].toLowerCase(),
-            id: di.attributes.bpmnElement
-        })
+            id: di.attributes.bpmnElement,
+            bounds: attr
+        }
     }
 
     /**
@@ -208,14 +222,12 @@ export default class BPMNHandler {
         let that = this
         _.flatMap(Mutations, (mutation, type) => {
             EventBus.$on(type, (payload) => {
-                mutation(that.elements, payload)
+                mutation(payload, that.elements, that.elementsDiagram, that.processes)
             })
         })
     }
 
     toXML() {
-        debugger
-        var convert = require('xml-js');
         var options = {
             compact: false,
             ignoreComment: true,
@@ -234,5 +246,10 @@ export default class BPMNHandler {
         let window2 = window.open(textFile, 'log.' + new Date() + '.txt');
         window2.onload = e => window.URL.revokeObjectURL(textFile);
         return textFile
+    }
+
+
+    createNewElementDiagram(options) {
+
     }
 }

@@ -2,7 +2,8 @@
 export const bpmn = {
     bpmn: {
         shape: {
-            update: x => x
+            update: x => x,
+            create: x => x
         },
         toXML: x => x
     }
