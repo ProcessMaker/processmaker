@@ -50,10 +50,7 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
 
     $this->get('/task', function(){
       return view('task',['title' => 'Dashboard']);
-    })->name('task');
-
-    $this->get('/process', function(){
-      return view('process',['title' => 'Dashboard']);
+    })->name('task'); $this->get('/process', function(){ return view('process',['title' => 'Dashboard']);
     })->name('process');
 
     $this->get('/request', function(){
@@ -91,6 +88,7 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
         'middleware' => ['permission:PM_CASES']
     ], function() {
         $this->get('/process/{process}/tasks', 'Designer\TaskController@index')->name('processes-task-index');
+        $this->get('/processes', 'Designer\ProcessController@index')->name('process');
     });
 
     $this->get('/designer', function() {
