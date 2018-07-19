@@ -9,7 +9,7 @@
                     <div class="popout">
                         <b-btn variant="action" @click="onAction('edit-item', props.rowData, props.rowIndex)"
                                v-b-tooltip.hover title="Edit"><i class="fas fa-edit"></i></b-btn>
-                        <b-btn variant="action" @click="onAction('permissions-item', props.rowData, props.rowIndex)"
+                        <b-btn variant="action" @click="onAction('deactivate-item', props.rowData, props.rowIndex)"
                                v-b-tooltip.hover title="Deactivate"><i class="fas fa-power-off"></i></b-btn>
                         <b-btn variant="action" @click="onAction('remove-item', props.rowData, props.rowIndex)"
                                v-b-tooltip.hover title="Remove"><i class="fas fa-trash-alt"></i></b-btn>
@@ -82,7 +82,13 @@
                 ]
             };
         },
+
         methods: {
+            onAction (actionType, data, index) {
+                if (actionType === 'edit-item') {
+                    window.open('/designer/' + data.uid);
+                }
+            },
             formatStatus(value) {
                 value = value.toLowerCase();
                 let response = '<i class="fas fa-circle ' + value + '"></i> ';
