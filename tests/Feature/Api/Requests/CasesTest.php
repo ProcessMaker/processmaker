@@ -28,7 +28,7 @@ class CasesTest extends ApiTestCase
 
     public function test_api_result_failed()
     {
-        $response = $this->api('GET', '/api/1.0/cases');
+        $response = $this->api('GET', '/api/1.0/requests');
         $response->assertStatus(401);
     }
 
@@ -40,29 +40,30 @@ class CasesTest extends ApiTestCase
     {
         $this->login();
 
-        factory(\ProcessMaker\Model\Delegation::class, 51)->create();
+        factory(\ProcessMaker\Model\Application::class, 51)->create([
+            'creator_user_id' => $this->user->id
+        ]);
 
-        $response = $this->api('GET', '/api/1.0/cases');
+        $response = $this->api('GET', '/api/1.0/requests');
 
         $response->assertStatus(200);
 
         $response->assertJsonStructure([
-            'total',
-            'per_page',
-            'current_page',
-            'last_page',
-            'first_page_url',
-            'last_page_url',
-            'next_page_url',
-            'prev_page_url',
-            'path',
-            'from',
-            'to',
-            'data'
-      ]);
+            'data',
+            'meta' => [
+                'count',
+                'current_page',
+                'filter',
+                'per_page',
+                'sort_by',
+                'sort_order',
+                'total',
+                'total_pages'
+            ],
+        ]);
       
         $data = json_decode($response->getContent());
-        $this->assertEquals($data->current_page, 1);
+        $this->assertEquals($data->meta->current_page, 1);
         $this->assertTrue(count($data->data) > 0);
 
     }
@@ -77,28 +78,27 @@ class CasesTest extends ApiTestCase
 
         factory(\ProcessMaker\Model\Application::class, 75)->create();
 
-        $response = $this->api('GET', '/api/1.0/cases/?page=2');
+        $response = $this->api('GET', '/api/1.0/requests/?page=2');
 
         $response->assertStatus(200);
 
         $response->assertJsonStructure([
-            'total',
-            'per_page',
-            'current_page',
-            'last_page',
-            'first_page_url',
-            'last_page_url',
-            'next_page_url',
-            'prev_page_url',
-            'path',
-            'from',
-            'to',
-            'data'
+            'data',
+            'meta' => [
+                'count',
+                'current_page',
+                'filter',
+                'per_page',
+                'sort_by',
+                'sort_order',
+                'total',
+                'total_pages'
+            ],
       ]);
 
         $data = json_decode($response->getContent());
 
-        $this->assertEquals($data->current_page, 2);
+        $this->assertEquals($data->meta->current_page, 2);
     }
     
     /**
@@ -112,58 +112,55 @@ class CasesTest extends ApiTestCase
 
         factory(\ProcessMaker\Model\Application::class, 26)->create();
 
-        $response = $this->api('GET', '/api/1.0/cases/?limit=21');
+        $response = $this->api('GET', '/api/1.0/requests/?per_page=21');
 
         $response->assertStatus(200);
 
         $response->assertJsonStructure([
-            'total',
-            'per_page',
-            'current_page',
-            'last_page',
-            'first_page_url',
-            'last_page_url',
-            'next_page_url',
-            'prev_page_url',
-            'path',
-            'from',
-            'to',
-            'data'
+            'data',
+            'meta' => [
+                'count',
+                'current_page',
+                'filter',
+                'per_page',
+                'sort_by',
+                'sort_order',
+                'total',
+                'total_pages'
+            ],
       ]);
 
         $data = json_decode($response->getContent());
 
-        $this->assertEquals($data->per_page, 21);
+        $this->assertEquals(21, $data->meta->per_page);
 
     }
 
     /**
      * Test to check that the route returns the correct response when adding a filter
-     */        
-    
+     */
     public function test_api_filtering()
     {
         $this->login();
 
         factory(\ProcessMaker\Model\Application::class, 10)->create();
 
-        $response = $this->api('GET', '/api/1.0/cases/?columnSearch=APP_TITLE&search=Test');
+        $response = $this->api('GET', '/api/1.0/requests/?columnSearch=APP_TITLE&search=Test');
 
         $response->assertStatus(200);
 
         $response->assertJsonStructure([
-            'total',
-            'per_page',
-            'current_page',
-            'last_page',
-            'first_page_url',
-            'last_page_url',
-            'next_page_url',
-            'prev_page_url',
-            'path',
-            'from',
-            'to',
-            'data'
+            'data',
+            'meta' => [
+                'count',
+                'current_page',
+                'filter',
+                'per_page',
+                'sort_by',
+                'sort_order',
+                'total',
+                'total_pages'
+            ],
       ]);
 
         $data = json_decode($response->getContent());
@@ -175,9 +172,9 @@ class CasesTest extends ApiTestCase
     private function login()
     {
         $this->user = factory(User::class)->create([
-        'password' => Hash::make('password'),
-        'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
-    ]);
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+        ]);
 
         $this->auth($this->user->username, 'password');
     }
