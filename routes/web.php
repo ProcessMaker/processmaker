@@ -20,16 +20,6 @@ $this->get('password/success', function(){
   return view('auth.passwords.success',['title' => __('Password Reset')]);
 })->name('password-success');
 
-// Password Reset Routes...
-// $this->get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
-// $this->post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
-// $this->get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
-// $this->post('password/reset', 'Auth\ResetPasswordController@reset');
-
-// $this->get('password/reset/{token?}', 'Auth\PasswordController@showResetForm');
-// $this->post('password/email', 'Auth\PasswordController@sendResetLinkEmail');
-// $this->post('password/reset', 'Auth\PasswordController@reset');
-
 $this->middleware(['auth', 'apitoken'])->group(function() {
     // Test Process Routes for Nayra
     $this->get('/requests/{process}/new', function(ProcessMaker\Model\Process $process) {
@@ -48,16 +38,15 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
 
   // All the routes in this group and below are for testing purposes only
 
-    $this->get('/task', function(){
-      return view('task',['title' => 'Dashboard']);
-    })->name('task'); $this->get('/process', function(){ return view('process',['title' => 'Dashboard']);
-    })->name('process');
+    $this->get('/tasks', function(){
+      return view('tasks',['title' => 'Dashboard']);
+    })->name('tasks');
 
-    $this->get('/request', function(){
-      return view('request.index',['title' => __('New Request')]);
-    })->name('request');
+    $this->get('/requests', function(){
+      return view('requests.index',['title' => __('New Request')]);
+    })->name('requests');
 
-    // For fetching the status of an open case/request
+    // For fetching the status of an open request
     $this->get('/request/{instance}/status', ['uses' => 'Request\StatusController@status'])->name('request-status');
 
     $this->get('/admin', function(){
@@ -69,6 +58,8 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
     })->name('profile');
 
     $this->get('/', function() {
+        $json = json_encode(['warning','Test Successful Message']);
+        request()->session()->flash('_alert',$json);
         return view('home', ['title' => 'Dashboard']);
     })->name('dash');
 
@@ -88,7 +79,7 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
         'middleware' => ['permission:PM_CASES']
     ], function() {
         $this->get('/process/{process}/tasks', 'Designer\TaskController@index')->name('processes-task-index');
-        $this->get('/processes', 'Designer\ProcessController@index')->name('process');
+        $this->get('/processes', 'Designer\ProcessController@index')->name('processes');
     });
 
     $this->get('/designer', function() {

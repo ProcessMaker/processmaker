@@ -14,7 +14,7 @@ Route::group(['namespace' => 'ProcessMaker\Http\Controllers\OAuth2'], function()
     Route::post('/oauth2/authorize', 'OAuth2Controller@postAuthorization')->middleware(['session']);
 });
 
-Route::get('api/1.0/cases','ProcessMaker\Http\Controllers\Api\Cases\CasesController@index')->middleware('auth');
+Route::get('api/1.0/requests','ProcessMaker\Http\Controllers\Api\Requests\RequestsController@index')->middleware('auth');
 
 // Our standard API calls
 Route::group([
@@ -32,6 +32,7 @@ Route::group([
             Route::get('users/{user}', 'Administration\UsersController@get');
             Route::get('users/{user}/avatar', 'Administration\UsersController@avatar');
             Route::put('users/{user}', 'Administration\UsersController@update');
+            Route::post('users', 'Administration\UsersController@create');
 
             // Roles API Endpoints
             Route::get('roles', 'Administration\RolesController@index');
@@ -155,8 +156,8 @@ Route::group([
         Route::put('process/{process}/input-document/{inputDocument}', 'Designer\InputDocumentController@update')->middleware('can:write,ProcessMaker\Model\InputDocument');
         Route::delete('process/{process}/input-document/{inputDocument}', 'Designer\InputDocumentController@remove')->middleware('can:delete,ProcessMaker\Model\InputDocument');
 
-        //Cases endpoints
-        Route::get('cases/{application}/variables', 'Cases\VariableController@get')->middleware('can:read,application');
+        //Requests endpoints
+        Route::get('requests/{application}/variables', 'Requests\VariableController@get')->middleware('can:read,application');
 
         //Task Delegations endpoints
         Route::get('tasks', 'Designer\TaskDelegationController@index')->middleware('can:read,ProcessMaker\Model\Delegation');
@@ -169,5 +170,7 @@ Route::group([
         Route::put('process/{process}/task/{task}', 'Designer\TaskController@update')->middleware('can:write,ProcessMaker\Model\Task');
         Route::delete('process/{process}/task/{task}', 'Designer\TaskController@remove')->middleware('can:delete,ProcessMaker\Model\Task');
 
+        //Requests endpoints
+        Route::get('requests','Requests\RequestsController@index')->middleware('auth');
     });
 });

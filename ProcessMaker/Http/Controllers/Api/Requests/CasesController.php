@@ -1,6 +1,6 @@
 <?php
 
-namespace ProcessMaker\Http\Controllers\Api\Cases;
+namespace ProcessMaker\Http\Controllers\Api\Requests;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -133,7 +133,7 @@ class CasesController extends Controller
         if ($request->has('search') && $request->search <> '') {
             if ($request->has('columnSearch') && in_array($request->columnSearch, ['APP_TITLE', 'APP_NUMBER'])) {
                 $application = Application::where($request->columnSearch, 'LIKE', "%{$request->search}%");
-                
+
                 if ($request->columnSearch == 'APP_NUMBER') {
                     if (substr($request->search, 0, 1) != '0' && ctype_digit($request->search)) {
                         $application->where($request->columnSearch, '>=', $request->search);
@@ -179,6 +179,6 @@ class CasesController extends Controller
         }
 
         return $cases->paginate($limit);
- 
+
     }
 }

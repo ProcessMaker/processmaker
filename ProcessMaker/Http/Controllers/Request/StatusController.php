@@ -9,7 +9,7 @@ class StatusController extends Controller
 
     public function status(Application $instance)
     {
-        return view('request.status', ['instance' => $instance]);
+        return view('requests.status', ['instance' => $instance]);
     }
 
 }

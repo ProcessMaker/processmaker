@@ -28,7 +28,7 @@ class UserManager
         // Filter
         $filter = $options['filter'];
         // Default order by
-        $orderBy = $options['sort_by'];
+        $orderBy = $options['order_by'];
         $orderDirection = $options['order_direction'];
 
         // Note, the current page is automatically handled by Laravel's pagination feature
