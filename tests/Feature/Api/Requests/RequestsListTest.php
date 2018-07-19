@@ -2,14 +2,12 @@
 namespace Tests\Feature\Api\Cases;
 
 use Illuminate\Support\Facades\Hash;
-use ProcessMaker\Model\Application;
 use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
 use Tests\Feature\Api\ApiTestCase;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
-class CasesTest extends ApiTestCase
+class RequestsListTest extends ApiTestCase
 {
     use DatabaseTransactions;
 
