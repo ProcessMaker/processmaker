@@ -21,8 +21,11 @@ export class Shape {
      * @returns {TaskShape}
      */
     config(options) {
-        this.options = Object.assign({}, this.options, options);
-        return this;
+        this.options = Object.assign({}, this.options, {
+            id: options.id,
+            type: options.type
+        })
+        return this
     }
 
     configBounds(bounds) {

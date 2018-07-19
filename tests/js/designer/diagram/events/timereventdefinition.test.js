@@ -12,7 +12,7 @@ describe("Elements", () => {
     beforeEach(() => {
         graph = new joint.dia.Graph
         paper = {}
-        ev = new Elements["intermediatetimerevent"]({
+        ev = new Elements["timereventdefinition"]({
             id: "timer",
             x: 10,
             y: 10,
@@ -23,6 +23,6 @@ describe("Elements", () => {
 
     it("render - function to render the event", () => {
         ev.render()
-        expect(ev.shape).toBeInstanceOf(JointElements.IntermediateTimerEvent)
+        expect(ev.shape).toBeInstanceOf(JointElements.TimerEventDefinition)
     })
 })

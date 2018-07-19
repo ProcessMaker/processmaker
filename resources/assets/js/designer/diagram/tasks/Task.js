@@ -11,14 +11,13 @@ export default class extends Shape {
             type: "task",
             bounds: {
                 x: null,
-                y: null
+                y: null,
+                width: 120,
+                height: 80
             }
         }
         this.config(options)
-        this.configBounds({
-            width: 120,
-            height: 80
-        })
+        this.configBounds(options.bounds)
     }
 
     /**

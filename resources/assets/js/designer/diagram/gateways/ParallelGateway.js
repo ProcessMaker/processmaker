@@ -11,14 +11,13 @@ export default class extends Shape {
             type: "parallelGateway",
             bounds: {
                 x: null,
-                y: null
+                y: null,
+                width: 40,
+                height: 40
             }
         }
         this.config(options)
-        this.configBounds({
-            width: 40,
-            height: 40
-        })
+        this.configBounds(options.bounds)
     }
 
     /**

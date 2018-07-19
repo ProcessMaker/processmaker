@@ -2,7 +2,6 @@ import actions from "../actions"
 
 
 function shapeUpdate(data, elements) {
-    debugger
     if (elements[data.id] && data.bounds) {
         elements[data.id].diagram.elements[0].attributes = data.bounds
     }

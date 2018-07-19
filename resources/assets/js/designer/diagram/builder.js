@@ -37,7 +37,6 @@ export class Builder {
     createShape(options, createbpmn = false) {
         let element
         let participant
-        debugger
         if (Elements[options.type.toLowerCase()]) {
             switch (options.type) {
                 case "sequenceflow":

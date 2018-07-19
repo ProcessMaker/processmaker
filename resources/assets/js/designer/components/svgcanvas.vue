@@ -32,7 +32,6 @@
         created() {
             EventBus.$on(actions.designer.drag.toolbar.end().type, (value) => this.createElement(value))
             EventBus.$on(actions.designer.bpmn.update().type, (value) => {
-                debugger
                 this.bpmn = value
             })
             EventBus.$on(actions.designer.flow.creating().type, (value) => this.creatingFlow(value))
