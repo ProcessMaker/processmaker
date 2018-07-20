@@ -6,9 +6,8 @@ import scripttask from "./tasks/ScriptTask"
 import inclusivegateway from "./gateways/InclusiveGateway"
 import parallelgateway from "./gateways/ParallelGateway"
 import exclusivegateway from "./gateways/ExclusiveGateway"
-import intermediatecatchevent from "./events/IntermediateCatchEvent"
-import intermediatethrowevent from "./events/IntermediateThrowEvent"
-import intermediatetimerevent from "./events/IntermediateTimerEvent"
+import messageeventdefinition from "./events/MessageEventDefinition"
+import timereventdefinition from "./events/TimerEventDefinition"
 import endemailevent from "./events/EndEmailEvent"
 import sequenceflow from "./flow/SequenceFlow"
 import messageflow from "./flow/MessageFlow"
@@ -22,9 +21,8 @@ import callactivity from "./tasks/CallActivity"
 
 export const Elements = Object.assign({}, {
     startevent,
-    intermediatecatchevent,
-    intermediatethrowevent,
-    intermediatetimerevent,
+    messageeventdefinition,
+    timereventdefinition,
     endevent,
     endemailevent,
     task,

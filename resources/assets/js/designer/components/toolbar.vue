@@ -2,36 +2,36 @@
     <div class="pmdesigner-toolbar">
         <ul class="nav flex-column flex-md-row mt--1 text-light">
             <li class="bpmn-item-menu">
-                <img id="bpmn:Task" src="../img/task.svg" height="18"
+                <img id="bpmn:task" src="../img/task.svg" height="18"
                      draggable="true" @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:CallActivity" src="../img/sub-process.svg" height="18"
+                <img id="bpmn:callActivity" src="../img/sub-process.svg" height="18"
                      draggable="true" @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:ExclusiveGateway" src="../img/exclusive-gateway.svg" height="25" draggable="true"
+                <img id="bpmn:exclusiveGateway" src="../img/exclusive-gateway.svg" height="25" draggable="true"
                      @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:ParallelGateway" src="../img/parallel-gateway.svg" height="25" draggable="true"
+                <img id="bpmn:parallelGateway" src="../img/parallel-gateway.svg" height="25" draggable="true"
                      @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:InclusiveGateway" src="../img/inclusive-gateway.svg" height="25" draggable="true"
+                <img id="bpmn:inclusiveGateway" src="../img/inclusive-gateway.svg" height="25" draggable="true"
                      @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:StartEvent" name="StartEvent" src="../img/start-event.svg" height="25"
+                <img id="bpmn:startEvent" src="../img/start-event.svg" height="25"
                      draggable="true" @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:IntermediateThrowEvent" name="IntermediateEmailEvent"
+                <img id="bpmn:messageEventDefinition"
                      src="../img/intermediate-email-event.svg" height="25"
                      draggable="true" @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:IntermediateTimerEvent" name="IntermediateTimerEvent"
+                <img id="bpmn:timerEventDefinition" name="IntermediateTimerEvent"
                      src="../img/intermediate-time-event.svg" height="25"
                      draggable="true" @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:EndEvent" src="../img/end-event.svg" height="25" draggable="true"
+                <img id="bpmn:endEvent" src="../img/end-event.svg" height="25" draggable="true"
                      @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:EndEmailEvent" src="../img/end-email-event.svg" height="25" draggable="true"
+                <img id="bpmn:endEmailEvent" src="../img/end-email-event.svg" height="25" draggable="true"
                      @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
                 <img id="bpmn:DataObject" src="../img/data-object.svg" height="23" draggable="true"
@@ -70,7 +70,6 @@
     export default {
         methods: {
             createElement (value) {
-                debugger
                 let action = actions.designer.drag.toolbar.end(value)
                 EventBus.$emit(action.type, action.payload)
             }
