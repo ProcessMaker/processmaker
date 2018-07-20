@@ -56,7 +56,8 @@
                     {
                         title: "Status",
                         name: "status",
-                        sortField: "status"
+                        sortField: "status",
+                        callback: this.formatStatus
                     },
                     {
                         title: "Modified By",
