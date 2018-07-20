@@ -20,6 +20,10 @@ export default class extends Shape {
             type: "intermediateThrowEvent",
             definition: options.type
         }))
+        options.bounds = Object.assign({}, options.bounds, {
+            width: 40,
+            height: 40
+        })
         this.configBounds({
             width: 40,
             height: 40

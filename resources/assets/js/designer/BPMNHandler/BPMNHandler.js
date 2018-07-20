@@ -9,21 +9,28 @@ export default class BPMNHandler {
     constructor(xml) {
         this.xml = xml
         this.bpmn = null
-        //Elements for update
         this.elements = {} // Models from Elements
         this.bpmnDesigner = {
             shapes: [],
             links: []
-        } // Builded elements to Process Designer
-
+        }
         this.elementsDiagram = [] // diagrams
         this.processes = [] // processes definition
         this.collaborations = [] // collaborations objects
-        if (this.xml) {
-            this.xml2json(xml)
-            this.addMutations()
-            this.buildModel()
+        this.addMutations()
+    }
+
+    reset() {
+        this.xml = null
+        this.bpmn = null
+        this.elements = {}
+        this.bpmnDesigner = {
+            shapes: [],
+            links: []
         }
+        this.elementsDiagram = []
+        this.processes = []
+        this.collaborations = []
     }
 
     getModel() {
@@ -31,6 +38,7 @@ export default class BPMNHandler {
     }
 
     xml2json(xml) {
+        this.xml = xml
         this.bpmn = convert.xml2js(xml, {
             ignoreComment: true,
             alwaysChildren: true
@@ -40,11 +48,16 @@ export default class BPMNHandler {
     /**
      * this method build objects to process the BPMN
      */
-    buildModel() {
-        this.elementsDiagram = this.findBPMNDiagram()
-        this.processes = this.findProcess()
-        this.collaborations = this.findCollaboration()
-        this.buildElementsDiagram(this.elementsDiagram)
+    buildModel(xml) {
+        this.reset()
+        if (xml) {
+            this.xml2json(xml)
+            this.elementsDiagram = this.findBPMNDiagram()
+            this.processes = this.findProcess()
+            this.collaborations = this.findCollaboration()
+            this.buildElementsDiagram(this.elementsDiagram)
+        }
+        return this.bpmnDesigner
     }
 
     /**

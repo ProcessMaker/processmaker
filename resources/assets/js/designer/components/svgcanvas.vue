@@ -24,12 +24,12 @@
         watch: {
             bpmn() {
                 this.builder.clear()
-                this.bpmnHandler = new BPMNHandler(this.bpmn)
-                this.builder.createFromBPMN(this.bpmnHandler.getModel())
+                this.builder.createFromBPMN(this.bpmnHandler.buildModel(this.bpmn))
             }
         },
         computed: {},
         created() {
+            this.bpmnHandler = new BPMNHandler()
             EventBus.$on(actions.designer.drag.toolbar.end().type, (value) => this.createElement(value))
             EventBus.$on(actions.designer.bpmn.update().type, (value) => {
                 this.bpmn = value
@@ -171,7 +171,7 @@
 
 
             this.builder = new Builder(this.graph, this.paper)
-            //this.bpmnHandler = new BPMNHandler()
+
             //this.builder.createFromBPMN(this.bpmnHandler.getModel())
         }
     }

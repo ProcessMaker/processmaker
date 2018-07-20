@@ -6,9 +6,9 @@ export const EndEvent = joint.dia.Element.define('bpmn.EndEvent',
                 fill: "#FFF1F2",
                 stroke: "#ED4757",
                 strokeWidth: 4,
-                refCx: "100%",
-                refCy: "100%",
-                refR: "50%"
+                cx: 40,
+                cy: 40,
+                r: 20
             }
         }
     }, {

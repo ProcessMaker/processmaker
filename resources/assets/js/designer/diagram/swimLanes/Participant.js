@@ -1,6 +1,9 @@
 import {JointElements} from "../jointElements"
 import {Shape} from "../Shape"
-import {Elements} from '../elements'
+import actions from "../../actions"
+import {Elements} from "../elements"
+import EventBus from "../../lib/event-bus"
+
 /**
  * Pool class
  */
@@ -98,5 +101,15 @@ export default class extends Shape {
      */
     showCrown() {
 
+    }
+
+    updateBpmn() {
+        let action = actions.bpmn.participant.update(this.options)
+        EventBus.$emit(action.type, action.payload)
+    }
+
+    createBpmn() {
+        let action = actions.bpmn.participant.create(this.options)
+        EventBus.$emit(action.type, action.payload)
     }
 }

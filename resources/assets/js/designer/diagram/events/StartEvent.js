@@ -18,12 +18,12 @@ export default class extends Shape {
 
         }
         this.config(options)
+        options.bounds = Object.assign({}, options.bounds, {
+            width: 40,
+            height: 40
+        })
         this.configBounds(options.bounds)
-    }
 
-    config(options) {
-        this.options = Object.assign({}, this.options, options);
-        return this;
     }
 
     /**

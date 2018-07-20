@@ -5,6 +5,10 @@ export const bpmn = {
             update: x => x,
             create: x => x
         },
+        participant: {
+            update: x => x,
+            create: x => x
+        },
         toXML: x => x
     }
 };

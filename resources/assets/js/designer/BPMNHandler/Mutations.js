@@ -1,9 +1,24 @@
 import actions from "../actions"
 
 
+function participantUpdate(data, elements) {
+    if (elements[data.id] && data.bounds) {
+        elements[data.id].diagram.elements[0].attributes = data.bounds
+    }
+}
+
 function shapeUpdate(data, elements) {
     if (elements[data.id] && data.bounds) {
         elements[data.id].diagram.elements[0].attributes = data.bounds
+    }
+}
+
+function participantCreate(data, elements) {
+    let participant = {
+        "type": "element",
+        "name": "bpmn:participant",
+        "attributes": {"id": "Participant_18loy4z", "name": "Approval Link", "processRef": "approval_link"},
+        "elements": []
     }
 }
 
@@ -37,7 +52,10 @@ function shapeCreate(data, elements, arrayElements, processes) {
 
 export default {
     [actions.bpmn.shape.update]: shapeUpdate,
-    [actions.bpmn.shape.create]: shapeCreate
+    [actions.bpmn.participant.update]: participantUpdate,
+    [actions.bpmn.shape.create]: shapeCreate,
+    [actions.bpmn.participant.create]: participantCreate,
+
 }
 
 
