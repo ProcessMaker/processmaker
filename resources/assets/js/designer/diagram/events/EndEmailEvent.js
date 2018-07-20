@@ -22,10 +22,7 @@ export default class extends Shape {
             width: 40,
             height: 40
         })
-        this.configBounds({
-            width: 40,
-            height: 40
-        })
+        this.configBounds(options.bounds)
     }
 
     /**

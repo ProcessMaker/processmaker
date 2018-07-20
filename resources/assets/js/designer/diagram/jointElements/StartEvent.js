@@ -6,8 +6,8 @@ export const StartEvent = joint.dia.Element.define('bpmn.StartEvent',
                 fill: "#EDFFFC",
                 stroke: "#00BF9C",
                 strokeWidth: 2,
-                cx: 40,
-                cy: 40,
+                cx: 20,
+                cy: 20,
                 r: 20
             }
         }

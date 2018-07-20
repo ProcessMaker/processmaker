@@ -6,8 +6,8 @@ export const EndEvent = joint.dia.Element.define('bpmn.EndEvent',
                 fill: "#FFF1F2",
                 stroke: "#ED4757",
                 strokeWidth: 4,
-                cx: 40,
-                cy: 40,
+                cx: 20,
+                cy: 20,
                 r: 20
             }
         }

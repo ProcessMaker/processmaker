@@ -12,8 +12,8 @@ export default class extends Shape {
             bounds: {
                 x: null,
                 y: null,
-                width: 40,
-                height: 40
+                width: null,
+                height: null
             }
 
         }
