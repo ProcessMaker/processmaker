@@ -141,7 +141,6 @@
             ProcessMaker.apiClient.get(`processes/${this.processUid}/bpmn`, {
                 params: {}
             }).then((response) => {
-                console.log(response.data)
                 let action = actions.designer.bpmn.update(response.data)
                 EventBus.$emit(action.type, action.payload)
             })
