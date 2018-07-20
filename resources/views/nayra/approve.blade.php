@@ -3,7 +3,7 @@
 @section('content')
 <div class="container" id="start">
     <approve-form 
-        process-uid="{{$process->uid}}" instance-uid="{{$instance->uid}}" token-uid="{{$token->uid}}"
+        process-uid="{{$process->uid}}" instance-uid="{{$instance->uid}}" token-uid="{{$token->uid}}" form-uid="{{$token->definition['formRef']}}"
         start-date="{{$startDate}}" end-date="{{$endDate}}" reason="{{$reason}}"></approve-form>
 </div>
 @endsection
