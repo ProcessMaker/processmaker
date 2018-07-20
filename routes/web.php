@@ -58,8 +58,6 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
     })->name('profile');
 
     $this->get('/', function() {
-        $json = json_encode(['warning','Test Successful Message']);
-        request()->session()->flash('_alert',$json);
         return view('home', ['title' => 'Dashboard']);
     })->name('dash');
 
@@ -82,9 +80,5 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
         $this->get('/processes', 'Designer\ProcessController@index')->name('processes');
     });
 
-    $this->get('/designer', function() {
-        return view('designer.designer', ['title' => 'Designer']);
-    })->name('designer');
-
-    $this->get('/designer/{process}', 'Designer\ProcessController@show')->name('designer-edit-process');
+    $this->get('/designer/{process?}', 'Designer\ProcessController@show')->name('designer-edit-process');
 });

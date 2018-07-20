@@ -15,7 +15,6 @@ class ProcessController extends Controller
      */
     public function index()
     {
-        //return view('processes.tasks.index', ['process' => $process]);
         return view('processes.index');
     }
 
