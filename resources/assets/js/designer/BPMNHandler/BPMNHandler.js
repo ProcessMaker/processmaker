@@ -44,9 +44,7 @@ export default class BPMNHandler {
         this.elementsDiagram = this.findBPMNDiagram()
         this.processes = this.findProcess()
         this.collaborations = this.findCollaboration()
-
         this.buildElementsDiagram(this.elementsDiagram)
-        console.log(this.bpmnDesigner)
     }
 
     /**
@@ -110,7 +108,6 @@ export default class BPMNHandler {
                 that.bpmnDesigner.links.push(that.formatEdge(value, bpmnEl))
 
             } else if (bpmnEl) {
-                //console.log(bpmnEl, idBpmnElement)
                 that.elements[idBpmnElement] = {
                     diagram: value,
                     process: bpmnEl
@@ -237,7 +234,6 @@ export default class BPMNHandler {
             spaces: 4
         };
         var result = convert.js2xml(this.bpmn, options);
-        console.log(result);
         let textFile
         var data = new Blob([result], {type: 'text/plain'});
         if (textFile !== null) {
