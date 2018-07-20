@@ -38,7 +38,8 @@
                     {
                         title: "ID",
                         name: "",
-                        sortField: "uid"
+                        sortField: "uid",
+                        callback: this.formatUid
                     },
                     {
                         title: "TASK",
