@@ -62,8 +62,6 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
     })->name('profile');
 
     $this->get('/', function() {
-        $json = json_encode(['warning','Test Successful Message']);
-        request()->session()->flash('_alert',$json);
         return view('home', ['title' => 'Dashboard']);
     })->name('dash');
 
