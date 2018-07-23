@@ -55,7 +55,7 @@ class ProcessesBpmnTest extends ApiTestCase
     }
 
     /**
-     * Test to verify that the bpm data of a process is returned
+     * Test to verify that the bpm data of a process is updated
      */
     public function testProcessesPutBpmn(): void
     {
@@ -68,7 +68,7 @@ class ProcessesBpmnTest extends ApiTestCase
 
         $processInDb = Process::where('uid', '=', self::API_TEST_PROCESS_UID)->first();
 
-        //the default process hasn't a bpmn column set
+        // When created, a process shouln't have a bpmn value
         $this->assertEmpty($processInDb->bpmn);
 
         $bpmn =  'test-bpm-text';
@@ -78,7 +78,7 @@ class ProcessesBpmnTest extends ApiTestCase
 
         $processInDb = Process::where('uid', '=', self::API_TEST_PROCESS_UID)->first();
 
-        //the updated process should have the bpmn column set
+        // The updated process should have the bpmn column set
         $this->assertEquals($bpmn, $processInDb->bpmn);
     }
 
