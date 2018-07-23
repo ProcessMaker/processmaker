@@ -18,20 +18,22 @@
     <form v-if="editData">
       <div class="form-group">
         <label for="add-role-code">Code</label>
-        <input id="add-role-code" class="form-control" :placeholder="editData.code" >
+        <input id="add-role-code" class="form-control" v-model="editData.code">
       </div>
       <div class="form-group">
         <label for="add-role-name">Name</label>
-        <input id="add-role-name" class="form-control" :placeholder="editData.name">
+        <input id="add-role-name" class="form-control" v-model="editData.name">
       </div>
       <div class="form-group">
         <label for="add-role-name">Description</label>
-        <input id="add-role-name" class="form-control" :placeholder="editData.description">
+        <input id="add-role-name" class="form-control" v-model="editData.description">
       </div>
       <div class="form-group">
         <label for="add-role-status">Status</label>
-        <select class="form-control" id="add-role-status">
+        <select class="form-control" id="add-role-status" v-model="editData.status">
           <option :value="editData.status">{{editData.status}}</option>
+          <option value="ACTIVE">Active</option>
+          <option value="DISABLED">Disabled</option>
         </select>
       </div>
     </form>
@@ -39,7 +41,7 @@
       <b-button @click="hideEditModal" class="btn-outline-secondary btn-md">
         Cancel
       </b-button>
-      <b-button class="btn-secondary text-light btn-md">
+      <b-button @click="submitEdit" class="btn-secondary text-light btn-md">
         Save
       </b-button>
       </template>
@@ -120,15 +122,35 @@ export default {
     onAction(action, data, index) {
       switch(action) {
         case 'edit-item' :
-          this.showEditModal(data)
+          this.showEditModal(data,index)
       }
     },
-    showEditModal(data) {
+    showEditModal(data, index) {
       this.editData = JSON.parse(JSON.stringify(data));
+      this.editData.index = index;
       this.$refs.editItem.show();
     },
     hideEditModal() {
       this.$refs.editItem.hide()
+    },
+    submitEdit(rowIndex) {
+      window.ProcessMaker.apiClient.post('roles/update/' + this.editData.uid, {
+        'uid': this.editData.uid,
+        'name': this.editData.name,
+        'code': this.editData.code,
+        'description': this.editData.description,
+        'status': this.editData.status
+      })
+      .then((response) => {
+        // Close modal
+        this.$refs.editItem.hide();
+        // update the data modal using this.editData.index // javascript slice
+        this.data.splice(this.editData.index, 1, this.editData)
+      })
+      // .catch((err) => {
+      //   // @todo Replace with new flashy errors?
+      //   alert('There was a problem creating the role.')
+      // })
     },
     formatActiveUsers(value) {
       return '<div class="text-center">' + value + "</div>";
