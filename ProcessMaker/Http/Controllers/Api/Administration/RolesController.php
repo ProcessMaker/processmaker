@@ -88,6 +88,7 @@ class RolesController extends Controller
       $role->status=$request->get('status');
       $role->save();
       return fractal($role, new RoleTransformer())->respond();
+      $role->refresh();
     }
 
 }
