@@ -79,6 +79,13 @@ class RolesController extends Controller
         return fractal($role, new RoleTransformer())->respond();
     }
 
+    /**
+    * Update the specified resource in storage.
+    *
+    * @param \Illuminate\Http\Request $request
+    * @param uid $uid
+    * @return \Illuminate\Http\Response
+    */
     public function update(Request $request, $uid)
     {
       $role = Role::where('uid', $uid)->firstOrFail();
