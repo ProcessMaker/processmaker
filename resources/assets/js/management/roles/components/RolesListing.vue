@@ -154,6 +154,7 @@ export default {
       .then((response) => {
         this.clearForm()
         this.hideEditModal ()
+        this.fetch()
       })
       .catch((err) => {
         // @todo Replace with new flashy errors?
