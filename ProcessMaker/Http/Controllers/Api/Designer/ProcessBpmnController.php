@@ -26,8 +26,23 @@ class ProcessBpmnController extends Controller
     public function show(Process $process)
     {
         $process->makeVisible(['bpmn']);
-
-        //return fractal($process->bpmn, new ProcessBpmnTransformer())->respond();
         return ($process->bpmn);
+    }
+
+    /**
+     * Updates the bpmn definition of a process
+     *
+     * @param Request $request
+     * @param Process $process
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function update(Request $request, Process $process)
+    {
+        $process->makeVisible(['bpmn']);
+        $process->bpmn = $request->get('bpmn');
+        ProcessManager::update($process, [
+            'bpmn' => $request->get('bpmn')
+        ]);
+        return response([], 200);
     }
 }

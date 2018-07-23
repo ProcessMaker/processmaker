@@ -55,6 +55,34 @@ class ProcessesBpmnTest extends ApiTestCase
     }
 
     /**
+     * Test to verify that the bpm data of a process is returned
+     */
+    public function testProcessesPutBpmn(): void
+    {
+        $this->authenticateAsAdmin();
+
+        // Create some processes
+        factory(Process::class)->create([
+            'uid' => self::API_TEST_PROCESS_UID
+        ]);
+
+        $processInDb = Process::where('uid', '=', self::API_TEST_PROCESS_UID)->first();
+
+        //the default process hasn't a bpmn column set
+        $this->assertEmpty($processInDb->bpmn);
+
+        $bpmn =  'test-bpm-text';
+        $uri = str_replace('{processUid}', self::API_TEST_PROCESS_UID, self::API_TEST_PROCESS_BPMN);
+        $response = $this->api('patch', $uri, ['bpmn' => $bpmn]);
+        $response->assertStatus(200);
+
+        $processInDb = Process::where('uid', '=', self::API_TEST_PROCESS_UID)->first();
+
+        //the updated process should have the bpmn column set
+        $this->assertEquals($bpmn, $processInDb->bpmn);
+    }
+
+    /**
      * Create an login API as an administrator user.
      *
      * @return User
