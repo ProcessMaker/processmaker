@@ -152,6 +152,7 @@ export default {
         'status': this.status
       })
       .then((response) => {
+        ProcessMaker.alert("Saved", "success")
         this.clearForm()
         this.hideEditModal ()
         this.fetch()
