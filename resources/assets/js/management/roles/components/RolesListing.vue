@@ -15,23 +15,23 @@
     </vuetable>
     <pagination single="Role" plural="Roles" :perPageSelectEnabled="true" @changePerPage="changePerPage" @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
     <b-modal ref="editItem" size="md" centered title="Create New Role">
-    <form v-if="editData">
+    <form>
       <div class="form-group">
         <label for="add-role-code">Code</label>
-        <input id="add-role-code" class="form-control" v-model="editData.code">
+        <input id="add-role-code" class="form-control" v-model="code">
       </div>
       <div class="form-group">
         <label for="add-role-name">Name</label>
-        <input id="add-role-name" class="form-control" v-model="editData.name">
+        <input id="add-role-name" class="form-control" v-model="name">
       </div>
       <div class="form-group">
         <label for="add-role-name">Description</label>
-        <input id="add-role-name" class="form-control" v-model="editData.description">
+        <input id="add-role-name" class="form-control" v-model="description">
       </div>
       <div class="form-group">
         <label for="add-role-status">Status</label>
-        <select class="form-control" id="add-role-status" v-model="editData.status">
-          <option :value="editData.status">{{editData.status}}</option>
+        <select class="form-control" id="add-role-status" v-model="status">
+          <option :value="status">{{status}}</option>
           <option value="ACTIVE">Active</option>
           <option value="DISABLED">Disabled</option>
         </select>
@@ -115,7 +115,13 @@ export default {
           name: "__slot:actions",
           title: ""
         }
-      ]
+      ],
+      name: '',
+      code: '',
+      description: '',
+      uid: '',
+      status: '',
+      curIndex: '',
     };
   },
   methods: {
@@ -126,31 +132,40 @@ export default {
       }
     },
     showEditModal(data, index) {
-      this.editData = JSON.parse(JSON.stringify(data));
-      this.editData.index = index;
+      this.name = this.data.data[index].name;
+      this.code = this.data.data[index].code;
+      this.status = this.data.data[index].status;
+      this.description = this.data.data[index].description;
+      this.uid = this.data.data[index].uid;
+      this.curIndex = index;
       this.$refs.editItem.show();
     },
     hideEditModal() {
       this.$refs.editItem.hide()
     },
     submitEdit(rowIndex) {
-      window.ProcessMaker.apiClient.post('roles/update/' + this.editData.uid, {
-        'uid': this.editData.uid,
-        'name': this.editData.name,
-        'code': this.editData.code,
-        'description': this.editData.description,
-        'status': this.editData.status
+      window.ProcessMaker.apiClient.post('roles/update/' + this.uid, {
+        'uid': this.uid,
+        'name': this.name,
+        'code': this.code,
+        'description': this.description,
+        'status': this.status
       })
       .then((response) => {
-        // Close modal
-        this.$refs.editItem.hide();
-        // update the data modal using this.editData.index // javascript slice
-        this.data.splice(this.editData.index, 1, this.editData)
+        this.clearForm()
+        this.hideEditModal ()
       })
-      // .catch((err) => {
-      //   // @todo Replace with new flashy errors?
-      //   alert('There was a problem creating the role.')
-      // })
+      .catch((err) => {
+        // @todo Replace with new flashy errors?
+        alert('There was a problem creating the role.')
+      })
+    },
+    clearForm(curIndex) {
+      this.name = '',
+      this.code = '',
+      this.description = '',
+      this.uid = '',
+      this.status = ''
     },
     formatActiveUsers(value) {
       return '<div class="text-center">' + value + "</div>";
