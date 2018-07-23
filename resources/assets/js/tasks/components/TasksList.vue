@@ -7,12 +7,6 @@
                 <div class="actions">
                     <i class="fas fa-ellipsis-h"></i>
                     <div class="popout">
-                        <b-btn variant="action" @click="onAction('edit-item', props.rowData, props.rowIndex)"
-                               v-b-tooltip.hover title="Edit"><i class="fas fa-edit"></i></b-btn>
-                        <b-btn variant="action" @click="onAction('remove-item', props.rowData, props.rowIndex)"
-                               v-b-tooltip.hover title="Remove"><i class="fas fa-trash-alt"></i></b-btn>
-                        <b-btn variant="action" @click="onAction('permissions-item', props.rowData, props.rowIndex)"
-                               v-b-tooltip.hover title="Permissions"><i class="fas fa-user-lock"></i></b-btn>
                     </div>
                 </div>
             </template>
@@ -43,8 +37,9 @@
                 fields: [
                     {
                         title: "ID",
-                        name: "uid",
-                        sortField: "uid"
+                        name: "",
+                        sortField: "uid",
+                        callback: this.formatUid
                     },
                     {
                         title: "TASK",
@@ -87,6 +82,25 @@
             };
         },
         methods: {
+            formatUid(token) {
+                let short = token.uid.split('-').pop();
+                let link = '/nayra/'
+                        + token.definition.id + '/'
+                        + token.application.process.uid + '/'
+                        + token.application.uid + '/'
+                        + token.uid;
+                return this.createLink({'href': link, 'target': '_blank'}, short);
+            },
+            createLink(properties, name) {
+                let container = document.createElement('div');
+                let link = document.createElement('a');
+                for (let property in properties) {
+                    link.setAttribute(property, properties[property]);
+                }
+                link.innerText = name;
+                container.appendChild(link);
+                return container.innerHTML;
+            },
             formatDateWithDot(value) {
                 if (!value) {
                     return '';
@@ -94,12 +108,15 @@
                 let duedate = moment(value);
                 let now = moment();
                 let diff = duedate.diff(now, 'hours');
-                let color = diff < 0 ? 'danger' : (diff <= 48 ? 'warning' : 'primary');
-                console.log(diff, color);
-                return '<b class="text-' + color + '">&#9679;</b> ' + value;
+                let color = diff < 0 ? 'text-danger' : (diff <= 48 ? 'text-warning' : 'text-primary');
+                let circle = '<i class="fas fa-circle ' + color + '"></i>';
+                return circle + ' ' + duedate.format('YYYY-MM-DD hh:mm');
             },
             formatDue(value) {
                 return value ? moment(value).fromNow() : '';
+            },
+            formatDate(value) {
+                return moment(value).format('YYYY-MM-DD hh:mm');
             },
             formatStatus(value) {
                 value = value.toLowerCase();
@@ -124,6 +141,7 @@
                         "tasks?page=" +
                         this.page +
                         "&include=application.creator" +
+                        "&status=ACTIVE" +
                         "&per_page=" +
                         this.perPage +
                         "&filter=" +

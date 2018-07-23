@@ -16,6 +16,14 @@
     <meta name="broadcasting-host" content="{{config('broadcasting.host')}}">
     <meta name="broadcasting-key" content="{{config('broadcasting.key')}}">
     @endif
+    @if(Session::has('_alert'))
+      <meta name="alert" content="show">
+      @php
+      list($type,$message) = json_decode(Session::get('_alert'));
+      @endphp
+      <meta name="alertVariant" content="{{$type}}">
+      <meta name="alertMessage" content="{{$message}}">
+    @endif
 
     <title>{{ $title or __('Welcome') }} - {{__('ProcessMaker')}}</title>
     <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico" />

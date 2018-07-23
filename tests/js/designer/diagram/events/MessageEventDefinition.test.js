@@ -12,8 +12,8 @@ describe("Elements", () => {
     beforeEach(() => {
         graph = new joint.dia.Graph
         paper = {}
-        ev = new Elements["intermediatecatchevent"]({
-            id: "catch",
+        ev = new Elements["messageeventdefinition"]({
+            id: "throw",
             x: 10,
             y: 10,
             width: 40,
@@ -23,6 +23,6 @@ describe("Elements", () => {
 
     it("render - function to render the event", () => {
         ev.render()
-        expect(ev.shape).toBeInstanceOf(JointElements.IntermediateCatchEvent)
+        expect(ev.shape).toBeInstanceOf(JointElements.MessageEventDefinition)
     })
 })

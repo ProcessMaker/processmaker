@@ -20,9 +20,9 @@ class GenerateMenus
         app()->setLocale('en');
 
         Menu::make('topnav', function ($menu) {
-            $menu->add(__('Requests'), ['route' => 'request']);
-            $menu->add(__('Tasks'), ['route' => 'task']);
-            $menu->add(__('Processes'), ['route' => 'process']);
+            $menu->add(__('Requests'), ['route' => 'requests']);
+            $menu->add(__('Tasks'), ['route' => 'tasks']);
+            $menu->add(__('Processes'), ['route' => 'processes']);
             $menu->add(__('Admin'), ['route' => 'admin']);
         });
 

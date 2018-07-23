@@ -1,6 +1,9 @@
 import {JointElements} from "../jointElements"
 import {Shape} from "../Shape"
-import {Elements} from '../elements'
+import actions from "../../actions"
+import {Elements} from "../elements"
+import EventBus from "../../lib/event-bus"
+
 /**
  * Pool class
  */
@@ -8,15 +11,19 @@ export default class extends Shape {
     constructor(options, graph, paper) {
         super(graph, paper)
         this.lanes = []
-        this.type = "participant"
         this.options = {
             id: null,
-            x: null,
-            y: null,
-            width: 700,
-            height: 250
+            type: "participant",
+            bounds: {
+                x: null,
+                y: null,
+                width: 700,
+                height: 250
+            }
+
         }
         this.config(options)
+        this.configBounds(options.bounds)
         this.heightLane = this.options.height
     }
 
@@ -25,8 +32,8 @@ export default class extends Shape {
      */
     render() {
         this.shape = new JointElements.Participant();
-        this.shape.position(this.options.x, this.options.y);
-        this.shape.resize(this.options.width, this.options.height);
+        this.shape.position(this.options.bounds.x, this.options.bounds.y);
+        this.shape.resize(this.options.bounds.width, this.options.bounds.height);
         this.shape.addTo(this.graph);
         let lane = this.firstLane()
         lane.render()
@@ -40,10 +47,10 @@ export default class extends Shape {
     firstLane() {
         let dx = 25
         let lane = this.createShapeLane({
-            x: this.options.x + dx,
-            y: this.options.y,
-            width: this.options.width - dx,
-            height: this.options.height
+            x: this.options.bounds.x + dx,
+            y: this.options.bounds.y,
+            width: this.options.bounds.width - dx,
+            height: this.options.bounds.height
 
         })
         return lane
@@ -55,10 +62,12 @@ export default class extends Shape {
      */
     createShapeLane(options) {
         let lane = new Elements["lane"]({
-                x: options.x,
-                y: options.y,
-                width: options.width,
-                height: options.height
+                bounds: {
+                    x: options.x,
+                    y: options.y,
+                    width: options.width,
+                    height: options.height
+                }
             },
             this.graph,
             this.paper,
@@ -73,13 +82,13 @@ export default class extends Shape {
      * @returns {*}
      */
     createLane() {
-        this.options.height += this.heightLane
-        this.shape.resize(this.options.width, this.options.height)
+        this.options.bounds.height += this.heightLane
+        this.shape.resize(this.options.bounds.width, this.options.bounds.height)
         let dx = 25
         let lane = this.createShapeLane({
-            x: this.options.x + dx,
-            y: this.options.y + this.lanes.length * this.heightLane,
-            width: this.options.width - dx,
+            x: this.options.bounds.x + dx,
+            y: this.options.bounds.y + this.lanes.length * this.heightLane,
+            width: this.options.bounds.width - dx,
             height: this.heightLane
         })
         lane.render()
@@ -92,5 +101,15 @@ export default class extends Shape {
      */
     showCrown() {
 
+    }
+
+    updateBpmn() {
+        let action = actions.bpmn.participant.update(this.options)
+        EventBus.$emit(action.type, action.payload)
+    }
+
+    createBpmn() {
+        let action = actions.bpmn.participant.create(this.options)
+        EventBus.$emit(action.type, action.payload)
     }
 }

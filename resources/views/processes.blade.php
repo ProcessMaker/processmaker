@@ -2,7 +2,7 @@
 
 @section('content')
 
-  <h1>Process</h1>
+  <h1>Processes</h1>
 
   <div class="container">
     <my-vuetable api-url="/test"></my-vuetable>
@@ -11,10 +11,4 @@
 
 @section('sidebar')
   @include('layouts.sidebar', ['sidebar' => Menu::get('sidebar_admin')])
-@endsection
-
-@section('js')
-<script>
-
-</script>
 @endsection

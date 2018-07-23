@@ -1,6 +1,8 @@
 @extends('layouts.layout')
 @section('content')
-    <div id="designer-container"></div>
+    <div id="designer-container">
+      <designer process-uid="{{$process->uid}}"></designer>
+    </div>
 @endsection
 
 @section('sidebar')

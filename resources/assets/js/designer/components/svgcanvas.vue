@@ -9,7 +9,7 @@
     import _ from "lodash"
     import joint from 'jointjs'
     import parser from 'xml-js'
-    import BPMNHandler from '../lib/BPMNHandler'
+    import BPMNHandler from '../BPMNHandler/BPMNHandler'
     import {Elements} from "../diagram/elements";
     export default {
         data() {
@@ -17,26 +17,27 @@
                 graph: null,
                 paper: null,
                 bpmnHandler: null,
-                bpmn: null,
+                bpmn: '<?xml version="1.0" encoding="UTF-8"?><bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" id="Definitions_0p3wzv2" targetNamespace="http://bpmn.io/schema/bpmn"><bpmn:process id="Process_1" isExecutable="false"><bpmn:startEvent id="StartEvent_1" /></bpmn:process><bpmndi:BPMNDiagram id="BPMNDiagram_1"><bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1"><bpmndi:BPMNShape id="_BPMNShape_StartEvent_1" bpmnElement="StartEvent_1"><dc:Bounds x="173" y="102" width="36" height="36" /></bpmndi:BPMNShape></bpmndi:BPMNPlane></bpmndi:BPMNDiagram></bpmn:definitions>',
                 builder: null
             }
         },
         watch: {
             bpmn() {
                 this.builder.clear()
-                let options = {ignoreComment: true, alwaysChildren: true}
-                let result = parser.xml2js(this.bpmn, options)
-                this.bpmnHandler = new BPMNHandler(result)
-                this.builder.createFromBPMN(this.bpmnHandler.buildModel())
+                this.builder.createFromBPMN(this.bpmnHandler.buildModel(this.bpmn))
             }
         },
         computed: {},
         created() {
+            this.bpmnHandler = new BPMNHandler()
             EventBus.$on(actions.designer.drag.toolbar.end().type, (value) => this.createElement(value))
-            EventBus.$on(actions.designer.bpmn.update().type, (value) => this.bpmn = value)
+            EventBus.$on(actions.designer.bpmn.update().type, (value) => {
+                this.bpmn = value
+            })
             EventBus.$on(actions.designer.flow.creating().type, (value) => this.creatingFlow(value))
             EventBus.$on(actions.designer.flow.create().type, (value) => this.createFlow(value))
             EventBus.$on(actions.designer.shape.remove().type, (value) => this.removeElement(value))
+            EventBus.$on(actions.bpmn.toXML().type, (value) => this.toXML(value))
         },
         methods: {
             /**
@@ -48,12 +49,14 @@
                 this.updateCoordinates()
                 const defaultOptions = {
                     id: name[1] + '_' + Math.floor((Math.random() * 100) + 1),
-                    x: event.x - this.diagramCoordinates.x,
-                    y: event.y - this.diagramCoordinates.y,
-                    type: name[1].toLowerCase()
+                    type: name[1],
+                    bounds: {
+                        x: event.x - this.diagramCoordinates.x,
+                        y: event.y - this.diagramCoordinates.y
+                    }
                 }
                 if (Elements[name[1].toLowerCase()]) {
-                    this.builder.createShape(defaultOptions, event.target.id)
+                    this.builder.createShape(defaultOptions, true)
                 } else {
                     console.error(name[1].toLowerCase() + "is not support")
                 }
@@ -64,6 +67,9 @@
              */
             removeElement (e){
                 this.builder.removeSelection()
+            },
+            toXML (e){
+                this.bpmnHandler.toXML()
             },
             /**
              * Listener from Crown for update position in element
@@ -155,7 +161,6 @@
                     color: 'white'
                 }
             })
-            this.builder = new Builder(this.graph, this.paper)
             this.graph.on('change:position', this.changeElementPosition)
             this.paper.on('element:pointerclick', this.clickElement)
             this.paper.on('blank:pointerclick', this.clickCanvas)
@@ -163,6 +168,11 @@
             this.paper.on('cell:pointerup', this.pointerUp)
             this.paper.on('link:mouseenter', this.linkMouseEnter)
             this.paper.on('link:mouseleave', this.linkMouseLeave)
+
+
+            this.builder = new Builder(this.graph, this.paper)
+
+            //this.builder.createFromBPMN(this.bpmnHandler.getModel())
         }
     }
 </script>

@@ -1,5 +1,5 @@
 import joint from "jointjs"
-export const IntermediateTimerEvent = joint.dia.Element.define('bpmn.IntermediateTimerEvent',
+export const TimerEventDefinition = joint.dia.Element.define('bpmn.TimerEventDefinition',
     {
         attrs: {
             c: {
