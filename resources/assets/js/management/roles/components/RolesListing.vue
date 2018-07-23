@@ -144,7 +144,7 @@ export default {
       this.$refs.editItem.hide()
     },
     submitEdit(rowIndex) {
-      window.ProcessMaker.apiClient.post('roles/update/' + this.uid, {
+      window.ProcessMaker.apiClient.post('roles/' + this.uid, {
         'uid': this.uid,
         'name': this.name,
         'code': this.code,
