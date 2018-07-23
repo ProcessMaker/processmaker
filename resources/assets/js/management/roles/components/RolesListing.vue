@@ -158,8 +158,7 @@ export default {
         this.fetch()
       })
       .catch((err) => {
-        // @todo Replace with new flashy errors?
-        alert('There was a problem creating the role.')
+        ProcessMaker.alert("There was an error with your edit", "danger")
       })
     },
     clearForm(curIndex) {
