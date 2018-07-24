@@ -250,6 +250,14 @@ class RolesTest extends ApiTestCase
             'uid' => '134A',
         ]);
         //Then call api to change the role name
+        $response = $this->api('put', self::API_TEST_ROLES, [
+            'code' => 'TESTROLE',
+            'uid' => '134A',
+            'code' => 'word',
+            'name' => 'New',
+            'description' => 'sentence',
+            'status' => 'ACTIVE'
+        ]);
         //re-fetch from database that role
         //assert role name is now the changed name 
 
