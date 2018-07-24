@@ -259,8 +259,11 @@ class RolesTest extends ApiTestCase
             'status' => 'ACTIVE'
         ]);
         //re-fetch from database that role
+        $response = $this->api('get', self::API_TEST_ROLES, [
+            'uid' => '134A',
+        ]);
         //assert role name is now the changed name 
-
+        $response->assertJson('name'=>'New');
     }
 }
 //error cases
