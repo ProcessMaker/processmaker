@@ -237,6 +237,11 @@ class RolesTest extends ApiTestCase
 
     public function testEditRoleSuccess() 
     {
+        $user = factory(User::class)->create([
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+        ]);
+        $this->auth($user->username, 'password');
         //create a role, but with a fixed name with a factory method 
         $role = factory(\ProcessMaker\Model\Role::class)->create([
             'code' => 'TESTROLE',
@@ -245,12 +250,14 @@ class RolesTest extends ApiTestCase
             'name' => 'name',
             'description' => 'sentence',
             'status' => 'ACTIVE'
+        ]);
         //Fetch from database that role with the uid that was created
         $response = $this->api('get', self::API_TEST_ROLES, [
             'uid' => '134A',
         ]);
+
         //Then call api to change the role name
-        $response = $this->api('put', self::API_TEST_ROLES, [
+        $response = $this->api('put', self::API_TEST_ROLES . '/' . $role->uid, [
             'code' => 'TESTROLE',
             'uid' => '134A',
             'code' => 'word',
@@ -259,11 +266,18 @@ class RolesTest extends ApiTestCase
             'status' => 'ACTIVE'
         ]);
         //re-fetch from database that role
-        $response = $this->api('get', self::API_TEST_ROLES, [
+        $response = $this->api('get', self::API_TEST_ROLES . '/' . $role->uid, [
             'uid' => '134A',
         ]);
         //assert role name is now the changed name 
-        $response->assertJson('name'=>'New');
+        $response->assertJson([
+            'code' => 'TESTROLE',
+            'uid' => '134A',
+            'code' => 'word',
+            'name' => 'New',
+            'description' => 'sentence',
+            'status' => 'ACTIVE'
+        ]);
     }
 }
 //error cases
