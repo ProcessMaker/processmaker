@@ -246,16 +246,18 @@ class RolesTest extends ApiTestCase
             'description' => 'sentence',
             'status' => 'ACTIVE'
         //Fetch from database that role with the uid that was created
+        $response = $this->api('get', self::API_TEST_ROLES, [
+            'uid' => '134A',
+        ]);
         //Then call api to change the role name
         //re-fetch from database that role
         //assert role name is now the changed name 
 
-        //error cases
-        //what if a role is no found?
-        //what if I pass in a parameter value hat is invalid (such as name)
     }
 }
-
+//error cases
+        //what if a role is no found?
+        //what if I pass in a parameter value hat is invalid (such as name)
 
 
  
