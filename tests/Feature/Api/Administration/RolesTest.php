@@ -234,6 +234,26 @@ class RolesTest extends ApiTestCase
         $transformed = (new RoleTransformer())->transform($role);
         $response->assertJson($transformed);
     }
+
+    public function testEditRoleSuccess() 
+    {
+        //create a role, but with a fixed name with a factory method 
+        $role = factory(\ProcessMaker\Model\Role::class)->create([
+            'code' => 'TESTROLE',
+            'uid' => '134A',
+            'code' => 'word',
+            'name' => 'name',
+            'description' => 'sentence',
+            'status' => 'ACTIVE'
+        //Fetch from database that role with the uid that was created
+        //Then call api to change the role name
+        //re-fetch from database that role
+        //assert role name is now the changed name 
+
+        //error cases
+        //what if a role is no found?
+        //what if I pass in a parameter value hat is invalid (such as name)
+    }
 }
 
 
