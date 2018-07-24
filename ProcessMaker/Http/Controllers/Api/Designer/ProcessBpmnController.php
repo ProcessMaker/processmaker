@@ -43,6 +43,6 @@ class ProcessBpmnController extends Controller
         ProcessManager::update($process, [
             'bpmn' => $request->get('bpmn')
         ]);
-        return response([], 200);
+        return response('', 204);
     }
 }
