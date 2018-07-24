@@ -5,7 +5,7 @@ namespace ProcessMaker\Http\Controllers\Api\Designer;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Mockery\Exception;
+use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Facades\ProcessManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Model\Process;
@@ -141,5 +141,17 @@ class ProcessesController extends Controller
         $process->category = $process->category()->first();
         $process->user = $process->user()->first();
         return fractal($process, new ProcessTransformer())->respond(200);
+    }
+
+    public function createProcess(Request $request)
+    {
+        $data = $request->json()->all();
+        $category = ProcessCategory::where('uid', $data['category_uid'])->first();
+
+        $data['user_id'] = Auth::id();
+        $data['process_category_id'] = $category->id;
+        $data['bpmn'] = file_get_contents(database_path('processes') . '/StartProcess/InitialProcess.bpmn');
+        $response = ProcessManager::store($data);
+        return fractal($response, new ProcessTransformer())->respond(201);
     }
 }
