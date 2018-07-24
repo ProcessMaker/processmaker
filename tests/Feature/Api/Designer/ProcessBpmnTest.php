@@ -74,7 +74,7 @@ class ProcessesBpmnTest extends ApiTestCase
         $bpmn =  'test-bpm-text';
         $uri = str_replace('{processUid}', self::API_TEST_PROCESS_UID, self::API_TEST_PROCESS_BPMN);
         $response = $this->api('patch', $uri, ['bpmn' => $bpmn]);
-        $response->assertStatus(200);
+        $response->assertStatus(204);
 
         $processInDb = Process::where('uid', '=', self::API_TEST_PROCESS_UID)->first();
 
