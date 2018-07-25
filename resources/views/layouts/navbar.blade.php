@@ -14,7 +14,7 @@
       <li class="nav-item">
       <notifications id="navbar-notifications-button" v-bind:is="'notifications'" v-bind:messages="messages"></notifications>
       </li>
-      <hr>
+      <hr id="seperator">
       <li class="dropdown">
       <img class="avatar dropdown-toggle" id="topnav-avatar" src="/img/avatar.png" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
@@ -30,7 +30,7 @@
 
 <style lang="scss" scoped>
 
-  hr{ 
+  #seperator{ 
     margin-left: 8px;
     margin-right: 8px;
     border: none;

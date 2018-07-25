@@ -8,15 +8,15 @@
 			<li>
 				<div class="arrow-container"><div class="arrow"></div></div>
 			</li>
-			<li class="dropdown-item">
-				<span class="drop-head">New Tasks</span>
+			<li class="dropdown-item drop-head">
+				<span>New Tasks</span>
 			</li>
 			<li v-for="task in messages" class="dropdown-item">
-				<div>
+				<div class="mb-1">
 					<a id="task-process" v-bind:href="task.url" @click.stop="remove(task)" target="_blank">
 						{{task.name}}
 					</a>
-					<small class="float-right task-data font-weight-bold">{{formatDateTime(task.dateTime)}}</small>
+					<small class="float-right task-meta">{{formatDateTime(task.dateTime)}}</small>
 				</div>
 				<div class="task-data">
 					{{task.processName}}
@@ -24,14 +24,12 @@
 				<div class="task-data">
 					{{task.userName}}
 				</div>
+				<hr>
 			</li>
-			<li class="dropdown-divider"></li>
-			<li class="dropdown-item">
-				<div class="link-block">
-					<a href="/task">
-						VIEW ALL TASKS
-					</a>
-				</div>
+			<li class="dropdown-item drop-foot">
+				<a href="/task">
+					VIEW ALL TASKS
+				</a>
 			</li>
 		</ul>
 	</div>
@@ -118,13 +116,28 @@ export default {
 #task-process {
   color: #3397e1;
   font-size: 16px;
+  padding-bottom: 8px;
 }
 .task-data {
-  color: rgba(0, 0, 0, 0.5);
-  font-size: 12px;
+  color: #788793;
+  font-size: 13px;
+  font-weight: lighter;
+}
+.task-meta {
+  color: #788793;
+  font-size: 11px;
 }
 .drop-head {
   font-size: 18px;
   font-weight: 400;
+  margin-bottom: 10px;
+}
+.drop-foot {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 15px;
+}
+hr {
+  margin-bottom: 0;
 }
 </style>
