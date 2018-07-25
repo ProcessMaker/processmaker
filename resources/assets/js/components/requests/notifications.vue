@@ -9,19 +9,19 @@
 				<div class="arrow-container"><div class="arrow"></div></div>
 			</li>
 			<li class="dropdown-item">
-				<strong>New Tasks</strong>
+				<span class="drop-head">New Tasks</span>
 			</li>
 			<li v-for="task in messages" class="dropdown-item">
 				<div>
-					<a id="task_process" v-bind:href="task.url" @click.stop="remove(task)" target="_blank">
+					<a id="task-process" v-bind:href="task.url" @click.stop="remove(task)" target="_blank">
 						{{task.name}}
 					</a>
-					<small class="float-right">{{formatDateTime(task.dateTime)}}</small>
+					<small class="float-right task-data font-weight-bold">{{formatDateTime(task.dateTime)}}</small>
 				</div>
-				<div>
+				<div class="task-data">
 					{{task.processName}}
 				</div>
-				<div>
+				<div class="task-data">
 					{{task.userName}}
 				</div>
 			</li>
@@ -111,14 +111,20 @@ export default {
   right: 0px;
   top: -16px;
 }
-
 .notifications {
   position: relative;
   padding: 16px;
 }
-
-#task_process {
+#task-process {
   color: #3397e1;
   font-size: 16px;
+}
+.task-data {
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 12px;
+}
+.drop-head {
+  font-size: 18px;
+  font-weight: 400;
 }
 </style>
