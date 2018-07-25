@@ -23,10 +23,16 @@ class ProcessController extends Controller
      * Redirects to the view of the designer
      *
      * @param Process $process
+     *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function show(Process $process)
     {
+        if (empty($process->getAttributes())) {
+            request()->session()->flash('_alert', json_encode(['danger', __('The process was not found.')]));
+            return view('processes.index');
+        }
+
         return view('designer.designer', compact('process'));
     }
 }
