@@ -1,21 +1,15 @@
-
 // Variables
 @import "variables";
-
 // @import '../sass/_variables.scss';
 @import "~bootstrap/scss/bootstrap";
-
 // Font Awesome
 @import '~@fortawesome/fontawesome/styles.css';
-
 @import '~@fortawesome/fontawesome-free-webfonts/scss/fa-brands';
 @import '~@fortawesome/fontawesome-free-webfonts/scss/fa-regular';
 @import '~@fortawesome/fontawesome-free-webfonts/scss/fa-solid';
 @import '~@fortawesome/fontawesome-free-webfonts/scss/fontawesome';
-
 //Font Open sans
 @import '~npm-font-open-sans/open-sans';
-
 body,
 html {
   width: 100%;
@@ -28,78 +22,73 @@ html {
 }
 
 #app-container .main {
-  width:100%;
+  width: 100%;
   position: absolute;
 }
 
 .row.no-gutters {
   margin-right: 0;
   margin-left: 0;
-
-  & > [class^="col-"],
-  & > [class*=" col-"] {
+  &>[class^="col-"],
+  &>[class*=" col-"] {
     padding-right: 0;
     padding-left: 0;
   }
 }
 
 .container-fluid {
-    width: 100%;
-    padding-right: 0;
-    padding-left: 0;
-    margin-right: auto;
-    margin-left: auto;
+  width: 100%;
+  padding-right: 0;
+  padding-left: 0;
+  margin-right: auto;
+  margin-left: auto;
 }
 
 //topnav
-.navbar{
-  height:60px;
-
-  .dropdown-menu-right{
+.navbar {
+  height: 60px;
+  .dropdown-menu-right {
     width: 200px;
     border: none;
   }
-  .drop-header{
+  .drop-header {
     background-color: #e9edf1;
     margin-top: -8px;
     font-weight: 600;
   }
-  .dropdown a{
+  .dropdown a {
     color: #333333;
     font-size: 14px;
     padding-top: 7px;
     padding-bottom: 7px;
-
-    &:hover{
+    &:hover {
       background-color: #e9edf1;
     }
   }
-  .avatar-small{
+  .avatar-small {
     width: 46px;
     height: 46px;
     margin: 0px 8px 3px -10px;
   }
-
   .avatar {
-    width:55px; padding:10px
+    width: 64px;
+    padding: 10px
   }
-
-  .dropdown-item i{
+  .dropdown-item i {
     margin-right: 6px;
     margin-left: -13px;
     color: #788793;
   }
-  .dropdown-menu-right{
-     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.23);
-}
+  .dropdown-menu-right {
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.23);
+  }
   .nav_icon {
     color: #7e8ba1;
   }
   .nav-link {
     font-size: 18px;
     font-weight: 600;
-    color: #333333 ;
-
+    color: #333333;
     &:hover {
       color: $primary !important;
       padding-bottom: 20px;
@@ -108,8 +97,8 @@ html {
   }
 }
 
-
 /*modal style*/
+
 .modal-title {
   margin-left: 15px;
   font-size: 18px;
@@ -120,7 +109,6 @@ html {
   border: none;
   padding-top: 16px;
   margin-bottom: 15px;
-
   .close {
     padding: 20px;
     margin-right: -3px;
@@ -150,7 +138,7 @@ html {
   margin-bottom: 0;
 }
 
-.form-check input{
+.form-check input {
   margin-top: 7px;
 }
 
@@ -183,17 +171,11 @@ select.form-control:not([size]):not([multiple]) {
   font-weight: 400;
 }
 
-
-
-
-
-
-
 #navbar-request-button {
-      margin-top: 6px;
+  margin-top: 6px;
 }
-// This is our top shelf notification panel
 
+// This is our top shelf notification panel
 .btn-action {
   background-color: #788793;
   border-color: #788793;
@@ -204,7 +186,6 @@ select.form-control:not([size]):not([multiple]) {
 
 a.btn-action {
   color: white;
-
   &:hover {
     color: white;
   }
@@ -226,19 +207,15 @@ h1.page-title {
 table.vuetable {
   margin-top: 16px;
   font-size: $font-size-base;
-
   tr:hover td {
     background-color: $grey-bg;
   }
-
   .vuetable-slot {
     position: relative;
   }
-
   .actions {
     cursor: pointer;
     text-align: right;
-
     .popout {
       display: none;
       align-items: center;
@@ -246,9 +223,8 @@ table.vuetable {
       background-color: $grey-bg;
       right: 0;
       top: 0;
-      margin:3px;
+      margin: 3px;
       font-size: $font-size-large;
-
       button.btn-action {
         color: #212529;
         height: 32px;
@@ -256,54 +232,46 @@ table.vuetable {
         margin-left: 4px;
         margin-right: 4px;
         background-color: $grey-bg;
-        border:0;
+        border: 0;
         text-align: center;
         padding: 0;
-
         &:hover {
           background-color: white;
           border-radius: 2px;
         }
       }
     }
-
     &:hover {
       .popout {
         display: flex;
       }
     }
   }
-
   th {
     background-color: $grey-bg;
     color: $secondary;
     text-transform: uppercase;
-
     &.ascending,
     &.descending {
       color: black;
     }
   }
-
-.vuetable-pagination {
-  color: $secondary;
-}
-
+  .vuetable-pagination {
+    color: $secondary;
+  }
 }
 
 ///icomoon
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?9f4tqy');
-  src:  url('fonts/icomoon.eot?9f4tqy#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?9f4tqy') format('truetype'),
-    url('fonts/icomoon.woff?9f4tqy') format('woff'),
-    url('fonts/icomoon.svg?9f4tqy#icomoon') format('svg');
+  src: url('fonts/icomoon.eot?9f4tqy');
+  src: url('fonts/icomoon.eot?9f4tqy#iefix') format('embedded-opentype'), url('fonts/icomoon.ttf?9f4tqy') format('truetype'), url('fonts/icomoon.woff?9f4tqy') format('woff'), url('fonts/icomoon.svg?9f4tqy#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
 
-[class^="icon-"], [class*=" icon-"] {
+[class^="icon-"],
+[class*=" icon-"] {
   /* use !important to prevent issues with browser extensions that change fonts */
   font-family: 'icomoon' !important;
   speak: none;
@@ -312,7 +280,6 @@ table.vuetable {
   font-variant: normal;
   text-transform: none;
   line-height: 1;
-
   /* Better Font Rendering =========== */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -321,47 +288,58 @@ table.vuetable {
 .icon-assigned:before {
   content: "\e900";
 }
+
 .icon-completed-1:before {
   content: "\e901";
 }
+
 .icon-completed-2:before {
   content: "\e902";
 }
+
 .icon-connectors:before {
   content: "\e903";
 }
+
 .icon-custom-ui:before {
   content: "\e904";
 }
+
 .icon-draft:before {
   content: "\e905";
 }
+
 .icon-in-progress:before {
   content: "\e906";
 }
+
 .icon-login:before {
   content: "\e907";
 }
+
 .icon-paused-1:before {
   content: "\e908";
 }
+
 .icon-paused-2:before {
   content: "\e909";
 }
+
 .icon-process:before {
   content: "\e90a";
 }
+
 .icon-security-on:before {
   content: "\e90b";
 }
+
 .icon-unassigned:before {
   content: "\e90c";
 }
+
 .icon-workstation:before {
   content: "\e90d";
 }
-
-
 
 [v-cloak] {
   display: none;
@@ -376,7 +354,7 @@ table.vuetable {
   text-align: center;
   color: #788793;
   margin-top: 40px;
-  div:first-child{
+  div:first-child {
     height: 200px;
     width: 260px;
     margin: auto;
@@ -394,13 +372,12 @@ table.vuetable {
 }
 
 .formContainer {
-    margin-top: 98px
+  margin-top: 98px
 }
 
 .formContainer .form {
   background-color: white;
   padding: 20px 30px;
-
 }
 
 .form-check {
@@ -408,8 +385,7 @@ table.vuetable {
 }
 
 #alertBox {
-  position: fixed;  
-  left:30%;
-  right:30%;
-
+  position: fixed;
+  left: 30%;
+  right: 30%;
 }
