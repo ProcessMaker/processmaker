@@ -167,7 +167,7 @@ class Process extends Model
      */
     protected $rules = [
         'uid' => 'max:36',
-        'name' => 'required',
+        'name' => 'required|unique:processes,name',
         'process_parent_id' => 'exists:processes',
         'status' => 'in:' . self::STATUS_ACTIVE . ',' . self::STATUS_INACTIVE,
         'create_trigger_id' => 'nullable|exists:triggers,id',

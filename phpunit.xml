@@ -25,7 +25,7 @@
     <php>
       <env name="APP_DEBUG" value="true" />
       <env name="APP_ENV" value="testing" />
-      <env name="APP_URL" value="http://nginx.pm4.net:81" />
+      <env name="APP_URL" value="http://localhost" />
       <env name="APP_KEY" value="base64:x80I9vQNxwllSuwBkTwfUa5qkgPTRdwqHCPSz7zHi1U=" />
       <env name="TESTING_VERBOSE" value="false" />
       <env name="POPULATE_DATABASE" value="true" />
@@ -39,7 +39,7 @@
       <env name="DB_HOST" value="127.0.0.1" />
       <env name="DB_PORT" value="3306" />
       <env name="DB_USERNAME" value="root" />
-      <env name="DB_PASSWORD" value="marquito" />
+      <env name="DB_PASSWORD" value="" />
       <env name="DB_DATABASE" value="workflow" />
 
 

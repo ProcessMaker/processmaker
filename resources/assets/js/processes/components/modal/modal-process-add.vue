@@ -2,19 +2,19 @@
     <b-modal id="createProcess" ref="modal" size="md" @hidden="onHidden" title="Create New Process">
         <form>
             <div class="form-group">
-                <label for="title" v-model="title">{{title}}</label>
-                <input type="text" class="form-control" v-model="titleValue">
+                <label for="title">{{titleLabel}}</label>
+                <input id="title" type="text" class="form-control" v-model="title">
             </div>
 
             <div class="form-group">
-                <label for="description">{{description}}</label>
-                <textarea class="form-control" v-model="descriptionValue" rows="3"></textarea>
+                <label for="description">{{descriptionLabel}}</label>
+                <textarea id="description" class="form-control" v-model="description" rows="3"></textarea>
             </div>
 
             <div class="form-group">
-                <label for="category" v-model="category">{{category}}</label>
+                <label for="category">{{categoryLabel}}</label>
                 <select class="form-control" id="category" v-model="categorySelect">
-                    <option v-for="(select, index) in categorySelectOptions" :key="index" :value="select.cat_uid">{{select.cat_name}}</option>
+                    <option v-for="select in categorySelectOptions" :value="select.cat_uid">{{select.cat_name}}</option>
                 </select>
             </div>
 
@@ -36,14 +36,13 @@
     export default {
         data() {
             return {
-                // form models here
-                'title': 'Title',
-                'category': 'Category',
-                'titleValue' : '',
-                'descriptionValue': '',
+                'titleLabel': 'Title',
+                'categoryLabel': 'Category',
+                'descriptionLabel': 'Description',
+                'title': '',
+                'description': '',
                 'categorySelect': null,
-                'categorySelectOptions': [],
-                'description': 'Description',
+                'categorySelectOptions': []
             }
         },
         methods: {
@@ -56,13 +55,16 @@
             onShow() {
                 window.ProcessMaker.apiClient.get('categories')
                     .then((response) => {
-                        response.data.unshift({ cat_uid: null, cat_name: 'None'});
+                        response.data.unshift({cat_uid: null, cat_name: 'None'});
                         this.categorySelectOptions = response.data;
+                        this.title = '';
+                        this.description = '';
+                        this.categorySelect = null;
                         //display modal create process
                         this.$refs.modal.show()
                     })
                     .catch((error) => {
-                        alert(error);
+                        //define how display errors
                     })
             },
             onSave() {
@@ -77,19 +79,21 @@
                     .post(
                         'processes/create',
                         {
-                            name: this.titleValue,
-                            description: this.descriptionValue,
+                            name: this.title,
+                            description: this.description,
                             category_uid: this.categorySelect
                         }
                     )
                     .then(response => {
-                        this.data = this.transform(response.data);
-                        this.loading = false;
+                        this.$refs.modal.hide();
+                        if (response.data && response.data.uid) {
+                            //Change way to open the designer
+                            window.location.href = '/designer/' + response.data.uid;
+                        }
                     })
                     .catch(error => {
-                        // Undefined behavior currently, show modal?
+                        //define how display errors
                     });
-
             }
         },
         mounted() {

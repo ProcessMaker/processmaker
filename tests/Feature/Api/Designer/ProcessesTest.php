@@ -98,6 +98,51 @@ class ProcessesTest extends ApiTestCase
     }
 
     /**
+     * Create new process with template
+     */
+    public function testCreateProcessTemplate()
+    {
+        $this->authenticateAsAdmin();
+        $faker = Faker::create();
+
+        $url = self::API_TEST_PROCESS . '/create';
+        $response = $this->api('POST', $url, [
+            'name' => $faker->sentence(3),
+            'description' => $faker->sentence(3),
+            'category_uid' => factory(ProcessCategory::class)->create()->uid
+
+        ]);
+        //validating the answer is correct.
+        $response->assertStatus(201);
+        //Check structure of response.
+        $response->assertJsonStructure(self::STRUCTURE);
+    }
+
+    /**
+     * Create Process validating duplicated
+     */
+    public function testCreateProcessDuplicated()
+    {
+        $this->authenticateAsAdmin();
+        $faker = Faker::create();
+        $name = 'Test Create Process';
+
+        factory(Process::class)->create([
+            'name' => $name
+        ]);
+
+        $url = self::API_TEST_PROCESS . '/create';
+        $response = $this->api('POST', $url, [
+            'name' => $name,
+            'description' => $faker->sentence(3),
+            'category_uid' => factory(ProcessCategory::class)->create()->uid
+        ]);
+        //validating the answer is correct.
+        $response->assertStatus(422);
+        $this->assertArrayHasKey('message', $response->json());
+    }
+
+    /**
      * Test to verify our processes listing api endpoint works without any filters
      */
     public function testProcessesListing(): void

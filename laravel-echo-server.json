@@ -1,5 +1,5 @@
 {
-	"authHost": "http://nginx.pm4.net",
+	"authHost": "https://bpm4.processmaker.local",
 	"authEndpoint": "/broadcasting/auth",
 	"clients": [
 		{
@@ -17,10 +17,10 @@
 	"devMode": true,
 	"host": null,
 	"port": "6001",
-	"protocol": "http",
+	"protocol": "https",
 	"socketio": {},
-	"sslCertPath": "",
-	"sslKeyPath": "",
+	"sslCertPath": "/etc/ssl/certs/nginx-selfsigned.crt",
+	"sslKeyPath": "/etc/ssl/nginx-selfsigned.key",
 	"sslCertChainPath": "",
 	"sslPassphrase": "",
 	"apiOriginAllow": {

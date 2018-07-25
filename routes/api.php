@@ -104,7 +104,7 @@ Route::group([
             Route::patch('processes/{process}/bpmn', 'Designer\ProcessBpmnController@update');
             Route::get('processes/{process}/bpmn', 'Designer\ProcessBpmnController@show');
 
-            Route::post('processes/create', 'Designer\ProcessesController@createProcess');
+            Route::post('processes/create', 'Designer\ProcessesController@createProcessTemplate');
         });
 
         //Workflow end points
