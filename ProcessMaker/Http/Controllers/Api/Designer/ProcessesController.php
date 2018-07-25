@@ -112,7 +112,7 @@ class ProcessesController extends Controller
     {
         $data = $request->json()->all();
         $response = ProcessManager::update($process, $data);
-        return response($this->format($response), 200);
+        return response('', 204);
     }
 
     /**

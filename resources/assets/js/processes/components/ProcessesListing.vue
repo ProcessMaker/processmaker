@@ -9,8 +9,8 @@
                     <div class="popout">
                         <b-btn variant="action" @click="onAction('edit-item', props.rowData, props.rowIndex)"
                                v-b-tooltip.hover title="Edit"><i class="fas fa-edit"></i></b-btn>
-                        <b-btn variant="action" @click="onAction('deactivate-item', props.rowData, props.rowIndex)"
-                               v-b-tooltip.hover title="Deactivate"><i class="fas fa-power-off"></i></b-btn>
+                        <b-btn variant="action" @click="onAction('toggle-status', props.rowData, props.rowIndex)"
+                               v-b-tooltip.hover :title='activateBtnTitle(props.rowData)'><i class="fas" v-bind:class='activateBtnCssClass(props.rowData)'></i></b-btn>
                         <b-btn variant="action" @click="onAction('remove-item', props.rowData, props.rowIndex)"
                                v-b-tooltip.hover title="Remove"><i class="fas fa-trash-alt"></i></b-btn>
                     </div>
@@ -85,9 +85,35 @@
         },
 
         methods: {
+            activateBtnCssClass (data) {
+                var showPowerOn = (data.status === 'INACTIVE') ? true : false;
+                var showPowerOff = (data.status === 'ACTIVE') ? true : false;
+                return {
+                    'fa-toggle-off': showPowerOff,
+                    'fa-toggle-on': showPowerOn
+                };
+            },
+            activateBtnTitle (data) {
+                return (data.status === 'ACTIVE') ? 'Deactivate' : 'Activate'
+            },
             onAction (actionType, data, index) {
                 if (actionType === 'edit-item') {
                     window.open('/designer/' + data.uid);
+                }
+
+                if (actionType === 'toggle-status') {
+                    this.loading = true;
+                    ProcessMaker.apiClient
+                        .put('/processes/' + data.uid, {
+                            status: (data.status === 'ACTIVE') ? 'INACTIVE' : 'ACTIVE'
+                        })
+                        .then(response => {
+                            this.loading = false;
+                            document.location.reload();
+                        })
+                        .catch(error => {
+                            // Undefined behavior currently, show modal?
+                        });
                 }
             },
             formatStatus(value) {
@@ -135,6 +161,10 @@
                         // Undefined behavior currently, show modal?
                     });
             }
+        },
+
+        computed: {
+
         }
     };
 </script>
