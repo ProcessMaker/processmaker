@@ -29,9 +29,12 @@
 </div>
 
 <style lang="scss" scoped>
+
   hr{ 
+    margin-left: 8px;
+    margin-right: 8px;
     border: none;
-    border-left:  1px solid rgb(227,231,236) ;
+    border-left: 1px solid rgb(227,231,236) ;
     height: 34px;
     width: 1px;     
 }
