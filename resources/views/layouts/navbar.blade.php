@@ -14,6 +14,7 @@
       <li class="nav-item">
       <notifications id="navbar-notifications-button" v-bind:is="'notifications'" v-bind:messages="messages"></notifications>
       </li>
+      <hr>
       <li class="dropdown">
       <img class="avatar dropdown-toggle" id="topnav-avatar" src="/img/avatar.png" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
@@ -26,3 +27,12 @@
     </b-navbar-nav>
   </b-navbar>
 </div>
+
+<style lang="scss" scoped>
+  hr{ 
+    border: none;
+    border-left:  1px solid rgb(227,231,236) ;
+    height: 34px;
+    width: 1px;     
+}
+</style>
