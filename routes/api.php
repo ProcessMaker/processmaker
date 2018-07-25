@@ -173,5 +173,12 @@ Route::group([
 
         //Requests endpoints
         Route::get('requests','Requests\RequestsController@index')->middleware('auth');
+
+        // Cases group
+        Route::group([
+            'middleware' => ['permission:PM_CASES']
+        ], function() {
+            Route::get('user/processes', 'Requests\RequestsController@getUserStartProcesses');
+        });
     });
 });
