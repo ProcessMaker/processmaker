@@ -126,7 +126,6 @@
                         this.loading = false;
                     })
                     .catch(error => {
-                        // Undefined behavior currently, show modal?
                     });
             }
         }

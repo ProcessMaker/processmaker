@@ -61,6 +61,9 @@ window.ProcessMaker.apiClient.interceptors.response.use(function (response) {
     elem = document.getElementById('api-error');
     elem.setAttribute('style', 'display: block');
   }
+  if (error.response.data && error.response.data.message) {
+    window.ProcessMaker.alert(error.response.data.message, 'danger');
+  }
   return Promise.reject(error);
 });
 

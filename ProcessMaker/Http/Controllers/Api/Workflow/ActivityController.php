@@ -14,7 +14,7 @@ class ActivityController extends Controller
     public function complete(Request $request, Process $process, Instance $instance, Delegation $token)
     {
         if ($token->thread_status === Delegation::THREAD_STATUS_CLOSED) {
-            return abort(404);
+            return abort(404, 'Task already closed');
         }
         $data = $request->input();
 

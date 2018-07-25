@@ -81,7 +81,6 @@ new Vue({
         .catch((error) => {
           if(error.response.status == 422) {
             // Validation error
-            this.addUserValidationError = error.response.data.message;
             let fields = Object.keys(error.response.data.errors);
             for(var field of fields) {
               this.addUserValidationErrors[field] = error.response.data.errors[field][0];

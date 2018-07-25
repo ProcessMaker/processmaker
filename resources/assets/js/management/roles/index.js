@@ -39,8 +39,6 @@ new Vue({
 
       })
       .catch((err) => {
-        // @todo Replace with new flashy errors?
-        alert('There was a problem creating the role.')
       })
     }
   }
