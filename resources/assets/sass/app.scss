@@ -85,6 +85,9 @@ html {
   .nav_icon {
     color: #7e8ba1;
   }
+  .nav-link.active {
+    color: $primary !important;
+  }
   .nav-link {
     font-size: 18px;
     font-weight: 600;
@@ -93,6 +96,9 @@ html {
       color: $primary !important;
       padding-bottom: 20px;
       margin-bottom: -20px;
+    }
+    .active a {
+      color: $primary !important;
     }
   }
 }

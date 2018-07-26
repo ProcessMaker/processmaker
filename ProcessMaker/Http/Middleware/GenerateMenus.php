@@ -122,23 +122,22 @@ class GenerateMenus
           $submenu = $menu->add(__('menus.sidebar_request.request'));
           $submenu->add(__('menus.sidebar_request.in_progress'), [
                 'route' => 'home',
-                'icon' => 'fa-user',
+                'icon' => 'icon-assigned',
                 'id' => 'homeid'
           ]);
           $submenu->add(__('menus.sidebar_request.draft'), [
               'route' => 'home',
-              'icon' => 'fa-user',
+              'icon' => 'icon-draft',
               'id' => 'homeid'
           ]);
           $submenu->add(__('menus.sidebar_request.completed'), [
               'route' => 'home',
-              'icon' => 'fa-users',
+              'icon' => 'icon-completed-1',
               'id' => 'homeid'
           ]);
           $submenu->add(__('menus.sidebar_request.paused'), [
-              'header' => false,
               'route' => 'home',
-              'icon' => 'fa-user-plus',
+              'icon' => 'icon-paused-2',
               'id' => 'homeid'
           ]);
        });
