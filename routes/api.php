@@ -101,6 +101,7 @@ Route::group([
             Route::get('processes/{process}', 'Designer\ProcessesController@show');
             Route::delete('processes/{process}', 'Designer\ProcessesController@remove');
             Route::put('processes/{process}', 'Designer\ProcessesController@update');
+            Route::patch('processes/{process}/bpmn', 'Designer\ProcessBpmnController@update');
             Route::get('processes/{process}/bpmn', 'Designer\ProcessBpmnController@show');
         });
 
