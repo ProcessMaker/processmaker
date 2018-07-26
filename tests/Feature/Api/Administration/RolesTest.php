@@ -9,6 +9,7 @@ use ProcessMaker\Model\User;
 use ProcessMaker\Transformers\RoleTransformer;
 use Tests\Feature\Api\ApiTestCase;
 
+
 /**
  * Tests the Roles API Endpoints with expected values
  */
@@ -244,45 +245,39 @@ class RolesTest extends ApiTestCase
         $this->auth($user->username, 'password');
         //create a role, but with a fixed name with a factory method 
         $role = factory(\ProcessMaker\Model\Role::class)->create([
-            'code' => 'TESTROLE',
-            'uid' => '134A',
-            'code' => 'word',
+            'code' => app()->make('Faker\Generator')->text(5),
+            'uid' => app()->make('Faker\Generator')->text(10),
             'name' => 'name',
-            'description' => 'sentence',
+            'description' => app()->make('Faker\Generator')->text(10),
             'status' => 'ACTIVE'
         ]);
         //Fetch from database that role with the uid that was created
         $response = $this->api('get', self::API_TEST_ROLES, [
-            'uid' => '134A',
+            
         ]);
 
         //Then call api to change the role name
         $response = $this->api('put', self::API_TEST_ROLES . '/' . $role->uid, [
-            'code' => 'TESTROLE',
-            'uid' => '134A',
-            'code' => 'word',
+            'code' => $role->code,
+            'uid' => $role->uid,
             'name' => 'New',
-            'description' => 'sentence',
+            'description' => $role->description,
             'status' => 'ACTIVE'
         ]);
         //re-fetch from database that role
-        $response = $this->api('get', self::API_TEST_ROLES . '/' . $role->uid, [
-            'uid' => '134A',
+          $response = $this->api('get', self::API_TEST_ROLES . '/' . $role->uid, [
+            
         ]);
         //assert role name is now the changed name 
         $response->assertJson([
-            'code' => 'TESTROLE',
-            'uid' => '134A',
-            'code' => 'word',
+            'code' => $role->code,
+            'uid' => $role->uid,
             'name' => 'New',
-            'description' => 'sentence',
+            'description' => $role->description,
             'status' => 'ACTIVE'
         ]);
     }
 }
-//error cases
-        //what if a role is no found?
-        //what if I pass in a parameter value hat is invalid (such as name)
 
 
  
