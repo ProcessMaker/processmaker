@@ -25,5 +25,6 @@ export default class extends Flow {
         })
         this.shape.addTo(this.graph)
         this.createTools()
+        this.addEvents()
     }
 }

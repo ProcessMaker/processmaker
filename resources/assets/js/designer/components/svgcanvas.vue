@@ -12,12 +12,15 @@
     import BPMNHandler from '../BPMNHandler/BPMNHandler'
     import {Elements} from "../diagram/elements";
     export default {
+        props: [
+            'processUid'
+        ],
         data() {
             return {
                 graph: null,
                 paper: null,
                 bpmnHandler: null,
-                bpmn: '<?xml version="1.0" encoding="UTF-8"?><bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" id="Definitions_0p3wzv2" targetNamespace="http://bpmn.io/schema/bpmn"><bpmn:process id="Process_1" isExecutable="false"><bpmn:startEvent id="StartEvent_1" /></bpmn:process><bpmndi:BPMNDiagram id="BPMNDiagram_1"><bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1"><bpmndi:BPMNShape id="_BPMNShape_StartEvent_1" bpmnElement="StartEvent_1"><dc:Bounds x="173" y="102" width="36" height="36" /></bpmndi:BPMNShape></bpmndi:BPMNPlane></bpmndi:BPMNDiagram></bpmn:definitions>',
+                bpmn: '<?xml version="1.0" encoding="UTF-8"?><bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" id="Definitions_0p3wzv2" targetNamespace="http://bpmn.io/schema/bpmn"><bpmn:collaboration id="Collaboration_1"></bpmn:collaboration>	<bpmn:process id="Process_1" isExecutable="false">	<bpmn:startEvent id="StartEvent_1" /></bpmn:process><bpmndi:BPMNDiagram id="BPMNDiagram_1">	<bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">	<bpmndi:BPMNShape id="_BPMNShape_StartEvent_1" bpmnElement="StartEvent_1">	<dc:Bounds x="173" y="102" width="36" height="36" /></bpmndi:BPMNShape></bpmndi:BPMNPlane></bpmndi:BPMNDiagram></bpmn:definitions>',
                 builder: null
             }
         },
@@ -45,31 +48,38 @@
              * @param event
              */
             createElement(event) {
-                let name = event.target.id.split(':')
+                let definition = event.target.getAttribute("event")
+                let type = event.target.getAttribute("type")
                 this.updateCoordinates()
                 const defaultOptions = {
-                    id: name[1] + '_' + Math.floor((Math.random() * 100) + 1),
-                    type: name[1],
+                    id: type + '_' + Math.floor((Math.random() * 1000000) + 1),
+                    type: type,
                     bounds: {
                         x: event.x - this.diagramCoordinates.x,
                         y: event.y - this.diagramCoordinates.y
-                    }
+                    },
+                    eventDefinition: definition
                 }
-                if (Elements[name[1].toLowerCase()]) {
+                if (Elements[type.toLowerCase()]) {
                     this.builder.createShape(defaultOptions, true)
                 } else {
-                    console.error(name[1].toLowerCase() + "is not support")
+                    console.error(type.toLowerCase() + " is not support")
                 }
             },
             /**
-             * Listener for remove element of the canvas
+             * Listener for remove element of the canvass
              * @param e
              */
             removeElement (e){
                 this.builder.removeSelection()
             },
             toXML (e){
-                this.bpmnHandler.toXML()
+                let result = this.bpmnHandler.toXML()
+                ProcessMaker.apiClient.patch(`processes/${this.$props.processUid}/bpmn`, {
+                    bpmn: result
+                }).then((response) => {
+                    alert("Process saved")
+                })
             },
             /**
              * Listener from Crown for update position in element
@@ -168,11 +178,8 @@
             this.paper.on('cell:pointerup', this.pointerUp)
             this.paper.on('link:mouseenter', this.linkMouseEnter)
             this.paper.on('link:mouseleave', this.linkMouseLeave)
-
-
             this.builder = new Builder(this.graph, this.paper)
-
-            //this.builder.createFromBPMN(this.bpmnHandler.getModel())
+            this.builder.createFromBPMN(this.bpmnHandler.buildModel(this.bpmn))
         }
     }
 </script>

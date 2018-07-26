@@ -1,15 +1,13 @@
 import {JointElements} from "../jointElements"
 import {Shape} from "../Shape"
-import {EndEvent} from "./endEvent/"
+import {IntermediateThrowEvent} from "./intermediateThrowEvent/"
 import _ from "lodash"
 /**
  * IntermediateTimerEvent class
  */
 export default class {
     constructor(options, graph, paper) {
-        let def = options["eventDefinition"]
-        def = def ? def : "empty"
-        this.adapter = new EndEvent[def](options, graph, paper)
+        this.adapter = new IntermediateThrowEvent[options["eventDefinition"]](options, graph, paper)
     }
 
     render() {

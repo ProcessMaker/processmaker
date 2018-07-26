@@ -170,16 +170,20 @@ export default class BPMNHandler {
      * @returns {*}
      */
     formatElement(di, bpmn) {
+
         let Element = {}
         let attr = this.getAttributes(di, "dc:Bounds")
         let name = bpmn.name.split(':')
         _.forEach(attr, (value, key, obj) => {
             obj[key] = parseFloat(value)
         })
+
+        let eventDefinition = bpmn.elements.length > 0 ? bpmn.elements[0].name.split(':')[1] : null
         return {
             type: name.length == 1 ? name[0].toLowerCase() : name[1].toLowerCase(),
             id: di.attributes.bpmnElement,
-            bounds: attr
+            bounds: attr,
+            eventDefinition
         }
     }
 
@@ -234,7 +238,7 @@ export default class BPMNHandler {
         let that = this
         _.flatMap(Mutations, (mutation, type) => {
             EventBus.$on(type, (payload) => {
-                mutation(payload, that.elements, that.elementsDiagram, that.processes)
+                mutation(payload, that.elements, that.elementsDiagram, that.processes, that.collaborations)
             })
         })
     }
@@ -245,18 +249,8 @@ export default class BPMNHandler {
             ignoreComment: true,
             ignoreDeclaration: true,
             spaces: 4
-        };
-        var result = convert.js2xml(this.bpmn, options);
-        let textFile
-        var data = new Blob([result], {type: 'text/plain'});
-        if (textFile !== null) {
-            window.URL.revokeObjectURL(textFile);
         }
-        textFile = window.URL.createObjectURL(data);
-
-        let window2 = window.open(textFile, 'log.' + new Date() + '.txt');
-        window2.onload = e => window.URL.revokeObjectURL(textFile);
-        return textFile
+        return convert.js2xml(this.bpmn, options)
     }
 
 

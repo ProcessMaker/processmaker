@@ -9,6 +9,10 @@ export const bpmn = {
             update: x => x,
             create: x => x
         },
+        flow: {
+            update: x => x,
+            create: x => x
+        },
         toXML: x => x
     }
 };

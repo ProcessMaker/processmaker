@@ -6,7 +6,7 @@
         <div id="designer-subcontainer">
             <div class="canvas-container" @scroll="onScroll">
                 <crown ref="crown"></crown>
-                <svgcanvas :bpmn="bpmn" ref="svgcanvas"></svgcanvas>
+                <svgcanvas :processUid="processUid" :bpmn="bpmn" ref="svgcanvas"></svgcanvas>
             </div>
             <designerobjectsmenu></designerobjectsmenu>
         </div>
@@ -141,6 +141,7 @@
             ProcessMaker.apiClient.get(`processes/${this.processUid}/bpmn`, {
                 params: {}
             }).then((response) => {
+
                 let action = actions.designer.bpmn.update(response.data)
                 EventBus.$emit(action.type, action.payload)
             })
