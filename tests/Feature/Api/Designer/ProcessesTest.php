@@ -108,8 +108,9 @@ class ProcessesTest extends ApiTestCase
         $response = $this->api('GET', self::API_TEST_PROCESS);
         $response->assertStatus(200);
         $data = json_decode($response->getContent(), true);
-        $this->assertCount(5, $data['data']);
-        $this->assertEquals(5, $data['meta']['total']);
+        // Verify we have a total of 7 results (our 5 plus processes plus our created processes)
+        $this->assertCount(7, $data['data']);
+        $this->assertEquals(7, $data['meta']['total']);
     }
 
     /**
@@ -258,8 +259,8 @@ class ProcessesTest extends ApiTestCase
         ]);
         $response = $this->api('GET', self::API_TEST_PROCESS);
         $response->assertStatus(200);
-
-        $this->assertEquals(1, $response->original->meta->total);
+        // Verify we have a total of 3 results (our 2 plus processes plus our created processes)
+        $this->assertEquals(3, $response->original->meta->total);
         $response->assertJsonStructure(['*' => self::STRUCTURE], $response->json('data'));
     }
 
