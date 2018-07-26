@@ -26,9 +26,9 @@ class ProcessController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function show(Process $process)
+    public function show(Process $process = null)
     {
-        if (empty($process->getAttributes())) {
+        if (!$process) {
             request()->session()->flash('_alert', json_encode(['danger', __('The process was not found.')]));
             return view('processes.index');
         }
