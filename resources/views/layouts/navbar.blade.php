@@ -3,7 +3,7 @@
     <b-alert :show="alertShow" id="alertBox" :variant="alertVariant" @dismissed="alertShow = false" dismissible>@{{alertText}}</b-alert>
     <b-navbar-nav>
       @foreach(Menu::get('topnav')->items as $item)
-      <b-nav-item href="{{ $item->url() }}">{{$item->title}}</b-nav-item>
+      <b-nav-item href="{{ $item->url() }}" {{$item->isActive !== false ? 'active': ''}}>{{$item->title}}</b-nav-item>
       @endforeach
       </b-navbar-nav>
       <b-navbar-nav class="ml-auto">

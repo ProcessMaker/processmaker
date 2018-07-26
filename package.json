@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "@processmaker/vue-form-elements": "^0.1.4",
-    "@vue/test-utils": "^1.0.0-beta.20",
+    "@vue/test-utils": "^1.0.0-beta.21",
     "accounting": "^0.4.1",
     "axios": "^0.15.3",
     "babel-jest": "^22.4.4",
@@ -60,7 +60,7 @@
     "popper.js": "^1.14.3",
     "pusher-js": "^4.2.2",
     "snapsvg": "^0.5.1",
-    "timezones.json": "^1.4.3",
+    "timezones.json": "^1.4.4",
     "tinymce": "^4.8.0",
     "tooltip.js": "^1.2.0",
     "v-tooltip": "^2.0.0-rc.33",

@@ -42,9 +42,20 @@ $border-radius: 0.125em;
 //link-decoration
 $link-hover-decoration: none;
 
+// components
+
+$component-active-color:    $primary !default;
+$component-active-bg: $light;
+
+// navbar
+$navbar-default-link-active-color:         $primary !default;
+$navbar-inverse-link-active-color:          $primary !default;
+$nav-tabs-active-link-hover-color:         $primary !default;
+$nav-pills-active-link-hover-color:          $primary !default;
+$list-group-active-color:          $primary !default;
+
 //pagination
 $pagination-color: $secondary;
-$component-active-bg: $light;
 $pagination-bg: $body-bg;
 $pagination-border-width: 0px;
 
