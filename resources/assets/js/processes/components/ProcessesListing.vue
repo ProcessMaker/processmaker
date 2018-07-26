@@ -158,7 +158,7 @@
                         this.loading = false;
                     })
                     .catch(error => {
-                        // Undefined behavior currently, show modal?
+                        ProcessMaker.alert(error.message, 'danger')
                     });
             }
         },
