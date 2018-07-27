@@ -73,7 +73,8 @@
         data() {
             return {
                 modalComponent: null,
-                bpmn: {}
+                bpmn: {},
+                autoSaveTime: 15000 // miliseconds
             }
         },
         created() {
@@ -135,16 +136,23 @@
             onScroll(){
                 let action = actions.designer.crown.hide()
                 EventBus.$emit(action.type, action.payload)
+            },
+            autoSave(){
+                setInterval(() => {
+                    let action = actions.bpmn.save()
+                    EventBus.$emit(action.type, action.payload)
+                }, this.autoSaveTime)
             }
         },
         mounted(){
             ProcessMaker.apiClient.get(`processes/${this.processUid}/bpmn`, {
                 params: {}
             }).then((response) => {
-
                 let action = actions.designer.bpmn.update(response.data)
                 EventBus.$emit(action.type, action.payload)
             })
+
+            this.autoSave()
         }
     };
 </script>

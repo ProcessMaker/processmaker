@@ -52,7 +52,7 @@
                 return inputFile
             },
             saveBPMN (value) {
-                let action = actions.bpmn.toXML(value)
+                let action = actions.bpmn.save(value)
                 EventBus.$emit(action.type, action.payload)
             },
             handleFileChange(e){

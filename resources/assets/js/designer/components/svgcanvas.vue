@@ -40,7 +40,7 @@
             EventBus.$on(actions.designer.flow.creating().type, (value) => this.creatingFlow(value))
             EventBus.$on(actions.designer.flow.create().type, (value) => this.createFlow(value))
             EventBus.$on(actions.designer.shape.remove().type, (value) => this.removeElement(value))
-            EventBus.$on(actions.bpmn.toXML().type, (value) => this.toXML(value))
+            EventBus.$on(actions.bpmn.save().type, (value) => this.saveBPMN(value))
         },
         methods: {
             /**
@@ -73,12 +73,12 @@
             removeElement (e){
                 this.builder.removeSelection()
             },
-            toXML (e){
+            saveBPMN (e){
                 let result = this.bpmnHandler.toXML()
                 ProcessMaker.apiClient.patch(`processes/${this.$props.processUid}/bpmn`, {
                     bpmn: result
                 }).then((response) => {
-                    alert("Process saved")
+                    console.log("Process saved")
                 })
             },
             /**

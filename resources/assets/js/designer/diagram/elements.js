@@ -7,6 +7,7 @@ import inclusivegateway from "./gateways/InclusiveGateway"
 import parallelgateway from "./gateways/ParallelGateway"
 import exclusivegateway from "./gateways/ExclusiveGateway"
 import intermediatethrowevent from "./events/IntermediateThrowEvent"
+import intermediatecatchevent from "./events/IntermediateCatchEvent"
 
 import sequenceflow from "./flow/SequenceFlow"
 import messageflow from "./flow/MessageFlow"
@@ -21,6 +22,7 @@ import callactivity from "./tasks/CallActivity"
 export const Elements = Object.assign({}, {
     startevent,
     intermediatethrowevent,
+    intermediatecatchevent,
     endevent,
     task,
     servicetask,

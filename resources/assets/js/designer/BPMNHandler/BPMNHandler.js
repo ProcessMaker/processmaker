@@ -163,6 +163,24 @@ export default class BPMNHandler {
         return element
     }
 
+
+    /**
+     * Find eventDefinition
+     * @param colls
+     * @param idbpmn
+     * @returns {*}
+     */
+    findDefinition(bpmn, nameBpmn) {
+        let name
+        _.each(bpmn.elements, (el) => {
+            if (el.name.indexOf(nameBpmn) > 0) {
+                name = el.name.split(":")[1]
+            }
+        })
+        return name
+    }
+
+
     /**
      * Format a diagram element for send to process designer
      * @param di
@@ -177,8 +195,7 @@ export default class BPMNHandler {
         _.forEach(attr, (value, key, obj) => {
             obj[key] = parseFloat(value)
         })
-
-        let eventDefinition = bpmn.elements.length > 0 ? bpmn.elements[0].name.split(':')[1] : null
+        let eventDefinition = this.findDefinition(bpmn, "EventDefinition")
         return {
             type: name.length == 1 ? name[0].toLowerCase() : name[1].toLowerCase(),
             id: di.attributes.bpmnElement,
