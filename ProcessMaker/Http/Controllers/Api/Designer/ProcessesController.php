@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Controllers\Api\Designer;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Mockery\Exception;
 use ProcessMaker\Facades\ProcessManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Model\Process;
@@ -112,7 +113,7 @@ class ProcessesController extends Controller
     {
         $data = $request->json()->all();
         $response = ProcessManager::update($process, $data);
-        return response($this->format($response), 200);
+        return response('', 204);
     }
 
     /**

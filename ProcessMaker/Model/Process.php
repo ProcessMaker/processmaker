@@ -170,7 +170,7 @@ class Process extends Model
         'process_parent_id' => 'exists:processes',
         'status' => 'in:' . self::STATUS_ACTIVE . ',' . self::STATUS_INACTIVE,
         'create_trigger_id' => 'nullable|exists:triggers,id',
-        'open_trigger_id' => 'nullable|exists:triggers',
+        'open_trigger_id' => 'nullable|exists:triggers,id',
         'deleted_trigger_id' => 'nullable|max:32',
         'canceled_trigger_id' => 'nullable|max:32',
         'paused_trigger_id' => 'nullable|max:32',
