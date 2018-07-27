@@ -15,12 +15,6 @@
                         <a href="#" title="Redo"><i class="fas fa-redo"></i></a>
                     </li>
                     <li class="nav-item ">
-                        <a href="#" title="Zoom In"><i class="fas fa-search-plus"></i></a>
-                    </li>
-                    <li class="nav-item ">
-                        <a href="#" title="Zoom In"><i class="fas fa-search-minus"></i></a>
-                    </li>
-                    <li class="nav-item ">
                         <a href="#" title="Save Process" @click="saveBPMN($event)"><i class="fas fa-save"></i></a>
                     </li>
                     <li class="nav-item ">
