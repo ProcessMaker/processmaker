@@ -36,10 +36,7 @@ new Vue({
             direction: 'desc'
           }
         ])
-
-      })
-      .catch((err) => {
-      })
+      });
     }
   }
 })
