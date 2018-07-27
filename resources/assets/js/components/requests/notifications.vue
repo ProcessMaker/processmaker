@@ -1,7 +1,7 @@
 <template>
 	<div class="notifications">
 		<a class="count-info" data-toggle="dropdown" href="#" aria-expanded="false">
-			<i class="fas fa-bell fa-2x"></i>
+			<i class="fas fa-bell"></i>
 				<b-badge pill variant="danger" v-show="messages.length>0">{{messages.length}}</b-badge>
 		</a>
 		<ul class="dropdown-menu dropdown-alerts">
