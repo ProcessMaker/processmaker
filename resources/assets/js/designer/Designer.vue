@@ -6,7 +6,7 @@
         <div id="designer-subcontainer">
             <div class="canvas-container" @scroll="onScroll">
                 <crown ref="crown"></crown>
-                <svgcanvas :bpmn="bpmn" ref="svgcanvas"></svgcanvas>
+                <svgcanvas :processUid="processUid" :bpmn="bpmn" ref="svgcanvas"></svgcanvas>
             </div>
             <designerobjectsmenu></designerobjectsmenu>
         </div>
@@ -73,7 +73,8 @@
         data() {
             return {
                 modalComponent: null,
-                bpmn: {}
+                bpmn: {},
+                autoSaveTime: 15000 // miliseconds
             }
         },
         created() {
@@ -135,6 +136,12 @@
             onScroll(){
                 let action = actions.designer.crown.hide()
                 EventBus.$emit(action.type, action.payload)
+            },
+            autoSave(){
+                setInterval(() => {
+                    let action = actions.bpmn.save()
+                    EventBus.$emit(action.type, action.payload)
+                }, this.autoSaveTime)
             }
         },
         mounted(){
@@ -144,6 +151,8 @@
                 let action = actions.designer.bpmn.update(response.data)
                 EventBus.$emit(action.type, action.payload)
             })
+
+            this.autoSave()
         }
     };
 </script>
