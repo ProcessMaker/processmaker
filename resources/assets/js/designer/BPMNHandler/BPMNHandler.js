@@ -33,10 +33,18 @@ export default class BPMNHandler {
         this.collaborations = []
     }
 
+    /**
+     * Get model to designer
+     * @returns {{shapes: Array, links: Array}|*}
+     */
     getModel() {
         return this.bpmnDesigner
     }
 
+    /**
+     * Convert xml to js
+     * @param xml
+     */
     xml2json(xml) {
         this.xml = xml
         this.bpmn = convert.xml2js(xml, {
@@ -164,22 +172,41 @@ export default class BPMNHandler {
     }
 
     /**
+     * Find eventDefinition
+     * @param colls
+     * @param idbpmn
+     * @returns {*}
+     */
+    findDefinition(bpmn, nameBpmn) {
+        let name
+        _.each(bpmn.elements, (el) => {
+            if (el.name.indexOf(nameBpmn) > 0) {
+                name = el.name.split(":")[1]
+            }
+        })
+        return name
+    }
+
+    /**
      * Format a diagram element for send to process designer
      * @param di
      * @param bpmn
      * @returns {*}
      */
     formatElement(di, bpmn) {
+
         let Element = {}
         let attr = this.getAttributes(di, "dc:Bounds")
         let name = bpmn.name.split(':')
         _.forEach(attr, (value, key, obj) => {
             obj[key] = parseFloat(value)
         })
+        let eventDefinition = this.findDefinition(bpmn, "EventDefinition")
         return {
             type: name.length == 1 ? name[0].toLowerCase() : name[1].toLowerCase(),
             id: di.attributes.bpmnElement,
-            bounds: attr
+            bounds: attr,
+            eventDefinition
         }
     }
 
@@ -230,37 +257,29 @@ export default class BPMNHandler {
         }
     }
 
+    /**
+     * Add mutations' functions in BPMNHandler
+     */
     addMutations() {
         let that = this
         _.flatMap(Mutations, (mutation, type) => {
             EventBus.$on(type, (payload) => {
-                mutation(payload, that.elements, that.elementsDiagram, that.processes)
+                mutation(payload, that.elements, that.elementsDiagram, that.processes, that.collaborations)
             })
         })
     }
 
+    /**
+     * Return the xml string
+     * @returns {string}
+     */
     toXML() {
         var options = {
             compact: false,
             ignoreComment: true,
             ignoreDeclaration: true,
             spaces: 4
-        };
-        var result = convert.js2xml(this.bpmn, options);
-        let textFile
-        var data = new Blob([result], {type: 'text/plain'});
-        if (textFile !== null) {
-            window.URL.revokeObjectURL(textFile);
         }
-        textFile = window.URL.createObjectURL(data);
-
-        let window2 = window.open(textFile, 'log.' + new Date() + '.txt');
-        window2.onload = e => window.URL.revokeObjectURL(textFile);
-        return textFile
-    }
-
-
-    createNewElementDiagram(options) {
-
+        return convert.js2xml(this.bpmn, options)
     }
 }
