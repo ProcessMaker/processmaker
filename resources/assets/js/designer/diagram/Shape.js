@@ -23,9 +23,22 @@ export class Shape {
     config(options) {
         this.options = Object.assign({}, this.options, {
             id: options.id,
-            type: options.type
+            type: options.type,
+            eventDefinition: options.eventDefinition
         })
         return this
+    }
+
+    /**
+     * Return shape's options
+     * @param val
+     * @returns {*}
+     */
+    getOptions(val) {
+        if (val) {
+            return this.options[val]
+        }
+        return this.options
     }
 
     configBounds(bounds) {
@@ -35,6 +48,7 @@ export class Shape {
     updateBounds(bounds) {
         this.options.bounds = Object.assign({}, this.options.bounds, bounds);
         this.updateBpmn()
+        this.updateFlows()
     }
 
     /**
@@ -111,18 +125,60 @@ export class Shape {
         }
     }
 
+    /**
+     * Update Flows in BPMN Model
+     */
+    updateFlows() {
+        let links
+        let that = this
+        if (this.shape) {
+            links = this.graph.getConnectedLinks(this.shape)
+            _.each(links, (link) => {
+                let linkView = that.paper.findViewByModel(link)
+                let arrVertices = that.getVertices(linkView)
+                let action = actions.bpmn.flow.update({
+                    id: link.id,
+                    sourceRef: link.getSourceElement().get("id"),
+                    targetRef: link.getTargetElement().get("id"),
+                    bounds: arrVertices
+                })
+                EventBus.$emit(action.type, action.payload)
+            })
+        }
+    }
+
     remove() {
         this.shape.remove()
         return this
     }
 
+    /**
+     * Update BPMN model
+     */
     updateBpmn() {
         let action = actions.bpmn.shape.update(this.options)
         EventBus.$emit(action.type, action.payload)
     }
 
+    /**
+     * Create BPMN model
+     */
     createBpmn() {
         let action = actions.bpmn.shape.create(this.options)
         EventBus.$emit(action.type, action.payload)
+    }
+
+    /**
+     * Return array points from flow
+     * @param linkView
+     * @returns {Array}
+     */
+    getVertices(linkView) {
+        let connection = linkView.getConnection()
+        let arrayPoints = []
+        _.each(connection.segments, (val) => {
+            arrayPoints.push(val.end)
+        })
+        return arrayPoints
     }
 }
