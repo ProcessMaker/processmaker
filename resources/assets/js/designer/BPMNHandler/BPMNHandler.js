@@ -172,7 +172,7 @@ export default class BPMNHandler {
     }
 
     /**
-     * Find eventDefinition
+     * Find definition y al object
      * @param colls
      * @param idbpmn
      * @returns {*}
