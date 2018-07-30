@@ -1,37 +1,50 @@
 import {JointElements} from "../jointElements"
 import {Shape} from "../Shape"
+import {EndEvent} from "./endEvent/"
+import _ from "lodash"
 /**
- * EndEvent class
+ * IntermediateTimerEvent class
  */
-export default class extends Shape {
+export default class {
     constructor(options, graph, paper) {
-        super(graph, paper)
-        this.options = {
-            id: null,
-            type: "endEvent",
-            bounds: {
-                x: null,
-                y: null,
-                width: null,
-                height: null
-            }
-
-        }
-        this.config(options)
-        options.bounds = Object.assign({}, options.bounds, {
-            width: 40,
-            height: 40
-        })
-        this.configBounds(options.bounds)
+        let def = options["eventDefinition"]
+        def = def ? def : "empty"
+        this.adapter = new EndEvent[def](options, graph, paper)
     }
 
-    /**
-     * Render the EndEvent Based in options config
-     */
     render() {
-        this.shape = new JointElements.EndEvent()
-        this.shape.position(this.options.bounds.x, this.options.bounds.y)
-        this.shape.resize(this.options.bounds.width, this.options.bounds.height)
-        this.shape.addTo(this.graph)
+        this.adapter.render()
+    }
+
+    getShape() {
+        return this.adapter.shape
+    }
+
+    createBpmn() {
+        return this.adapter.createBpmn()
+    }
+
+    updateBounds(data) {
+        return this.adapter.updateBounds(data)
+    }
+
+    resetFlows(data) {
+        return this.adapter.resetFlows(data)
+    }
+
+    showCrown() {
+        return this.adapter.showCrown()
+    }
+
+    hideCrown() {
+        return this.adapter.hideCrown()
+    }
+
+    getType() {
+        return this.adapter.getType()
+    }
+
+    getOptions(val) {
+        return this.adapter.getOptions(val)
     }
 }
