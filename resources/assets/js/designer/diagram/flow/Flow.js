@@ -1,5 +1,8 @@
 import _ from "lodash"
 import joint from "jointjs"
+import actions from "../../actions"
+import EventBus from "../../lib/event-bus"
+
 /**
  * Flow class
  */
@@ -133,5 +136,47 @@ export default class {
         let linkView = this.shape.findView(this.paper)
         linkView.addTools(toolsView);
         linkView.hideTools()
+    }
+
+    createBpmn() {
+        let linkView = this.paper.findViewByModel(this.shape)
+        let arrVertices = this.getVertices(linkView)
+        let action = actions.bpmn.flow.create({
+            id: this.shape.id,
+            sourceRef: this.shape.getSourceElement().get("id"),
+            targetRef: this.shape.getTargetElement().get("id"),
+            type: this.options.type,
+            bounds: arrVertices
+        })
+        EventBus.$emit(action.type, action.payload)
+    }
+
+    getVertices(linkView) {
+        let connection = linkView.getConnection()
+        let arrayPoints = []
+        _.each(connection.segments, (val) => {
+            arrayPoints.push(val.end)
+        })
+        return arrayPoints
+    }
+
+    updateBpmn() {
+        let that = this
+        return () => {
+            let linkView = that.paper.findViewByModel(that.shape)
+            let arrVertices = that.getVertices(linkView)
+            let action = actions.bpmn.flow.update({
+                id: that.shape.id,
+                sourceRef: that.shape.getSourceElement().get("id"),
+                targetRef: that.shape.getTargetElement().get("id"),
+                type: that.options.type,
+                bounds: arrVertices
+            })
+            EventBus.$emit(action.type, action.payload)
+        }
+    }
+
+    addEvents() {
+        this.shape.on("change", this.updateBpmn())
     }
 }
