@@ -5,15 +5,11 @@ import ModalCreateProcess from "./components/modal/modal-process-add.vue";
 new Vue({
     el: '#processes-listing',
     data: {
-        filter: ''
+        filter: '',
+        processModal: false
     },
     components: {
         ProcessesListing,
         ModalCreateProcess
-    },
-    methods: {
-        openModalProcess() {
-            this.$refs.modalProcess.onShow();
-        }
     }
 });

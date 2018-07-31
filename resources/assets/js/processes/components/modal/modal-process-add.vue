@@ -1,14 +1,14 @@
 <template>
-    <b-modal id="createProcess" ref="modal" size="md" centered @hidden="onHidden" title="Create New Process" v-cloak>
-        <b-alert dismissable :show="validationError != null" variant="danger">@{{validationError}}</b-alert>
+    <b-modal v-model="opened" size="md" centered @hidden="onClose" @show="onReset" @close="onClose" title="Create New Process" v-cloak>
         <form-input :error="errors.name" v-model="name" label="Title" helper="Process Name must be distinct"
                     required="required"></form-input>
-        <form-text-area :error="errors.description" :rows="3" v-model="description" label="Description"></form-text-area>
+        <form-text-area :error="errors.description" :rows="3" v-model="description"
+                        label="Description"></form-text-area>
         <form-select :error="errors.process_category_id" label="Category" name="category" v-model="categorySelect"
                      :options="categorySelectOptions"></form-select>
 
         <template slot="modal-footer">
-            <b-button @click="onCancel" class="btn-outline-secondary btn-md">
+            <b-button @click="onClose" class="btn-outline-secondary btn-md">
                 CANCEL
             </b-button>
             <b-button @click="onSave" class="btn-secondary text-light btn-md">
@@ -26,41 +26,45 @@
 
     export default {
         components: {FormInput, FormSelect, FormTextArea},
+        props: ['show'],
         data() {
             return {
                 'name': '',
                 'description': '',
                 'categorySelect': null,
                 'categorySelectOptions': [],
-                'validationError': null,
                 'errors': {
                     'name': null,
                     'description': null,
                     'process_category_id': null,
-                }
+                },
+                'opened': this.show
+            }
+        },
+        watch: {
+            show(value) {
+                this.opened = value;
             }
         },
         methods: {
             onHidden() {
                 this.$emit('hidden')
             },
-            onCancel() {
-                this.$refs.modal.hide()
+            onClose() {
+                this.$emit('close');
             },
-            reset() {
+            onReset() {
                 this.name = '';
                 this.description = '';
                 this.categorySelect = null;
-                this.validationError = null;
                 this.errors.name = null;
                 this.errors.description = null;
                 this.errors.process_category_id = null;
+                this.loadCategories();
             },
-            onShow() {
-                //load Process Categories
+            loadCategories() {
                 window.ProcessMaker.apiClient.get('categories')
                     .then((response) => {
-
                         let options = [
                             {
                                 value: null, content: 'None'
@@ -73,15 +77,6 @@
                             })
                         });
                         this.categorySelectOptions = options;
-
-                        this.reset();
-                        this.$refs.modal.show()
-                    })
-                    .catch((error) => {
-                        this.validationError = error;
-                        if (error.response.status === 422) {
-                            this.validationError = error.response.data.message;
-                        }
                     })
             },
             onSave() {
@@ -96,7 +91,7 @@
                     )
                     .then(response => {
                         ProcessMaker.alert('New Process Successfully Created', 'success');
-                        this.$refs.modal.hide();
+                        this.onClose();
                         if (response.data && response.data.uid) {
                             //Change way to open the designer
                             window.location.href = '/designer/' + response.data.uid;
@@ -106,18 +101,13 @@
                         //define how display errors
                         if (error.response.status === 422) {
                             // Validation error
-                            this.validationError = error.response.data.message;
                             let fields = Object.keys(error.response.data.errors);
-                            for (var field of fields) {
+                            for (let field of fields) {
                                 this.errors[field] = error.response.data.errors[field][0];
-
                             }
                         }
                     });
             }
-        },
-        mounted() {
-            this.$refs.modal.hide();
         }
     };
 </script>
