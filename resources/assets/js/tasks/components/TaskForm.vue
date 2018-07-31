@@ -1,6 +1,5 @@
 <template>
     <div>
-        TODO:<br><!-- TODO: component to load the form -->
         processUid: {{processUid}}<br>
         instanceUid: {{instanceUid}}<br>
         tokenUid: {{tokenUid}}<br>
@@ -23,7 +22,6 @@
             'instanceUid',
             'tokenUid',
             'formUid',
-
             'data',
         ],
         data() {
@@ -37,6 +35,7 @@
             };
         },
         mounted() {
+            this.fetch();
         },
         methods: {
             submit() {
@@ -50,9 +49,24 @@
             },
             update() {
 
+            },
+            fetch() {
+                this.loading = true;
+
+                // Load from our api client
+                ProcessMaker.apiClient
+                    .get(
+                        "process/" +
+                        this.processUid +
+                        "/form/" +
+                        this.formUid
+                    )
+                    .then(response => {
+                        this.json = response.data;
+                        this.loading = false;
+                    });
             }
         }
-
     }
 
 </script>

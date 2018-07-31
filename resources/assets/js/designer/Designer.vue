@@ -38,6 +38,7 @@
     import modalVariablesAdd from "./components/modals/modal-variables-add";
     import modalMessageTypes from "./components/modals/modal-message-types";
     import modalOutputDocuments from "./components/modals/modal-output-documents"
+    import modalListForms from "./components/modals/modal-list-forms"
     // This is out Cron for every shape
     import crown from "./components/crown"
     import actions from "./actions"
@@ -59,6 +60,7 @@
             modalPublicFileAdd,
             modalVariablesAdd,
             modalOutputDocuments,
+            modalListForms,
             svgcanvas,
             toolbar,
             toptoolbar
@@ -92,6 +94,9 @@
                     case 'forms':
                         this.modalComponent = 'modal-forms-add'
                         break;
+                    case 'listforms':
+                        this.modalComponent = 'modal-list-forms'
+                        break;
                     case 'message-types':
                         this.modalComponent = 'modal-message-types'
                         break;
@@ -108,6 +113,9 @@
                         this.modalComponent = 'modal-create-trigger-add'
                         break;
                     case 'templates':
+                        this.modalComponent = 'modal-create-template-add'
+                        break;
+                    case 'open':
                         this.modalComponent = 'modal-create-template-add'
                         break;
                     default:
