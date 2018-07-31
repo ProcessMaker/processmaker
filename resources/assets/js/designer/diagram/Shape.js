@@ -21,8 +21,20 @@ export class Shape {
      * @returns {TaskShape}
      */
     config(options) {
-        this.options = Object.assign({}, this.options, options);
-        return this;
+        this.options = Object.assign({}, this.options, {
+            id: options.id,
+            type: options.type
+        })
+        return this
+    }
+
+    configBounds(bounds) {
+        this.options.bounds = Object.assign({}, this.options.bounds, bounds);
+    }
+
+    updateBounds(bounds) {
+        this.options.bounds = Object.assign({}, this.options.bounds, bounds);
+        this.updateBpmn()
     }
 
     /**
@@ -31,8 +43,8 @@ export class Shape {
     showCrown() {
         let diffDy = -6
         let action = actions.designer.crown.show({
-            y: this.options.y + diffDy,
-            x: this.options.x + this.options.width
+            y: this.options.bounds.y + diffDy,
+            x: this.options.bounds.x + this.options.bounds.width
         })
         EventBus.$emit(action.type, action.payload)
     }
@@ -102,5 +114,15 @@ export class Shape {
     remove() {
         this.shape.remove()
         return this
+    }
+
+    updateBpmn() {
+        let action = actions.bpmn.shape.update(this.options)
+        EventBus.$emit(action.type, action.payload)
+    }
+
+    createBpmn() {
+        let action = actions.bpmn.shape.create(this.options)
+        EventBus.$emit(action.type, action.payload)
     }
 }

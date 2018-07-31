@@ -42,10 +42,6 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
       return view('tasks',['title' => 'Dashboard']);
     })->name('tasks');
 
-    $this->get('/processes', function(){
-      return view('processes',['title' => 'Dashboard']);
-    })->name('processes');
-
     $this->get('/requests', function(){
       return view('requests.index',['title' => __('New Request')]);
     })->name('requests');
@@ -81,9 +77,8 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
         'middleware' => ['permission:PM_CASES']
     ], function() {
         $this->get('/process/{process}/tasks', 'Designer\TaskController@index')->name('processes-task-index');
+        $this->get('/processes', 'Designer\ProcessController@index')->name('processes');
     });
 
-    $this->get('/designer', function() {
-        return view('designer.designer', ['title' => 'Designer']);
-    })->name('designer');
+    $this->get('/designer/{process?}', 'Designer\ProcessController@show')->name('designer-edit-process');
 });

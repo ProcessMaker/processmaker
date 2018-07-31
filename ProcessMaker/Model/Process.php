@@ -61,6 +61,7 @@ use Watson\Validating\ValidatingTrait;
  * @property string $PRO_AUTHOR_VERSION
  * @property string $PRO_ORIGINAL_SOURCE
  * @property \Illuminate\Database\Eloquent\Collection $cases
+ * @property string $bpmn
  *
  * @package ProcessMaker\Model
  */
@@ -169,8 +170,8 @@ class Process extends Model
         'name' => 'required',
         'process_parent_id' => 'exists:processes',
         'status' => 'in:' . self::STATUS_ACTIVE . ',' . self::STATUS_INACTIVE,
-        'create_trigger_id' => 'exists:triggers,id',
-        'open_trigger_id' => 'exists:triggers',
+        'create_trigger_id' => 'nullable|exists:triggers,id',
+        'open_trigger_id' => 'nullable|exists:triggers,id',
         'deleted_trigger_id' => 'nullable|max:32',
         'canceled_trigger_id' => 'nullable|max:32',
         'paused_trigger_id' => 'nullable|max:32',

@@ -10,13 +10,17 @@ export default class extends Shape {
         this.type = "lane"
         this.options = {
             id: null,
-            x: null,
-            y: null,
-            width: 600,
-            height: 150
+            type: "lane",
+            bounds: {
+                x: null,
+                y: null,
+                width: 600,
+                height: 150
+            }
         }
         this.setParent(parent)
         this.config(options)
+        this.configBounds(options.bounds)
     }
 
     /**
@@ -24,8 +28,8 @@ export default class extends Shape {
      */
     render() {
         this.shape = new JointElements.Lane();
-        this.shape.position(this.options.x, this.options.y);
-        this.shape.resize(this.options.width, this.options.height);
+        this.shape.position(this.options.bounds.x, this.options.bounds.y);
+        this.shape.resize(this.options.bounds.width, this.options.bounds.height);
         this.shape.addTo(this.graph);
     }
 }

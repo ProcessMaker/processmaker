@@ -4,9 +4,8 @@ import {Elements} from "../../../../resources/assets/js/designer/diagram/element
 describe("Elements", () => {
     it("Instance of keys in elements", () => {
         expect(Elements['startevent']).toBeDefined()
-        expect(Elements['intermediatecatchevent']).toBeDefined()
-        expect(Elements['intermediatethrowevent']).toBeDefined()
-        expect(Elements['intermediatetimerevent']).toBeDefined()
+        expect(Elements['messageeventdefinition']).toBeDefined()
+        expect(Elements['timereventdefinition']).toBeDefined()
         expect(Elements['endevent']).toBeDefined()
         expect(Elements['endemailevent']).toBeDefined()
         expect(Elements['task']).toBeDefined()

@@ -1,34 +1,62 @@
 import _ from "lodash"
-
+import Mutations from "./Mutations"
+import EventBus from "../lib/event-bus"
+import convert from 'xml-js'
 /**
  * BPMNHandler class
  */
 export default class BPMNHandler {
-    constructor(bpmn) {
-        this.bpmn = bpmn
-        //Elements for update
+    constructor(xml) {
+        this.xml = xml
+        this.bpmn = null
         this.elements = {} // Models from Elements
-
         this.bpmnDesigner = {
             shapes: [],
             links: []
-        } // Builded elements to Process Designer
-
+        }
         this.elementsDiagram = [] // diagrams
         this.processes = [] // processes definition
         this.collaborations = [] // collaborations objects
+        this.addMutations()
+    }
+
+    reset() {
+        this.xml = null
+        this.bpmn = null
+        this.elements = {}
+        this.bpmnDesigner = {
+            shapes: [],
+            links: []
+        }
+        this.elementsDiagram = []
+        this.processes = []
+        this.collaborations = []
+    }
+
+    getModel() {
+        return this.bpmnDesigner
+    }
+
+    xml2json(xml) {
+        this.xml = xml
+        this.bpmn = convert.xml2js(xml, {
+            ignoreComment: true,
+            alwaysChildren: true
+        })
     }
 
     /**
      * this method build objects to process the BPMN
      */
-    buildModel() {
-        this.elementsDiagram = this.findBPMNDiagram()
-        this.processes = this.findProcess()
-        this.collaborations = this.findCollaboration()
-
-        this.buildElementsDiagram(this.elementsDiagram)
-        console.log(this.bpmnDesigner)
+    buildModel(xml) {
+        this.reset()
+        if (xml) {
+            this.xml2json(xml)
+            this.elementsDiagram = this.findBPMNDiagram()
+            this.processes = this.findProcess()
+            this.collaborations = this.findCollaboration()
+            this.buildElementsDiagram(this.elementsDiagram)
+        }
         return this.bpmnDesigner
     }
 
@@ -93,7 +121,6 @@ export default class BPMNHandler {
                 that.bpmnDesigner.links.push(that.formatEdge(value, bpmnEl))
 
             } else if (bpmnEl) {
-                //console.log(bpmnEl, idBpmnElement)
                 that.elements[idBpmnElement] = {
                     diagram: value,
                     process: bpmnEl
@@ -149,10 +176,11 @@ export default class BPMNHandler {
         _.forEach(attr, (value, key, obj) => {
             obj[key] = parseFloat(value)
         })
-        return Object.assign({}, attr, {
+        return {
             type: name.length == 1 ? name[0].toLowerCase() : name[1].toLowerCase(),
-            id: di.attributes.bpmnElement
-        })
+            id: di.attributes.bpmnElement,
+            bounds: attr
+        }
     }
 
     /**
@@ -200,5 +228,39 @@ export default class BPMNHandler {
         } else {
             return null
         }
+    }
+
+    addMutations() {
+        let that = this
+        _.flatMap(Mutations, (mutation, type) => {
+            EventBus.$on(type, (payload) => {
+                mutation(payload, that.elements, that.elementsDiagram, that.processes)
+            })
+        })
+    }
+
+    toXML() {
+        var options = {
+            compact: false,
+            ignoreComment: true,
+            ignoreDeclaration: true,
+            spaces: 4
+        };
+        var result = convert.js2xml(this.bpmn, options);
+        let textFile
+        var data = new Blob([result], {type: 'text/plain'});
+        if (textFile !== null) {
+            window.URL.revokeObjectURL(textFile);
+        }
+        textFile = window.URL.createObjectURL(data);
+
+        let window2 = window.open(textFile, 'log.' + new Date() + '.txt');
+        window2.onload = e => window.URL.revokeObjectURL(textFile);
+        return textFile
+    }
+
+
+    createNewElementDiagram(options) {
+
     }
 }

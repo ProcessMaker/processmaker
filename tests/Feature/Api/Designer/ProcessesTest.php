@@ -98,6 +98,27 @@ class ProcessesTest extends ApiTestCase
     }
 
     /**
+     * Create new process with template
+     */
+    public function testCreateProcessTemplate()
+    {
+        $this->authenticateAsAdmin();
+        $faker = Faker::create();
+
+        $url = self::API_TEST_PROCESS . '/create';
+        $response = $this->api('POST', $url, [
+            'name' => $faker->sentence(3),
+            'description' => $faker->sentence(3),
+            'category_uid' => factory(ProcessCategory::class)->create()->uid
+
+        ]);
+        //validating the answer is correct.
+        $response->assertStatus(201);
+        //Check structure of response.
+        $response->assertJsonStructure(self::STRUCTURE);
+    }
+
+    /**
      * Test to verify our processes listing api endpoint works without any filters
      */
     public function testProcessesListing(): void
@@ -108,8 +129,9 @@ class ProcessesTest extends ApiTestCase
         $response = $this->api('GET', self::API_TEST_PROCESS);
         $response->assertStatus(200);
         $data = json_decode($response->getContent(), true);
-        $this->assertCount(5, $data['data']);
-        $this->assertEquals(5, $data['meta']['total']);
+        // Verify we have a total of 7 results (our 5 plus processes plus our created processes)
+        $this->assertCount(7, $data['data']);
+        $this->assertEquals(7, $data['meta']['total']);
     }
 
     /**
@@ -258,8 +280,8 @@ class ProcessesTest extends ApiTestCase
         ]);
         $response = $this->api('GET', self::API_TEST_PROCESS);
         $response->assertStatus(200);
-
-        $this->assertEquals(1, $response->original->meta->total);
+        // Verify we have a total of 3 results (our 2 plus processes plus our created processes)
+        $this->assertEquals(3, $response->original->meta->total);
         $response->assertJsonStructure(['*' => self::STRUCTURE], $response->json('data'));
     }
 

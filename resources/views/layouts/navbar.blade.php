@@ -3,7 +3,7 @@
     <b-alert :show="alertShow" id="alertBox" :variant="alertVariant" @dismissed="alertShow = false" dismissible>@{{alertText}}</b-alert>
     <b-navbar-nav>
       @foreach(Menu::get('topnav')->items as $item)
-      <b-nav-item href="{{ $item->url() }}">{{$item->title}}</b-nav-item>
+      <b-nav-item href="{{ $item->url() }}" {{$item->isActive !== false ? 'active': ''}}>{{$item->title}}</b-nav-item>
       @endforeach
       </b-navbar-nav>
       <b-navbar-nav class="ml-auto">
@@ -14,6 +14,7 @@
       <li class="nav-item">
       <notifications id="navbar-notifications-button" v-bind:is="'notifications'" v-bind:messages="messages"></notifications>
       </li>
+       <hr id="seperator">
       <li class="dropdown">
       <img class="avatar dropdown-toggle" id="topnav-avatar" src="/img/avatar.png" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
@@ -26,3 +27,17 @@
     </b-navbar-nav>
   </b-navbar>
 </div>
+
+<style lang="scss" scoped>
+  #seperator{ 
+    margin-left: 8px;
+    margin-right: 8px;
+    border: none;
+    border-left: 1px solid rgb(227,231,236) ;
+    height: 34px;
+    width: 1px;     
+}
+.nav-item {
+  padding-top: 5px;
+}
+</style>

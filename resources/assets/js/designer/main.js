@@ -8,6 +8,5 @@ import 'tinymce/themes/modern/theme'
 // Bootstrap our Designer application
 new Vue({
   el: '#designer-container',
-  components: { Designer,Editor },
-  template: '<Designer/>'
+  components: { Designer,Editor }
 })

@@ -8,14 +8,21 @@ export default class extends Shape {
         super(graph, paper)
         this.options = {
             id: null,
-            x: null,
-            y: null
+            type: "endEvent",
+            bounds: {
+                x: null,
+                y: null,
+                width: null,
+                height: null
+            }
+
         }
         this.config(options)
-        this.config({
+        options.bounds = Object.assign({}, options.bounds, {
             width: 40,
             height: 40
         })
+        this.configBounds(options.bounds)
     }
 
     /**
@@ -23,8 +30,8 @@ export default class extends Shape {
      */
     render() {
         this.shape = new JointElements.EndEmailEvent();
-        this.shape.position(this.options.x, this.options.y);
-        this.shape.resize(this.options.width, this.options.height);
+        this.shape.position(this.options.bounds.x, this.options.bounds.y);
+        this.shape.resize(this.options.bounds.width, this.options.bounds.height);
         this.shape.addTo(this.graph);
     }
 }

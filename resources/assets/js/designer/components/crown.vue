@@ -81,7 +81,6 @@
                 EventBus.$emit(action1.type, action1.payload)
             },
             createFlow(ev){
-                debugger
                 let action = actions.designer.flow.create(ev)
                 EventBus.$emit(action.type, action.payload)
             },
