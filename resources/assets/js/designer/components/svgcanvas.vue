@@ -10,7 +10,9 @@
     import joint from 'jointjs'
     import parser from 'xml-js'
     import BPMNHandler from '../BPMNHandler/BPMNHandler'
-    import {Elements} from "../diagram/elements";
+    import {Elements} from "../diagram/elements"
+    import qinu from 'qinu'
+
     export default {
         props: [
             'processUid'
@@ -52,7 +54,7 @@
                 let type = event.target.getAttribute("type")
                 this.updateCoordinates()
                 const defaultOptions = {
-                    id: type + '_' + Math.floor((Math.random() * 1000000) + 1),
+                    id: type + '_' + qinu(),
                     type: type,
                     bounds: {
                         x: event.x - this.diagramCoordinates.x,
@@ -63,11 +65,11 @@
                 if (Elements[type.toLowerCase()]) {
                     this.builder.createShape(defaultOptions, true)
                 } else {
-                    console.error(type.toLowerCase() + " is not support")
+                    ProcessMaker.alert(type.toLowerCase() + " is not supported", "danger")
                 }
             },
             /**
-             * Listener for remove element of the canvass
+             * Listener for remove element of the canvas
              * @param e
              */
             removeElement (e){
@@ -78,7 +80,7 @@
                 ProcessMaker.apiClient.patch(`processes/${this.$props.processUid}/bpmn`, {
                     bpmn: result
                 }).then((response) => {
-                    console.log("Process saved")
+                    ProcessMaker.alert("Process saved", "success")
                 })
             },
             /**

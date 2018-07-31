@@ -5,7 +5,7 @@ import _ from "lodash"
  * @param data
  * @param elements
  */
-function participantUpdate(data, elements) {
+function updateParticipant(data, elements) {
     if (elements[data.id] && data.bounds) {
         elements[data.id].diagram.elements[0].attributes = data.bounds
     }
@@ -16,7 +16,7 @@ function participantUpdate(data, elements) {
  * @param data
  * @param elements
  */
-function shapeUpdate(data, elements) {
+function updateShape(data, elements) {
     if (elements[data.id] && data.bounds) {
         elements[data.id].diagram.elements[0].attributes = data.bounds
     }
@@ -30,11 +30,11 @@ function shapeUpdate(data, elements) {
  * @param processes
  * @param collaborations
  */
-function participantCreate(data, elements, arrayElements, processes, collaborations) {
+function createParticipant(data, elements, arrayElements, processes, collaborations) {
     let process = {
         "type": "element",
         "name": "bpmn:participant",
-        "attributes": {"id": data.id, "name": "Approval Link", "processRef": "approval_link"},
+        "attributes": {"id": data.id, "name": "", "processRef": ""},
         "elements": []
     }
 
@@ -65,7 +65,7 @@ function participantCreate(data, elements, arrayElements, processes, collaborati
  * @param arrayElements
  * @param processes
  */
-function shapeCreate(data, elements, arrayElements, processes) {
+function createShape(data, elements, arrayElements, processes) {
     let eventDefinition = data.eventDefinition ? createEventDefinition(data.eventDefinition) : null
     let arrEvent = eventDefinition ? [eventDefinition] : []
     let diagram = {
@@ -116,7 +116,7 @@ function createEventDefinition(def) {
  * @param arrayElements
  * @param processes
  */
-function flowCreate(data, elements, arrayElements, processes) {
+function createFlow(data, elements, arrayElements, processes) {
     let bounds = createBounds(data.bounds)
 
     let diagram = {
@@ -146,7 +146,7 @@ function flowCreate(data, elements, arrayElements, processes) {
  * @param data
  * @param elements
  */
-function flowUpdate(data, elements) {
+function updateFlow(data, elements) {
     if (elements[data.id]) {
         elements[data.id].process.attributes = {
             "id": data.id,
@@ -182,10 +182,10 @@ function createBounds(data) {
 }
 
 export default {
-    [actions.bpmn.shape.update]: shapeUpdate,
-    [actions.bpmn.participant.update]: participantUpdate,
-    [actions.bpmn.flow.update]: flowUpdate,
-    [actions.bpmn.shape.create]: shapeCreate,
-    [actions.bpmn.flow.create]: flowCreate,
-    [actions.bpmn.participant.create]: participantCreate
+    [actions.bpmn.shape.update]: updateShape,
+    [actions.bpmn.participant.update]: updateParticipant,
+    [actions.bpmn.flow.update]: updateFlow,
+    [actions.bpmn.shape.create]: createShape,
+    [actions.bpmn.flow.create]: createFlow,
+    [actions.bpmn.participant.create]: createParticipant
 }

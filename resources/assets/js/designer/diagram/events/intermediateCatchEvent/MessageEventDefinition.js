@@ -1,7 +1,7 @@
 import {JointElements} from "../../jointElements/index"
 import {Shape} from "../../Shape"
 /**
- * IntermediateEmailEvent class
+ * Message Event Definition class
  */
 export default class extends Shape {
     constructor(options, graph, paper) {

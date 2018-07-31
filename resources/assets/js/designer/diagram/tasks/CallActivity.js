@@ -1,7 +1,7 @@
 import {JointElements} from "../jointElements"
 import {Shape} from "../Shape"
 /**
- * SubProcess class
+ * CallActivity class
  */
 export default class extends Shape {
     constructor(options, graph, paper) {

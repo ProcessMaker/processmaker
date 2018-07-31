@@ -3,7 +3,7 @@ import {Shape} from "../Shape"
 import {IntermediateCatchEvent} from "./intermediateCatchEvent/"
 import _ from "lodash"
 /**
- * IntermediateTimerEvent class
+ * IntermediateCatchEvent class
  */
 export default class {
     constructor(options, graph, paper) {

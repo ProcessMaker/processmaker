@@ -16,4 +16,4 @@ export const bpmn = {
         toXML: x => x,
         save: x => x
     }
-};
+}

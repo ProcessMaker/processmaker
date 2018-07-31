@@ -99,6 +99,7 @@
         text-align: left;
         color: #ffffff;
     }
+
     #designer-toolbar a {
         color: white;
         padding-right: 15px;

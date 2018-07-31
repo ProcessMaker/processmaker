@@ -3,7 +3,7 @@ import {Shape} from "../Shape"
 import {IntermediateThrowEvent} from "./intermediateThrowEvent/"
 import _ from "lodash"
 /**
- * IntermediateTimerEvent class
+ * IntermediateThrowEvent class
  */
 export default class {
     constructor(options, graph, paper) {
@@ -45,5 +45,4 @@ export default class {
     getOptions(val) {
         return this.adapter.getOptions(val)
     }
-
 }
