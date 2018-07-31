@@ -61,7 +61,7 @@ use Watson\Validating\ValidatingTrait;
  * @property string $PRO_AUTHOR_VERSION
  * @property string $PRO_ORIGINAL_SOURCE
  * @property \Illuminate\Database\Eloquent\Collection $cases
- * @property string bpmn
+ * @property string $bpmn
  *
  * @package ProcessMaker\Model
  */
