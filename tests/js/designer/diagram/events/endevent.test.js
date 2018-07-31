@@ -14,15 +14,19 @@ describe("Elements", () => {
         paper = {}
         ev = new Elements["endevent"]({
             id: "start",
-            x: 10,
-            y: 10,
-            width: 40,
-            height: 40
+            type: "endevent",
+            eventDefinition: null,
+            bounds: {
+                x: 10,
+                y: 10,
+                width: 40,
+                height: 40
+            }
         }, graph, paper)
     })
 
     it("render - function to render the event", () => {
         ev.render()
-        expect(ev.shape).toBeInstanceOf(JointElements.EndEvent)
+        expect(ev.getShape()).toBeInstanceOf(JointElements.EndEvent)
     })
 })
