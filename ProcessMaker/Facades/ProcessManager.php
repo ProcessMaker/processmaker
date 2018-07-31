@@ -3,6 +3,7 @@
 namespace ProcessMaker\Facades;
 
 use Illuminate\Support\Facades\Facade;
+use ProcessMaker\Model\Process;
 
 /**
  * Facade for the Process Manager
@@ -11,6 +12,8 @@ use Illuminate\Support\Facades\Facade;
  * @see \ProcessMaker\Managers\ProcessManager
  *
  * @method array index($filter, $start, $limit)
+ * @method static Process store(array $data)
+ *
  */
 class ProcessManager extends Facade
 {
