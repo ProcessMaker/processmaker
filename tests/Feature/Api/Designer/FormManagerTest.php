@@ -13,7 +13,7 @@ use Tests\Feature\Api\ApiTestCase;
 
 class FormManagerTest extends ApiTestCase
 {
-    //use DatabaseTransactions;
+    use DatabaseTransactions;
 
     const API_TEST_FORM = '/api/1.0/process/';
     const DEFAULT_PASS = 'password';
