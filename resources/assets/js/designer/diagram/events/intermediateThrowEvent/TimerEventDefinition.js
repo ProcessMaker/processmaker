@@ -1,7 +1,7 @@
-import {JointElements} from "../jointElements"
-import {Shape} from "../Shape"
+import {JointElements} from "../../jointElements/index"
+import {Shape} from "../../Shape"
 /**
- * IntermediateTimerEvent class
+ * TimerEventDefinition class
  */
 export default class extends Shape {
     constructor(options, graph, paper) {
@@ -17,8 +17,8 @@ export default class extends Shape {
             }
         }
         this.config(Object.assign({}, options, {
-            type: "intermediateThrowEvent",
-            definition: options.type
+            type: options.type,
+            eventDefinitions: options.eventDefinition
         }))
         options.bounds = Object.assign({}, options.bounds, {
             width: 40,
@@ -31,7 +31,7 @@ export default class extends Shape {
      * Render the IntermediateTimerEvent Based in options config
      */
     render() {
-        this.shape = new JointElements.TimerEventDefinition();
+        this.shape = new JointElements.TimerEventDefinition({id: this.options.id});
         this.shape.position(this.options.bounds.x, this.options.bounds.y)
         this.shape.resize(this.options.bounds.width, this.options.bounds.height)
         this.shape.addTo(this.graph)
