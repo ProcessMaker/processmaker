@@ -26,9 +26,17 @@ class ProcessManager
     {
         $process = new Process();
         $process->fill($data);
+        if (isset($data['bpmn'])) {
+            $process->bpmn = $data['bpmn'];
+        }
+
         $process->saveOrFail();
 
-        return $process->refresh();
+        $process->refresh();
+        $process->category = $process->category()->first();
+        $process->user = $process->user()->first();
+
+        return $process;
     }
 
     /**

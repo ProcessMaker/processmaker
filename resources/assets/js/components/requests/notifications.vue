@@ -1,38 +1,40 @@
 <template>
-	<div class="notifications">
-		<a class="count-info" data-toggle="dropdown" href="#" aria-expanded="false">
-			<i class="fas fa-bell"></i>
-				<b-badge pill variant="danger" v-show="messages.length>0">{{messages.length}}</b-badge>
-		</a>
-		<ul class="dropdown-menu dropdown-alerts">
-			<li>
-				<div class="arrow-container"><div class="arrow"></div></div>
-			</li>
-			<li class="dropdown-item drop-head">
-				<span>New Tasks</span>
-			</li>
-			<li v-for="task in messages" class="dropdown-item">
-				<div class="mb-1">
-					<a id="task-process" v-bind:href="task.url" @click.stop="remove(task)" target="_blank">
-						{{task.name}}
-					</a>
-					<small class="float-right task-meta">{{formatDateTime(task.dateTime)}}</small>
-				</div>
-				<div class="task-data">
-					{{task.processName}}
-				</div>
-				<div class="task-data">
-					{{task.userName}}
-				</div>
-				<hr>
-			</li>
-			<li class="dropdown-item drop-foot">
-				<a href="/task">
-					VIEW ALL TASKS
-				</a>
-			</li>
-		</ul>
-	</div>
+    <div class="notifications">
+        <a class="count-info" data-toggle="dropdown" href="#" aria-expanded="false">
+            <i class="fas fa-bell fa-2x"></i>
+            <b-badge pill variant="danger" v-show="messages.length>0">{{messages.length}}</b-badge>
+        </a>
+        <ul class="dropdown-menu dropdown-alerts">
+            <li>
+                <div class="arrow-container"><div class="arrow"></div></div>
+            </li>
+            <li class="dropdown-item">
+                <strong>New Tasks</strong>
+            </li>
+            <li v-for="task in messages" class="dropdown-item">
+                <div>
+                    <a v-bind:href="task.url" @click.stop="remove(task)" target="_blank">
+                        {{task.name}}
+                    </a>
+                    <small class="float-right">{{formatDateTime(task.dateTime)}}</small>
+                </div>
+                <div>
+                    {{task.processName}}
+                </div>
+                <div>
+                    {{task.userName}}
+                </div>
+            </li>
+            <li class="dropdown-divider"></li>
+            <li class="dropdown-item">
+                <div class="link-block">
+                    <a href="/task">
+                        VIEW ALL TASKS
+                    </a>
+                </div>
+            </li>
+        </ul>
+    </div>
 </template>
 
 <script>
@@ -109,35 +111,9 @@ export default {
   right: 0px;
   top: -16px;
 }
+
 .notifications {
   position: relative;
   padding: 16px;
-}
-#task-process {
-  color: #3397e1;
-  font-size: 16px;
-  padding-bottom: 8px;
-}
-.task-data {
-  color: #788793;
-  font-size: 13px;
-  font-weight: lighter;
-}
-.task-meta {
-  color: #788793;
-  font-size: 11px;
-}
-.drop-head {
-  font-size: 18px;
-  font-weight: 400;
-  margin-bottom: 10px;
-}
-.drop-foot {
-  margin-top: 10px;
-  margin-bottom: 10px;
-  font-size: 15px;
-}
-hr {
-  margin-bottom: 0;
 }
 </style>

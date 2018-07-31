@@ -71,7 +71,7 @@ html {
     margin: 0px 8px 3px -10px;
   }
   .avatar {
-    width: 55px;
+    width: 64px;
     padding: 10px
   }
   .dropdown-item i {
@@ -394,4 +394,5 @@ table.vuetable {
   position: fixed;
   left: 30%;
   right: 30%;
+  z-index: $alertZIndex;
 }

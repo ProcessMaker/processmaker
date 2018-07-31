@@ -5,12 +5,14 @@ namespace ProcessMaker\Http\Controllers\Api\Designer;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Facades\ProcessManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\ProcessCategory;
 use ProcessMaker\Model\User;
 use ProcessMaker\Transformers\ProcessTransformer;
+use Ramsey\Uuid\Uuid;
 
 /**
  * Implements endpoints to manage the processes.
@@ -112,7 +114,7 @@ class ProcessesController extends Controller
     {
         $data = $request->json()->all();
         $response = ProcessManager::update($process, $data);
-        return response($this->format($response), 200);
+        return response('', 204);
     }
 
     /**
@@ -140,5 +142,32 @@ class ProcessesController extends Controller
         $process->category = $process->category()->first();
         $process->user = $process->user()->first();
         return fractal($process, new ProcessTransformer())->respond(200);
+    }
+
+    /**
+     * Create Process with diagram bpmn by default
+     *
+     * @param Request $request
+     *
+     * @return ResponseFactory|Response
+     */
+    public function createProcessTemplate(Request $request)
+    {
+        $data = $request->json()->all();
+        $category = ProcessCategory::where('uid', $data['category_uid'])->first();
+
+        if (!empty($category)) {
+            $data['process_category_id'] = $category->id;
+        }
+
+        $data['user_id'] = Auth::id();
+        //Load process by default with template bpmn only start element
+        $template = file_get_contents(database_path('processes') . '/templates/OnlyStartElement.bpmn');
+        $templateIds = ['DefinitionsId', 'ProcessId', 'ProcessName', 'BPMNShapeStartEventId', 'StartEventId', 'BPMNDiagramId', 'BPMNPlaneId'];
+        $values = [Uuid::uuid4(), Uuid::uuid4(), $data['name'], Uuid::uuid4(), Uuid::uuid4(), Uuid::uuid4(), Uuid::uuid4()];
+
+        $data['bpmn'] = str_replace($templateIds, $values, $template);
+        $response = ProcessManager::store($data);
+        return fractal($response, new ProcessTransformer())->respond(201);
     }
 }
