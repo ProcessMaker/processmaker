@@ -1,6 +1,11 @@
 <template>
     <div>
-        TODO<!-- TODO: component to load the form -->
+        TODO:<!-- TODO: component to load the form -->
+        processUid: {{processUid}}<br>
+        instanceUid: {{instanceUid}}<br>
+        tokenUid: {{tokenUid}}<br>
+        formUid: {{formUid}}<br>
+        data: {{data}}<br>
     </div>
 </template>
 

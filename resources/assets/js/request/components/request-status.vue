@@ -110,7 +110,7 @@
                 return moment(isoDate).format('YYYY-MM-DD hh:mm');
             },
             openLink(process, delegation) {
-                return '/nayra/' +
+                return '/tasks/' +
                         delegation.definition.id +
                         '/' +
                         process.uid +
@@ -137,9 +137,9 @@
                         thread_status: 'CLOSED'
                     }
                 })
-                        .then((response) => {
-                            this.completed = response.data.data;
-                        });
+                    .then((response) => {
+                        this.completed = response.data.data;
+                    });
 
 
             }
