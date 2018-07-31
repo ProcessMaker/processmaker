@@ -13,7 +13,7 @@ use Tests\Feature\Api\ApiTestCase;
 
 class FormManagerTest extends ApiTestCase
 {
-    use DatabaseTransactions;
+    //use DatabaseTransactions;
 
     const API_TEST_FORM = '/api/1.0/process/';
     const DEFAULT_PASS = 'password';
@@ -261,7 +261,16 @@ class FormManagerTest extends ApiTestCase
     public function testGetForm()
     {
         //load Form
-        $url = self::API_TEST_FORM . $this->process->uid . '/form/' . factory(Form::class)->create(['process_id' => $this->process->id])->uid;
+        $url = self::API_TEST_FORM . $this->process->uid . '/form/' . factory(Form::class)->create([
+            'process_id' => $this->process->id,
+            'content' => (object)[
+                'field' => 'field 1',
+                'field 2' => (object)[
+                    'data1' => 'text',
+                    'data2' => 'text 2'
+                ]
+            ]
+        ])->uid;
         $response = $this->api('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
