@@ -60,12 +60,12 @@ class Form extends Model
     }
 
     /**
- * Accessor content to json
- *
- * @param $value
- *
- * @return array|null
- */
+     * Accessor content to json
+     *
+     * @param $value
+     *
+     * @return array|null
+     */
     public function getContentAttribute($value): ?array
     {
         return json_decode($value, true);
@@ -105,4 +105,8 @@ class Form extends Model
         $this->attributes['label'] = empty($value) ? null : json_encode($value);
     }
 
+    public function process()
+    {
+        return $this->belongsTo(Process::class);
+    }
 }
