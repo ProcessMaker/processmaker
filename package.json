@@ -46,6 +46,7 @@
     "@fortawesome/fontawesome-free-brands": "^5.0.13",
     "@fortawesome/fontawesome-free-solid": "^5.0.13",
     "@fortawesome/fontawesome-free-webfonts": "^1.0.9",
+    "@processmaker/vue-form-builder": "^0.1.1",
     "@tinymce/tinymce-vue": "^1.0.8",
     "bootstrap": "^4.1.2",
     "bootstrap-vue": "^2.0.0-rc.11",
