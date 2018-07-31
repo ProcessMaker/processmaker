@@ -394,4 +394,5 @@ table.vuetable {
   position: fixed;
   left: 30%;
   right: 30%;
+  z-index: $alertZIndex;
 }
