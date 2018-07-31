@@ -6,7 +6,7 @@
         <div id="designer-subcontainer">
             <div class="canvas-container" @scroll="onScroll">
                 <crown ref="crown"></crown>
-                <svgcanvas :bpmn="bpmn" ref="svgcanvas"></svgcanvas>
+                <svgcanvas :processUid="processUid" :bpmn="bpmn" ref="svgcanvas"></svgcanvas>
             </div>
             <designerobjectsmenu></designerobjectsmenu>
         </div>
@@ -18,19 +18,14 @@
     // Import our designer event-bus
     import EventBus from "./lib/event-bus";
     // Import our top-level components
-
     // Designer is our overall canvas tool
     import svgcanvas from "./components/svgcanvas";
-
     // This is our toolbar palette
     import toolbar from "./components/toolbar";
-
     // This is our top toolbar with process title and process options
     import toptoolbar from "./components/toptoolbar";
-
     // This is our objects menu with nested object-menu items components
     import designerobjectsmenu from "./components/designer-objects-menu";
-
     // @todo Figure out a way to add these modals to the properties of components
     import modalCreateDatabaseAdd from "./components/modals/modal-create-database-add";
     import modalCreateOutputAdd from "./components/modals/modal-create-output-add";
@@ -43,11 +38,9 @@
     import modalVariablesAdd from "./components/modals/modal-variables-add";
     import modalMessageTypes from "./components/modals/modal-message-types";
     import modalOutputDocuments from "./components/modals/modal-output-documents"
-
     // This is out Cron for every shape
     import crown from "./components/crown"
     import actions from "./actions"
-
     export default {
         props: [
             'processUid'
@@ -73,7 +66,8 @@
         data() {
             return {
                 modalComponent: null,
-                bpmn: {}
+                bpmn: {},
+                autoSaveTime: 15000 // miliseconds
             }
         },
         created() {
@@ -135,6 +129,12 @@
             onScroll(){
                 let action = actions.designer.crown.hide()
                 EventBus.$emit(action.type, action.payload)
+            },
+            autoSave(){
+                setInterval(() => {
+                    let action = actions.bpmn.save()
+                    EventBus.$emit(action.type, action.payload)
+                }, this.autoSaveTime)
             }
         },
         mounted(){
@@ -144,6 +144,7 @@
                 let action = actions.designer.bpmn.update(response.data)
                 EventBus.$emit(action.type, action.payload)
             })
+            this.autoSave()
         }
     };
 </script>
@@ -160,7 +161,6 @@
         display: flex;
         flex-direction: column;
         background-color: green;
-
         #designer-subcontainer {
             display: flex;
             flex: 1;
@@ -169,7 +169,6 @@
             max-width: 100%;
             min-height: 100%;
             max-height: 100%;
-
             .canvas-container {
                 flex: 1;
                 overflow: auto;

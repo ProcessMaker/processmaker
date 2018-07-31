@@ -46,7 +46,7 @@
                 return inputFile
             },
             saveBPMN (value) {
-                let action = actions.bpmn.toXML(value)
+                let action = actions.bpmn.save(value)
                 EventBus.$emit(action.type, action.payload)
             },
             handleFileChange(e){
@@ -85,7 +85,6 @@
 </script>
 
 <style lang='scss' scoped>
-
     #designer-toolbar .override {
         background-color: #b6bfc6;
         padding: 10px;
@@ -104,6 +103,5 @@
     #designer-toolbar a {
         color: white;
         padding-right: 15px;
-
     }
 </style>
