@@ -39,6 +39,7 @@
     import modalMessageTypes from "./components/modals/modal-message-types";
     import modalOutputDocuments from "./components/modals/modal-output-documents"
     import modalListForms from "./components/modals/modal-list-forms"
+    import modalForms from "./components/modals/modal-forms"
     // This is out Cron for every shape
     import crown from "./components/crown"
     import actions from "./actions"
@@ -63,7 +64,8 @@
             modalListForms,
             svgcanvas,
             toolbar,
-            toptoolbar
+            toptoolbar,
+            modalForms
         },
         data() {
             return {
@@ -125,7 +127,10 @@
             openTitleDialog(key){
                 switch (key) {
                     case 'output-documents':
-                        this.modalComponent = 'modal-output-documents'
+                        this.modalComponent = 'modal-output-documents';
+                        break;
+                    case 'forms':
+                        this.modalComponent = 'modal-forms';
                         break;
                     default:
                         alert(key + ' Behavior TBD')
