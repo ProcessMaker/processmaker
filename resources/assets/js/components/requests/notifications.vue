@@ -68,10 +68,10 @@ export default {
 
 <style lang="scss" scoped>
 .dropdown-menu {
-  right: -28px;
-  margin-top: 16px;
+  right: -10px;
+  margin-top: -2px;
   left: auto;
-  width: 400px;
+  width: 300px;
   border-radius: 2px;
   border: none;
   background-color: #ffffff;
@@ -92,7 +92,7 @@ export default {
 .arrow {
   -webkit-transform: rotate(45deg);
   transform: rotate(45deg);
-  width: 25px;
+  width: 13px;
   height: 25px;
   /* border: 1px solid #222222; */
   -webkit-box-shadow: 0px 0px 3px 0px rgba(150, 150, 150, 0.5);
@@ -101,7 +101,7 @@ export default {
   position: absolute;
   top: 8px;
   background-color: white;
-  right: 38px;
+  right: 33px;
 }
 .arrow-container {
   position: absolute;
