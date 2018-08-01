@@ -13,23 +13,23 @@
             </li>
             <li v-for="task in messages" class="dropdown-item">
                 <div>
-                    <a id="task-process" v-bind:href="task.url" @click.stop="remove(task)" target="_blank">
-						{{task.name}}
-					</a>
-                    <small class="float-right task-meta">{{formatDateTime(task.dateTime)}}</small>
+                  <a class="text-primary" v-bind:href="task.url" @click.stop="remove(task)" target="_blank">
+                      <h5>{{task.name}}</h5> 
+                  </a>
+                  <small class="float-right task-meta">{{formatDateTime(task.dateTime)}}</small>
                 </div>
-                <div class="task-data">
-                    {{task.processName}}
+                <div>
+                  <h6 class="text-secondary">{{task.processName}}</h6> 
                 </div>
-                <div class="task-data">
-                    {{task.userName}}
+                <div>
+                  <h6 class="text-secondary">{{task.userName}}</h6>
                 </div>
+                <hr>
             </li>
-            <li class="dropdown-divider"></li>
             <li class="dropdown-item">
                 <div class="link-block">
                     <a href="/task">
-                        VIEW ALL TASKS
+                       <h5 class="text-uppercase">view ALL TASKS</h5> 
                     </a>
                 </div>
             </li>
@@ -116,14 +116,7 @@ export default {
   position: relative;
   padding: 16px;
 }
-#task-process {
-  color: #3397e1;
-  font-size: 16px;
-}
-.task-data {
-  color: rgba(0, 0, 0, 0.5);
-  font-size: 12px;
-}
+
 .task-meta {
   color: #788793;
   font-size: 11px;
