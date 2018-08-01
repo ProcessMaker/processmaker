@@ -9,13 +9,13 @@
                 <div class="arrow-container"><div class="arrow"></div></div>
             </li>
             <li class="dropdown-item">
-                <h4>New Tasks</h4>
+                <h4 class="mb-3">New Tasks</h4>
             </li>
             <li v-for="task in messages" class="dropdown-item font-weight">
-                <div>
-                  <small class="float-right task-meta">{{formatDateTime(task.dateTime)}}</small>
-                  <a class="text-primary" v-bind:href="task.url" @click.stop="remove(task)" target="_blank">
-                    <h5 class="font-weight">{{task.name}}</h5> 
+                <div class="mb-0">
+                  <small class="float-right task-meta mt-1">{{formatDateTime(task.dateTime)}}</small>
+                  <a class="text-primary font-size-16" v-bind:href="task.url" @click.stop="remove(task)" target="_blank">
+                    <span>{{task.name}}</span> 
                   </a>
                 </div>
                 <div>
@@ -27,9 +27,9 @@
                 <hr id="divider">
             </li>
             <li class="dropdown-item">
-                <div class="link-block mt-2">
+                <div class="link-block mt-2 mb-2">
                     <a href="/task">
-                       <h5 class="text-uppercase">view ALL TASKS</h5> 
+                       <span class="text-uppercase font-size-16 font-weight">view ALL TASKS</span> 
                     </a>
                 </div>
             </li>
@@ -123,7 +123,10 @@ export default {
   color: #788793;
   font-size: 11px;
 }
-#font-weight {
-  font-weight: 100;
+.font-size-16 {
+  font-size: 16px;
+}
+.font-weight {
+  font-weight: 200;
 }
 </style>
