@@ -114,7 +114,11 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
      */
     public function persistInstanceUpdated(ExecutionInstanceInterface $instance)
     {
+        //Get instance data
+        $data = $instance->getDataStore()->getData();
+        //Save instance
         $instance->APP_STATUS = Instance::STATUS_TO_DO;
+        $instance->APP_DATA = json_encode($data);
         $instance->save();
     }
 
@@ -127,9 +131,13 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
      */
     public function persistInstanceCompleted(ExecutionInstanceInterface $instance)
     {
+        //Get instance data
+        $data = $instance->getDataStore()->getData();
+        //Save instance
         Log::info("persistInstanceCompleted");
         $instance->APP_STATUS = Instance::STATUS_COMPLETED;
         $instance->APP_FINISH_DATE = Carbon::now();
+        $instance->APP_DATA = json_encode($data);
         $instance->save();
     }
 }
