@@ -6,13 +6,14 @@
         formUid: {{formUid}}<br>
         data: {{data}}<br>
 
-        <vue-form-renderer @submit="submit" @update="update" v-if="mode == 'preview'" :config="config" />
+        <vue-form-renderer @submit="submit" @update="update"  :config="json" />
     </div>
 </template>
 
 <script>
 
     import VueFormRenderer from "@processmaker/vue-form-builder/src/components/vue-form-renderer";
+
 
     export default {
         components: {
@@ -27,26 +28,16 @@
         ],
         data() {
             return {
-                mode:"preview",
-                config: [
+                json: [
                     {
-                        name: "Test",
-                        items: [
-                            {
-                                type: "FormInput",
-                                field: "label",
-                                config: {
-                                    "label": "Text Label",
-                                    "helper": "The text to display"
-                                }
-                            }
-                        ]
+                        name: "Default",
+                        items: [ ]
                     }
-                ]
+                ],
             };
         },
         mounted() {
-            //this.fetch();
+            this.fetch();
         },
         methods: {
             submit() {
@@ -55,11 +46,11 @@
                         '/instances/' + this.instanceUid +
                         '/tokens/' + this.tokenUid +
                         '/complete',
-                        this.data
+                        this.formData
                         )
             },
-            update() {
-
+            update(data) {
+                //this.formData = data;
             },
             fetch() {
                 this.loading = true;
@@ -73,9 +64,7 @@
                         this.formUid
                     )
                     .then(response => {
-                        this.json = response.data;
-                        debugger;
-                        this.$refs.vueRenderer.updateDataModel();
+                        this.json = response.data.content;
                         this.loading = false;
                     });
             }
