@@ -8,8 +8,13 @@
                 <li class="nav-item">
                     <a class="nav-link" @click="mode = 'preview'" href="#">Preview</a>
                 </li>
-                <li class="nav-item pull-right">
+            </ul>
+            <ul class="navbar-nav  pull-right">
+                <li class="nav-item">
                     <a class="nav-link" @click="saveForm" href="#">Save</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" @click="onClose" href="#">Close</a>
                 </li>
             </ul>
         </nav>
@@ -79,6 +84,9 @@
             },
             previewSubmit() {
                 alert("Preview Form was Submitted")
+            },
+            onClose() {
+                window.location.href = '/designer/' + this.process.uid;
             },
             saveForm() {
                 ProcessMaker.apiClient
