@@ -34,6 +34,7 @@
                         items: [ ]
                     }
                 ],
+                formData: this.data
             };
         },
         mounted() {
@@ -50,7 +51,7 @@
                         )
             },
             update(data) {
-                //this.formData = data;
+                this.formData = data;
             },
             fetch() {
                 this.loading = true;
