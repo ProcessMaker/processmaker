@@ -12,17 +12,21 @@ describe("Elements", () => {
     beforeEach(() => {
         graph = new joint.dia.Graph
         paper = {}
-        ev = new Elements["messageeventdefinition"]({
-            id: "throw",
-            x: 10,
-            y: 10,
-            width: 40,
-            height: 40
+        ev = new Elements["endevent"]({
+            id: "email",
+            type: "endevent",
+            eventDefinition: "messageEventDefinition",
+            bounds: {
+                x: 10,
+                y: 10,
+                width: 40,
+                height: 40
+            }
         }, graph, paper)
     })
 
     it("render - function to render the event", () => {
         ev.render()
-        expect(ev.shape).toBeInstanceOf(JointElements.MessageEventDefinition)
+        expect(ev.getShape()).toBeInstanceOf(JointElements.EndEmailEvent)
     })
 })

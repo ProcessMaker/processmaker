@@ -15,12 +15,6 @@
                         <a href="#" title="Redo"><i class="fas fa-redo"></i></a>
                     </li>
                     <li class="nav-item ">
-                        <a href="#" title="Zoom In"><i class="fas fa-search-plus"></i></a>
-                    </li>
-                    <li class="nav-item ">
-                        <a href="#" title="Zoom In"><i class="fas fa-search-minus"></i></a>
-                    </li>
-                    <li class="nav-item ">
                         <a href="#" title="Save Process" @click="saveBPMN($event)"><i class="fas fa-save"></i></a>
                     </li>
                     <li class="nav-item ">
@@ -52,7 +46,7 @@
                 return inputFile
             },
             saveBPMN (value) {
-                let action = actions.bpmn.toXML(value)
+                let action = actions.bpmn.save(value)
                 EventBus.$emit(action.type, action.payload)
             },
             handleFileChange(e){
@@ -91,7 +85,6 @@
 </script>
 
 <style lang='scss' scoped>
-
     #designer-toolbar .override {
         background-color: #b6bfc6;
         padding: 10px;
@@ -110,6 +103,5 @@
     #designer-toolbar a {
         color: white;
         padding-right: 15px;
-
     }
 </style>

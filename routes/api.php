@@ -101,8 +101,11 @@ Route::group([
             Route::get('processes', 'Designer\ProcessesController@index');
             Route::get('processes/{process}', 'Designer\ProcessesController@show');
             Route::delete('processes/{process}', 'Designer\ProcessesController@remove');
+            Route::put('processes/{process}', 'Designer\ProcessesController@update');
             Route::patch('processes/{process}/bpmn', 'Designer\ProcessBpmnController@update');
             Route::get('processes/{process}/bpmn', 'Designer\ProcessBpmnController@show');
+
+            Route::post('processes/create', 'Designer\ProcessesController@createProcessTemplate');
         });
 
         //Workflow end points
@@ -174,5 +177,12 @@ Route::group([
 
         //Requests endpoints
         Route::get('requests','Requests\RequestsController@index')->middleware('auth');
+
+        // Cases group
+        Route::group([
+            'middleware' => ['permission:PM_CASES']
+        ], function() {
+            Route::get('user/processes', 'Requests\RequestsController@getUserStartProcesses');
+        });
     });
 });
