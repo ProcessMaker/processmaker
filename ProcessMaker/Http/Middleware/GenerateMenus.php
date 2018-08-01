@@ -141,6 +141,8 @@ class GenerateMenus
               'id' => 'homeid'
           ]);
        });
+        Menu::make('sidebar_process', function ($menu) {});
+
         Menu::make('sidebar_designer', function ($menu) {});
 
         Menu::make('dropdown_nav', function ($menu) {
