@@ -15,7 +15,7 @@
                 <div>
                   <small class="float-right task-meta">{{formatDateTime(task.dateTime)}}</small>
                   <a class="text-primary" v-bind:href="task.url" @click.stop="remove(task)" target="_blank">
-                    <h5>{{task.name}}</h5> 
+                    <h5 class="font-weight">{{task.name}}</h5> 
                   </a>
                 </div>
                 <div>
@@ -27,7 +27,7 @@
                 <hr id="divider">
             </li>
             <li class="dropdown-item">
-                <div class="link-block">
+                <div class="link-block mt-2">
                     <a href="/task">
                        <h5 class="text-uppercase">view ALL TASKS</h5> 
                     </a>
@@ -123,7 +123,7 @@ export default {
   color: #788793;
   font-size: 11px;
 }
-.font-weight {
+#font-weight {
   font-weight: 100;
 }
 </style>
