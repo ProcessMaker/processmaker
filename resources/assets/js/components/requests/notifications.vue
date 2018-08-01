@@ -11,12 +11,12 @@
             <li class="dropdown-item">
                 <h4>New Tasks</h4>
             </li>
-            <li v-for="task in messages" class="dropdown-item">
+            <li v-for="task in messages" class="dropdown-item font-weight">
                 <div>
+                  <small class="float-right task-meta">{{formatDateTime(task.dateTime)}}</small>
                   <a class="text-primary" v-bind:href="task.url" @click.stop="remove(task)" target="_blank">
                     <h5>{{task.name}}</h5> 
                   </a>
-                  <small class="float-right task-meta">{{formatDateTime(task.dateTime)}}</small>
                 </div>
                 <div>
                   <span class="text-secondary">{{task.processName}}</span> 
@@ -24,7 +24,7 @@
                 <div>
                   <span class="text-secondary">{{task.userName}}</span>
                 </div>
-                <hr>
+                <hr id="divider">
             </li>
             <li class="dropdown-item">
                 <div class="link-block">
@@ -111,14 +111,19 @@ export default {
   right: 0px;
   top: -16px;
 }
-
+#divider {
+  margin-bottom: 0px;
+  margin-top: 8px;
+}
 .notifications {
   position: relative;
   padding: 16px;
 }
-
 .task-meta {
   color: #788793;
   font-size: 11px;
+}
+.font-weight {
+  font-weight: 100;
 }
 </style>
