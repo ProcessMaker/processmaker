@@ -1,6 +1,6 @@
 <template>
     <div id="designer-container">
-        <component :is="modalComponent" :if="modalComponent" @hidden="onHidden"></component>
+        <component :is="modalComponent" :if="modalComponent" @hidden="onHidden" :processUid="processUid"></component>
         <toptoolbar ref="toptoolbar"></toptoolbar>
         <toolbar ref="toolbar"></toolbar>
         <div id="designer-subcontainer">

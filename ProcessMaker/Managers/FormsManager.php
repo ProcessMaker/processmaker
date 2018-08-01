@@ -63,7 +63,7 @@ class FormsManager
         $data['process_id'] = $process->id;
 
         if (!isset($data['content']) || empty($data['content'])) {
-            $data['content'] = new stdClass();
+            $data['content'] = null;
         }
 
         $form = new Form();
@@ -117,7 +117,7 @@ class FormsManager
         $data['process_id'] = $process->id;
         $form->fill($data);
         if (empty($form->content)) {
-            $form->content = new stdClass();
+            $form->content = null;
         }
         $form->saveOrFail();
         return $form->refresh();
