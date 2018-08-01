@@ -38,7 +38,7 @@
     import modalVariablesAdd from "./components/modals/modal-variables-add";
     import modalMessageTypes from "./components/modals/modal-message-types";
     import modalOutputDocuments from "./components/modals/modal-output-documents"
-    import modalListForms from "./components/modals/modal-list-forms"
+    import modalFormsList from "./components/modals/modal-forms-list"
     // This is out Cron for every shape
     import crown from "./components/crown"
     import actions from "./actions"
@@ -60,7 +60,7 @@
             modalPublicFileAdd,
             modalVariablesAdd,
             modalOutputDocuments,
-            modalListForms,
+            modalFormsList,
             svgcanvas,
             toolbar,
             toptoolbar
@@ -79,6 +79,7 @@
         },
         methods: {
             openAddDialog(key) {
+                debugger
                 // @todo Replace this with dynamic modal generation once we have all modals in place
                 // We're not doing this now so we can have visual alert feedback when a modal isn't implemented
                 switch (key) {
@@ -94,8 +95,8 @@
                     case 'forms':
                         this.modalComponent = 'modal-forms-add'
                         break;
-                    case 'listforms':
-                        this.modalComponent = 'modal-list-forms'
+                    case 'formslist':
+                        this.modalComponent = 'modal-forms-list'
                         break;
                     case 'message-types':
                         this.modalComponent = 'modal-message-types'

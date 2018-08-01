@@ -41,7 +41,9 @@
 <script>
     import actions from "../actions"
     import EventBus from "../lib/event-bus"
+
     export default {
+        components: [],
         data() {
             return {
                 dx: 3,
@@ -67,7 +69,8 @@
              * Method for remove the Selected Shape
              */
             showListForm (ev){
-                EventBus.$emit("open-add-dialog", "listforms");
+                debugger
+                EventBus.$emit("open-add-dialog", "formslist");
             },
             /**
              * Method for show the crown

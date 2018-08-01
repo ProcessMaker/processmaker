@@ -25,7 +25,7 @@
 </template>
 
 <script>
-    import datatableMixin from "../../components/common/mixins/datatable";
+    import datatableMixin from "../../../components/common/mixins/datatable";
 
     export default {
         mixins: [datatableMixin],
@@ -85,7 +85,13 @@
                 ]
             };
         },
-
+        created(){
+            debugger
+        },
+        mounted (){
+            debugger
+            this.fetch()
+        },
         methods: {
             activateBtnCssClass (data) {
                 var showPowerOn = (data.status === 'INACTIVE') ? true : false;
@@ -133,29 +139,12 @@
                 var path = location.pathname.split('/');
 
                 // Load from our api client
-                ProcessMaker.apiClient
-                    .get(
-                        "processes/" +
-                        "?page=" +
-                        this.page +
-                        "&per_page=" +
-                        this.perPage +
-                        "&filter=" +
-                        this.filter +
-                        "&order_by=" +
-                        this.orderBy +
-                        "&order_direction=" +
-                        this.orderDirection,
-                        {
-                            cancelToken: new CancelToken(c => {
-                                this.cancelToken = c;
-                            })
-                        }
-                    )
-                    .then(response => {
-                        this.data = this.transform(response.data);
-                        this.loading = false;
-                    });
+                ProcessMaker.apiClient.get(`process/${this.processUid}/forms`, {
+                    params: {}
+                }).then(response => {
+                    this.data = this.transform(response.data);
+                    this.loading = false;
+                })
             }
         },
 
