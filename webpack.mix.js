@@ -26,6 +26,7 @@ mix.js('resources/assets/js/app-layout.js', 'public/js')
     .js('resources/assets/js/request/status.js', 'public/js/request')
     .js('resources/assets/js/tasks/index.js', 'public/js/tasks/index.js')
     .js('resources/assets/js/tasks/show.js', 'public/js/tasks/show.js')
+    .js('resources/assets/js/designer/formBuilder/main.js', 'public/js/formBuilder')
 
 
 

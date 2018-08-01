@@ -81,4 +81,6 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
     });
 
     $this->get('/designer/{process?}', 'Designer\ProcessController@show')->name('designer-edit-process');
+
+    $this->get('/designer/{process?}/form/{form?}', 'Designer\FormController@show')->name('designer-edit-form');
 });
