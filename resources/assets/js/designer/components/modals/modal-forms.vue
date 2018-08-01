@@ -15,7 +15,7 @@
                             <div class="popout">
                                 <b-btn variant="action" @click="onEdit(props.rowData, props.rowIndex)"
                                        v-b-tooltip.hover title="Edit"><i class="fas fa-edit"></i></b-btn>
-                                <b-btn variant="action" @click="onDeleteprops(props.rowData, props.rowIndex)"
+                                <b-btn variant="action" @click="onDelete(props.rowData, props.rowIndex)"
                                        v-b-tooltip.hover title="Remove"><i class="fas fa-trash-alt"></i></b-btn>
                             </div>
                         </div>
@@ -86,7 +86,7 @@
             onDelete(data, index) {
                 const CancelToken = ProcessMaker.apiClient.CancelToken;
                 ProcessMaker.apiClient
-                    .delete('process/' + this.processUid + '/forms/' + data.uid,
+                    .delete('process/' + this.processUid + '/form/' + data.uid,
                         {
                             cancelToken: new CancelToken(c => {
                                 this.cancelToken = c;
