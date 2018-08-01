@@ -5,7 +5,8 @@
         tokenUid: {{tokenUid}}<br>
         formUid: {{formUid}}<br>
         data: {{data}}<br>
-        <vue-form-renderer @submit="submit" @update="update" :config="json" />
+
+        <vue-form-renderer @submit="submit" @update="update" v-if="mode == 'preview'" :config="config" />
     </div>
 </template>
 
@@ -26,16 +27,26 @@
         ],
         data() {
             return {
-                json: [
+                mode:"preview",
+                config: [
                     {
-                        name: "Default",
-                        items: []
+                        name: "Test",
+                        items: [
+                            {
+                                type: "FormInput",
+                                field: "label",
+                                config: {
+                                    "label": "Text Label",
+                                    "helper": "The text to display"
+                                }
+                            }
+                        ]
                     }
                 ]
             };
         },
         mounted() {
-            this.fetch();
+            //this.fetch();
         },
         methods: {
             submit() {
@@ -63,6 +74,8 @@
                     )
                     .then(response => {
                         this.json = response.data;
+                        debugger;
+                        this.$refs.vueRenderer.updateDataModel();
                         this.loading = false;
                     });
             }
