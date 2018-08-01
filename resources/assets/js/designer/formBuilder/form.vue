@@ -13,13 +13,14 @@
                 </li>
             </ul>
         </nav>
-        <vue-form-builder @change="updateConfig" v-show="mode == 'editor'" />
+        <vue-form-builder @change="updateConfig" ref="formbuilder" v-show="mode == 'editor'" config="config"/>
         <div id="preview" v-if="mode == 'preview'">
             <div id="renderer-container">
                 <div class="container">
                     <div class="row">
                         <div class="col-sm">
-                            <vue-form-renderer @submit="previewSubmit" @update="updatePreview" v-if="mode == 'preview'" :config="config" />
+                            <vue-form-renderer @submit="previewSubmit" @update="updatePreview" v-if="mode == 'preview'"
+                                               :config="config"/>
                         </div>
                     </div>
                 </div>
@@ -38,7 +39,6 @@
     import VueFormBuilder from "@processmaker/vue-form-builder/src/components/vue-form-builder";
     import VueFormRenderer from "@processmaker/vue-form-builder/src/components/vue-form-renderer";
     import VueJsonPretty from 'vue-json-pretty';
-
 
     export default {
         data() {
@@ -62,6 +62,14 @@
             'process',
             'form'
         ],
+        mounted() {
+            this.$refs.formbuilder.config = this.form.content ? this.form.content : [
+                {
+                    name: "Default",
+                    items: []
+                }
+            ];
+        },
         methods: {
             updateConfig(newConfig) {
                 this.config = newConfig
@@ -73,7 +81,20 @@
                 alert("Preview Form was Submitted")
             },
             saveForm() {
-
+                ProcessMaker.apiClient
+                    .put(
+                        'process/' +
+                        this.process.uid +
+                        '/form/' +
+                        this.form.uid
+                        ,
+                        {
+                            content: this.config
+                        }
+                    )
+                    .then(response => {
+                        ProcessMaker.alert(' Successfully saved', 'success');
+                    });
             }
         }
     };

@@ -26,7 +26,11 @@ class FormController extends Controller
             request()->session()->flash('_alert', json_encode(['danger', __('The form was not found.')]));
             return view('designer.designer', compact('process'));
         }
-        //return view('designer.form', ['process' => $process, 'form' => $form]);
+
+        if ($process->id !== $form->process_id) {
+            request()->session()->flash('_alert', json_encode(['danger', __('The form does not belong to process.')]));
+            return view('designer.designer', compact('process'));
+        }
         return view('designer.form', compact(['process', 'form']));
     }
 
