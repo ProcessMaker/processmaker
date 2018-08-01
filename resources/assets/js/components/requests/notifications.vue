@@ -14,15 +14,15 @@
             <li v-for="task in messages" class="dropdown-item">
                 <div>
                   <a class="text-primary" v-bind:href="task.url" @click.stop="remove(task)" target="_blank">
-                      <h5>{{task.name}}</h5> 
+                    <h5>{{task.name}}</h5> 
                   </a>
                   <small class="float-right task-meta">{{formatDateTime(task.dateTime)}}</small>
                 </div>
                 <div>
-                  <h6 class="text-secondary">{{task.processName}}</h6> 
+                  <span class="text-secondary">{{task.processName}}</span> 
                 </div>
                 <div>
-                  <h6 class="text-secondary">{{task.userName}}</h6>
+                  <span class="text-secondary">{{task.userName}}</span>
                 </div>
                 <hr>
             </li>
