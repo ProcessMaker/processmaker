@@ -12,7 +12,7 @@
                 <h4 class="mb-3">New Tasks</h4>
             </li>
             <li v-for="task in messages" class="dropdown-item font-weight">
-                <div class="mb-0">
+                <div class="mb-1">
                   <small class="float-right task-meta mt-1">{{formatDateTime(task.dateTime)}}</small>
                   <a class="text-primary font-size-16" v-bind:href="task.url" @click.stop="remove(task)" target="_blank">
                     <span>{{task.name}}</span> 
