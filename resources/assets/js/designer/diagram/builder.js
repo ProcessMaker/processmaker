@@ -58,7 +58,7 @@ export class Builder {
                     element.render()
                     createbpmn ? element.createBpmn() : null
                     this.collection.push(element)
-                    participant ? participant.shape.embed(element.shape) : null
+                    participant ? participant.getShape().embed(element.shape) : null
                     if (options.type === "participant") {
                         this.collection = _.concat(element.lanes, this.collection);
                     }
@@ -131,7 +131,7 @@ export class Builder {
     updatePosition(element) {
         this.hideCrown()
         let res = _.find(this.collection, (o) => {
-            return element.id === o.shape.id
+            return element.id === o.getShape().id
         })
         if (res) {
             res.updateBounds(element.get("position"))
@@ -145,13 +145,15 @@ export class Builder {
      * @param target
      */
     connect(options) {
+        let flow
         if (options.source != options.target && Validators.verifyConnectWith(options.source.getType(), options.target.getType())) {
-            let flow = new Elements[options.type](options,
+            flow = new Elements[options.type](options,
                 this.graph,
                 this.paper
             );
             flow.render()
         }
+        return flow
     }
 
 
@@ -164,12 +166,12 @@ export class Builder {
         if (elements.length > 0) {
             let element = elements.pop()
             let target = this.findElementInCollection(element)
-            this.connect({
+            let flow = this.connect({
                 source: this.sourceShape,
                 target,
                 type: "sequenceflow"
             })
-
+            flow ? flow.createBpmn() : null
         }
         this.connectingFlow.remove()
         this.connectingFlow = null
@@ -183,9 +185,9 @@ export class Builder {
     findElementInCollection(element, inModel = false) {
         return _.find(this.collection, (o) => {
             if (inModel) {
-                return element.model.id === o.shape.id
+                return element.model.id === o.getShape().id
             } else {
-                return element.id === o.shape.id
+                return element.id === o.getShape().id
             }
         })
     }
@@ -196,7 +198,7 @@ export class Builder {
      */
     findInCollectionById(id) {
         return _.find(this.collection, (o) => {
-            return id === o.options.id
+            return id === o.getOptions("id")
         })
     }
 
@@ -267,7 +269,7 @@ export class Builder {
             if (cellViewBelow && cellViewBelow.model.get('parent') !== cell.id) {
                 let el = this.findElementInCollection(cellViewBelow, true)
                 let elCell = this.findElementInCollection(cell)
-                if (el && el.type == "participant" && elCell && !elCell.type != "participant") {
+                if (el && el.getOptions("type") == "participant" && elCell && !elCell.getOptions("type") != "participant") {
                     cellViewBelow.model.embed(cell)
                 }
             }

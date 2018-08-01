@@ -12,17 +12,21 @@ describe("Elements", () => {
     beforeEach(() => {
         graph = new joint.dia.Graph
         paper = {}
-        ev = new Elements["timereventdefinition"]({
-            id: "timer",
-            x: 10,
-            y: 10,
-            width: 40,
-            height: 40
+        ev = new Elements["intermediatethrowevent"]({
+            id: "throw",
+            type: "intermediateThrowEvent",
+            eventDefinition: "messageEventDefinition",
+            bounds: {
+                x: 10,
+                y: 10,
+                width: 40,
+                height: 40
+            }
         }, graph, paper)
     })
 
     it("render - function to render the event", () => {
         ev.render()
-        expect(ev.shape).toBeInstanceOf(JointElements.TimerEventDefinition)
+        expect(ev.getShape()).toBeInstanceOf(JointElements.MessageEventDefinition)
     })
 })

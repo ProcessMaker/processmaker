@@ -400,6 +400,15 @@ class Process extends Model
     }
 
     /**
+     * Get the forms of the process.
+     *
+     */
+    public function forms()
+    {
+        return $this->hasMany(Form::class);
+    }
+
+    /**
      * Get the process definitions from BPMN field.
      *
      * @return ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface
