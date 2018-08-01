@@ -41,19 +41,19 @@ class ProcessSeeder extends Seeder
             //Add forms to the process
             factory(Form::class)->create([
                 'uid' => $definitions->getActivity('request')->getProperty('formRef'),
-                'content' => $this->loadForm('request'),
+                'content' => $this->loadForm('request.json'),
                 'process_id' => $process->id,
             ]);
 
             factory(Form::class)->create([
                 'uid' => $definitions->getActivity('approve')->getProperty('formRef'),
-                'content' => $this->loadForm('approve'),
+                'content' => $this->loadForm('approve.json'),
                 'process_id' => $process->id,
             ]);
 
             $form = factory(Form::class)->create([
                 'uid' => $definitions->getActivity('validate')->getProperty('formRef'),
-                'content' => $this->loadForm('validate'),
+                'content' => $this->loadForm('validate.json'),
                 'process_id' => $process->id,
             ]);
 
