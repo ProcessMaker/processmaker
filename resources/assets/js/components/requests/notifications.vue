@@ -9,7 +9,7 @@
                 <div class="arrow-container"><div class="arrow"></div></div>
             </li>
             <li class="dropdown-item">
-                <span class="drop-head">New Tasks</span>
+                <h4>New Tasks</h4>
             </li>
             <li v-for="task in messages" class="dropdown-item">
                 <div>
@@ -115,10 +115,6 @@ export default {
 .notifications {
   position: relative;
   padding: 16px;
-}
-.drop-head {
-  font-size: 18px;
-  font-weight: 400;
 }
 #task-process {
   color: #3397e1;
