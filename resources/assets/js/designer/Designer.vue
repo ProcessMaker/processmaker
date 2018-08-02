@@ -82,7 +82,6 @@
         },
         methods: {
             openAddDialog(key) {
-                debugger
                 // @todo Replace this with dynamic modal generation once we have all modals in place
                 // We're not doing this now so we can have visual alert feedback when a modal isn't implemented
                 switch (key) {
