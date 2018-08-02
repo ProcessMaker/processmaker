@@ -18,13 +18,21 @@ class TriggerController extends Controller
      * Get a list of triggers in a process.
      *
      * @param Process $process
+     * @param Request $request
      *
      * @return ResponseFactory|Response
      */
-    public function index(Process $process)
+    public function index(Process $process, Request $request)
     {
-        $response = TriggerManager::index($process);
-        return fractal($response, new TriggerTransformer())->respond(200);
+        $options = [
+            'filter' => $request->input('filter', ''),
+            'current_page' => $request->input('current_page', 1),
+            'per_page' => $request->input('per_page', 10),
+            'sort_by' => $request->input('order_by', 'title'),
+            'sort_order' => $request->input('order_direction', 'ASC'),
+        ];
+        $response = TriggerManager::index($process, $options);
+        return fractal($response, new TriggerTransformer())->respond();
     }
 
     /**

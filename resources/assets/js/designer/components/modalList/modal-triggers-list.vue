@@ -2,7 +2,7 @@
     <b-modal class="triggers-list" ref="modal" size="lg" @hidden="onHidden" title="Triggers" hide-footer>
         <div class="form-group">
             <div class="d-flex justify-content-between">
-                <filter-bar></filter-bar>
+                <input v-model="filter" class="form-control  col-sm-3" placeholder="Search..." @keyup="fetch" >
                 <button type="submit" class="btn btn-secondary"><i class="fas fa-plus fa-md"></i> Create</button>
             </div>
             <div class="data-table">
@@ -29,25 +29,23 @@
 </template>
 
 <script>
-    import FilterBar from "../../../components/FilterBar";
-
-    Vue.component('filter-bar', FilterBar);
     import dataTableMixin from "../../../components/common/mixins/datatable";
     import Pagination from "../../../components/common/Pagination";
 
     export default {
         components: {Pagination},
         mixins: [dataTableMixin],
-        props: ['processUid', 'filter'],
+        props: ['processUid'],
         data() {
             return {
                 items: [],
+                filter: '',
                 orderBy: "title",
 
                 sortOrder: [
                     {
-                        field: "ID",
-                        sortField: "id",
+                        field: "title",
+                        sortField: "title",
                         direction: "asc"
                     }
                 ],
@@ -101,22 +99,19 @@
             },
             fetch() {
                 this.loading = true;
-                if (this.cancelToken) {
-                    this.cancelToken();
-                    this.cancelToken = null;
-                }
                 const CancelToken = ProcessMaker.apiClient.CancelToken;
                 ProcessMaker.apiClient
-                    .get('process/' + this.processUid + '/triggers',
-                        "roles?page=" +
+                    .get('process/' +
+                        this.processUid +
+                        '/triggers?page=' +
                         this.page +
-                        "&per_page=" +
+                        '&per_page=' +
                         this.perPage +
-                        "&filter=" +
+                        '&filter=' +
                         this.filter +
-                        "&order_by=" +
+                        '&order_by=' +
                         this.orderBy +
-                        "&order_direction=" +
+                        '&order_direction=' +
                         this.orderDirection,
                         {
                             cancelToken: new CancelToken(c => {

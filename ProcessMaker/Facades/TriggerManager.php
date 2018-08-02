@@ -13,9 +13,7 @@ use ProcessMaker\Model\Trigger;
  * @package ProcessMaker\Facades
  * @see \ProcessMaker\Managers\TriggerManager
  *
- * @method static Paginator index(Process $process)
- * @method static Trigger save(Process $process, array $data)
- * @method static array update(Process $process, Trigger $trigger, array $data)
+ * @method static Paginator index(Process $process, array $options)
  * @method static boolean|null remove(Trigger $trigger)
  * @method static array getTriggers(Process $process)
  * @method static array save(Process $process, array $data)
