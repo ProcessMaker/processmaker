@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Model\Role;
 use ProcessMaker\Transformers\RoleTransformer;
-use Illuminate\Validation\Validator;
 
 /**
  * Controller that handles all Roles API endpoints
