@@ -53,6 +53,7 @@ class Role extends Model
         
         return [
         'name' => 'required|max:255',
+        'code' => 'required|max:255',
         'description' => 'max:255',
         'status' => 'required|in:ACTIVE,DISABLED'
         ];
