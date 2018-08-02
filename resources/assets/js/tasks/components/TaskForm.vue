@@ -6,7 +6,7 @@
         formUid: {{formUid}}<br>
         data: {{data}}<br>
 
-        <vue-form-renderer @submit="submit" @update="update"  :config="json" />
+        <vue-form-renderer @submit="submit" v-model="formData" :config="json" />
     </div>
 </template>
 
