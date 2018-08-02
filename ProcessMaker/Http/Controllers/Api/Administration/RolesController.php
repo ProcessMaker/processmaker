@@ -8,7 +8,6 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Model\Role;
 use ProcessMaker\Transformers\RoleTransformer;
 
-
 /**
  * Controller that handles all Roles API endpoints
  *
@@ -18,7 +17,7 @@ class RolesController extends Controller
 
     /**
      * Fetch a collection of roles based on paged request and filter if provided
-     * 
+     *
      * @return JsonResponse A list of matched roles and paging data
      */
     public function index(Request $request)
@@ -68,15 +67,33 @@ class RolesController extends Controller
 
     public function create(Request $request)
     {
-        $data = $request->validate([
-            'name' => 'required|max:255',
-            'code' => 'unique:roles,code|required|max:255',
-            'description' => 'max:255',
-            'status' => 'required|in:ACTIVE,DISABLED'
-        ]);
+        $data = $request->validate(Role::rules());
         $role = Role::create($data);
         $role->refresh();
         return fractal($role, new RoleTransformer())->respond();
+    }
+
+    /**
+    * Update the specified resource in storage.
+    *
+    * @param \Illuminate\Http\Request $request
+    * @param uid $uid
+    * @return \Illuminate\Http\Response
+    */
+    public function update(Request $request, $uid)
+    {
+      $request->validate(Role::rules());
+
+      $role = Role::where('uid', $uid)->firstOrFail();
+      $role->name=$request->get('name');
+      $role->code=$request->get('code');
+      $role->description=$request->get('description');
+      $role->status=$request->get('status');
+
+      $role->save();
+
+      return fractal($role, new RoleTransformer())->respond();
+
     }
 
 }

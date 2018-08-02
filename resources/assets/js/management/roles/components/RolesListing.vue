@@ -1,7 +1,7 @@
 <template>
   <div class="data-table">
     <vuetable :dataManager="dataManager" :sortOrder="sortOrder" :css="css" :api-mode="false"  @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data" pagination-path="meta">
-        <template slot="actions" slot-scope="props"> 
+        <template slot="actions" slot-scope="props">
           <div class="actions">
             <i class="fas fa-ellipsis-h"></i>
             <div class="popout">
@@ -11,10 +11,42 @@
               <b-btn variant="action" @click="onAction('permissions-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="Permissions"><i class="fas fa-user-lock"></i></b-btn>
             </div>
           </div>
-      </template>  
-    </vuetable> 
+      </template>
+    </vuetable>
     <pagination single="Role" plural="Roles" :perPageSelectEnabled="true" @changePerPage="changePerPage" @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
-   </div>
+    <b-modal ref="editItem" size="md" centered title="Create New Role">
+    <form>
+      <div class="form-group">
+        <label for="add-role-code">Code</label>
+        <input id="add-role-code" class="form-control" v-model="code">
+      </div>
+      <div class="form-group">
+        <label for="add-role-name">Name</label>
+        <input id="add-role-name" class="form-control" v-model="name">
+      </div>
+      <div class="form-group">
+        <label for="add-role-name">Description</label>
+        <input id="add-role-name" class="form-control" v-model="description">
+      </div>
+      <div class="form-group">
+        <label for="add-role-status">Status</label>
+        <select class="form-control" id="add-role-status" v-model="status">
+          <option :value="status">{{status}}</option>
+          <option value="ACTIVE">Active</option>
+          <option value="DISABLED">Disabled</option>
+        </select>
+      </div>
+    </form>
+    <template slot="modal-footer">
+      <b-button @click="hideEditModal" class="btn-outline-secondary btn-md">
+        Cancel
+      </b-button>
+      <b-button @click="submitEdit" class="btn-secondary text-light btn-md">
+        Save
+      </b-button>
+      </template>
+    </b-modal>
+  </div>
 </template>
 
 <script>
@@ -28,7 +60,7 @@ export default {
   data() {
     return {
       orderBy: "code",
-
+      editData: null,
       sortOrder: [
         {
           field: "code",
@@ -83,10 +115,59 @@ export default {
           name: "__slot:actions",
           title: ""
         }
-      ]
+      ],
+      name: '',
+      code: '',
+      description: '',
+      uid: '',
+      status: '',
+      curIndex: '',
     };
   },
   methods: {
+    onAction(action, data, index) {
+      switch(action) {
+        case 'edit-item' :
+          this.showEditModal(data,index)
+      }
+    },
+    showEditModal(data, index) {
+      this.name = this.data.data[index].name;
+      this.code = this.data.data[index].code;
+      this.status = this.data.data[index].status;
+      this.description = this.data.data[index].description;
+      this.uid = this.data.data[index].uid;
+      this.curIndex = index;
+      this.$refs.editItem.show();
+    },
+    hideEditModal() {
+      this.$refs.editItem.hide()
+    },
+    submitEdit(rowIndex) {
+      window.ProcessMaker.apiClient.put('roles/' + this.uid, {
+        'uid': this.uid,
+        'name': this.name,
+        'code': this.code,
+        'description': this.description,
+        'status': this.status
+      })
+      .then((response) => {
+        ProcessMaker.alert("Saved", "success")
+        this.clearForm()
+        this.hideEditModal ()
+        this.fetch()
+      })
+      .catch((err) => {
+        ProcessMaker.alert("There was an error with your edit", "danger")
+      })
+    },
+    clearForm(curIndex) {
+      this.name = '',
+      this.code = '',
+      this.description = '',
+      this.uid = '',
+      this.status = ''
+    },
     formatActiveUsers(value) {
       return '<div class="text-center">' + value + "</div>";
     },
@@ -153,4 +234,3 @@ export default {
   }
 }
 </style>
-
