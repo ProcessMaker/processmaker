@@ -49,12 +49,14 @@ class Role extends Model
      *
      * @var array $rules
      */
-    protected $rules = [
+    public static function rules() {
+        
+        return [
         'name' => 'required|max:255',
-        'code' => 'unique:roles,code|required|max:255',
         'description' => 'max:255',
         'status' => 'required|in:ACTIVE,DISABLED'
-    ];
+        ];
+    }
 
 
     /**
