@@ -37,11 +37,12 @@
     import modalPublicFileAdd from "./components/modals/modal-public-file-add";
     import modalVariablesAdd from "./components/modals/modal-variables-add";
     import modalMessageTypes from "./components/modals/modal-message-types";
-    import modalOutputDocuments from "./components/modals/modal-output-documents"
     import modalFormsList from "./components/modals/modal-forms-list"
 
     //Modal list
     import modalForms from "./components/modalList/modal-forms-list"
+    import modalOutputDocuments from "./components/modalList/modal-output-documents"
+
 
     // This is out Cron for every shape
     import crown from "./components/crown"
