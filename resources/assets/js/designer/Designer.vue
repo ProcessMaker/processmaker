@@ -43,6 +43,7 @@
     import modalForms from "./components/modalList/modal-forms-list"
     import modalOutputDocuments from "./components/modalList/modal-output-documents"
     import ModalInputDocumentList from "./components/modalList/modal-input-document-list";
+    import ModalTriggersList from "./components/modalList/modal-triggers-list";
 
 
     // This is out Cron for every shape
@@ -54,7 +55,6 @@
             'processUid'
         ],
         components: {
-            ModalInputDocumentList,
             crown,
             designerobjectsmenu,
             modalCreateDatabaseAdd,
@@ -73,7 +73,8 @@
             toolbar,
             toptoolbar,
             modalForms,
-            ModalInputDocumentList
+            ModalInputDocumentList,
+            ModalTriggersList
         },
         data() {
             return {
@@ -134,14 +135,17 @@
             },
             openTitleDialog(key){
                 switch (key) {
-                    case 'output-documents':
-                        this.modalComponent = 'modal-output-documents';
-                        break;
                     case 'forms':
                         this.modalComponent = 'modal-forms';
                         break;
                     case 'input-documents':
                         this.modalComponent = 'modal-input-document-list';
+                        break;
+                    case 'output-documents':
+                        this.modalComponent = 'modal-output-documents';
+                        break;
+                    case 'triggers':
+                        this.modalComponent = 'modal-triggers-list';
                         break;
                     default:
                         alert(key + ' Behavior TBD')
