@@ -42,16 +42,19 @@
     //Modal list
     import modalForms from "./components/modalList/modal-forms-list"
     import modalOutputDocuments from "./components/modalList/modal-output-documents"
+    import ModalInputDocumentList from "./components/modalList/modal-input-document-list";
 
 
     // This is out Cron for every shape
     import crown from "./components/crown"
     import actions from "./actions"
+
     export default {
         props: [
             'processUid'
         ],
         components: {
+            ModalInputDocumentList,
             crown,
             designerobjectsmenu,
             modalCreateDatabaseAdd,
@@ -69,7 +72,8 @@
             svgcanvas,
             toolbar,
             toptoolbar,
-            modalForms
+            modalForms,
+            ModalInputDocumentList
         },
         data() {
             return {
@@ -135,6 +139,9 @@
                         break;
                     case 'forms':
                         this.modalComponent = 'modal-forms';
+                        break;
+                    case 'input-documents':
+                        this.modalComponent = 'modal-input-document-list';
                         break;
                     default:
                         alert(key + ' Behavior TBD')
