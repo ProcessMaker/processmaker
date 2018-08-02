@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Model\Role;
 use ProcessMaker\Transformers\RoleTransformer;
-
+use Illuminate\Validation\Validator;
 
 /**
  * Controller that handles all Roles API endpoints
@@ -68,12 +68,7 @@ class RolesController extends Controller
 
     public function create(Request $request)
     {
-        $data = $request->validate([
-            'name' => 'required|max:255',
-            'code' => 'unique:roles,code|required|max:255',
-            'description' => 'max:255',
-            'status' => 'required|in:ACTIVE,DISABLED'
-        ]);
+        $data = $request->validate(Role::rules());
         $role = Role::create($data);
         $role->refresh();
         return fractal($role, new RoleTransformer())->respond();
@@ -88,13 +83,16 @@ class RolesController extends Controller
     */
     public function update(Request $request, $uid)
     {
+      $request->validate(Role::rules());
+
       $role = Role::where('uid', $uid)->firstOrFail();
-      $role->name=$request->get('name', 'required|max:255');
-      $role->code=$request->get('code', 'unique:roles,code|required|max:255');
-      $role->description=$request->get('description', 'max:255');
-      $role->status=$request->get('status', 'required|in:ACTIVE,DISABLED');
+      $role->name=$request->get('name');
+      $role->code=$request->get('code');
+      $role->description=$request->get('description');
+      $role->status=$request->get('status');
+
       $role->save();
-      $role->refresh();
+
       return fractal($role, new RoleTransformer())->respond();
 
     }
