@@ -199,20 +199,13 @@ class RolesTest extends ApiTestCase
                 'status' => ['The selected status is invalid.']
             ]
         ]);
-        // Test for duplicate
-        $existingRole = factory(\ProcessMaker\Model\Role::class)->create([
-            'code' => 'TESTROLE'
-        ]);
         $response = $this->api('post', self::API_TEST_ROLES, [
             'name' => 'Test Conflict Role',
-            'code' => 'TESTROLE',
+            'code' => app()->make('Faker\Generator')->text(500),
             'status' => 'ACTIVE'
         ]);
         $response->assertJson([
-            'message' => 'The given data was invalid.',
-            'errors' => [
-                'code' => ['The code has already been taken.'],
-            ]
+            'message' => 'The given data was invalid.'
         ]);
     }
 
