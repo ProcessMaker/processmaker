@@ -16,7 +16,7 @@ export default class extends Flow {
      * Render the Flow
      */
     render() {
-        this.shape = new joint.shapes.standard.Link()
+        this.shape = new joint.shapes.standard.Link({id: this.options.id})
         this.shape.vertices(this.formatWayPoints(this.options.wayPoints))
         this.setSource(this.options.source)
         this.setTarget(this.options.target)

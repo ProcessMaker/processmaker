@@ -11,8 +11,15 @@ function updateParticipant(data, elements) {
     }
 }
 
-function updateShape(payload, BPMNProcess, BPMNCollaboration, BPMNDiagram, BPMNDefinitions) {
-    BPMNDiagram.updateElement(payload.id, "Bounds", payload.bounds)
+/**
+ * Function to update shape
+ * @param data
+ * @param elements
+ */
+function updateShape(data, elements) {
+    if (elements[data.id] && data.bounds) {
+        elements[data.id].diagram.elements[0].attributes = data.bounds
+    }
 }
 
 /**
@@ -58,12 +65,8 @@ function createParticipant(data, elements, arrayElements, processes, collaborati
  * @param arrayElements
  * @param processes
  */
-function createShape(payload, BPMNProcess, BPMNCollaboration, BPMNDiagram, BPMNDefinitions) {
-    let eventDefinition = payload.eventDefinition ? createEventDefinition(payload.eventDefinition) : null
-
-    BPMNDiagram.createElement(payload)
-    BPMNProcess.createElement(payload)
-    /*let eventDefinition = data.eventDefinition ? createEventDefinition(data.eventDefinition) : null
+function createShape(data, elements, arrayElements, processes) {
+    let eventDefinition = data.eventDefinition ? createEventDefinition(data.eventDefinition) : null
     let arrEvent = eventDefinition ? [eventDefinition] : []
     let diagram = {
         "type": "element",
@@ -89,7 +92,7 @@ function createShape(payload, BPMNProcess, BPMNCollaboration, BPMNDiagram, BPMND
         process
     }
     arrayElements.push(diagram)
-    processes[0].elements.push(process)*/
+    processes[0].elements.push(process)
 }
 
 /**
@@ -138,8 +141,44 @@ function createFlow(data, elements, arrayElements, processes) {
     processes[0].elements.push(process)
 }
 
-function updateFlow(payload, BPMNProcess, BPMNCollaboration, BPMNDiagram, BPMNDefinitions) {
-    BPMNDiagram.updateEdge(payload.id, payload)
+/**
+ * Function to update flow in model
+ * @param data
+ * @param elements
+ */
+function updateFlow(data, elements) {
+    if (elements[data.id]) {
+        elements[data.id].process.attributes = {
+            "id": data.id,
+            "sourceRef": data.sourceRef,
+            "targetRef": data.targetRef
+        }
+
+        elements[data.id].diagram.attributes = {
+            "id": data.id + "_di",
+            "bpmnElement": data.id
+        }
+
+        elements[data.id].diagram.elements = createBounds(data.bounds)
+    }
+}
+
+/**
+ * Function to return object bounds
+ * @param data
+ * @returns {Array}
+ */
+function createBounds(data) {
+    let bounds = []
+    _.each(data, (value) => {
+        bounds.push({
+            "type": "element",
+            "name": "di:waypoint",
+            "attributes": value,
+            "elements": []
+        })
+    })
+    return bounds
 }
 
 export default {

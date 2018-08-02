@@ -86,10 +86,8 @@
             };
         },
         created(){
-            debugger
         },
         mounted (){
-            debugger
             this.fetch()
         },
         methods: {
