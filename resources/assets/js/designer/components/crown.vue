@@ -69,7 +69,6 @@
              * Method for remove the Selected Shape
              */
             showListForm (ev){
-                debugger
                 EventBus.$emit("open-add-dialog", "formslist");
             },
             /**
