@@ -39,7 +39,9 @@
     import modalMessageTypes from "./components/modals/modal-message-types";
     import modalOutputDocuments from "./components/modals/modal-output-documents"
     import modalFormsList from "./components/modals/modal-forms-list"
-    import modalForms from "./components/modals/modal-forms"
+
+    //Modal list
+    import modalForms from "./components/modalList/modal-forms-list"
 
     // This is out Cron for every shape
     import crown from "./components/crown"
