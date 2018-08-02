@@ -1,7 +1,7 @@
 <template>
     <div class="notifications">
         <a class="count-info" data-toggle="dropdown" href="#" aria-expanded="false">
-            <i class="fas fa-bell fa-2x"></i>
+            <i class="fas fa-bell fa-lg font-size-23"></i>
             <b-badge pill variant="danger" v-show="messages.length>0">{{messages.length}}</b-badge>
         </a>
         <ul class="dropdown-menu dropdown-alerts">
@@ -83,11 +83,11 @@ export default {
   color: #788793;
 }
 .count-info .badge {
-  font-size: 0.6em;
-  padding: 2px 5px;
+  font-size: 10px;
+  padding: 2px 3px;
   position: absolute;
-  right: 0.5em;
-  top: 1em;
+  right: 10px;
+  top: 12px;
 }
 .arrow {
   -webkit-transform: rotate(45deg);
@@ -125,6 +125,9 @@ export default {
 }
 .font-size-16 {
   font-size: 16px;
+}
+.font-size-23 {
+  font-size: 23px;
 }
 .font-weight {
   font-weight: 200;
