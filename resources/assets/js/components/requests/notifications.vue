@@ -9,27 +9,27 @@
                 <div class="arrow-container"><div class="arrow"></div></div>
             </li>
             <li class="dropdown-item">
-                <strong>New Tasks</strong>
+                <h4 class="mb-3">New Tasks</h4>
             </li>
-            <li v-for="task in messages" class="dropdown-item">
-                <div>
-                    <a v-bind:href="task.url" @click.stop="remove(task)" target="_blank">
-                        {{task.name}}
-                    </a>
-                    <small class="float-right">{{formatDateTime(task.dateTime)}}</small>
+            <li v-for="task in messages" class="dropdown-item font-weight">
+                <div class="mb-1">
+                  <small class="float-right task-meta mt-1">{{formatDateTime(task.dateTime)}}</small>
+                  <a class="text-primary font-size-16" v-bind:href="task.url" @click.stop="remove(task)" target="_blank">
+                    <span>{{task.name}}</span> 
+                  </a>
                 </div>
                 <div>
-                    {{task.processName}}
+                  <span class="text-secondary">{{task.processName}}</span> 
                 </div>
                 <div>
-                    {{task.userName}}
+                  <span class="text-secondary">{{task.userName}}</span>
                 </div>
+                <hr id="divider">
             </li>
-            <li class="dropdown-divider"></li>
             <li class="dropdown-item">
-                <div class="link-block">
+                <div class="link-block mt-2 mb-2">
                     <a href="/task">
-                        VIEW ALL TASKS
+                       <span class="text-uppercase font-size-16 font-weight">view ALL TASKS</span> 
                     </a>
                 </div>
             </li>
@@ -68,10 +68,10 @@ export default {
 
 <style lang="scss" scoped>
 .dropdown-menu {
-  right: -28px;
-  margin-top: 16px;
+  right: 2px;
+  margin-top: -2px;
   left: auto;
-  width: 400px;
+  width: 300px;
   border-radius: 2px;
   border: none;
   background-color: #ffffff;
@@ -92,7 +92,7 @@ export default {
 .arrow {
   -webkit-transform: rotate(45deg);
   transform: rotate(45deg);
-  width: 25px;
+  width: 10px;
   height: 25px;
   /* border: 1px solid #222222; */
   -webkit-box-shadow: 0px 0px 3px 0px rgba(150, 150, 150, 0.5);
@@ -101,7 +101,7 @@ export default {
   position: absolute;
   top: 8px;
   background-color: white;
-  right: 38px;
+  right: 25px;
 }
 .arrow-container {
   position: absolute;
@@ -111,9 +111,22 @@ export default {
   right: 0px;
   top: -16px;
 }
-
+#divider {
+  margin-bottom: 0px;
+  margin-top: 8px;
+}
 .notifications {
   position: relative;
   padding: 16px;
+}
+.task-meta {
+  color: #788793;
+  font-size: 11px;
+}
+.font-size-16 {
+  font-size: 16px;
+}
+.font-weight {
+  font-weight: 200;
 }
 </style>
