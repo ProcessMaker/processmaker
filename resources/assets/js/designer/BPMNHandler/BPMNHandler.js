@@ -270,7 +270,8 @@ export default class BPMNHandler {
             type: name.length == 1 ? name[0].toLowerCase() : name[1].toLowerCase(),
             id: di.attributes.bpmnElement,
             bounds: attr,
-            eventDefinition
+            eventDefinition,
+            attributes: bpmn.attributes
         }
     }
 

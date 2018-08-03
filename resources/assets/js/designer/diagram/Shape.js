@@ -24,7 +24,8 @@ export class Shape {
         this.options = Object.assign({}, this.options, {
             id: options.id,
             type: options.type,
-            eventDefinition: options.eventDefinition
+            eventDefinition: options.eventDefinition,
+            attributes: options.attributes
         })
         return this
     }
