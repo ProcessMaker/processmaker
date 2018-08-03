@@ -3,7 +3,8 @@ export const bpmn = {
     bpmn: {
         shape: {
             update: x => x,
-            create: x => x
+            create: x => x,
+            assignTask: x => x
         },
         participant: {
             update: x => x,

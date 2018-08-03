@@ -22,6 +22,22 @@ export default class BPMNProcess {
         this.data.elements.push(process)
     }
 
+    updateElement(data) {
+        let element = this.findElement(data.id)
+        Object.assign(element.attributes, data.attributes)
+    }
+
+    findElement(idBpmnElement) {
+        let element
+        _.each(this.data.elements, (value) => {
+            if (value.attributes.id == idBpmnElement) {
+                element = value
+                return false
+            }
+        })
+        return element
+    }
+
     createFlow(data) {
         let process = {
             "type": "element",

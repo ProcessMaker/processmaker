@@ -338,7 +338,6 @@ export default class BPMNHandler {
      * @returns {string}
      */
     toXML() {
-        debugger
         var options = {
             compact: false,
             ignoreComment: true,

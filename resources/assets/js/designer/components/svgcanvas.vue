@@ -43,6 +43,7 @@
             EventBus.$on(actions.designer.flow.create().type, (value) => this.createFlow(value))
             EventBus.$on(actions.designer.shape.remove().type, (value) => this.removeElement(value))
             EventBus.$on(actions.bpmn.save().type, (value) => this.saveBPMN(value))
+            EventBus.$on(actions.bpmn.shape.assignTask().type, (value) => this.assignTask(value))
         },
         methods: {
             /**
@@ -118,6 +119,9 @@
                     x: ev.x - this.diagramCoordinates.x,
                     y: ev.y - this.diagramCoordinates.y
                 })
+            },
+            assignTask(ev){
+                this.builder.assignTask(ev)
             },
             /**
              * Listener in pointerDown event

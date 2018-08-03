@@ -45,6 +45,10 @@ export class Shape {
         this.options.bounds = Object.assign({}, this.options.bounds, bounds);
     }
 
+    configAttributes(attr) {
+        this.options.attributes = Object.assign({}, this.options.attributes, attr);
+    }
+
     updateBounds(bounds) {
         this.options.bounds = Object.assign({}, this.options.bounds, bounds);
         this.updateBpmn()

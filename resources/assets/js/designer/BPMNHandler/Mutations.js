@@ -52,7 +52,6 @@ function createShape(payload, BPMNProcess, BPMNCollaboration, BPMNDiagram, BPMND
 }
 
 function createFlow(payload, BPMNProcess, BPMNCollaboration, BPMNDiagram, BPMNDefinitions) {
-    debugger
     BPMNDiagram.createEdge(payload)
     BPMNProcess.createFlow(payload)
 }
@@ -62,7 +61,8 @@ function updateFlow(payload, BPMNProcess, BPMNCollaboration, BPMNDiagram, BPMNDe
 }
 
 function updateShape(payload, BPMNProcess, BPMNCollaboration, BPMNDiagram, BPMNDefinitions) {
-    BPMNDiagram.updateElement(payload.id, "Bounds", payload.bounds)
+    BPMNDiagram.updateElement(payload.id, payload)
+    BPMNProcess.updateElement(payload)
 }
 
 export default {

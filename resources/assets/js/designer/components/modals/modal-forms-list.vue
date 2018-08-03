@@ -28,6 +28,8 @@
 
 <script>
     import FilterBar from "../../../components/FilterBar";
+    import actions from "../../actions"
+    import EventBus from "../../lib/event-bus"
 
     Vue.component('filter-bar', FilterBar);
     import Vuetable from "vuetable-2/src/components/Vuetable";
@@ -83,6 +85,8 @@
                 let formRef = data.uid;
                 //Hide popup
                 this.$refs.modal.hide()
+                let action = actions.bpmn.shape.assignTask({formRef})
+                EventBus.$emit(action.type, action.payload)
             },
             fetch() {
                 this.loading = true;

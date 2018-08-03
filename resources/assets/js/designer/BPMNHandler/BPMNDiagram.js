@@ -37,14 +37,13 @@ export default class BPMNDiagram {
      * @param keyOptions ex:"Bounds"
      * @param options - value to update
      */
-    updateElement(idBpmnElement, keyOptions, options) {
+    updateElement(idBpmnElement, options) {
         let bpmnElement = this.findElement(idBpmnElement)
-        let option = this.findOptionInElement(bpmnElement, keyOptions)
+        let option = this.findOptionInElement(bpmnElement, "Bounds")
         option.attributes = options
     }
 
     updateEdge(idBpmnElement, options) {
-        debugger
         let bpmnElement = this.findElement(idBpmnElement)
         this.deleteOptions(bpmnElement, "waypoint")
         let points = this.createBounds(options.bounds, this.BPMN.BPMNDefinitions.getdi())
