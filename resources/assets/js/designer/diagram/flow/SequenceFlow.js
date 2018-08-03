@@ -10,6 +10,7 @@ export default class extends Flow {
         this.paper = paper
         this.shape = null
         this.options = options
+        this.options.type = "sequenceFlow"
     }
 
     /**

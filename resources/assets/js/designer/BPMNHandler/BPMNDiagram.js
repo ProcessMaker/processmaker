@@ -94,6 +94,20 @@ export default class BPMNDiagram {
         this.addBPMNElement(diagram)
     }
 
+    createEdge(data) {
+        let points = this.createBounds(data.bounds, this.BPMN.BPMNDefinitions.getdi())
+        let diagram = {
+            "type": "element",
+            "name": this.BPMN.BPMNDefinitions.getdi() + ":BPMNEdge",
+            "attributes": {
+                "id": data.id + "_di",
+                "bpmnElement": data.id
+            },
+            "elements": points
+        }
+        this.addBPMNElement(diagram)
+    }
+
     addBPMNElement(bpmnElement) {
         let element
         _.each(this.data.elements, (value) => { // Find in Planes

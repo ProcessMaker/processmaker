@@ -47,7 +47,7 @@ export default class BPMNHandler {
     }
 
     createBPMNProcess() {
-        this.BPMNProcess = new BPMNProcess(this.findProcess(), {
+        this.BPMNProcess = new BPMNProcess(this.findProcesses(), {
             BPMNDefinitions: this.BPMNDefinitions,
             BPMNCollaboration: this.BPMNCollaboration,
             BPMNDiagram: this.BPMNDiagram
@@ -109,8 +109,8 @@ export default class BPMNHandler {
             this.createBPMNDefinitions()
             this.createBPMNCollaboration()
             this.createBPMNDiagram()
+            this.createBPMNProcess()
         }
-        debugger
         return this.bpmnDesigner
     }
 
@@ -163,6 +163,14 @@ export default class BPMNHandler {
         return _.filter(this.bpmn.elements[0].elements, (value) => {
             return value.name.indexOf("process") >= 0 ? true : false
         })
+    }
+
+
+    findProcesses() {
+        let processes = _.find(this.bpmn.elements[0].elements, (value) => {
+            return value.name.indexOf("process") >= 0 ? true : false
+        })
+        return processes
     }
 
     /**
