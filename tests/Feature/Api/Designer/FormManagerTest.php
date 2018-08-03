@@ -66,6 +66,7 @@ class FormManagerTest extends ApiTestCase
         $response->assertStatus(422);
         $this->assertArrayHasKey('message', $response->json());
     }
+
     /**
      * Create form successfully
      */
@@ -262,15 +263,15 @@ class FormManagerTest extends ApiTestCase
     {
         //load Form
         $url = self::API_TEST_FORM . $this->process->uid . '/form/' . factory(Form::class)->create([
-            'process_id' => $this->process->id,
-            'content' => (object)[
-                'field' => 'field 1',
-                'field 2' => (object)[
-                    'data1' => 'text',
-                    'data2' => 'text 2'
+                'process_id' => $this->process->id,
+                'content' => (object)[
+                    'field' => 'field 1',
+                    'field 2' => (object)[
+                        'data1' => 'text',
+                        'data2' => 'text 2'
+                    ]
                 ]
-            ]
-        ])->uid;
+            ])->uid;
         $response = $this->api('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);

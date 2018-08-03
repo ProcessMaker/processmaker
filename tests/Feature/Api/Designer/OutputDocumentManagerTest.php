@@ -214,12 +214,12 @@ class OutputDocumentManagerTest extends ApiTestCase
     public function testListOutputDocumentWithQueryParameter()
     {
         $title = 'search Title Output document';
-        factory(OutputDocument::class)->create([
+        factory(Document::class)->create([
             'title' => $title,
             'process_id' => $this->process->id
         ]);
 
-        //List Form with filter option
+        //List Output Document with filter option
         $perPage = Faker::create()->randomDigitNotNull;
         $query = '?page=1&per_page=' . $perPage . '&order_by=description&order_direction=DESC&filter=' . urlencode($title);
         $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-documents?' . $query;

@@ -161,7 +161,7 @@ class InputDocumentManagerTest extends ApiTestCase
             'process_id' => $this->process->id
         ]);
 
-        //List Form with filter option
+        //List input Document with filter option
         $perPage = Faker::create()->randomDigitNotNull;
         $query = '?page=1&per_page=' . $perPage . '&order_by=description&order_direction=DESC&filter=' . urlencode($title);
         $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-documents?' . $query;
