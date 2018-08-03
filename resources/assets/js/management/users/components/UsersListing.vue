@@ -13,7 +13,7 @@
     </vuetable>
     <pagination single="User" plural="Users" :perPageSelectEnabled="true" @changePerPage="changePerPage" @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
     <b-modal ref="editItem" size="md" centered title="Create New Role">
-      <h1>test</h1>
+      <h1>{{username}}</h1>
     <template slot="modal-footer">
       <b-button @click="hideEditModal" class="btn-outline-secondary btn-md">
         Cancel
@@ -95,7 +95,13 @@ export default {
           name: "__slot:actions",
           title: ""
         }
-      ]
+      ],
+      username: "",
+      firstname: "",
+      lastname: "",
+      uid: "",
+      status: "",
+      curIndex: ""
     };
   },
   methods: {
@@ -160,7 +166,6 @@ export default {
         )
         .then(response => {
           this.data = this.transform(response.data);
-          console.log(this.data);
           this.loading = false;
         });
     }
