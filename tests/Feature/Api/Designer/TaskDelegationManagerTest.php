@@ -125,7 +125,7 @@ class TaskDelegationManagerTest extends ApiTestCase
         ]);
         //List Task with parameters pages and sort
         $perPage = Faker::create()->randomDigitNotNull;
-        $query = '?current_page=2&per_page=' . $perPage . '&sort_by=delegate_date&sort_order=DESC';
+        $query = '?page=2&per_page=' . $perPage . '&order_by=delegate_date&order_direction=DESC';
         $url = self::API_ROUTE_TASK . $query;
         $response = $this->api('GET', $url);
         //Validate the answer is correct
@@ -164,7 +164,7 @@ class TaskDelegationManagerTest extends ApiTestCase
         factory(Delegation::class, 5)->create();
         //List Delegations with filter options
         $perPage = Faker::create()->randomDigitNotNull;
-        $query = '?current_page=1&per_page=' . $perPage . '&sort_by=delegate_date&sort_order=DESC&filter=' . urlencode($filter);
+        $query = '?page=1&per_page=' . $perPage . '&order_by=delegate_date&order_direction=DESC&filter=' . urlencode($filter);
         $url = self::API_ROUTE_TASK . $query;
         $response = $this->api('GET', $url);
         //Validate the answer is correct
@@ -200,7 +200,7 @@ class TaskDelegationManagerTest extends ApiTestCase
         factory(Delegation::class, 5)->create();
         //List Delegations with filter options
         $perPage = Faker::create()->randomDigitNotNull;
-        $query = '?current_page=1&per_page=' . $perPage . '&sort_by=delegate_date&sort_order=DESC&filter=' . urlencode($this->task->title);
+        $query = '?page=1&per_page=' . $perPage . '&order_by=delegate_date&order_direction=DESC&filter=' . urlencode($this->task->title);
         $url = self::API_ROUTE_TASK . $query;
         $response = $this->api('GET', $url);
         //Validate the answer is correct
@@ -241,7 +241,7 @@ class TaskDelegationManagerTest extends ApiTestCase
         factory(Delegation::class, 5)->create();
         //List Delegations with filter options
         $perPage = Faker::create()->randomDigitNotNull;
-        $query = '?current_page=1&per_page=' . $perPage . '&sort_by=delegate_date&sort_order=DESC&filter=' . urlencode($title);
+        $query = '?page=1&per_page=' . $perPage . '&order_by=delegate_date&order_direction=DESC&filter=' . urlencode($title);
         $url = self::API_ROUTE_TASK . $query;
         $response = $this->api('GET', $url);
         //Validate the answer is correct

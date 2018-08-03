@@ -25,10 +25,10 @@ class FormController
     {
         $options = [
             'filter' => $request->input('filter', ''),
-            'current_page' => $request->input('current_page', 1),
+            'current_page' => $request->input('page', 1),
             'per_page' => $request->input('per_page', 10),
-            'sort_by' => $request->input('sort_by', 'title'),
-            'sort_order' => $request->input('sort_order', 'ASC'),
+            'sort_by' => $request->input('order_by', 'title'),
+            'sort_order' => $request->input('order_direction', 'ASC'),
         ];
         $response = FormManager::index($process, $options);
         return fractal($response, new FormTransformer())->respond();
