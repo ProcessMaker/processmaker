@@ -37,13 +37,19 @@
     import modalPublicFileAdd from "./components/modals/modal-public-file-add";
     import modalVariablesAdd from "./components/modals/modal-variables-add";
     import modalMessageTypes from "./components/modals/modal-message-types";
-    import modalOutputDocuments from "./components/modals/modal-output-documents"
     import modalFormsList from "./components/modals/modal-forms-list"
-    import modalForms from "./components/modals/modal-forms"
+
+    //Modal list
+    import modalForms from "./components/modalList/modal-forms-list"
+    import modalOutputDocuments from "./components/modalList/modal-output-documents"
+    import ModalInputDocumentList from "./components/modalList/modal-input-document-list";
+    import ModalTriggersList from "./components/modalList/modal-triggers-list";
+
 
     // This is out Cron for every shape
     import crown from "./components/crown"
     import actions from "./actions"
+
     export default {
         props: [
             'processUid'
@@ -66,7 +72,9 @@
             svgcanvas,
             toolbar,
             toptoolbar,
-            modalForms
+            modalForms,
+            ModalInputDocumentList,
+            ModalTriggersList
         },
         data() {
             return {
@@ -127,11 +135,17 @@
             },
             openTitleDialog(key){
                 switch (key) {
+                    case 'forms':
+                        this.modalComponent = 'modal-forms';
+                        break;
+                    case 'input-documents':
+                        this.modalComponent = 'modal-input-document-list';
+                        break;
                     case 'output-documents':
                         this.modalComponent = 'modal-output-documents';
                         break;
-                    case 'forms':
-                        this.modalComponent = 'modal-forms';
+                    case 'triggers':
+                        this.modalComponent = 'modal-triggers-list';
                         break;
                     default:
                         alert(key + ' Behavior TBD')

@@ -3,14 +3,12 @@
 namespace ProcessMaker\Managers;
 
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Exception\DoesNotBelongToProcessException;
 use ProcessMaker\Exception\ValidationException;
 use ProcessMaker\Model\Form;
 use ProcessMaker\Model\Process;
 use Ramsey\Uuid\Uuid;
-use stdClass;
 
 class FormsManager
 {
@@ -25,10 +23,6 @@ class FormsManager
      */
     public function index(Process $process, array $options): LengthAwarePaginator
     {
-        $start = $options['current_page'];
-        Paginator::currentPageResolver(function () use ($start) {
-            return $start;
-        });
         $query = Form::where('process_id', $process->id);
         $filter = $options['filter'];
         if (!empty($filter)) {

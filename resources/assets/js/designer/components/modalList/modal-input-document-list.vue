@@ -1,8 +1,8 @@
 <template>
-    <b-modal class="form-docs" ref="modal" size="lg" @hidden="onHidden" title="Forms" hide-footer>
+    <b-modal class="input-docs" ref="modal" size="lg" @hidden="onHidden" title="Input Documents" hide-footer>
         <div class="form-group">
             <div class="d-flex justify-content-between">
-                <filter-bar></filter-bar>
+                <input v-model="filter" class="form-control  col-sm-3" placeholder="Search..." @keyup="fetch">
                 <button type="submit" class="btn btn-secondary"><i class="fas fa-plus fa-md"></i> Create</button>
             </div>
             <div class="data-table">
@@ -21,7 +21,8 @@
                         </div>
                     </template>
                 </vuetable>
-                <pagination single="Form" plural="Forms" :perPageSelectEnabled="true" @changePerPage="changePerPage"
+                <pagination single="Input Document" plural="Input Documents" :perPageSelectEnabled="true"
+                            @changePerPage="changePerPage"
                             @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
             </div>
         </div>
@@ -29,28 +30,24 @@
 </template>
 
 <script>
-    import FilterBar from "../../../components/FilterBar";
-
-    Vue.component('filter-bar', FilterBar);
-    import Vuetable from "vuetable-2/src/components/Vuetable";
-    import datatableMixin from "../../../components/common/mixins/datatable";
+    import dataTableMixin from "../../../components/common/mixins/datatable";
     import Pagination from "../../../components/common/Pagination";
 
     export default {
         components: {Pagination},
-        mixins: [datatableMixin],
-        props: ['processUid', 'filter'],
+        mixins: [dataTableMixin],
+        props: ['processUid'],
         data() {
             return {
                 // form models here
-                'messageFieldName': "Name",
                 items: [],
                 orderBy: "title",
+                filter: '',
 
                 sortOrder: [
                     {
-                        field: "ID",
-                        sortField: "id",
+                        field: "title",
+                        sortField: "title",
                         direction: "asc"
                     }
                 ],
@@ -81,12 +78,12 @@
                 this.$refs.modal.hide()
             },
             onEdit(data, index) {
-                window.location.href = '/designer/' + this.processUid + '/form/' + data.uid;
+                //define action
             },
             onDelete(data, index) {
                 const CancelToken = ProcessMaker.apiClient.CancelToken;
                 ProcessMaker.apiClient
-                    .delete('process/' + this.processUid + '/form/' + data.uid,
+                    .delete('process/' + this.processUid + '/input-document/' + data.uid,
                         {
                             cancelToken: new CancelToken(c => {
                                 this.cancelToken = c;
@@ -105,16 +102,16 @@
                 }
                 const CancelToken = ProcessMaker.apiClient.CancelToken;
                 ProcessMaker.apiClient
-                    .get('process/' + this.processUid + '/forms',
-                        "roles?page=" +
+                    .get('process/' + this.processUid +
+                        '/input-documents?page=' +
                         this.page +
-                        "&per_page=" +
+                        '&per_page=' +
                         this.perPage +
-                        "&filter=" +
+                        '&filter=' +
                         this.filter +
-                        "&order_by=" +
+                        '&order_by=' +
                         this.orderBy +
-                        "&order_direction=" +
+                        '&order_direction=' +
                         this.orderDirection,
                         {
                             cancelToken: new CancelToken(c => {

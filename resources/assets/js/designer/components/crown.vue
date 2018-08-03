@@ -43,7 +43,6 @@
     import EventBus from "../lib/event-bus"
 
     export default {
-        components: [],
         data() {
             return {
                 dx: 3,
