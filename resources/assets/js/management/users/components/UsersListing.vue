@@ -106,10 +106,11 @@ export default {
       }
     },
     showEditModal(data, index) {
-      this.name = this.data.data[index].name;
-      this.code = this.data.data[index].code;
+      this.username = this.data.data[index].username;
+      this.firstname = this.data.data[index].firstname;
+      this.lastname = this.data.data[index].lastname;
       this.status = this.data.data[index].status;
-      this.description = this.data.data[index].description;
+      this.role = this.data.data[index].role;
       this.uid = this.data.data[index].uid;
       this.curIndex = index;
       this.$refs.editItem.show();
@@ -159,6 +160,7 @@ export default {
         )
         .then(response => {
           this.data = this.transform(response.data);
+          console.log(this.data);
           this.loading = false;
         });
     }
