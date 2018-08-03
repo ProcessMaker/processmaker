@@ -12,6 +12,17 @@
       </template>  
     </vuetable>
     <pagination single="User" plural="Users" :perPageSelectEnabled="true" @changePerPage="changePerPage" @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
+    <b-modal ref="editItem" size="md" centered title="Create New Role">
+      <h1>test</h1>
+    <template slot="modal-footer">
+      <b-button @click="hideEditModal" class="btn-outline-secondary btn-md">
+        Cancel
+      </b-button>
+      <b-button class="btn-secondary text-light btn-md">
+        Save
+      </b-button>
+      </template>
+    </b-modal>
    </div>
 </template>
 
@@ -51,43 +62,61 @@ export default {
           sortField: "status",
           callback: this.formatStatus
         },
-         {
+        {
           title: "Role",
           name: "role",
           sortField: "role"
         },
         {
-          title: 'Login',
+          title: "Login",
           name: "last_login",
           sortField: "last_login",
           callback: this.formatDate
         },
         {
-          title: 'Expires On',
-          name: 'expires_at',
-          sortField: 'expires_at',
+          title: "Expires On",
+          name: "expires_at",
+          sortField: "expires_at",
           callback: this.formatDate
         },
         {
-          title: 'Created At',
-          name: 'created_at',
-          sortField: 'created_at',
+          title: "Created At",
+          name: "created_at",
+          sortField: "created_at",
           callback: this.formatDate
         },
-         {
-          title: 'Updated At',
-          name: 'updated_at',
-          sortField: 'updated_at',
+        {
+          title: "Updated At",
+          name: "updated_at",
+          sortField: "updated_at",
           callback: this.formatDate
         },
         {
           name: "__slot:actions",
           title: ""
         }
-     ]
+      ]
     };
   },
   methods: {
+    onAction(action, data, index) {
+      switch (action) {
+        case "edit-item":
+          this.showEditModal(data, index);
+      }
+    },
+    showEditModal(data, index) {
+      this.name = this.data.data[index].name;
+      this.code = this.data.data[index].code;
+      this.status = this.data.data[index].status;
+      this.description = this.data.data[index].description;
+      this.uid = this.data.data[index].uid;
+      this.curIndex = index;
+      this.$refs.editItem.show();
+    },
+    hideEditModal() {
+      this.$refs.editItem.hide();
+    },
     formatStatus(value) {
       value = value.toLowerCase();
       let response = '<i class="fas fa-circle ' + value + '"></i> ';
@@ -103,10 +132,12 @@ export default {
 
       // Create full name field
       // Iterate through each data.data row and create one
-      for(let record of data.data) {
-        record['full_name'] = [record['firstname'], record['lastname']].join(' ');
+      for (let record of data.data) {
+        record["full_name"] = [record["firstname"], record["lastname"]].join(
+          " "
+        );
         // put in placeholder for case count
-        record['task_count'] = '#'
+        record["task_count"] = "#";
       }
       return data;
     },
