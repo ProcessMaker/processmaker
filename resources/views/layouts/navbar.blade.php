@@ -31,8 +31,8 @@
 <style lang="scss" scoped>
   .seperator{ 
     border-left: 1px solid rgb(227,231,236) ;
-    height: 34px;  
-    margin-top: 15px;  
+    height: 30px;  
+    margin-top: 17px;  
 }
 .nav-item {
   padding-top: 5px;
