@@ -13,7 +13,28 @@
     </vuetable>
     <pagination single="User" plural="Users" :perPageSelectEnabled="true" @changePerPage="changePerPage" @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
     <b-modal ref="editItem" size="md" centered title="Create New Role">
-      <h1>{{username}}</h1>
+      <form>
+      <div class="form-group">
+        <label for="edit-first-name">first name</label>
+        <input id="edit-first-name" class="form-control" v-model="firstname">
+      </div>
+      <div class="form-group">
+        <label for="edit-last-name">last Name</label>
+        <input id="edit-last-name" class="form-control" v-model="lastname">
+      </div>
+      <div class="form-group">
+        <label for="edit-username">username</label>
+        <input id="edit-username" class="form-control" v-model="username">
+      </div>
+      <div class="form-group">
+        <label for="add-user-status">Status</label>
+        <select class="form-control" id="add-user-status" v-model="status">
+          <option :value="status">{{status}}</option>
+          <option value="ACTIVE">Active</option>
+          <option value="DISABLED">Disabled</option>
+        </select>
+      </div>
+    </form>
     <template slot="modal-footer">
       <b-button @click="hideEditModal" class="btn-outline-secondary btn-md">
         Cancel
