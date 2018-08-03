@@ -12,12 +12,26 @@ class TriggerManager
      * Get a list of All triggers in a process.
      *
      * @param Process $process
+     * @param array $options
      *
      * @return LengthAwarePaginator
      */
-    public function index(Process $process): LengthAwarePaginator
+    public function index(Process $process, array $options): LengthAwarePaginator
     {
-        return Trigger::where('process_id', $process->id)->paginate(20);
+        $start = $options['current_page'];
+        $query = Trigger::where('process_id', $process->id);
+        $filter = $options['filter'];
+        if (!empty($filter)) {
+            $filter = '%' . $filter . '%';
+            $query->where(function ($query) use ($filter) {
+                $query->Where('title', 'like', $filter)
+                    ->orWhere('description', 'like', $filter)
+                    ->orWhere('type', 'like', $filter);
+            });
+        }
+        return $query->orderBy($options['sort_by'], $options['sort_order'])
+            ->paginate($options['per_page'])
+            ->appends($options);
     }
 
     /**

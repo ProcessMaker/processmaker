@@ -208,38 +208,38 @@ class OutputDocumentManagerTest extends ApiTestCase
     }
 
     /**
-     * List documents with query parameters
+     * Get a list of Output Document with parameters
      */
-    public function testListDocumentsWithQueryParameter()
+    public function testListOutputDocumentWithQueryParameter()
     {
-        //add Document to process
-        factory(Document::class, 11)->create([
+        $title = 'search Title Output document';
+        factory(Document::class)->create([
+            'title' => $title,
             'process_id' => $this->process->id
         ]);
 
-        //List Document with parameters pages and sort
-        $query = '?current_page=2&per_page=5&sort_by=description&sort_order=DESC';
-
-        $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-documents' . $query;
+        //List Output Document with filter option
+        $perPage = Faker::create()->randomDigitNotNull;
+        $query = '?page=1&per_page=' . $perPage . '&order_by=description&order_direction=DESC&filter=' . urlencode($title);
+        $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-documents?' . $query;
         $response = $this->api('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
-
         //verify structure paginate
         $response->assertJsonStructure([
             'data',
             'meta',
         ]);
         //verify response in meta
-        $this->assertEquals(11, $response->original->meta->total);
-        $this->assertEquals(5, $response->original->meta->count);
-        $this->assertEquals(5, $response->original->meta->per_page);
-        $this->assertEquals(2, $response->original->meta->current_page);
-        $this->assertEquals(3, $response->original->meta->total_pages);
+        $this->assertEquals(1, $response->original->meta->total);
+        $this->assertEquals(1, $response->original->meta->count);
+        $this->assertEquals($perPage, $response->original->meta->per_page);
+        $this->assertEquals(1, $response->original->meta->current_page);
+        $this->assertEquals(1, $response->original->meta->total_pages);
+        $this->assertEquals($title, $response->original->meta->filter);
         $this->assertEquals('description', $response->original->meta->sort_by);
         $this->assertEquals('DESC', $response->original->meta->sort_order);
         //verify structure of model
-        //Verify the structure
         $response->assertJsonStructure(['*' => self::STRUCTURE], $response->json('data'));
     }
 
@@ -256,7 +256,8 @@ class OutputDocumentManagerTest extends ApiTestCase
         ]);
 
         //List Document with filter option
-        $query = '?current_page=1&per_page=5&sort_by=description&sort_order=DESC&filter=' . urlencode($title);
+        $perPage = Faker::create()->randomDigitNotNull;
+        $query = '?page=1&per_page=' . $perPage . '&order_by=description&order_direction=DESC&filter=' . urlencode($title);
         $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-documents' . $query;
         $response = $this->api('GET', $url);
         //Validate the answer is correct
@@ -270,7 +271,7 @@ class OutputDocumentManagerTest extends ApiTestCase
         //verify response in meta
         $this->assertEquals(1, $response->original->meta->total);
         $this->assertEquals(1, $response->original->meta->count);
-        $this->assertEquals(5, $response->original->meta->per_page);
+        $this->assertEquals($perPage, $response->original->meta->per_page);
         $this->assertEquals(1, $response->original->meta->current_page);
         $this->assertEquals(1, $response->original->meta->total_pages);
         $this->assertEquals($title, $response->original->meta->filter);
