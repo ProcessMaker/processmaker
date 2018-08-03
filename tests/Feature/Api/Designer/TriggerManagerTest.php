@@ -135,6 +135,42 @@ class TriggerManagerTest extends ApiTestCase
     }
 
     /**
+     * Get a list of Form with parameters
+     */
+    public function testListTriggersWithQueryParameter()
+    {
+        $title = 'search Title trigger';
+        factory(Trigger::class)->create([
+            'title' => $title,
+            'process_id' => $this->process->id
+        ]);
+
+        //List Document with filter option
+        $perPage = Faker::create()->randomDigitNotNull;
+        $query = '?current_page=1&per_page=' . $perPage . '&order_by=description&order_direction=DESC&filter=' . urlencode($title);
+        $url = self::API_TEST_TRIGGER . $this->process->uid . '/triggers?' . $query;
+        $response = $this->api('GET', $url);
+        //Validate the answer is correct
+        $response->assertStatus(200);
+        //verify structure paginate
+        $response->assertJsonStructure([
+            'data',
+            'meta',
+        ]);
+        //verify response in meta
+        $this->assertEquals(1, $response->original->meta->total);
+        $this->assertEquals(1, $response->original->meta->count);
+        $this->assertEquals($perPage, $response->original->meta->per_page);
+        $this->assertEquals(1, $response->original->meta->current_page);
+        $this->assertEquals(1, $response->original->meta->total_pages);
+        $this->assertEquals($title, $response->original->meta->filter);
+        $this->assertEquals('description', $response->original->meta->sort_by);
+        $this->assertEquals('DESC', $response->original->meta->sort_order);
+        //verify structure of model
+        $response->assertJsonStructure(['*' => self::STRUCTURE], $response->json('data'));
+    }
+
+    /**
      * Get a trigger of a project.
      */
     public function testGetTrigger()
