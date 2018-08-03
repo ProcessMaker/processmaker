@@ -143,6 +143,7 @@ export class Builder {
         let selection = this.selection.pop()
         selection.configAttributes(options)
         selection.updateBpmn()
+        selection.hideCrown()
     }
 
     /**

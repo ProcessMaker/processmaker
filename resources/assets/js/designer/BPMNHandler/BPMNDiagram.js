@@ -40,7 +40,7 @@ export default class BPMNDiagram {
     updateElement(idBpmnElement, options) {
         let bpmnElement = this.findElement(idBpmnElement)
         let option = this.findOptionInElement(bpmnElement, "Bounds")
-        option.attributes = options
+        option.attributes = options.bounds
     }
 
     updateEdge(idBpmnElement, options) {
@@ -70,7 +70,7 @@ export default class BPMNDiagram {
         _.each(data, (value) => {
             bounds.push({
                 "type": "element",
-                "name": namespace + ":waypoint",
+                "name": "di:waypoint",
                 "attributes": value,
                 "elements": []
             })
@@ -81,7 +81,7 @@ export default class BPMNDiagram {
     createElement(data) {
         let diagram = {
             "type": "element",
-            "name": this.BPMN.BPMNDefinitions.getdi() + ":BPMNShape",
+            "name": this.BPMN.BPMNDefinitions.getbpmndi() + ":BPMNShape",
             "attributes": {"id": data.id + "_di", "bpmnElement": data.id},
             "elements": [{
                 "type": "element",
@@ -97,7 +97,7 @@ export default class BPMNDiagram {
         let points = this.createBounds(data.bounds, this.BPMN.BPMNDefinitions.getdi())
         let diagram = {
             "type": "element",
-            "name": this.BPMN.BPMNDefinitions.getdi() + ":BPMNEdge",
+            "name": this.BPMN.BPMNDefinitions.getbpmndi() + ":BPMNEdge",
             "attributes": {
                 "id": data.id + "_di",
                 "bpmnElement": data.id
