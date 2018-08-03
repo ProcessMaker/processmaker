@@ -21,10 +21,6 @@ class OutputDocumentManager
      */
     public function index(Process $process, array $options): LengthAwarePaginator
     {
-        $start = $options['current_page'];
-        Paginator::currentPageResolver(function () use ($start) {
-            return $start;
-        });
         $query = OutputDocument::where('process_id', $process->id);
         $filter = $options['filter'];
         if (!empty($filter)) {

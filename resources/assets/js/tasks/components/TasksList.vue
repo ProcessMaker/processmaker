@@ -84,7 +84,7 @@
         methods: {
             formatUid(token) {
                 let short = token.uid.split('-').pop();
-                let link = '/nayra/'
+                let link = '/tasks/'
                         + token.definition.id + '/'
                         + token.application.process.uid + '/'
                         + token.application.uid + '/'

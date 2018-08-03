@@ -86,7 +86,7 @@ class ActivityActivatedNotification extends Notification
             'dateTime' => $token->delegate_date->toIso8601String(),
             'uid' => $this->tokenUid,
             'url' => sprintf(
-                '/nayra/%s/%s/%s/%s',
+                '/tasks/%s/%s/%s/%s',
                 $this->tokenElement,
                 $this->processUid,
                 $this->instanceUid,

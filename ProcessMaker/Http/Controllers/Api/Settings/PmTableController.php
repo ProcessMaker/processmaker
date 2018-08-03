@@ -36,10 +36,10 @@ class PmTableController extends Controller
     {
         $options = [
             'filter' => $request->input('filter', ''),
-            'current_page' => $request->input('current_page', 1),
+            'current_page' => $request->input('page', 1),
             'per_page' => $request->input('per_page', 10),
-            'sort_by' => $request->input('sort_by', 'name'),
-            'sort_order' => $request->input('sort_order', 'ASC'),
+            'sort_by' => $request->input('order_by', 'name'),
+            'sort_order' => $request->input('order_direction', 'ASC'),
         ];
         $query = PmTable::where('type', 'PMTABLE');
 

@@ -31,6 +31,9 @@
             <div class="item-crown" @click="remove($event)">
                 <i id="trash" class="fas fa-trash-alt icrown" draggable="true"></i>
             </div>
+            <div class="item-crown" @click="showListForm($event)">
+                <i id="wpforms" class="fas fa-list-alt icrown" draggable="true"></i>
+            </div>
         </div>
     </div>
 </template>
@@ -38,6 +41,7 @@
 <script>
     import actions from "../actions"
     import EventBus from "../lib/event-bus"
+
     export default {
         data() {
             return {
@@ -59,6 +63,12 @@
             remove (ev){
                 let action = actions.designer.shape.remove()
                 EventBus.$emit(action.type, action.payload)
+            },
+            /**
+             * Method for remove the Selected Shape
+             */
+            showListForm (ev){
+                EventBus.$emit("open-add-dialog", "formslist");
             },
             /**
              * Method for show the crown

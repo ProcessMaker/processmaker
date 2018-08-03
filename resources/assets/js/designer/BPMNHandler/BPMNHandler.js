@@ -2,11 +2,21 @@ import _ from "lodash"
 import Mutations from "./Mutations"
 import EventBus from "../lib/event-bus"
 import convert from 'xml-js'
+import BPMNDefinitions from './BPMNDefinitions'
+import BPMNCollaboration from './BPMNCollaboration'
+import BPMNProcess from './BPMNProcess'
+import BPMNDiagram from './BPMNDiagram'
+
 /**
  * BPMNHandler class
  */
 export default class BPMNHandler {
     constructor(xml) {
+        this.BPMNDefinitions = null
+        this.BPMNCollaboration = null
+        this.BPMNProcess = null
+        this.BPMNDiagram = null
+
         this.xml = xml
         this.bpmn = null
         this.elements = {} // Models from Elements
@@ -18,6 +28,38 @@ export default class BPMNHandler {
         this.processes = [] // processes definition
         this.collaborations = [] // collaborations objects
         this.addMutations()
+    }
+
+    createBPMNDefinitions() {
+        this.BPMNDefinitions = new BPMNDefinitions(this.bpmn.elements[0].attributes, {
+            BPMNCollaboration: this.BPMNCollaboration,
+            BPMNProcess: this.BPMNProcess,
+            BPMNDiagram: this.BPMNDiagram
+        })
+    }
+
+    createBPMNCollaboration() {
+        this.BPMNCollaboration = new BPMNCollaboration(this.findCollaboration(), {
+            BPMNDefinitions: this.BPMNDefinitions,
+            BPMNProcess: this.BPMNProcess,
+            BPMNDiagram: this.BPMNDiagram
+        })
+    }
+
+    createBPMNProcess() {
+        this.BPMNProcess = new BPMNProcess(this.findProcesses(), {
+            BPMNDefinitions: this.BPMNDefinitions,
+            BPMNCollaboration: this.BPMNCollaboration,
+            BPMNDiagram: this.BPMNDiagram
+        })
+    }
+
+    createBPMNDiagram() {
+        this.BPMNDiagram = new BPMNDiagram(this.findBPMNDiagrams(), {
+            BPMNDefinitions: this.BPMNDefinitions,
+            BPMNCollaboration: this.BPMNCollaboration,
+            BPMNProcess: this.BPMNProcess
+        })
     }
 
     reset() {
@@ -64,6 +106,10 @@ export default class BPMNHandler {
             this.processes = this.findProcess()
             this.collaborations = this.findCollaboration()
             this.buildElementsDiagram(this.elementsDiagram)
+            this.createBPMNDefinitions()
+            this.createBPMNCollaboration()
+            this.createBPMNDiagram()
+            this.createBPMNProcess()
         }
         return this.bpmnDesigner
     }
@@ -101,12 +147,30 @@ export default class BPMNHandler {
     }
 
     /**
+     * This method diagrams in BPMN
+     */
+    findBPMNDiagrams() {
+        let BPMNDiagram = _.find(this.bpmn.elements[0].elements, (value) => {
+            return value.name.indexOf("BPMNDiagram") >= 0 ? true : false
+        })
+        return BPMNDiagram
+    }
+
+    /**
      * This method find a object Process in BPMN
      */
     findProcess() {
         return _.filter(this.bpmn.elements[0].elements, (value) => {
             return value.name.indexOf("process") >= 0 ? true : false
         })
+    }
+
+
+    findProcesses() {
+        let processes = _.find(this.bpmn.elements[0].elements, (value) => {
+            return value.name.indexOf("process") >= 0 ? true : false
+        })
+        return processes
     }
 
     /**
@@ -206,7 +270,8 @@ export default class BPMNHandler {
             type: name.length == 1 ? name[0].toLowerCase() : name[1].toLowerCase(),
             id: di.attributes.bpmnElement,
             bounds: attr,
-            eventDefinition
+            eventDefinition,
+            attributes: bpmn.attributes
         }
     }
 
@@ -264,7 +329,7 @@ export default class BPMNHandler {
         let that = this
         _.flatMap(Mutations, (mutation, type) => {
             EventBus.$on(type, (payload) => {
-                mutation(payload, that.elements, that.elementsDiagram, that.processes, that.collaborations)
+                mutation(payload, this.BPMNProcess, this.BPMNCollaboration, this.BPMNDiagram, this.BPMNDefinitions)
             })
         })
     }

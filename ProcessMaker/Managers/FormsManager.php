@@ -3,7 +3,6 @@
 namespace ProcessMaker\Managers;
 
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Exception\DoesNotBelongToProcessException;
 use ProcessMaker\Exception\ValidationException;
@@ -24,10 +23,6 @@ class FormsManager
      */
     public function index(Process $process, array $options): LengthAwarePaginator
     {
-        $start = $options['current_page'];
-        Paginator::currentPageResolver(function () use ($start) {
-            return $start;
-        });
         $query = Form::where('process_id', $process->id);
         $filter = $options['filter'];
         if (!empty($filter)) {
@@ -62,7 +57,7 @@ class FormsManager
         $data['process_id'] = $process->id;
 
         if (!isset($data['content']) || empty($data['content'])) {
-            $data['content'] = $this->generateContent($data['uid'], $data['title'], $data['description']);
+            $data['content'] = null;
         }
 
         $form = new Form();
@@ -116,7 +111,7 @@ class FormsManager
         $data['process_id'] = $process->id;
         $form->fill($data);
         if (empty($form->content)) {
-            $form->content = $this->generateContent($form->uid, $form->title, $form->description);
+            $form->content = null;
         }
         $form->saveOrFail();
         return $form->refresh();
@@ -165,40 +160,4 @@ class FormsManager
             throw new ValidationException($validator);
         }
     }
-
-    /**
-     * Generate structure content Form
-     *
-     * @param string $uid
-     * @param string $title
-     * @param string $description
-     *
-     * @return array
-     */
-    private function generateContent($uid, $title, $description): array
-    {
-        return [
-            'name' => $title,
-            'description' => $description,
-            'items' => [
-                [
-                    'type' => 'form',
-                    'variable' => '',
-                    'var_uid' => '',
-                    'dataType' => '',
-                    'id' => $uid,
-                    'name' => $title,
-                    'description' => $description,
-                    'mode' => 'edit',
-                    'script' => '',
-                    'language' => 'en',
-                    'externalLibs' => '',
-                    'printable' => false,
-                    'items' => [],
-                    'variables' => []
-                ]
-            ]
-        ];
-    }
-
 }

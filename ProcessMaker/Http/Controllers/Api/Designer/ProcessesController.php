@@ -163,8 +163,8 @@ class ProcessesController extends Controller
         $data['user_id'] = Auth::id();
         //Load process by default with template bpmn only start element
         $template = file_get_contents(database_path('processes') . '/templates/OnlyStartElement.bpmn');
-        $templateIds = ['DefinitionsId', 'ProcessId', 'ProcessName', 'BPMNShapeStartEventId', 'StartEventId', 'BPMNDiagramId', 'BPMNPlaneId'];
-        $values = [Uuid::uuid4(), Uuid::uuid4(), $data['name'], Uuid::uuid4(), Uuid::uuid4(), Uuid::uuid4(), Uuid::uuid4()];
+        $templateIds = ['ProcessMakerXsd', 'DefinitionsId', 'ProcessId', 'ProcessName', 'BPMNShapeStartEventId', 'StartEventId', 'BPMNDiagramId', 'BPMNPlaneId'];
+        $values = [$request->getSchemeAndHttpHost() . '/definition/ProcessMaker.xsd', Uuid::uuid4(), Uuid::uuid4(), $data['name'], Uuid::uuid4(), Uuid::uuid4(), Uuid::uuid4(), Uuid::uuid4()];
 
         $data['bpmn'] = str_replace($templateIds, $values, $template);
         $response = ProcessManager::store($data);
