@@ -56,20 +56,20 @@ export default {
       error: false,
       processes: {
         // Blank
-      },
-   };
+      }
+    };
   },
   watch: {
     filter: _.debounce(function() {
-      if(!this.loading) {
-        this.fetch()
+      if (!this.loading) {
+        this.fetch();
       }
     }, 250)
   },
   methods: {
     toggleRequestModal() {
       this.show = !this.show;
-      if(this.show && !this.loaded) {
+      if (this.show && !this.loaded) {
         // Perform initial load of requests from backend
         this.fetch();
       }
@@ -79,8 +79,9 @@ export default {
       // Now call our api
       // Maximum number of requests returned is 200 but should be enough
       // @todo Determine if we need to paginate or lazy scroll if someone has more than 200 requests
-      window.ProcessMaker.apiClient.get('user/processes?filter=' + this.filter)
-        .then((response) => {
+      window.ProcessMaker.apiClient
+        .get("user/processes?filter=" + this.filter)
+        .then(response => {
           let data = response.data;
           // Empty processes
           this.processes = {};
@@ -89,19 +90,19 @@ export default {
           // Do initial filter
           this.loading = false;
         })
-        .catch((error) => {
+        .catch(error => {
           this.loading = false;
           this.error = true;
-        })
+        });
     },
     populate(data) {
       // Each element in data represents an individual process
       // We need to pull out the category name, and if it's available in our processes, append it there
       // if not, create the category in our processes array and then append it
-      for(let process of data) {
-        let category = process.category ? process.category : 'Uncategorized';
+      for (let process of data) {
+        let category = process.category ? process.category : "Uncategorized";
         // Now determine if we have it defined in our processes list
-        if(typeof this.processes[category] == 'undefined') {
+        if (typeof this.processes[category] == "undefined") {
           // Create it
           this.processes[category] = [];
         }
@@ -111,7 +112,7 @@ export default {
     }
   },
   mounted() {
-    this.arrowStyle.top = $("#navbar-request-button").offset().top + 57 + "px";
+    this.arrowStyle.top = $("#navbar-request-button").offset().top + 45 + "px";
     this.arrowStyle.left =
       $("#navbar-request-button").offset().left + 32 + "px";
 
@@ -128,7 +129,7 @@ export default {
 <style lang="scss" scoped>
 .arrow {
   transform: rotate(45deg);
-  width: 25px;
+  width: 30px;
   height: 25px;
   border: 1px solid rgba(0, 0, 0, 0.1);
   position: fixed;
@@ -153,7 +154,7 @@ export default {
   height: 70%;
   width: calc(100% - 160px);
   position: fixed;
-  top: 70px;
+  top: 56px;
   left: 50%;
   transform: translateX(-50%);
 
@@ -194,12 +195,12 @@ export default {
     background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0), #000000);
   }
 
-  .loading, .no-requests {
+  .loading,
+  .no-requests {
     padding: 32px 60px;
     font-size: 16px;
     font-weight: bold;
   }
-
 
   .process-list {
     //flex-grow: 1;
