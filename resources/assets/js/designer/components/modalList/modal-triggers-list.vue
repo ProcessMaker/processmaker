@@ -21,7 +21,7 @@
                         </div>
                     </template>
                 </vuetable>
-                <pagination single="Form" plural="Forms" :perPageSelectEnabled="true" @changePerPage="changePerPage"
+                <pagination single="Trigger" plural="Triggers" :perPageSelectEnabled="true" @changePerPage="changePerPage"
                             @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
             </div>
         </div>
