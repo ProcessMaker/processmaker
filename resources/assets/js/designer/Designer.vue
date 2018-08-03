@@ -1,6 +1,6 @@
 <template>
     <div id="designer-container">
-        <component :is="modalComponent" :if="modalComponent" @hidden="onHidden" :processUid="processUid"></component>
+        <component :is="modalComponent" :if="modalComponent" @hidden="onHidden" :processUid="processUid" :selectedElement="selectedElement"></component>
         <toptoolbar ref="toptoolbar"></toptoolbar>
         <toolbar ref="toolbar"></toolbar>
         <div id="designer-subcontainer">
@@ -80,6 +80,7 @@
             return {
                 modalComponent: null,
                 bpmn: {},
+                selectedElement: {},
                 autoSaveTime: 15000 // miliseconds
             }
         },
@@ -90,6 +91,7 @@
         },
         methods: {
             openAddDialog(key) {
+                this.selectedElement = this.$refs.svgcanvas.builder.selection[0].getOptions();
                 // @todo Replace this with dynamic modal generation once we have all modals in place
                 // We're not doing this now so we can have visual alert feedback when a modal isn't implemented
                 switch (key) {

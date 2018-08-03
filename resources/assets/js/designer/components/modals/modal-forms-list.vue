@@ -1,5 +1,13 @@
 <template>
-    <b-modal class="form-docs" ref="modal" size="lg" @hidden="onHidden" title="Forms" hide-footer>
+    <b-modal class="form-docs" ref="modal" size="lg" @hidden="onHidden" title="Task Form" hide-footer>
+      <div class="ibox-content m-b-sm border-bottom">
+        <div class="p-xs">
+          <h2>{{formTitle}}</h2>
+          <div v-show="formUid">
+            UID: <span class="badge badge-pill badge-secondary">{{formUid}}</span>
+          </div>
+        </div>
+      </div>
         <div class="form-group">
             <div class="d-flex justify-content-between">
                 <filter-bar></filter-bar>
@@ -39,7 +47,7 @@
     export default {
         components: {Pagination},
         mixins: [datatableMixin],
-        props: ['processUid', 'filter'],
+        props: ['processUid', 'filter','selectedElement'],
         data() {
             return {
                 // form models here
@@ -70,7 +78,9 @@
                         title: ""
                     }
                 ],
-                data: []
+                data: [],
+                formUid: this.selectedElement.attributes['pm:formRef'],
+                formTitle: '...'
             };
         },
         methods: {
@@ -95,6 +105,18 @@
                     this.cancelToken = null;
                 }
                 const CancelToken = ProcessMaker.apiClient.CancelToken;
+                //Load Form Assigned label
+                let formRef = this.selectedElement.attributes['pm:formRef'];
+                if (formRef) {
+                  ProcessMaker.apiClient
+                    .get('process/' + this.processUid + '/form/' + formRef)
+                    .then(response => {
+                        this.formTitle = response.data.title;
+                    });
+                } else {
+                  this.formTitle = '(Unassigned)';
+                }
+                //Load Forms list
                 ProcessMaker.apiClient
                     .get('process/' + this.processUid + '/forms',
                         "roles?page=" +
@@ -115,7 +137,7 @@
                     )
                     .then(response => {
                         this.data = this.transform(response.data);
-                    })
+                    });
             }
         },
         mounted() {
