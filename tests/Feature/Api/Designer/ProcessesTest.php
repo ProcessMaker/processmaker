@@ -309,11 +309,14 @@ class ProcessesTest extends ApiTestCase
     {
 
         //Create a test process using factories
-        $process = factory(Process::class)->create([
+        $name = 'Name process Test';
+        factory(Process::class)->create([
+            'name' => $name,
             'user_id' => $this->authenticateAsAdmin()->id
         ]);
         $perPage = Faker::create()->randomDigitNotNull;
-        $query = '?current_page=1&per_page=' . $perPage . '&sort_by=description&sort_order=DESC&filter=' . urlencode($process->name);
+        $query = '?page=1&per_page=' . $perPage . '&order_by=delegate_date&order_direction=DESC&filter=' . urlencode($name);
+
         $response = $this->api('GET', self::API_TEST_PROCESS. '?filter=' . $query);
         $response->assertStatus(200);
 
@@ -323,7 +326,7 @@ class ProcessesTest extends ApiTestCase
         $this->assertEquals($perPage, $response->original->meta->per_page);
         $this->assertEquals(1, $response->original->meta->current_page);
         $this->assertEquals(1, $response->original->meta->total_pages);
-        $this->assertEquals($process->name, $response->original->meta->filter);
+        $this->assertEquals($name, $response->original->meta->filter);
     }
 
     /**

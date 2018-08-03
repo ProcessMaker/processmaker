@@ -147,7 +147,7 @@ class TriggerManagerTest extends ApiTestCase
 
         //List Document with filter option
         $perPage = Faker::create()->randomDigitNotNull;
-        $query = '?current_page=1&per_page=' . $perPage . '&order_by=description&order_direction=DESC&filter=' . urlencode($title);
+        $query = '?page=1&per_page=' . $perPage . '&order_by=description&order_direction=DESC&filter=' . urlencode($title);
         $url = self::API_TEST_TRIGGER . $this->process->uid . '/triggers?' . $query;
         $response = $this->api('GET', $url);
         //Validate the answer is correct

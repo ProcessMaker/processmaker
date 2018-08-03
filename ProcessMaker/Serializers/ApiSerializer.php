@@ -104,8 +104,8 @@ class ApiSerializer extends SerializerAbstract
             'current_page' => (int)$paginator->getCurrentPage(),
             'total_pages' => (int)$paginator->getLastPage(),
             'filter' => $request->input('filter', ''),
-            'sort_by' => $request->input('sort_by', ''),
-            'sort_order' => $request->input('sort_order', '')
+            'sort_by' => $request->input('order_by', ''),
+            'sort_order' => $request->input('order_direction', '')
         ];
 
         return ['pagination' => $pagination];

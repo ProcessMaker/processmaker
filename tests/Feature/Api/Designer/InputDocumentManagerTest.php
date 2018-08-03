@@ -151,6 +151,42 @@ class InputDocumentManagerTest extends ApiTestCase
     }
 
     /**
+     * Get a list of input Document with parameters
+     */
+    public function testListInputDocumentWithQueryParameter()
+    {
+        $title = 'search Title Input document';
+        factory(InputDocument::class)->create([
+            'title' => $title,
+            'process_id' => $this->process->id
+        ]);
+
+        //List Form with filter option
+        $perPage = Faker::create()->randomDigitNotNull;
+        $query = '?page=1&per_page=' . $perPage . '&order_by=description&order_direction=DESC&filter=' . urlencode($title);
+        $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-documents?' . $query;
+        $response = $this->api('GET', $url);
+        //Validate the answer is correct
+        $response->assertStatus(200);
+        //verify structure paginate
+        $response->assertJsonStructure([
+            'data',
+            'meta',
+        ]);
+        //verify response in meta
+        $this->assertEquals(1, $response->original->meta->total);
+        $this->assertEquals(1, $response->original->meta->count);
+        $this->assertEquals($perPage, $response->original->meta->per_page);
+        $this->assertEquals(1, $response->original->meta->current_page);
+        $this->assertEquals(1, $response->original->meta->total_pages);
+        $this->assertEquals($title, $response->original->meta->filter);
+        $this->assertEquals('description', $response->original->meta->sort_by);
+        $this->assertEquals('DESC', $response->original->meta->sort_order);
+        //verify structure of model
+        $response->assertJsonStructure(['*' => self::STRUCTURE], $response->json('data'));
+    }
+
+    /**
      * Get a Input Document of a project.
      */
     public function testGetInputDocument()
