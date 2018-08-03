@@ -76,6 +76,7 @@
     "setupFiles": [
       "<rootDir>/jest/globals.js"
     ],
+    "testURL": "http://localhost",
     "moduleFileExtensions": [
       "vue",
       "json",
