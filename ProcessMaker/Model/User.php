@@ -62,6 +62,17 @@ class User extends Authenticatable implements UserEntityInterface, CanResetPassw
         'fullname'
     ];
 
+    public static function rules() {
+        
+        return [
+        'firstname' => 'nullable',
+        'lastname' => 'nullable',
+        'password' => 'password',
+        'status' => 'required|in:ACTIVE,DISABLED'
+        'username' => 'required|unique:users,username',
+        ];
+    }
+
     /**
      * The key to use in routes to fetch a user
      */
