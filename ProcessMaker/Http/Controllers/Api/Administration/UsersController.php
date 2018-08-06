@@ -86,9 +86,16 @@ class UsersController extends Controller
      */
     public function update(User $user, Request $request)
     {
-        UserManager::update($user, $request);
-        $request->validate(User::rules());
-        return response([], 200);
+      $user->validate(User::rules());
+      $user = $user->findorfail($id);
+      $user->username=$request->get('username');
+      $user->firstname=$request->get('firstname');
+      $user->lastname=$request->get('lastname');
+      $user->status=$request->get('status');
+
+      $user->save();
+
+      return fractal($user, new UserTransformer())->respond();
     }
 
     /**
