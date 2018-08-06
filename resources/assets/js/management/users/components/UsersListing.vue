@@ -39,7 +39,7 @@
       <b-button @click="hideEditModal" class="btn-outline-secondary btn-md">
         Cancel
       </b-button>
-      <b-button class="btn-secondary text-light btn-md">
+      <b-button @click="submitEdit" class="btn-secondary text-light btn-md">
         Save
       </b-button>
       </template>
@@ -141,6 +141,32 @@ export default {
       this.uid = this.data.data[index].uid;
       this.curIndex = index;
       this.$refs.editItem.show();
+    },
+    submitEdit(rowIndex) {
+      window.ProcessMaker.apiClient
+        .put("users/" + this.uid, {
+          uid: this.uid,
+          username: this.username,
+          firstname: this.firstname,
+          lastname: this.lastname,
+          status: this.status
+        })
+        .then(response => {
+          ProcessMaker.alert("Saved", "success");
+          this.clearForm();
+          this.hideEditModal();
+          this.fetch();
+        })
+        .catch(err => {
+          ProcessMaker.alert("There was an error with your edit", "danger");
+        });
+    },
+    clearForm(curIndex) {
+      (this.username = ""),
+        (this.firstname = ""),
+        (this.description = ""),
+        (this.lastname = ""),
+        (this.status = "");
     },
     hideEditModal() {
       this.$refs.editItem.hide();
