@@ -87,6 +87,7 @@ class UsersController extends Controller
     public function update(User $user, Request $request)
     {
         UserManager::update($user, $request);
+        $request->validate(User::rules());
         return response([], 200);
     }
 
