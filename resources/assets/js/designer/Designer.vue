@@ -1,6 +1,6 @@
 <template>
     <div id="designer-container">
-        <component :is="modalComponent" :if="modalComponent" @hidden="onHidden"></component>
+        <component :is="modalComponent" :if="modalComponent" @hidden="onHidden" :processUid="processUid" :selectedElement="selectedElement"></component>
         <toptoolbar ref="toptoolbar"></toptoolbar>
         <toolbar ref="toolbar"></toolbar>
         <div id="designer-subcontainer">
@@ -37,10 +37,19 @@
     import modalPublicFileAdd from "./components/modals/modal-public-file-add";
     import modalVariablesAdd from "./components/modals/modal-variables-add";
     import modalMessageTypes from "./components/modals/modal-message-types";
-    import modalOutputDocuments from "./components/modals/modal-output-documents"
+    import modalFormsList from "./components/modals/modal-forms-list"
+
+    //Modal list
+    import modalForms from "./components/modalList/modal-forms-list"
+    import modalOutputDocuments from "./components/modalList/modal-output-documents"
+    import ModalInputDocumentList from "./components/modalList/modal-input-document-list";
+    import ModalTriggersList from "./components/modalList/modal-triggers-list";
+
+
     // This is out Cron for every shape
     import crown from "./components/crown"
     import actions from "./actions"
+
     export default {
         props: [
             'processUid'
@@ -59,14 +68,19 @@
             modalPublicFileAdd,
             modalVariablesAdd,
             modalOutputDocuments,
+            modalFormsList,
             svgcanvas,
             toolbar,
-            toptoolbar
+            toptoolbar,
+            modalForms,
+            ModalInputDocumentList,
+            ModalTriggersList
         },
         data() {
             return {
                 modalComponent: null,
                 bpmn: {},
+                selectedElement: {},
                 autoSaveTime: 15000 // miliseconds
             }
         },
@@ -77,6 +91,7 @@
         },
         methods: {
             openAddDialog(key) {
+                this.selectedElement = this.$refs.svgcanvas.builder.selection[0].getOptions();
                 // @todo Replace this with dynamic modal generation once we have all modals in place
                 // We're not doing this now so we can have visual alert feedback when a modal isn't implemented
                 switch (key) {
@@ -91,6 +106,9 @@
                         break;
                     case 'forms':
                         this.modalComponent = 'modal-forms-add'
+                        break;
+                    case 'formslist':
+                        this.modalComponent = 'modal-forms-list'
                         break;
                     case 'message-types':
                         this.modalComponent = 'modal-message-types'
@@ -110,14 +128,26 @@
                     case 'templates':
                         this.modalComponent = 'modal-create-template-add'
                         break;
+                    case 'open':
+                        this.modalComponent = 'modal-create-template-add'
+                        break;
                     default:
                         alert(key + ' add modal not yet implemented.')
                 }
             },
             openTitleDialog(key){
                 switch (key) {
+                    case 'forms':
+                        this.modalComponent = 'modal-forms';
+                        break;
+                    case 'input-documents':
+                        this.modalComponent = 'modal-input-document-list';
+                        break;
                     case 'output-documents':
-                        this.modalComponent = 'modal-output-documents'
+                        this.modalComponent = 'modal-output-documents';
+                        break;
+                    case 'triggers':
+                        this.modalComponent = 'modal-triggers-list';
                         break;
                     default:
                         alert(key + ' Behavior TBD')

@@ -16,10 +16,7 @@ class TokenController extends Controller
         }
         $instance = $process->getDefinitions()->getEngine()->loadExecutionInstance($instance->uid);
         $dataStore = $instance->getDataStore();
-        $startDate = $dataStore->getData('startDate');
-        $endDate = $dataStore->getData('endDate');
-        $reason = $dataStore->getData('reason');
-        $approved = $dataStore->getData('approved');
-        return view('nayra.' . $view, compact('process', 'instance', 'token', 'startDate', 'endDate', 'reason', 'approved'));
+        $data = (object) $dataStore->getData();
+        return view('tasks.show', compact('process', 'instance', 'token', 'data'));
     }
 }

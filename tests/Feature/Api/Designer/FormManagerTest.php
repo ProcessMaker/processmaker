@@ -66,6 +66,7 @@ class FormManagerTest extends ApiTestCase
         $response->assertStatus(422);
         $this->assertArrayHasKey('message', $response->json());
     }
+
     /**
      * Create form successfully
      */

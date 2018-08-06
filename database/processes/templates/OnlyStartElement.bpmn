@@ -4,6 +4,7 @@
         xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
         xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
         xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+        xmlns:pm="ProcessMakerXsd"
         id="DefinitionsId"
         targetNamespace="http://bpmn.io/schema/bpmn">
     <bpmn:process id="ProcessId" isExecutable="true" name="ProcessName">

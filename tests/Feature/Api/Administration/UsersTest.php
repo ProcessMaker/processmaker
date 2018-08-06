@@ -101,19 +101,19 @@ class UsersTest extends ApiTestCase
     {
         $user = factory(User::class)->create([
             'username' => 'testuser',
-            'firstname' => 'Joe',
+            'firstname' => 'UniqueJoe',
             'lastname' => 'Biden',
             'password' => Hash::make('password'),
             'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
         ]);
         $this->auth($user->username, 'password');
-        $response = $this->api('GET', self::API_TEST_USERS . '?filter=' . urlencode('joe'));
+        $response = $this->api('GET', self::API_TEST_USERS . '?filter=' . urlencode('UniqueJoe'));
         $response->assertStatus(200);
         $data = json_decode($response->getContent(), true);
         // Ensure we have empty results
         $this->assertCount(1, $data['data']);
         $this->assertEquals(1, $data['meta']['total']);
-        $this->assertEquals('joe', $data['meta']['filter']);
+        $this->assertEquals('UniqueJoe', $data['meta']['filter']);
         // We refetch from the DB to ensure we have all columns from DB when transforming
         $transformed = (new UserTransformer())->transform(User::find($user->id));
         $this->assertEquals($transformed, $data['data'][0]);

@@ -24,7 +24,8 @@ export class Shape {
         this.options = Object.assign({}, this.options, {
             id: options.id,
             type: options.type,
-            eventDefinition: options.eventDefinition
+            eventDefinition: options.eventDefinition,
+            attributes: options.attributes
         })
         return this
     }
@@ -43,6 +44,10 @@ export class Shape {
 
     configBounds(bounds) {
         this.options.bounds = Object.assign({}, this.options.bounds, bounds);
+    }
+
+    configAttributes(attr) {
+        this.options.attributes = Object.assign({}, this.options.attributes, attr);
     }
 
     updateBounds(bounds) {
