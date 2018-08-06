@@ -199,13 +199,27 @@ class UsersTest extends ApiTestCase
         ]);
         $this->auth($user->username, 'password');
 
-        $response = $this->api('put', self::API_TEST_USERS . '/' . $user->uid->toString(), [
+        $user = factory(User::class)->create([
+            'uid' => '1234',
+            'username' => app()->make('Faker\Generator')->text(10),
+            'firstname' => app()->make('Faker\Generator')->text(10),
+            'lastname' => app()->make('Faker\Generator')->text(10),
+        ]);
+        $response = $this->api('get', self::API_TEST_USERS, []);
+        
+
+        $response = $this->api('put', self::API_TEST_USERS . '/' . $user->uid, [
             'firstname' => 'User update',
             'lastname' => 'profile',
             'avatar' => UploadedFile::fake()->image('avatar.jpg'),
             'password' => 'password2'
         ]);
+        $response = $this->api('get', self::API_TEST_USERS . '/' . $user->uid, []);
         $response->assertStatus(200);
+        $response->assertJson([
+            'firstname' => 'User update',
+            'lastname' => 'profile',
+        ]);
     }
 
     public function testCreateUser()
