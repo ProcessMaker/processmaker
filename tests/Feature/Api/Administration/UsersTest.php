@@ -211,8 +211,6 @@ class UsersTest extends ApiTestCase
         $response = $this->api('put', self::API_TEST_USERS . '/' . $user->uid, [
             'firstname' => 'User update',
             'lastname' => 'profile',
-            'avatar' => UploadedFile::fake()->image('avatar.jpg'),
-            'password' => 'password2'
         ]);
         $response = $this->api('get', self::API_TEST_USERS . '/' . $user->uid, []);
         $response->assertStatus(200);

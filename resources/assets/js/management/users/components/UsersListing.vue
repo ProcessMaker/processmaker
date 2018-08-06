@@ -164,7 +164,6 @@ export default {
     clearForm(curIndex) {
       (this.username = ""),
         (this.firstname = ""),
-        (this.description = ""),
         (this.lastname = ""),
         (this.status = "");
     },
