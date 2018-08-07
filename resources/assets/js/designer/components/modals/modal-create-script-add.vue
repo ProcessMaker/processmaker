@@ -1,5 +1,5 @@
 <template>
-  <b-modal ref="modal" size="md" @hidden="onHidden" centered title="Create Custom Trigger">
+  <b-modal ref="modal" size="md" @hidden="onHidden" centered title="Create Custom Script">
       <form>
         <div class="form-group">
           <label for="title" v-model="title">{{title}}</label>
