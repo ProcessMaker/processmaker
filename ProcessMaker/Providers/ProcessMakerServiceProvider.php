@@ -17,7 +17,7 @@ use ProcessMaker\Managers\SchemaManager;
 use ProcessMaker\Managers\TaskAssigneeManager;
 use ProcessMaker\Managers\TaskManager;
 use ProcessMaker\Managers\TasksDelegationManager;
-use ProcessMaker\Managers\TriggerManager;
+use ProcessMaker\Managers\ScriptManager;
 use ProcessMaker\Managers\UserManager;
 use ProcessMaker\Model\Group;
 use ProcessMaker\Model\User;
@@ -107,7 +107,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
         });
         
         $this->app->singleton('trigger.manager', function ($app) {
-            return new TriggerManager();
+            return new ScriptManager();
         });
 
         $this->app->singleton('output_document.manager', function ($app) {

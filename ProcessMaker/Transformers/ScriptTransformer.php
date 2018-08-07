@@ -3,7 +3,7 @@
 namespace ProcessMaker\Transformers;
 
 use League\Fractal\TransformerAbstract;
-use ProcessMaker\Model\Trigger;
+use ProcessMaker\Model\Script;
 
 /**
  * Trigger transformer, used to prepare the JSON response returned in the
@@ -11,17 +11,17 @@ use ProcessMaker\Model\Trigger;
  *
  * @package ProcessMaker\Transformer
  */
-class TriggerTransformer extends TransformerAbstract
+class ScriptTransformer extends TransformerAbstract
 {
 
     /**
      * Transform the trigger.
      *
-     * @param Trigger $trigger
+     * @param Script $trigger
      *
      * @return array
      */
-    public function transform(Trigger $trigger)
+    public function transform(Script $trigger)
     {
         return [
             'uid' => $trigger->uid,

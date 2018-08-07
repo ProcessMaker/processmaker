@@ -4,12 +4,12 @@ namespace ProcessMaker\Managers;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 use ProcessMaker\Model\Process;
-use ProcessMaker\Model\Trigger;
+use ProcessMaker\Model\Script;
 
-class TriggerManager
+class ScriptManager
 {
     /**
-     * Get a list of All triggers in a process.
+     * Get a list of All scripts in a process.
      *
      * @param Process $process
      * @param array $options
@@ -19,7 +19,7 @@ class TriggerManager
     public function index(Process $process, array $options): LengthAwarePaginator
     {
         $start = $options['current_page'];
-        $query = Trigger::where('process_id', $process->id);
+        $query = Script::where('process_id', $process->id);
         $filter = $options['filter'];
         if (!empty($filter)) {
             $filter = '%' . $filter . '%';
@@ -35,54 +35,54 @@ class TriggerManager
     }
 
     /**
-     * Create a new trigger in a process.
+     * Create a new script in a process.
      *
      * @param Process $process
      * @param array $data
      *
-     * @return Trigger
+     * @return Script
      * @throws \Throwable
      */
-    public function save(Process $process, $data): Trigger
+    public function save(Process $process, $data): Script
     {
         $data['process_id'] = $process->id;
 
-        $trigger = new Trigger();
-        $trigger->fill($data);
-        $trigger->saveOrFail();
+        $script = new Script();
+        $script->fill($data);
+        $script->saveOrFail();
 
-        return $trigger;
+        return $script;
     }
 
     /**
-     * Update trigger in a process.
+     * Update script in a process.
      *
      * @param Process $process
-     * @param Trigger $trigger
+     * @param Script $script
      * @param array $data
      *
-     * @return Trigger
+     * @return Script
      * @throws \Throwable
      */
-    public function update(Process $process, Trigger $trigger, $data): Trigger
+    public function update(Process $process, Script $script, $data): Script
     {
         $data['process_id'] = $process->id;
-        $trigger->fill($data);
-        $trigger->saveOrFail();
-        return $trigger;
+        $script->fill($data);
+        $script->saveOrFail();
+        return $script;
     }
 
     /**
-     * Remove trigger in a process.
+     * Remove script in a process.
      *
-     * @param Trigger $trigger
+     * @param Script $script
      *
      * @return bool|null
      * @throws \Exception
      */
-    public function remove(Trigger $trigger): ?bool
+    public function remove(Script $script): ?bool
     {
-        return $trigger->delete();
+        return $script->delete();
     }
 
 }

@@ -5,14 +5,14 @@ namespace ProcessMaker\Http\Controllers\Api\Designer;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use ProcessMaker\Exception\DoesNotBelongToProcessException;
-use ProcessMaker\Facades\TriggerManager;
+use ProcessMaker\Facades\ScriptManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Model\Process;
-use ProcessMaker\Model\Trigger;
-use ProcessMaker\Transformers\TriggerTransformer;
+use ProcessMaker\Model\Script;
+use ProcessMaker\Transformers\ScriptTransformer;
 use Symfony\Component\HttpFoundation\Response;
 
-class TriggerController extends Controller
+class ScriptController extends Controller
 {
     /**
      * Get a list of triggers in a process.
@@ -31,23 +31,23 @@ class TriggerController extends Controller
             'sort_by' => $request->input('order_by', 'title'),
             'sort_order' => $request->input('order_direction', 'ASC'),
         ];
-        $response = TriggerManager::index($process, $options);
-        return fractal($response, new TriggerTransformer())->respond();
+        $response = ScriptManager::index($process, $options);
+        return fractal($response, new ScriptTransformer())->respond();
     }
 
     /**
      * Get a single trigger in a process.
      *
      * @param Process $process
-     * @param Trigger $script
+     * @param Script $script
      *
      * @return ResponseFactory|Response
      * @throws DoesNotBelongToProcessException
      */
-    public function show(Process $process, Trigger $script)
+    public function show(Process $process, Script $script)
     {
         $this->belongsToProcess($process, $script);
-        return fractal($script, new TriggerTransformer())->respond(200);
+        return fractal($script, new ScriptTransformer())->respond(200);
     }
 
     /**
@@ -67,21 +67,21 @@ class TriggerController extends Controller
             'param' =>  $request->input('param', '')
         ];
 
-        $response = TriggerManager::save($process, $data);
-        return fractal($response, new TriggerTransformer())->respond(201);
+        $response = ScriptManager::save($process, $data);
+        return fractal($response, new ScriptTransformer())->respond(201);
     }
 
     /**
      * Update a trigger in a process.
      *
      * @param Process $process
-     * @param Trigger $script
+     * @param Script $script
      * @param Request $request
      *
      * @return ResponseFactory|Response
      * @throws DoesNotBelongToProcessException
      */
-    public function update(Process $process, Trigger $script, Request $request)
+    public function update(Process $process, Script $script, Request $request)
     {
         $this->belongsToProcess($process, $script);
         $data = [];
@@ -98,7 +98,7 @@ class TriggerController extends Controller
             $data['param'] = $request->input('param');
         }
         if($data) {
-            TriggerManager::update($process, $script, $data);
+            ScriptManager::update($process, $script, $data);
         }
         return response([], 204);
     }
@@ -107,15 +107,15 @@ class TriggerController extends Controller
      * Delete a trigger in a process.
      *
      * @param Process $process
-     * @param Trigger $script
+     * @param Script $script
      *
      * @return ResponseFactory|Response
      * @throws DoesNotBelongToProcessException
      */
-    public function remove(Process $process, Trigger $script)
+    public function remove(Process $process, Script $script)
     {
         $this->belongsToProcess($process, $script);
-        TriggerManager::remove($script);
+        ScriptManager::remove($script);
         return response([], 204);
     }
 
@@ -123,11 +123,11 @@ class TriggerController extends Controller
      * Validate if trigger belong to process.
      *
      * @param Process $process
-     * @param Trigger $script
+     * @param Script $script
      *
      * @throws DoesNotBelongToProcessException|void
      */
-    private function belongsToProcess(Process $process, Trigger $script)
+    private function belongsToProcess(Process $process, Script $script)
     {
         if($process->id !== $script->process_id) {
             Throw new DoesNotBelongToProcessException(__('The trigger does not belong to this process.'));

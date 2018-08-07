@@ -21,7 +21,7 @@ use Watson\Validating\ValidatingTrait;
  * @property array param
  *
  */
-class Trigger extends Model
+class Script extends Model
 {
     use ValidatingTrait;
     use Uuid;

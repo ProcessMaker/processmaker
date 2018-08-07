@@ -7,11 +7,11 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\Role;
-use ProcessMaker\Model\Trigger;
+use ProcessMaker\Model\Script;
 use ProcessMaker\Model\User;
 use Tests\Feature\Api\ApiTestCase;
 
-class TriggerManagerTest extends ApiTestCase
+class ScriptManagerTest extends ApiTestCase
 {
     use DatabaseTransactions;
 
@@ -86,7 +86,7 @@ class TriggerManagerTest extends ApiTestCase
      */
     public function testNotCreateTriggerWithTitleExists()
     {
-        factory(Trigger::class)->create([
+        factory(Script::class)->create([
             'title' => 'Title Trigger',
             'process_id' => $this->process->id
         ]);
@@ -111,7 +111,7 @@ class TriggerManagerTest extends ApiTestCase
         //add triggers to process
         $faker = Faker::create();
         $total = $faker->randomDigitNotNull;
-        factory(Trigger::class, $total)->create([
+        factory(Script::class, $total)->create([
             'process_id' => $this->process->id,
             'param' => $faker->words($faker->randomDigitNotNull)
         ]);
@@ -140,7 +140,7 @@ class TriggerManagerTest extends ApiTestCase
     public function testListTriggersWithQueryParameter()
     {
         $title = 'search Title trigger';
-        factory(Trigger::class)->create([
+        factory(Script::class)->create([
             'title' => $title,
             'process_id' => $this->process->id
         ]);
@@ -179,7 +179,7 @@ class TriggerManagerTest extends ApiTestCase
         $faker = Faker::create();
 
         //load trigger
-        $url = self::API_TEST_TRIGGER . $this->process->uid . '/script/' . factory(Trigger::class)->create([
+        $url = self::API_TEST_TRIGGER . $this->process->uid . '/script/' . factory(Script::class)->create([
                 'process_id' => $this->process->id,
                 'param' => $faker->words($faker->randomDigitNotNull)
             ])->uid;
@@ -197,7 +197,7 @@ class TriggerManagerTest extends ApiTestCase
     public function testGetTriggerNotBelongToProcess()
     {
         //load trigger
-        $url = self::API_TEST_TRIGGER . $this->process->uid . '/script/' . factory(Trigger::class)->create()->uid;
+        $url = self::API_TEST_TRIGGER . $this->process->uid . '/script/' . factory(Script::class)->create()->uid;
         $response = $this->api('GET', $url);
         //Validate the answer is incorrect
         $response->assertStatus(404);
@@ -211,7 +211,7 @@ class TriggerManagerTest extends ApiTestCase
     {
         $faker = Faker::create();
         //The post must have the required parameters
-        $url = self::API_TEST_TRIGGER . $this->process->uid . '/script/' . factory(Trigger::class)->create([
+        $url = self::API_TEST_TRIGGER . $this->process->uid . '/script/' . factory(Script::class)->create([
                 'process_id' => $this->process->id,
                 'param' => $faker->words($faker->randomDigitNotNull)
             ])->uid;
@@ -232,7 +232,7 @@ class TriggerManagerTest extends ApiTestCase
     {
         $faker = Faker::create();
         //Post saved success
-        $url = self::API_TEST_TRIGGER . $this->process->uid . '/script/' . factory(Trigger::class)->create([
+        $url = self::API_TEST_TRIGGER . $this->process->uid . '/script/' . factory(Script::class)->create([
                 'process_id' => $this->process->id,
                 'param' => $faker->words($faker->randomDigitNotNull)
             ])->uid;
@@ -249,7 +249,7 @@ class TriggerManagerTest extends ApiTestCase
     public function testDeleteTrigger()
     {
         //Remove Trigger
-        $url = self::API_TEST_TRIGGER . $this->process->uid . '/script/' . factory(Trigger::class)->create(['process_id' => $this->process->id])->uid;
+        $url = self::API_TEST_TRIGGER . $this->process->uid . '/script/' . factory(Script::class)->create(['process_id' => $this->process->id])->uid;
         $response = $this->api('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(204);
@@ -261,7 +261,7 @@ class TriggerManagerTest extends ApiTestCase
     public function testDeleteTriggerNotExist()
     {
         //Trigger not exist
-        $url = self::API_TEST_TRIGGER . $this->process->uid . '/script/' . factory(Trigger::class)->make()->uid;
+        $url = self::API_TEST_TRIGGER . $this->process->uid . '/script/' . factory(Script::class)->make()->uid;
         $response = $this->api('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(404);

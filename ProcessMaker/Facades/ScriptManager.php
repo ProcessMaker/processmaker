@@ -11,7 +11,7 @@ use ProcessMaker\Model\Trigger;
  * Facade for our Task Manager
  *
  * @package ProcessMaker\Facades
- * @see \ProcessMaker\Managers\TriggerManager
+ * @see \ProcessMaker\Managers\ScriptManager
  *
  * @method static Paginator index(Process $process, array $options)
  * @method static Trigger save(Process $process, array $data)
@@ -20,7 +20,7 @@ use ProcessMaker\Model\Trigger;
  * @method static array getTriggers(Process $process)
  *
  */
-class TriggerManager extends Facade
+class ScriptManager extends Facade
 {
     /**
      * Get the registered name of the component.
