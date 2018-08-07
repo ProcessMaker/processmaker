@@ -209,17 +209,28 @@ class UsersTest extends ApiTestCase
         $response->assertStatus(200);
 
         $response = $this->api('put', self::API_TEST_USERS . '/' . $user->uid, [
-            'uid' => $user->uid,
-            'description' => $user->description,
             'firstname' => 'User update',
+            'status' => 'ACTIVE',
             'lastname' => 'profile',
+            'username' => $user->username
         ]);
         $response->assertStatus(200);
-        // $response = $this->api('get', self::API_TEST_USERS . '/' . $user->uid, []);
-        // $response->assertJson([
-        //     'firstname' => 'User update',
-        //     'lastname' => 'profile',
-        // ]);
+        // Verify change made it to the database
+        $this->assertDatabaseHas('users', [
+            'uid' => $user->uid,
+            'username' => $user->username,
+            'firstname' => 'User update',
+            'lastname' => 'profile',
+            'status' => 'ACTIVE'
+        ]);
+        // Also ensure the changed attributes are reflected in JSON response
+        $response->assertJson([
+            'uid' => $user->uid,
+            'username' => $user->username,
+            'firstname' => 'User update',
+            'lastname' => 'profile',
+            'status' => 'ACTIVE'
+        ]);
     }
 
     public function testCreateUser()

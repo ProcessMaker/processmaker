@@ -11,7 +11,6 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Model\User;
 use ProcessMaker\Transformers\UserTransformer;
 
-
 /**
  * Controller that handles all Users API endpoints
  *
@@ -54,9 +53,9 @@ class UsersController extends Controller
 
     /**
      * Create a new user
-     * 
+     *
      * @param Request $request
-     * 
+     *
      * @return ResponseFactory|Response
      * @throws \Throwable
      */
@@ -86,16 +85,15 @@ class UsersController extends Controller
      */
     public function update(User $user, Request $request)
     {
-      $user->validate(User::rules());
-      $user = $user->findorfail($id);
-      $user->username=$request->get('username');
-      $user->firstname=$request->get('firstname');
-      $user->lastname=$request->get('lastname');
-      $user->status=$request->get('status');
+        $request->validate(User::rules($user));
+        $user->username = $request->get('username');
+        $user->firstname = $request->get('firstname');
+        $user->lastname = $request->get('lastname');
+        $user->status = $request->get('status');
 
-      $user->save();
+        $user->save();
 
-      return fractal($user, new UserTransformer())->respond();
+        return fractal($user, new UserTransformer())->respond();
     }
 
     /**
@@ -110,5 +108,4 @@ class UsersController extends Controller
             'user' => fractal($user, new UserTransformer())->toArray()
         ], 404);
     }
-
 }
