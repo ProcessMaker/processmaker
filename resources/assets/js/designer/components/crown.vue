@@ -3,7 +3,7 @@
         <div class="d-flex flex-row">
             <div class="item-crown">
                 <img id="bpmn:Task" src="../img/task.svg" height="20"
-                     @click="createAction($event)">
+                     @dragstart="creatingFlow($event)" @dragend="createTask($event)">
             </div>
             <div class="item-crown">
                 <img id="bpmn:ExclusiveGateway" src="../img/exclusive-gateway.svg" height="27"
@@ -92,6 +92,14 @@
             },
             createFlow(ev){
                 let action = actions.designer.flow.create(ev)
+                EventBus.$emit(action.type, action.payload)
+            },
+            createTask(ev){
+                let action = actions.designer.shape.dragFromCrown({
+                    type: "task",
+                    ev: ev,
+                    eventDefinition: null
+                })
                 EventBus.$emit(action.type, action.payload)
             },
             mounted() {
