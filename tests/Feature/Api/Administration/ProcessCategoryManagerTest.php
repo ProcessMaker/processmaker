@@ -231,13 +231,13 @@ class ProcessCategoryManagerTest extends ApiTestCase
         $processCategory = ProcessCategory::where('uid', $processCategoryJson['cat_uid'])
             ->first();
         $this->assertNotNull($processCategory);
-        $response->assertJsonFragment([
+        $response->assertJsonFragment(
             [
-                "cat_uid"             => $processCategory->uid,
-                "cat_name"            => $processCategory->name,
+                "cat_uid" => $processCategory->uid,
+                "cat_name" => $processCategory->name,
                 "cat_total_processes" => 0,
             ]
-        ]);
+        );
 
         //Validate required cat_name
         $response = $this->api('POST', self::API_TEST_CATEGORY, []);
