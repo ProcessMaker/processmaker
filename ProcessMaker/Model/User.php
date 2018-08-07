@@ -69,7 +69,7 @@ class User extends Authenticatable implements UserEntityInterface, CanResetPassw
         'lastname' => 'nullable',
         'password' => 'password',
         'status' => 'required|in:ACTIVE,DISABLED',
-        'username' => 'required|unique:users,username',
+        'username' => 'required|unique:users',
         ];
     }
 
