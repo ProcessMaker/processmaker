@@ -39,15 +39,15 @@ class TriggerController extends Controller
      * Get a single trigger in a process.
      *
      * @param Process $process
-     * @param Trigger $trigger
+     * @param Trigger $script
      *
      * @return ResponseFactory|Response
      * @throws DoesNotBelongToProcessException
      */
-    public function show(Process $process, Trigger $trigger)
+    public function show(Process $process, Trigger $script)
     {
-        $this->belongsToProcess($process, $trigger);
-        return fractal($trigger, new TriggerTransformer())->respond(200);
+        $this->belongsToProcess($process, $script);
+        return fractal($script, new TriggerTransformer())->respond(200);
     }
 
     /**
@@ -75,15 +75,15 @@ class TriggerController extends Controller
      * Update a trigger in a process.
      *
      * @param Process $process
-     * @param Trigger $trigger
+     * @param Trigger $script
      * @param Request $request
      *
      * @return ResponseFactory|Response
      * @throws DoesNotBelongToProcessException
      */
-    public function update(Process $process, Trigger $trigger, Request $request)
+    public function update(Process $process, Trigger $script, Request $request)
     {
-        $this->belongsToProcess($process, $trigger);
+        $this->belongsToProcess($process, $script);
         $data = [];
         if ($request->has('title')) {
             $data['title'] = $request->input('title');
@@ -98,7 +98,7 @@ class TriggerController extends Controller
             $data['param'] = $request->input('param');
         }
         if($data) {
-            TriggerManager::update($process, $trigger, $data);
+            TriggerManager::update($process, $script, $data);
         }
         return response([], 204);
     }
@@ -107,15 +107,15 @@ class TriggerController extends Controller
      * Delete a trigger in a process.
      *
      * @param Process $process
-     * @param Trigger $trigger
+     * @param Trigger $script
      *
      * @return ResponseFactory|Response
      * @throws DoesNotBelongToProcessException
      */
-    public function remove(Process $process, Trigger $trigger)
+    public function remove(Process $process, Trigger $script)
     {
-        $this->belongsToProcess($process, $trigger);
-        TriggerManager::remove($trigger);
+        $this->belongsToProcess($process, $script);
+        TriggerManager::remove($script);
         return response([], 204);
     }
 
@@ -123,13 +123,13 @@ class TriggerController extends Controller
      * Validate if trigger belong to process.
      *
      * @param Process $process
-     * @param Trigger $trigger
+     * @param Trigger $script
      *
      * @throws DoesNotBelongToProcessException|void
      */
-    private function belongsToProcess(Process $process, Trigger $trigger)
+    private function belongsToProcess(Process $process, Trigger $script)
     {
-        if($process->id !== $trigger->process_id) {
+        if($process->id !== $script->process_id) {
             Throw new DoesNotBelongToProcessException(__('The trigger does not belong to this process.'));
         }
     }
