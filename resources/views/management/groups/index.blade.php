@@ -17,7 +17,7 @@
           <label for="add-group-status">Status</label>
           <select class="form-control" id="add-group-status" v-model="addGroupStatus">
               <option value="ACTIVE">Active</option>
-              <option value="DISABLED">Disabled</option>
+              <option value="INACTIVE">Inactive</option>
 
           </select>
         </div>

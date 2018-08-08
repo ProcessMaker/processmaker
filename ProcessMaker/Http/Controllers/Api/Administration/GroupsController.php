@@ -68,7 +68,7 @@ class GroupsController extends Controller
     {
         $data = $request->validate([
             'title' => 'required|max:255|unique:groups,title',
-            'status' => 'required|in:ACTIVE,DISABLED'
+            'status' => 'required|in:ACTIVE,INACTIVE'
         ]);
         $group = Group::create($data);
         //$group->refresh();

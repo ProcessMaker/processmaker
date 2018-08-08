@@ -21,7 +21,7 @@ class CreateRolesTable extends Migration
             $table->string('description');
             $table->string('code');
             $table->timestamps();
-            $table->enum('status', ['ACTIVE', 'DISABLED'])->default('ACTIVE');
+            $table->enum('status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
 
             // setup relationship for Parent rol we belong to
             $table->foreign('parent_role_id')->references('id')->on('roles')->ondelete('cascade');
