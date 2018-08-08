@@ -23,8 +23,8 @@
                 <img id="bpmn:Flow" src="../img/corona-flow.png" height="28"
                      @dragstart="creatingFlow($event)" @dragend="createFlow($event)">
             </div>
-            <div class="item-crown">
-                <i id="cog" class="fas fa-cog icrown" draggable="true"></i>
+            <div class="item-crown" @click="showConfiguration">
+                <i id="cog" class="fas fa-cog icrown" draggable="false"></i>
             </div>
         </div>
         <div class="d-flex flex-row">
@@ -57,6 +57,12 @@
             EventBus.$on(actions.designer.crown.hide().type, (value) => this.hide(value))
         },
         methods: {
+            /**
+             * Show the configuration popup of the element
+             */
+            showConfiguration (ev){
+                EventBus.$emit("open-add-dialog", "show-element-configuration");
+            },
             /**
              * Method for remove the Selected Shape
              */
