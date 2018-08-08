@@ -10,7 +10,7 @@ use Exception;
  * @package ProcessMaker\Exceptions
  */
 
-class TriggerException extends Exception
+class ScriptException extends Exception
 {
 
 }

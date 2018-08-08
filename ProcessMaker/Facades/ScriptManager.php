@@ -5,7 +5,7 @@ namespace ProcessMaker\Facades;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Facade;
 use ProcessMaker\Model\Process;
-use ProcessMaker\Model\Trigger;
+use ProcessMaker\Model\Script;
 
 /**
  * Facade for our Task Manager
@@ -14,10 +14,10 @@ use ProcessMaker\Model\Trigger;
  * @see \ProcessMaker\Managers\ScriptManager
  *
  * @method static Paginator index(Process $process, array $options)
- * @method static Trigger save(Process $process, array $data)
- * @method static array update(Process $process, Trigger $trigger, array $data)
- * @method static boolean|null remove(Trigger $trigger)
- * @method static array getTriggers(Process $process)
+ * @method static Script save(Process $process, array $data)
+ * @method static array update(Process $process, Script $script, array $data)
+ * @method static boolean|null remove(Script $script)
+ * @method static array getScript(Process $process)
  *
  */
 class ScriptManager extends Facade
@@ -29,6 +29,6 @@ class ScriptManager extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return 'trigger.manager';
+        return 'script.manager';
     }
 }

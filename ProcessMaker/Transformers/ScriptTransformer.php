@@ -6,7 +6,7 @@ use League\Fractal\TransformerAbstract;
 use ProcessMaker\Model\Script;
 
 /**
- * Trigger transformer, used to prepare the JSON response returned in the
+ * Script transformer, used to prepare the JSON response returned in the
  * designer's endpoints.
  *
  * @package ProcessMaker\Transformer
@@ -15,21 +15,21 @@ class ScriptTransformer extends TransformerAbstract
 {
 
     /**
-     * Transform the trigger.
+     * Transform the script.
      *
-     * @param Script $trigger
+     * @param Script $script
      *
      * @return array
      */
-    public function transform(Script $trigger)
+    public function transform(Script $script)
     {
         return [
-            'uid' => $trigger->uid,
-            'title' => $trigger->title,
-            'description' => $trigger->description,
-            'type' => $trigger->type,
-            'webbot' => $trigger->webbot,
-            'param' => $trigger->param,
+            'uid' => $script->uid,
+            'title' => $script->title,
+            'description' => $script->description,
+            'type' => $script->type,
+            'webbot' => $script->webbot,
+            'param' => $script->param,
         ];
     }
 }

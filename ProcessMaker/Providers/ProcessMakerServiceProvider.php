@@ -106,7 +106,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
             return new InputDocumentManager();
         });
         
-        $this->app->singleton('trigger.manager', function ($app) {
+        $this->app->singleton('script.manager', function ($app) {
             return new ScriptManager();
         });
 
