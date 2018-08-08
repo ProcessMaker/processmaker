@@ -26,7 +26,7 @@ class Script extends Model
     use ValidatingTrait;
     use Uuid;
 
-    protected $table = 'triggers';
+    protected $table = 'scripts';
 
     const SCRIPT_TYPE = 'SCRIPT';
 
@@ -61,7 +61,7 @@ class Script extends Model
 
     protected $rules = [
         'uid' => 'max:36',
-        'title' => 'required|unique:triggers,title',
+        'title' => 'required|unique:scripts,title',
         'process_id' => 'exists:processes,id',
         'type' => 'required|in:' . self::SCRIPT_TYPE
     ];

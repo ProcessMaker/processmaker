@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTriggersTable extends Migration
+class CreateScriptsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateTriggersTable extends Migration
      */
     public function up()
     {
-        Schema::create('triggers', function (Blueprint $table) {
+        Schema::create('scripts', function (Blueprint $table) {
             $table->increments('id');
             $table->timestamps();
             $table->uuid('uid');
@@ -38,6 +38,6 @@ class CreateTriggersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('triggers');
+        Schema::dropIfExists('scripts');
     }
 }

@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 class ScriptController extends Controller
 {
     /**
-     * Get a list of triggers in a process.
+     * Get a list of scripts in a process.
      *
      * @param Process $process
      * @param Request $request
@@ -36,7 +36,7 @@ class ScriptController extends Controller
     }
 
     /**
-     * Get a single trigger in a process.
+     * Get a single script in a process.
      *
      * @param Process $process
      * @param Script $script
@@ -51,7 +51,7 @@ class ScriptController extends Controller
     }
 
     /**
-     * Create a new trigger in a process.
+     * Create a new script in a process.
      *
      * @param Process $process
      * @param Request $request
@@ -72,7 +72,7 @@ class ScriptController extends Controller
     }
 
     /**
-     * Update a trigger in a process.
+     * Update a script in a process.
      *
      * @param Process $process
      * @param Script $script
@@ -104,7 +104,7 @@ class ScriptController extends Controller
     }
 
     /**
-     * Delete a trigger in a process.
+     * Delete a script in a process.
      *
      * @param Process $process
      * @param Script $script
@@ -120,7 +120,7 @@ class ScriptController extends Controller
     }
 
     /**
-     * Validate if trigger belong to process.
+     * Validate if script belong to process.
      *
      * @param Process $process
      * @param Script $script
@@ -130,7 +130,7 @@ class ScriptController extends Controller
     private function belongsToProcess(Process $process, Script $script)
     {
         if($process->id !== $script->process_id) {
-            Throw new DoesNotBelongToProcessException(__('The trigger does not belong to this process.'));
+            Throw new DoesNotBelongToProcessException(__('The script does not belong to this process.'));
         }
     }
 
