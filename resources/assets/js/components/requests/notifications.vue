@@ -1,45 +1,39 @@
 <template>
     <div class="notifications">
-        <a class="count-info" data-toggle="dropdown" href="#" aria-expanded="false">
+        <a class="count-info" data-toggle="dropdown" href="#" aria-expanded="false" id="exPopover1-bottom">
             <i class="fas fa-bell fa-lg font-size-23"></i>
             <b-badge pill variant="danger" v-show="messages.length>0">{{messages.length}}</b-badge>
         </a>
-        <ul class="dropdown-menu dropdown-alerts">
-            <li>
-                <div class="arrow-container"><div class="arrow"></div></div>
-            </li>
-            <li class="dropdown-item">
-                <h4 class="mb-3">New Tasks</h4>
-            </li>
-            <li v-for="task in messages" class="dropdown-item font-weight">
-                <div class="mb-1">
-                  <small class="float-right task-meta mt-1">{{formatDateTime(task.dateTime)}}</small>
-                  <a class="text-primary font-size-16" v-bind:href="task.url" @click.stop="remove(task)" target="_blank">
-                    <span>{{task.name}}</span> 
-                  </a>
-                </div>
-                <div>
-                  <span class="text-secondary">{{task.processName}}</span> 
-                </div>
-                <div>
-                  <span class="text-secondary">{{task.userName}}</span>
-                </div>
-                <hr id="divider">
-            </li>
-            <li class="dropdown-item">
-                <div class="link-block mt-2 mb-2">
-                    <a href="/task">
-                       <span class="text-uppercase font-size-16 font-weight">view ALL TASKS</span> 
-                    </a>
-                </div>
-            </li>
-        </ul>
+        <b-popover :target="'exPopover1-bottom'"
+                   :placement="'bottomleft'"
+                   triggers="focus">
+                   <h3 class="popover-header">New Tasks</h3>
+                   <ul class="list-unstyled tasklist">
+                     <li v-if="messages.length == 0">No Tasks Found<hr></li>
+                       <li v-for="task in messages">
+                         <small class="float-right muted">{{formatDateTime(task.dateTime)}}</small>
+                         <h3><a v-bind:href="task.url" @click.stop="remove(task)">{{task.name}}</a></h3>
+                         <div class="muted">
+                         {{task.processName}}<br>
+                         {{task.userName}}
+                       </div>
+                         <hr>
+                       </li>
+                       <li class="footer">
+                         <a href="/tasks">View All Tasks</a>
+                       </li>
+                   </ul>
+        </b-popover>
+
+
+
     </div>
 </template>
 
 <script>
 import moment from "moment";
-
+import { Popover } from 'bootstrap-vue/es/components';
+Vue.use(Popover);
 export default {
   props: {
     messages: Array
@@ -52,21 +46,64 @@ export default {
     }
   },
   data() {
-    return {};
+    return {
+      arrowStyle: {
+        top: "0px",
+        left: "0px"
+      },
+    };
   },
   methods: {
     remove(message) {
       this.messages.splice(this.messages.indexOf(message), 1);
     },
     formatDateTime(iso8601) {
-      return moment(iso8601).format("hh:mm MM.DD.YYYY");
+      return moment(iso8601).format("MM/DD/YY HH:mm");
     }
   },
-  mounted() {}
+  mounted() {
+    this.arrowStyle.top = $("#navbar-request-button").offset().top + 45 + "px";
+    this.arrowStyle.left =
+      $("#navbar-request-button").offset().left + 53 + "px";
+
+    window.addEventListener("resize", () => {
+      this.arrowStyle.top =
+        $("#navbar-request-button").offset().top + 42 + "px";
+      this.arrowStyle.left =
+        $("#navbar-request-button").offset().left + 32 + "px";
+    });
+  }
 };
 </script>
 
 <style lang="scss" scoped>
+.popover-header {
+  background-color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333333;
+  margin:-8px;
+  margin-bottom:18px;
+  display: block
+}
+.tasklist {
+  font-size: 12px;
+   width:250px;
+   margin-bottom: 6px;
+   h3 {
+      font-size: 14px;
+      color: #3397e1;
+   }
+   .muted {color:#7b8792}
+   .footer {
+    font-size: 14px;
+    font-weight: normal;
+    color: #3397e1;
+    text-transform: uppercase;
+   }
+
+}
+
 .dropdown-menu {
   right: 2px;
   margin-top: -2px;
@@ -89,47 +126,9 @@ export default {
   right: 10px;
   top: 12px;
 }
-.arrow {
-  -webkit-transform: rotate(45deg);
-  transform: rotate(45deg);
-  width: 10px;
-  height: 25px;
-  /* border: 1px solid #222222; */
-  -webkit-box-shadow: 0px 0px 3px 0px rgba(150, 150, 150, 0.5);
-  -moz-box-shadow: 0px 0px 3px 0px rgba(150, 150, 150, 0.5);
-  box-shadow: 0px 0px 3px 0px rgba(150, 150, 150, 0.5);
-  position: absolute;
-  top: 8px;
-  background-color: white;
-  right: 25px;
-}
-.arrow-container {
-  position: absolute;
-  overflow: hidden;
-  height: 16px;
-  width: 64px;
-  right: 0px;
-  top: -16px;
-}
-#divider {
-  margin-bottom: 0px;
-  margin-top: 8px;
-}
 .notifications {
   position: relative;
   padding: 16px;
 }
-.task-meta {
-  color: #788793;
-  font-size: 11px;
-}
-.font-size-16 {
-  font-size: 16px;
-}
-.font-size-23 {
-  font-size: 23px;
-}
-.font-weight {
-  font-weight: 200;
-}
+
 </style>
