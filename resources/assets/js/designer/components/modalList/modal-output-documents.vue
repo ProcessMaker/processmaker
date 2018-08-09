@@ -1,5 +1,5 @@
 <template>
-    <b-modal class='output-docs' ref='modal' size='lg' @hidden='onHidden' title='Output Documents' hide-footer>
+    <b-modal class='output-docs' ref='modal' size='lg' @hidden='onHidden' title='Output Documents'>
         <div class='form-group'>
             <div class='d-flex justify-content-between'>
                 <input v-model='filter' class='form-control  col-sm-3' placeholder='Search...' @keyup='fetch'>
@@ -23,6 +23,14 @@
                 </vuetable>
                 <pagination single="Output Document" plural="Output Documents" :perPageSelectEnabled="true" @changePerPage="changePerPage"
                             @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
+                <template slot="modal-footer">
+                    <b-button @click="onCancel" class="btn-outline-success btn-md">
+                        CANCEL
+                    </b-button>
+                    <b-button class="btn btn-success btn-sm text-uppercase">
+                        CONTINUE
+                    </b-button>
+                </template>
             </div>
         </div>
     </b-modal>
