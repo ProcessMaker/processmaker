@@ -32,7 +32,7 @@
         },
         methods: {
             submit() {
-                ProcessMaker.apiClient.post('processes/' + this.processUid + '/events/' + this.event + '/trigger', {
+                ProcessMaker.apiClient.post('processes/' + this.processUid + '/events/' + this.event + '/script', {
                     startDate: new Date().toISOString(),
                     endDate: '',
                     reason: '',

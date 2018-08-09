@@ -40,7 +40,7 @@ class TaskManagerTest extends ApiTestCase
         'is_start_task',
         'routing_screen_template',
         'timing_control_configuration',
-        'trigger_id',
+        'script_id',
         'self_service_timeout_configuration',
         'custom_title',
         'custom_description',

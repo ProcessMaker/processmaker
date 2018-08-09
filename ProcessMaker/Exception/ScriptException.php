@@ -5,12 +5,12 @@ namespace ProcessMaker\Exception;
 use Exception;
 
 /**
- * Thrown if the triggers to a process failed
+ * Thrown if the scripts to a process failed
  *
  * @package ProcessMaker\Exceptions
  */
 
-class TriggerException extends Exception
+class ScriptException extends Exception
 {
 
 }
