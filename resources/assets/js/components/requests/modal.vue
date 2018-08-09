@@ -1,7 +1,7 @@
 <template>
     <div>
         <button id="navbar-request-button" class="btn btn-success btn-sm" @click="toggleRequestModal"><i class="fas fa-plus"></i> Request</button>
-        <div id="requests-modal" class="requests-modal modal fade bd-example-modal-lg" :class="{show: show}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <b-modal size="lg" id="requests-modal" class="requests-modal" ref="requestModalAdd">
             <div class="header">
                 <div class="title">
                 We've made it easy for you to make the following requests
@@ -13,9 +13,6 @@
                         </div>
                         <input class="form-control form-control-sm" v-model="filter" placeholder="Search...">
                       </div>
-                </div>
-                <div class="actions">
-                    <i class="fas fa-times" @click="toggleRequestModal"></i>
                 </div>
             </div>
             <div class="header-bar"></div>
@@ -31,7 +28,7 @@
             <div v-if="loading" class="loading">
                 Finding Requests available to you
             </div>
-        </div>
+        </b-modal>
     </div>
 </template>
 
@@ -45,12 +42,7 @@ export default {
   },
   data() {
     return {
-      show: false,
       filter: "",
-      arrowStyle: {
-        top: "0px",
-        left: "0px"
-      },
       loading: false,
       error: false,
       processes: {
@@ -67,9 +59,9 @@ export default {
   },
   methods: {
     toggleRequestModal() {
-      this.show = !this.show;
-      if (this.show && !this.loaded) {
+      if (!this.loaded) {
         // Perform initial load of requests from backend
+        this.$refs.requestModalAdd.show();
         this.fetch();
       }
     },
@@ -115,20 +107,6 @@ export default {
 
 <style lang="scss" scoped>
 .requests-modal {
-  // Do not display by default
-  display: none;
-  position: fixed;
-  border-radius: 2px;
-  background-color: #ffffff;
-  box-shadow: 0 4px 18px 0 rgba(0, 0, 0, 0.1);
-  z-index: 90000;
-  height: 70%;
-  width: calc(100% - 160px);
-  position: fixed;
-  top: 56px;
-  left: 50%;
-  transform: translateX(-50%);
-
   .header {
     min-height: 74px;
     display: flex;
@@ -204,3 +182,22 @@ export default {
   }
 }
 </style>
+
+
+
+
+
+
+
+ 
+
+
+
+  
+
+        
+
+        
+
+        
+                
