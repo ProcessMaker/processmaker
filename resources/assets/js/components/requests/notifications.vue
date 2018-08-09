@@ -6,7 +6,7 @@
         </a>
         <b-popover :target="'exPopover1-bottom'"
                    :placement="'bottomleft'"
-                   triggers="focus">
+                   >
                    <h3 class="popover-header">New Tasks</h3>
                    <ul class="list-unstyled tasklist">
                      <li v-if="messages.length == 0">No Tasks Found<hr></li>
@@ -82,7 +82,8 @@ export default {
   font-size: 18px;
   font-weight: 600;
   color: #333333;
-  margin:-8px;
+  margin: -12px;
+  margin-top:-8px;
   margin-bottom:18px;
   display: block
 }
