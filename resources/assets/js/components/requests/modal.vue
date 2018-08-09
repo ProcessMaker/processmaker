@@ -1,7 +1,7 @@
 <template>
     <div>
         <button id="navbar-request-button" class="btn btn-success btn-sm" @click="toggleRequestModal"><i class="fas fa-plus"></i> Request</button>
-        <div id="requests-modal" class="requests-modal" :class="{show: show}">
+        <div id="requests-modal" class="requests-modal modal fade bd-example-modal-lg" :class="{show: show}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
             <div class="header">
                 <div class="title">
                 We've made it easy for you to make the following requests
