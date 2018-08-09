@@ -104,18 +104,6 @@ export default {
 
 }
 
-.dropdown-menu {
-  right: 2px;
-  margin-top: -2px;
-  left: auto;
-  width: 300px;
-  border-radius: 2px;
-  border: none;
-  background-color: #ffffff;
-  -webkit-box-shadow: 0px 2px 4px 1px rgba(150, 150, 150, 1);
-  -moz-box-shadow: 0px 2px 4px 1px rgba(150, 150, 150, 1);
-  box-shadow: 0px 2px 4px 1px rgba(150, 150, 150, 1);
-}
 .count-info {
   color: #788793;
 }
