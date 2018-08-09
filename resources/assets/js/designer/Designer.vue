@@ -77,7 +77,6 @@
             toptoolbar,
             modalForms,
             ModalInputDocumentList,
-            ModalTriggersList,
             contextMenu,
             ModalScriptsList
         },

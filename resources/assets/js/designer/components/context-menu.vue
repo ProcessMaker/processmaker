@@ -32,7 +32,6 @@
                 }
             },
             show(data){
-                debugger
                 this.cmList = data.options
                 this.$easycm(data.event, this.$root)
             }
