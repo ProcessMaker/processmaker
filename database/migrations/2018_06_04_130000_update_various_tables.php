@@ -20,13 +20,13 @@ class UpdateVariousTables extends Migration
     {
         // Update process table to have foreign keys
         Schema::table('processes', function (Blueprint $table) {
-            $table->foreign('create_trigger_id')->references('id')->on('triggers')->onDelete('CASCADE');
-            $table->foreign('open_trigger_id')->references('id')->on('triggers')->onDelete('CASCADE');
-            $table->foreign('deleted_trigger_id')->references('id')->on('triggers')->onDelete('CASCADE');
-            $table->foreign('canceled_trigger_id')->references('id')->on('triggers')->onDelete('CASCADE');
-            $table->foreign('paused_trigger_id')->references('id')->on('triggers')->onDelete('CASCADE');
-            $table->foreign('reassigned_trigger_id')->references('id')->on('triggers')->onDelete('CASCADE');
-            $table->foreign('unpaused_trigger_id')->references('id')->on('triggers')->onDelete('CASCADE');
+            $table->foreign('create_script_id')->references('id')->on('scripts')->onDelete('CASCADE');
+            $table->foreign('open_script_id')->references('id')->on('scripts')->onDelete('CASCADE');
+            $table->foreign('deleted_script_id')->references('id')->on('scripts')->onDelete('CASCADE');
+            $table->foreign('canceled_script_id')->references('id')->on('scripts')->onDelete('CASCADE');
+            $table->foreign('paused_script_id')->references('id')->on('scripts')->onDelete('CASCADE');
+            $table->foreign('reassigned_script_id')->references('id')->on('scripts')->onDelete('CASCADE');
+            $table->foreign('unpaused_script_id')->references('id')->on('scripts')->onDelete('CASCADE');
         });
     }
 
@@ -39,13 +39,13 @@ class UpdateVariousTables extends Migration
     {
         // Delete process table to have foreign keys
         Schema::table('processes', function (Blueprint $table) {
-            $table->dropForeign('processes_create_trigger_id_foreign');
-            $table->dropForeign('processes_open_trigger_id_foreign');
-            $table->dropForeign('processes_deleted_trigger_id_foreign');
-            $table->dropForeign('processes_canceled_trigger_id_foreign');
-            $table->dropForeign('processes_paused_trigger_id_foreign');
-            $table->dropForeign('processes_reassigned_trigger_id_foreign');
-            $table->dropForeign('processes_unpaused_trigger_id_foreign');
+            $table->dropForeign('processes_create_script_id_foreign');
+            $table->dropForeign('processes_open_script_id_foreign');
+            $table->dropForeign('processes_deleted_script_id_foreign');
+            $table->dropForeign('processes_canceled_script_id_foreign');
+            $table->dropForeign('processes_paused_script_id_foreign');
+            $table->dropForeign('processes_reassigned_script_id_foreign');
+            $table->dropForeign('processes_unpaused_script_id_foreign');
         });
 
     }
