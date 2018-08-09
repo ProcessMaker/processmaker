@@ -1,5 +1,5 @@
 <template>
-  <b-modal ref="profileModal" hide-footer title="Profile Avatar">
+  <b-modal ref="profileModal" title="Profile Avatar">
     <div>
       <div v-if="!image" class="no-avatar">Click the browse button below to get started</div>
         <vue-croppie :style="{display: (image) ? 'block' : 'none' }" ref="croppie" :viewport="{ width: 380, height: 380, type: 'circle' }" :boundary="{ width: 400, height: 400 }" :enableOrientation="false" :enableResize="false">
@@ -7,12 +7,19 @@
     </div>
     <input type="file" class="custom-file-input" ref="customFile" @change="onFileChange">
     </div>
-    <div class="mb-5 mt-3 float-right">
-      <button type="button" @click="browse" class="btn btn-secondary text-light">
-        <i class="fas fa-upload"></i> Browse</button>
-      <button type="button" @click="hideModal" class="btn btn-outline-secondary">Cancel</button>
-      <button type="button" @click="saveAndEmit" class="btn btn-secondary text-light">Continue</button>
-    </div>
+
+    <template slot="modal-footer">
+      <b-button class="btn btn-success btn-sm text-uppercase"><i class="fas fa-upload"></i>
+          BROWSE
+      </b-button>
+      <b-button @click="onCancel" class="btn-outline-success btn-md">
+          CANCEL
+      </b-button>
+      <b-button class="btn btn-success btn-sm text-uppercase">
+          CONTINUE
+      </b-button>
+    </template>
+
   </b-modal>
 </template>
 
