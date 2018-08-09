@@ -53,8 +53,8 @@
                         visible: true
                     },
                     {
-                        title: "Triggers",
-                        key: 'triggers',
+                        title: "Scripts",
+                        key: 'scripts',
                         hasadd: true,
                         visible: true
                     },

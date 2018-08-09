@@ -5,10 +5,10 @@ namespace ProcessMaker\Policies;
 use ProcessMaker\Model\Permission;
 use ProcessMaker\Model\User;
 
-class TriggerPolicy
+class ScriptPolicy
 {
     /**
-     * Determine if the trigger can be read by the user.
+     * Determine if the script can be read by the user.
      *
      * @param User $user
      * @return bool
@@ -19,7 +19,7 @@ class TriggerPolicy
     }
 
     /**
-     * Determine if the trigger can be written by the user.
+     * Determine if the script can be written by the user.
      *
      * @param User $user
      * @return bool
@@ -30,7 +30,7 @@ class TriggerPolicy
     }
 
     /**
-     * Determine if the trigger can be deleted by the user.
+     * Determine if the script can be deleted by the user.
      *
      * @param User $user
      * @return bool

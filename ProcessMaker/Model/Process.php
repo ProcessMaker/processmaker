@@ -23,13 +23,13 @@ use Watson\Validating\ValidatingTrait;
  * @property string $type
  * @property bool $show_map
  * @property bool $show_message
- * @property string $create_trigger_id
- * @property string $open_trigger_id
- * @property string $deleted_trigger_id
- * @property string $canceled_trigger_id
- * @property string $paused_trigger_id
- * @property string $reassigned_trigger_id
- * @property string $unpaused_trigger_id
+ * @property string $create_script_id
+ * @property string $open_script_id
+ * @property string $deleted_script_id
+ * @property string $canceled_script_id
+ * @property string $paused_script_id
+ * @property string $reassigned_script_id
+ * @property string $unpaused_script_id
  * @property string $visibility_id
  * @property bool $show_delegate
  * @property bool $show_dynaform
@@ -111,13 +111,13 @@ class Process extends Model
         'type',
         'show_map',
         'show_message',
-        'create_trigger_id',
-        'open_trigger_id',
-        'deleted_trigger_id',
-        'canceled_trigger_id',
-        'paused_trigger_id',
-        'reassigned_trigger_id',
-        'unpaused_trigger_id',
+        'create_script_id',
+        'open_script_id',
+        'deleted_script_id',
+        'canceled_script_id',
+        'paused_script_id',
+        'reassigned_script_id',
+        'unpaused_script_id',
         'visibility',
         'show_delegate',
         'show_dynaform',
@@ -170,13 +170,13 @@ class Process extends Model
         'name' => 'required',
         'process_parent_id' => 'exists:processes',
         'status' => 'in:' . self::STATUS_ACTIVE . ',' . self::STATUS_INACTIVE,
-        'create_trigger_id' => 'nullable|exists:triggers,id',
-        'open_trigger_id' => 'nullable|exists:triggers,id',
-        'deleted_trigger_id' => 'nullable|max:32',
-        'canceled_trigger_id' => 'nullable|max:32',
-        'paused_trigger_id' => 'nullable|max:32',
-        'reassigned_trigger_id' => 'nullable|max:32',
-        'unpaused_trigger_id' => 'nullable|max:32',
+        'create_script_id' => 'nullable|exists:scripts,id',
+        'open_script_id' => 'nullable|exists:scripts,id',
+        'deleted_script_id' => 'nullable|max:32',
+        'canceled_script_id' => 'nullable|max:32',
+        'paused_script_id' => 'nullable|max:32',
+        'reassigned_script_id' => 'nullable|max:32',
+        'unpaused_script_id' => 'nullable|max:32',
         'process_category_id' => 'exists:process_categories,id',
         'user_id' => 'exists:users,id',
     ];
