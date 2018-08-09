@@ -12,7 +12,7 @@
       <b-button class="btn btn-success btn-sm text-uppercase"><i class="fas fa-upload"></i>
           BROWSE
       </b-button>
-      <b-button @click="onCancel" class="btn-outline-success btn-md">
+      <b-button @click="onCancel" class="btn btn-outline-success btn-md">
           CANCEL
       </b-button>
       <b-button class="btn btn-success btn-sm text-uppercase">
