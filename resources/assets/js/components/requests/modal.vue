@@ -1,7 +1,6 @@
 <template>
     <div>
         <button id="navbar-request-button" class="btn btn-success btn-sm" @click="toggleRequestModal"><i class="fas fa-plus"></i> Request</button>
-        <div class="arrow" :class="{show: show}" :style="arrowStyle"></div>
         <div id="requests-modal" class="requests-modal" :class="{show: show}">
             <div class="header">
                 <div class="title">
