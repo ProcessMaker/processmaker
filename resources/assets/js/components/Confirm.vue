@@ -4,20 +4,22 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">{{ title }}</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onCancel">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onClose">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body mb-1 text-center">
-                    <p :class="'text-'+variant">{{ message }}</p>
+                    <p :class="'text-'+variant"><span v-html="message"></span></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-success btn-sm text-uppercase" data-dismiss="modal"
-                            @click="onCancel">Close
+                    <button id="close" type="button" class="btn btn-outline-success btn-sm text-uppercase" data-dismiss="modal"
+                            @click="onClose">Cancel
                     </button>
-                    <button type="button" class="btn btn-success btn-sm text-uppercase" @click="onConfirm">Confirm
+                    <button id="cancel" type="button" class="btn btn-outline-success btn-sm text-uppercase" data-dismiss="modal"
+                            @click="onDeny">No
                     </button>
-
+                    <button id="confirm" type="button" class="btn btn-success btn-sm text-uppercase" @click="onConfirm">Yes
+                    </button>
                 </div>
             </div>
         </div>
@@ -30,7 +32,6 @@
         props: ["title", "message", "variant", "callback"],
         methods: {
             onClose() {
-                this.$emit('show', false);
                 this.$emit('close');
             },
             onConfirm() {
@@ -40,7 +41,7 @@
                 }
                 this.onClose();
             },
-            onCancel() {
+            onDeny() {
                 this.$emit("confirm", false);
                 this.onClose();
             }

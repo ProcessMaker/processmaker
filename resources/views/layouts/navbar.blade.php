@@ -1,7 +1,7 @@
 <div id="navbar" v-cloak>
 
   <b-navbar toggleable="md" type="light" variant="light">
-    <confirmation-modal id="confirmModal7" v-if='confirmShow' :title="confirmTitle" :message="confirmMessage" :variant="confirmVariant" :callback="confirmCallback" @close="confirmShow=false"></confirmation-modal>
+    <confirmation-modal id="confirmModal" v-if='confirmShow' :title="confirmTitle" :message="confirmMessage" :variant="confirmVariant" :callback="confirmCallback" @close="confirmShow=false"></confirmation-modal>
     <b-alert :show="alertShow" id="alertBox" :variant="alertVariant" @dismissed="alertShow = false" dismissible>@{{alertText}}</b-alert>
 
     <b-navbar-nav>
