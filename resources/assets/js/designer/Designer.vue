@@ -1,11 +1,13 @@
 <template>
     <div id="designer-container">
-        <component :is="modalComponent" :if="modalComponent" @hidden="onHidden" :processUid="processUid" :selectedElement="selectedElement"></component>
+        <component :is="modalComponent" :if="modalComponent" @hidden="onHidden" :processUid="processUid"
+                   :selectedElement="selectedElement"></component>
         <toptoolbar ref="toptoolbar"></toptoolbar>
         <toolbar ref="toolbar"></toolbar>
         <div id="designer-subcontainer">
             <div class="canvas-container" @scroll="onScroll">
                 <crown ref="crown"></crown>
+                <context-menu ref="contextMenu"></context-menu>
                 <svgcanvas :processUid="processUid" :bpmn="bpmn" ref="svgcanvas"></svgcanvas>
             </div>
             <designerobjectsmenu></designerobjectsmenu>
@@ -48,6 +50,7 @@
 
     // This is out Cron for every shape
     import crown from "./components/crown"
+    import contextMenu from "./components/context-menu"
     import actions from "./actions"
 
     export default {
@@ -74,7 +77,8 @@
             toptoolbar,
             modalForms,
             ModalInputDocumentList,
-            ModalTriggersList
+            ModalTriggersList,
+            contextMenu
         },
         data() {
             return {

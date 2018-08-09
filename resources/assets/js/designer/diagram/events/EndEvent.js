@@ -47,4 +47,8 @@ export default class {
     getOptions(val) {
         return this.adapter.getOptions(val)
     }
+
+    showContextMenu(ev) {
+        return this.adapter.showContextMenu(ev)
+    }
 }
