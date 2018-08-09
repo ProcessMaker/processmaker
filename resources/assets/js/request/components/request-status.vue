@@ -104,13 +104,20 @@
                         this.process = response.data;
                         this.update();
                     })
+            // Listen for notifications
+            let userId = document.head.querySelector('meta[name="user-id"]').content;
+            Echo.private(`ProcessMaker.Model.User.${userId}`)
+                .notification((token) => {
+                    ProcessMaker.pushNotification(token);
+                    this.update();
+                });
         },
         methods: {
             formatDate(isoDate) {
                 return moment(isoDate).format('YYYY-MM-DD hh:mm');
             },
             openLink(process, delegation) {
-                return '/nayra/' +
+                return '/tasks/' +
                         delegation.definition.id +
                         '/' +
                         process.uid +
@@ -137,9 +144,9 @@
                         thread_status: 'CLOSED'
                     }
                 })
-                        .then((response) => {
-                            this.completed = response.data.data;
-                        });
+                    .then((response) => {
+                        this.completed = response.data.data;
+                    });
 
 
             }

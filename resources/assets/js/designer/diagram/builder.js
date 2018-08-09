@@ -139,6 +139,13 @@ export class Builder {
         }
     }
 
+    assignTask(options) {
+        let selection = this.selection.pop()
+        selection.configAttributes(options)
+        selection.updateBpmn()
+        selection.hideCrown()
+    }
+
     /**
      * Connect shapes source, target, and vertices
      * @param source

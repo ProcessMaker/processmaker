@@ -1,5 +1,8 @@
 <template>
     <div class="card">
+        <div class="card-header">
+            Form UID: <span class="badge badge-info">{{formUid}}</span>
+        </div>
         <div class="card-body">
             <h5 class="card-title">Approve</h5>
             <form>
@@ -34,6 +37,7 @@
             'processUid',
             'instanceUid',
             'tokenUid',
+            'formUid',
 
             'startDate',
             'endDate',

@@ -10,7 +10,9 @@
                         <b-btn variant="action" @click="onAction('edit-item', props.rowData, props.rowIndex)"
                                v-b-tooltip.hover title="Edit"><i class="fas fa-edit"></i></b-btn>
                         <b-btn variant="action" @click="onAction('toggle-status', props.rowData, props.rowIndex)"
-                               v-b-tooltip.hover :title='activateBtnTitle(props.rowData)'><i class="fas" v-bind:class='activateBtnCssClass(props.rowData)'></i></b-btn>
+                               v-b-tooltip.hover :title='activateBtnTitle(props.rowData)'><i class="fas"
+                                                                                             v-bind:class='activateBtnCssClass(props.rowData)'></i>
+                        </b-btn>
                         <b-btn variant="action" @click="onAction('remove-item', props.rowData, props.rowIndex)"
                                v-b-tooltip.hover title="Remove"><i class="fas fa-trash-alt"></i></b-btn>
                     </div>
@@ -157,9 +159,7 @@
             }
         },
 
-        computed: {
-
-        }
+        computed: {}
     };
 </script>
 

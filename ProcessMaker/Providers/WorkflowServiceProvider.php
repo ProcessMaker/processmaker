@@ -1,16 +1,20 @@
 <?php
 namespace ProcessMaker\Providers;
 
+use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use ProcessMaker\BpmnEngine;
 use ProcessMaker\Listeners\BpmnSubscriber;
 use ProcessMaker\Managers\WorkflowManager;
-use ProcessMaker\Repositories\DefinitionsRepository;
-use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
+use ProcessMaker\Repositories\DefinitionsRepository;
 
 class WorkflowServiceProvider extends ServiceProvider
 {
+    /**
+     * ProcessMaker BPMN extension definitions.
+     */
+    const PROCESS_MAKER_NS = 'https://bpm4.processmaker.local/definition/ProcessMaker.xsd';
 
     /**
      * The subscriber classes to register.
@@ -50,6 +54,9 @@ class WorkflowServiceProvider extends ServiceProvider
             $bpmnRepository->setFactory($repository);
             $engine->setStorage($bpmnRepository);
             $engine->setProcess($params['process']);
+
+            //Initialize custom properties for ProcessMaker
+            $bpmnRepository->setBpmnElementMapping(self::PROCESS_MAKER_NS, '', []);
 
             return $bpmnRepository;
         });
