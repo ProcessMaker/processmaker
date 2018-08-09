@@ -1,8 +1,7 @@
 <template>
     <div>
         <button id="navbar-request-button" class="btn btn-success btn-sm" @click="toggleRequestModal"><i class="fas fa-plus"></i> Request</button>
-        <div class="arrow" :class="{show: show}" :style="arrowStyle"></div>
-        <div id="requests-modal" class="requests-modal" :class="{show: show}">
+        <div id="requests-modal" class="requests-modal modal fade bd-example-modal-lg" :class="{show: show}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
             <div class="header">
                 <div class="title">
                 We've made it easy for you to make the following requests
@@ -110,39 +109,11 @@ export default {
         this.processes[category].push(process);
       }
     }
-  },
-  mounted() {
-    this.arrowStyle.top = $("#navbar-request-button").offset().top + 45 + "px";
-    this.arrowStyle.left =
-      $("#navbar-request-button").offset().left + 53 + "px";
-
-    window.addEventListener("resize", () => {
-      this.arrowStyle.top =
-        $("#navbar-request-button").offset().top + 42 + "px";
-      this.arrowStyle.left =
-        $("#navbar-request-button").offset().left + 32 + "px";
-    });
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.arrow {
-  transform: rotate(45deg);
-  width: 30px;
-  height: 25px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  position: fixed;
-  top: 0px;
-  right: 50px;
-  background-color: white;
-  display: none;
-
-  &.show {
-    display: block;
-  }
-}
-
 .requests-modal {
   // Do not display by default
   display: none;
