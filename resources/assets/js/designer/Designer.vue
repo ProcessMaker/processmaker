@@ -79,7 +79,6 @@
             ModalInputDocumentList,
             ModalScriptsList,
             contextMenu
-
         },
         data() {
             return {
