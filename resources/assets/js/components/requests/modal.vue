@@ -1,6 +1,6 @@
 <template>
     <div>
-        <button id="navbar-request-button" class="btn btn-success btn-sm" @click="toggleRequestModal"><i class="fas fa-plus"></i> Request</button>
+        <button id="navbar-request-button" class="btn btn-success btn-sm" @click="showRequestModal"><i class="fas fa-plus"></i> Request</button>
         <b-modal size="lg" id="requests-modal" class="requests-modal" ref="requestModalAdd">
             <div class="header">
                 <div class="title">
@@ -58,7 +58,7 @@ export default {
     }, 250)
   },
   methods: {
-    toggleRequestModal() {
+    showRequestModal() {
       if (!this.loaded) {
         // Perform initial load of requests from backend
         this.$refs.requestModalAdd.show();
