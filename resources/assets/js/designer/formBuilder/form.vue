@@ -144,14 +144,6 @@
 
 <style lang="scss">
 
-    html,
-    body {
-        height: 100%;
-        min-height: 100%;
-        max-height: 100%;
-        overflow: hidden;
-    }
-
     #form-container {
         height: 100%;
         display: flex;

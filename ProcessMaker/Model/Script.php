@@ -35,9 +35,8 @@ class Script extends Model
         'title',
         'description',
         'process_id',
-        'type',
-        'webbot',
-        'param'
+        'language',
+        'code'
     ];
 
     protected $attributes = [
@@ -45,25 +44,23 @@ class Script extends Model
         'title' => '',
         'description' => '',
         'process_id' => '',
-        'type' => self::SCRIPT_TYPE,
-        'webbot' => '',
-        'param' => ''
+        'language' => '',
+        'code' => ''
     ];
     protected $casts = [
         'uid' => 'string',
         'title' => 'string',
         'description' => 'string',
         'process_id' => 'int',
-        'type' => 'string',
-        'webbot' => 'string',
-        'param' => 'string'
+        'language' => 'string',
+        'code' => 'string'
     ];
 
     protected $rules = [
         'uid' => 'max:36',
         'title' => 'required|unique:scripts,title',
         'process_id' => 'exists:processes,id',
-        'type' => 'required|in:' . self::SCRIPT_TYPE
+        'language' => 'required'
     ];
 
     protected $validationMessages = [
@@ -87,29 +84,4 @@ class Script extends Model
     {
         return $this->belongsTo(Process::class);
     }
-
-    /**
-     * Accessor param to json
-     *
-     * @param $value
-     *
-     * @return array|null
-     */
-    public function getParamAttribute($value): ?array
-    {
-        return json_decode($value);
-    }
-
-    /**
-     * Mutator param json decode
-     *
-     * @param $value
-     *
-     * @return void
-     */
-    public function setParamAttribute($value)
-    {
-        $this->attributes['param'] = empty($value) ? null : json_encode($value);
-    }
-
 }

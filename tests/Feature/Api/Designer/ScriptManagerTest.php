@@ -25,9 +25,8 @@ class ScriptManagerTest extends ApiTestCase
         'uid',
         'title',
         'description',
-        'type',
-        'webbot',
-        'param'
+        'language',
+        'code'
     ];
 
     /**
@@ -73,7 +72,7 @@ class ScriptManagerTest extends ApiTestCase
         $response = $this->api('POST', $url, [
             'title' => 'Script Title',
             'description' => $faker->sentence(6),
-            'param' => $faker->words($faker->randomDigitNotNull)
+            'language' => 'php'
         ]);
         //validating the answer is correct.
         $response->assertStatus(201);
@@ -97,7 +96,7 @@ class ScriptManagerTest extends ApiTestCase
         $response = $this->api('POST', $url, [
             'title' => 'Script Title',
             'description' => $faker->sentence(6),
-            'param' => $faker->words($faker->randomDigitNotNull)
+            'code' => $faker->sentence($faker->randomDigitNotNull)
         ]);
         $response->assertStatus(422);
         $this->assertArrayHasKey('message', $response->json());
@@ -113,7 +112,7 @@ class ScriptManagerTest extends ApiTestCase
         $total = $faker->randomDigitNotNull;
         factory(Script::class, $total)->create([
             'process_id' => $this->process->id,
-            'param' => $faker->words($faker->randomDigitNotNull)
+            'code' => $faker->sentence($faker->randomDigitNotNull)
         ]);
 
         //List scripts
@@ -135,7 +134,7 @@ class ScriptManagerTest extends ApiTestCase
     }
 
     /**
-     * Get a list of Form with parameters
+     * Get a list of Scripts with parameters
      */
     public function testListScriptsWithQueryParameter()
     {
@@ -178,11 +177,13 @@ class ScriptManagerTest extends ApiTestCase
         //add scripts to process
         $faker = Faker::create();
 
-        //load script
-        $url = self::API_TEST_SCRIPT . $this->process->uid . '/script/' . factory(Script::class)->create([
+        $script = factory(Script::class)->create([
                 'process_id' => $this->process->id,
-                'param' => $faker->words($faker->randomDigitNotNull)
-            ])->uid;
+                'code' => $faker->sentence($faker->randomDigitNotNull)
+        ]);
+
+        //load script
+        $url = self::API_TEST_SCRIPT . $this->process->uid . '/script/' . $script->uid;
         $response = $this->api('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
@@ -213,13 +214,13 @@ class ScriptManagerTest extends ApiTestCase
         //The post must have the required parameters
         $url = self::API_TEST_SCRIPT . $this->process->uid . '/script/' . factory(Script::class)->create([
                 'process_id' => $this->process->id,
-                'param' => $faker->words($faker->randomDigitNotNull)
+                'code' => $faker->sentence($faker->randomDigitNotNull)
             ])->uid;
         $response = $this->api('PUT', $url, [
             'title' => '',
             'description' => $faker->sentence(6),
-            'webbot' => $faker->sentence(2),
-            'param' => $faker->words(3),
+            'language' => 'php', 
+            'code' => $faker->sentence(3),
         ]);
         //Validate the answer is incorrect
         $response->assertStatus(422);
@@ -234,7 +235,7 @@ class ScriptManagerTest extends ApiTestCase
         //Post saved success
         $url = self::API_TEST_SCRIPT . $this->process->uid . '/script/' . factory(Script::class)->create([
                 'process_id' => $this->process->id,
-                'param' => $faker->words($faker->randomDigitNotNull)
+                'code' => $faker->sentence($faker->randomDigitNotNull)
             ])->uid;
         $response = $this->api('PUT', $url, [
             'title' => $faker->sentence(2)

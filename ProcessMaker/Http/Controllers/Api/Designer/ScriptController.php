@@ -36,6 +36,51 @@ class ScriptController extends Controller
     }
 
     /**
+     * Previews executing a script, with sample data/config data
+     */
+    public function preview(Request $request)
+    {
+        $data = $request->get('data');
+        $config = $request->get('config');
+        $code = $request->get('code');
+        $language = $request->get('language');
+        // Create the temporary files to feed into our docker container
+        $datafname = tempnam("/tmp", "data.json");
+
+        $tempData = fopen($datafname, 'w');
+        fwrite($tempData, $data);
+
+        fclose($tempData);
+        $configfname = tempnam("/tmp", "config.json");
+        $tempData = fopen($configfname, 'w');
+        fwrite($tempData, $config);
+        fclose($tempData);
+        $scriptfname = tempnam("/tmp", "script.php");
+        $tempData = fopen($scriptfname, 'w');
+        fwrite($tempData, $code);
+        fclose($tempData);
+        $outputfname = tempnam("/tmp", "output.json");
+        // Chmod
+        $response = chmod($datafname, 0777);
+
+
+        // So we have the files, let's execute the docker container
+
+        $output = [];
+
+        $cmd = "/usr/bin/docker run -v " . $datafname . ":/opt/executor/data.json -v " . $configfname . ":/opt/executor/config.json -v " . $scriptfname . ":/opt/executor/script.php -v " . $outputfname . ":/opt/executor/output.json processmaker/executor:php php /opt/executor/bootstrap.php";
+        echo $cmd;
+
+        $response = exec($cmd, $output, $returnCode);
+
+        var_dump($response);
+        var_dump($output);
+        dd($returnCode);
+
+        sleep(15);
+    }
+
+    /**
      * Get a single script in a process.
      *
      * @param Process $process
@@ -60,14 +105,7 @@ class ScriptController extends Controller
      */
     public function store(Process $process, Request $request)
     {
-        $data = [
-            'title' =>  $request->input('title', ''),
-            'description' =>  $request->input('description', ''),
-            'webbot' =>  $request->input('webbot', ''),
-            'param' =>  $request->input('param', '')
-        ];
-
-        $response = ScriptManager::save($process, $data);
+        $response = ScriptManager::save($process, $request->all());
         return fractal($response, new ScriptTransformer())->respond(201);
     }
 
