@@ -1,6 +1,7 @@
 import actions from "../actions"
 import EventBus from "../lib/event-bus"
 import {JointElements} from "./jointElements"
+import {ContextMenuOptions} from "./contextMenuOptions/"
 import _ from "lodash"
 /**
  * Shape class
@@ -69,6 +70,17 @@ export class Shape {
     }
 
     /**
+     * Emit a message to display context menu
+     */
+    showContextMenu(ev) {
+        let action = actions.designer.contextMenu.show({
+            event: ev,
+            options: ContextMenuOptions.getOptions(this.getType())
+        })
+        EventBus.$emit(action.type, action.payload)
+    }
+
+    /**
      * This method hides the crown of shape
      */
     hideCrown() {
@@ -114,7 +126,7 @@ export class Shape {
      * @returns {string}
      */
     getType() {
-        return this.type
+        return this.options.type
     }
 
     /**

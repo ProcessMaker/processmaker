@@ -67,6 +67,13 @@ export class Builder {
         }
     }
 
+    contextMenuShape(options) {
+        let el = this.findElementInCollection(options.element, true)
+        if (el) {
+            el.showContextMenu(options.event)
+        }
+    }
+
     /**
      * onClick event for a shape
      * @param element

@@ -7,6 +7,7 @@
         <div id="designer-subcontainer">
             <div class="canvas-container" @scroll="onScroll">
                 <crown ref="crown"></crown>
+                <context-menu ref="contextMenu"></context-menu>
                 <svgcanvas :processUid="processUid" :bpmn="bpmn" ref="svgcanvas"></svgcanvas>
             </div>
             <designerobjectsmenu></designerobjectsmenu>
@@ -49,6 +50,7 @@
 
     // This is out Cron for every shape
     import crown from "./components/crown"
+    import contextMenu from "./components/context-menu"
     import actions from "./actions"
 
     export default {
@@ -75,7 +77,9 @@
             toptoolbar,
             modalForms,
             ModalInputDocumentList,
-            ModalScriptsList
+            ModalScriptsList,
+            contextMenu
+
         },
         data() {
             return {

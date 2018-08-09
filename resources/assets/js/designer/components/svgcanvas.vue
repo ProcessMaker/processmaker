@@ -96,6 +96,13 @@
             clickElement(element){
                 this.builder.onClickShape(element)
             },
+
+            contextMenuElement(element, event){
+                this.builder.contextMenuShape({element, event})
+            },
+            contextMenuCanvas(element){
+
+            },
             /**
              * Listener from Crown for click in canvas
              */
@@ -176,9 +183,12 @@
                 background: {
                     color: 'white'
                 }
+
             })
             this.graph.on('change:position', this.changeElementPosition)
             this.paper.on('element:pointerclick', this.clickElement)
+            this.paper.on('element:contextmenu', this.contextMenuElement)
+            this.paper.on('blank:contextmenu', this.contextMenuCanvas)
             this.paper.on('blank:pointerclick', this.clickCanvas)
             this.paper.on('cell:pointerdown', this.pointerDown)
             this.paper.on('cell:pointerup', this.pointerUp)
