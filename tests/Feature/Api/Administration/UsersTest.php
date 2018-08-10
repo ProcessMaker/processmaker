@@ -174,7 +174,8 @@ class UsersTest extends ApiTestCase
      */
     public function testUploadAvatarProfile()
     {
-        //$this->markTestSkipped('User Avatar File Related Test Skipped');
+        $diskName = UserManager::DISK_PROFILE;
+        Storage::disk($diskName);
         $nameAvatar = 'avatar.jpg';
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
@@ -187,7 +188,7 @@ class UsersTest extends ApiTestCase
         ]);
         $response->assertStatus(200);
 
-        $diskName = UserManager::DISK_PROFILE;
+
 
         $mediaAvatar = $user->getMedia($diskName);
 
@@ -207,6 +208,8 @@ class UsersTest extends ApiTestCase
      */
     public function testUpdateUser()
     {
+        $diskName = UserManager::DISK_PROFILE;
+        Storage::disk($diskName);
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
             'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
