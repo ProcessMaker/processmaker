@@ -1,5 +1,5 @@
 <template>
-    <b-modal class="form-docs" ref="modal" size="lg" @hidden="onHidden" title="Task Form">
+    <b-modal class="form-docs" ref="modal" size="lg" @hidden="onHidden" hide-footer title="Task Form">
       <div class="ibox-content m-b-sm border-bottom">
         <div class="p-xs">
           <h2>{{formTitle}}</h2>
@@ -29,14 +29,6 @@
                 </vuetable>
                 <pagination single="Form" plural="Forms" :perPageSelectEnabled="true" @changePerPage="changePerPage"
                             @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
-                <template slot="modal-footer">
-                    <b-button @click="onCancel" class="btn-outline-success btn-md">
-                        CANCEL
-                    </b-button>
-                    <b-button class="btn btn-success btn-sm text-uppercase">
-                        CONTINUE
-                    </b-button>
-                </template>
             </div>
         </div>
     </b-modal>

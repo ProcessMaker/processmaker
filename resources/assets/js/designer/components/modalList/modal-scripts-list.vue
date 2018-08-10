@@ -1,9 +1,5 @@
 <template>
-<<<<<<< HEAD:resources/assets/js/designer/components/modalList/modal-triggers-list.vue
-    <b-modal class="triggers-list" ref="modal" size="lg" @hidden="onHidden" title="Triggers">
-=======
     <b-modal class="scripts-list" ref="modal" size="lg" @hidden="onHidden" title="Scripts" hide-footer>
->>>>>>> develop:resources/assets/js/designer/components/modalList/modal-scripts-list.vue
         <div class="form-group">
             <div class="d-flex justify-content-between">
                 <input v-model="filter" class="form-control  col-sm-3" placeholder="Search..." @keyup="fetch" >
@@ -29,14 +25,7 @@
                             @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
             </div>
         </div>
-        <template slot="modal-footer">
-            <b-button @click="onCancel" class="btn btn-outline-success btn-md">
-                CANCEL
-            </b-button>
-            <b-button class="btn btn-success btn-sm">
-                SAVE
-            </b-button>
-        </template>
+
     </b-modal>
 </template>
 
