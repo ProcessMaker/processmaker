@@ -8,8 +8,9 @@ use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Auth\Passwords\CanResetPassword as CanResetPasswordTrait;
 
 use League\OAuth2\Server\Entities\UserEntityInterface;
-use ProcessMaker\Core\System;
 use ProcessMaker\Model\Traits\Uuid;
+use Spatie\MediaLibrary\HasMedia\HasMedia;
+use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
 /**
  * Represents an Eloquent model of a User
@@ -17,11 +18,12 @@ use ProcessMaker\Model\Traits\Uuid;
  *
  * @property \ProcessMaker\Model\Role $role
  */
-class User extends Authenticatable implements UserEntityInterface, CanResetPassword
+class User extends Authenticatable implements UserEntityInterface, CanResetPassword, HasMedia
 {
     use Notifiable;
     use Uuid;
     use CanResetPasswordTrait;
+    use HasMediaTrait;
 
     const TYPE = 'USER';
 

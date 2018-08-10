@@ -8,6 +8,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use ProcessMaker\Managers\UserManager;
 use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
 use ProcessMaker\Transformers\UserTransformer;
@@ -173,7 +174,8 @@ class UsersTest extends ApiTestCase
      */
     public function testUploadAvatarProfile()
     {
-        $this->markTestSkipped('User Avatar File Related Test Skipped');
+        //$this->markTestSkipped('User Avatar File Related Test Skipped');
+        $nameAvatar = 'avatar.jpg';
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
             'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
@@ -181,12 +183,23 @@ class UsersTest extends ApiTestCase
         $this->auth($user->username, 'password');
 
         $response = $this->api('put', self::API_TEST_PROFILE . 'profile', [
-            'avatar' => UploadedFile::fake()->image('avatar.jpg')
+            'avatar' => UploadedFile::fake()->image($nameAvatar)
         ]);
         $response->assertStatus(200);
 
+        $diskName = UserManager::DISK_PROFILE;
+
+        $mediaAvatar = $user->getMedia($diskName);
+
+        //verify name of file
+        $this->assertEquals($nameAvatar, $mediaAvatar[0]->file_name);
+
+        //get path of file
+        $path = $mediaAvatar[0]->getPath();
+        $path = explode($diskName, $path);
+
         //verify exist file
-        Storage::disk('profile')->assertExists($user->refresh()->avatar);
+        Storage::disk($diskName)->assertExists($path[1]);
     }
 
     /**
@@ -194,7 +207,6 @@ class UsersTest extends ApiTestCase
      */
     public function testUpdateUser()
     {
-        $this->markTestSkipped('User Avatar File Related Test Skipped');
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
             'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,

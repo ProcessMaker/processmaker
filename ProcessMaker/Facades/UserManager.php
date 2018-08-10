@@ -16,6 +16,7 @@ use ProcessMaker\Model\User;
  * @method static Paginator index(array $options)
  * @method static User update(User $user, Request $request)
  * @method static string uploadAvatar(User $user, Request $request)
+ * @method static string getUrlAvatar(User $user)
  *
  */
 class UserManager extends Facade
