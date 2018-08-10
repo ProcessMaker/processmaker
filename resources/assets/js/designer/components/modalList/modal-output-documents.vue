@@ -28,7 +28,7 @@
                         CANCEL
                     </b-button>
                     <b-button class="btn btn-success btn-sm text-uppercase">
-                        CONTINUE
+                        SAVE
                     </b-button>
                 </template>
             </div>
