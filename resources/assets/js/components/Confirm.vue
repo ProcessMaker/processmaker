@@ -9,16 +9,14 @@
                     </button>
                 </div>
                 <div class="modal-body mb-1 text-center">
-                    <p :class="'text-'+variant"><span v-html="message"></span></p>
+                    <p :class="classMessage"><span v-html="message"></span></p>
                 </div>
                 <div class="modal-footer">
-                    <button id="close" type="button" class="btn btn-outline-success btn-sm text-uppercase" data-dismiss="modal"
-                            @click="onClose">Cancel
+                    <button id="cancel" type="button" :class="classButtonCancel" data-dismiss="modal" @click="onDeny">
+                        Cancel
                     </button>
-                    <button id="cancel" type="button" class="btn btn-outline-success btn-sm text-uppercase" data-dismiss="modal"
-                            @click="onDeny">No
-                    </button>
-                    <button id="confirm" type="button" class="btn btn-success btn-sm text-uppercase" @click="onConfirm">Yes
+                    <button id="confirm" type="button" :class="classButtonConfirm" @click="onConfirm">
+                        Confirm
                     </button>
                 </div>
             </div>
@@ -30,7 +28,29 @@
 <script>
     export default {
         props: ["title", "message", "variant", "callback"],
+        data() {
+            return {
+                'classMessage': '',
+                'classButtonCancel': '',
+                'classButtonConfirm': ''
+            }
+        },
+        watch: {
+            variant(value) {
+                this.styles()
+            }
+        },
         methods: {
+            styles() {
+                this.classMessage = '';
+                this.classButtonCancel = 'btn btn-outline-success btn-sm text-uppercase';
+                this.classButtonConfirm = 'btn btn-success btn-sm text-uppercase';
+                if (this.variant) {
+                    this.classMessage += ' text-' + this.variant;
+                    this.classButtonCancel += ' btn-outline-' + this.variant;
+                    this.classButtonConfirm += ' btn-' + this.variant;
+                }
+            },
             onClose() {
                 this.$emit('close');
             },
@@ -48,6 +68,7 @@
         },
         mounted() {
             this.$emit("show");
+            this.styles();
         }
     }
 </script>

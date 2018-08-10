@@ -32,14 +32,13 @@ describe('Component Confirm Modal', () => {
                 variant: variant
             }
         });
-
         expect(wrapper.find('.modal-title').text()).toBe(title);
-        expect(wrapper.find('.text-' + variant).text()).toBe(message);
+        expect(wrapper.find('.modal-body span').text()).toBe(message);
 
     });
 
     test('button click close', () => {
-        const button = wrapper.find('#close');
+        const button = wrapper.find('.close');
         button.trigger('click');
         expect(wrapper.emitted().confirm).toEqual(undefined)
     });

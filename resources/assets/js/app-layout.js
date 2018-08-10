@@ -57,7 +57,7 @@ window.ProcessMaker.alert = function (msg, variant) {
 window.ProcessMaker.confirmModal = function (title, message, variant, callback) {
     ProcessMaker.navbar.confirmTitle = title || 'Confirm';
     ProcessMaker.navbar.confirmMessage = message || 'Are you sure to delete?';
-    ProcessMaker.navbar.confirmVariant = variant || 'dark';
+    ProcessMaker.navbar.confirmVariant = variant;
     ProcessMaker.navbar.confirmCallback = callback;
     ProcessMaker.navbar.confirmShow = true;
 };
