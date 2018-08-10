@@ -1,36 +1,42 @@
 <template>
     <div id="editor-container">
         <div class="toolbar">
-         <nav class="navbar navbar-expand-md override">
-            <span>{{process.name}} - {{script.title}}</span>
-            <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
-                <ul class="navbar-nav">
-                    <li class="nav-item ">
-                        <a href="#" title="Save Script" @click="save"><i class="fas fa-save"></i></a>
-                    </li>
-                    <li class="nav-item ">
-                        <a href="#" @click="onClose" title="Return to Designer"><i class="fas fa-times"></i></a>
-                    </li>
-                </ul>
-            </div>
+            <nav class="navbar navbar-expand-md override">
+                <span>{{process.name}} - {{script.title}} ({{script.language}})</span>
+                <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+                    <ul class="navbar-nav">
+                        <li class="nav-item ">
+                            <a href="#" title="Save Script" @click="save">
+                                <i class="fas fa-save"></i>
+                            </a>
+                        </li>
+                        <li class="nav-item ">
+                            <a href="#" @click="onClose" title="Return to Designer">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
 
-        </nav>
+            </nav>
         </div>
-        <monaco-editor :options="monacoOptions" v-model="code" :language="script.language" class="editor"></monaco-editor>
+        <monaco-editor :options="monacoOptions" v-model="code" :language="script.language" class="editor" :class="{hidden: resizing}"></monaco-editor>
+        <div class="editor" v-if="resizing"></div>
         <div class="preview border-top">
             <div class="data border-right">
                 <div class=" p-1 bg-secondary border-bottom text-white">Input Data JSON</div>
-                <monaco-editor :options="monacoOptions" v-model="preview.data" language="json" class="editor"></monaco-editor>
+                <monaco-editor :options="monacoOptions" v-model="preview.data" language="json" class="editor" :class="{hidden: resizing}"></monaco-editor>
             </div>
             <div class="config border-right">
                 <div class="p-1 bg-secondary border-bottom text-white">Script Config JSON</div>
-                <monaco-editor :options="monacoOptions" v-model="preview.config" language="json" class="editor"></monaco-editor>
+                <monaco-editor :options="monacoOptions" v-model="preview.config" language="json" class="editor" :class="{hidden: resizing}"></monaco-editor>
 
             </div>
             <div class="output">
                 <div class="p-1 bg-secondary border-bottom text-white">Script Output</div>
-                <button @click="execute" class="btn btn-primary">Execute</button>
-                <div class="content">
+                <button :disabled="preview.executing" @click="execute" class="btn btn-primary">Execute</button>
+                <div class="content" style="overflow: auto; width: 100%;">
+                    <pre v-text="preview.output"></pre>
                 </div>
 
             </div>
@@ -39,36 +45,60 @@
 </template>
 
 <script>
-import MonacoEditor from 'vue-monaco'
+import MonacoEditor from "vue-monaco";
+import _ from "lodash";
 
 export default {
   props: [, "process", "script"],
   data() {
     return {
-        monacoOptions: {
-            automaticLayout: true
-        },
-        code: this.script.code,
-        preview: {
-            data: '{}',
-            config: '{}'
-        }
+        resizing: false,
+      monacoOptions: {
+        automaticLayout: true
+      },
+      code: this.script.code,
+      preview: {
+          executing: false,
+        data: "{}",
+        config: "{}",
+        output: ''
+      }
     };
   },
   components: {
-      MonacoEditor
+    MonacoEditor
   },
+  mounted() {
+    window.addEventListener("resize", this.handleResize);
+  },
+  beforeDestroy: function() {
+    window.removeEventListener("resize", this.handleResize);
+  },
+
   methods: {
+    stopResizing: _.debounce(function() {
+        this.resizing = false;
+    }, 50),
+    handleResize() {
+        this.resizing = true;
+        this.stopResizing();
+    },
     execute() {
-        // Attempt to execute a script, using our temp variables
-        ProcessMaker.apiClient.post('script/preview', {
-            code: this.code,
-            language: this.script.language,
-            data: this.preview.data,
-            config: this.preview.config
+        this.preview.executing = true;
+      // Attempt to execute a script, using our temp variables
+      ProcessMaker.apiClient
+        .post("script/preview", {
+          code: this.code,
+          language: this.script.language,
+          data: this.preview.data,
+          config: this.preview.config
         })
-        .then((response) => {
-            this.preview.output = response.data.output;
+        .then(response => {
+            this.preview.executing = false;
+          this.preview.output = response.data.output;
+        })
+        .catch((err) => {
+            this.preview.executing = false;
         });
     },
     onClose() {
@@ -89,42 +119,56 @@ export default {
 
 <style lang="scss">
 #editor-container {
-    height: calc(100vh - 60px);
+  height: calc(100vh - 60px);
+  display: flex;
+  flex-direction: column;
+
+  .editor {
+    flex-grow: 1;
+
+    &.hidden {
+        display: none;
+    }
+  }
+
+  .preview {
+    height: 200px;
     display: flex;
-    flex-direction: column;
 
+    .content {
+      flex-grow: 1;
+      display: flex;
 
-    .editor {
+      .editor {
         flex-grow: 1;
+      }
     }
 
-    .preview {
-        height: 200px;
-        display: flex;
-
-        .content {
-            flex-grow: 1;
-            display: flex;
-
-            .editor {
-                flex-grow: 1;
-            }
-        }
-
-        .data, .config {
-            width: 200px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .output {
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-
+    .data,
+    .config {
+      width: 300px;
+      display: flex;
+      flex-direction: column;
     }
 
+    .output {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+
+      .content {
+          padding: 8px;
+          background-color: black;
+
+          pre {
+          color: white;
+          font-weight: bold;
+          font-size: 12px;
+          font-family: monospace;
+          }
+      }
+    }
+  }
 
   .toolbar .override {
     background-color: #b6bfc6;

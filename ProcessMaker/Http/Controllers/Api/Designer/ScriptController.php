@@ -45,39 +45,60 @@ class ScriptController extends Controller
         $code = $request->get('code');
         $language = $request->get('language');
         // Create the temporary files to feed into our docker container
-        $datafname = tempnam("/tmp", "data.json");
-
+        $datafname = tempnam("/home/vagrant", "data.json");
+        chmod($datafname, 0660);
         $tempData = fopen($datafname, 'w');
         fwrite($tempData, $data);
 
         fclose($tempData);
-        $configfname = tempnam("/tmp", "config.json");
+        $configfname = tempnam("/home/vagrant", "config.json");
+        chmod($configfname, 0660);
+
         $tempData = fopen($configfname, 'w');
         fwrite($tempData, $config);
         fclose($tempData);
-        $scriptfname = tempnam("/tmp", "script.php");
+        $scriptfname = tempnam("/home/vagrant", "script");
+        chmod($scriptfname, 0660);
+
         $tempData = fopen($scriptfname, 'w');
         fwrite($tempData, $code);
         fclose($tempData);
-        $outputfname = tempnam("/tmp", "output.json");
-        // Chmod
-        $response = chmod($datafname, 0777);
-
+        $outputfname = tempnam("/home/vagrant", "output.json");
+        chmod($outputfname, 0660);
 
         // So we have the files, let's execute the docker container
-
-        $output = [];
-
-        $cmd = "/usr/bin/docker run -v " . $datafname . ":/opt/executor/data.json -v " . $configfname . ":/opt/executor/config.json -v " . $scriptfname . ":/opt/executor/script.php -v " . $outputfname . ":/opt/executor/output.json processmaker/executor:php php /opt/executor/bootstrap.php";
-        echo $cmd;
+        switch($language) {
+            case 'php':
+                $cmd = "/usr/bin/docker run -v " . $datafname . ":/opt/executor/data.json -v " . $configfname . ":/opt/executor/config.json -v " . $scriptfname . ":/opt/executor/script.php -v " . $outputfname . ":/opt/executor/output.json processmaker/executor:php php /opt/executor/bootstrap.php 2>&1";
+                break;
+            case 'lua':
+                $cmd = "/usr/bin/docker run -v " . $datafname . ":/opt/executor/data.json -v " . $configfname . ":/opt/executor/config.json -v " . $scriptfname . ":/opt/executor/script.lua -v " . $outputfname . ":/opt/executor/output.json processmaker/executor:lua lua5.3 /opt/executor/bootstrap.lua 2>&1";
+                break;
+        }
 
         $response = exec($cmd, $output, $returnCode);
+        if($returnCode) {
+            // Non-zero, there is an error!
+            unlink($datafname);
+            unlink($configfname);
+            unlink($scriptfname);
+            unlink($outputfname);
+            return [
+                'output' => implode($output, "\n")
+            ];
+        } else {
+            // Success, let's format and output
+            // Grab output
+            $output = json_decode(file_get_contents($outputfname), true);
+            unlink($datafname);
+            unlink($configfname);
+            unlink($scriptfname);
+            unlink($outputfname);
+            return [
+                'output' => json_encode($output, JSON_PRETTY_PRINT)
+            ];
+        }
 
-        var_dump($response);
-        var_dump($output);
-        dd($returnCode);
-
-        sleep(15);
     }
 
     /**
@@ -129,11 +150,8 @@ class ScriptController extends Controller
         if ($request->has('description')) {
             $data['description'] = $request->input('description');
         }
-        if ($request->has('webbot')) {
-            $data['webbot'] = $request->input('webbot');
-        }
-        if ($request->has('param')) {
-            $data['param'] = $request->input('param');
+        if ($request->has('code')) {
+            $data['code'] = $request->input('code');
         }
         if($data) {
             ScriptManager::update($process, $script, $data);
