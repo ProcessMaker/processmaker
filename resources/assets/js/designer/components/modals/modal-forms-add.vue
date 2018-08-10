@@ -5,13 +5,13 @@
                         label="Description"></form-text-area>
 
         <template slot="modal-footer">
-            <b-button @click="onClose" class="btn-outline-success btn-md">
+            <b-button @click="onClose" class="btn btn-outline-success btn-md">
                 CANCEL
             </b-button>
-            <b-button @click="onSave(true)" class="btn btn-success btn-sm text-uppercase">
+            <b-button @click="onSave(true)" class="btn btn btn-success btn-sm text-uppercase">
                 SAVE & OPEN
             </b-button>
-            <b-button @click="onSave(false)" class="btn btn-success btn-sm text-uppercase">
+            <b-button @click="onSave(false)" class="btn btn btn-success btn-sm text-uppercase">
                 SAVE
             </b-button>
         </template>
