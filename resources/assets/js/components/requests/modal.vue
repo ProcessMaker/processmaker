@@ -1,7 +1,7 @@
 <template>
     <div>
         <button id="navbar-request-button" class="btn btn-success btn-sm" @click="showRequestModal"><i class="fas fa-plus"></i> Request</button>
-        <b-modal size="lg" id="requests-modal" class="requests-modal" ref="requestModalAdd">
+        <b-modal size="lg" id="requests-modal" class="requests-modal" ref="requestModalAdd" title="New Request" hide-footer>
             <div class="header">
                 <div class="title">
                 We've made it easy for you to make the following requests
@@ -15,7 +15,6 @@
                       </div>
                 </div>
             </div>
-            <div class="header-bar"></div>
             <div v-if="Object.keys(processes).length && !loading" class="process-list">
                 <div class="category" v-for="(processList, index) in processes" :key="index">
                     <h3 class="name">{{index}}</h3>
@@ -135,13 +134,6 @@ export default {
       padding-right: 32px;
       font-size: 19px;
     }
-  }
-
-  .header-bar {
-    width: 100%;
-    height: 3px;
-    opacity: 0.05;
-    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0), #000000);
   }
 
   .loading,
