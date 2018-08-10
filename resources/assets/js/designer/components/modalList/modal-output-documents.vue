@@ -23,16 +23,16 @@
                 </vuetable>
                 <pagination single="Output Document" plural="Output Documents" :perPageSelectEnabled="true" @changePerPage="changePerPage"
                             @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
-                <template slot="modal-footer">
-                    <b-button @click="onCancel" class="btn btn-outline-success btn-md">
-                        CANCEL
-                    </b-button>
-                    <b-button class="btn btn-success btn-sm text-uppercase">
-                        SAVE
-                    </b-button>
-                </template>
             </div>
         </div>
+        <template slot="modal-footer">
+            <b-button @click="onCancel" class="btn btn-outline-success btn-md">
+                CANCEL
+            </b-button>
+            <b-button class="btn btn-success btn-sm text-uppercase">
+                SAVE
+            </b-button>
+        </template>
     </b-modal>
 </template>
 
