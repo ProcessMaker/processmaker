@@ -1,5 +1,5 @@
 <template>
-    <b-modal class="input-docs" ref="modal" size="lg" @hidden="onHidden" title="Input Documents">
+    <b-modal class="input-docs" ref="modal" size="lg" @hidden="onHidden" title="Input Documents" hide-footer>
         <div class="form-group">
             <div class="d-flex justify-content-between">
                 <input v-model="filter" class="form-control  col-sm-3" placeholder="Search..." @keyup="fetch">
