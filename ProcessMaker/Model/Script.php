@@ -7,7 +7,7 @@ use ProcessMaker\Model\Traits\Uuid;
 use Watson\Validating\ValidatingTrait;
 
 /**
- * Represents an Eloquent model of a Trigger
+ * Represents an Eloquent model of a Script
  *
  * @package ProcessMaker\Model
  *
@@ -21,14 +21,14 @@ use Watson\Validating\ValidatingTrait;
  * @property array param
  *
  */
-class Trigger extends Model
+class Script extends Model
 {
     use ValidatingTrait;
     use Uuid;
 
-    protected $table = 'triggers';
+    protected $table = 'scripts';
 
-    const TRIGGER_TYPE = 'SCRIPT';
+    const SCRIPT_TYPE = 'SCRIPT';
 
     protected $fillable = [
         'uid',
@@ -45,7 +45,7 @@ class Trigger extends Model
         'title' => '',
         'description' => '',
         'process_id' => '',
-        'type' => self::TRIGGER_TYPE,
+        'type' => self::SCRIPT_TYPE,
         'webbot' => '',
         'param' => ''
     ];
@@ -61,13 +61,13 @@ class Trigger extends Model
 
     protected $rules = [
         'uid' => 'max:36',
-        'title' => 'required|unique:triggers,title',
+        'title' => 'required|unique:scripts,title',
         'process_id' => 'exists:processes,id',
-        'type' => 'required|in:' . self::TRIGGER_TYPE
+        'type' => 'required|in:' . self::SCRIPT_TYPE
     ];
 
     protected $validationMessages = [
-        'title.unique' => 'A trigger with the same name already exists in this process.'
+        'title.unique' => 'A script with the same name already exists in this process.'
     ];
 
     /**
