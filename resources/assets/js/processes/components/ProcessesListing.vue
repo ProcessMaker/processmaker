@@ -117,9 +117,7 @@
             },
             formatStatus(value) {
                 value = value.toLowerCase();
-                console.log(value);
                 let colorValue = '';
-                console.log(colorValue);
                     if (value === 'active'){
                         colorValue = 'text-success'
                     }
@@ -186,15 +184,6 @@
 
     /deep/ th#_description {
         width: 250px;
-    }
-
-    /deep/ i.fa-circle {
-        &.active {
-            color: green;
-        }
-        &.inactive {
-            color: red;
-        }
     }
 </style>
 
