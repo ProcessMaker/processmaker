@@ -51,6 +51,11 @@ describe('designer.vue', () => {
             payload: {}
         })
 
+        expect(actions.designer.shape.dragFromCrown({})).toEqual({
+            type: "designer/shape/dragFromCrown",
+            payload: {}
+        })
+
         expect(actions.designer.shape.click({})).toEqual({
             type: "designer/shape/click",
             payload: {}
@@ -78,6 +83,43 @@ describe('designer.vue', () => {
 
         expect(actions.designer.canvas.click({})).toEqual({
             type: "designer/canvas/click",
+            payload: {}
+        })
+    })
+
+    it('Actions bpmn.js', () => {
+        expect(actions.bpmn.shape.create({})).toEqual({
+            type: "bpmn/shape/create",
+            payload: {}
+        })
+
+        expect(actions.bpmn.shape.update({})).toEqual({
+            type: "bpmn/shape/update",
+            payload: {}
+        })
+
+        expect(actions.bpmn.shape.assignTask({})).toEqual({
+            type: "bpmn/shape/assignTask",
+            payload: {}
+        })
+
+        expect(actions.bpmn.flow.create({})).toEqual({
+            type: "bpmn/flow/create",
+            payload: {}
+        })
+
+        expect(actions.bpmn.flow.update({})).toEqual({
+            type: "bpmn/flow/update",
+            payload: {}
+        })
+
+        expect(actions.bpmn.toXML({})).toEqual({
+            type: "bpmn/toXML",
+            payload: {}
+        })
+
+        expect(actions.bpmn.save({})).toEqual({
+            type: "bpmn/save",
             payload: {}
         })
     })
