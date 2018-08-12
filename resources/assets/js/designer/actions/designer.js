@@ -38,6 +38,10 @@ export const designer = {
         },
         bpmn: {
             update: x => x
+        },
+        contextMenu: {
+            show: x => x,
+            hide: x => x
         }
     }
 };
