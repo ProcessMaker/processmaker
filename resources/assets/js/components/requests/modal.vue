@@ -2,19 +2,19 @@
     <div>
         <button id="navbar-request-button" class="btn btn-success btn-sm" @click="showRequestModal"><i class="fas fa-plus"></i> Request</button>
         <b-modal size="lg" id="requests-modal" class="requests-modal" ref="requestModalAdd" title="New Request" hide-footer>
-            <div class="header">
-                <div class="title">
-                We've made it easy for you to make the following requests
+          <span class="float-right">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                      <div class="input-group-text"><i class="fas fa-search"></i></div>
+                  </div>
+                  <input class="form-control form-control-sm" v-model="filter" placeholder="Search...">
                 </div>
-                <div class="search">
-                      <div class="input-group">
-                        <div class="input-group-prepend">
-                            <div class="input-group-text"><i class="fas fa-search"></i></div>
-                        </div>
-                        <input class="form-control form-control-sm" v-model="filter" placeholder="Search...">
-                      </div>
-                </div>
-            </div>
+          </span>
+            <p>We've made it easy for you to make the following requests</p>
+
+
+
+
             <div v-if="Object.keys(processes).length && !loading" class="process-list">
                 <div class="category" v-for="(processList, index) in processes" :key="index">
                     <h3 class="name">{{index}}</h3>
@@ -106,35 +106,6 @@ export default {
 
 <style lang="scss" scoped>
 .requests-modal {
-  .header {
-    min-height: 74px;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    align-items: center;
-
-    .title {
-      flex-grow: 1;
-      font-size: 16px;
-      font-weight: normal;
-      font-style: normal;
-      font-stretch: normal;
-      line-height: normal;
-      letter-spacing: normal;
-      color: #333333;
-      vertical-align: middle;
-      padding-left: 60px;
-    }
-
-    .search {
-      padding: 0px 32px;
-    }
-
-    .actions {
-      padding-right: 32px;
-      font-size: 19px;
-    }
-  }
 
   .loading,
   .no-requests {
@@ -146,7 +117,7 @@ export default {
   .process-list {
     //flex-grow: 1;
     overflow: auto;
-    padding: 32px 60px;
+    
 
     .category {
       padding-bottom: 32px;
@@ -174,22 +145,3 @@ export default {
   }
 }
 </style>
-
-
-
-
-
-
-
- 
-
-
-
-  
-
-        
-
-        
-
-        
-                
