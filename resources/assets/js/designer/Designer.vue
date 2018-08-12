@@ -31,7 +31,7 @@
     import modalCreateDatabaseAdd from "./components/modals/modal-create-database-add";
     import modalCreateOutputAdd from "./components/modals/modal-create-output-add";
     import modalCreateTemplateAdd from "./components/modals/modal-create-template-add";
-    import modalCreateTriggerAdd from "./components/modals/modal-create-trigger-add";
+    import modalCreateScriptAdd from "./components/modals/modal-create-script-add";
     import modalFormsAdd from "./components/modals/modal-forms-add";
     import modalInputDocumentAdd from "./components/modals/modal-input-document-add";
     import modalPermissionsAdd from "./components/modals/modal-permissions-add";
@@ -44,7 +44,7 @@
     import modalForms from "./components/modalList/modal-forms-list"
     import modalOutputDocuments from "./components/modalList/modal-output-documents"
     import ModalInputDocumentList from "./components/modalList/modal-input-document-list";
-    import ModalTriggersList from "./components/modalList/modal-triggers-list";
+    import ModalScriptsList from "./components/modalList/modal-scripts-list";
 
 
     // This is out Cron for every shape
@@ -61,7 +61,7 @@
             modalCreateDatabaseAdd,
             modalCreateOutputAdd,
             modalCreateTemplateAdd,
-            modalCreateTriggerAdd,
+            modalCreateScriptAdd,
             modalFormsAdd,
             modalMessageTypes,
             modalInputDocumentAdd,
@@ -75,7 +75,7 @@
             toptoolbar,
             modalForms,
             ModalInputDocumentList,
-            ModalTriggersList
+            ModalScriptsList
         },
         data() {
             return {
@@ -123,8 +123,8 @@
                     case 'output-documents':
                         this.modalComponent = 'modal-create-output-add'
                         break;
-                    case 'triggers':
-                        this.modalComponent = 'modal-create-trigger-add'
+                    case 'scripts':
+                        this.modalComponent = 'modal-create-script-add'
                         break;
                     case 'templates':
                         this.modalComponent = 'modal-create-template-add'
@@ -147,8 +147,8 @@
                     case 'output-documents':
                         this.modalComponent = 'modal-output-documents';
                         break;
-                    case 'triggers':
-                        this.modalComponent = 'modal-triggers-list';
+                    case 'scripts':
+                        this.modalComponent = 'modal-scripts-list';
                         break;
                     default:
                         alert(key + ' Behavior TBD')

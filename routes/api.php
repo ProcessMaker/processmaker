@@ -108,7 +108,7 @@ Route::group([
             Route::post('processes/create', 'Designer\ProcessesController@createProcessTemplate');
         });
 
-        //Workflow end points
+        //Workflow end point
         Route::post('processes/{process}/{processId}/call', 'Workflow\EventController@callProcess');
         Route::post('processes/{process}/events/{event}/trigger', 'Workflow\EventController@triggerStart');
         Route::get('processes/{process}/instances/{instance}/tokens', 'Workflow\TokenController@index');
@@ -133,11 +133,11 @@ Route::group([
         Route::delete('process/{process}/form/{form}', 'Designer\FormController@remove')->middleware('can:delete,ProcessMaker\Model\Form');
 
         //Trigger endpoints
-        Route::get('process/{process}/triggers', 'Designer\TriggerController@index')->middleware('can:read,ProcessMaker\Model\Trigger');
-        Route::get('process/{process}/trigger/{trigger}', 'Designer\TriggerController@show')->middleware('can:read,ProcessMaker\Model\Trigger');
-        Route::post('process/{process}/trigger', 'Designer\TriggerController@store')->middleware('can:write,ProcessMaker\Model\Trigger');
-        Route::put('process/{process}/trigger/{trigger}', 'Designer\TriggerController@update')->middleware('can:write,ProcessMaker\Model\Trigger');
-        Route::delete('process/{process}/trigger/{trigger}', 'Designer\TriggerController@remove')->middleware('can:delete,ProcessMaker\Model\Trigger');
+        Route::get('process/{process}/scripts', 'Designer\ScriptController@index')->middleware('can:read,ProcessMaker\Model\Script');
+        Route::get('process/{process}/script/{script}', 'Designer\ScriptController@show')->middleware('can:read,ProcessMaker\Model\Script');
+        Route::post('process/{process}/script', 'Designer\ScriptController@store')->middleware('can:write,ProcessMaker\Model\Script');
+        Route::put('process/{process}/script/{script}', 'Designer\ScriptController@update')->middleware('can:write,ProcessMaker\Model\Script');
+        Route::delete('process/{process}/script/{script}', 'Designer\ScriptController@remove')->middleware('can:delete,ProcessMaker\Model\Script');
 
         //Assignee users o groups to Activity endpoints
         Route::get('process/{process}/activity/{activity}/assignee', 'Designer\AssigneeController@getActivityAssignees')->middleware('can:read,ProcessMaker\Model\TaskUser');
