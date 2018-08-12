@@ -56,8 +56,7 @@ class GenerateMenus
                 'icon' => 'fa-globe',
                 'id' => 'homeid'
           ]);
-
-          $submenu = $menu->add(__('menus.sidebar_admin.appearance'));
+          
           $submenu->add(__('menus.sidebar_admin.colors_and_logos'), [
                 'route' => 'home',
                 'icon' => 'fa-palette',
