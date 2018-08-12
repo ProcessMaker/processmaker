@@ -1,5 +1,5 @@
 <template>
-    <b-modal class="triggers-list" ref="modal" size="lg" @hidden="onHidden" title="Triggers" hide-footer>
+    <b-modal class="scripts-list" ref="modal" size="lg" @hidden="onHidden" title="Scripts" hide-footer>
         <div class="form-group">
             <div class="d-flex justify-content-between">
                 <input v-model="filter" class="form-control  col-sm-3" placeholder="Search..." @keyup="fetch" >
@@ -21,7 +21,7 @@
                         </div>
                     </template>
                 </vuetable>
-                <pagination single="Trigger" plural="Triggers" :perPageSelectEnabled="true" @changePerPage="changePerPage"
+                <pagination single="Script" plural="Scripts" :perPageSelectEnabled="true" @changePerPage="changePerPage"
                             @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
             </div>
         </div>
@@ -86,7 +86,7 @@
             onDelete(data, index) {
                 const CancelToken = ProcessMaker.apiClient.CancelToken;
                 ProcessMaker.apiClient
-                    .delete('process/' + this.processUid + '/trigger/' + data.uid,
+                    .delete('process/' + this.processUid + '/script/' + data.uid,
                         {
                             cancelToken: new CancelToken(c => {
                                 this.cancelToken = c;
@@ -103,7 +103,7 @@
                 ProcessMaker.apiClient
                     .get('process/' +
                         this.processUid +
-                        '/triggers?page=' +
+                        '/scripts?page=' +
                         this.page +
                         '&per_page=' +
                         this.perPage +
