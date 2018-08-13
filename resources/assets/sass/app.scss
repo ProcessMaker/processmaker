@@ -152,10 +152,13 @@ html {
 
 .form-control {
   font-size: 14px;
-  color: #333333;
-  border-color: #b6bfc6;
+  color: #b6bfc6;
+  border-color: #dddfe4;
   border-radius: 2px;
 }
+.form-control::placeholder {
+  color: #b6bfc6;
+} 
 
 select.form-control:not([size]):not([multiple]) {
   height: 32px;
