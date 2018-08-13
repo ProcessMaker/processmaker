@@ -7,14 +7,14 @@
         <form-select :error="errors.process_category_id" label="Category" name="category" v-model="categorySelect"
                      :options="categorySelectOptions"></form-select>
 
-        <template slot="modal-footer">
+        <div slot="modal-footer">
             <b-button @click="onClose" class="btn-outline-secondary btn-md">
                 CANCEL
             </b-button>
             <b-button @click="onSave" class="btn-secondary text-light btn-md">
                 SAVE
             </b-button>
-        </template>
+        </div>
 
     </b-modal>
 </template>

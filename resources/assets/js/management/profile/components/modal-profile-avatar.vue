@@ -8,7 +8,7 @@
     <input type="file" class="custom-file-input" ref="customFile" @change="onFileChange">
     </div>
 
-    <template slot="modal-footer">
+    <div slot="modal-footer">
       <b-button class="btn btn-success btn-sm text-uppercase"><i class="fas fa-upload"></i>
           BROWSE
       </b-button>
@@ -18,7 +18,7 @@
       <b-button class="btn btn-success btn-sm text-uppercase">
           CONTINUE
       </b-button>
-    </template>
+    </div>
 
   </b-modal>
 </template>
