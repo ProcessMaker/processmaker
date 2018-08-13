@@ -11,10 +11,10 @@
         <component id="navbar-request-button" v-bind:is="'request-modal'"></component>
       </li>
 
-      <li class="nav-item">
+      <li class="nav-notification">
       <notifications id="navbar-notifications-button" v-bind:is="'notifications'" v-bind:messages="messages"></notifications>
       </li>
-       <hr id="seperator">
+      <li class="seperator"></li>
       <li class="dropdown">
       <img class="avatar dropdown-toggle" id="topnav-avatar" src="/img/avatar.png" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
@@ -29,15 +29,15 @@
 </div>
 
 <style lang="scss" scoped>
-  #seperator{ 
-    margin-left: 8px;
-    margin-right: 8px;
-    border: none;
+  .seperator{ 
     border-left: 1px solid rgb(227,231,236) ;
-    height: 34px;
-    width: 1px;     
+    height: 30px;  
+    margin-top: 17px;  
 }
 .nav-item {
   padding-top: 5px;
+}
+.nav-notification {
+  padding-top: 8px;
 }
 </style>

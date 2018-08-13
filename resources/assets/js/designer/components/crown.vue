@@ -3,36 +3,35 @@
         <div class="d-flex flex-row">
             <div class="item-crown">
                 <img id="bpmn:Task" src="../img/task.svg" height="20"
-                     @click="createAction($event)">
+                     @dragstart="creatingFlow($event)" @dragend="createTask($event)">
             </div>
             <div class="item-crown">
                 <img id="bpmn:ExclusiveGateway" src="../img/exclusive-gateway.svg" height="27"
-                     @click="createAction($event)">
+                     @dragstart="creatingFlow($event)" @dragend="createExclusiveGateway($event)">
             </div>
             <div class="item-crown">
                 <img id="bpmn:IntermediateEmailEvent" name="IntermediateEmailEvent"
-                     src="../img/intermediate-email-event.svg" height="27" @click="createAction($event)">
+                     src="../img/intermediate-email-event.svg" height="27"
+                     @dragstart="creatingFlow($event)" @dragend="createMessageEvent($event)">
             </div>
         </div>
         <div class="d-flex flex-row">
             <div class="item-crown">
                 <img id="bpmn:EndEvent" name="EndEvent"
-                     src="../img/end-event.svg" height="27" @click="createAction($event)">
+                     src="../img/end-event.svg" height="27"
+                     @dragstart="creatingFlow($event)" @dragend="createEndEvent($event)">
             </div>
             <div class="item-crown">
                 <img id="bpmn:Flow" src="../img/corona-flow.png" height="28"
                      @dragstart="creatingFlow($event)" @dragend="createFlow($event)">
             </div>
-            <div class="item-crown">
+            <div class="item-crown" @click="showListForm($event)">
                 <i id="cog" class="fas fa-cog icrown" draggable="true"></i>
             </div>
         </div>
         <div class="d-flex flex-row">
             <div class="item-crown" @click="remove($event)">
                 <i id="trash" class="fas fa-trash-alt icrown" draggable="true"></i>
-            </div>
-            <div class="item-crown" @click="showListForm($event)">
-                <i id="wpforms" class="fas fa-list-alt icrown" draggable="true"></i>
             </div>
         </div>
     </div>
@@ -92,6 +91,38 @@
             },
             createFlow(ev){
                 let action = actions.designer.flow.create(ev)
+                EventBus.$emit(action.type, action.payload)
+            },
+            createTask(ev){
+                let action = actions.designer.shape.dragFromCrown({
+                    type: "task",
+                    ev: ev,
+                    eventDefinition: null
+                })
+                EventBus.$emit(action.type, action.payload)
+            },
+            createExclusiveGateway(ev){
+                let action = actions.designer.shape.dragFromCrown({
+                    type: "exclusiveGateway",
+                    ev: ev,
+                    eventDefinition: null
+                })
+                EventBus.$emit(action.type, action.payload)
+            },
+            createEndEvent(ev){
+                let action = actions.designer.shape.dragFromCrown({
+                    type: "endEvent",
+                    ev: ev,
+                    eventDefinition: null
+                })
+                EventBus.$emit(action.type, action.payload)
+            },
+            createMessageEvent(ev){
+                let action = actions.designer.shape.dragFromCrown({
+                    type: "intermediateThrowEvent",
+                    ev: ev,
+                    eventDefinition: "messageEventDefinition"
+                })
                 EventBus.$emit(action.type, action.payload)
             },
             mounted() {
