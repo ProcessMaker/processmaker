@@ -50,6 +50,7 @@ html {
   .dropdown-menu-right {
     width: 200px;
     border: none;
+    top: 56px;
   }
   .drop-header {
     background-color: #e9edf1;
@@ -72,7 +73,8 @@ html {
   }
   .avatar {
     width: 64px;
-    padding: 10px
+    padding: 10px;
+    margin-left: 6px;
   }
   .dropdown-item i {
     margin-right: 6px;
@@ -394,5 +396,4 @@ table.vuetable {
   position: fixed;
   left: 30%;
   right: 30%;
-  z-index: $alertZIndex;
 }
