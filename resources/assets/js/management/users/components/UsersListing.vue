@@ -13,26 +13,26 @@
     </vuetable>
     <pagination single="User" plural="Users" :perPageSelectEnabled="true" @changePerPage="changePerPage" @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
     <b-modal ref="editItem" size="md" centered title="Edit User">
-      <form>
+    <form>
       <div class="form-group">
-        <label for="edit-first-name">first name</label>
-        <input id="edit-first-name" class="form-control" v-model="firstname">
-      </div>
-      <div class="form-group">
-        <label for="edit-last-name">last Name</label>
-        <input id="edit-last-name" class="form-control" v-model="lastname">
-      </div>
-      <div class="form-group">
-        <label for="edit-username">username</label>
+        <label for="edit-username">Username</label>
         <input id="edit-username" class="form-control" v-model="username">
       </div>
       <div class="form-group">
-        <label for="add-user-status">Status</label>
-        <select class="form-control" id="add-user-status" v-model="status">
-          <option :value="status">{{status}}</option>
-          <option value="ACTIVE">Active</option>
-          <option value="DISABLED">Disabled</option>
-        </select>
+        <label for="edit-first-name">First Name</label>
+        <input id="edit-first-name" class="form-control" v-model="firstname">
+      </div>
+      <div class="form-group">
+        <label for="edit-last-name">Last Name</label>
+        <input id="edit-last-name" class="form-control" v-model="lastname">
+      </div>
+      <div class="form-group">
+        <label for="edit-password">Password</label>
+        <input id="edit-password" class="form-control" v-model="password">
+      </div>
+      <div class="form-group">
+        <label for="confirm-password">Confirm Password</label>
+        <input id="confirm-password" class="form-control" v-model="password">
       </div>
     </form>
     <template slot="modal-footer">
@@ -122,7 +122,8 @@ export default {
       lastname: "",
       uid: "",
       status: "",
-      curIndex: ""
+      curIndex: "",
+      password: ""
     };
   },
   methods: {
@@ -137,6 +138,7 @@ export default {
       this.firstname = this.data.data[index].firstname;
       this.lastname = this.data.data[index].lastname;
       this.status = this.data.data[index].status;
+      this.password = this.data.data[index].password;
       this.role = this.data.data[index].role;
       this.uid = this.data.data[index].uid;
       this.curIndex = index;
@@ -149,7 +151,8 @@ export default {
           username: this.username,
           firstname: this.firstname,
           lastname: this.lastname,
-          status: this.status
+          status: this.status,
+          password: this.password
         })
         .then(response => {
           ProcessMaker.alert("Saved", "success");
@@ -166,6 +169,7 @@ export default {
         (this.firstname = ""),
         (this.lastname = ""),
         (this.status = "");
+      this.password = "";
     },
     hideEditModal() {
       this.$refs.editItem.hide();
