@@ -12,7 +12,7 @@
       </template>  
     </vuetable>
     <pagination single="User" plural="Users" :perPageSelectEnabled="true" @changePerPage="changePerPage" @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
-    <b-modal ref="editItem" size="md" centered title="Create New Role">
+    <b-modal ref="editItem" size="md" centered title="Edit User">
       <form>
       <div class="form-group">
         <label for="edit-first-name">first name</label>
