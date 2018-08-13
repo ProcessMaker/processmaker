@@ -158,6 +158,11 @@ html {
 }
 .form-control::placeholder {
   color: #b6bfc6;
+}
+.form-control:focus {
+  box-shadow: none;
+  -webkit-box-shadow: none;
+  border-color: #b6bfc6;
 } 
 
 select.form-control:not([size]):not([multiple]) {
