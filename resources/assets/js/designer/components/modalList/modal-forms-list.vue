@@ -39,7 +39,6 @@
         data() {
             return {
                 items: [],
-                confirm: '',
                 filter: '',
                 orderBy: "title",
 
@@ -80,21 +79,18 @@
                 window.location.href = '/designer/' + this.processUid + '/form/' + data.uid;
             },
             onDelete(data, index) {
-                let that = this;
-                ProcessMaker.confirmModal('Confirm Delete Form', 'Are you sure to delete ' + data.title + '?', 'danger', function() {
-                    const CancelToken = ProcessMaker.apiClient.CancelToken;
-                    ProcessMaker.apiClient
-                        .delete('process/' + that.processUid + '/form/' + data.uid,
-                            {
-                                cancelToken: new CancelToken(c => {
-                                    this.cancelToken = c;
-                                })
-                            }
-                        )
-                        .then(response => {
-                            that.fetch();
-                        })
-                });
+                const CancelToken = ProcessMaker.apiClient.CancelToken;
+                ProcessMaker.apiClient
+                    .delete('process/' + this.processUid + '/form/' + data.uid,
+                        {
+                            cancelToken: new CancelToken(c => {
+                                this.cancelToken = c;
+                            })
+                        }
+                    )
+                    .then(response => {
+                        this.fetch();
+                    })
             },
             fetch() {
                 this.loading = true;
