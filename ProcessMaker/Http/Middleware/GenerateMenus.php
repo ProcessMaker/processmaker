@@ -44,24 +44,6 @@ class GenerateMenus
               'icon' => 'fa-key',
               'id' => 'homeid'
           ]);
-          $submenu = $menu->add(__('menus.sidebar_admin.security'));
-          $submenu->add(__('menus.sidebar_admin.authentication'), [
-                'route' => 'home',
-                'icon' => 'fa-shield-alt',
-                'id' => 'homeid'
-          ]);
-
-          $submenu = $menu->add(__('menus.sidebar_admin.localization'));
-          $submenu->add(__('menus.sidebar_admin.preferences'), [
-                'route' => 'home',
-                'icon' => 'fa-globe',
-                'id' => 'homeid'
-          ]);
-          $submenu->add(__('menus.sidebar_admin.languages'), [
-                'route' => 'home',
-                'icon' => 'fa-language',
-                'id' => 'homeid'
-          ]);
 
           $submenu = $menu->add(__('menus.sidebar_admin.configuration'));
           $submenu->add(__('menus.sidebar_admin.notifications_configuration'), [
@@ -69,20 +51,13 @@ class GenerateMenus
                 'icon' => 'fa-bell',
                 'id' => 'homeid'
           ]);
-          $submenu->add(__('menus.sidebar_admin.inbox_configuration'), [
+          $submenu->add(__('menus.sidebar_admin.preferences'), [
                 'route' => 'home',
-                'icon' => 'fa-inbox',
+                'icon' => 'fa-globe',
                 'id' => 'homeid'
           ]);
-
-
-          $submenu = $menu->add(__('menus.sidebar_admin.appearance'));
-          $submenu->add(__('menus.sidebar_admin.inbox_customization'), [
-                'route' => 'home',
-                'icon' => 'fa-columns',
-                'id' => 'homeid'
-          ]);
-          $submenu->add(__('menus.sidebar_admin.ui_customization'), [
+          
+          $submenu->add(__('menus.sidebar_admin.colors_and_logos'), [
                 'route' => 'home',
                 'icon' => 'fa-palette',
                 'id' => 'homeid'

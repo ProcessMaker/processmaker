@@ -52,8 +52,8 @@ class CreateTasksTable extends Migration
              * time_unit    |   enum    |['MINUTES', 'HOURS', 'DAYS', 'WEEKS', 'MONTHS']    |   DAYS
              *************************************************************************************************/
 
-            //Options to run a trigger when you have a Self service timeout
-            $table->unsignedInteger('trigger_id')->nullable();
+            //Options to run a script when you have a Self service timeout
+            $table->unsignedInteger('script_id')->nullable();
 
             //self service json configuration
             $table->json('self_service_timeout_configuration')->nullable();
@@ -76,8 +76,8 @@ class CreateTasksTable extends Migration
 
             // setup relationships of the task with processes and other tables
             $table->foreign('process_id')->references('id')->on('processes')->ondelete('cascade');
-            // setup relationships of the task with triggers and other tables
-            $table->foreign('trigger_id')->references('id')->on('triggers')->ondelete('cascade');
+            // setup relationships of the task with scripts and other tables
+            $table->foreign('script_id')->references('id')->on('scripts')->ondelete('cascade');
         });
     }
 
