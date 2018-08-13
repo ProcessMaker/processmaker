@@ -181,7 +181,6 @@
         width: 150px;
         text-align: center;
     }
-
     /deep/ th#_description {
         width: 250px;
     }
