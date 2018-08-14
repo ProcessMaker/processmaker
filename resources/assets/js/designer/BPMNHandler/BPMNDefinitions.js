@@ -9,7 +9,9 @@ let defs = {
     TAG_BPMNDI: "http://www.omg.org/spec/DD/20100524/DI",
     TAG_DC: "http://www.omg.org/spec/DD/20100524/DC",
     TAG_XSI: "http://www.w3.org/2001/XMLSchema-instance",
-    TARGET_NAMESPACE: "http://bpmn.io/schema/bpmn"
+    TARGET_NAMESPACE: "http://bpmn.io/schema/bpmn",
+    PM_NAMESPACE: "https://bpm4.processmaker.local/definition/ProcessMaker.xsd",
+    
 }
 
 export default class BPMNDefinitions {
@@ -23,26 +25,39 @@ export default class BPMNDefinitions {
         this.processTags()
     }
 
-    getmodel() {
-        return this.model.split(":")[1]
+    getnonamespace(tagName) {
+        return tagName;
     }
 
-    getdc() {
-        return this.dc.split(":")[1]
+    getmodel(tagName) {
+        return this.formatNS(this.model, tagName);
     }
 
-    getxsi() {
-        return this.xsi.split(":")[1]
+    getdc(tagName) {
+        return this.formatNS(this.dc, tagName);
     }
 
-    getdi() {
-        return this.di.split(":")[1]
+    getxsi(tagName) {
+        return this.formatNS(this.xsi, tagName);
     }
 
-    getbpmndi() {
-        return this.bpmndi.split(":")[1]
+    getdi(tagName) {
+        return this.formatNS(this.di, tagName);
     }
 
+    getbpmndi(tagName) {
+        return this.formatNS(this.bpmndi, tagName);
+    }
+
+    getpm(tagName) {
+        return this.formatNS(this.pmNamespace, tagName);
+    }
+
+    formatNS(namespace, tagName){
+        let ns = namespace.split(":");
+        return tagName ? (ns.length === 2 ? ns[1] + ':' + tagName : tagName)
+                : (ns.length === 2 ? ns[1] : undefined);
+    }
 
     processTags() {
         _.each(this.data, (value, key) => {
@@ -63,6 +78,9 @@ export default class BPMNDefinitions {
             }
             if (value == defs.TARGET_NAMESPACE) {
                 this.targetNameSpace = key
+            }
+            if (value == defs.PM_NAMESPACE) {
+                this.pmNamespace = key
             }
         })
     }
