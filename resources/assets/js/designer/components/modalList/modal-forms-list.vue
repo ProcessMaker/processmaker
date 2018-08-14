@@ -87,18 +87,21 @@
                 window.location.href = '/designer/' + this.processUid + '/form/' + data.uid;
             },
             onDelete(data, index) {
-                const CancelToken = ProcessMaker.apiClient.CancelToken;
-                ProcessMaker.apiClient
-                    .delete('process/' + this.processUid + '/form/' + data.uid,
-                        {
-                            cancelToken: new CancelToken(c => {
-                                this.cancelToken = c;
-                            })
-                        }
-                    )
-                    .then(response => {
-                        this.fetch();
-                    })
+                let that = this;
+                ProcessMaker.confirmModal('Caution!', '<b>Are you sure to delete </b>' + data.title + '?', '', function() {
+                    const CancelToken = ProcessMaker.apiClient.CancelToken;
+                    ProcessMaker.apiClient
+                        .delete('process/' + that.processUid + '/form/' + data.uid,
+                            {
+                                cancelToken: new CancelToken(c => {
+                                    this.cancelToken = c;
+                                })
+                            }
+                        )
+                        .then(response => {
+                            that.fetch();
+                        })
+                });
             },
             fetch() {
                 this.loading = true;
