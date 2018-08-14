@@ -1,7 +1,7 @@
 <template>
     <div id="designer-toolbar">
         <nav class="navbar navbar-expand-md override">
-            <span>Process Name</span>
+            <span>{{ title }}</span>
 
             <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
                 <ul class="navbar-nav">
@@ -37,6 +37,7 @@
     import EventBus from "../lib/event-bus"
     import actions from "../actions/"
     export default {
+        props: [ 'title' ],
         methods: {
             uploadBPMN (value) {
                 let inputFile = this.$el.querySelector("#uploadBPMN")
