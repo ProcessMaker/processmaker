@@ -1,7 +1,7 @@
 <template>
-<div id="designer-toolbar">
-  <nav class="navbar navbar-expand-md override">
-    <span>Process Name</span>
+    <div id="designer-toolbar">
+        <nav class="navbar navbar-expand-md override">
+            <span>{{ title }}</span>
 
     <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
       <ul class="navbar-nav">
@@ -34,29 +34,53 @@
 </template>
 
 <script>
-import EventBus from "../lib/event-bus"
-import actions from "../actions/"
-export default {
-  methods: {
-    uploadBPMN(value) {
-      let inputFile = this.$el.querySelector("#uploadBPMN")
-      if (inputFile) {
-        inputFile.click()
-      }
-      return inputFile
-    },
-    saveBPMN(value) {
-      let action = actions.bpmn.save(value)
-      EventBus.$emit(action.type, action.payload)
-    },
-    handleFileChange(e) {
-      let file = e && e.target ? e.target.files[0] : null
-      if (file) {
-        let that = this;
-        let reader = new FileReader()
-        reader.onerror = this.errorFileHandler
-        reader.onabort = function(e) {
-          console.error(__('File read cancelled'));
+    import EventBus from "../lib/event-bus"
+    import actions from "../actions/"
+    export default {
+        props: [ 'title' ],
+        methods: {
+            uploadBPMN (value) {
+                let inputFile = this.$el.querySelector("#uploadBPMN")
+                if (inputFile) {
+                    inputFile.click()
+                }
+                return inputFile
+            },
+            saveBPMN (value) {
+                let action = actions.bpmn.save(value)
+                EventBus.$emit(action.type, action.payload)
+            },
+            handleFileChange(e){
+                let file = e && e.target ? e.target.files[0] : null
+                if (file) {
+                    let that = this;
+                    let reader = new FileReader()
+                    reader.onerror = this.errorFileHandler
+                    reader.onabort = function (e) {
+                        console.error(__('File read cancelled'));
+                    }
+                    reader.onload = function (ev) {
+                        let action = actions.designer.bpmn.update(ev.target.result)
+                        EventBus.$emit(action.type, action.payload)
+                    }
+                    reader.readAsText(file);
+                    e.preventDefault()
+                }
+            },
+            errorFileHandler(evt){
+                switch (evt.target.error.code) {
+                    case evt.target.error.NOT_FOUND_ERR:
+                        console.error('File Not Found!')
+                        break;
+                    case evt.target.error.NOT_READABLE_ERR:
+                        console.error('File is not readable')
+                        break;
+                    case evt.target.error.ABORT_ERR:
+                        break; // noop
+                    default:
+                        console.error('An error occurred reading this file.')
+                }
+            }
         }
         reader.onload = function(ev) {
           let action = actions.designer.bpmn.update(ev.target.result)

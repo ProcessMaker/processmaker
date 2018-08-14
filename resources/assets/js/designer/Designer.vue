@@ -2,7 +2,7 @@
     <div id="designer-container">
         <component :is="modalComponent" :if="modalComponent" @hidden="onHidden" :processUid="processUid"
                    :selectedElement="selectedElement"></component>
-        <toptoolbar ref="toptoolbar"></toptoolbar>
+        <toptoolbar ref="toptoolbar" :title="processTitle"></toptoolbar>
         <toolbar ref="toolbar"></toolbar>
         <div id="designer-subcontainer">
             <div class="canvas-container" @scroll="onScroll">
@@ -53,7 +53,7 @@
 
     export default {
         props: [
-            'processUid'
+            'processUid', 'processTitle'
         ],
         components: {
             crown,

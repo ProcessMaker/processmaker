@@ -25,6 +25,7 @@
                             @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
             </div>
         </div>
+
     </b-modal>
 </template>
 
