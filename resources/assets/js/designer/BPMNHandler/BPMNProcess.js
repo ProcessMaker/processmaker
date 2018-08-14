@@ -80,9 +80,34 @@ import _ from "lodash"
             task.elements.push(script);
         }
         //Set the task name
-        if (data.name!==undefined) {
+        if (data.name !== undefined) {
             task.attributes.name = data.name;
         }
+
+        if (data.type !== undefined) {
+            task.attributes.type = data.type;
+        }
+
+        if (data.formRef !== undefined) {
+            task.attributes.formRef = data.formRef;
+        }
+
+        if (data.scriptRef !== undefined) {
+            task.attributes.scriptRef = data.scriptRef;
+        }
+
+        if (data.notifyAfterRouting !== undefined) {
+            task.attributes.notifyAfterRouting = data.notifyAfterRouting;
+        }
+
+        if (data.notifyToRequestCreator !== undefined) {
+            task.attributes.notifyToRequestCreator = data.notifyToRequestCreator;
+        }
+
+        if (data.dueDate !== undefined) {
+            task.attributes.dueDate = data.dueDate;
+        }
+
         //Set the code
         if (data.code!==undefined) {
             script.elements = [
