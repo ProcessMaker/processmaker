@@ -115,12 +115,13 @@
                         });
                 }
             },
-            formatStatus(value) {
-                value = value.toLowerCase();
-                let bubbleColors = {'active': 'text-success', 'inactive': 'text-danger', 'draft': 'text-warning', 'archived': 'text-info'};
-                let response = '<i class="fas fa-circle ' + bubbleColors[value] + ' small"></i> ';
-                value = value.charAt(0).toUpperCase() + value.slice(1);
-                return response + value;
+            formatStatus(status) {
+                console.log(status)
+                status = status.toLowerCase();
+                let bubbleColor = {'active': 'text-success', 'inactive': 'text-danger', 'draft': 'text-warning', 'archived': 'text-info'};
+                let response = '<i class="fas fa-circle ' + bubbleColor[status] + ' small"></i> ';
+                status = status.charAt(0).toUpperCase() + status.slice(1);
+                return response + status;
             },
             fetch() {
                 this.loading = true;
