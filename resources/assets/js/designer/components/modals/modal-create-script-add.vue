@@ -18,10 +18,10 @@
     </form>
 
     <div slot="modal-footer">
-      <b-button @click="onCancel" class="btn btn-outline-success btn-md">
+      <b-button @click="onCancel" class="btn btn-outline-success btn-sm text-uppercase">
         CANCEL
       </b-button>
-      <b-button class="btn btn-success btn-sm">
+      <b-button class="btn btn-success btn-sm text-uppercase">
         SAVE
       </b-button>
     </div>

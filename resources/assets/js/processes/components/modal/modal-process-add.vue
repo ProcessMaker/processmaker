@@ -8,7 +8,7 @@
                      :options="categorySelectOptions"></form-select>
 
         <div slot="modal-footer">
-            <b-button @click="onClose" class="btn btn-outline-success btn-md">
+            <b-button @click="onClose" class="btn btn-outline-success btn-sm text-uppercase">
                 CANCEL
             </b-button>
             <b-button @click="onSave" class="btn btn-success btn-sm text-uppercase">
