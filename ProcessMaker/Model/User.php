@@ -56,8 +56,7 @@ class User extends Authenticatable implements UserEntityInterface, CanResetPassw
         'role_id',
         'time_zone',
         'lang',
-        'last_login',
-        'avatar'
+        'last_login'
     ];
 
     protected $appends = [
