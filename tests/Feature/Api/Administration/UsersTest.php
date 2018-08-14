@@ -160,13 +160,14 @@ class UsersTest extends ApiTestCase
         $avatar = Faker::create()->image(Storage::disk('profile')->getAdapter()->getPathPrefix(), 10, 10, null, true);
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
-            'avatar' => basename($avatar)
+            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
         $this->auth($user->username, 'password');
 
         $response = $this->api('get', self::API_TEST_PROFILE . 'profile');
+
         $response->assertStatus(200);
+        $this->assertNotNull($response->json(['avatar']));
     }
 
     /**
