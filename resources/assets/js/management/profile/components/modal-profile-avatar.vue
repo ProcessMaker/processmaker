@@ -9,13 +9,13 @@
     </div>
 
     <div slot="modal-footer">
-      <b-button class="btn btn-success btn-sm text-uppercase"><i class="fas fa-upload"></i>
+      <b-button @click="browse" class="btn btn-success btn-sm text-uppercase"><i class="fas fa-upload"></i>
           BROWSE
       </b-button>
-      <b-button @click="onCancel" class="btn btn-outline-success btn-md">
+      <b-button @click="hideModal" class="btn btn-outline-success btn-md">
           CANCEL
       </b-button>
-      <b-button class="btn btn-success btn-sm text-uppercase">
+      <b-button @click="saveAndEmit" class="btn btn-success btn-sm text-uppercase">
           CONTINUE
       </b-button>
     </div>

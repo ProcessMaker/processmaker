@@ -10,8 +10,7 @@ use ProcessMaker\Model\User;
 
 class UserManager
 {
-    public const DISK_PROFILE = 'profile';
-    public const COLLECTION_PROFILE = 'profile';
+
 
     /**
      * Get a list of All Users.
@@ -73,7 +72,7 @@ class UserManager
      */
     public function getUrlAvatar(User $user)
     {
-        $mediaFile = $user->getMedia(self::COLLECTION_PROFILE);
+        $mediaFile = $user->getMedia(User::COLLECTION_PROFILE);
         if (isset($mediaFile[0])) {
             return $mediaFile[0]->getFullUrl();
         }
@@ -118,7 +117,7 @@ class UserManager
         ]);
 
         $user->addMedia($request->avatar)
-            ->toMediaCollection(self::COLLECTION_PROFILE, self::DISK_PROFILE);
+            ->toMediaCollection(User::COLLECTION_PROFILE, User::DISK_PROFILE);
     }
 
 }

@@ -27,6 +27,11 @@ class User extends Authenticatable implements UserEntityInterface, CanResetPassw
 
     const TYPE = 'USER';
 
+    //Disk
+    public const DISK_PROFILE = 'profile';
+    //collection media library
+    public const COLLECTION_PROFILE = 'profile';
+
     protected $hidden = [
         'id',
         'password'
@@ -190,5 +195,19 @@ class User extends Authenticatable implements UserEntityInterface, CanResetPassw
      */
     public function getFullnameAttribute() {
         return $this->getFullName();
+    }
+
+    /**
+     * Get url Avatar
+     *
+     * @return string
+     */
+    public function getAvatar()
+    {
+        $mediaFile = $this->getMedia(self::COLLECTION_PROFILE);
+        if (isset($mediaFile[0])) {
+            return $mediaFile[0]->getFullUrl();
+        }
+        return '';
     }
 }

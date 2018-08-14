@@ -19,7 +19,7 @@ use Tests\Feature\Api\ApiTestCase;
  */
 class UsersTest extends ApiTestCase
 {
-    use DatabaseTransactions;
+    //use DatabaseTransactions;
 
     const API_TEST_USERS = '/api/1.0/users';
     const API_TEST_PROFILE = '/api/1.0/admin/';
@@ -175,7 +175,7 @@ class UsersTest extends ApiTestCase
      */
     public function testUploadAvatarProfile()
     {
-        $diskName = UserManager::DISK_PROFILE;
+        $diskName = User::DISK_PROFILE;
         Storage::disk($diskName);
         $nameAvatar = 'avatar.jpg';
         $user = factory(User::class)->create([
@@ -209,7 +209,7 @@ class UsersTest extends ApiTestCase
      */
     public function testUpdateUser()
     {
-        $diskName = UserManager::DISK_PROFILE;
+        $diskName = User::DISK_PROFILE;
         Storage::disk($diskName);
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
