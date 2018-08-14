@@ -33,6 +33,7 @@ Route::group([
             Route::get('users/{user}/avatar', 'Administration\UsersController@avatar');
             Route::put('users/{user}', 'Administration\UsersController@update');
             Route::post('users', 'Administration\UsersController@create');
+            Route::delete('users/{user}', 'Administration\UsersController@delete');
 
             // Roles API Endpoints
             Route::get('roles', 'Administration\RolesController@index');
@@ -186,3 +187,4 @@ Route::group([
         });
     });
 });
+
