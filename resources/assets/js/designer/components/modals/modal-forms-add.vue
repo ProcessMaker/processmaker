@@ -4,17 +4,18 @@
         <form-text-area :error="errors.description" :rows="3" v-model="description"
                         label="Description"></form-text-area>
 
-        <template slot="modal-footer">
-            <b-button @click="onClose" class="btn-outline-secondary btn-md">
+
+        <div slot="modal-footer">
+            <b-button @click="onClose" class="btn btn-outline-success btn-sm text-uppercase">
                 CANCEL
             </b-button>
-            <b-button @click="onSave(true)" class="btn-secondary text-light btn-md">
+            <b-button @click="onSave(true)" class="btn btn-success btn-sm text-uppercase">
                 SAVE & OPEN
             </b-button>
-            <b-button @click="onSave(false)" class="btn-secondary text-light btn-md">
+            <b-button @click="onSave(false)" class="btn btn-success btn-sm text-uppercase">
                 SAVE
             </b-button>
-        </template>
+        </div>
 
     </b-modal>
 
