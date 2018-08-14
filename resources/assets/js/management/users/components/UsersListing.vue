@@ -121,6 +121,7 @@
                     ProcessMaker.apiClient
                         .delete('users/' + data.uid)
                         .then(response => {
+                            ProcessMaker.alert('User successfully eliminated', 'success');
                             that.fetch();
                         })
                 });

@@ -117,10 +117,11 @@
 
                 if (actionType === 'remove-item') {
                     let that = this;
-                    ProcessMaker.confirmModal('Caution!', '<b>Are you sure to delete the item </b>' + data.name + '?', '', function () {
+                    ProcessMaker.confirmModal('Caution!', '<b>Are you sure to delete the process </b>' + data.name + '?', '', function () {
                         ProcessMaker.apiClient
                             .delete('processes/' + data.uid)
                             .then(response => {
+                                ProcessMaker.alert('Process successfully eliminated', 'success');
                                 that.fetch();
                             })
                     });

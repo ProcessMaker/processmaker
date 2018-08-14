@@ -89,17 +89,11 @@
             },
             onDelete(data, index) {
                 let that = this;
-                ProcessMaker.confirmModal('Caution!', '<b>Are you sure to delete </b>' + data.title + '?', '', function() {
-                    const CancelToken = ProcessMaker.apiClient.CancelToken;
+                ProcessMaker.confirmModal('Caution!', '<b>Are you sure to delete </b>' + data.title + '?', '', function () {
                     ProcessMaker.apiClient
-                        .delete('process/' + that.processUid + '/form/' + data.uid,
-                            {
-                                cancelToken: new CancelToken(c => {
-                                    this.cancelToken = c;
-                                })
-                            }
-                        )
+                        .delete('process/' + that.processUid + '/form/' + data.uid)
                         .then(response => {
+                            ProcessMaker.alert('Form successfully eliminated', 'success');
                             that.fetch();
                         })
                 });

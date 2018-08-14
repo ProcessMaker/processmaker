@@ -45,6 +45,7 @@ Route::group([
             Route::get('groups', 'Administration\GroupsController@index');
             Route::post('groups', 'Administration\GroupsController@create');
             Route::get('groups/{group}', 'Administration\GroupsController@get');
+            Route::delete('groups/{group}', 'Administration\GroupsController@delete');
 
         });
 
