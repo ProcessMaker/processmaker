@@ -23,7 +23,8 @@ export const designer = {
         shape: {
             remove: x => x,
             drag: x => x,
-            click: x => x
+            click: x => x,
+            dragFromCrown: x => x
         },
         canvas: {
             click: x => x

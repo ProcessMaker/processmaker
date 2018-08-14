@@ -183,7 +183,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     /**
      * The task not belongs to process.
      */
-    public function testGetTriggerNotBelongToProcess()
+    public function testGetAssigneeNotBelongToProcess()
     {
         //load assignee
         $activity = factory(Task::class)->create();

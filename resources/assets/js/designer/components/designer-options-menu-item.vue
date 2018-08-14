@@ -3,8 +3,8 @@
         <a href="#" @click="titleClick" v-if="hasadd" class="object-menu-item">
             {{title}}
             <i class="plus-icon fas fa-plus-circle"></i>
-            <button @click.stop="buttonClick" type="button" class="add-button btn btn-success btn-sm float-right">
-                <i class="fas fa-plus fa-sm"></i> Add
+            <button @click.stop="buttonClick" type="button" class="add-button btn-success btn-sm float-right">
+                CREATE
             </button>
         </a>
         <a href="#" @click="titleClick" v-else class="object-menu-item">
