@@ -130,7 +130,7 @@
                     if (value === 'archived'){
                         colorValue = 'text-info'
                     }
-                let response = '<i class="fas fa-circle ' + colorValue + '"></i> ';
+                let response = '<i class="fas fa-circle ' + colorValue + ' small"></i> ';
                 value = value.charAt(0).toUpperCase() + value.slice(1);
                 return response + value;
             },
