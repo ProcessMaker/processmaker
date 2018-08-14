@@ -117,20 +117,8 @@
             },
             formatStatus(value) {
                 value = value.toLowerCase();
-                let colorValue = '';
-                    if (value === 'active'){
-                        colorValue = 'text-success'
-                    }
-                    if (value === 'inactive'){
-                        colorValue = 'text-danger'
-                    }
-                    if (value === 'draft'){
-                        colorValue = 'text-warning'
-                    }
-                    if (value === 'archived'){
-                        colorValue = 'text-info'
-                    }
-                let response = '<i class="fas fa-circle ' + colorValue + ' small"></i> ';
+                let bubbleColors = {'active': 'text-success', 'inactive': 'text-danger', 'draft': 'text-warning', 'archived': 'text-info'};
+                let response = '<i class="fas fa-circle ' + bubbleColors[value] + ' small"></i> ';
                 value = value.charAt(0).toUpperCase() + value.slice(1);
                 return response + value;
             },
