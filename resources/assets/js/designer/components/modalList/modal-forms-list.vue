@@ -89,7 +89,7 @@
             },
             onDelete(data, index) {
                 let that = this;
-                ProcessMaker.confirmModal('Caution!', '<b>Are you sure to delete </b>' + data.title + '?', '', function () {
+                ProcessMaker.confirmModal('Caution!', '<b>Are you sure to delete the form </b>' + data.title + '?', '', function () {
                     ProcessMaker.apiClient
                         .delete('process/' + that.processUid + '/form/' + data.uid)
                         .then(response => {
