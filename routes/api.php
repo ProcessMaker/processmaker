@@ -40,8 +40,9 @@ Route::group([
             Route::post('roles', 'Administration\RolesController@create');
             Route::put('roles/{uid}', 'Administration\RolesController@update');
             Route::get('roles/{role}', 'Administration\RolesController@get');
+            Route::delete('roles/{role}', 'Administration\RolesController@delete');
 
-            // Roles API Endpoints
+            // Groups API Endpoints
             Route::get('groups', 'Administration\GroupsController@index');
             Route::post('groups', 'Administration\GroupsController@create');
             Route::get('groups/{group}', 'Administration\GroupsController@get');
