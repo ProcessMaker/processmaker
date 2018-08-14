@@ -114,14 +114,14 @@
 
     </form>
 
-    <template slot="modal-footer">
-      <b-button @click="onCancel" class="btn-outline-secondary btn-md">
-        CANCEL
-      </b-button>
-      <b-button class="btn-secondary text-light btn-md">
-        SAVE
-      </b-button>
-    </template>
+    <div slot="modal-footer">
+        <b-button @click="onCancel" class="btn btn-outline-success btn-md">
+            CANCEL
+        </b-button>
+        <b-button class="btn btn-success btn-sm text-uppercase">
+            SAVE
+        </b-button>
+    </div>
 
   </b-modal>
 </template>
