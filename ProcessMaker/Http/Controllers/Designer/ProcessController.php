@@ -32,7 +32,8 @@ class ProcessController extends Controller
             request()->session()->flash('_alert', json_encode(['danger', __('The process was not found.')]));
             return view('processes.index');
         }
+        $title = $process->name;
 
-        return view('designer.designer', compact('process'));
+        return view('designer.designer', compact(['process', 'title']));
     }
 }

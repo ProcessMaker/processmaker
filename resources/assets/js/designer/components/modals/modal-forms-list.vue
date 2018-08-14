@@ -1,5 +1,5 @@
 <template>
-    <b-modal class="form-docs" ref="modal" size="lg" @hidden="onHidden" title="Task Form" hide-footer>
+    <b-modal class="form-docs" ref="modal" size="lg" @hidden="onHidden" hide-footer title="Task Form">
       <div class="ibox-content m-b-sm border-bottom">
         <div class="p-xs">
           <h2>{{formTitle}}</h2>
