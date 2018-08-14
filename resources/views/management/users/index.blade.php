@@ -29,10 +29,10 @@
         <form-input :error="addUserPasswordMismatch" type="password" v-model="addUserPasswordConfirmation" label="Confirm Password"></form-input>
 
         <template slot="modal-footer">
-        <b-button @click="hideAddModal" class="btn-outline-secondary btn-md">
+        <b-button @click="hideAddModal" class="btn btn-outline-success btn-sm text-uppercase">
             Cancel
         </b-button>
-        <b-button @click="submitAdd" class="btn-secondary text-light btn-md">
+        <b-button @click="submitAdd" class="btn btn-outline-success btn-sm text-uppercase">
             Save
         </b-button>
         </template>
