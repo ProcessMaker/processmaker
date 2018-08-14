@@ -156,6 +156,14 @@ html {
   border-color: #b6bfc6;
   border-radius: 2px;
 }
+.form-control::placeholder {
+  color: #b6bfc6;
+}
+.form-control:focus {
+  box-shadow: none;
+  -webkit-box-shadow: none;
+  border-color: #b6bfc6;
+} 
 
 select.form-control:not([size]):not([multiple]) {
   height: 32px;
@@ -224,6 +232,7 @@ table.vuetable {
   .actions {
     cursor: pointer;
     text-align: right;
+    color: #788793;
     .popout {
       display: none;
       align-items: center;
@@ -234,7 +243,7 @@ table.vuetable {
       margin: 3px;
       font-size: $font-size-large;
       button.btn-action {
-        color: #212529;
+        color: #788793;
         height: 32px;
         width: 32px;
         margin-left: 4px;
@@ -261,7 +270,7 @@ table.vuetable {
     text-transform: uppercase;
     &.ascending,
     &.descending {
-      color: black;
+      color: #333333;
     }
   }
   .vuetable-pagination {
