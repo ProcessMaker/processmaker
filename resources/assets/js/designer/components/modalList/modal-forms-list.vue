@@ -21,6 +21,7 @@
                         </div>
                     </template>
                 </vuetable>
+
                 <pagination single="Form" plural="Forms" :perPageSelectEnabled="true" @changePerPage="changePerPage"
                             @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
                 <template slot="modal-footer">

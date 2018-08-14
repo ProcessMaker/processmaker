@@ -46,14 +46,14 @@
         </div>
     </form>
 
-    <template slot="modal-footer">
+    <div slot="modal-footer">
       <b-button @click="onCancel" class="btn btn-outline-success btn-sm text-uppercase">
         CANCEL
       </b-button>
       <b-button class="btn btn-success btn-sm text-uppercase">
         TEST CONNECTION
       </b-button>
-    </template>
+    </div>
 
   </b-modal>
 </template>

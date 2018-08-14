@@ -4,7 +4,8 @@
         <form-text-area :error="errors.description" :rows="3" v-model="description"
                         label="Description"></form-text-area>
 
-        <template slot="modal-footer">
+
+        <div slot="modal-footer">
             <b-button @click="onClose" class="btn btn-outline-success btn-sm text-uppercase">
                 CANCEL
             </b-button>
@@ -14,7 +15,7 @@
             <b-button @click="onSave(false)" class="btn btn-success btn-sm text-uppercase">
                 SAVE
             </b-button>
-        </template>
+        </div>
 
     </b-modal>
 
