@@ -55,14 +55,19 @@ window.ProcessMaker.apiClient.interceptors.response.use(function (response) {
   // When access token expires: Refresh the token and retry the request
   const apiRequest = error.config;
   if (error.response.status === 401 && !apiRequest.retryApiRequest) {
+    if (apiRequest.url === '/auth/refresh' && error.response.data.access_token === null) {
+      return Promise.reject(error);
+    }
     apiRequest.retryApiRequest = true;
-    const refreshToken = window.localStorage.getItem('refreshToken');
     return window.ProcessMaker.apiClient({url: '/auth/refresh', baseURL: '/', method: 'post'}, {})
       .then(({data}) => {
         window.ProcessMaker.apiClient.defaults.headers.common['Authorization'] = 'Bearer ' + data.access_token;
         apiRequest.headers['Authorization'] = 'Bearer ' + data.access_token;
         apiRequest.baseURL = '';
         return window.ProcessMaker.apiClient(apiRequest);
+      }).catch((error) => {
+        window.location.href = '/logout';
+        return Promise.reject(error);
       });
   }
   let elem = document.getElementById('content-inner');
