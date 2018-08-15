@@ -101,16 +101,6 @@ class ProcessManager
     {
         $validator = Validator::make($data, $rules, $messages, $customAttributes);
 
-        /**
-         * Validate that the process does not have cases.
-         */
-//        $validator->addExtension(
-//            'process_manager.process_does_not_have_cases',
-//            function ($attribute, Process $process) {
-//                return $process->cases()->count() === 0;
-//            }
-//        );
-
         if ($validator->fails()) {
             throw new ValidationException($validator);
         }

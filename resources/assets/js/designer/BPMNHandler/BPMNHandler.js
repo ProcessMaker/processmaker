@@ -345,6 +345,7 @@ export default class BPMNHandler {
             ignoreDeclaration: true,
             spaces: 4
         }
-        return convert.js2xml(this.bpmn, options)
+        let xmlHeader = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+        return xmlHeader + convert.js2xml(this.bpmn, options)
     }
 }
