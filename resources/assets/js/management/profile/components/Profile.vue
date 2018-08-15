@@ -145,17 +145,21 @@ export default {
         });
     },
     save() {
+        delete this.data.avatar;
       ProcessMaker.apiClient.put('admin/profile', this.data)
         .then((response) => {
           // @todo Show success alert/modal
-          console.log('submitted',response)
-          alert("saved")
+          console.log('submitted',response);
+            location.reload();
+          ProcessMaker.alert('Save profile success', 'success');
 
         });
     },
     updateImage (newImage) {
       this.image = newImage;
-      ProcessMaker.apiClient.put('admin/profile', this.image)
+      ProcessMaker.apiClient.put('admin/profile', {
+          avatar : this.image
+      })
         .then((response) => {
           console.log('image',response)
         })
