@@ -2,8 +2,10 @@
 
 namespace ProcessMaker\Http\Controllers\Api\Administration;
 
-use Illuminate\Support\Facades\DB;
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Model\Role;
 use ProcessMaker\Transformers\RoleTransformer;
@@ -94,6 +96,20 @@ class RolesController extends Controller
 
       return fractal($role, new RoleTransformer())->respond();
 
+    }
+
+    /**
+     * Delete Role
+     *
+     * @param Role $role
+     *
+     * @return ResponseFactory|Response
+     * @throws \Exception
+     */
+    public function delete(Role $role)
+    {
+        $role->delete();
+        return response([], 204);
     }
 
 }

@@ -103,7 +103,7 @@ class GenerateApiToken
                 'token_type' => $tokenInfo['token_type'],
                 'scope' => '*',
                 'refresh_token' => $tokenInfo['refresh_token'],
-                'client_id' => $oauthClient->client,
+                'client_id' => $oauthClient->id,
                 'client_secret' => $oauthClient->secret
             ]);
         }

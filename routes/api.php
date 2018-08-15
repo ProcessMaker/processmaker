@@ -33,17 +33,20 @@ Route::group([
             Route::get('users/{user}/avatar', 'Administration\UsersController@avatar');
             Route::put('users/{user}', 'Administration\UsersController@update');
             Route::post('users', 'Administration\UsersController@create');
+            Route::delete('users/{user}', 'Administration\UsersController@delete');
 
             // Roles API Endpoints
             Route::get('roles', 'Administration\RolesController@index');
             Route::post('roles', 'Administration\RolesController@create');
             Route::put('roles/{uid}', 'Administration\RolesController@update');
             Route::get('roles/{role}', 'Administration\RolesController@get');
+            Route::delete('roles/{role}', 'Administration\RolesController@delete');
 
-            // Roles API Endpoints
+            // Groups API Endpoints
             Route::get('groups', 'Administration\GroupsController@index');
             Route::post('groups', 'Administration\GroupsController@create');
             Route::get('groups/{group}', 'Administration\GroupsController@get');
+            Route::delete('groups/{group}', 'Administration\GroupsController@delete');
 
         });
 
@@ -186,3 +189,4 @@ Route::group([
         });
     });
 });
+

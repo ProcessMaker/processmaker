@@ -108,4 +108,19 @@ class UsersController extends Controller
             'user' => fractal($user, new UserTransformer())->toArray()
         ], 404);
     }
+
+    /**
+     * Delete user
+     *
+     * @param User $user
+     *
+     * @return ResponseFactory|Response
+     * @throws \Exception
+     */
+    public function delete(User $user)
+    {
+        $user->delete();
+        return response([], 204);
+    }
+
 }

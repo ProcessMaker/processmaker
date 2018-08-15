@@ -14,10 +14,15 @@ describe("Elements", () => {
         paper = {}
         ev = new Elements["startevent"]({
             id: "start",
-            x: 10,
-            y: 10,
-            width: 40,
-            height: 40
+            bounds: {
+                x: 10,
+                y: 10,
+                width: 40,
+                height: 40
+            },
+            attributes:{
+                name:"test"
+            }
         }, graph, paper)
     })
 

@@ -270,6 +270,27 @@ class RolesTest extends ApiTestCase
             'status' => 'ACTIVE'
         ]);
     }
+
+    /**
+     * Test Delete role
+     */
+    public function testDeleteRole()
+    {
+        $user = factory(User::class)->create([
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+        ]);
+        $this->auth($user->username, 'password');
+
+        $role = factory(Role::class)->create();
+
+        $response = $this->api('delete', self::API_TEST_ROLES . '/' . $role->uid);
+        $response->assertStatus(204);
+
+        //validating that the group does not exist
+        $exitRole = Role::where('uid', $role->uid)->first();
+        $this->assertNull($exitRole);
+    }
 }
 
 
