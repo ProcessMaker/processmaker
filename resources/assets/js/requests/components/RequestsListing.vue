@@ -96,7 +96,8 @@ export default {
       let now = moment();
       let diff = duedate.diff(now, 'hours');
       let color = diff < 0 ? 'text-danger' : (diff <= 48 ? 'text-warning' : 'text-primary');
-      return '<i class="fas fa-circle '+color+'"></i> ' + duedate.format('YYYY-MM-DD hh:mm');
+
+      return '<i class="fas fa-circle '+color+' small"></i> ' + duedate.format('YYYY-MM-DD hh:mm');
     },
     formatDate(value) {
       let date = moment(value);
