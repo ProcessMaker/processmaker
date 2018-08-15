@@ -84,7 +84,6 @@
         },
         methods: {
             formatStatus(status) {
-                console.log(status)
                 status = status.toLowerCase();
                 let bubbleColor = {'active': 'text-success', 'inactive': 'text-danger', 'draft': 'text-warning', 'archived': 'text-info'};
                 let response = '<i class="fas fa-circle ' + bubbleColor[status] + ' small"></i> ';

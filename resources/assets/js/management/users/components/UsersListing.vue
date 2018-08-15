@@ -88,11 +88,12 @@ export default {
     };
   },
   methods: {
-    formatStatus(value) {
-      value = value.toLowerCase();
-      let response = '<i class="fas fa-circle ' + value + '"></i> ';
-      value = value.charAt(0).toUpperCase() + value.slice(1);
-      return response + value;
+    formatStatus(status) {
+    status = status.toLowerCase();
+    let bubbleColor = {'active': 'text-success', 'inactive': 'text-danger', 'draft': 'text-warning', 'archived': 'text-info'};
+    let response = '<i class="fas fa-circle ' + bubbleColor[status] + ' small"></i> ';
+    status = status.charAt(0).toUpperCase() + status.slice(1);
+    return response + status;
     },
     transform(data) {
       // Bring in our mixin version, but we have to do additional transformation to create a full_name field
