@@ -26,29 +26,33 @@
         methods: {
             setImage(image) {
                 this.image = image;
+            },
+            fetch() {
+                console.log('fetch');
+                // Fetch url
+                // If 404, we'll have a json response with error and user meta data
+                // If 200, then it's actually a valid image url, so let's replace our image
+                // with the data url
+                ProcessMaker.apiClient('admin/profile')
+                    .then((response) => {
+                        this.label = (response.data.firstname[0] + response.data.lastname[0]).toUpperCase();
+                        if (response.data.avatar) {
+                            this.image = response.data.avatar;
+                        }
+                    })
+                    .catch((error) => {
+                        if (error.response.status == 404 && error.response.data.user) {
+                            // We have a 404 and we have a user object returned, let's fetch label
+                            let user = error.response.data.user;
+                            this.label = (user.firstname[0] + user.lastname[0]).toUpperCase();
+                        } else {
+                            this.label = 'n/a'
+                        }
+                    })
             }
         },
         mounted() {
-            // Fetch url
-            // If 404, we'll have a json response with error and user meta data
-            // If 200, then it's actually a valid image url, so let's replace our image
-            // with the data url
-            ProcessMaker.apiClient('admin/profile')
-                .then((response) => {
-                    this.label = (response.data.firstname[0] + response.data.lastname[0]).toUpperCase();
-                    if (response.data.avatar) {
-                        this.image = response.data.avatar;
-                    }
-                })
-                .catch((error) => {
-                    if (error.response.status == 404 && error.response.data.user) {
-                        // We have a 404 and we have a user object returned, let's fetch label
-                        let user = error.response.data.user;
-                        this.label = (user.firstname[0] + user.lastname[0]).toUpperCase();
-                    } else {
-                        this.label = 'n/a'
-                    }
-                })
+            this.fetch();
         },
         data() {
             return {
