@@ -26,6 +26,7 @@
                             @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
             </div>
         </div>
+
     </b-modal>
 </template>
 
@@ -81,18 +82,15 @@
                 //define action
             },
             onDelete(data, index) {
-                const CancelToken = ProcessMaker.apiClient.CancelToken;
-                ProcessMaker.apiClient
-                    .delete('process/' + this.processUid + '/input-document/' + data.uid,
-                        {
-                            cancelToken: new CancelToken(c => {
-                                this.cancelToken = c;
-                            })
-                        }
-                    )
-                    .then(response => {
-                        this.fetch();
-                    })
+                let that = this;
+                ProcessMaker.confirmModal('Caution!', '<b>Are you sure to delete the Input document </b>' + data.title + '?', '', function () {
+                    ProcessMaker.apiClient
+                        .delete('process/' + that.processUid + '/input-document/' + data.uid)
+                        .then(response => {
+                            ProcessMaker.alert('Input Document successfully eliminated', 'success');
+                            that.fetch();
+                        })
+                });
             },
             fetch() {
                 this.loading = true;

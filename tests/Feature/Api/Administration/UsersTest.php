@@ -242,4 +242,28 @@ class UsersTest extends ApiTestCase
         $this->assertEquals(true, Hash::check('password', $existingUser->password));
     }
 
+    /**
+     * Delete User
+     */
+    public function testDeleteUser()
+    {
+        $admin = factory(User::class)->create([
+            'password' => Hash::make('password'),
+            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+        ]);
+        $this->auth($admin->username, 'password');
+
+        $user = factory(User::class)->create([
+            'password' => Hash::make('password'),
+            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+        ]);
+
+        $response = $this->api('delete', self::API_TEST_USERS . '/' . $user->uid);
+        $response->assertStatus(204);
+
+        //validating that the user does not exist
+        $existingUser = User::where('uid', $user->uid)->first();
+        $this->assertNull($existingUser);
+    }
+
 }

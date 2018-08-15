@@ -2,7 +2,7 @@
     <b-modal class="scripts-list" ref="modal" size="lg" @hidden="onHidden" title="Scripts" hide-footer>
         <div class="form-group">
             <div class="d-flex justify-content-between">
-                <input v-model="filter" class="form-control  col-sm-3" placeholder="Search..." @keyup="fetch" >
+                <input v-model="filter" class="form-control  col-sm-3" placeholder="Search..." @keyup="fetch">
                 <button type="submit" class="btn btn-secondary"><i class="fas fa-plus fa-md"></i> Create</button>
             </div>
             <div class="data-table">
@@ -25,6 +25,7 @@
                             @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
             </div>
         </div>
+
     </b-modal>
 </template>
 
@@ -85,18 +86,15 @@
                 "/designer/" + this.processUid + "/script/" + data.uid;
             },
             onDelete(data, index) {
-                const CancelToken = ProcessMaker.apiClient.CancelToken;
-                ProcessMaker.apiClient
-                    .delete('process/' + this.processUid + '/script/' + data.uid,
-                        {
-                            cancelToken: new CancelToken(c => {
-                                this.cancelToken = c;
-                            })
-                        }
-                    )
-                    .then(response => {
-                        this.fetch();
-                    })
+                let that = this;
+                ProcessMaker.confirmModal('Caution!', '<b>Are you sure to delete the Script </b>' + data.title + '?', '', function () {
+                    ProcessMaker.apiClient
+                        .delete('process/' + that.processUid + '/script/' + data.uid)
+                        .then(response => {
+                            ProcessMaker.alert('Script successfully eliminated', 'success');
+                            that.fetch();
+                        })
+                });
             },
             fetch() {
                 this.loading = true;

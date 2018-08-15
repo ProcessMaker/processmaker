@@ -21,7 +21,8 @@
                         </div>
                     </template>
                 </vuetable>
-                <pagination single="Output Document" plural="Output Documents" :perPageSelectEnabled="true" @changePerPage="changePerPage"
+                <pagination single="Output Document" plural="Output Documents" :perPageSelectEnabled="true"
+                            @changePerPage="changePerPage"
                             @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
             </div>
         </div>
@@ -87,18 +88,15 @@
                 //define action
             },
             onDelete(data, index) {
-                const CancelToken = ProcessMaker.apiClient.CancelToken;
-                ProcessMaker.apiClient
-                    .delete('process/' + this.processUid + '/output-document/' + data.uid,
-                        {
-                            cancelToken: new CancelToken(c => {
-                                this.cancelToken = c;
-                            })
-                        }
-                    )
-                    .then(response => {
-                        this.fetch();
-                    })
+                let that = this;
+                ProcessMaker.confirmModal('Caution!', '<b>Are you sure to delete the Output document </b>' + data.title + '?', '', function () {
+                    ProcessMaker.apiClient
+                        .delete('process/' + that.processUid + '/output-document/' + data.uid)
+                        .then(response => {
+                            ProcessMaker.alert('Output Document successfully eliminated', 'success');
+                            that.fetch();
+                        })
+                });
             },
             fetch() {
                 this.loading = true;

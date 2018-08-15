@@ -44,8 +44,17 @@
             EventBus.$on(actions.designer.shape.remove().type, (value) => this.removeElement(value))
             EventBus.$on(actions.bpmn.save().type, (value) => this.saveBPMN(value))
             EventBus.$on(actions.bpmn.shape.assignTask().type, (value) => this.assignTask(value))
+            EventBus.$on(actions.designer.shape.dragFromCrown().type, (value) => this.createFromCrown(value))
+            EventBus.$on(actions.designer.bpmn.loadFromModel().type, (value) => this.loadFromModel(value))
         },
         methods: {
+            /**
+             * Loads the xml bpmn definition from the current model of the process
+             */
+            loadFromModel () {
+               this.bpmn = this.bpmnHandler.toXML()
+            },
+
             /**
              * Create the element
              * @param event
@@ -60,6 +69,9 @@
                     bounds: {
                         x: event.x - this.diagramCoordinates.x,
                         y: event.y - this.diagramCoordinates.y
+                    },
+                    attributes: {
+                        name: ""
                     },
                     eventDefinition: definition
                 }
@@ -160,6 +172,33 @@
                 this.diagramCoordinates = {
                     x: this.$el.getBoundingClientRect().left,
                     y: this.$el.getBoundingClientRect().top
+                }
+            },
+            createFromCrown(options){
+                let event = options.ev
+                let type = options.type
+                let eventDefinition = options.eventDefinition
+                this.updateCoordinates()
+                const defaultOptions = {
+                    id: type + '_' + qinu(),
+                    type: type,
+                    bounds: {
+                        x: event.x - this.diagramCoordinates.x,
+                        y: event.y - this.diagramCoordinates.y
+                    },
+                    attributes: {
+                        name: ""
+                    },
+                    eventDefinition
+                }
+                if (Elements[type.toLowerCase()]) {
+                    this.builder.createShape(defaultOptions, true)
+                    this.builder.createFlow({
+                        x: event.x - this.diagramCoordinates.x,
+                        y: event.y - this.diagramCoordinates.y
+                    })
+                } else {
+                    ProcessMaker.alert(type.toLowerCase() + " is not supported", "danger")
                 }
             }
         },

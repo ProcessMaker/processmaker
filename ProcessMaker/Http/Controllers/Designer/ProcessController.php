@@ -22,17 +22,19 @@ class ProcessController extends Controller
     /**
      * Redirects to the view of the designer
      *
-     * @param Process $process
+     * @param string $process
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function show(Process $process = null)
+    public function show($process = null)
     {
-        if (!$process) {
-            request()->session()->flash('_alert', json_encode(['danger', __('The process was not found.')]));
-            return view('processes.index');
-        }
+        $model = Process::where('uid', '=', $process)->first();
 
-        return view('designer.designer', compact('process'));
+        if (!$model) {
+            request()->session()->flash('_alert', json_encode(['danger', __('The process was not found.')]));
+            return redirect('processes');
+        }
+        $title = $model->name;
+        return view('designer.designer', ['process' => $model, 'title' => $title]);
     }
 }

@@ -1,5 +1,5 @@
 import joint from "jointjs"
-export const EndEmailEvent = joint.dia.Element.define('bpmn.EndEmailEvent',
+export const EndEventMessageDefinition = joint.dia.Element.define('bpmn.EndEvent.MessageEventDefinition',
     {
         attrs: {
             c: {
