@@ -82,30 +82,7 @@
                 }
             }
         }
-        reader.onload = function(ev) {
-          let action = actions.designer.bpmn.update(ev.target.result)
-          EventBus.$emit(action.type, action.payload)
-        }
-        reader.readAsText(file);
-        e.preventDefault()
-      }
-    },
-    errorFileHandler(evt) {
-      switch (evt.target.error.code) {
-        case evt.target.error.NOT_FOUND_ERR:
-          console.error('File Not Found!')
-          break;
-        case evt.target.error.NOT_READABLE_ERR:
-          console.error('File is not readable')
-          break;
-        case evt.target.error.ABORT_ERR:
-          break; // noop
-        default:
-          console.error('An error occurred reading this file.')
-      }
-    }
-  }
-};
+    };
 </script>
 
 <style lang='scss' scoped>
