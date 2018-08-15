@@ -169,11 +169,11 @@ export default {
     },
     clearForm(curIndex) {
       (this.username = ""),
-      (this.firstname = ""),
-      (this.lastname = ""),
-      (this.status = "");
-      (this.password = "";)
-      (this.confpassword = "";)
+        (this.firstname = ""),
+        (this.lastname = ""),
+        (this.status = ""),
+        (this.password = ""),
+        (this.confpassword = "");
     },
     hideEditModal() {
       this.$refs.editItem.hide();
