@@ -67,7 +67,7 @@
              * Method for remove the Selected Shape
              */
             showListForm (ev){
-                EventBus.$emit("open-add-dialog", "formslist");
+                EventBus.$emit("open-add-dialog", "task-configuration");
             },
             /**
              * Method for show the crown

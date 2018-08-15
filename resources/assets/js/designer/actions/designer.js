@@ -37,7 +37,8 @@ export const designer = {
             create: x => x
         },
         bpmn: {
-            update: x => x
+            update: x => x,
+            loadFromModel: x => x
         }
     }
 };

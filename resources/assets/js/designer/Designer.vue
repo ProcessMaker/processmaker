@@ -39,6 +39,7 @@
     import modalVariablesAdd from "./components/modals/modal-variables-add";
     import modalMessageTypes from "./components/modals/modal-message-types";
     import modalFormsList from "./components/modals/modal-forms-list"
+    import modalTaskConfiguration from "./components/modals/modal-task-configuration"
 
     //Modal list
     import modalForms from "./components/modalList/modal-forms-list"
@@ -70,6 +71,7 @@
             modalVariablesAdd,
             modalOutputDocuments,
             modalFormsList,
+            modalTaskConfiguration,
             svgcanvas,
             toolbar,
             toptoolbar,
@@ -131,6 +133,9 @@
                         break;
                     case 'open':
                         this.modalComponent = 'modal-create-template-add'
+                        break;
+                    case 'task-configuration':
+                        this.modalComponent = 'modal-task-configuration'
                         break;
                     default:
                         alert(key + ' add modal not yet implemented.')

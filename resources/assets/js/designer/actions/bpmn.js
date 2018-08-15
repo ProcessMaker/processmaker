@@ -15,6 +15,9 @@ export const bpmn = {
             create: x => x
         },
         toXML: x => x,
-        save: x => x
+        save: x => x,
+        task: {
+            update: x => x
+        }
     }
 }
