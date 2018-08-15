@@ -205,9 +205,10 @@ class User extends Authenticatable implements UserEntityInterface, CanResetPassw
     public function getAvatar()
     {
         $mediaFile = $this->getMedia(self::COLLECTION_PROFILE);
-        if (isset($mediaFile[0])) {
-            return $mediaFile[0]->getFullUrl();
+        $url = '';
+        foreach ($mediaFile as $media) {
+            $url = $media->getFullUrl();
         }
-        return '';
+        return $url;
     }
 }

@@ -72,11 +72,7 @@ class UserManager
      */
     public function getUrlAvatar(User $user)
     {
-        $mediaFile = $user->getMedia(User::COLLECTION_PROFILE);
-        if (isset($mediaFile[0])) {
-            return $mediaFile[0]->getFullUrl();
-        }
-        return null;
+        return $user->getAvatar();
     }
 
     /**
