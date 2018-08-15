@@ -28,21 +28,21 @@
       </div>
       <div class="form-group">
         <label for="edit-password">Password</label>
-        <input id="edit-password" class="form-control" v-model="password">
+        <input id="edit-password" type="password" class="form-control" v-model="password">
       </div>
       <div class="form-group">
         <label for="confirm-password">Confirm Password</label>
-        <input id="confirm-password" class="form-control" v-model="password">
+        <input id="confirm-password" type="password" class="form-control" v-model="confpassword">
       </div>
     </form>
-    <template slot="modal-footer">
+    <div slot="modal-footer">
       <b-button @click="hideEditModal" class="btn btn-outline-success btn-sm text-uppercase">
         Cancel
       </b-button>
       <b-button @click="submitEdit" class="btn btn-success btn-sm text-uppercase">
         Save
       </b-button>
-      </template>
+      </div>
     </b-modal>
    </div>
 </template>
@@ -123,7 +123,8 @@ export default {
       uid: "",
       status: "",
       curIndex: "",
-      password: ""
+      password: "",
+      confpassword: ""
     };
   },
   methods: {
@@ -139,6 +140,7 @@ export default {
       this.lastname = this.data.data[index].lastname;
       this.status = this.data.data[index].status;
       this.password = this.data.data[index].password;
+      this.confpassword = this.data.data[index].confpassword;
       this.role = this.data.data[index].role;
       this.uid = this.data.data[index].uid;
       this.curIndex = index;
@@ -152,7 +154,8 @@ export default {
           firstname: this.firstname,
           lastname: this.lastname,
           status: this.status,
-          password: this.password
+          password: this.password,
+          confpassword: this.confpassword
         })
         .then(response => {
           ProcessMaker.alert("Saved", "success");
@@ -166,10 +169,11 @@ export default {
     },
     clearForm(curIndex) {
       (this.username = ""),
-        (this.firstname = ""),
-        (this.lastname = ""),
-        (this.status = "");
-      this.password = "";
+      (this.firstname = ""),
+      (this.lastname = ""),
+      (this.status = "");
+      (this.password = "";)
+      (this.confpassword = "";)
     },
     hideEditModal() {
       this.$refs.editItem.hide();
