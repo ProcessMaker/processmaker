@@ -103,4 +103,18 @@ class UsersController extends Controller
         ], 404);
     }
 
+    /**
+     * Delete user
+     *
+     * @param User $user
+     *
+     * @return ResponseFactory|Response
+     * @throws \Exception
+     */
+    public function delete(User $user)
+    {
+        $user->delete();
+        return response([], 204);
+    }
+
 }

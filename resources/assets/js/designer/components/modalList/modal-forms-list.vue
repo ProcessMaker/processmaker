@@ -1,5 +1,5 @@
 <template>
-    <b-modal class="form-docs" ref="modal" size="lg" @hidden="onHidden" title="Forms">
+    <b-modal class="form-docs" ref="modal" size="lg" @hidden="onHidden" title="Forms"  hide-footer>
         <div class="form-group">
             <div class="d-flex justify-content-between">
                 <input v-model="filter" class="form-control  col-sm-3" placeholder="Search..." @keyup="fetch">
@@ -25,12 +25,6 @@
                 <pagination single="Form" plural="Forms" :perPageSelectEnabled="true" @changePerPage="changePerPage"
                             @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
                 <template slot="modal-footer">
-                    <b-button @click="onCancel" class="btn-outline-success btn-md">
-                        CANCEL
-                    </b-button>
-                    <b-button class="btn btn-success btn-sm text-uppercase">
-                        CONTINUE
-                    </b-button>
                 </template>
             </div>
         </div>
@@ -89,17 +83,11 @@
             },
             onDelete(data, index) {
                 let that = this;
-                ProcessMaker.confirmModal('Caution!', '<b>Are you sure to delete </b>' + data.title + '?', '', function() {
-                    const CancelToken = ProcessMaker.apiClient.CancelToken;
+                ProcessMaker.confirmModal('Caution!', '<b>Are you sure to delete the form </b>' + data.title + '?', '', function () {
                     ProcessMaker.apiClient
-                        .delete('process/' + that.processUid + '/form/' + data.uid,
-                            {
-                                cancelToken: new CancelToken(c => {
-                                    this.cancelToken = c;
-                                })
-                            }
-                        )
+                        .delete('process/' + that.processUid + '/form/' + data.uid)
                         .then(response => {
+                            ProcessMaker.alert('Form successfully eliminated', 'success');
                             that.fetch();
                         })
                 });
