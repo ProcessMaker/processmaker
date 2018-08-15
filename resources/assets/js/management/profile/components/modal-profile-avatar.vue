@@ -6,7 +6,6 @@
         </vue-croppie>
     </div>
     <input type="file" class="custom-file-input" ref="customFile" @change="onFileChange">
-    </div>
 
     <div slot="modal-footer">
       <b-button @click="browse" class="btn btn-success btn-sm text-uppercase"><i class="fas fa-upload"></i>

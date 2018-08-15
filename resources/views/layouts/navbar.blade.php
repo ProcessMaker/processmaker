@@ -93,7 +93,7 @@
     .avatar-circle {
         width: 50px;
         height: 50px;
-        background-color: #fbbe02;
+        background-color: rgb(251,181,4);
         text-align: center;
         border-radius: 50%;
         -webkit-border-radius: 50%;

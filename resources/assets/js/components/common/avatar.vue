@@ -75,6 +75,8 @@ export default {
       max-height: 100%;
       background-color: rgb(251,181,4);
       text-align:center;
+      font-size: 40px;
+      font-weight: bold;
   }
   .profile-avatar{
     max-width: 100%;
