@@ -2,12 +2,13 @@
 
 namespace ProcessMaker\Http\Controllers\Api\Administration;
 
-use Illuminate\Support\Facades\DB;
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Model\Group;
 use ProcessMaker\Transformers\GroupTransformer;
-
 
 /**
  * Controller that handles all Groups API endpoints
@@ -73,6 +74,20 @@ class GroupsController extends Controller
         $group = Group::create($data);
         //$group->refresh();
         return fractal($group, new GroupTransformer())->respond();
+    }
+
+    /**
+     * Delete group
+     *
+     * @param Group $group
+     *
+     * @return ResponseFactory|Response
+     * @throws \Exception
+     */
+    public function delete(Group $group)
+    {
+        $group->delete();
+        return response([], 204);
     }
 
 }
