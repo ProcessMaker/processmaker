@@ -8,12 +8,12 @@ use ProcessMaker\Nayra\Bpmn\Events\ActivityClosedEvent;
 use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
 use ProcessMaker\Nayra\Bpmn\Events\ProcessInstanceCreatedEvent;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
-
+use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Notifications\ActivityActivatedNotification;
 use ProcessMaker\Nayra\Bpmn\Events\ProcessInstanceCompletedEvent;
 use ProcessMaker\Notifications\ProcessCompletedNotification;
+use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
+use ProcessMaker\Facades\WorkflowManager;
 
 /**
  * Description of BpmnSubscriber
@@ -32,10 +32,12 @@ class BpmnSubscriber
         $token = $event->token;
         Log::info('Nofity activity activated: ' . json_encode($token->getProperties()));
 
-        //client events
-        $user = Auth::user();
-        $notification = new ActivityActivatedNotification($event->token);
-        $user->notify($notification);
+        //Send the notification to the assigned user
+        $user = $event->token->user;
+        if (!empty($user)) {
+            $notification = new ActivityActivatedNotification($event->token);
+            $user->notify($notification);
+        }
     }
 
     /**
@@ -95,6 +97,17 @@ class BpmnSubscriber
     }
 
     /**
+     * When the activity is closed.
+     *
+     * @param $event
+     */
+    public function onScriptTaskActivated(ScriptTaskInterface $scriptTask, TokenInterface $token)
+    {
+        Log::info('ScriptTaskActivated: ' . $scriptTask->getId());
+        WorkflowManager::runScripTask($scriptTask, $token);
+    }
+
+    /**
      * Subscription.
      *
      * @param type $events
@@ -108,5 +121,6 @@ class BpmnSubscriber
         $events->listen(ActivityInterface::EVENT_ACTIVITY_CLOSED, static::class . '@onActivityClosed');
 
         $events->listen(ActivityInterface::EVENT_ACTIVITY_ACTIVATED, static::class . '@onActivityActivated');
+        $events->listen(ScriptTaskInterface::EVENT_SCRIPT_TASK_ACTIVATED, static::class . '@onScriptTaskActivated');
     }
 }

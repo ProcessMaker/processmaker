@@ -12,7 +12,7 @@ return [
     | Supported: "sync", "database", "beanstalkd", "sqs", "redis", "null"
     |
     */
-    'default' => env('QUEUE_DRIVER', 'sync'),
+    'default' => env('QUEUE_DRIVER', 'redis'),
     /*
     |--------------------------------------------------------------------------
     | Queue Connections
