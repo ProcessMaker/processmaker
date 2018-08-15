@@ -54,8 +54,8 @@
                 'taskType': '',
                 'taskTypes': [
                     {value: '', content:''},
-                    {value: 'manual', content:'Manual Task'},
-                    {value: 'script', content:'Script Task'}
+                    {value: 'form', content:'Form'},
+                    {value: 'script', content:'Script'}
                 ],
                 'taskTypeItem': '',
                 'taskTypeItems': [
@@ -79,7 +79,7 @@
             onTaskTypeChanged(selectedType) {
                 this.taskTypeItems = [];
                 switch (selectedType) {
-                    case 'manual':
+                    case 'form':
                         ProcessMaker.apiClient
                             .get('process/' + this.processUid + '/forms')
                             .then(response => {
@@ -132,7 +132,7 @@
                     id: this.selectedElement.id,
                     name: this.taskTitle,
                     type: this.taskType,
-                    formRef: (this.taskType === 'manual' ? this.taskTypeItem : ''),
+                    formRef: (this.taskType === 'form' ? this.taskTypeItem : ''),
                     scriptRef: (this.taskType === 'script' ? this.taskTypeItem : ''),
                     dueDate: this.taskDueDate,
                     notifyAfterRouting: this.notifyAfterRouting,
@@ -154,7 +154,7 @@
                 this.taskTitle = this.selectedElement.attributes.name;
                 this.taskType = this.selectedElement.attributes.type;
                 this.onTaskTypeChanged(this.taskType);
-                this.taskTypeItem = this.taskType === 'manual'
+                this.taskTypeItem = this.taskType === 'form'
                     ? this.selectedElement.attributes.formRef
                     : this.selectedElement.attributes.scriptRef;
                 this.taskDueDate = this.selectedElement.attributes.dueDate;
