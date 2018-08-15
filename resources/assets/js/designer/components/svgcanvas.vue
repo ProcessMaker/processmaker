@@ -45,8 +45,16 @@
             EventBus.$on(actions.bpmn.save().type, (value) => this.saveBPMN(value))
             EventBus.$on(actions.bpmn.shape.assignTask().type, (value) => this.assignTask(value))
             EventBus.$on(actions.designer.shape.dragFromCrown().type, (value) => this.createFromCrown(value))
+            EventBus.$on(actions.designer.bpmn.loadFromModel().type, (value) => this.loadFromModel(value))
         },
         methods: {
+            /**
+             * Loads the xml bpmn definition from the current model of the process
+             */
+            loadFromModel () {
+               this.bpmn = this.bpmnHandler.toXML()
+            },
+
             /**
              * Create the element
              * @param event
