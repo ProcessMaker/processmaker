@@ -5,7 +5,7 @@
   <div class="formContainer">
     <img src="/img/md-blue-logo.png">
     <h3>{{__('Forgot Your Password?')}}</h3>
-    <small>{{__("Enter your email address and we'll send you a reset link.")}}</small>
+    <p>{{__("Enter your email address and we'll send you a reset link.")}}</p>
     <form method="POST" class="form" action="{{ route('password.email') }}">
       @if (session('status'))
       <div class="alert alert-success">
@@ -26,34 +26,31 @@
         <button type="submit" class="btn btn-success btn-block">{{ __('Request Reset Link') }}</button>
       </div>
       <div class="form-group">
-        <small>
-            <a href="/login">{{__("Back to Login")}}</a>
-        </small>
+        <a href="/login">{{__("Back to Login")}}</a>
       </div>
     </form>
   </div>
 </div>
 @endsection
 @section('css')
-  <style media="screen">
-
+<style media="screen">
   .formContainer {
-    width:400px;
+    width: 400px;
   }
 
   .formContainer .form {
-    margin-top:50px;
+    margin-top: 50px;
     text-align: left;
   }
 
-  .formContainer  h3 {
-      margin-top: 52px;
-      font-size: 18px;
-      font-weight: 600;
-    }
+  .formContainer h3 {
+    margin-top: 52px;
+    font-size: 18px;
+    font-weight: 600;
+  }
 
   .formContainer button {
     margin-top: 6px;
   }
-  </style>
+</style>
 @endsection
