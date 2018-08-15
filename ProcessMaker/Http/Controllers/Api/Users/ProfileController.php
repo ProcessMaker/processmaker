@@ -27,11 +27,7 @@ class ProfileController extends Controller
     public function profile()
     {
         $user = User::find(Auth::id());
-        $url = UserManager::getUrlAvatar($user);
-        if (!$url) {
-            $url = '/img/avatar.png';
-        }
-        $user->avatar = $url;
+        $user->avatar = UserManager::getUrlAvatar($user);
         return fractal($user, new UserTransformer())->respond();
     }
 

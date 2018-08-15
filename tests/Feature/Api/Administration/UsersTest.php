@@ -8,7 +8,6 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use ProcessMaker\Managers\UserManager;
 use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
 use ProcessMaker\Transformers\UserTransformer;
@@ -164,6 +163,10 @@ class UsersTest extends ApiTestCase
         ]);
         $this->auth($user->username, 'password');
 
+        $user->addMedia(public_path() . '/img/avatar.png')
+            ->preservingOriginal()
+            ->toMediaCollection(User::COLLECTION_PROFILE, User::DISK_PROFILE);
+
         $response = $this->api('get', self::API_TEST_PROFILE . 'profile');
 
         $response->assertStatus(200);
@@ -188,8 +191,6 @@ class UsersTest extends ApiTestCase
             'avatar' => UploadedFile::fake()->image($nameAvatar)
         ]);
         $response->assertStatus(200);
-
-
 
         $mediaAvatar = $user->getMedia($diskName);
 
