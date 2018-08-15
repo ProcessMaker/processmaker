@@ -62,6 +62,9 @@
                         x: event.x - this.diagramCoordinates.x,
                         y: event.y - this.diagramCoordinates.y
                     },
+                    attributes: {
+                        name: ""
+                    },
                     eventDefinition: definition
                 }
                 if (Elements[type.toLowerCase()]) {
@@ -174,6 +177,9 @@
                     bounds: {
                         x: event.x - this.diagramCoordinates.x,
                         y: event.y - this.diagramCoordinates.y
+                    },
+                    attributes: {
+                        name: ""
                     },
                     eventDefinition
                 }

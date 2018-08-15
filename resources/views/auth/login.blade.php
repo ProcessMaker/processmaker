@@ -38,12 +38,10 @@
       <div class="form-group">
         <button type="submit" class="btn btn-success btn-block text-uppercase">{{ __('Login') }}</button>
       </div>
-      <div class="form-group">
-        <small>
+      <div class="form-group">        
           <a href="{{ route('password.request') }}">
             {{ __('Forgot Password?') }}
           </a>
-        </small>
       </div>
       @if(isset($footer))
       {!! $footer !!}
