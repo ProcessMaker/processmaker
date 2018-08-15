@@ -36,10 +36,10 @@
       </div>
     </form>
     <template slot="modal-footer">
-      <b-button @click="hideEditModal" class="btn-outline-secondary btn-md">
+      <b-button @click="hideEditModal" class="btn btn-outline-success btn-sm text-uppercase">
         Cancel
       </b-button>
-      <b-button @click="submitEdit" class="btn-secondary text-light btn-md">
+      <b-button @click="submitEdit" class="btn btn-success btn-sm text-uppercase">
         Save
       </b-button>
       </template>
