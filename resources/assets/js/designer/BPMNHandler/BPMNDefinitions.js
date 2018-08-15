@@ -6,7 +6,7 @@ import _ from "lodash"
 let defs = {
     TAG_MODEL: "http://www.omg.org/spec/BPMN/20100524/MODEL",
     TAG_DI: "http://www.omg.org/spec/BPMN/20100524/DI",
-    TAG_BPMNDI: "http://www.omg.org/spec/DD/20100524/DI",
+    TAG_BPMNDI: "http://www.omg.org/spec/BPMN/20100524/DI",
     TAG_DC: "http://www.omg.org/spec/DD/20100524/DC",
     TAG_XSI: "http://www.w3.org/2001/XMLSchema-instance",
     TARGET_NAMESPACE: "http://bpmn.io/schema/bpmn",

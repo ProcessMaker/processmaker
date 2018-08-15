@@ -55,7 +55,6 @@ class ProcessManager
                 'process' => $process,
             ],
             [
-                'process' => 'process_manager.process_does_not_have_cases'
             ]
         );
         $process->fill($data);
@@ -78,7 +77,6 @@ class ProcessManager
                 'process' => $process,
             ],
             [
-                'process' => 'process_manager.process_does_not_have_cases'
             ]
         );
         return $process->delete();
@@ -106,12 +104,12 @@ class ProcessManager
         /**
          * Validate that the process does not have cases.
          */
-        $validator->addExtension(
-            'process_manager.process_does_not_have_cases',
-            function ($attribute, Process $process) {
-                return $process->cases()->count() === 0;
-            }
-        );
+//        $validator->addExtension(
+//            'process_manager.process_does_not_have_cases',
+//            function ($attribute, Process $process) {
+//                return $process->cases()->count() === 0;
+//            }
+//        );
 
         if ($validator->fails()) {
             throw new ValidationException($validator);
