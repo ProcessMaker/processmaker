@@ -139,8 +139,15 @@
                     notifyToRequestCreator: this.notifyToRequestCreator
                 };
 
-                let action = actions.bpmn.task.update(data);
-                EventBus.$emit(action.type, action.payload);
+                let hideCrownAction = actions.designer.crown.hide();
+                EventBus.$emit(hideCrownAction.type, hideCrownAction.payload);
+
+                let updateTaskAction = actions.bpmn.task.update(data);
+                EventBus.$emit(updateTaskAction.type, updateTaskAction.payload);
+
+                let reloadModelAction = actions.designer.bpmn.loadFromModel();
+                EventBus.$emit(reloadModelAction.type, reloadModelAction.payload);
+
                 this.$refs.modal.hide()
             },
             setDataFromSelectedElement() {

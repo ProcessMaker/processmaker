@@ -1,22 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1533669417248" clover="3.2.0">
-  <project timestamp="1533669417248" name="All files">
-    <metrics statements="458" coveredstatements="163" conditionals="32" coveredconditionals="11" methods="154" coveredmethods="50" elements="644" coveredelements="224" complexity="0" loc="458" ncloc="458" packages="18" files="58" classes="58">
+<coverage generated="1534342416833" clover="3.2.0">
+  <project timestamp="1534342416833" name="All files">
+    <metrics statements="489" coveredstatements="185" conditionals="36" coveredconditionals="14" methods="156" coveredmethods="50" elements="681" coveredelements="249" complexity="0" loc="489" ncloc="489" packages="18" files="59" classes="59">
       <package name="jest">
         <metrics statements="6" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
-        <file name="globals.js" path="/opt/processmaker/jest/globals.js">
+        <file name="globals.js" path="/home/dante/desa/bpm/jest/globals.js">
           <metrics statements="6" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
-          <line num="1" count="11" type="stmt"/>
+          <line num="1" count="12" type="stmt"/>
           <line num="2" count="0" type="stmt"/>
-          <line num="5" count="11" type="stmt"/>
+          <line num="5" count="12" type="stmt"/>
           <line num="6" count="0" type="stmt"/>
-          <line num="9" count="11" type="stmt"/>
-          <line num="10" count="11" type="stmt"/>
+          <line num="9" count="12" type="stmt"/>
+          <line num="10" count="12" type="stmt"/>
         </file>
       </package>
       <package name="resources.assets.js.components">
-        <metrics statements="4" coveredstatements="4" conditionals="2" coveredconditionals="2" methods="0" coveredmethods="0"/>
-        <file name="FilterBar.vue" path="/opt/processmaker/resources/assets/js/components/FilterBar.vue">
+        <metrics statements="22" coveredstatements="21" conditionals="6" coveredconditionals="5" methods="0" coveredmethods="0"/>
+        <file name="Confirm.vue" path="/home/dante/desa/bpm/resources/assets/js/components/Confirm.vue">
+          <metrics statements="18" coveredstatements="17" conditionals="4" coveredconditionals="3" methods="0" coveredmethods="0"/>
+          <line num="32" count="7" type="stmt"/>
+          <line num="40" count="0" type="stmt"/>
+          <line num="45" count="7" type="stmt"/>
+          <line num="46" count="7" type="stmt"/>
+          <line num="47" count="7" type="stmt"/>
+          <line num="48" count="7" type="cond" truecount="1" falsecount="1"/>
+          <line num="49" count="7" type="stmt"/>
+          <line num="50" count="7" type="stmt"/>
+          <line num="51" count="7" type="stmt"/>
+          <line num="55" count="4" type="stmt"/>
+          <line num="58" count="2" type="stmt"/>
+          <line num="59" count="2" type="cond" truecount="2" falsecount="0"/>
+          <line num="60" count="1" type="stmt"/>
+          <line num="62" count="2" type="stmt"/>
+          <line num="65" count="1" type="stmt"/>
+          <line num="66" count="1" type="stmt"/>
+          <line num="70" count="7" type="stmt"/>
+          <line num="71" count="7" type="stmt"/>
+        </file>
+        <file name="FilterBar.vue" path="/home/dante/desa/bpm/resources/assets/js/components/FilterBar.vue">
           <metrics statements="4" coveredstatements="4" conditionals="2" coveredconditionals="2" methods="0" coveredmethods="0"/>
           <line num="14" count="3" type="stmt"/>
           <line num="20" count="2" type="cond" truecount="2" falsecount="0"/>
@@ -25,9 +46,9 @@
         </file>
       </package>
       <package name="resources.assets.js.designer.actions">
-        <metrics statements="29" coveredstatements="27" conditionals="0" coveredconditionals="0" methods="27" coveredmethods="25"/>
-        <file name="bpmn.js" path="/opt/processmaker/resources/assets/js/designer/actions/bpmn.js">
-          <metrics statements="10" coveredstatements="8" conditionals="0" coveredconditionals="0" methods="9" coveredmethods="7"/>
+        <metrics statements="31" coveredstatements="27" conditionals="0" coveredconditionals="0" methods="29" coveredmethods="25"/>
+        <file name="bpmn.js" path="/home/dante/desa/bpm/resources/assets/js/designer/actions/bpmn.js">
+          <metrics statements="11" coveredstatements="8" conditionals="0" coveredconditionals="0" methods="10" coveredmethods="7"/>
           <line num="2" count="10" type="stmt"/>
           <line num="5" count="1" type="stmt"/>
           <line num="6" count="1" type="stmt"/>
@@ -38,9 +59,10 @@
           <line num="15" count="1" type="stmt"/>
           <line num="17" count="1" type="stmt"/>
           <line num="18" count="1" type="stmt"/>
+          <line num="20" count="0" type="stmt"/>
         </file>
-        <file name="designer.js" path="/opt/processmaker/resources/assets/js/designer/actions/designer.js">
-          <metrics statements="19" coveredstatements="19" conditionals="0" coveredconditionals="0" methods="18" coveredmethods="18"/>
+        <file name="designer.js" path="/home/dante/desa/bpm/resources/assets/js/designer/actions/designer.js">
+          <metrics statements="20" coveredstatements="19" conditionals="0" coveredconditionals="0" methods="19" coveredmethods="18"/>
           <line num="2" count="10" type="stmt"/>
           <line num="6" count="1" type="stmt"/>
           <line num="7" count="2" type="stmt"/>
@@ -60,40 +82,41 @@
           <line num="34" count="1" type="stmt"/>
           <line num="37" count="1" type="stmt"/>
           <line num="40" count="1" type="stmt"/>
+          <line num="41" count="0" type="stmt"/>
         </file>
-        <file name="index.js" path="/opt/processmaker/resources/assets/js/designer/actions/index.js">
+        <file name="index.js" path="/home/dante/desa/bpm/resources/assets/js/designer/actions/index.js">
           <metrics statements="0" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         </file>
       </package>
       <package name="resources.assets.js.designer.base">
         <metrics statements="20" coveredstatements="20" conditionals="6" coveredconditionals="6" methods="7" coveredmethods="6"/>
-        <file name="actionsCreator.js" path="/opt/processmaker/resources/assets/js/designer/base/actionsCreator.js">
+        <file name="actionsCreator.js" path="/home/dante/desa/bpm/resources/assets/js/designer/base/actionsCreator.js">
           <metrics statements="20" coveredstatements="20" conditionals="6" coveredconditionals="6" methods="7" coveredmethods="6"/>
           <line num="8" count="10" type="stmt"/>
           <line num="9" count="10" type="stmt"/>
           <line num="10" count="20" type="stmt"/>
           <line num="12" count="10" type="stmt"/>
-          <line num="24" count="420" type="cond" truecount="2" falsecount="0"/>
-          <line num="25" count="270" type="stmt"/>
-          <line num="27" count="150" type="stmt"/>
-          <line num="28" count="400" type="stmt"/>
-          <line num="41" count="270" type="stmt"/>
-          <line num="42" count="270" type="stmt"/>
-          <line num="44" count="270" type="stmt"/>
-          <line num="45" count="830" type="stmt"/>
-          <line num="46" count="830" type="cond" truecount="2" falsecount="0"/>
-          <line num="47" count="420" type="stmt"/>
-          <line num="49" count="830" type="stmt"/>
-          <line num="50" count="830" type="cond" truecount="2" falsecount="0"/>
-          <line num="51" count="270" type="stmt"/>
-          <line num="55" count="270" type="stmt"/>
-          <line num="57" count="830" type="stmt"/>
-          <line num="59" count="270" type="stmt"/>
+          <line num="24" count="450" type="cond" truecount="2" falsecount="0"/>
+          <line num="25" count="290" type="stmt"/>
+          <line num="27" count="160" type="stmt"/>
+          <line num="28" count="430" type="stmt"/>
+          <line num="41" count="290" type="stmt"/>
+          <line num="42" count="290" type="stmt"/>
+          <line num="44" count="290" type="stmt"/>
+          <line num="45" count="890" type="stmt"/>
+          <line num="46" count="890" type="cond" truecount="2" falsecount="0"/>
+          <line num="47" count="450" type="stmt"/>
+          <line num="49" count="890" type="stmt"/>
+          <line num="50" count="890" type="cond" truecount="2" falsecount="0"/>
+          <line num="51" count="290" type="stmt"/>
+          <line num="55" count="290" type="stmt"/>
+          <line num="57" count="890" type="stmt"/>
+          <line num="59" count="290" type="stmt"/>
         </file>
       </package>
       <package name="resources.assets.js.designer.components">
         <metrics statements="57" coveredstatements="23" conditionals="10" coveredconditionals="1" methods="4" coveredmethods="0"/>
-        <file name="crown.vue" path="/opt/processmaker/resources/assets/js/designer/components/crown.vue">
+        <file name="crown.vue" path="/home/dante/desa/bpm/resources/assets/js/designer/components/crown.vue">
           <metrics statements="26" coveredstatements="13" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
           <line num="41" count="1" type="stmt"/>
           <line num="42" count="1" type="stmt"/>
@@ -122,47 +145,47 @@
           <line num="121" count="0" type="stmt"/>
           <line num="126" count="0" type="stmt"/>
         </file>
-        <file name="toolbar.vue" path="/opt/processmaker/resources/assets/js/designer/components/toolbar.vue">
+        <file name="toolbar.vue" path="/home/dante/desa/bpm/resources/assets/js/designer/components/toolbar.vue">
           <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-          <line num="103" count="1" type="stmt"/>
-          <line num="104" count="1" type="stmt"/>
-          <line num="108" count="1" type="stmt"/>
-          <line num="109" count="1" type="stmt"/>
+          <line num="72" count="1" type="stmt"/>
+          <line num="73" count="1" type="stmt"/>
+          <line num="77" count="1" type="stmt"/>
+          <line num="78" count="1" type="stmt"/>
         </file>
-        <file name="toptoolbar.vue" path="/opt/processmaker/resources/assets/js/designer/components/toptoolbar.vue">
+        <file name="toptoolbar.vue" path="/home/dante/desa/bpm/resources/assets/js/designer/components/toptoolbar.vue">
           <metrics statements="27" coveredstatements="6" conditionals="10" coveredconditionals="1" methods="2" coveredmethods="0"/>
           <line num="37" count="1" type="stmt"/>
           <line num="38" count="1" type="stmt"/>
-          <line num="42" count="1" type="stmt"/>
-          <line num="43" count="1" type="cond" truecount="1" falsecount="1"/>
-          <line num="44" count="1" type="stmt"/>
-          <line num="46" count="1" type="stmt"/>
-          <line num="49" count="0" type="stmt"/>
+          <line num="43" count="1" type="stmt"/>
+          <line num="44" count="1" type="cond" truecount="1" falsecount="1"/>
+          <line num="45" count="1" type="stmt"/>
+          <line num="47" count="1" type="stmt"/>
           <line num="50" count="0" type="stmt"/>
-          <line num="53" count="0" type="cond" truecount="0" falsecount="2"/>
+          <line num="51" count="0" type="stmt"/>
           <line num="54" count="0" type="cond" truecount="0" falsecount="2"/>
-          <line num="55" count="0" type="stmt"/>
+          <line num="55" count="0" type="cond" truecount="0" falsecount="2"/>
           <line num="56" count="0" type="stmt"/>
           <line num="57" count="0" type="stmt"/>
           <line num="58" count="0" type="stmt"/>
           <line num="59" count="0" type="stmt"/>
-          <line num="61" count="0" type="stmt"/>
+          <line num="60" count="0" type="stmt"/>
           <line num="62" count="0" type="stmt"/>
           <line num="63" count="0" type="stmt"/>
-          <line num="65" count="0" type="stmt"/>
+          <line num="64" count="0" type="stmt"/>
           <line num="66" count="0" type="stmt"/>
-          <line num="70" count="0" type="stmt"/>
-          <line num="72" count="0" type="stmt"/>
+          <line num="67" count="0" type="stmt"/>
+          <line num="71" count="0" type="stmt"/>
           <line num="73" count="0" type="stmt"/>
-          <line num="75" count="0" type="stmt"/>
+          <line num="74" count="0" type="stmt"/>
           <line num="76" count="0" type="stmt"/>
-          <line num="78" count="0" type="stmt"/>
-          <line num="80" count="0" type="stmt"/>
+          <line num="77" count="0" type="stmt"/>
+          <line num="79" count="0" type="stmt"/>
+          <line num="81" count="0" type="stmt"/>
         </file>
       </package>
       <package name="resources.assets.js.designer.diagram">
         <metrics statements="50" coveredstatements="10" conditionals="6" coveredconditionals="0" methods="22" coveredmethods="3"/>
-        <file name="Shape.js" path="/opt/processmaker/resources/assets/js/designer/diagram/Shape.js">
+        <file name="Shape.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/Shape.js">
           <metrics statements="49" coveredstatements="9" conditionals="6" coveredconditionals="0" methods="22" coveredmethods="3"/>
           <line num="10" count="5" type="stmt"/>
           <line num="11" count="5" type="stmt"/>
@@ -214,14 +237,14 @@
           <line num="185" count="0" type="stmt"/>
           <line num="187" count="0" type="stmt"/>
         </file>
-        <file name="elements.js" path="/opt/processmaker/resources/assets/js/designer/diagram/elements.js">
+        <file name="elements.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/elements.js">
           <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
           <line num="22" count="6" type="stmt"/>
         </file>
       </package>
       <package name="resources.assets.js.designer.diagram.artifacts">
         <metrics statements="7" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
-        <file name="Group.js" path="/opt/processmaker/resources/assets/js/designer/diagram/artifacts/Group.js">
+        <file name="Group.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/artifacts/Group.js">
           <metrics statements="7" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
           <line num="8" count="0" type="stmt"/>
           <line num="9" count="0" type="stmt"/>
@@ -234,7 +257,7 @@
       </package>
       <package name="resources.assets.js.designer.diagram.data">
         <metrics statements="14" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="0"/>
-        <file name="DataObject.js" path="/opt/processmaker/resources/assets/js/designer/diagram/data/DataObject.js">
+        <file name="DataObject.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/data/DataObject.js">
           <metrics statements="7" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
           <line num="8" count="0" type="stmt"/>
           <line num="9" count="0" type="stmt"/>
@@ -244,7 +267,7 @@
           <line num="25" count="0" type="stmt"/>
           <line num="26" count="0" type="stmt"/>
         </file>
-        <file name="DataStore.js" path="/opt/processmaker/resources/assets/js/designer/diagram/data/DataStore.js">
+        <file name="DataStore.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/data/DataStore.js">
           <metrics statements="7" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
           <line num="8" count="0" type="stmt"/>
           <line num="9" count="0" type="stmt"/>
@@ -256,8 +279,8 @@
         </file>
       </package>
       <package name="resources.assets.js.designer.diagram.events">
-        <metrics statements="41" coveredstatements="17" conditionals="2" coveredconditionals="2" methods="32" coveredmethods="8"/>
-        <file name="EndEvent.js" path="/opt/processmaker/resources/assets/js/designer/diagram/events/EndEvent.js">
+        <metrics statements="42" coveredstatements="18" conditionals="2" coveredconditionals="2" methods="32" coveredmethods="8"/>
+        <file name="EndEvent.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/events/EndEvent.js">
           <metrics statements="12" coveredstatements="5" conditionals="2" coveredconditionals="2" methods="10" coveredmethods="3"/>
           <line num="10" count="2" type="stmt"/>
           <line num="11" count="2" type="cond" truecount="2" falsecount="0"/>
@@ -272,7 +295,7 @@
           <line num="44" count="0" type="stmt"/>
           <line num="48" count="0" type="stmt"/>
         </file>
-        <file name="IntermediateCatchEvent.js" path="/opt/processmaker/resources/assets/js/designer/diagram/events/IntermediateCatchEvent.js">
+        <file name="IntermediateCatchEvent.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/events/IntermediateCatchEvent.js">
           <metrics statements="10" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="10" coveredmethods="0"/>
           <line num="10" count="0" type="stmt"/>
           <line num="14" count="0" type="stmt"/>
@@ -285,7 +308,7 @@
           <line num="42" count="0" type="stmt"/>
           <line num="46" count="0" type="stmt"/>
         </file>
-        <file name="IntermediateThrowEvent.js" path="/opt/processmaker/resources/assets/js/designer/diagram/events/IntermediateThrowEvent.js">
+        <file name="IntermediateThrowEvent.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/events/IntermediateThrowEvent.js">
           <metrics statements="10" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="10" coveredmethods="3"/>
           <line num="10" count="2" type="stmt"/>
           <line num="14" count="2" type="stmt"/>
@@ -298,8 +321,8 @@
           <line num="42" count="0" type="stmt"/>
           <line num="46" count="0" type="stmt"/>
         </file>
-        <file name="StartEvent.js" path="/opt/processmaker/resources/assets/js/designer/diagram/events/StartEvent.js">
-          <metrics statements="9" coveredstatements="9" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <file name="StartEvent.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/events/StartEvent.js">
+          <metrics statements="10" coveredstatements="10" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
           <line num="8" count="1" type="stmt"/>
           <line num="9" count="1" type="stmt"/>
           <line num="20" count="1" type="stmt"/>
@@ -309,12 +332,13 @@
           <line num="33" count="1" type="stmt"/>
           <line num="34" count="1" type="stmt"/>
           <line num="35" count="1" type="stmt"/>
+          <line num="40" count="1" type="stmt"/>
         </file>
       </package>
       <package name="resources.assets.js.designer.diagram.events.endEvent">
-        <metrics statements="19" coveredstatements="19" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="4"/>
-        <file name="Empty.js" path="/opt/processmaker/resources/assets/js/designer/diagram/events/endEvent/Empty.js">
-          <metrics statements="9" coveredstatements="9" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <metrics statements="21" coveredstatements="21" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="4"/>
+        <file name="Empty.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/events/endEvent/Empty.js">
+          <metrics statements="10" coveredstatements="10" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
           <line num="8" count="1" type="stmt"/>
           <line num="9" count="1" type="stmt"/>
           <line num="19" count="1" type="stmt"/>
@@ -324,9 +348,10 @@
           <line num="34" count="1" type="stmt"/>
           <line num="35" count="1" type="stmt"/>
           <line num="36" count="1" type="stmt"/>
+          <line num="41" count="1" type="stmt"/>
         </file>
-        <file name="MessageEventDefinition.js" path="/opt/processmaker/resources/assets/js/designer/diagram/events/endEvent/MessageEventDefinition.js">
-          <metrics statements="9" coveredstatements="9" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <file name="MessageEventDefinition.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/events/endEvent/MessageEventDefinition.js">
+          <metrics statements="10" coveredstatements="10" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
           <line num="8" count="1" type="stmt"/>
           <line num="9" count="1" type="stmt"/>
           <line num="19" count="1" type="stmt"/>
@@ -336,16 +361,17 @@
           <line num="35" count="1" type="stmt"/>
           <line num="36" count="1" type="stmt"/>
           <line num="37" count="1" type="stmt"/>
+          <line num="42" count="1" type="stmt"/>
         </file>
-        <file name="index.js" path="/opt/processmaker/resources/assets/js/designer/diagram/events/endEvent/index.js">
+        <file name="index.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/events/endEvent/index.js">
           <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
           <line num="4" count="6" type="stmt"/>
         </file>
       </package>
       <package name="resources.assets.js.designer.diagram.events.intermediateCatchEvent">
-        <metrics statements="10" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
-        <file name="MessageEventDefinition.js" path="/opt/processmaker/resources/assets/js/designer/diagram/events/intermediateCatchEvent/MessageEventDefinition.js">
-          <metrics statements="9" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
+        <metrics statements="11" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
+        <file name="MessageEventDefinition.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/events/intermediateCatchEvent/MessageEventDefinition.js">
+          <metrics statements="10" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
           <line num="8" count="0" type="stmt"/>
           <line num="9" count="0" type="stmt"/>
           <line num="19" count="0" type="stmt"/>
@@ -355,16 +381,17 @@
           <line num="35" count="0" type="stmt"/>
           <line num="36" count="0" type="stmt"/>
           <line num="37" count="0" type="stmt"/>
+          <line num="42" count="0" type="stmt"/>
         </file>
-        <file name="index.js" path="/opt/processmaker/resources/assets/js/designer/diagram/events/intermediateCatchEvent/index.js">
+        <file name="index.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/events/intermediateCatchEvent/index.js">
           <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
           <line num="3" count="6" type="stmt"/>
         </file>
       </package>
       <package name="resources.assets.js.designer.diagram.events.intermediateThrowEvent">
-        <metrics statements="19" coveredstatements="19" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="4"/>
-        <file name="MessageEventDefinition.js" path="/opt/processmaker/resources/assets/js/designer/diagram/events/intermediateThrowEvent/MessageEventDefinition.js">
-          <metrics statements="9" coveredstatements="9" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <metrics statements="21" coveredstatements="21" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="4"/>
+        <file name="MessageEventDefinition.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/events/intermediateThrowEvent/MessageEventDefinition.js">
+          <metrics statements="10" coveredstatements="10" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
           <line num="8" count="1" type="stmt"/>
           <line num="9" count="1" type="stmt"/>
           <line num="19" count="1" type="stmt"/>
@@ -374,9 +401,10 @@
           <line num="35" count="1" type="stmt"/>
           <line num="36" count="1" type="stmt"/>
           <line num="37" count="1" type="stmt"/>
+          <line num="42" count="1" type="stmt"/>
         </file>
-        <file name="TimerEventDefinition.js" path="/opt/processmaker/resources/assets/js/designer/diagram/events/intermediateThrowEvent/TimerEventDefinition.js">
-          <metrics statements="9" coveredstatements="9" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <file name="TimerEventDefinition.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/events/intermediateThrowEvent/TimerEventDefinition.js">
+          <metrics statements="10" coveredstatements="10" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
           <line num="8" count="1" type="stmt"/>
           <line num="9" count="1" type="stmt"/>
           <line num="19" count="1" type="stmt"/>
@@ -386,15 +414,16 @@
           <line num="35" count="1" type="stmt"/>
           <line num="36" count="1" type="stmt"/>
           <line num="37" count="1" type="stmt"/>
+          <line num="42" count="1" type="stmt"/>
         </file>
-        <file name="index.js" path="/opt/processmaker/resources/assets/js/designer/diagram/events/intermediateThrowEvent/index.js">
+        <file name="index.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/events/intermediateThrowEvent/index.js">
           <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
           <line num="4" count="6" type="stmt"/>
         </file>
       </package>
       <package name="resources.assets.js.designer.diagram.flow">
         <metrics statements="72" coveredstatements="0" conditionals="6" coveredconditionals="0" methods="20" coveredmethods="0"/>
-        <file name="Flow.js" path="/opt/processmaker/resources/assets/js/designer/diagram/flow/Flow.js">
+        <file name="Flow.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/flow/Flow.js">
           <metrics statements="45" coveredstatements="0" conditionals="6" coveredconditionals="0" methods="16" coveredmethods="0"/>
           <line num="11" count="0" type="stmt"/>
           <line num="12" count="0" type="stmt"/>
@@ -442,7 +471,7 @@
           <line num="175" count="0" type="stmt"/>
           <line num="180" count="0" type="stmt"/>
         </file>
-        <file name="MessageFlow.js" path="/opt/processmaker/resources/assets/js/designer/diagram/flow/MessageFlow.js">
+        <file name="MessageFlow.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/flow/MessageFlow.js">
           <metrics statements="13" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
           <line num="8" count="0" type="stmt"/>
           <line num="9" count="0" type="stmt"/>
@@ -458,7 +487,7 @@
           <line num="27" count="0" type="stmt"/>
           <line num="28" count="0" type="stmt"/>
         </file>
-        <file name="SequenceFlow.js" path="/opt/processmaker/resources/assets/js/designer/diagram/flow/SequenceFlow.js">
+        <file name="SequenceFlow.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/flow/SequenceFlow.js">
           <metrics statements="14" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
           <line num="8" count="0" type="stmt"/>
           <line num="9" count="0" type="stmt"/>
@@ -477,9 +506,9 @@
         </file>
       </package>
       <package name="resources.assets.js.designer.diagram.gateways">
-        <metrics statements="24" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="6" coveredmethods="0"/>
-        <file name="ExclusiveGateway.js" path="/opt/processmaker/resources/assets/js/designer/diagram/gateways/ExclusiveGateway.js">
-          <metrics statements="8" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
+        <metrics statements="27" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="6" coveredmethods="0"/>
+        <file name="ExclusiveGateway.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/gateways/ExclusiveGateway.js">
+          <metrics statements="9" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
           <line num="8" count="0" type="stmt"/>
           <line num="9" count="0" type="stmt"/>
           <line num="19" count="0" type="stmt"/>
@@ -488,9 +517,10 @@
           <line num="28" count="0" type="stmt"/>
           <line num="29" count="0" type="stmt"/>
           <line num="30" count="0" type="stmt"/>
+          <line num="31" count="0" type="stmt"/>
         </file>
-        <file name="InclusiveGateway.js" path="/opt/processmaker/resources/assets/js/designer/diagram/gateways/InclusiveGateway.js">
-          <metrics statements="8" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
+        <file name="InclusiveGateway.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/gateways/InclusiveGateway.js">
+          <metrics statements="9" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
           <line num="8" count="0" type="stmt"/>
           <line num="9" count="0" type="stmt"/>
           <line num="19" count="0" type="stmt"/>
@@ -499,9 +529,10 @@
           <line num="28" count="0" type="stmt"/>
           <line num="29" count="0" type="stmt"/>
           <line num="30" count="0" type="stmt"/>
+          <line num="31" count="0" type="stmt"/>
         </file>
-        <file name="ParallelGateway.js" path="/opt/processmaker/resources/assets/js/designer/diagram/gateways/ParallelGateway.js">
-          <metrics statements="8" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
+        <file name="ParallelGateway.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/gateways/ParallelGateway.js">
+          <metrics statements="9" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
           <line num="8" count="0" type="stmt"/>
           <line num="9" count="0" type="stmt"/>
           <line num="19" count="0" type="stmt"/>
@@ -510,86 +541,87 @@
           <line num="28" count="0" type="stmt"/>
           <line num="29" count="0" type="stmt"/>
           <line num="30" count="0" type="stmt"/>
+          <line num="31" count="0" type="stmt"/>
         </file>
       </package>
       <package name="resources.assets.js.designer.diagram.jointElements">
         <metrics statements="18" coveredstatements="18" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-        <file name="BlackBoxPool.js" path="/opt/processmaker/resources/assets/js/designer/diagram/jointElements/BlackBoxPool.js">
+        <file name="BlackBoxPool.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/jointElements/BlackBoxPool.js">
           <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
           <line num="2" count="6" type="stmt"/>
         </file>
-        <file name="DataObject.js" path="/opt/processmaker/resources/assets/js/designer/diagram/jointElements/DataObject.js">
+        <file name="CallActivity.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/jointElements/CallActivity.js">
           <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
           <line num="2" count="6" type="stmt"/>
         </file>
-        <file name="DataStore.js" path="/opt/processmaker/resources/assets/js/designer/diagram/jointElements/DataStore.js">
+        <file name="DataObject.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/jointElements/DataObject.js">
           <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
           <line num="2" count="6" type="stmt"/>
         </file>
-        <file name="EndEmailEvent.js" path="/opt/processmaker/resources/assets/js/designer/diagram/jointElements/EndEmailEvent.js">
+        <file name="DataStore.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/jointElements/DataStore.js">
           <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
           <line num="2" count="6" type="stmt"/>
         </file>
-        <file name="EndEvent.js" path="/opt/processmaker/resources/assets/js/designer/diagram/jointElements/EndEvent.js">
+        <file name="EndEvent.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/jointElements/EndEvent.js">
           <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
           <line num="2" count="6" type="stmt"/>
         </file>
-        <file name="ExclusiveGateway.js" path="/opt/processmaker/resources/assets/js/designer/diagram/jointElements/ExclusiveGateway.js">
+        <file name="EndEventMessageDefinition.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/jointElements/EndEventMessageDefinition.js">
           <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
           <line num="2" count="6" type="stmt"/>
         </file>
-        <file name="Group.js" path="/opt/processmaker/resources/assets/js/designer/diagram/jointElements/Group.js">
+        <file name="ExclusiveGateway.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/jointElements/ExclusiveGateway.js">
           <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
           <line num="2" count="6" type="stmt"/>
         </file>
-        <file name="InclusiveGateway.js" path="/opt/processmaker/resources/assets/js/designer/diagram/jointElements/InclusiveGateway.js">
+        <file name="Group.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/jointElements/Group.js">
           <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
           <line num="2" count="6" type="stmt"/>
         </file>
-        <file name="IntermediateCatchEvent.js" path="/opt/processmaker/resources/assets/js/designer/diagram/jointElements/IntermediateCatchEvent.js">
+        <file name="InclusiveGateway.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/jointElements/InclusiveGateway.js">
           <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
           <line num="2" count="6" type="stmt"/>
         </file>
-        <file name="Lane.js" path="/opt/processmaker/resources/assets/js/designer/diagram/jointElements/Lane.js">
+        <file name="IntermediateCatchEvent.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/jointElements/IntermediateCatchEvent.js">
           <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
           <line num="2" count="6" type="stmt"/>
         </file>
-        <file name="MessageEventDefinition.js" path="/opt/processmaker/resources/assets/js/designer/diagram/jointElements/MessageEventDefinition.js">
+        <file name="Lane.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/jointElements/Lane.js">
           <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
           <line num="2" count="6" type="stmt"/>
         </file>
-        <file name="ParallelGateway.js" path="/opt/processmaker/resources/assets/js/designer/diagram/jointElements/ParallelGateway.js">
+        <file name="MessageEventDefinition.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/jointElements/MessageEventDefinition.js">
           <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
           <line num="2" count="6" type="stmt"/>
         </file>
-        <file name="Participant.js" path="/opt/processmaker/resources/assets/js/designer/diagram/jointElements/Participant.js">
+        <file name="ParallelGateway.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/jointElements/ParallelGateway.js">
           <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
           <line num="2" count="6" type="stmt"/>
         </file>
-        <file name="StartEvent.js" path="/opt/processmaker/resources/assets/js/designer/diagram/jointElements/StartEvent.js">
+        <file name="Participant.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/jointElements/Participant.js">
           <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
           <line num="2" count="6" type="stmt"/>
         </file>
-        <file name="SubProcess.js" path="/opt/processmaker/resources/assets/js/designer/diagram/jointElements/SubProcess.js">
+        <file name="StartEvent.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/jointElements/StartEvent.js">
           <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
           <line num="2" count="6" type="stmt"/>
         </file>
-        <file name="Task.js" path="/opt/processmaker/resources/assets/js/designer/diagram/jointElements/Task.js">
+        <file name="Task.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/jointElements/Task.js">
           <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
           <line num="2" count="6" type="stmt"/>
         </file>
-        <file name="TimerEventDefinition.js" path="/opt/processmaker/resources/assets/js/designer/diagram/jointElements/TimerEventDefinition.js">
+        <file name="TimerEventDefinition.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/jointElements/TimerEventDefinition.js">
           <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
           <line num="2" count="6" type="stmt"/>
         </file>
-        <file name="index.js" path="/opt/processmaker/resources/assets/js/designer/diagram/jointElements/index.js">
+        <file name="index.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/jointElements/index.js">
           <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
           <line num="19" count="6" type="stmt"/>
         </file>
       </package>
       <package name="resources.assets.js.designer.diagram.swimLanes">
         <metrics statements="48" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="12" coveredmethods="0"/>
-        <file name="BlackBoxPool.js" path="/opt/processmaker/resources/assets/js/designer/diagram/swimLanes/BlackBoxPool.js">
+        <file name="BlackBoxPool.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/swimLanes/BlackBoxPool.js">
           <metrics statements="7" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
           <line num="8" count="0" type="stmt"/>
           <line num="9" count="0" type="stmt"/>
@@ -599,7 +631,7 @@
           <line num="25" count="0" type="stmt"/>
           <line num="26" count="0" type="stmt"/>
         </file>
-        <file name="Lane.js" path="/opt/processmaker/resources/assets/js/designer/diagram/swimLanes/Lane.js">
+        <file name="Lane.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/swimLanes/Lane.js">
           <metrics statements="11" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
           <line num="8" count="0" type="stmt"/>
           <line num="9" count="0" type="stmt"/>
@@ -613,7 +645,7 @@
           <line num="32" count="0" type="stmt"/>
           <line num="33" count="0" type="stmt"/>
         </file>
-        <file name="Participant.js" path="/opt/processmaker/resources/assets/js/designer/diagram/swimLanes/Participant.js">
+        <file name="Participant.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/swimLanes/Participant.js">
           <metrics statements="30" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="8" coveredmethods="0"/>
           <line num="12" count="0" type="stmt"/>
           <line num="13" count="0" type="stmt"/>
@@ -648,9 +680,9 @@
         </file>
       </package>
       <package name="resources.assets.js.designer.diagram.tasks">
-        <metrics statements="19" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="6" coveredmethods="0"/>
-        <file name="CallActivity.js" path="/opt/processmaker/resources/assets/js/designer/diagram/tasks/CallActivity.js">
-          <metrics statements="8" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
+        <metrics statements="21" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="6" coveredmethods="0"/>
+        <file name="CallActivity.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/tasks/CallActivity.js">
+          <metrics statements="9" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
           <line num="8" count="0" type="stmt"/>
           <line num="9" count="0" type="stmt"/>
           <line num="19" count="0" type="stmt"/>
@@ -659,17 +691,18 @@
           <line num="28" count="0" type="stmt"/>
           <line num="29" count="0" type="stmt"/>
           <line num="30" count="0" type="stmt"/>
+          <line num="35" count="0" type="stmt"/>
         </file>
-        <file name="ScriptTask.js" path="/opt/processmaker/resources/assets/js/designer/diagram/tasks/ScriptTask.js">
+        <file name="ScriptTask.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/tasks/ScriptTask.js">
           <metrics statements="1" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
           <line num="8" count="0" type="stmt"/>
         </file>
-        <file name="ServiceTask.js" path="/opt/processmaker/resources/assets/js/designer/diagram/tasks/ServiceTask.js">
+        <file name="ServiceTask.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/tasks/ServiceTask.js">
           <metrics statements="1" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
           <line num="8" count="0" type="stmt"/>
         </file>
-        <file name="Task.js" path="/opt/processmaker/resources/assets/js/designer/diagram/tasks/Task.js">
-          <metrics statements="9" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
+        <file name="Task.js" path="/home/dante/desa/bpm/resources/assets/js/designer/diagram/tasks/Task.js">
+          <metrics statements="10" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
           <line num="8" count="0" type="stmt"/>
           <line num="9" count="0" type="stmt"/>
           <line num="20" count="0" type="stmt"/>
@@ -679,11 +712,12 @@
           <line num="30" count="0" type="stmt"/>
           <line num="31" count="0" type="stmt"/>
           <line num="32" count="0" type="stmt"/>
+          <line num="33" count="0" type="stmt"/>
         </file>
       </package>
       <package name="resources.assets.js.designer.lib">
         <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-        <file name="event-bus.js" path="/opt/processmaker/resources/assets/js/designer/lib/event-bus.js">
+        <file name="event-bus.js" path="/home/dante/desa/bpm/resources/assets/js/designer/lib/event-bus.js">
           <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
           <line num="8" count="9" type="stmt"/>
         </file>
