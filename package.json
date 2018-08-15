@@ -39,8 +39,6 @@
     "moment": "^2.22.2",
     "vue": "^2.5.17",
     "vue-jest": "^2.6.0",
-    "vue-monaco": "^0.2.0",
-    "vue-monaco-editor": "0.0.19",
     "vue-uniq-ids": "^1.0.0"
   },
   "dependencies": {

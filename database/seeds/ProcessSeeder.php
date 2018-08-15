@@ -93,6 +93,15 @@ class ProcessSeeder extends Seeder
                 'content' => $json,
                 'process_id' => $process->id,
             ]);
+            if ($definitions->findElementById('notavailable')) {
+                $json = $this->loadForm('notavailable.json');
+                factory(Form::class)->create([
+                    'uid' => $definitions->getActivity('notavailable')->getProperty('formRef'),
+                    'title' => $json[0]->name,
+                    'content' => $json,
+                    'process_id' => $process->id,
+                ]);
+            }
 
             echo 'Process created: ', $process->uid, "\n";
         }

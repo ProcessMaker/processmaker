@@ -63,6 +63,7 @@ import _ from "lodash"
         let scriptFormatAttrName = this.BPMN.BPMNDefinitions.getnonamespace('scriptFormat');
         let scriptRefAttrName = this.BPMN.BPMNDefinitions.getpm('scriptRef');
         let scriptConfigurationAttrName = this.BPMN.BPMNDefinitions.getpm('scriptConfiguration');
+        let formRefAttrName = this.BPMN.BPMNDefinitions.getpm('formRef');
         //Find the task
         let task = this.findElement(data.id);
         //Find the script or create one
@@ -83,31 +84,26 @@ import _ from "lodash"
         if (data.name !== undefined) {
             task.attributes.name = data.name;
         }
-
-        if (data.type !== undefined) {
-            task.attributes.type = data.type;
+        //Change the node type
+        if (data.$type !== undefined) {
+            task.name = this.BPMN.BPMNDefinitions.getmodel(data.$type);
         }
-
+        //Set the task form
         if (data.formRef !== undefined) {
-            task.attributes.formRef = data.formRef;
+            task.attributes[formRefAttrName] = data.formRef;
         }
-
-        if (data.scriptRef !== undefined) {
-            task.attributes.scriptRef = data.scriptRef;
-        }
-
+        //Set the notifyAfterRouting
         if (data.notifyAfterRouting !== undefined) {
             task.attributes.notifyAfterRouting = data.notifyAfterRouting;
         }
-
+        //Set the notifyToRequestCreator
         if (data.notifyToRequestCreator !== undefined) {
             task.attributes.notifyToRequestCreator = data.notifyToRequestCreator;
         }
-
+        //Set the dueDate
         if (data.dueDate !== undefined) {
             task.attributes.dueDate = data.dueDate;
         }
-
         //Set the code
         if (data.code!==undefined) {
             script.elements = [
