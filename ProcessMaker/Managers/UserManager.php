@@ -2,17 +2,16 @@
 
 namespace ProcessMaker\Managers;
 
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use ProcessMaker\Model\InputDocument;
-use ProcessMaker\Model\Process;
 use ProcessMaker\Model\User;
 
 class UserManager
 {
+    public const DISK_PROFILE = 'profile';
+    public const COLLECTION_PROFILE = 'profile';
 
     /**
      * Get a list of All Users.
@@ -66,6 +65,22 @@ class UserManager
     }
 
     /**
+     * Get url user avatar
+     *
+     * @param User $user
+     *
+     * @return string url
+     */
+    public function getUrlAvatar(User $user)
+    {
+        $mediaFile = $user->getMedia(self::COLLECTION_PROFILE);
+        if (isset($mediaFile[0])) {
+            return $mediaFile[0]->getFullUrl();
+        }
+        return null;
+    }
+
+    /**
      * Update information User
      *
      * @param User $user
@@ -78,7 +93,7 @@ class UserManager
     {
         $data = $request->all();
         if (isset($data['avatar']) && !empty($data['avatar'])) {
-            $data['avatar'] = $this->uploadAvatar($user, $request);
+            $this->uploadAvatar($user, $request);
         }
         if (isset($data['password']) && !empty($data['password'])) {
             $data['password'] = Hash::make($data['password']);
@@ -95,22 +110,15 @@ class UserManager
      * @param User $user
      * @param Request $request
      *
-     * @return string name of file
-     * @throws \Throwable
      */
-    public function uploadAvatar(User $user, Request $request): string
+    public function uploadAvatar(User $user, Request $request)
     {
         $request->validate([
             'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $avatarName = $user->id . '_avatar' . Carbon::now()->timestamp . '.' . request()->avatar->getClientOriginalExtension();
-        $request->avatar->storeAs('', $avatarName, 'profile');
-
-        $user->avatar = $avatarName;
-        $user->saveOrFail();
-
-        return $avatarName;
+        $user->addMedia($request->avatar)
+            ->toMediaCollection(self::COLLECTION_PROFILE, self::DISK_PROFILE);
     }
 
 }
