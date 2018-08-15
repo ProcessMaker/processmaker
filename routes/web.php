@@ -57,13 +57,7 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
       return view('profile',['title' => 'Dashboard']);
     })->name('profile');
 
-    $this->get('/', function() {
-        return view('home', ['title' => 'Dashboard']);
-    })->name('dash');
-
-    $this->get('/home', function() {
-        return view('home', ['title' => 'Dashboard']);
-    })->name('home');
+    $this->get('/', 'HomeController@index')->name('home');
 
     Route::group([
         'middleware' => ['permission:PM_USERS']
