@@ -35,9 +35,9 @@
             // with the data url
             ProcessMaker.apiClient('admin/profile')
                 .then((response) => {
-                    this.image = response.data.avatar;
-                    if (!info.avatar) {
-                        this.label = (response.data.firstname[0] + response.data.lastname[0]).toUpperCase();
+                    this.label = (response.data.firstname[0] + response.data.lastname[0]).toUpperCase();
+                    if (response.data.avatar) {
+                        this.image = response.data.avatar;
                     }
                 })
                 .catch((error) => {
