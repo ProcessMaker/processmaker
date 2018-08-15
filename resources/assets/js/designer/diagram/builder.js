@@ -179,8 +179,8 @@ export class Builder {
                 type: "sequenceflow"
             })
             flow ? flow.createBpmn() : null
+            this.connectingFlow.remove()
         }
-        this.connectingFlow.remove()
         this.connectingFlow = null
         this.sourceShape = null
     }
