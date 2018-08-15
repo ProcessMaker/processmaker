@@ -61,16 +61,16 @@ return ['availableDays' => rand(0, 5)];]]></script>
       <outgoing>_15</outgoing>
       <outgoing>_17</outgoing>
     </exclusiveGateway>
-    <task completionQuantity="1" id="_16" isForCompensation="false" name="Not available days" startQuantity="1">
+    <task completionQuantity="1" id="notavailable" isForCompensation="false" name="Not available days" startQuantity="1" pm:formRef="581f95eb-76d8-459d-b56a-ea605bea4e3f">
       <incoming>_17</incoming>
       <outgoing>_19</outgoing>
     </task>
-    <sequenceFlow id="_17" sourceRef="_13" targetRef="_16"/>
+    <sequenceFlow id="_17" sourceRef="_13" targetRef="notavailable"/>
     <endEvent id="_18" name="End Event">
       <incoming>_19</incoming>
       <inputSet/>
     </endEvent>
-    <sequenceFlow id="_19" sourceRef="_16" targetRef="_18"/>
+    <sequenceFlow id="_19" sourceRef="notavailable" targetRef="_18"/>
   </process>
   <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-PROCESS_1" name="Untitled Diagram" resolution="96.0">
     <bpmndi:BPMNPlane bpmnElement="PROCESS_1">
@@ -128,7 +128,7 @@ return ['availableDays' => rand(0, 5)];]]></script>
           <dc:Bounds height="18.96" width="6.0" x="318.0" y="149.06"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="_16" id="Yaoqiang-_16">
+      <bpmndi:BPMNShape bpmnElement="notavailable" id="Yaoqiang-notavailable">
         <dc:Bounds height="71.0" width="124.0" x="259.0" y="228.0"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="18.96" width="102.0" x="270.0" y="256.02"/>
