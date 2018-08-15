@@ -32,7 +32,7 @@
         props: ["filter", "uid"],
         data() {
             return {
-                orderBy: "code",
+                orderBy: "name",
 
                 sortOrder: [
                     {
@@ -113,6 +113,18 @@
                             this.loading = false;
                             document.location.reload();
                         });
+                }
+
+                if (actionType === 'remove-item') {
+                    let that = this;
+                    ProcessMaker.confirmModal('Caution!', '<b>Are you sure to delete the process </b>' + data.name + '?', '', function () {
+                        ProcessMaker.apiClient
+                            .delete('processes/' + data.uid)
+                            .then(response => {
+                                ProcessMaker.alert('Process successfully eliminated', 'success');
+                                that.fetch();
+                            })
+                    });
                 }
             },
             formatStatus(status) {

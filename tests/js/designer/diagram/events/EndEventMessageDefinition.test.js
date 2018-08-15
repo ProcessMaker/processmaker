@@ -21,12 +21,15 @@ describe("Elements", () => {
                 y: 10,
                 width: 40,
                 height: 40
+            },
+            attributes: {
+                name: "test"
             }
         }, graph, paper)
     })
 
     it("render - function to render the event", () => {
         ev.render()
-        expect(ev.getShape()).toBeInstanceOf(JointElements.EndEmailEvent)
+        expect(ev.getShape()).toBeInstanceOf(JointElements.EndEventMessageDefinition)
     })
 })

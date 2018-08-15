@@ -25,12 +25,12 @@
         props: ["filter"],
         data() {
             return {
-                orderBy: "code",
+                orderBy: "task_due_date",
 
                 sortOrder: [
                     {
-                        field: "title",
-                        sortField: "title",
+                        field: "task_due_date",
+                        sortField: "task_due_date",
                         direction: "asc"
                     }
                 ],
