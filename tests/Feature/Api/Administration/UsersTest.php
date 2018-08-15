@@ -19,7 +19,7 @@ use Tests\Feature\Api\ApiTestCase;
  */
 class UsersTest extends ApiTestCase
 {
-    //use DatabaseTransactions;
+    use DatabaseTransactions;
 
     const API_TEST_USERS = '/api/1.0/users';
     const API_TEST_PROFILE = '/api/1.0/admin/';
