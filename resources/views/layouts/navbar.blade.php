@@ -34,7 +34,7 @@
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                         <a class="dropdown-item drop-header">
                             <img class="avatar-small" src="{{\Auth::user()->getAvatar()}}">
-                            {{\Auth::user()->firstname}} {{\Auth::user()->lastname}}
+                            <div class="wrap-name">{{\Auth::user()->firstname}} {{\Auth::user()->lastname}}</div>
                         </a>
                         @foreach($dropdown_nav->items as $row)
                             <a class="dropdown-item" href="{{ $row->url() }}">
@@ -52,14 +52,12 @@
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                             <a class="dropdown-item drop-header">
                                 <div class="avatar-circle small">
-                                    <span class="initials-small text-uppercase" aria-haspopup="true"
+                                    <div class="initials-small text-uppercase" aria-haspopup="true"
                                           aria-expanded="false">
                                     {{Auth::user()->firstname[0]}}{{Auth::user()->lastname[0]}}
-                                    </span>
-                                    <span class="avatar-name">{{\Auth::user()->firstname}} {{\Auth::user()->lastname}}</span>
+                                    </div>
+                                    <div class="wrap-name avatar-name">{{\Auth::user()->firstname}} {{\Auth::user()->lastname}}</div>
                                 </div>
-
-
                             </a>
                             @foreach($dropdown_nav->items as $row)
                                 <a class="dropdown-item" href="{{ $row->url() }}">
@@ -111,21 +109,37 @@
         font-size: 21px;
         line-height: 40px;
         color: #fff;
-        font-weight: bold;
     }
 
     .initials-small {
         position: relative;
         font-size: 21px;
-        line-height: 50px;
+        line-height: 40px;
         color: #fff;
-        font-weight: bold;
-        margin-left: 10px;
+    }
+
+    .wrap-name{
+        font-size: 14px;
+        font-weight: 600;
+        width: 120px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        margin-top: -35px;
+        float: right;
+        margin-right: -10px;
+        text-align: left;
     }
 
     .avatar-name {
-        margin-left: 20px;
-        font-size: 14px;
-        font-weight: 600;
+        margin-right: -130px;
+        margin-left: 0px;
     }
+
+    .wrap-name:hover {
+        white-space: initial;
+        overflow:visible;
+        cursor: pointer;
+    }
+
 </style>

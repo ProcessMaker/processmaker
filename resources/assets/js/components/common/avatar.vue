@@ -28,7 +28,6 @@
                 this.image = image;
             },
             fetch() {
-                console.log('fetch');
                 // Fetch url
                 // If 404, we'll have a json response with error and user meta data
                 // If 200, then it's actually a valid image url, so let's replace our image
@@ -84,7 +83,6 @@
         background-color: rgb(251, 181, 4);
         text-align: center;
         font-size: 40px;
-        font-weight: bold;
     }
 
     .profile-avatar {

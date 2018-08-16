@@ -2,7 +2,7 @@
     <div v-if="loaded" class="form-wrap container bg-light mt-3 p-5">
         <h3 class="pl-5">Profile</h3>
         <div class="modal-wrapper">
-            <avatar :uid="uid" class="avatar-wrapper">
+            <avatar ref="avatar" :uid="uid" class="avatar-wrapper">
                 <template slot="optional">
                     <img class="profile-overlay" align="center" src="/img/avatar-profile-overlay.png"
                          @click="openModal()">
@@ -154,20 +154,18 @@
             },
             save() {
                 delete this.data.avatar;
+                if (this.image) {
+                    this.data.avatar = this.image;
+                }
                 ProcessMaker.apiClient.put('admin/profile', this.data)
                     .then((response) => {
-                        location.reload();
                         ProcessMaker.alert('Save profile success', 'success');
+                        location.reload();
                     });
             },
             updateImage(newImage) {
                 this.image = newImage;
-                ProcessMaker.apiClient.put('admin/profile', {
-                    avatar: this.image
-                })
-                    .then((response) => {
-                        console.log('image', response)
-                    })
+                this.$refs.avatar.setImage(newImage);
             },
             openModal() {
                 this.$refs.profileModal.openModal()
