@@ -62,7 +62,7 @@ class InputDocumentManagerTest extends ApiTestCase
 
         //validating the answer is an error
         $response->assertStatus(422);
-        $this->assertArrayHasKey('message', $response->json());
+        $this->assertArrayHasKey('message', $response->json('error'));
     }
 
     /**
@@ -118,7 +118,7 @@ class InputDocumentManagerTest extends ApiTestCase
             'form_needed' => $faker->randomElement(array_keys(InputDocument::FORM_NEEDED_TYPE))
         ]);
         $response->assertStatus(422);
-        $this->assertArrayHasKey('message', $response->json());
+        $this->assertArrayHasKey('message', $response->json('error'));
     }
 
     /**

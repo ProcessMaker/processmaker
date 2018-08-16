@@ -61,13 +61,8 @@ class Script extends Model
 
     protected $rules = [
         'uid' => 'max:36',
-        'title' => 'required|unique:scripts,title',
         'process_id' => 'exists:processes,id',
         'type' => 'required|in:' . self::SCRIPT_TYPE
-    ];
-
-    protected $validationMessages = [
-        'title.unique' => 'A script with the same name already exists in this process.'
     ];
 
     /**

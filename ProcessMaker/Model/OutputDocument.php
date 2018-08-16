@@ -86,7 +86,6 @@ class OutputDocument extends Model
 
     protected $rules = [
         'uid' => 'max:36',
-        'title' => 'required|unique:output_documents,title',
         'process_id' => 'exists:processes,id',
         'filename' => 'required',
         'report_generator' => 'required',
@@ -94,10 +93,6 @@ class OutputDocument extends Model
         'current_revision' => 'required|min:0',
         'versioning' => 'required|min:0',
         'open_type' => 'required|boolean',
-    ];
-
-    protected $validationMessages = [
-        'title.unique' => 'A output document with the same name already exists in this process.'
     ];
 
     /**

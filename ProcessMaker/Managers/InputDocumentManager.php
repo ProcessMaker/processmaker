@@ -4,6 +4,7 @@ namespace ProcessMaker\Managers;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use ProcessMaker\Exception\ValidationException;
 use ProcessMaker\Model\InputDocument;
 use ProcessMaker\Model\Process;
@@ -48,9 +49,8 @@ class InputDocumentManager
      */
     public function save(Process $process, $data): InputDocument
     {
-        $this->validate($data);
-
         $data['process_id'] = $process->id;
+        $this->validate($data);
 
         $inputDocument = new InputDocument();
         $inputDocument->fill($data);
@@ -72,6 +72,7 @@ class InputDocumentManager
     public function update(Process $process, InputDocument $inputDocument, $data): InputDocument
     {
         $data['process_id'] = $process->id;
+        $this->validate($data);
         $inputDocument->fill($data);
         $this->validate($inputDocument->toArray(), true);
         $inputDocument->saveOrFail();
@@ -107,6 +108,9 @@ class InputDocumentManager
         $validator = Validator::make(
             $data,
             [
+                'title' => ['required', Rule::unique('input_documents')->where(function ($query) use ($data){
+                    $query->where('process_id', $data['process_id']);
+                })],
                 'form_needed' => 'required|in:' . implode(',', $type),
                 'original' => 'required|in:' . implode(',', InputDocument::DOC_ORIGINAL_TYPE),
                 'published' => 'required|in:' . implode(',', InputDocument::DOC_PUBLISHED_TYPE),

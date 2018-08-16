@@ -41,8 +41,7 @@ class Form extends Model
 
     protected $rules = [
         'uid' => 'required|max:36',
-        'process_id' => 'exists:processes,id',
-        'title' => 'required|unique:forms,title',
+        'process_id' => 'exists:processes,id'
     ];
 
     protected $validationMessages = [

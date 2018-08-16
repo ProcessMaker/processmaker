@@ -4,6 +4,7 @@ namespace ProcessMaker\Managers;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use ProcessMaker\Exception\DoesNotBelongToProcessException;
 use ProcessMaker\Exception\ValidationException;
 use ProcessMaker\Model\Form;
@@ -51,10 +52,10 @@ class FormsManager
      */
     public function save(Process $process, $data): Form
     {
+        $data['process_id'] = $process->id;
         $this->validate($data);
 
         $data['uid'] = Uuid::uuid4();
-        $data['process_id'] = $process->id;
 
         if (!isset($data['content']) || empty($data['content'])) {
             $data['content'] = null;
@@ -109,6 +110,7 @@ class FormsManager
     public function update(Process $process, Form $form, $data): Form
     {
         $data['process_id'] = $process->id;
+        $this->validate($data);
         $form->fill($data);
         if (empty($form->content)) {
             $form->content = null;
@@ -144,6 +146,18 @@ class FormsManager
          */
 
         if (!isset($data['copy_import'])) {
+            $validator = Validator::make(
+                $data,
+                [
+                    //Validate title unique by process
+                    'title' => ['required', Rule::unique('forms')->where(function ($query) use ($data) {
+                        $query->where('process_id', $data['process_id']);
+                    })]
+                ]
+            );
+            if ($validator->fails()) {
+                throw new ValidationException($validator);
+            }
             return;
         }
 

@@ -116,13 +116,8 @@ class InputDocument extends Model
 
     protected $rules = [
         'uid' => 'max:36',
-        'title' => 'required|unique:input_documents,title',
         'process_id' => 'exists:processes,id',
         'versioning' => 'required|boolean'
-    ];
-
-    protected $validationMessages = [
-        'title.unique' => 'A Input Document with the same name already exists in this process.'
     ];
 
     /**
