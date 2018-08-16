@@ -21,6 +21,9 @@ describe("Elements", () => {
                 y: 10,
                 width: 40,
                 height: 40
+            },
+            attributes:{
+                name:"test"
             }
         }, graph, paper)
     })

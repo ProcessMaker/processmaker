@@ -1,5 +1,5 @@
 <template>
-    <b-modal class="form-docs" ref="modal" size="lg" @hidden="onHidden" title="Forms" hide-footer>
+    <b-modal class="form-docs" ref="modal" size="lg" @hidden="onHidden" title="Forms"  hide-footer>
         <div class="form-group">
             <div class="d-flex justify-content-between">
                 <input v-model="filter" class="form-control  col-sm-3" placeholder="Search..." @keyup="fetch">
@@ -21,8 +21,11 @@
                         </div>
                     </template>
                 </vuetable>
+
                 <pagination single="Form" plural="Forms" :perPageSelectEnabled="true" @changePerPage="changePerPage"
                             @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
+                <template slot="modal-footer">
+                </template>
             </div>
         </div>
     </b-modal>
@@ -79,18 +82,15 @@
                 window.location.href = '/designer/' + this.processUid + '/form/' + data.uid;
             },
             onDelete(data, index) {
-                const CancelToken = ProcessMaker.apiClient.CancelToken;
-                ProcessMaker.apiClient
-                    .delete('process/' + this.processUid + '/form/' + data.uid,
-                        {
-                            cancelToken: new CancelToken(c => {
-                                this.cancelToken = c;
-                            })
-                        }
-                    )
-                    .then(response => {
-                        this.fetch();
-                    })
+                let that = this;
+                ProcessMaker.confirmModal('Caution!', '<b>Are you sure to delete the form </b>' + data.title + '?', '', function () {
+                    ProcessMaker.apiClient
+                        .delete('process/' + that.processUid + '/form/' + data.uid)
+                        .then(response => {
+                            ProcessMaker.alert('Form successfully eliminated', 'success');
+                            that.fetch();
+                        })
+                });
             },
             fetch() {
                 this.loading = true;

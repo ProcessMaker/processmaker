@@ -32,7 +32,7 @@
         props: ["filter", "uid"],
         data() {
             return {
-                orderBy: "code",
+                orderBy: "name",
 
                 sortOrder: [
                     {
@@ -42,9 +42,7 @@
                     }
                 ],
                 fields: [
-                    {
-                        name: "__checkbox"
-                    },
+                    
                     {
                         title: "Process",
                         name: "name",
@@ -114,12 +112,26 @@
                             document.location.reload();
                         });
                 }
+
+                if (actionType === 'remove-item') {
+                    let that = this;
+                    ProcessMaker.confirmModal('Caution!', '<b>Are you sure to delete the process </b>' + data.name + '?', '', function () {
+                        ProcessMaker.apiClient
+                            .delete('processes/' + data.uid)
+                            .then(response => {
+                                ProcessMaker.alert('Process successfully eliminated', 'success');
+                                that.fetch();
+                            })
+                    });
+                }
             },
-            formatStatus(value) {
-                value = value.toLowerCase();
-                let response = '<i class="fas fa-circle ' + value + '"></i> ';
-                value = value.charAt(0).toUpperCase() + value.slice(1);
-                return response + value;
+            formatStatus(status) {
+                console.log(status)
+                status = status.toLowerCase();
+                let bubbleColor = {'active': 'text-success', 'inactive': 'text-danger', 'draft': 'text-warning', 'archived': 'text-info'};
+                let response = '<i class="fas fa-circle ' + bubbleColor[status] + ' small"></i> ';
+                status = status.charAt(0).toUpperCase() + status.slice(1);
+                return response + status;
             },
             fetch() {
                 this.loading = true;
@@ -168,18 +180,8 @@
         width: 150px;
         text-align: center;
     }
-
     /deep/ th#_description {
         width: 250px;
-    }
-
-    /deep/ i.fa-circle {
-        &.active {
-            color: green;
-        }
-        &.inactive {
-            color: red;
-        }
     }
 </style>
 

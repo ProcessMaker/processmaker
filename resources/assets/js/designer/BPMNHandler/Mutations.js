@@ -65,11 +65,17 @@ function updateShape(payload, BPMNProcess, BPMNCollaboration, BPMNDiagram, BPMND
     BPMNProcess.updateElement(payload)
 }
 
+function updateTask(payload, BPMNProcess, BPMNCollaboration, BPMNDiagram, BPMNDefinitions) {
+    BPMNProcess.updateTask(payload)
+}
+
 export default {
     [actions.bpmn.shape.update]: updateShape,
     [actions.bpmn.participant.update]: updateParticipant,
     [actions.bpmn.flow.update]: updateFlow,
     [actions.bpmn.shape.create]: createShape,
     [actions.bpmn.flow.create]: createFlow,
-    [actions.bpmn.participant.create]: createParticipant
+    [actions.bpmn.participant.create]: createParticipant,
+    [actions.bpmn.task.update]: updateTask,
+    
 }

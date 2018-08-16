@@ -8,6 +8,11 @@
         <xsd:complexContent>
             <xsd:extension base="tTask">
                 <xsd:attribute name="formRef" type="xsd:string" default=""/>
+                <xsd:attribute name="scriptRef" type="xsd:string" default=""/>
+                <xsd:attribute name="type" type="xsd:string" default=""/>
+                <xsd:attribute name="dueDate" type="xsd:date" default=""/>
+                <xsd:attribute name="notifyAfterRouting" type="xsd:boolean" default="false"/>
+                <xsd:attribute name="notifyToRequestCreator" type="xsd:boolean" default="false"/>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>

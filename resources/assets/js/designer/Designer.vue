@@ -2,7 +2,7 @@
     <div id="designer-container">
         <component :is="modalComponent" :if="modalComponent" @hidden="onHidden" :processUid="processUid"
                    :selectedElement="selectedElement"></component>
-        <toptoolbar ref="toptoolbar"></toptoolbar>
+        <toptoolbar ref="toptoolbar" :title="processTitle"></toptoolbar>
         <toolbar ref="toolbar"></toolbar>
         <div id="designer-subcontainer">
             <div class="canvas-container" @scroll="onScroll">
@@ -39,6 +39,7 @@
     import modalVariablesAdd from "./components/modals/modal-variables-add";
     import modalMessageTypes from "./components/modals/modal-message-types";
     import modalFormsList from "./components/modals/modal-forms-list"
+    import modalTaskConfiguration from "./components/modals/modal-task-configuration"
 
     //Modal list
     import modalForms from "./components/modalList/modal-forms-list"
@@ -53,7 +54,7 @@
 
     export default {
         props: [
-            'processUid'
+            'processUid', 'processTitle'
         ],
         components: {
             crown,
@@ -70,6 +71,7 @@
             modalVariablesAdd,
             modalOutputDocuments,
             modalFormsList,
+            modalTaskConfiguration,
             svgcanvas,
             toolbar,
             toptoolbar,
@@ -131,6 +133,9 @@
                         break;
                     case 'open':
                         this.modalComponent = 'modal-create-template-add'
+                        break;
+                    case 'task-configuration':
+                        this.modalComponent = 'modal-task-configuration'
                         break;
                     default:
                         alert(key + ' add modal not yet implemented.')
