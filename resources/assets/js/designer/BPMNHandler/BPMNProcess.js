@@ -55,7 +55,7 @@ export default class BPMNProcess {
                     text: incoming,
                     type: "text"
                 }],
-                name: "incoming",
+                name: this.BPMN.BPMNDefinitions.getmodel('incoming'),
                 type: "element"
             })
         }
@@ -79,7 +79,7 @@ export default class BPMNProcess {
                     text: outgoing,
                     type: "text"
                 }],
-                name: "outgoing",
+                name: this.BPMN.BPMNDefinitions.getmodel('outgoing'),
                 type: "element"
             })
         }
@@ -88,7 +88,7 @@ export default class BPMNProcess {
     findElementsInBpmnObject(bpmnObject, key, value) {
         let response
         _.each(bpmnObject.elements, (el) => {
-            if (el[key] == value) {
+            if (el[key].indexOf(value) > 0) {
                 response = el
             }
         })
