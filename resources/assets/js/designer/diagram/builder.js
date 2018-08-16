@@ -158,7 +158,7 @@ export class Builder {
                 this.graph,
                 this.paper
             )
-            flow.render()
+            flow.render();
             options.source.updateOptions({
                 outgoing: flow.options.id
             })
