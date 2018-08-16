@@ -14,26 +14,11 @@
     <pagination single="User" plural="Users" :perPageSelectEnabled="true" @changePerPage="changePerPage" @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
     <b-modal ref="editItem" size="md" centered title="Edit User">
     <form>
-      <div class="form-group">
-        <label for="edit-username">Username</label>
-        <input id="edit-username" class="form-control" v-model="username">
-      </div>
-      <div class="form-group">
-        <label for="edit-first-name">First Name</label>
-        <input id="edit-first-name" class="form-control" v-model="firstname">
-      </div>
-      <div class="form-group">
-        <label for="edit-last-name">Last Name</label>
-        <input id="edit-last-name" class="form-control" v-model="lastname">
-      </div>
-      <div class="form-group">
-        <label for="edit-password">Password</label>
-        <input id="edit-password" type="password" class="form-control" v-model="password">
-      </div>
-      <div class="form-group">
-        <label for="confirm-password">Confirm Password</label>
-        <input id="confirm-password" type="password" class="form-control" v-model="confpassword">
-      </div>
+      <form-input v-model="username" label="Username" helper="Username must be distinct" required="required"></form-input>
+      <form-input v-model="firstname" label="First Name"></form-input>
+      <form-input v-model="lastname" label="Last Name"></form-input>
+      <form-input v-model="password" type="password" label="Password"></form-input>
+      <form-input v-model="confpassword" type="password" label="Confirm Password"></form-input>
     </form>
     <div slot="modal-footer">
       <b-button @click="hideEditModal" class="btn btn-outline-success btn-sm text-uppercase">
@@ -51,10 +36,12 @@
 import Vuetable from "vuetable-2/src/components/Vuetable";
 import datatableMixin from "../../../components/common/mixins/datatable";
 import Pagination from "../../../components/common/Pagination";
+import FormInput from "@processmaker/vue-form-elements/src/components/FormInput";
 
 export default {
   mixins: [datatableMixin],
   props: ["filter"],
+  components: { FormInput },
   data() {
     return {
       orderBy: "username",
@@ -154,8 +141,7 @@ export default {
           firstname: this.firstname,
           lastname: this.lastname,
           status: this.status,
-          password: this.password,
-          confpassword: this.confpassword
+          password: this.password
         })
         .then(response => {
           ProcessMaker.alert("Saved", "success");
