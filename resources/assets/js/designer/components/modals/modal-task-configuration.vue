@@ -116,6 +116,9 @@
                                 if (options.length === 0) {
                                     options.push({ value: null, content: 'None'});
                                 }
+                                if (options.length === 1) {
+                                    this.taskTypeItem = options[0].value;
+                                }
                             });
                         break;
                     case 'scriptTask':
@@ -132,6 +135,9 @@
 
                                 if (options.length === 0) {
                                     options.push({ value: null, content: 'None'});
+                                }
+                                if (options.length === 1) {
+                                    this.taskTypeItem = options[0].value;
                                 }
                             });
                         break;
