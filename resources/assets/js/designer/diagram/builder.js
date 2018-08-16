@@ -160,10 +160,10 @@ export class Builder {
             )
             flow.render()
             options.source.updateOptions({
-                outgoing: options.target.getId()
+                outgoing: flow.options.id
             })
             options.target.updateOptions({
-                incoming: options.source.getId()
+                incoming: flow.options.id
             })
         }
         return flow
