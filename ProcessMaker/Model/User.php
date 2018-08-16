@@ -8,8 +8,9 @@ use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Auth\Passwords\CanResetPassword as CanResetPasswordTrait;
 
 use League\OAuth2\Server\Entities\UserEntityInterface;
-use ProcessMaker\Core\System;
 use ProcessMaker\Model\Traits\Uuid;
+use Spatie\MediaLibrary\HasMedia\HasMedia;
+use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
 /**
  * Represents an Eloquent model of a User
@@ -17,13 +18,19 @@ use ProcessMaker\Model\Traits\Uuid;
  *
  * @property \ProcessMaker\Model\Role $role
  */
-class User extends Authenticatable implements UserEntityInterface, CanResetPassword
+class User extends Authenticatable implements UserEntityInterface, CanResetPassword, HasMedia
 {
     use Notifiable;
     use Uuid;
     use CanResetPasswordTrait;
+    use HasMediaTrait;
 
     const TYPE = 'USER';
+
+    //Disk
+    public const DISK_PROFILE = 'profile';
+    //collection media library
+    public const COLLECTION_PROFILE = 'profile';
 
     protected $hidden = [
         'id',
@@ -54,8 +61,7 @@ class User extends Authenticatable implements UserEntityInterface, CanResetPassw
         'role_id',
         'time_zone',
         'lang',
-        'last_login',
-        'avatar'
+        'last_login'
     ];
 
     protected $appends = [
@@ -189,5 +195,20 @@ class User extends Authenticatable implements UserEntityInterface, CanResetPassw
      */
     public function getFullnameAttribute() {
         return $this->getFullName();
+    }
+
+    /**
+     * Get url Avatar
+     *
+     * @return string
+     */
+    public function getAvatar()
+    {
+        $mediaFile = $this->getMedia(self::COLLECTION_PROFILE);
+        $url = '';
+        foreach ($mediaFile as $media) {
+            $url = $media->getFullUrl();
+        }
+        return $url;
     }
 }

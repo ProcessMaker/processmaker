@@ -159,13 +159,18 @@ class UsersTest extends ApiTestCase
         $avatar = Faker::create()->image(Storage::disk('profile')->getAdapter()->getPathPrefix(), 10, 10, null, true);
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
-            'avatar' => basename($avatar)
+            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
         $this->auth($user->username, 'password');
 
+        $user->addMedia(public_path() . '/img/avatar.png')
+            ->preservingOriginal()
+            ->toMediaCollection(User::COLLECTION_PROFILE, User::DISK_PROFILE);
+
         $response = $this->api('get', self::API_TEST_PROFILE . 'profile');
+
         $response->assertStatus(200);
+        $this->assertNotNull($response->json(['avatar']));
     }
 
     /**
@@ -173,7 +178,9 @@ class UsersTest extends ApiTestCase
      */
     public function testUploadAvatarProfile()
     {
-        $this->markTestSkipped('User Avatar File Related Test Skipped');
+        $diskName = User::DISK_PROFILE;
+        Storage::disk($diskName);
+        $nameAvatar = 'avatar.jpg';
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
             'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
@@ -181,12 +188,21 @@ class UsersTest extends ApiTestCase
         $this->auth($user->username, 'password');
 
         $response = $this->api('put', self::API_TEST_PROFILE . 'profile', [
-            'avatar' => UploadedFile::fake()->image('avatar.jpg')
+            'avatar' => UploadedFile::fake()->image($nameAvatar)
         ]);
         $response->assertStatus(200);
 
+        $mediaAvatar = $user->getMedia($diskName);
+
+        //verify name of file
+        $this->assertEquals($nameAvatar, $mediaAvatar[0]->file_name);
+
+        //get path of file
+        $path = $mediaAvatar[0]->getPath();
+        $path = explode($diskName, $path);
+
         //verify exist file
-        Storage::disk('profile')->assertExists($user->refresh()->avatar);
+        Storage::disk($diskName)->assertExists($path[1]);
     }
 
     /**
@@ -194,7 +210,8 @@ class UsersTest extends ApiTestCase
      */
     public function testUpdateUser()
     {
-        $this->markTestSkipped('User Avatar File Related Test Skipped');
+        $diskName = User::DISK_PROFILE;
+        Storage::disk($diskName);
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
             'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
