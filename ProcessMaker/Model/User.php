@@ -72,7 +72,7 @@ class User extends Authenticatable implements UserEntityInterface, CanResetPassw
         $rules = [
         'firstname' => 'nullable',
         'lastname' => 'nullable',
-        'password' => 'password',
+        'password' => 'required',
         'status' => 'required|in:ACTIVE,DISABLED',
         ];
         if($existing) {
