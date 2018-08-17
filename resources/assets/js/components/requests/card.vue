@@ -39,6 +39,9 @@ export default {
       });
     },
     truncatedDescription() {
+      if (!this.process.description) {
+          return '<span class="filtered"></span>';
+      }
       let result = "";
       let container = this.$refs.description;
       let wordArray = this.process.description.split(" ");

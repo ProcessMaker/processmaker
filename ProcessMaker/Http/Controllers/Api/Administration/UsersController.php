@@ -91,16 +91,17 @@ class UsersController extends Controller
     }
 
     /**
-     * Fetch an avatar for a user
-     * If the avatar is not uploaded, return a JSON error response, with the user provided
+     * Delete user
+     *
+     * @param User $user
+     *
+     * @return ResponseFactory|Response
+     * @throws \Exception
      */
-    public function avatar(Request $request, User $user)
+    public function delete(User $user)
     {
-        // Testing, just return an error
-        return response([
-            'message' => 'No avatar was uploaded for the requested user',
-            'user' => fractal($user, new UserTransformer())->toArray()
-        ], 404);
+        $user->delete();
+        return response([], 204);
     }
 
 }
