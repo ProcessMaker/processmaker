@@ -32,7 +32,7 @@
                 'name': '',
                 'description': '',
                 'categorySelect': null,
-                'categorySelectOptions': [],
+                'categorySelectOptions': [{value:'', content:''}],
                 'errors': {
                     'name': null,
                     'description': null,

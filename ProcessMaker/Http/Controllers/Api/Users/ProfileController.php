@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Facades\UserManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Model\User;
@@ -20,8 +19,6 @@ use ProcessMaker\Transformers\UserTransformer;
 class ProfileController extends Controller
 {
 
-    const DISK_PROFILE = 'profile';
-
     /**
      * Load profile user
      *
@@ -29,13 +26,8 @@ class ProfileController extends Controller
      */
     public function profile()
     {
-        $url = '';
         $user = User::find(Auth::id());
-        if (!empty($user->avatar) && Storage::disk(self::DISK_PROFILE)->exists($user->avatar)) {
-            //Generate url for image
-            $url = Storage::disk(self::DISK_PROFILE)->url($user->avatar);
-        }
-        $user->avatar = $url;
+        $user->avatar = UserManager::getUrlAvatar($user);
         return fractal($user, new UserTransformer())->respond();
     }
 
@@ -52,7 +44,5 @@ class ProfileController extends Controller
         UserManager::update(User::find(Auth::id()), $request);
         return response([], 200);
     }
-
-
 
 }
