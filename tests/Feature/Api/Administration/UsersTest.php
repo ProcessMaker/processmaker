@@ -199,7 +199,6 @@ class UsersTest extends ApiTestCase
             'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
         ]);
         $this->auth($user->username, 'password');
-
         $user = factory(User::class)->create([
             'uid' => '1234',
             'username' => app()->make('Faker\Generator')->text(10),
@@ -208,12 +207,12 @@ class UsersTest extends ApiTestCase
         ]);
         $response = $this->api('get', self::API_TEST_USERS, []);
         $response->assertStatus(200);
-
         $response = $this->api('put', self::API_TEST_USERS . '/' . $user->uid, [
             'firstname' => 'User update',
             'status' => 'ACTIVE',
             'lastname' => 'profile',
-            'username' => $user->username
+            'username' => $user->username,
+            'password' => '1234',
         ]);
         $response->assertStatus(200);
         // Verify change made it to the database
@@ -232,6 +231,13 @@ class UsersTest extends ApiTestCase
             'lastname' => 'profile',
             'status' => 'ACTIVE'
         ]);
+        //log back in with new password
+        $response = $this->call('POST', '/login', [
+            'username' => $user->username,
+            'password' => '1234',
+            '_token' => csrf_token()
+        ]);
+        $response->assertStatus(302);
     }
 
     public function testCreateUser()
