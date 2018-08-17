@@ -86,10 +86,13 @@ class UsersController extends Controller
     public function update(User $user, Request $request)
     {
         $request->validate(User::rules($user));
-        $user->username = $request->get('username');
-        $user->firstname = $request->get('firstname');
-        $user->lastname = $request->get('lastname');
-        $user->status = $request->get('status');
+        $user->username = $request->username;
+        $user->firstname = $request->firstname;
+        $user->lastname = $request->lastname;
+        $user->status = $request->status;
+        if($request->password != ""){
+            $user->password = Hash::make($request->password);
+        }
 
         $user->save();
 
