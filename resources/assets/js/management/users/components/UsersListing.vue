@@ -14,11 +14,12 @@
     <pagination single="User" plural="Users" :perPageSelectEnabled="true" @changePerPage="changePerPage" @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
     <b-modal ref="editItem" size="md" centered title="Edit User">
     <form>
-      <form-input v-model="username" label="Username" helper="Username must be distinct" required="required"></form-input>
+      <form-input :error="errors.username" v-model="username" label="Username" helper="Username must be distinct"></form-input>
       <form-input v-model="firstname" label="First Name"></form-input>
       <form-input v-model="lastname" label="Last Name"></form-input>
-      <form-input v-model="password" type="password" label="Password"></form-input>
-      <form-input v-model="confpassword" type="password" label="Confirm Password" :validationData="data" validation="same:password"></form-input>
+      <form-input :error="errors.password" v-model="password" type="password" label="Password"></form-input>
+      <form-input :error="errors.confpassword" v-model="confpassword" type="password" 
+                  label="Confirm Password" :validationData="data" validation="same:password"></form-input>
     </form>
     <div slot="modal-footer">
       <b-button @click="hideEditModal" class="btn btn-outline-success btn-sm text-uppercase">
@@ -107,11 +108,17 @@ export default {
       username: "",
       firstname: "",
       lastname: "",
-      uid: "",
       status: "",
       curIndex: "",
       password: "",
-      confpassword: ""
+      confpassword: "",
+      uid: "",
+      errors: {
+        password: null,
+        confpassword: null,
+        username: null
+      },
+      rules: {}
     };
   },
   methods: {
@@ -136,7 +143,6 @@ export default {
     submitEdit(rowIndex) {
       window.ProcessMaker.apiClient
         .put("users/" + this.uid, {
-          uid: this.uid,
           username: this.username,
           firstname: this.firstname,
           lastname: this.lastname,
@@ -149,8 +155,14 @@ export default {
           this.hideEditModal();
           this.fetch();
         })
-        .catch(err => {
-          ProcessMaker.alert("There was an error with your edit", "danger");
+        .catch(error => {
+          if (error.response.status === 422) {
+            // Validation error
+            let fields = Object.keys(error.response.data.errors);
+            for (let field of fields) {
+              this.errors[field] = error.response.data.errors[field][0];
+            }
+          }
         });
     },
     clearForm(curIndex) {
