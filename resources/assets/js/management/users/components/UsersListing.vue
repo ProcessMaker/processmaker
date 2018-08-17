@@ -18,7 +18,7 @@
       <form-input v-model="firstname" label="First Name"></form-input>
       <form-input v-model="lastname" label="Last Name"></form-input>
       <form-input v-model="password" type="password" label="Password"></form-input>
-      <form-input v-model="confpassword" type="password" label="Confirm Password"></form-input>
+      <form-input v-model="confpassword" type="password" label="Confirm Password" :validationData="data" validation="same:password"></form-input>
     </form>
     <div slot="modal-footer">
       <b-button @click="hideEditModal" class="btn btn-outline-success btn-sm text-uppercase">
