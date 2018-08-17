@@ -62,6 +62,7 @@ import _ from "lodash"
         let scriptNodeName = this.BPMN.BPMNDefinitions.getmodel('script');
         let scriptFormatAttrName = this.BPMN.BPMNDefinitions.getnonamespace('scriptFormat');
         let scriptRefAttrName = this.BPMN.BPMNDefinitions.getpm('scriptRef');
+        let formRefAttrName = this.BPMN.BPMNDefinitions.getpm('formRef');
         let scriptConfigurationAttrName = this.BPMN.BPMNDefinitions.getpm('scriptConfiguration');
         //Find the task
         let task = this.findElement(data.id);
@@ -90,6 +91,7 @@ import _ from "lodash"
 
         if (data.formRef !== undefined) {
             task.attributes.formRef = data.formRef;
+            task.attributes[formRefAttrName] = data.formRef;
         }
 
         if (data.scriptRef !== undefined) {

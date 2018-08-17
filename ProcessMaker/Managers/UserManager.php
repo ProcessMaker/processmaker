@@ -2,17 +2,15 @@
 
 namespace ProcessMaker\Managers;
 
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use ProcessMaker\Model\InputDocument;
-use ProcessMaker\Model\Process;
 use ProcessMaker\Model\User;
 
 class UserManager
 {
+
 
     /**
      * Get a list of All Users.
@@ -66,6 +64,18 @@ class UserManager
     }
 
     /**
+     * Get url user avatar
+     *
+     * @param User $user
+     *
+     * @return string url
+     */
+    public function getUrlAvatar(User $user)
+    {
+        return $user->getAvatar();
+    }
+
+    /**
      * Update information User
      *
      * @param User $user
@@ -78,7 +88,7 @@ class UserManager
     {
         $data = $request->all();
         if (isset($data['avatar']) && !empty($data['avatar'])) {
-            $data['avatar'] = $this->uploadAvatar($user, $request);
+            $this->uploadAvatar($user, $request);
         }
         if (isset($data['password']) && !empty($data['password'])) {
             $data['password'] = Hash::make($data['password']);
@@ -95,22 +105,38 @@ class UserManager
      * @param User $user
      * @param Request $request
      *
-     * @return string name of file
-     * @throws \Throwable
+     * @throws \Exception
      */
-    public function uploadAvatar(User $user, Request $request): string
+    public function uploadAvatar(User $user, Request $request)
     {
-        $request->validate([
-            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
+        //verify data
+        $data = $request->all();
+        if (preg_match('/^data:image\/(\w+);base64,/', $data['avatar'] , $type)) {
+            $data = substr($data['avatar'], strpos($data['avatar'], ',') + 1);
+            $type = strtolower($type[1]); // jpg, png, gif
 
-        $avatarName = $user->id . '_avatar' . Carbon::now()->timestamp . '.' . request()->avatar->getClientOriginalExtension();
-        $request->avatar->storeAs('', $avatarName, 'profile');
+            if (!in_array($type, [ 'jpg', 'jpeg', 'gif', 'png' , 'svg'])) {
+                throw new \Exception('invalid image type');
+            }
 
-        $user->avatar = $avatarName;
-        $user->saveOrFail();
+            $data = base64_decode($data);
 
-        return $avatarName;
+            if ($data === false) {
+                throw new \Exception('base64_decode failed');
+            }
+
+            file_put_contents("/tmp/img.{$type}", $data);
+
+            $user->addMedia("/tmp/img.{$type}")
+                ->toMediaCollection(User::COLLECTION_PROFILE, User::DISK_PROFILE);
+        } else if (isset($data['avatar']) && !empty($data['avatar'])) {
+            $request->validate([
+                'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            ]);
+
+            $user->addMedia($request->avatar)
+                ->toMediaCollection(User::COLLECTION_PROFILE, User::DISK_PROFILE);
+        }
     }
 
 }
