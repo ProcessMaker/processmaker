@@ -137,13 +137,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/deep/ i.fa-circle {
-  &.active {
-    color: green;
-  }
-  &.inactive {
-    color: red;
-  }
-}
+
 </style>
 

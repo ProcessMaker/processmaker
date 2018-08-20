@@ -131,12 +131,4 @@ export default {
   text-align: center;
 }
 
-/deep/ i.fa-circle {
-  &.active {
-    color: green;
-  }
-  &.inactive {
-    color: red;
-  }
-}
 </style>

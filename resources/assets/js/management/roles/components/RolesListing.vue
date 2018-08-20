@@ -226,12 +226,4 @@ export default {
   width: 225px;
 }
 
-/deep/ i.fa-circle {
-  &.active {
-    color: green;
-  }
-  &.inactive {
-    color: red;
-  }
-}
 </style>
