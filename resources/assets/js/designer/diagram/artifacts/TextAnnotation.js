@@ -6,8 +6,6 @@ import joint from "jointjs"
  */
 export default class extends Shape {
     constructor(options, graph, paper) {
-        debugger
-        console.log("asdasd")
         super(graph, paper)
         this.shapeEmbed = null
         this.options = {
