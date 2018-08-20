@@ -3,6 +3,7 @@
 namespace ProcessMaker\Model;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Validation\Rule;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Auth\Passwords\CanResetPassword as CanResetPasswordTrait;
@@ -67,6 +68,29 @@ class User extends Authenticatable implements UserEntityInterface, CanResetPassw
     protected $appends = [
         'fullname'
     ];
+
+    /**
+     * Returns the validation rules for this model.
+     * If this is an update validation rule, pass in the existing 
+     * user to avoid unique rules clashing.
+     */
+    public static function rules(User $existing = null) {
+        $rules = [
+        'firstname' => 'nullable',
+        'lastname' => 'nullable',
+        'password' => 'required',
+        'status' => 'required|in:ACTIVE,DISABLED',
+        ];
+        if($existing) {
+            $rules['username'] = [
+                'required',
+                Rule::unique('users')->ignore($existing->id)
+            ];
+        } else {
+            $rules['username'] = 'required|unique:users';
+        }
+        return $rules;
+    }
 
     /**
      * The key to use in routes to fetch a user
