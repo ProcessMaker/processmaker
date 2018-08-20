@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
         //Create default All Users group
         factory(Group::class)->create([
             'uid' => Group::ALL_USERS_GROUP,
-            'title' => 'All Users',
+            'title' => 'Users',
             'status' => Group::STATUS_ACTIVE,
             'ux' => Group::UX_NORMAL
         ]);
