@@ -7,7 +7,7 @@
                 <div class="actions">
                     <i class="fas fa-ellipsis-h"></i>
                     <div class="popout">
-                        <b-btn variant="action" @click="onAction('edit-item', props.rowData, props.rowIndex)"
+                        <b-btn variant="action" @click="onEdit(props.rowData, props.rowIndex)"
                                v-b-tooltip.hover title="Edit"><i class="fas fa-edit"></i></b-btn>
                         <b-btn variant="action" @click="onDelete( props.rowData, props.rowIndex)" v-b-tooltip.hover
                                title="Remove"><i class="fas fa-trash-alt"></i></b-btn>
@@ -92,6 +92,9 @@
                 let response = '<i class="fas fa-circle ' + value + '"></i> ';
                 value = value.charAt(0).toUpperCase() + value.slice(1);
                 return response + value;
+            },
+            onEdit(data, index) {
+                this.$emit('edit', data.uid);
             },
             onDelete(data, index) {
                 let that = this;
