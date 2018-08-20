@@ -52,7 +52,7 @@ class GenerateMenus
                 'id' => 'homeid'
           ]);
           $submenu->add(__('menus.sidebar_admin.preferences'), [
-                'route' => 'home',
+                'route' => 'preferences',
                 'icon' => 'fa-globe',
                 'id' => 'homeid'
           ]);
