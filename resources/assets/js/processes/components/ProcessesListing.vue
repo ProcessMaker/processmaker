@@ -42,9 +42,7 @@
                     }
                 ],
                 fields: [
-                    {
-                        name: "__checkbox"
-                    },
+                    
                     {
                         title: "Process",
                         name: "name",
