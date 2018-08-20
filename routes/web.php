@@ -55,7 +55,7 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
     })->name('admin');
 
     $this->get('/manage/customize', function(){
-        return view('management/customization/customize',['title' => 'Dashboard']);
+        return view('/management/customization/customize',['title' => 'Dashboard']);
       })->name('admin');
 
     $this->get('/', function() {

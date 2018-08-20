@@ -12,7 +12,7 @@
     </div>
     <div>
         <p>Create a color scheme to customize your UI</p>
-
+        <ui-customize></ui-customize>
     </div>
 </div>
 
@@ -21,5 +21,5 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/processes/tasks/index.js')}}"></script>
+    <script src="{{mix('js/management/admin/index.js')}}"></script>
 @endsection
