@@ -157,8 +157,14 @@ export class Builder {
             flow = new Elements[options.type](options,
                 this.graph,
                 this.paper
-            );
-            flow.render()
+            )
+            flow.render();
+            options.source.updateOptions({
+                outgoing: flow.options.id
+            })
+            options.target.updateOptions({
+                incoming: flow.options.id
+            })
         }
         return flow
     }
