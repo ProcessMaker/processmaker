@@ -116,7 +116,7 @@ class WorkflowTest extends ApiTestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'role_id' => Role::PROCESSMAKER_ADMIN
         ]);
         $this->auth($admin->username, 'password');
     }

@@ -67,7 +67,7 @@ class AuthTest extends TestCase
 
         // Now let's add a role
         $role = factory(Role::class)->create([
-            'code' => 'test-role'
+            'name' => 'test-role'
         ]);
         $user->role()->associate($role);
         $user->save();

@@ -59,7 +59,7 @@ class TaskDelegationManagerTest extends ApiTestCase
         parent::setUp();
         $this->user = factory(User::class)->create([
             'password' => Hash::make(self::DEFAULT_PASS),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'role_id' => Role::PROCESSMAKER_ADMIN
         ]);
 
         $this->process = factory(Process::class)->create([
@@ -155,7 +155,7 @@ class TaskDelegationManagerTest extends ApiTestCase
         $user = factory(User::class)->create([
             'firstname' => $filter,
             'password' => Hash::make(self::DEFAULT_PASS),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'role_id' => Role::PROCESSMAKER_ADMIN
         ]);
         factory(Delegation::class)->create([
             'user_id' => $user->id,

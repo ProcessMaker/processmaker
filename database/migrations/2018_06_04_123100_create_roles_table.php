@@ -19,7 +19,6 @@ class CreateRolesTable extends Migration
             $table->unsignedInteger('parent_role_id')->nullable();
             $table->string('name');
             $table->string('description');
-            $table->string('code');
             $table->timestamps();
             $table->enum('status', ['ACTIVE', 'DISABLED'])->default('ACTIVE');
 

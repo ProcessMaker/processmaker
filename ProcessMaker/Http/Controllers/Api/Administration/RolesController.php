@@ -34,7 +34,7 @@ class RolesController extends Controller
         if($filter) {
             $filter = '%' . $filter . '%';
             $roles = Role::where('name', 'like', $filter)
-                ->orWhere('code', 'like', $filter)
+                ->orWhere('name', 'like', $filter)
                 ->orWhere('description', 'like', $filter)
                 ->orderBy($orderBy, $orderDirection);
             if($orderBy == 'total_users') {
@@ -88,7 +88,6 @@ class RolesController extends Controller
 
       $role = Role::where('uid', $uid)->firstOrFail();
       $role->name=$request->get('name');
-      $role->code=$request->get('code');
       $role->description=$request->get('description');
       $role->status=$request->get('status');
 

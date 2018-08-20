@@ -20,12 +20,12 @@ $factory->define(ProcessFile::class, function (Faker $faker) {
         },
         'user_id' => function () {
             return factory(User::class)->create([
-                'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+                'role_id' => Role::PROCESSMAKER_ADMIN
             ])->id;
         },
         'update_user_id' => function () {
             return factory(User::class)->create([
-                'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+                'role_id' => Role::PROCESSMAKER_ADMIN
             ])->id;
         },
         'path' => $filePath,

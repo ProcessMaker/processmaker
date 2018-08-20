@@ -50,7 +50,7 @@ class RolesTest extends ApiTestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id'     => Role::PROCESSMAKER_ADMIN,
         ]);
         $this->auth($user->username, 'password');
         // Build a sample of 5 roles into the system
@@ -75,7 +75,7 @@ class RolesTest extends ApiTestCase
     {
        $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id'     => Role::PROCESSMAKER_ADMIN,
         ]);
         $this->auth($user->username, 'password');
         $response = $this->api('GET', self::API_TEST_ROLES . '?filter=' . urlencode('invalid'));
@@ -94,7 +94,7 @@ class RolesTest extends ApiTestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id'     => Role::PROCESSMAKER_ADMIN,
         ]);
         $this->auth($user->username, 'password');
         // Now create a role that would match
@@ -120,7 +120,7 @@ class RolesTest extends ApiTestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id'     => Role::PROCESSMAKER_ADMIN,
         ]);
         $this->auth($user->username, 'password');
         $response = $this->api('get', self::API_TEST_ROLES . '/invaliduid');
@@ -134,7 +134,7 @@ class RolesTest extends ApiTestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id'     => Role::PROCESSMAKER_ADMIN,
         ]);
         $this->auth($user->username, 'password');
         $role = factory(Role::class)->create();
@@ -153,7 +153,7 @@ class RolesTest extends ApiTestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id'     => Role::PROCESSMAKER_ADMIN,
         ]);
         $this->auth($user->username, 'password');
         $role = factory(Role::class)->create();
@@ -170,7 +170,7 @@ class RolesTest extends ApiTestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id'     => Role::PROCESSMAKER_ADMIN,
         ]);
         $this->auth($user->username, 'password');
         $response = $this->api('post', self::API_TEST_ROLES, [
@@ -181,31 +181,20 @@ class RolesTest extends ApiTestCase
             'message' => 'The given data was invalid.',
             'errors' => [
                 'name' => ['The name field is required.'],
-                'code' => ['The code field is required.'],
                 'status' => ['The status field is required.']
             ]
         ]);
         // Ensure out of bounds checks on validation
         $response = $this->api('post', self::API_TEST_ROLES, [
             'name' => app()->make('Faker\Generator')->text(500),
-            'code' => app()->make('Faker\Generator')->text(500),
             'status' => 'DERP'
         ]);
          $response->assertJson([
             'message' => 'The given data was invalid.',
             'errors' => [
                 'name' => ['The name may not be greater than 255 characters.'],
-                'code' => ['The code may not be greater than 255 characters.'],
                 'status' => ['The selected status is invalid.']
             ]
-        ]);
-        $response = $this->api('post', self::API_TEST_ROLES, [
-            'name' => 'Test Conflict Role',
-            'code' => app()->make('Faker\Generator')->text(500),
-            'status' => 'ACTIVE'
-        ]);
-        $response->assertJson([
-            'message' => 'The given data was invalid.'
         ]);
     }
 
@@ -213,18 +202,17 @@ class RolesTest extends ApiTestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id'     => Role::PROCESSMAKER_ADMIN,
         ]);
         $this->auth($user->username, 'password');
         $response = $this->api('post', self::API_TEST_ROLES, [
             'name' => 'Test Role',
-            'code' => 'TESTROLE',
             'description' => 'This is a test role',
             'status' => 'ACTIVE'
         ]);
         $response->assertStatus(200);
         // Okay, grab our role from the DB
-        $role = Role::where('code', 'TESTROLE')->first();
+        $role = Role::where('name', 'Test Role')->first();
         $transformed = (new RoleTransformer())->transform($role);
         $response->assertJson($transformed);
     }
@@ -233,12 +221,11 @@ class RolesTest extends ApiTestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id'     => Role::PROCESSMAKER_ADMIN,
         ]);
         $this->auth($user->username, 'password');
         //create a role, but with a fixed name with a factory method 
         $role = factory(\ProcessMaker\Model\Role::class)->create([
-            'code' => app()->make('Faker\Generator')->text(5),
             'uid' => app()->make('Faker\Generator')->text(10),
             'name' => 'name',
             'description' => app()->make('Faker\Generator')->text(10),
@@ -263,7 +250,6 @@ class RolesTest extends ApiTestCase
         ]);
         //assert role name is now the changed name 
         $response->assertJson([
-            'code' => $role->code,
             'uid' => $role->uid,
             'name' => 'New',
             'description' => $role->description,
@@ -278,7 +264,7 @@ class RolesTest extends ApiTestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id'     => Role::PROCESSMAKER_ADMIN,
         ]);
         $this->auth($user->username, 'password');
 
