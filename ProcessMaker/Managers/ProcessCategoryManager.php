@@ -14,18 +14,16 @@ class ProcessCategoryManager
     /**
      * Provides a list of the process categories.
      *
-     * @param string $filter
-     * @param int $start
-     * @param int $limit
+     * @param array $options
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function index($filter, $start, $limit)
+    public function index(array $options)
     {
         $this->validate(
             [
-                'start' => $start,
-                'limit' => $limit,
+                'start' => $options['start'],
+                'limit' => $options['limit'],
             ],
             [
                 'start' => 'nullable|numeric|min:0',
@@ -37,9 +35,17 @@ class ProcessCategoryManager
                 'name',
             ])->where('uid', '!=', '')
             ->withCount('processes');
-        $filter === null ?: $query->where('name', 'like', "%$filter%");
-        $start === null ? : $query->offset($start);
-        $limit === null ? : $query->limit($limit);
+
+        $options['filter'] === null ? : $query->where(
+            'name', 'like', '%' . $options['filter'] . '%'
+        );
+
+        $options['sort_by'] === null ? : $query->orderBy(
+            $options['sort_by'], $options['sort_order']
+        );
+
+        $options['start'] === null ? : $query->offset($options['start']);
+        $options['limit'] === null ? : $query->limit($options['limit']);
         return $query->get();
     }
 

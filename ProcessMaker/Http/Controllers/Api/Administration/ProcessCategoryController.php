@@ -29,7 +29,14 @@ class ProcessCategoryController extends Controller
         $filter = $request->input("filter");
         $start = $request->input("start");
         $limit = $request->input("limit");
-        $response = ProcessCategoryManager::index($filter, $start, $limit);
+        $options = [
+            'filter' => $request->input('filter'),
+            'start' => $request->input('start'),
+            'limit' => $request->input('limit'),
+            'sort_by' => $request->input('sort_by', 'name'),
+            'sort_order' => $request->input('sort_order', 'ASC'),
+        ];
+        $response = ProcessCategoryManager::index($options);
         return response($this->formatList($response), 200);
     }
 

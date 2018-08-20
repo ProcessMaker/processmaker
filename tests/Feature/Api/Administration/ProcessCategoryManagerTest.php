@@ -111,6 +111,38 @@ class ProcessCategoryManagerTest extends ApiTestCase
         );
 
     }
+    /**
+     * Test sorting by category name
+     */
+    public function testGetListOfCategoriesSorted()
+    {
+        $this->login();
+        factory(ProcessCategory::class)->create([
+            'name' => 'first test category'
+        ]);
+        
+        factory(ProcessCategory::class)->create([
+            'name' => 'second test category'
+        ]);
+        
+        // defaults sort to name ASC
+        $response = $this->api('GET', self::API_TEST_CATEGORIES . '?filter=test');
+        $json = $response->json();
+        $this->assertEquals($json[0]['cat_name'], 'first test category');
+        $this->assertEquals($json[1]['cat_name'], 'second test category');
+        
+        // sort by name ASC
+        $response = $this->api('GET', self::API_TEST_CATEGORIES . '?filter=test&sort_by=name&sort_order=ASC');
+        $json = $response->json();
+        $this->assertEquals($json[0]['cat_name'], 'first test category');
+        $this->assertEquals($json[1]['cat_name'], 'second test category');
+        
+        // sort by name DESC
+        $response = $this->api('GET', self::API_TEST_CATEGORIES . '?filter=test&sort_by=name&sort_order=DESC');
+        $json = $response->json();
+        $this->assertEquals($json[0]['cat_name'], 'second test category');
+        $this->assertEquals($json[1]['cat_name'], 'first test category');
+    }
 
     /**
      * Test get the list of categories without results
