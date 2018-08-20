@@ -30,7 +30,6 @@ Route::group([
             // Users API Endpoints
             Route::get('users', 'Administration\UsersController@index');
             Route::get('users/{user}', 'Administration\UsersController@get');
-            Route::get('users/{user}/avatar', 'Administration\UsersController@avatar');
             Route::put('users/{user}', 'Administration\UsersController@update');
             Route::post('users', 'Administration\UsersController@create');
             Route::delete('users/{user}', 'Administration\UsersController@delete');
