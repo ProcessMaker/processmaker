@@ -25,6 +25,7 @@ export default class extends Flow {
             elementPadding: 10
         })
         this.shape.addTo(this.graph)
+        this.options.id = this.shape.id
         this.createTools()
         this.addEvents()
     }
