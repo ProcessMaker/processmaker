@@ -222,6 +222,7 @@ class UsersTest extends ApiTestCase
             'username' => app()->make('Faker\Generator')->text(10),
             'firstname' => app()->make('Faker\Generator')->text(10),
             'lastname' => app()->make('Faker\Generator')->text(10),
+            'status' => 'INACTIVE'
         ]);
         $response = $this->api('get', self::API_TEST_USERS, []);
         $response->assertStatus(200);
