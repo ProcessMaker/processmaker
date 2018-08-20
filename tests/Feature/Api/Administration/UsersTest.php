@@ -217,14 +217,45 @@ class UsersTest extends ApiTestCase
             'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
         ]);
         $this->auth($user->username, 'password');
-
-        $response = $this->api('put', self::API_TEST_USERS . '/' . $user->uid->toString(), [
+        $user = factory(User::class)->create([
+            'uid' => '1234',
+            'username' => app()->make('Faker\Generator')->text(10),
+            'firstname' => app()->make('Faker\Generator')->text(10),
+            'lastname' => app()->make('Faker\Generator')->text(10),
+        ]);
+        $response = $this->api('get', self::API_TEST_USERS, []);
+        $response->assertStatus(200);
+        $response = $this->api('put', self::API_TEST_USERS . '/' . $user->uid, [
             'firstname' => 'User update',
+            'status' => 'ACTIVE',
             'lastname' => 'profile',
-            'avatar' => UploadedFile::fake()->image('avatar.jpg'),
-            'password' => 'password2'
+            'username' => $user->username,
+            'password' => '1234',
         ]);
         $response->assertStatus(200);
+        // Verify change made it to the database
+        $this->assertDatabaseHas('users', [
+            'uid' => $user->uid,
+            'username' => $user->username,
+            'firstname' => 'User update',
+            'lastname' => 'profile',
+            'status' => 'ACTIVE'
+        ]);
+        // Also ensure the changed attributes are reflected in JSON response
+        $response->assertJson([
+            'uid' => $user->uid,
+            'username' => $user->username,
+            'firstname' => 'User update',
+            'lastname' => 'profile',
+            'status' => 'ACTIVE'
+        ]);
+        //log back in with new password
+        $response = $this->call('POST', '/login', [
+            'username' => $user->username,
+            'password' => '1234',
+            '_token' => csrf_token()
+        ]);
+        $response->assertStatus(302);
     }
 
     public function testCreateUser()
