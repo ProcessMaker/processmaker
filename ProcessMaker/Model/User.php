@@ -6,7 +6,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Auth\Passwords\CanResetPassword as CanResetPasswordTrait;
-
+use ProcessMaker\Model\Group;
 use League\OAuth2\Server\Entities\UserEntityInterface;
 use ProcessMaker\Model\Traits\Uuid;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
@@ -67,6 +67,22 @@ class User extends Authenticatable implements UserEntityInterface, CanResetPassw
     protected $appends = [
         'fullname'
     ];
+
+    /**
+     * Boot user model.
+     *
+     */
+    public static function boot()
+    {
+        parent::boot();
+        //By default the users should be assigned to a "All Users" group #544
+        static::created(
+            function($user)
+            {
+                Group::where('uid', Group::ALL_USERS_GROUP)->first()->users()->attach($user);
+            }
+        );
+    }
 
     /**
      * The key to use in routes to fetch a user
