@@ -48,7 +48,7 @@ function createParticipant(data, elements, arrayElements, processes, collaborati
 }
 function createShape(payload, BPMNProcess, BPMNCollaboration, BPMNDiagram, BPMNDefinitions) {
     BPMNDiagram.createElement(payload)
-    BPMNProcess.createElement(payload)
+    BPMNProcess.createBpmnObject(payload)
 }
 
 function createFlow(payload, BPMNProcess, BPMNCollaboration, BPMNDiagram, BPMNDefinitions) {
@@ -62,7 +62,11 @@ function updateFlow(payload, BPMNProcess, BPMNCollaboration, BPMNDiagram, BPMNDe
 
 function updateShape(payload, BPMNProcess, BPMNCollaboration, BPMNDiagram, BPMNDefinitions) {
     BPMNDiagram.updateElement(payload.id, payload)
-    BPMNProcess.updateElement(payload)
+    BPMNProcess.updateBpmnObject(payload)
+}
+
+function updateTask(payload, BPMNProcess, BPMNCollaboration, BPMNDiagram, BPMNDefinitions) {
+    BPMNProcess.updateTask(payload)
 }
 
 export default {
@@ -71,5 +75,7 @@ export default {
     [actions.bpmn.flow.update]: updateFlow,
     [actions.bpmn.shape.create]: createShape,
     [actions.bpmn.flow.create]: createFlow,
-    [actions.bpmn.participant.create]: createParticipant
+    [actions.bpmn.participant.create]: createParticipant,
+    [actions.bpmn.task.update]: updateTask,
+
 }

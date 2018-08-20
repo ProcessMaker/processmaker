@@ -177,7 +177,7 @@ class Process extends Model
         'paused_script_id' => 'nullable|max:32',
         'reassigned_script_id' => 'nullable|max:32',
         'unpaused_script_id' => 'nullable|max:32',
-        'process_category_id' => 'exists:process_categories,id',
+        'process_category_id' => 'nullable|exists:process_categories,id',
         'user_id' => 'exists:users,id',
     ];
     

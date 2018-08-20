@@ -105,11 +105,11 @@ export default class BPMNHandler {
             this.elementsDiagram = this.findBPMNDiagram()
             this.processes = this.findProcess()
             this.collaborations = this.findCollaboration()
-            this.buildElementsDiagram(this.elementsDiagram)
             this.createBPMNDefinitions()
             this.createBPMNCollaboration()
             this.createBPMNDiagram()
             this.createBPMNProcess()
+            this.buildElementsDiagram(this.elementsDiagram)
         }
         return this.bpmnDesigner
     }
@@ -185,7 +185,7 @@ export default class BPMNHandler {
             bpmnEl = that.findElementInCollaboration(this.collaborations, idBpmnElement)
             bpmnEl = !bpmnEl ? that.findElementInProcess(this.processes, idBpmnElement) : bpmnEl
 
-            if (bpmnEl && value.name == "bpmndi:BPMNEdge") {
+            if (bpmnEl && value.name == that.BPMNDefinitions.getbpmndi() + ":BPMNEdge") {
                 that.elements[idBpmnElement] = {
                     diagram: value,
                     process: bpmnEl
@@ -345,6 +345,7 @@ export default class BPMNHandler {
             ignoreDeclaration: true,
             spaces: 4
         }
-        return convert.js2xml(this.bpmn, options)
+        let xmlHeader = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+        return xmlHeader + convert.js2xml(this.bpmn, options)
     }
 }

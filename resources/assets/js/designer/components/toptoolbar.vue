@@ -3,34 +3,34 @@
         <nav class="navbar navbar-expand-md override">
             <span>{{ title }}</span>
 
-            <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a href="#" title="Full Screen"><i class="fas fa-arrows-alt"></i></a>
-                    </li>
-                    <li class="nav-item ">
-                        <a href="#" title="Undo"><i class="fas fa-undo"></i></a>
-                    </li>
-                    <li class="nav-item ">
-                        <a href="#" title="Redo"><i class="fas fa-redo"></i></a>
-                    </li>
-                    <li class="nav-item ">
-                        <a href="#" title="Save Process" @click="saveBPMN($event)"><i class="fas fa-save"></i></a>
-                    </li>
-                    <li class="nav-item ">
-                        <a @click="uploadBPMN($event)" title="Upload BPMN"><i class="fas fa-upload"></i></a>
-                        <input id="uploadBPMN" type="file" @change="handleFileChange" style="display: none"/>
-                    </li>
-                    <li class="nav-item ">
-                        <a href="#" title="Help"><i class="fas fa-info"></i></a>
-                    </li>
-                    <li class="nav-item ">
-                        <a href="#" title="Close Designer"><i class="fas fa-times"></i></a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a href="#" title="Full Screen"><i class="fas fa-arrows-alt"></i></a>
+        </li>
+        <li class="nav-item ">
+          <a href="#" title="Undo"><i class="fas fa-undo"></i></a>
+        </li>
+        <li class="nav-item ">
+          <a href="#" title="Redo"><i class="fas fa-redo"></i></a>
+        </li>
+        <li class="nav-item ">
+          <a href="#" title="Save Process" @click="saveBPMN($event)"><i class="fas fa-save"></i></a>
+        </li>
+        <li class="nav-item ">
+          <a @click="uploadBPMN($event)" title="Upload BPMN"><i class="fas fa-upload"></i></a>
+          <input id="uploadBPMN" type="file" @change="handleFileChange" style="display: none" />
+        </li>
+        <li class="nav-item ">
+          <a href="#" title="Help"><i class="fas fa-info"></i></a>
+        </li>
+        <li class="nav-item ">
+          <a href="#" title="Close Designer"><i class="fas fa-times"></i></a>
+        </li>
+      </ul>
     </div>
+  </nav>
+</div>
 </template>
 
 <script>
@@ -86,13 +86,14 @@
 </script>
 
 <style lang='scss' scoped>
-    #designer-toolbar .override {
+#designer-toolbar {
+
+    .override {
         background-color: #b6bfc6;
         padding: 10px;
         height: 40px;
-        font-family: "Open Sans";
         font-size: 18px;
-        font-weight: 600;
+        font-weight: 400;
         font-style: normal;
         font-stretch: normal;
         line-height: normal;
@@ -101,8 +102,14 @@
         color: #ffffff;
     }
 
-    #designer-toolbar a {
+    a {
         color: white;
         padding-right: 15px;
     }
+
+    .nav-item {
+        padding-top: 0;
+    }
+
+}
 </style>

@@ -4,7 +4,7 @@ import {ExclusiveGateway} from "./ExclusiveGateway"
 import {IntermediateCatchEvent} from "./IntermediateCatchEvent"
 import {MessageEventDefinition} from "./MessageEventDefinition"
 import {TimerEventDefinition} from "./TimerEventDefinition"
-import {EndEmailEvent} from "./EndEmailEvent"
+import {EndEventMessageDefinition} from "./EndEventMessageDefinition"
 import {StartEvent} from "./StartEvent"
 import {EndEvent} from "./EndEvent"
 import {DataObject} from "./DataObject"
@@ -13,7 +13,7 @@ import {Participant} from "./Participant"
 import {Lane} from "./Lane"
 import {Group} from "./Group"
 import {BlackBoxPool} from "./BlackBoxPool"
-import {SubProcess} from "./SubProcess"
+import {CallActivity} from "./CallActivity"
 import {Task} from "./Task"
 
 export const JointElements = Object.assign({}, {
@@ -23,7 +23,7 @@ export const JointElements = Object.assign({}, {
     IntermediateCatchEvent,
     MessageEventDefinition,
     TimerEventDefinition,
-    EndEmailEvent,
+    EndEventMessageDefinition,
     StartEvent,
     EndEvent,
     DataObject,
@@ -32,6 +32,6 @@ export const JointElements = Object.assign({}, {
     Lane,
     Group,
     BlackBoxPool,
-    SubProcess,
+    CallActivity,
     Task
 })
