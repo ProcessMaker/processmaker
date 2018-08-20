@@ -7,12 +7,12 @@
 @section('content')
 <div>
     <h1 class="page-title">{{__('UI Customization')}}</h1>
-    <div>
+    <div id="ui-customize">
         <p>Add your company logo</p>
     </div>
     <div>
         <p>Create a color scheme to customize your UI</p>
-        <ui-customize></ui-customize>
+        <customize-color></customize-color>
     </div>
 </div>
 

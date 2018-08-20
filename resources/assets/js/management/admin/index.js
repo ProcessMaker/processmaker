@@ -1,7 +1,9 @@
 import Vue from 'vue'
-import UICustomize from './components/UICustomize'
+import CustomizeColor from './components/CustomizeColor'
 
 new Vue ({
     el: '#ui-customize',
-    components: { UICustomize }
+    components: { 
+        CustomizeColor
+    }
 })
