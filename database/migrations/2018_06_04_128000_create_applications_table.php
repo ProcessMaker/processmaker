@@ -17,6 +17,7 @@ class CreateApplicationsTable extends Migration
             $table->increments('id');
             $table->uuid('uid')->unique();
             $table->integer('process_id')->unsigned();
+            $table->string('callable')->nullable();
             $table->text('APP_TITLE', 16777215);
             $table->text('APP_DESCRIPTION', 16777215)->nullable();
             $table->string('APP_PARENT', 32)->default('0');

@@ -1,28 +1,58 @@
 import {JointElements} from "../jointElements"
 import {Shape} from "../Shape"
+import {EndEvent} from "./endEvent/"
+import _ from "lodash"
 /**
  * EndEvent class
  */
-export class EndEvent extends Shape {
+export default class {
     constructor(options, graph, paper) {
-        super(graph, paper)
-        this.options = {
-            id: null,
-            x: null,
-            y: null,
-            width: 40,
-            height: 40
-        }
-        this.config(options)
+        let def = options["eventDefinition"]
+        def = def ? def : "empty"
+        this.adapter = new EndEvent[def](options, graph, paper)
     }
 
-    /**
-     * Render the EndEvent Based in options config
-     */
     render() {
-        this.shape = new JointElements.EndEvent();
-        this.shape.position(this.options.x, this.options.y);
-        this.shape.resize(this.options.width, this.options.height);
-        this.shape.addTo(this.graph);
+        this.adapter.render()
+    }
+
+    getShape() {
+        return this.adapter.shape
+    }
+
+    createBpmn() {
+        return this.adapter.createBpmn()
+    }
+
+    updateBounds(data) {
+        return this.adapter.updateBounds(data)
+    }
+
+    resetFlows(data) {
+        return this.adapter.resetFlows(data)
+    }
+
+    showCrown() {
+        return this.adapter.showCrown()
+    }
+
+    hideCrown() {
+        return this.adapter.hideCrown()
+    }
+
+    getType() {
+        return this.adapter.getType()
+    }
+
+    getOptions(val) {
+        return this.adapter.getOptions(val)
+    }
+
+    getId(val) {
+        return this.adapter.getId(val)
+    }
+
+    updateOptions(options) {
+        return this.adapter.updateOptions(options)
     }
 }

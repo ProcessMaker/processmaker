@@ -2,63 +2,67 @@
     <div class="pmdesigner-toolbar">
         <ul class="nav flex-column flex-md-row mt--1 text-light">
             <li class="bpmn-item-menu">
-                <img id="bpmn:Task" src="../img/task.svg" height="18"
+                <img id="bpmn:task"
+                     type="task"
+                     src="../img/task.svg" height="18"
                      draggable="true" @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:SubProcess" src="../img/sub-process.svg" height="18"
+                <img id="bpmn:exclusiveGateway"
+                     type="exclusiveGateway"
+                     src="../img/exclusive-gateway.svg" height="25" draggable="true"
+                     @dragend="createElement($event)"></li>
+            <li class="bpmn-item-menu">
+                <img id="bpmn:parallelGateway"
+                     type="parallelGateway"
+                     src="../img/parallel-gateway.svg" height="25" draggable="true"
+                     @dragend="createElement($event)"></li>
+            <li class="bpmn-item-menu">
+                <img id="bpmn:inclusiveGateway"
+                     type="inclusiveGateway"
+                     src="../img/inclusive-gateway.svg" height="25" draggable="true"
+                     @dragend="createElement($event)"></li>
+            <li class="bpmn-item-menu">
+                <img id="bpmn:startEvent"
+                     type="startEvent"
+                     src="../img/start-event.svg" height="25"
                      draggable="true" @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:ExclusiveGateway" src="../img/exclusive-gateway.svg" height="25" draggable="true"
-                     @dragend="createElement($event)"></li>
-            <li class="bpmn-item-menu">
-                <img id="bpmn:ParallelGateway" src="../img/parallel-gateway.svg" height="25" draggable="true"
-                     @dragend="createElement($event)"></li>
-            <li class="bpmn-item-menu">
-                <img id="bpmn:InclusiveGateway" src="../img/inclusive-gateway.svg" height="25" draggable="true"
-                     @dragend="createElement($event)"></li>
-            <li class="bpmn-item-menu">
-                <img id="bpmn:StartEvent" name="StartEvent" src="../img/start-event.svg" height="25"
-                     draggable="true" @dragend="createElement($event)"></li>
-            <li class="bpmn-item-menu">
-                <img id="bpmn:IntermediateEmailEvent" name="IntermediateEmailEvent"
+                <img id="bpmn:messageEventDefinition"
+                     event="messageEventDefinition"
+                     type="intermediateThrowEvent"
                      src="../img/intermediate-email-event.svg" height="25"
                      draggable="true" @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:IntermediateTimerEvent" name="IntermediateTimerEvent"
+                <img id="bpmn:timerEventDefinition"
+                     event="timerEventDefinition"
+                     type="intermediateThrowEvent"
                      src="../img/intermediate-time-event.svg" height="25"
                      draggable="true" @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:EndEvent" src="../img/end-event.svg" height="25" draggable="true"
+                <img id="bpmn:endEvent"
+                     type="endEvent"
+                     src="../img/end-event.svg" height="25" draggable="true"
                      @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:EndEmailEvent" src="../img/end-email-event.svg" height="25" draggable="true"
+                <img id="bpmn:endEmailEvent"
+                     type="endEvent"
+                     event="messageEventDefinition"
+                     src="../img/end-email-event.svg" height="25" draggable="true"
                      @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:DataObject" src="../img/data-object.svg" height="23" draggable="true"
+                <img id="bpmn:participant"
+                     type="participant"
+                     src="../img/pool.svg" height="18" draggable="true"
                      @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:DataStore" src="../img/data-store.svg" height="23" draggable="true"
+                <img id="bpmn:Lane"
+                     type="Lane"
+                     src="../img/lane.svg" height="18"
                      @dragend="createElement($event)"></li>
             <li class="bpmn-item-menu">
-                <img id="bpmn:BlackBoxPool" src="../img/black-box-pool.svg" height="18" draggable="true"
-                     @dragend="createElement($event)"></li>
-            <li class="bpmn-item-menu">
-                <img id="bpmn:Pool" src="../img/pool.svg" height="18" draggable="true"
-                     @dragend="createElement($event)"></li>
-            <li class="bpmn-item-menu">
-                <img id="bpmn:Lane" src="../img/lane.svg" height="18" draggable="true"
-                     @dragend="createElement($event)"></li>
-            <li class="bpmn-item-menu">
-                <img id="bpmn:Group" src="../img/group.svg" height="18" draggable="true"
-                     @dragend="createElement($event)"></li>
-            <li class="bpmn-item-menu">
-                <img id="bpmn:TextAnnotation" src="../img/text-annotation.svg" height="15" draggable="true"
-                     @dragend="createElement($event)"></li>
-            <li class="bpmn-item-menu">
-                <img id="bpmn:Lasso" src="../img/lasso.svg" height="20" draggable="true"
-                     @dragend="createElement($event)"></li>
-            <li class="bpmn-item-menu">
-                <img id="bpmn:Validator" src="../img/validator.svg" height="20" draggable="true"
+                <img id="bpmn:TextAnnotation"
+                     type="TextAnnotation"
+                     src="../img/text-annotation.svg" height="15" draggable="true"
                      @dragend="createElement($event)"></li>
         </ul>
     </div>
@@ -80,11 +84,9 @@
     .pmdesigner-toolbar {
         background-color: white;
         border-right: 2px solid #e1dbd9;
-
         .bpmn-item-menu {
             padding: 7px 7px
         }
-
         .bpmn-item-menu:hover {
             background-color: #eff2ed;
         }

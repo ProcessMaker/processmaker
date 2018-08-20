@@ -1,28 +1,50 @@
 <template>
-    <div @click="go" class="process-card"><div class="inner">
-            <div class="name" v-html="transformedName"></div>
-            <div ref="description" class="description" v-html="truncatedDescription"></div>
-        </div></div>
+    <div class="processes">
+        <div v-for="definition in process.definitions" @click="go(definition)" class="process-card">
+            <div class="inner">
+                <div>
+                    <span class="name" v-html="transformedName"></span>
+                    <i v-show="spin===definition.id" class="fa fa-spinner fa-spin fa-fw"></i>
+                </div>
+                <div ref="description" class="description" v-html="truncatedDescription"></div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
 export default {
-  props: ["name", "description", "filter", "uid"],
+  props: ["name", "description", "filter", "uid", "process"],
+  data() {
+      return {
+          spin: 0
+      }
+  },
   methods: {
-    go() {
-      window.location = '/requests/' + this.uid + '/new'
+    go(definition) {
+      //Start a process
+      this.spin = definition.id;
+      window.ProcessMaker.apiClient.post('processes/'+this.process.uid+'/' + definition.id + '/call')
+        .then((response) => {
+            this.spin = 0;
+            var instance = response.data;
+            window.location = '/request/' + instance.uid + '/status';
+        })
     }
   },
   computed: {
     transformedName() {
-      return this.name.replace(new RegExp(this.filter, "gi"), match => {
+      return this.process.name.replace(new RegExp(this.filter, "gi"), match => {
         return '<span class="filtered">' + match + "</span>";
       });
     },
     truncatedDescription() {
+      if (!this.process.description) {
+          return '<span class="filtered"></span>';
+      }
       let result = "";
       let container = this.$refs.description;
-      let wordArray = this.description.split(" ");
+      let wordArray = this.process.description.split(" ");
       // Number of maximum characters we want for our description
       let maxLength = 100;
       let word = null;

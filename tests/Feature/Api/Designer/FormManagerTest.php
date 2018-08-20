@@ -66,6 +66,7 @@ class FormManagerTest extends ApiTestCase
         $response->assertStatus(422);
         $this->assertArrayHasKey('message', $response->json());
     }
+
     /**
      * Create form successfully
      */
@@ -230,9 +231,9 @@ class FormManagerTest extends ApiTestCase
             'process_id' => $this->process->id
         ]);
 
-        //List Document with filter option
+        //List Form with filter option
         $perPage = Faker::create()->randomDigitNotNull;
-        $query = '?current_page=1&per_page=' . $perPage . '&sort_by=description&sort_order=DESC&filter=' . urlencode($title);
+        $query = '?page=1&per_page=' . $perPage . '&order_by=description&order_direction=DESC&filter=' . urlencode($title);
         $url = self::API_TEST_FORM . $this->process->uid . '/forms?' . $query;
         $response = $this->api('GET', $url);
         //Validate the answer is correct
@@ -261,7 +262,16 @@ class FormManagerTest extends ApiTestCase
     public function testGetForm()
     {
         //load Form
-        $url = self::API_TEST_FORM . $this->process->uid . '/form/' . factory(Form::class)->create(['process_id' => $this->process->id])->uid;
+        $url = self::API_TEST_FORM . $this->process->uid . '/form/' . factory(Form::class)->create([
+                'process_id' => $this->process->id,
+                'content' => (object)[
+                    'field' => 'field 1',
+                    'field 2' => (object)[
+                        'data1' => 'text',
+                        'data2' => 'text 2'
+                    ]
+                ]
+            ])->uid;
         $response = $this->api('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);

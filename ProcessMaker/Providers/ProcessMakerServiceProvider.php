@@ -4,6 +4,7 @@ namespace ProcessMaker\Providers;
 
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use ProcessMaker\Config\Repository;
 use ProcessMaker\Managers\DatabaseManager;
 use ProcessMaker\Managers\FormsManager;
 use ProcessMaker\Managers\InputDocumentManager;
@@ -16,7 +17,7 @@ use ProcessMaker\Managers\SchemaManager;
 use ProcessMaker\Managers\TaskAssigneeManager;
 use ProcessMaker\Managers\TaskManager;
 use ProcessMaker\Managers\TasksDelegationManager;
-use ProcessMaker\Managers\TriggerManager;
+use ProcessMaker\Managers\ScriptManager;
 use ProcessMaker\Managers\UserManager;
 use ProcessMaker\Model\Group;
 use ProcessMaker\Model\User;
@@ -43,6 +44,10 @@ class ProcessMakerServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $old  = $this->app['config'];
+        $new = new Repository($old->all());
+        $this->app->instance('config', $new);
+
 
         // Dusk, if env is appropriate
         if(!$this->app->environment('production')) {
@@ -101,8 +106,8 @@ class ProcessMakerServiceProvider extends ServiceProvider
             return new InputDocumentManager();
         });
         
-        $this->app->singleton('trigger.manager', function ($app) {
-            return new TriggerManager();
+        $this->app->singleton('script.manager', function ($app) {
+            return new ScriptManager();
         });
 
         $this->app->singleton('output_document.manager', function ($app) {

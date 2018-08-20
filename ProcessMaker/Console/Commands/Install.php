@@ -58,7 +58,9 @@ class Install extends Command
             'APP_DEBUG' => 'FALSE',
             'APP_NAME' => 'ProcessMaker',
             'APP_ENV' => 'production',
-            'APP_KEY' => 'base64:'.base64_encode(Encrypter::generateKey($this->laravel['config']['app.cipher']))
+            'APP_KEY' => 'base64:'.base64_encode(Encrypter::generateKey($this->laravel['config']['app.cipher'])),
+            'BROADCAST_DRIVER' => 'redis',
+            'BROADCASTER_KEY' => '21a795019957dde6bcd96142e05d4b10'
         ];
 
     }
@@ -106,14 +108,16 @@ class Install extends Command
                                         FILTER_FLAG_HOST_REQUIRED) 
                     || ($this->env['APP_URL'][strlen($this->env['APP_URL']) - 1] == '/'))
         );
+        // Set broadcaster url
+        $this->env['BROADCASTER_HOST'] = $this->env['APP_URL'] . ':6001';
 
         // Set it as our url in our config
         config(['app.url' => $this->env['APP_URL']]);
 
         $this->info(__("Installing ProcessMaker Database, OAuth SSL Keys and configuration file"));
 
-        // Create database
-        // Now install migrations
+        // The database should already exist and is tested by the fetchDatabaseCredentials call
+        // Install migrations
         $this->call('migrate:fresh', ['--seed' => true]);
 
         // Generate the required oauth private/public keys
@@ -173,6 +177,8 @@ class Install extends Command
 
     private function fetchDatabaseCredentials()
     {
+        $this->info(__("ProcessMaker requires a MySQL database created with appropriate credentials configured."));
+        $this->info(__("Refer to the Installation Guide for more information on database best practices."));
         $this->env['DB_HOSTNAME'] = $this->anticipate(__("Enter your MySQL host"), ['localhost']);
         $this->env['DB_PORT'] = $this->anticipate(__("Enter your MySQL port (Usually 3306)"), [3306]);
         $this->env['DB_DATABASE'] = $this->anticipate(__("Enter your MySQL Database name"), ['workflow']);
@@ -183,7 +189,7 @@ class Install extends Command
     private function testDatabaseConnection()
     {
         // Setup Laravel Database Configuration
-        config(['database.connections.workflow' => [
+        config(['database.connections.install' => [
             'driver' => 'mysql',
             'host' => $this->env['DB_HOSTNAME'],
             'port' => $this->env['DB_PORT'],
@@ -193,8 +199,9 @@ class Install extends Command
         ]]);
         // Attempt to connect
         try {
-            $pdo = DB::connection('workflow')->getPdo();
+            $pdo = DB::connection('install')->getPdo();
         } catch(Exception $e) {
+            dd($e);
             $this->error(__("Failed to connect to MySQL database. Check your credentials and try again. Note, the database must also exist."));
             return false;
         }

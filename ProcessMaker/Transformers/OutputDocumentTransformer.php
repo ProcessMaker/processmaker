@@ -24,7 +24,7 @@ class OutputDocumentTransformer extends TransformerAbstract
     public function transform(OutputDocument $item)
     {
         $data = $item->toArray();
-        unset($data['id'], $data['process_id'], $data['open_type'], $data['created_at'], $data['updated_at']);
+        unset($data['id'], $data['process_id'], $data['open_type']);
         return $data;
     }
 }

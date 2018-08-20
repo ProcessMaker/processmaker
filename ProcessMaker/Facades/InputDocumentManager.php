@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Facades;
 
+use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Facade;
 use ProcessMaker\Model\InputDocument;
@@ -13,7 +14,7 @@ use ProcessMaker\Model\Process;
  * @package ProcessMaker\Facades
  * @see \ProcessMaker\Managers\InputDocumentManager
  *
- * @method static Paginator index(Process $process)
+ * @method static Paginator index(Process $process, array $options)
  * @method static InputDocument save(Process $process, array $data)
  * @method static array update(Process $process, InputDocument $inputDocument, array $data)
  * @method static boolean|null remove(InputDocument $inputDocument)

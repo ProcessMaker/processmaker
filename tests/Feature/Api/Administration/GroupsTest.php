@@ -23,11 +23,13 @@ class GroupsTest extends ApiTestCase
      * 
      * These api endpoints can only work if you are authenticated
      */
+    /*
     public function testUnauthenticated()
     {
         $response = $this->api('GET', self::API_TEST_GROUPS);
         $response->assertStatus(401);
     }
+    */
 
     /**
      * Ensure our API endpoint is protected by required permission
@@ -277,6 +279,27 @@ class GroupsTest extends ApiTestCase
         $this->assertEquals(6, $data['meta']['total']);
         $this->assertEquals('Test Group', $data['data'][5]['title']);
   
+    }
+
+    /**
+     * Test Delete group
+     */
+    public function testDeleteGroup()
+    {
+        $user = factory(User::class)->create([
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+        ]);
+        $this->auth($user->username, 'password');
+
+        $group = factory(Group::class)->create();
+
+        $response = $this->api('delete', self::API_TEST_GROUPS . '/' . $group->uid);
+        $response->assertStatus(204);
+
+        //validating that the group does not exist
+        $existGroup = Group::where('uid', $group->uid)->first();
+        $this->assertNull($existGroup);
     }
 }
 

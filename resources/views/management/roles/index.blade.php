@@ -1,7 +1,7 @@
 @extends('layouts.layout', ['title' => 'Role Management'])
 
 @section('sidebar')
-  @include('sidebars.default', ['sidebar'=> $sidebar_admin])
+  @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
 @endsection
 
 @section('content')
@@ -32,10 +32,10 @@
    </form>
 
     <template slot="modal-footer">
-      <b-button @click="hideAddModal" class="btn-outline-secondary btn-md">
+      <b-button @click="hideAddModal" class="btn btn-outline-success btn-sm text-uppercase">
         Cancel
       </b-button>
-      <b-button @click="submitAdd" class="btn-secondary text-light btn-md">
+      <b-button @click="submitAdd" class="btn btn-success btn-sm text-uppercase">
         Save
       </b-button>
     </template>
@@ -49,7 +49,7 @@
                 <input v-model="filter" class="form-control col-sm-3" placeholder="{{__('Search')}}...">
                 </div>
                 <div class="col-md-4 d-flex justify-content-end align-items-center col-sm-12 actions">
-                    <button @click="showAddModal" class="btn btn-action"><i class="fas fa-plus"></i> {{__('Role')}}</button>
+                    <button @click="showAddModal" class="btn btn-secondary"><i class="fas fa-plus"></i> {{__('Role')}}</button>
                 </div>
             </div>
             <roles-listing ref="rolesListing" :filter="filter"></roles-listing>

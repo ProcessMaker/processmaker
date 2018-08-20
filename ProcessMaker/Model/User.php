@@ -3,10 +3,15 @@
 namespace ProcessMaker\Model;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Validation\Rule;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Contracts\Auth\CanResetPassword;
+use Illuminate\Auth\Passwords\CanResetPassword as CanResetPasswordTrait;
+
 use League\OAuth2\Server\Entities\UserEntityInterface;
-use ProcessMaker\Core\System;
 use ProcessMaker\Model\Traits\Uuid;
+use Spatie\MediaLibrary\HasMedia\HasMedia;
+use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
 /**
  * Represents an Eloquent model of a User
@@ -14,12 +19,19 @@ use ProcessMaker\Model\Traits\Uuid;
  *
  * @property \ProcessMaker\Model\Role $role
  */
-class User extends Authenticatable implements UserEntityInterface
+class User extends Authenticatable implements UserEntityInterface, CanResetPassword, HasMedia
 {
     use Notifiable;
     use Uuid;
+    use CanResetPasswordTrait;
+    use HasMediaTrait;
 
     const TYPE = 'USER';
+
+    //Disk
+    public const DISK_PROFILE = 'profile';
+    //collection media library
+    public const COLLECTION_PROFILE = 'profile';
 
     protected $hidden = [
         'id',
@@ -50,9 +62,35 @@ class User extends Authenticatable implements UserEntityInterface
         'role_id',
         'time_zone',
         'lang',
-        'last_login',
-        'avatar'
+        'last_login'
     ];
+
+    protected $appends = [
+        'fullname'
+    ];
+
+    /**
+     * Returns the validation rules for this model.
+     * If this is an update validation rule, pass in the existing 
+     * user to avoid unique rules clashing.
+     */
+    public static function rules(User $existing = null) {
+        $rules = [
+        'firstname' => 'nullable',
+        'lastname' => 'nullable',
+        'password' => 'required',
+        'status' => 'required|in:ACTIVE,DISABLED',
+        ];
+        if($existing) {
+            $rules['username'] = [
+                'required',
+                Rule::unique('users')->ignore($existing->id)
+            ];
+        } else {
+            $rules['username'] = 'required|unique:users';
+        }
+        return $rules;
+    }
 
     /**
      * The key to use in routes to fetch a user
@@ -172,5 +210,29 @@ class User extends Authenticatable implements UserEntityInterface
     public function role()
     {
         return $this->belongsTo(Role::class);
+    }
+
+    /**
+     * Get the full name as an attribute.
+     *
+     * @return string
+     */
+    public function getFullnameAttribute() {
+        return $this->getFullName();
+    }
+
+    /**
+     * Get url Avatar
+     *
+     * @return string
+     */
+    public function getAvatar()
+    {
+        $mediaFile = $this->getMedia(self::COLLECTION_PROFILE);
+        $url = '';
+        foreach ($mediaFile as $media) {
+            $url = $media->getFullUrl();
+        }
+        return $url;
     }
 }

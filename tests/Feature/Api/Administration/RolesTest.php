@@ -9,6 +9,7 @@ use ProcessMaker\Model\User;
 use ProcessMaker\Transformers\RoleTransformer;
 use Tests\Feature\Api\ApiTestCase;
 
+
 /**
  * Tests the Roles API Endpoints with expected values
  */
@@ -198,20 +199,13 @@ class RolesTest extends ApiTestCase
                 'status' => ['The selected status is invalid.']
             ]
         ]);
-        // Test for duplicate
-        $existingRole = factory(\ProcessMaker\Model\Role::class)->create([
-            'code' => 'TESTROLE'
-        ]);
         $response = $this->api('post', self::API_TEST_ROLES, [
             'name' => 'Test Conflict Role',
-            'code' => 'TESTROLE',
+            'code' => app()->make('Faker\Generator')->text(500),
             'status' => 'ACTIVE'
         ]);
         $response->assertJson([
-            'message' => 'The given data was invalid.',
-            'errors' => [
-                'code' => ['The code has already been taken.'],
-            ]
+            'message' => 'The given data was invalid.'
         ]);
     }
 
@@ -234,8 +228,70 @@ class RolesTest extends ApiTestCase
         $transformed = (new RoleTransformer())->transform($role);
         $response->assertJson($transformed);
     }
-}
 
+    public function testEditRoleSuccess() 
+    {
+        $user = factory(User::class)->create([
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+        ]);
+        $this->auth($user->username, 'password');
+        //create a role, but with a fixed name with a factory method 
+        $role = factory(\ProcessMaker\Model\Role::class)->create([
+            'code' => app()->make('Faker\Generator')->text(5),
+            'uid' => app()->make('Faker\Generator')->text(10),
+            'name' => 'name',
+            'description' => app()->make('Faker\Generator')->text(10),
+            'status' => 'ACTIVE'
+        ]);
+        //Fetch from database that role with the uid that was created
+        $response = $this->api('get', self::API_TEST_ROLES, [
+            
+        ]);
+
+        //Then call api to change the role name
+        $response = $this->api('put', self::API_TEST_ROLES . '/' . $role->uid, [
+            'code' => $role->code,
+            'uid' => $role->uid,
+            'name' => 'New',
+            'description' => $role->description,
+            'status' => 'ACTIVE'
+        ]);
+        //re-fetch from database that role
+          $response = $this->api('get', self::API_TEST_ROLES . '/' . $role->uid, [
+            
+        ]);
+        //assert role name is now the changed name 
+        $response->assertJson([
+            'code' => $role->code,
+            'uid' => $role->uid,
+            'name' => 'New',
+            'description' => $role->description,
+            'status' => 'ACTIVE'
+        ]);
+    }
+
+    /**
+     * Test Delete role
+     */
+    public function testDeleteRole()
+    {
+        $user = factory(User::class)->create([
+            'password' => Hash::make('password'),
+            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+        ]);
+        $this->auth($user->username, 'password');
+
+        $role = factory(Role::class)->create();
+
+        $response = $this->api('delete', self::API_TEST_ROLES . '/' . $role->uid);
+        $response->assertStatus(204);
+
+        //validating that the group does not exist
+        $exitRole = Role::where('uid', $role->uid)->first();
+        $this->assertNull($exitRole);
+    }
+}
 
 
  

@@ -12,6 +12,24 @@
       </template>  
     </vuetable>
     <pagination single="User" plural="Users" :perPageSelectEnabled="true" @changePerPage="changePerPage" @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
+    <b-modal ref="editItem" size="md" centered title="Edit User">
+    <form>
+      <form-input :error="errors.username" v-model="username" label="Username" helper="Username must be distinct"></form-input>
+      <form-input v-model="firstname" label="First Name"></form-input>
+      <form-input v-model="lastname" label="Last Name"></form-input>
+      <form-input :error="errors.password" v-model="password" type="password" label="Password"></form-input>
+      <form-input :error="errors.confpassword" v-model="confpassword" type="password" 
+                  label="Confirm Password" :validationData="data" validation="same:password"></form-input>
+    </form>
+    <div slot="modal-footer">
+      <b-button @click="hideEditModal" class="btn btn-outline-success btn-sm text-uppercase">
+        Cancel
+      </b-button>
+      <b-button @click="submitEdit" class="btn btn-success btn-sm text-uppercase">
+        Save
+      </b-button>
+      </div>
+    </b-modal>
    </div>
 </template>
 
@@ -19,10 +37,12 @@
 import Vuetable from "vuetable-2/src/components/Vuetable";
 import datatableMixin from "../../../components/common/mixins/datatable";
 import Pagination from "../../../components/common/Pagination";
+import FormInput from "@processmaker/vue-form-elements/src/components/FormInput";
 
 export default {
   mixins: [datatableMixin],
   props: ["filter"],
+  components: { FormInput },
   data() {
     return {
       orderBy: "username",
@@ -51,31 +71,111 @@ export default {
           sortField: "status",
           callback: this.formatStatus
         },
-         {
+        {
           title: "Role",
           name: "role",
           sortField: "role"
         },
         {
-          title: 'Login',
+          title: "Login",
           name: "last_login",
           sortField: "last_login",
           callback: this.formatDate
         },
         {
-          title: 'Expires On',
-          name: 'expires_at',
-          sortField: 'expires_at',
-          callback: 'formatDate|l'
+          title: "Expires On",
+          name: "expires_at",
+          sortField: "expires_at",
+          callback: this.formatDate
+        },
+        {
+          title: "Created At",
+          name: "created_at",
+          sortField: "created_at",
+          callback: this.formatDate
+        },
+        {
+          title: "Updated At",
+          name: "updated_at",
+          sortField: "updated_at",
+          callback: this.formatDate
         },
         {
           name: "__slot:actions",
           title: ""
         }
-     ]
+      ],
+      username: "",
+      firstname: "",
+      lastname: "",
+      status: "",
+      curIndex: "",
+      password: "",
+      confpassword: "",
+      uid: "",
+      errors: {
+        password: null,
+        confpassword: null,
+        username: null
+      },
+      rules: {}
     };
   },
   methods: {
+    onAction(action, data, index) {
+      switch (action) {
+        case "edit-item":
+          this.showEditModal(data, index);
+      }
+    },
+    showEditModal(data, index) {
+      this.username = this.data.data[index].username;
+      this.firstname = this.data.data[index].firstname;
+      this.lastname = this.data.data[index].lastname;
+      this.status = this.data.data[index].status;
+      this.password = this.data.data[index].password;
+      this.confpassword = this.data.data[index].confpassword;
+      this.role = this.data.data[index].role;
+      this.uid = this.data.data[index].uid;
+      this.curIndex = index;
+      this.$refs.editItem.show();
+    },
+    submitEdit(rowIndex) {
+      window.ProcessMaker.apiClient
+        .put("users/" + this.uid, {
+          username: this.username,
+          firstname: this.firstname,
+          lastname: this.lastname,
+          status: this.status,
+          password: this.password
+        })
+        .then(response => {
+          ProcessMaker.alert("Saved", "success");
+          this.clearForm();
+          this.hideEditModal();
+          this.fetch();
+        })
+        .catch(error => {
+          if (error.response.status === 422) {
+            // Validation error
+            let fields = Object.keys(error.response.data.errors);
+            for (let field of fields) {
+              this.errors[field] = error.response.data.errors[field][0];
+            }
+          }
+        });
+    },
+    clearForm(curIndex) {
+      (this.username = ""),
+        (this.firstname = ""),
+        (this.lastname = ""),
+        (this.status = ""),
+        (this.password = ""),
+        (this.confpassword = "");
+    },
+    hideEditModal() {
+      this.$refs.editItem.hide();
+    },
     formatStatus(value) {
       value = value.toLowerCase();
       let response = '<i class="fas fa-circle ' + value + '"></i> ';
@@ -91,10 +191,12 @@ export default {
 
       // Create full name field
       // Iterate through each data.data row and create one
-      for(let record of data.data) {
-        record['full_name'] = [record['firstname'], record['lastname']].join(' ');
+      for (let record of data.data) {
+        record["full_name"] = [record["firstname"], record["lastname"]].join(
+          " "
+        );
         // put in placeholder for case count
-        record['task_count'] = '#'
+        record["task_count"] = "#";
       }
       return data;
     },
@@ -117,9 +219,6 @@ export default {
         .then(response => {
           this.data = this.transform(response.data);
           this.loading = false;
-        })
-        .catch(error => {
-          // Undefined behavior currently, show modal?
         });
     }
   }

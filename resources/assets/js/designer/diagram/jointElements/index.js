@@ -1,33 +1,37 @@
 import {InclusiveGateway} from "./InclusiveGateway"
 import {ParallelGateway} from "./ParallelGateway"
 import {ExclusiveGateway} from "./ExclusiveGateway"
-import {IntermediateEmailEvent} from "./IntermediateEmailEvent"
-import {IntermediateTimerEvent} from "./IntermediateTimerEvent"
-import {EndEmailEvent} from "./EndEmailEvent"
+import {IntermediateCatchEvent} from "./IntermediateCatchEvent"
+import {MessageEventDefinition} from "./MessageEventDefinition"
+import {TimerEventDefinition} from "./TimerEventDefinition"
+import {EndEventMessageDefinition} from "./EndEventMessageDefinition"
 import {StartEvent} from "./StartEvent"
 import {EndEvent} from "./EndEvent"
 import {DataObject} from "./DataObject"
 import {DataStore} from "./DataStore"
-import {Pool} from "./Pool"
+import {Participant} from "./Participant"
+import {Lane} from "./Lane"
 import {Group} from "./Group"
 import {BlackBoxPool} from "./BlackBoxPool"
-import {SubProcess} from "./SubProcess"
+import {CallActivity} from "./CallActivity"
 import {Task} from "./Task"
 
 export const JointElements = Object.assign({}, {
     InclusiveGateway,
     ParallelGateway,
     ExclusiveGateway,
-    IntermediateEmailEvent,
-    IntermediateTimerEvent,
-    EndEmailEvent,
+    IntermediateCatchEvent,
+    MessageEventDefinition,
+    TimerEventDefinition,
+    EndEventMessageDefinition,
     StartEvent,
     EndEvent,
     DataObject,
     DataStore,
-    Pool,
+    Participant,
+    Lane,
     Group,
     BlackBoxPool,
-    SubProcess,
+    CallActivity,
     Task
 })

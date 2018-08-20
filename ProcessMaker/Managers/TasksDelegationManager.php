@@ -24,7 +24,12 @@ class TasksDelegationManager
         Paginator::currentPageResolver(function () use ($start) {
             return $start;
         });
-        $query = Delegation::with('task', 'user', 'application');
+        $include = $options['include'] ? explode(',', $options['include']): [];
+        $include = array_unique(array_merge(['user', 'application'], $include));
+        $query = Delegation::with($include);
+        if (!empty($options['status'])) {
+            $query = $query->where('thread_status', '=', $options['status']);
+        }
         $filter = $options['filter'];
         if (!empty($filter)) {
             $filter = '%' . $filter . '%';

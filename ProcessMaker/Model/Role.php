@@ -44,7 +44,20 @@ class Role extends Model
     protected $hidden = [
         'id'
     ];
-
+/**
+     * Validation rules.
+     *
+     * @var array $rules
+     */
+    public static function rules() {
+        
+        return [
+        'name' => 'required|max:255',
+        'code' => 'required|max:255',
+        'description' => 'max:255',
+        'status' => 'required|in:ACTIVE,DISABLED'
+        ];
+    }
 
 
     /**

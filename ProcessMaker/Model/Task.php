@@ -5,6 +5,7 @@ namespace ProcessMaker\Model;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use ProcessMaker\Model\Traits\Uuid;
+use ProcessMaker\Model\Process;
 use Watson\Validating\ValidatingTrait;
 
 /**
@@ -24,7 +25,7 @@ use Watson\Validating\ValidatingTrait;
  * @property boolean is_start_task
  * @property string routing_screen_template
  * @property array timing_control_configuration
- * @property integer trigger_id
+ * @property integer script_id
  * @property array self_service_timeout_configuration
  * @property string custom_title
  * @property string custom_description
@@ -100,7 +101,7 @@ class Task extends Model
         'is_start_task',
         'routing_screen_template',
         'timing_control_configuration',
-        'trigger_id',
+        'script_id',
         'self_service_timeout_configuration',
         'custom_title',
         'custom_description',
@@ -113,7 +114,7 @@ class Task extends Model
         'title' => 'required|unique:tasks,title',
         'description' => 'required',
         'process_id' => 'exists:processes,id',
-        'trigger_id' => 'nullable|exists:triggers,id',
+        'script_id' => 'nullable|exists:scripts,id',
         'type' => 'required|in:' . self::TYPE_NORMAL . ',' . self::TYPE_ADHOC . ',' . self::TYPE_SUB_PROCESS . ',' . self::TYPE_HIDDEN . ',' . self::TYPE_GATEWAY . ',' . self::TYPE_WEB_ENTRY_EVENT . ',' . self::TYPE_END_MESSAGE_EVENT . ',' . self::TYPE_START_MESSAGE_EVENT . ',' . self::TYPE_INTERMEDIATE_THROW_MESSAGE_EVENT . ',' . self::TYPE_INTERMEDIATE_CATCH_MESSAGE_EVENT . ',' . self::TYPE_SCRIPT_TASK . ',' . self::TYPE_START_TIMER_EVENT . ',' . self::TYPE_INTERMEDIATE_CATCH_TIMER_EVENT . ',' . self::TYPE_END_EMAIL_EVENT . ',' . self::TYPE_INTERMEDIATE_THROW_EMAIL_EVENT . ',' . self::TYPE_SERVICE_TASK,
         'assign_type' => 'required|in:' . self::ASSIGN_TYPE_BALANCED . ',' . self::ASSIGN_TYPE_MANUAL . ',' . self::ASSIGN_TYPE_EVALUATE . ',' . self::ASSIGN_TYPE_REPORT_TO . ',' . self::ASSIGN_TYPE_SELF_SERVICE . ',' . self::ASSIGN_TYPE_STATIC_MI . ',' . self::ASSIGN_TYPE_CANCEL_MI . ',' . self::ASSIGN_TYPE_MULTIPLE_INSTANCE . ',' . self::ASSIGN_TYPE_MULTIPLE_INSTANCE_VALUE_BASED,
         'routing_type' => 'required|in:' . self::ROUTE_TYPE_NORMAL . ',' . self::ROUTE_TYPE_FAST . ',' . self::ROUTE_TYPE_AUTOMATIC,
@@ -207,6 +208,11 @@ class Task extends Model
         $value['self_service_time_unit'] = isset($value['self_service_time_unit']) ? $value['self_service_time_unit'] : 'HOURS';
         $value['self_service_execution'] = isset($value['self_service_execution']) ? $value['self_service_execution'] : 'EVERY_TIME';
         $this->attributes['self_service_timeout_configuration'] = empty($value) ? null : json_encode($value);
+    }
+
+    public function process()
+    {
+        return $this->belongsTo(Process::class);
     }
 
 }

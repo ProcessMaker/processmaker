@@ -3,7 +3,7 @@ import {Shape} from "../Shape"
 /**
  * Group class
  */
-export class Group extends Shape {
+export default class extends Shape {
     constructor(options, graph, paper) {
         super(graph, paper)
         this.options = {

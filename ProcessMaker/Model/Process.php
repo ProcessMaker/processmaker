@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 use ProcessMaker\Model\Traits\Uuid;
+use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use Watson\Validating\ValidatingTrait;
-
 
 /**
  * Represents a business process definition.
@@ -23,13 +23,13 @@ use Watson\Validating\ValidatingTrait;
  * @property string $type
  * @property bool $show_map
  * @property bool $show_message
- * @property string $create_trigger_id
- * @property string $open_trigger_id
- * @property string $deleted_trigger_id
- * @property string $canceled_trigger_id
- * @property string $paused_trigger_id
- * @property string $reassigned_trigger_id
- * @property string $unpaused_trigger_id
+ * @property string $create_script_id
+ * @property string $open_script_id
+ * @property string $deleted_script_id
+ * @property string $canceled_script_id
+ * @property string $paused_script_id
+ * @property string $reassigned_script_id
+ * @property string $unpaused_script_id
  * @property string $visibility_id
  * @property bool $show_delegate
  * @property bool $show_dynaform
@@ -61,6 +61,7 @@ use Watson\Validating\ValidatingTrait;
  * @property string $PRO_AUTHOR_VERSION
  * @property string $PRO_ORIGINAL_SOURCE
  * @property \Illuminate\Database\Eloquent\Collection $cases
+ * @property string $bpmn
  *
  * @package ProcessMaker\Model
  */
@@ -110,13 +111,13 @@ class Process extends Model
         'type',
         'show_map',
         'show_message',
-        'create_trigger_id',
-        'open_trigger_id',
-        'deleted_trigger_id',
-        'canceled_trigger_id',
-        'paused_trigger_id',
-        'reassigned_trigger_id',
-        'unpaused_trigger_id',
+        'create_script_id',
+        'open_script_id',
+        'deleted_script_id',
+        'canceled_script_id',
+        'paused_script_id',
+        'reassigned_script_id',
+        'unpaused_script_id',
         'visibility',
         'show_delegate',
         'show_dynaform',
@@ -169,16 +170,18 @@ class Process extends Model
         'name' => 'required',
         'process_parent_id' => 'exists:processes',
         'status' => 'in:' . self::STATUS_ACTIVE . ',' . self::STATUS_INACTIVE,
-        'create_trigger_id' => 'exists:triggers,id',
-        'open_trigger_id' => 'exists:triggers',
-        'deleted_trigger_id' => 'nullable|max:32',
-        'canceled_trigger_id' => 'nullable|max:32',
-        'paused_trigger_id' => 'nullable|max:32',
-        'reassigned_trigger_id' => 'nullable|max:32',
-        'unpaused_trigger_id' => 'nullable|max:32',
-        'process_category_id' => 'exists:process_categories,id',
+        'create_script_id' => 'nullable|exists:scripts,id',
+        'open_script_id' => 'nullable|exists:scripts,id',
+        'deleted_script_id' => 'nullable|max:32',
+        'canceled_script_id' => 'nullable|max:32',
+        'paused_script_id' => 'nullable|max:32',
+        'reassigned_script_id' => 'nullable|max:32',
+        'unpaused_script_id' => 'nullable|max:32',
+        'process_category_id' => 'nullable|exists:process_categories,id',
         'user_id' => 'exists:users,id',
     ];
+    
+    private $bpmnDefinitions;
 
     /**
      * Determines if the provided user is a supervisor for this process
@@ -396,4 +399,28 @@ class Process extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    /**
+     * Get the forms of the process.
+     *
+     */
+    public function forms()
+    {
+        return $this->hasMany(Form::class);
+    }
+
+    /**
+     * Get the process definitions from BPMN field.
+     *
+     * @return ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface
+     */
+    public function getDefinitions()
+    {
+        if (empty($this->bpmnDefinitions)) {
+            $this->bpmnDefinitions = app(BpmnDocumentInterface::class, ['process' => $this]);
+            if ($this->bpmn) {
+                $this->bpmnDefinitions->loadXML($this->bpmn);
+            }
+        }
+        return $this->bpmnDefinitions;
+    }
 }

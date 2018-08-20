@@ -18,18 +18,27 @@ export const designer = {
         },
         crown: {
             show: x => x,
-            hide: x => x
+            hide: x => x,
         },
         shape: {
             remove: x => x,
             drag: x => x,
-            click: x => x
+            click: x => x,
+            dragFromCrown: x => x
         },
         canvas: {
             click: x => x
         },
         flow: {
+            create: x => x,
+            creating: x => x
+        },
+        lane: {
             create: x => x
+        },
+        bpmn: {
+            update: x => x,
+            loadFromModel: x => x
         }
     }
 };

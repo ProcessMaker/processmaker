@@ -1,7 +1,7 @@
 /**
- * Default mix in for general data table behavior.  Defines look and feel of sorting, 
+ * Default mix in for general data table behavior.  Defines look and feel of sorting,
  * pagination transformers, etc.
- * 
+ *
  */
 import Vuetable from "vuetable-2/src/components/Vuetable";
 import Pagination from "../../../components/common/Pagination";
@@ -92,7 +92,7 @@ export default {
             // Cancel token which should be stored from axios if you want to cancel the current in progress request
             cancelToken: null,
             css: {
-                tableClass: "ui blue selectable celled stackable attached table",
+                tableClass: "table table-hover",
                 loadingClass: "loading",
                 ascendingIcon: "blue chevron up icon",
                 descendingIcon: "blue chevron down icon",

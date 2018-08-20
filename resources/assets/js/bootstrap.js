@@ -27,12 +27,27 @@ window.Vue = require('vue');
 
 window.Vue.use(BootstrapVue);
 
-window.ProcessMaker = {};
+window.ProcessMaker = {
+    /**
+     * ProcessMaker Notifications
+     */
+    notifications: [],
+    /**
+     * Push a notification.
+     *
+     * @param {object} notification
+     *
+     * @returns {void}
+     */
+    pushNotification(notification) {
+        this.notifications.push(notification);
+    }
+};
 
 /**
- * Create a axios instance which any vue component can bring in to call 
+ * Create a axios instance which any vue component can bring in to call
  * REST api endpoints through oauth authentication
- * 
+ *
  */
 window.ProcessMaker.apiClient = require('axios');
 // Have default endpoint and headers
@@ -47,37 +62,26 @@ window.ProcessMaker.apiClient.defaults.baseURL = '/api/1.0/';
 // Default to a 5 second timeout, which is an eternity in web app terms
 window.ProcessMaker.apiClient.defaults.timeout = 5000;
 
-
-/**
- * We'll load the axios HTTP library which allows us to easily issue requests
- * to our Laravel back-end. This library automatically handles sending the
- * CSRF token as a header based on the value of the "XSRF" token cookie.
- */
-
-//window.axios = require('axios');
-
-/*
-window.axios.defaults.headers.common['X-CSRF-TOKEN'] = window.Processmaker.csrfToken;
-
-window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-*/
-
-/**
- * Echo exposes an expressive API for subscribing to channels and listening
- * for events that are broadcast by Laravel. Echo and event broadcasting
- * allows your team to easily build robust real-time web applications.
- */
-
- /*
-if (window.Processmaker.broadcaster == 'pusher') {
-  window.Pusher = require('pusher-js');
+// Default alert functionality
+window.ProcessMaker.alert = function(text, variant) {
+  window.alert(variant + ": " + text);
 }
-*/
-/*
+
+let userUID = document.head.querySelector('meta[name="user-uid"]');
+
+if(userUID) {
+  window.ProcessMaker.user = {
+    uid: userUID.content
+  }
+}
+
+let broadcaster = document.head.querySelector('meta[name="broadcaster"]');
+let key = document.head.querySelector('meta[name="broadcasting-key"]');
+let host = document.head.querySelector('meta[name="broadcasting-host"]');
+
 
 window.Echo = new Echo({
-  broadcaster: window.Processmaker.broadcasting.broadcaster,
-  key: window.Processmaker.broadcasting.key,
-  host: window.Processmaker.broadcasting.host
+  broadcaster: broadcaster.content,
+  key: key.content,
+  host:host.content
 });
-*/

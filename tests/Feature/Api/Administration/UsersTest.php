@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api\Administration;
 
+use Auth;
 use Faker\Factory as Faker;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\UploadedFile;
@@ -64,9 +65,9 @@ class UsersTest extends ApiTestCase
         $response->assertStatus(200);
         // Grab users
         $data = json_decode($response->getContent(), true);
-        // Verify we have a total of 7 results (our 5 plus admin plus our created user)
-        $this->assertCount(7, $data['data']);
-        $this->assertEquals(7, $data['meta']['total']);
+        // Verify we have a total of 9 results (our 5 plus admin plus our created user)
+        $this->assertCount(9, $data['data']);
+        $this->assertEquals(9, $data['meta']['total']);
         // Not testing returned data format as we're assuming the single user fetch validates that 
         // output matches transformer
     }
@@ -100,19 +101,19 @@ class UsersTest extends ApiTestCase
     {
         $user = factory(User::class)->create([
             'username' => 'testuser',
-            'firstname' => 'Joe',
+            'firstname' => 'UniqueJoe',
             'lastname' => 'Biden',
             'password' => Hash::make('password'),
             'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
         ]);
         $this->auth($user->username, 'password');
-        $response = $this->api('GET', self::API_TEST_USERS . '?filter=' . urlencode('joe'));
+        $response = $this->api('GET', self::API_TEST_USERS . '?filter=' . urlencode('UniqueJoe'));
         $response->assertStatus(200);
         $data = json_decode($response->getContent(), true);
         // Ensure we have empty results
         $this->assertCount(1, $data['data']);
         $this->assertEquals(1, $data['meta']['total']);
-        $this->assertEquals('joe', $data['meta']['filter']);
+        $this->assertEquals('UniqueJoe', $data['meta']['filter']);
         // We refetch from the DB to ensure we have all columns from DB when transforming
         $transformed = (new UserTransformer())->transform(User::find($user->id));
         $this->assertEquals($transformed, $data['data'][0]);
@@ -158,13 +159,18 @@ class UsersTest extends ApiTestCase
         $avatar = Faker::create()->image(Storage::disk('profile')->getAdapter()->getPathPrefix(), 10, 10, null, true);
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
-            'avatar' => basename($avatar)
+            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
         $this->auth($user->username, 'password');
 
+        $user->addMedia(public_path() . '/img/avatar.png')
+            ->preservingOriginal()
+            ->toMediaCollection(User::COLLECTION_PROFILE, User::DISK_PROFILE);
+
         $response = $this->api('get', self::API_TEST_PROFILE . 'profile');
+
         $response->assertStatus(200);
+        $this->assertNotNull($response->json(['avatar']));
     }
 
     /**
@@ -172,6 +178,9 @@ class UsersTest extends ApiTestCase
      */
     public function testUploadAvatarProfile()
     {
+        $diskName = User::DISK_PROFILE;
+        Storage::disk($diskName);
+        $nameAvatar = 'avatar.jpg';
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
             'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
@@ -179,12 +188,21 @@ class UsersTest extends ApiTestCase
         $this->auth($user->username, 'password');
 
         $response = $this->api('put', self::API_TEST_PROFILE . 'profile', [
-            'avatar' => UploadedFile::fake()->image('avatar.jpg')
+            'avatar' => UploadedFile::fake()->image($nameAvatar)
         ]);
         $response->assertStatus(200);
 
+        $mediaAvatar = $user->getMedia($diskName);
+
+        //verify name of file
+        $this->assertEquals($nameAvatar, $mediaAvatar[0]->file_name);
+
+        //get path of file
+        $path = $mediaAvatar[0]->getPath();
+        $path = explode($diskName, $path);
+
         //verify exist file
-        Storage::disk('profile')->assertExists($user->refresh()->avatar);
+        Storage::disk($diskName)->assertExists($path[1]);
     }
 
     /**
@@ -192,19 +210,108 @@ class UsersTest extends ApiTestCase
      */
     public function testUpdateUser()
     {
+        $diskName = User::DISK_PROFILE;
+        Storage::disk($diskName);
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
             'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
         ]);
         $this->auth($user->username, 'password');
-
-        $response = $this->api('put', self::API_TEST_USERS . '/' . $user->uid->toString(), [
+        $user = factory(User::class)->create([
+            'uid' => '1234',
+            'username' => app()->make('Faker\Generator')->text(10),
+            'firstname' => app()->make('Faker\Generator')->text(10),
+            'lastname' => app()->make('Faker\Generator')->text(10),
+        ]);
+        $response = $this->api('get', self::API_TEST_USERS, []);
+        $response->assertStatus(200);
+        $response = $this->api('put', self::API_TEST_USERS . '/' . $user->uid, [
             'firstname' => 'User update',
+            'status' => 'ACTIVE',
             'lastname' => 'profile',
-            'avatar' => UploadedFile::fake()->image('avatar.jpg'),
-            'password' => 'password2'
+            'username' => $user->username,
+            'password' => '1234',
         ]);
         $response->assertStatus(200);
+        // Verify change made it to the database
+        $this->assertDatabaseHas('users', [
+            'uid' => $user->uid,
+            'username' => $user->username,
+            'firstname' => 'User update',
+            'lastname' => 'profile',
+            'status' => 'ACTIVE'
+        ]);
+        // Also ensure the changed attributes are reflected in JSON response
+        $response->assertJson([
+            'uid' => $user->uid,
+            'username' => $user->username,
+            'firstname' => 'User update',
+            'lastname' => 'profile',
+            'status' => 'ACTIVE'
+        ]);
+        //log back in with new password
+        $response = $this->call('POST', '/login', [
+            'username' => $user->username,
+            'password' => '1234',
+            '_token' => csrf_token()
+        ]);
+        $response->assertStatus(302);
+    }
+
+    public function testCreateUser()
+    {
+        $user = factory(User::class)->create([
+            'password' => Hash::make('password'),
+            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+        ]);
+        $this->auth($user->username, 'password');
+        $data = [
+            'username' => 'testuser',
+            'firstname' => 'Test',
+            'lastname' => 'User',
+            'password' => 'password'
+        ];
+
+        $response = $this->api('post', self::API_TEST_USERS, $data);
+        $response->assertStatus(200);
+        unset($data['password']);
+        $this->assertDatabaseHas('users', $data);	
+        // Also check for duplicate user error
+        // Just resubmit with same data
+        $data['password'] = 'password';
+        $response = $this->api('post', self::API_TEST_USERS, $data);
+        $response->assertStatus(422);
+        // Get a 422 with empty payload, with required fields being listed
+        $data = [];
+        $response = $this->api('post', self::API_TEST_USERS, $data);
+        $response->assertStatus(422);
+        // Check for hashed value for password
+        $existingUser = User::where('username', 'testuser')->first();
+        $this->assertEquals(true, Hash::check('password', $existingUser->password));
+    }
+
+    /**
+     * Delete User
+     */
+    public function testDeleteUser()
+    {
+        $admin = factory(User::class)->create([
+            'password' => Hash::make('password'),
+            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+        ]);
+        $this->auth($admin->username, 'password');
+
+        $user = factory(User::class)->create([
+            'password' => Hash::make('password'),
+            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+        ]);
+
+        $response = $this->api('delete', self::API_TEST_USERS . '/' . $user->uid);
+        $response->assertStatus(204);
+
+        //validating that the user does not exist
+        $existingUser = User::where('uid', $user->uid)->first();
+        $this->assertNull($existingUser);
     }
 
 }

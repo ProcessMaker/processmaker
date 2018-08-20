@@ -3,34 +3,35 @@
         <div class="d-flex flex-row">
             <div class="item-crown">
                 <img id="bpmn:Task" src="../img/task.svg" height="20"
-                     @click="createAction($event)">
+                     @dragstart="creatingFlow($event)" @dragend="createTask($event)">
             </div>
             <div class="item-crown">
                 <img id="bpmn:ExclusiveGateway" src="../img/exclusive-gateway.svg" height="27"
-                     @click="createAction($event)">
+                     @dragstart="creatingFlow($event)" @dragend="createExclusiveGateway($event)">
             </div>
             <div class="item-crown">
                 <img id="bpmn:IntermediateEmailEvent" name="IntermediateEmailEvent"
-                     src="../img/intermediate-email-event.svg" height="27" @click="createAction($event)">
+                     src="../img/intermediate-email-event.svg" height="27"
+                     @dragstart="creatingFlow($event)" @dragend="createMessageEvent($event)">
             </div>
         </div>
         <div class="d-flex flex-row">
             <div class="item-crown">
                 <img id="bpmn:EndEvent" name="EndEvent"
-                     src="../img/end-event.svg" height="27" @click="createAction($event)">
+                     src="../img/end-event.svg" height="27"
+                     @dragstart="creatingFlow($event)" @dragend="createEndEvent($event)">
             </div>
             <div class="item-crown">
-                <img id="bpmn:EndEvent" src="../img/corona-flow.png" height="28"
-                     @click="createFlow($event)">
+                <img id="bpmn:Flow" src="../img/corona-flow.png" height="28"
+                     @dragstart="creatingFlow($event)" @dragend="createFlow($event)">
             </div>
-            <div class="item-crown">
-                <i id="settings" class="fas fa-cog icon-crown" @click="createFlow($event)" draggable="true"></i>
+            <div class="item-crown" @click="showListForm($event)">
+                <i id="cog" class="fas fa-cog icrown" draggable="true"></i>
             </div>
         </div>
         <div class="d-flex flex-row">
-            <div class="item-crown">
-                <i id="settings" class="fas fa-trash-alt icon-crown" @click="createFlow($event)"
-                   draggable="true"></i>
+            <div class="item-crown" @click="remove($event)">
+                <i id="trash" class="fas fa-trash-alt icrown" draggable="true"></i>
             </div>
         </div>
     </div>
@@ -39,6 +40,7 @@
 <script>
     import actions from "../actions"
     import EventBus from "../lib/event-bus"
+
     export default {
         data() {
             return {
@@ -62,6 +64,12 @@
                 EventBus.$emit(action.type, action.payload)
             },
             /**
+             * Method for remove the Selected Shape
+             */
+            showListForm (ev){
+                EventBus.$emit("open-add-dialog", "task-configuration");
+            },
+            /**
              * Method for show the crown
              */
             show(conf){
@@ -75,13 +83,51 @@
             hide(){
                 this.visible = false
             },
-            createFlow(ev){
-                let action = actions.designer.flow.create()
+            creatingFlow(ev){
+                let action = actions.designer.crown.hide()
                 EventBus.$emit(action.type, action.payload)
-            }
-        },
-        mounted() {
+                let action1 = actions.designer.flow.creating(ev)
+                EventBus.$emit(action1.type, action1.payload)
+            },
+            createFlow(ev){
+                let action = actions.designer.flow.create(ev)
+                EventBus.$emit(action.type, action.payload)
+            },
+            createTask(ev){
+                let action = actions.designer.shape.dragFromCrown({
+                    type: "task",
+                    ev: ev,
+                    eventDefinition: null
+                })
+                EventBus.$emit(action.type, action.payload)
+            },
+            createExclusiveGateway(ev){
+                let action = actions.designer.shape.dragFromCrown({
+                    type: "exclusiveGateway",
+                    ev: ev,
+                    eventDefinition: null
+                })
+                EventBus.$emit(action.type, action.payload)
+            },
+            createEndEvent(ev){
+                let action = actions.designer.shape.dragFromCrown({
+                    type: "endEvent",
+                    ev: ev,
+                    eventDefinition: null
+                })
+                EventBus.$emit(action.type, action.payload)
+            },
+            createMessageEvent(ev){
+                let action = actions.designer.shape.dragFromCrown({
+                    type: "intermediateThrowEvent",
+                    ev: ev,
+                    eventDefinition: "messageEventDefinition"
+                })
+                EventBus.$emit(action.type, action.payload)
+            },
+            mounted() {
 
+            }
         }
     }
 </script>
@@ -98,6 +144,7 @@
         text-align: center;
         min-width: 33px;
         padding: 2px;
+        background: white;
 
         img:before {
             content: '';
@@ -108,7 +155,7 @@
         }
     }
 
-    .icon-crown {
+    .icrown {
         padding: 3px;
         font-size: 22px;
     }
