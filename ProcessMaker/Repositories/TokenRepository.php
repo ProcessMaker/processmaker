@@ -104,6 +104,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->user_id = Auth::id();
         $token->started = true;
         $token->finished = true;
+        $token->finish_date = Carbon::now();
         $token->save();
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
     }
