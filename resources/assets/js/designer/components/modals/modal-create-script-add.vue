@@ -65,7 +65,7 @@ export default {
           if (open) {
             //Change way to open the designer
             window.location.href =
-              "/designer/" + this.processUid + "/script/" + response.data.uid;
+              "/processes/" + this.processUid + "/script/" + response.data.uid;
           }
         })
         .catch(error => {

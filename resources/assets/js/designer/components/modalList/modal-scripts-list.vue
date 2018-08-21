@@ -83,7 +83,7 @@
             },
             onEdit(data, index) {
                 window.location.href =
-                "/designer/" + this.processUid + "/script/" + data.uid;
+                "/processes/" + this.processUid + "/script/" + data.uid;
             },
             onDelete(data, index) {
                 let that = this;
