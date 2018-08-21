@@ -59,7 +59,7 @@ class ScriptManagerTest extends ApiTestCase
 
         //validating the answer is an error
         $response->assertStatus(422);
-        $this->assertArrayHasKey('message', $response->json('error'));
+        $this->assertArrayHasKey('message', $response->json());
     }
 
     /**
@@ -100,7 +100,7 @@ class ScriptManagerTest extends ApiTestCase
             'param' => $faker->words($faker->randomDigitNotNull)
         ]);
         $response->assertStatus(422);
-        $this->assertArrayHasKey('message', $response->json('error'));
+        $this->assertArrayHasKey('message', $response->json());
     }
 
     /**

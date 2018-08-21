@@ -64,7 +64,7 @@ class FormManagerTest extends ApiTestCase
 
         //validating the answer is an error
         $response->assertStatus(422);
-        $this->assertArrayHasKey('message', $response->json('error'));
+        $this->assertArrayHasKey('message', $response->json());
     }
 
     /**
@@ -101,7 +101,7 @@ class FormManagerTest extends ApiTestCase
             'description' => $faker->sentence(10)
         ]);
         $response->assertStatus(422);
-        $this->assertArrayHasKey('message', $response->json('error'));
+        $this->assertArrayHasKey('message', $response->json());
     }
 
     /**
@@ -306,7 +306,7 @@ class FormManagerTest extends ApiTestCase
         ]);
         //Validate the answer is incorrect
         $response->assertStatus(422);
-        $this->assertArrayHasKey('message', $response->json('error'));
+        $this->assertArrayHasKey('message', $response->json());
     }
 
     /**
