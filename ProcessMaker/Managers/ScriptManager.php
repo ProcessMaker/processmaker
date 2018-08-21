@@ -26,7 +26,7 @@ class ScriptManager
             $query->where(function ($query) use ($filter) {
                 $query->Where('title', 'like', $filter)
                     ->orWhere('description', 'like', $filter)
-                    ->orWhere('type', 'like', $filter);
+                    ->orWhere('language', 'like', $filter);
             });
         }
         return $query->orderBy($options['sort_by'], $options['sort_order'])

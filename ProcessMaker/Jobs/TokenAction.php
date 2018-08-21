@@ -25,7 +25,7 @@ abstract class TokenAction extends BpmnAction
     {
         $this->definitionsId = $definitions->id;
         $this->instanceId = $instance->uid;
-        $this->tokenId = $token->uid;
+        $this->tokenId = (string) $token->uid;
         $this->data = $data;
     }
 
