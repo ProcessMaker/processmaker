@@ -24,6 +24,10 @@ Route::group([
     Route::group([
         'middleware' => ['auth:api', 'bindings']
     ], function() {
+        
+        // TEST SCRIPT PREVIEW/EXECUTION
+        Route::post('script/preview', 'Designer\ScriptController@preview');
+
         Route::group([
             'middleware' => ['permission:PM_USERS']
         ], function() {

@@ -48,9 +48,8 @@ class InputDocumentManager
      */
     public function save(Process $process, $data): InputDocument
     {
-        $this->validate($data);
-
         $data['process_id'] = $process->id;
+        $this->validate($data);
 
         $inputDocument = new InputDocument();
         $inputDocument->fill($data);
@@ -72,6 +71,7 @@ class InputDocumentManager
     public function update(Process $process, InputDocument $inputDocument, $data): InputDocument
     {
         $data['process_id'] = $process->id;
+        $this->validate($data);
         $inputDocument->fill($data);
         $this->validate($inputDocument->toArray(), true);
         $inputDocument->saveOrFail();

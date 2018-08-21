@@ -20,9 +20,9 @@ class CreateGroupUsersTable extends Migration
             $table->unique(['group_id', 'user_id']);
 
             // setup relationship for group we belong to
-            $table->foreign('group_id')->references('id')->on('groups')->ondelete('cascade');
+            $table->foreign('group_id')->references('id')->on('groups')->onDelete('cascade');
             // setup relationship for User we belong to
-            $table->foreign('user_id')->references('id')->on('users')->ondelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

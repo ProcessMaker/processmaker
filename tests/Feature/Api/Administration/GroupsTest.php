@@ -63,9 +63,9 @@ class GroupsTest extends ApiTestCase
         $response->assertStatus(200);
         // Grab users
         $data = json_decode($response->getContent(), true);
-        // Verify we have a total of 5 results
-        $this->assertCount(5, $data['data']);
-        $this->assertEquals(5, $data['meta']['total']);
+        // Verify we have a total of 5 results + 1 default group
+        $this->assertCount(6, $data['data']);
+        $this->assertEquals(6, $data['meta']['total']);
         // Not testing returned data format as we're assuming the single role fetch validates that 
         // output matches transformer
     }
@@ -261,10 +261,10 @@ class GroupsTest extends ApiTestCase
         $response->assertStatus(200);
         // Grab users
         $data = json_decode($response->getContent(), true);
-        // Verify we have a total of 6 results
-        $this->assertCount(6, $data['data']);
-        $this->assertEquals(6, $data['meta']['total']);
-        $this->assertEquals('Test Group', $data['data'][0]['title']);
+        // Verify we have a total of 6 results + 1 the default group 'Users'
+        $this->assertCount(7, $data['data']);
+        $this->assertEquals(7, $data['meta']['total']);
+        $this->assertEquals('Test Group', $data['data'][1]['title']);
         // Test the other direction
         $response = $this->api('GET', self::API_TEST_GROUPS, [
             'order_by' => 'total_users',
@@ -274,9 +274,9 @@ class GroupsTest extends ApiTestCase
         $response->assertStatus(200);
         // Grab users
         $data = json_decode($response->getContent(), true);
-        // Verify we have a total of 6 results
-        $this->assertCount(6, $data['data']);
-        $this->assertEquals(6, $data['meta']['total']);
+        // Verify we have a total of 6 results + 1 the default group 'Users'
+        $this->assertCount(7, $data['data']);
+        $this->assertEquals(7, $data['meta']['total']);
         $this->assertEquals('Test Group', $data['data'][5]['title']);
   
     }
