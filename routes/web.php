@@ -43,6 +43,22 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
       return view('tasks',['title' => 'Dashboard']);
     })->name('tasks');
 
+    $this->get('/page1', function(){
+      return view('page1',['title' => 'Page Option One']);
+    })->name('page1');
+
+    $this->get('/page2', function(){
+      return view('page2',['title' => 'Page Option Two']);
+    })->name('page2');
+
+    $this->get('/page3', function(){
+      return view('page3',['title' => 'Page Option Three']);
+    })->name('page3');
+
+
+
+
+
     $this->get('/requests', function(){
       return view('requests.index',['title' => __('New Request')]);
     })->name('requests');
