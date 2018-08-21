@@ -28,7 +28,7 @@ class Permission extends Model
     const PM_USERS = 'PM_USERS';
 
     // If the permission is active or not
-    const STATUS_DISABLED = 'DISABLED';
+    const STATUS_INACTIVE = 'INACTIVE';
     const STATUS_ACTIVE = 'ACTIVE';
 
     protected $fillable = [
