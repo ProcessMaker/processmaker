@@ -14,8 +14,10 @@ export default class extends Shape {
                 y: null,
                 width: null,
                 height: null
-            }
-
+            },
+            incoming: null,
+            outgoing: null,
+            attributes: {}
         }
         this.config(options)
         options.bounds = Object.assign({}, options.bounds, {

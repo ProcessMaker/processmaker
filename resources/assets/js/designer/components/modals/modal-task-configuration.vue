@@ -77,51 +77,34 @@
         },
         methods: {
             onTaskTypeChanged(selectedType) {
-                this.taskTypeItems = [];
+                let options = this.taskTypeItems;
                 switch (selectedType) {
                     case 'form':
                         ProcessMaker.apiClient
                             .get('process/' + this.processUid + '/forms')
                             .then(response => {
-                                let options = [];
+                                options.splice(0);
+                                options.push({ value: '', content: 'None'});
                                 response.data.data.map(function (form) {
                                     options.push({
                                         value: form.uid,
                                         content: form.title
                                     })
                                 });
-
-                                if (options.length === 0) {
-                                    options = [{ value: null, content: 'None'}];
-                                }
-
-                                this.taskTypeItems = options;
-                                if (options.length === 1) {
-                                    this.taskTypeItem = options[0].value;
-                                }
                             });
                         break;
                     case 'script':
                         ProcessMaker.apiClient
                             .get('process/' + this.processUid + '/scripts')
                             .then(response => {
-                                let options = [];
+                                options.splice(0);
+                                options.push({ value: '', content: 'None'});
                                 response.data.data.map(function (form) {
                                     options.push({
                                         value: form.uid,
                                         content: form.title
                                     })
                                 });
-
-                                if (options.length === 0) {
-                                    options = [{ value: null, content: 'None'}];
-                                }
-
-                                this.taskTypeItems = options;
-
-                                if (options.length === 1) {
-                                    this.taskTypeItem = options[0].value;
-                                }
                             });
                         break;
                 }

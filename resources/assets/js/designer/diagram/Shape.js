@@ -57,6 +57,15 @@ export class Shape {
     }
 
     /**
+     * Merge the options
+     * @param options
+     */
+    updateOptions(options) {
+        this.options = Object.assign({}, this.options, options);
+        this.updateBpmn()
+    }
+
+    /**
      * Emit a message to crown to display
      */
     showCrown() {
@@ -115,6 +124,16 @@ export class Shape {
      */
     getType() {
         return this.type
+    }
+
+
+    /**
+     * Return the type of shape
+     * @param parent
+     * @returns {string}
+     */
+    getId() {
+        return this.options.id
     }
 
     /**
