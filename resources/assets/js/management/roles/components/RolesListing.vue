@@ -40,7 +40,7 @@
                     <select class="form-control" id="add-role-status" v-model="status">
                         <option :value="status">{{status}}</option>
                         <option value="ACTIVE">Active</option>
-                        <option value="DISABLED">Disabled</option>
+                        <option value="INACTIVE">Inactive</option>
                     </select>
                 </div>
             </form>
