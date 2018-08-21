@@ -47,10 +47,11 @@ class EnvironmentVariable extends Model
         if($existing) {
             $rules['name'] = [
                 'required',
+                'alpha_dash',
                 Rule::unique('environment_variables')->ignore($existing->id)
             ];
         } else {
-            $rules['name'] = 'required|unique:environment_variables';
+            $rules['name'] = 'required|alpha_dash|unique:environment_variables';
         }
         return $rules;
     }

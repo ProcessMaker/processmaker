@@ -85,6 +85,21 @@ class EnvironmentVariablesTest extends ApiTestCase
     }
 
     /** @test */
+    public function it_should_not_allow_whitespace_in_variable_name()
+    {
+        // Data with a name with a space
+        $data = [
+            'name' => 'test name',
+            'description' => 'test',
+            'value' => 'testvalue'
+        ];
+        $response = $this->api('POST', self::API_TEST_VARIABLES, $data);
+
+        // Check for validation error status code
+        $response->assertStatus(422);
+    }
+
+    /** @test */
     public function it_should_successfully_return_an_environment_variable()
     {
         // Create an environment variable with a set name
