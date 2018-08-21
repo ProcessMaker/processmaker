@@ -108,9 +108,6 @@ class InputDocumentManager
         $validator = Validator::make(
             $data,
             [
-                'title' => ['required', Rule::unique('input_documents')->where(function ($query) use ($data){
-                    $query->where('process_id', $data['process_id']);
-                })],
                 'form_needed' => 'required|in:' . implode(',', $type),
                 'original' => 'required|in:' . implode(',', InputDocument::DOC_ORIGINAL_TYPE),
                 'published' => 'required|in:' . implode(',', InputDocument::DOC_PUBLISHED_TYPE),

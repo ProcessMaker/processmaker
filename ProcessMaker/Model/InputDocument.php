@@ -3,6 +3,7 @@
 namespace ProcessMaker\Model;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Validation\Rule;
 use ProcessMaker\Model\Traits\Uuid;
 use Watson\Validating\ValidatingTrait;
 
@@ -32,6 +33,7 @@ class InputDocument extends Model
     use Uuid;
 
     protected $table = 'input_documents';
+    protected $injectUniqueIdentifier = true;
 
     /**
      * Values for form_needed
@@ -116,9 +118,32 @@ class InputDocument extends Model
 
     protected $rules = [
         'uid' => 'max:36',
+        'title' => 'required|unique:input_documents,title',
         'process_id' => 'exists:processes,id',
         'versioning' => 'required|boolean'
     ];
+
+    protected $validationMessages = [
+        'title.unique' => 'A Input Document with the same name already exists in this process.',
+        'process_id.exists' => 'Process not found.'
+    ];
+
+    /**
+     * Validating fields unique
+     *
+     * @param $parameters
+     * @param $field
+     *
+     * @return \Illuminate\Validation\Rules\Unique
+     */
+    protected function prepareUniqueRule($parameters, $field)
+    {
+        if ($field === 'title') {
+            return Rule::unique('input_documents')->where(function ($query) {
+                $query->where('process_id', $this->process_id);
+            });
+        }
+    }
 
     /**
      * Get the route key for the model.
