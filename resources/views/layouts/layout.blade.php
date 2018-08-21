@@ -20,6 +20,7 @@
       <meta name="alert" content="show">
       @php
       list($type,$message) = json_decode(Session::get('_alert'));
+      Session::forget('_alert');
       @endphp
       <meta name="alertVariant" content="{{$type}}">
       <meta name="alertMessage" content="{{$message}}">
