@@ -3,9 +3,6 @@
 namespace ProcessMaker\Managers;
 
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Validator;
-use ProcessMaker\Exception\ValidationException;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\Script;
 
@@ -49,8 +46,6 @@ class ScriptManager
     public function save(Process $process, $data): Script
     {
         $data['process_id'] = $process->id;
-        $this->validate($data);
-
         $script = new Script();
         $script->fill($data);
         $script->saveOrFail();
@@ -71,7 +66,6 @@ class ScriptManager
     public function update(Process $process, Script $script, $data): Script
     {
         $data['process_id'] = $process->id;
-        $this->validate($data);
         $script->fill($data);
         $script->saveOrFail();
         return $script;
@@ -88,32 +82,6 @@ class ScriptManager
     public function remove(Script $script): ?bool
     {
         return $script->delete();
-    }
-
-    /**
-     * Validate extra rules
-     *
-     * @param array $data
-     *
-     * @throws ValidationException
-     */
-    private function validate($data)
-    {
-        /**
-         * @var $validator \Illuminate\Validation\Validator
-         */
-        $validator = Validator::make(
-            $data,
-            [
-                'title' => ['required', Rule::unique('scripts')->where(function ($query) use ($data){
-                    $query->where('process_id', $data['process_id']);
-                })]
-            ]
-        );
-
-        if ($validator->fails()) {
-            throw new ValidationException($validator);
-        }
     }
 
 }
