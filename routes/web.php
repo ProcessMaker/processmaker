@@ -63,6 +63,13 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
     Route::group([
         'middleware' => ['permission:PM_USERS']
     ], function() {
+      $this->get('/manage/environment-variables', 'Management\EnvironmentVariablesController@index')->name('management-environment-variables');
+    });
+
+
+    Route::group([
+        'middleware' => ['permission:PM_USERS']
+    ], function() {
       $this->get('/manage/users', 'Management\UsersController@index')->name('management-users-index');
       $this->get('/manage/roles', 'Management\RolesController@index')->name('management-roles-index');
       $this->get('/manage/groups', 'Management\GroupsController@index')->name('management-groups-index');

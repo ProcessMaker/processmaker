@@ -31,6 +31,7 @@ return[
     'languages' => 'Languages',
     'email_configuration' => 'Email Configuration',
     'notifications_configuration' => 'Notifications Configuration',
+    'environment_variables' => 'Environment Variables',
     'colors_and_logos' => 'Colors and Logos',
     'app_version_details' => 'App Version Details',
     'configuration' => 'Configuration',

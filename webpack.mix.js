@@ -19,6 +19,7 @@ mix.webpackConfig({
 }).js('resources/assets/js/app-layout.js', 'public/js')
     .js('resources/assets/js/designer/main.js', 'public/js/designer')
     .js('resources/assets/js/management/users/index.js', 'public/js/management/users')
+    .js('resources/assets/js/management/environment-variables/index.js', 'public/js/management/environment-variables')
     .js('resources/assets/js/management/profile/index.js', 'public/js/management/profile')
     .js('resources/assets/js/management/roles/index.js', 'public/js/management/roles')
     .js('resources/assets/js/management/groups/index.js', 'public/js/management/groups')

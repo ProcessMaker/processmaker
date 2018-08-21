@@ -51,6 +51,10 @@ class GenerateMenus
                 'icon' => 'fa-bell',
                 'id' => 'homeid'
           ]);
+          $submenu->add(__('menus.sidebar_admin.environment_variables'), [
+                'route' => 'management-environment-variables',
+                'icon' => 'fa-globe',
+          ]);
           $submenu->add(__('menus.sidebar_admin.preferences'), [
                 'route' => 'home',
                 'icon' => 'fa-globe',
