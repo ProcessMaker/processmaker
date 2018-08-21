@@ -113,7 +113,7 @@ export default {
       status: "",
       statusOptions: [
         { value: "ACTIVE", content: "active" },
-        { value: "DISABLED", content: "inactive" }
+        { value: "INACTIVE", content: "inactive" }
       ],
       curIndex: "",
       password: "",
