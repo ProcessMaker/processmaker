@@ -6,5 +6,10 @@ new Vue ({
     el: '#uicustomize',
     components: { 
         CustomizeColor,
+    },
+    methods: {
+        showPickColor() {
+            this.$refs.show();
+        }
     }
 })

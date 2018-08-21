@@ -25,22 +25,20 @@
         <h6 style="mt-5">Create a color scheme to customize your UI</h6>
         <div class="form-group">
             <label>Enter hex color or chose a color for the left navigation bar</label>
-            <input type="text" class="form-control inline-input">
+            <input type="text" class="form-control inline-input dropdown-toggle" id="pickColor1" @click=showPickColor data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <div class="dropdown-menu" aria-labelledby="pickColor1">
+                <customize-color ></customize-color>
+            </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group dropdown show">
             <label>Enter hex color or chose a color for the action buttons</label>
-            <input type="text" class="form-control inline-input">
+            <input type="text" class="form-control inline-input dropdown-toggle" id="pickColor2" @click=showPickColor data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <div class="dropdown-menu" aria-labelledby="pickColor2">
+                <customize-color ></customize-color>
+            </div>
         </div>
     
-    <div>
-        <span>
-            <div>
-
-            </div>
-        </span>
-        <customize-color></customize-color>
-    </div>
 </div>
 @endsection
 
