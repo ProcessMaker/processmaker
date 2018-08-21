@@ -24,6 +24,21 @@ Route::group([
     Route::group([
         'middleware' => ['auth:api', 'bindings']
     ], function() {
+        // Environment Variables Group
+        Route::group([
+            // @todo Identify a new permission for managing environment variables
+            'middleware' => ['permission:PM_USERS']
+        ], function() {
+            // Routes
+            Route::get('environment-variables', 'Administration\EnvironmentVariablesController@index');
+            Route::post('environment-variables', 'Administration\EnvironmentVariablesController@create');
+            Route::get('environment-variables/{variable}', 'Administration\EnvironmentVariablesController@get');
+            Route::put('environment-variables/{variable}', 'Administration\EnvironmentVariablesController@update');
+            Route::delete('environment-variables/{variable}', 'Administration\EnvironmentVariablesController@delete');
+        });
+
+
+
         Route::group([
             'middleware' => ['permission:PM_USERS']
         ], function() {
