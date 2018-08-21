@@ -1,10 +1,14 @@
 <template>
-  <div class="container">
-    <h1>Preferences</h1>
-    <form>
-
-    </form>
+<div>
+  <h1>Preferences</h1>
+  <div class="card">
+    <div class="card-body">
+      <form>
+        <div>heeey</div>
+      </form>
+    </div>
   </div>
+</div>
 </template>
 
 <script>
