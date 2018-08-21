@@ -39,6 +39,7 @@
     import modalVariablesAdd from "./components/modals/modal-variables-add";
     import modalMessageTypes from "./components/modals/modal-message-types";
     import modalFormsList from "./components/modals/modal-forms-list"
+    import ModalScriptTask from "./components/modals/modal-script-task";
     import modalTaskConfiguration from "./components/modals/modal-task-configuration"
 
     //Modal list
@@ -77,7 +78,8 @@
             toptoolbar,
             modalForms,
             ModalInputDocumentList,
-            ModalScriptsList
+            ModalScriptsList,
+            ModalScriptTask
         },
         data() {
             return {
@@ -94,7 +96,8 @@
         },
         methods: {
             openAddDialog(key) {
-                this.selectedElement = this.$refs.svgcanvas.builder.selection[0] ? this.$refs.svgcanvas.builder.selection[0].getOptions() : {};
+                let element = this.$refs.svgcanvas.builder.selection[0];
+                this.selectedElement = element ? element.getOptions() : undefined;
                 // @todo Replace this with dynamic modal generation once we have all modals in place
                 // We're not doing this now so we can have visual alert feedback when a modal isn't implemented
                 switch (key) {
@@ -134,6 +137,12 @@
                     case 'open':
                         this.modalComponent = 'modal-create-template-add'
                         break;
+                    case 'show-element-configuration':
+                        switch (this.selectedElement.type) {
+                          case 'scripttask':
+                            this.modalComponent = 'modal-script-task'
+                            break;
+                        }
                     case 'task-configuration':
                         this.modalComponent = 'modal-task-configuration'
                         break;

@@ -66,7 +66,8 @@ class User extends Authenticatable implements UserEntityInterface, CanResetPassw
     ];
 
     protected $appends = [
-        'fullname'
+        'fullname',
+        'avatar',
     ];
 
     /**
@@ -219,6 +220,15 @@ class User extends Authenticatable implements UserEntityInterface, CanResetPassw
      */
     public function getFullnameAttribute() {
         return $this->getFullName();
+    }
+
+    /**
+     * Get the avatar URL
+     *
+     * @return string
+     */
+    public function getAvatarAttribute() {
+        return $this->getAvatar();
     }
 
     /**

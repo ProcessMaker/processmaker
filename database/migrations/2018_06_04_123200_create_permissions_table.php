@@ -19,7 +19,7 @@ class CreatePermissionsTable extends Migration
             $table->uuid('uid')->unique();
             $table->string('code')->index('indexPermissionsCode');
             $table->timestamps();
-            $table->enum('status', ['ACTIVE', 'DISABLED'])->default('ACTIVE');
+            $table->enum('status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
         });
     }
 

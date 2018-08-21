@@ -105,11 +105,6 @@ class Delegation extends Model implements TokenInterface
         'uid' => 'max:36',
         'application_id' => 'exists:APPLICATION,id',
         //'task_id' => 'exists:tasks,id',
-        'user_id' => 'exists:users,id',
-        'delegate_date' => 'required',
-        'started' => 'required|boolean',
-        'finished' => 'required|boolean',
-        'delayed' => 'required|boolean',
     ];
 
     /**

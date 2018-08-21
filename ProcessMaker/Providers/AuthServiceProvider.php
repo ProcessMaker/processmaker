@@ -86,7 +86,7 @@ class AuthServiceProvider extends ServiceProvider
             // First get user's role
             $role = $user->role;
 
-            // Check for existence of role or if role is disabled
+            // Check for existence of role or if role is inactive
             if (!$role || $role->status != Role::STATUS_ACTIVE) {
                 return false;
             }
