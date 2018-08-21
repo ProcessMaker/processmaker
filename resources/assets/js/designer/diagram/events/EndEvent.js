@@ -47,4 +47,12 @@ export default class {
     getOptions(val) {
         return this.adapter.getOptions(val)
     }
+
+    getId(val) {
+        return this.adapter.getId(val)
+    }
+
+    updateOptions(options) {
+        return this.adapter.updateOptions(options)
+    }
 }

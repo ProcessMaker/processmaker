@@ -77,9 +77,6 @@
                 ],
                 fields: [
                     {
-                        name: "__checkbox"
-                    },
-                    {
                         title: "Code",
                         name: "code",
                         sortField: "code"

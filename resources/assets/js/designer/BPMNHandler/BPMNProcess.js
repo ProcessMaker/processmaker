@@ -1,15 +1,19 @@
 import _ from "lodash"
 
-        /**
-         * BPMNProcess class
-         */
-        export default class BPMNProcess {
+/**
+ * BPMNProcess class
+ */
+export default class BPMNProcess {
     constructor(data, BPMN) {
         this.data = data
         this.BPMN = BPMN
     }
 
-    createElement(data) {
+    /**
+     * Create element BPMN
+     * @param data
+     */
+    createBpmnObject(data) {
         let eventDefinition = data.eventDefinition ? this.createEventDefinition(data.eventDefinition) : null
         let arrEvent = eventDefinition ? [eventDefinition] : []
 
@@ -22,10 +26,75 @@ import _ from "lodash"
         this.data.elements.push(process)
     }
 
-    updateElement(data) {
-        let element = this.findElement(data.id)
-        Object.assign(element.attributes, data.attributes)
+    /**
+     * Update Object BPMN
+     * @param data
+     */
+    updateBpmnObject(data) {
+        let bpmnObject = this.findElement(data.id)
+        Object.assign(bpmnObject.attributes, data.attributes)
+        data.incoming ? this.updateIncoming(bpmnObject, data.incoming) : null
+        data.outgoing ? this.updateOutgoing(bpmnObject, data.outgoing) : null
     }
+
+    /**
+     * Update incoming element
+     * @param bpmnObject
+     * @param incoming
+     */
+    updateIncoming(bpmnObject, incoming) {
+        let element = this.findElementsInBpmnObject(bpmnObject, "name", "incoming")
+        if (element) {
+            let text = this.findElementsInBpmnObject(bpmnObject, "type", "text")
+            if (text) {
+                text.text = incoming
+            }
+        } else {
+            bpmnObject.elements.push({
+                elements: [{
+                    text: incoming,
+                    type: "text"
+                }],
+                name: this.BPMN.BPMNDefinitions.getmodel('incoming'),
+                type: "element"
+            })
+        }
+    }
+
+    /**
+     * Update outgoing element
+     * @param bpmnObject
+     * @param outgoing
+     */
+    updateOutgoing(bpmnObject, outgoing) {
+        let element = this.findElementsInBpmnObject(bpmnObject, "name", "outgoing")
+        if (element) {
+            let text = this.findElementsInBpmnObject(bpmnObject, "type", "text")
+            if (text) {
+                text.text = outgoing
+            }
+        } else {
+            bpmnObject.elements.push({
+                elements: [{
+                    text: outgoing,
+                    type: "text"
+                }],
+                name: this.BPMN.BPMNDefinitions.getmodel('outgoing'),
+                type: "element"
+            })
+        }
+    }
+
+    findElementsInBpmnObject(bpmnObject, key, value) {
+        let response
+        _.each(bpmnObject.elements, (el) => {
+            if (el[key].indexOf(value) > 0) {
+                response = el
+            }
+        })
+        return response
+    }
+
 
     findElement(idBpmnElement) {
         let element
@@ -111,7 +180,7 @@ import _ from "lodash"
         }
 
         //Set the code
-        if (data.code!==undefined) {
+        if (data.code !== undefined) {
             script.elements = [
                 {
                     type: 'cdata',
@@ -120,15 +189,15 @@ import _ from "lodash"
             ];
         }
         //Set the scriptFormat
-        if (data.scriptFormat!==undefined) {
+        if (data.scriptFormat !== undefined) {
             task.attributes[scriptFormatAttrName] = data.scriptFormat;
         }
         //Set the scriptRef
-        if (data.scriptRef!==undefined) {
+        if (data.scriptRef !== undefined) {
             task.attributes[scriptRefAttrName] = data.scriptRef;
         }
         //Set the scriptConfiguration
-        if (data.scriptRef!==undefined) {
+        if (data.scriptRef !== undefined) {
             task.attributes[scriptConfigurationAttrName] = data.scriptConfiguration;
         }
     }

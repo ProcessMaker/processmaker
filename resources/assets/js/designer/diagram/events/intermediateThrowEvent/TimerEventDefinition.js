@@ -14,7 +14,10 @@ export default class extends Shape {
                 y: null,
                 width: null,
                 height: null
-            }
+            },
+            incoming: null,
+            outgoing: null,
+            attributes: {}
         }
         this.config(Object.assign({}, options, {
             type: options.type,
