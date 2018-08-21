@@ -73,6 +73,8 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
     ], function() {
         $this->get('/process/{process}/tasks', 'Designer\TaskController@index')->name('processes-task-index');
         $this->get('/processes', 'Designer\ProcessController@index')->name('processes');
+        $this->get('/processes/categories', 'Designer\ProcessCategoryController@index')
+             ->name('process-categories-index');
     });
 
     $this->get('/designer/{process?}', 'Designer\ProcessController@show')->name('designer-edit-process');

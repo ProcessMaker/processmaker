@@ -116,7 +116,20 @@ class GenerateMenus
               'id' => 'homeid'
           ]);
        });
-        Menu::make('sidebar_process', function ($menu) {});
+
+        Menu::make('sidebar_process', function ($menu) {
+          $submenu = $menu->add(__('menus.sidebar_process.process'));
+          $submenu->add(__('menus.sidebar_process.processes'), [
+              'route' => 'processes',
+              'icon' => 'fa-folder',
+              'id' => 'processes'
+          ]);
+          $submenu->add(__('menus.sidebar_process.categories'), [
+              'route' => 'process-categories-index',
+              'icon' => 'fa-folder-open',
+              'id' => 'process-categories'
+          ]);
+        });
 
         Menu::make('sidebar_designer', function ($menu) {});
 

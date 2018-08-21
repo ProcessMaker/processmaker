@@ -19,6 +19,7 @@ mix.js('resources/assets/js/app-layout.js', 'public/js')
     .js('resources/assets/js/management/groups/index.js', 'public/js/management/groups')
     .js('resources/assets/js/processes/tasks/index.js', 'public/js/processes/tasks')
     .js('resources/assets/js/processes/index.js', 'public/js/processes')
+    .js('resources/assets/js/processes/categories/index.js', 'public/js/processes/categories')
     .js('resources/assets/js/requests/index.js', 'public/js/requests')
 
     .js('resources/assets/js/nayra/start.js', 'public/js/nayra')
