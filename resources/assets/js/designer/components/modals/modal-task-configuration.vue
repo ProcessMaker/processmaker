@@ -106,19 +106,13 @@
                             .get('process/' + this.processUid + '/forms')
                             .then(response => {
                                 options.splice(0);
+                                options.push({ value: '', content: 'None'});
                                 response.data.data.map(function (form) {
                                     options.push({
                                         value: form.uid,
                                         content: form.title
                                     })
                                 });
-
-                                if (options.length === 0) {
-                                    options.push({ value: null, content: 'None'});
-                                }
-                                if (options.length === 1) {
-                                    this.taskTypeItem = options[0].value;
-                                }
                             });
                         break;
                     case 'scriptTask':
@@ -126,6 +120,7 @@
                             .get('process/' + this.processUid + '/scripts')
                             .then(response => {
                                 options.splice(0);
+                                options.push({ value: '', content: 'None'});
                                 response.data.data.map(function (script) {
                                     options.push({
                                         value: script.uid,
@@ -133,12 +128,6 @@
                                     })
                                 });
 
-                                if (options.length === 0) {
-                                    options.push({ value: null, content: 'None'});
-                                }
-                                if (options.length === 1) {
-                                    this.taskTypeItem = options[0].value;
-                                }
                             });
                         break;
                 }
