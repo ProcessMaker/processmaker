@@ -4,7 +4,6 @@ namespace ProcessMaker\Managers;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 use ProcessMaker\Exception\ValidationException;
 use ProcessMaker\Model\InputDocument;
 use ProcessMaker\Model\Process;

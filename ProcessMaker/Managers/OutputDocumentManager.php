@@ -4,7 +4,6 @@ namespace ProcessMaker\Managers;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 use ProcessMaker\Exception\ValidationException;
 use ProcessMaker\Model\OutputDocument;
 use ProcessMaker\Model\Process;
@@ -115,9 +114,6 @@ class OutputDocumentManager
         $validator = Validator::make(
             $data,
             [
-                'title' => ['required', Rule::unique('output_documents')->where(function ($query) use ($data){
-                    $query->where('process_id', $data['process_id']);
-                })],
                 'report_generator' => 'required|in:' . implode(',', OutputDocument::DOC_REPORT_GENERATOR_TYPE),
                 'generate' => 'required|in:' . implode(',', OutputDocument::DOC_GENERATE_TYPE),
                 'type' => 'required|in:' . implode(',', OutputDocument::DOC_TYPE),

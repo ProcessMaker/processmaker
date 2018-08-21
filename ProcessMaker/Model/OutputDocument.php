@@ -32,6 +32,8 @@ class OutputDocument extends Model
     use ValidatingTrait;
     use Uuid;
 
+    protected $injectUniqueIdentifier = true;
+
     /**
      * Values for report_generator
      */
@@ -86,6 +88,7 @@ class OutputDocument extends Model
 
     protected $rules = [
         'uid' => 'max:36',
+        'title' => 'required|unique:output_documents,title',
         'process_id' => 'exists:processes,id',
         'filename' => 'required',
         'report_generator' => 'required',
@@ -94,6 +97,28 @@ class OutputDocument extends Model
         'versioning' => 'required|min:0',
         'open_type' => 'required|boolean',
     ];
+
+    protected $validationMessages = [
+        'title.unique' => 'A Input Document with the same name already exists in this process.',
+        'process_id.exists' => 'Process not found.'
+    ];
+
+    /**
+     * Validating fields unique
+     *
+     * @param $parameters
+     * @param $field
+     *
+     * @return \Illuminate\Validation\Rules\Unique
+     */
+    protected function prepareUniqueRule($parameters, $field)
+    {
+        if ($field === 'title') {
+            return Rule::unique('output_documents')->where(function ($query) {
+                $query->where('process_id', $this->process_id);
+            });
+        }
+    }
 
     /**
      * Get the route key for the model.
