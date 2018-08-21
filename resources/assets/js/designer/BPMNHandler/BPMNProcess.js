@@ -1,15 +1,19 @@
 import _ from "lodash"
 
-        /**
-         * BPMNProcess class
-         */
-        export default class BPMNProcess {
+/**
+ * BPMNProcess class
+ */
+export default class BPMNProcess {
     constructor(data, BPMN) {
         this.data = data
         this.BPMN = BPMN
     }
 
-    createElement(data) {
+    /**
+     * Create element BPMN
+     * @param data
+     */
+    createBpmnObject(data) {
         let eventDefinition = data.eventDefinition ? this.createEventDefinition(data.eventDefinition) : null
         let arrEvent = eventDefinition ? [eventDefinition] : []
 
@@ -22,10 +26,75 @@ import _ from "lodash"
         this.data.elements.push(process)
     }
 
-    updateElement(data) {
-        let element = this.findElement(data.id)
-        Object.assign(element.attributes, data.attributes)
+    /**
+     * Update Object BPMN
+     * @param data
+     */
+    updateBpmnObject(data) {
+        let bpmnObject = this.findElement(data.id)
+        Object.assign(bpmnObject.attributes, data.attributes)
+        data.incoming ? this.updateIncoming(bpmnObject, data.incoming) : null
+        data.outgoing ? this.updateOutgoing(bpmnObject, data.outgoing) : null
     }
+
+    /**
+     * Update incoming element
+     * @param bpmnObject
+     * @param incoming
+     */
+    updateIncoming(bpmnObject, incoming) {
+        let element = this.findElementsInBpmnObject(bpmnObject, "name", "incoming")
+        if (element) {
+            let text = this.findElementsInBpmnObject(bpmnObject, "type", "text")
+            if (text) {
+                text.text = incoming
+            }
+        } else {
+            bpmnObject.elements.push({
+                elements: [{
+                    text: incoming,
+                    type: "text"
+                }],
+                name: this.BPMN.BPMNDefinitions.getmodel('incoming'),
+                type: "element"
+            })
+        }
+    }
+
+    /**
+     * Update outgoing element
+     * @param bpmnObject
+     * @param outgoing
+     */
+    updateOutgoing(bpmnObject, outgoing) {
+        let element = this.findElementsInBpmnObject(bpmnObject, "name", "outgoing")
+        if (element) {
+            let text = this.findElementsInBpmnObject(bpmnObject, "type", "text")
+            if (text) {
+                text.text = outgoing
+            }
+        } else {
+            bpmnObject.elements.push({
+                elements: [{
+                    text: outgoing,
+                    type: "text"
+                }],
+                name: this.BPMN.BPMNDefinitions.getmodel('outgoing'),
+                type: "element"
+            })
+        }
+    }
+
+    findElementsInBpmnObject(bpmnObject, key, value) {
+        let response
+        _.each(bpmnObject.elements, (el) => {
+            if (el[key].indexOf(value) > 0) {
+                response = el
+            }
+        })
+        return response
+    }
+
 
     findElement(idBpmnElement) {
         let element
@@ -62,8 +131,8 @@ import _ from "lodash"
         let scriptNodeName = this.BPMN.BPMNDefinitions.getmodel('script');
         let scriptFormatAttrName = this.BPMN.BPMNDefinitions.getnonamespace('scriptFormat');
         let scriptRefAttrName = this.BPMN.BPMNDefinitions.getpm('scriptRef');
-        let formRefAttrName = this.BPMN.BPMNDefinitions.getpm('formRef');
         let scriptConfigurationAttrName = this.BPMN.BPMNDefinitions.getpm('scriptConfiguration');
+        let formRefAttrName = this.BPMN.BPMNDefinitions.getpm('formRef');
         //Find the task
         let task = this.findElement(data.id);
         //Find the script or create one
@@ -84,34 +153,28 @@ import _ from "lodash"
         if (data.name !== undefined) {
             task.attributes.name = data.name;
         }
-
-        if (data.type !== undefined) {
-            task.attributes.type = data.type;
+        //Change the node type
+        if (data.$type !== undefined) {
+            task.name = this.BPMN.BPMNDefinitions.getmodel(data.$type);
         }
-
+        //Set the task form
         if (data.formRef !== undefined) {
-            task.attributes.formRef = data.formRef;
             task.attributes[formRefAttrName] = data.formRef;
         }
-
-        if (data.scriptRef !== undefined) {
-            task.attributes.scriptRef = data.scriptRef;
-        }
-
+        //Set the notifyAfterRouting
         if (data.notifyAfterRouting !== undefined) {
             task.attributes.notifyAfterRouting = data.notifyAfterRouting;
         }
-
+        //Set the notifyToRequestCreator
         if (data.notifyToRequestCreator !== undefined) {
             task.attributes.notifyToRequestCreator = data.notifyToRequestCreator;
         }
-
+        //Set the dueDate
         if (data.dueDate !== undefined) {
             task.attributes.dueDate = data.dueDate;
         }
-
         //Set the code
-        if (data.code!==undefined) {
+        if (data.code !== undefined) {
             script.elements = [
                 {
                     type: 'cdata',
@@ -120,15 +183,15 @@ import _ from "lodash"
             ];
         }
         //Set the scriptFormat
-        if (data.scriptFormat!==undefined) {
+        if (data.scriptFormat !== undefined) {
             task.attributes[scriptFormatAttrName] = data.scriptFormat;
         }
         //Set the scriptRef
-        if (data.scriptRef!==undefined) {
+        if (data.scriptRef !== undefined) {
             task.attributes[scriptRefAttrName] = data.scriptRef;
         }
         //Set the scriptConfiguration
-        if (data.scriptRef!==undefined) {
+        if (data.scriptRef !== undefined) {
             task.attributes[scriptConfigurationAttrName] = data.scriptConfiguration;
         }
     }
