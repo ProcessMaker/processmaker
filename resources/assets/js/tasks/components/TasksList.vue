@@ -7,6 +7,10 @@
                 <div class="actions">
                     <i class="fas fa-ellipsis-h"></i>
                     <div class="popout">
+                        <b-btn variant="action" @click="onAction('pause', props.rowData, props.rowIndex)"
+                               v-b-tooltip.hover title=""><i class="fas fa-pause"></i></b-btn>
+                        <b-btn variant="action" @click="onAction('undo', props.rowData, props.rowIndex)"
+                               v-b-tooltip.hover title=""><i class="fas fa-undo"></i></b-btn>
                     </div>
                 </div>
             </template>
@@ -36,43 +40,29 @@
                 ],
                 fields: [
                     {
-                        title: "ID",
+                        title: "TITLE",
                         name: "",
-                        sortField: "uid",
-                        callback: this.formatUid
-                    },
-                    {
-                        title: "TASK",
-                        name: "definition.name",
-                        sortField: "title"
+                        callback: this.formatTitle
                     },
                     {
                         title: "PROCESS",
-                        name: "application.process.name",
-                        sortField: "application.process.name"
+                        name: "application.process.name"
+                    },
+                    {
+                        title: "ASSIGNED TO",
+                        name: "",
+                        callback: this.formatUserName
                     },
                     {
                         title: "CREATED BY",
-                        name: "application.creator.fullname",
-                        sortField: "application.creator.firstname"
+                        name: "",
+                        callback: this.formatCreatorName
                     },
                     {
                         title: "DUE",
                         name: "task_due_date",
                         sortField: "task_due_date",
                         callback: this.formatDue
-                    },
-                    {
-                        title: "DUE DATE",
-                        name: "task_due_date",
-                        sortField: "task_due_date",
-                        callback: this.formatDateWithDot
-                    },
-                    {
-                        title: "LAST MODIFIED",
-                        name: "application.APP_UPDATE_DATE",
-                        sortField: "application.APP_UPDATE_DATE",
-                        callback: this.formatDate
                     },
                     {
                         name: "__slot:actions",
@@ -82,14 +72,25 @@
             };
         },
         methods: {
-            formatUid(token) {
-                let short = token.uid.split('-').pop();
+            formatCreatorName(token) {
+                return (token.application.creator.avatar
+                    ? this.createImg({'src': token.application.creator.avatar, 'class': 'rounded-user'})
+                    : '<i class="fa fa-user rounded-user"></i>')
+                  + '<span>' + token.application.creator.fullname + '</span>';
+            },
+            formatUserName(token) {
+                return (token.application.creator.avatar
+                    ? this.createImg({'src': token.user.avatar, 'class': 'rounded-user'})
+                    : '<i class="fa fa-user rounded-user"></i>')
+                  + '<span>' + token.user.fullname + '</span>';
+            },
+            formatTitle(token) {
                 let link = '/tasks/'
                         + token.definition.id + '/'
                         + token.application.process.uid + '/'
                         + token.application.uid + '/'
                         + token.uid;
-                return this.createLink({'href': link, 'target': '_blank'}, short);
+                return this.createLink({'href': link}, token.definition.name);
             },
             createLink(properties, name) {
                 let container = document.createElement('div');
@@ -101,28 +102,22 @@
                 container.appendChild(link);
                 return container.innerHTML;
             },
-            formatDateWithDot(value) {
-                if (!value) {
-                    return '';
+            createImg(properties, name) {
+                let container = document.createElement('div');
+                let node = document.createElement('img');
+                for (let property in properties) {
+                    node.setAttribute(property, properties[property]);
                 }
+                container.appendChild(node);
+                return container.innerHTML;
+            },
+            formatDue(value) {
                 let duedate = moment(value);
                 let now = moment();
                 let diff = duedate.diff(now, 'hours');
                 let color = diff < 0 ? 'text-danger' : (diff <= 48 ? 'text-warning' : 'text-primary');
-                let circle = '<i class="fas fa-circle ' + color + ' small "></i>';
-                return circle + ' ' + duedate.format('YYYY-MM-DD hh:mm');
-            },
-            formatDue(value) {
-                return value ? moment(value).fromNow() : '';
-            },
-            formatDate(value) {
-                return moment(value).format('YYYY-MM-DD hh:mm');
-            },
-            formatStatus(value) {
-                value = value.toLowerCase();
-                let response = '<i class="fas fa-circle ' + value + '"></i> ';
-                value = value.charAt(0).toUpperCase() + value.slice(1);
-                return response + moment(value).format('YYYY-MM-DD hh:mm');
+                let circle = '<i class="fas fa-circle ' + color + '"></i>';
+                return circle + moment(value).fromNow();
             },
             fetch() {
                 this.loading = true;
@@ -165,7 +160,7 @@
     };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
     /deep/ th#_total_users {
         width: 150px;
         text-align: center;
@@ -182,6 +177,11 @@
         &.inactive {
             color: red;
         }
+    }
+    .rounded-user {
+        border-radius: 50%!important;
+        height: 1.5em;
+        margin-right: 0.5em;
     }
 </style>
 

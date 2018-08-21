@@ -23,13 +23,6 @@ class ScriptTransformer extends TransformerAbstract
      */
     public function transform(Script $script)
     {
-        return [
-            'uid' => $script->uid,
-            'title' => $script->title,
-            'description' => $script->description,
-            'type' => $script->type,
-            'webbot' => $script->webbot,
-            'param' => $script->param,
-        ];
+        return $script->toArray();
     }
 }

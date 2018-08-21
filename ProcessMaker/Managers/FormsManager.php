@@ -51,10 +51,10 @@ class FormsManager
      */
     public function save(Process $process, $data): Form
     {
+        $data['process_id'] = $process->id;
         $this->validate($data);
 
         $data['uid'] = Uuid::uuid4();
-        $data['process_id'] = $process->id;
 
         if (!isset($data['content']) || empty($data['content'])) {
             $data['content'] = null;
@@ -109,6 +109,7 @@ class FormsManager
     public function update(Process $process, Form $form, $data): Form
     {
         $data['process_id'] = $process->id;
+        $this->validate($data);
         $form->fill($data);
         if (empty($form->content)) {
             $form->content = null;
