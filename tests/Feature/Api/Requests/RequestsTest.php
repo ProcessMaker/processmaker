@@ -63,9 +63,9 @@ class RequestsTest extends ApiTestCase
     private function login()
     {
         $this->user = factory(User::class)->create([
-        'password' => Hash::make('password'),
-        'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
-    ]);
+            'password' => Hash::make('password'),
+            'role_id'     => Role::PROCESSMAKER_ADMIN
+        ]);
 
         $this->auth($this->user->username, 'password');
     }

@@ -52,7 +52,7 @@ class GroupsTest extends ApiTestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id'     => Role::PROCESSMAKER_ADMIN,
         ]);
         $this->auth($user->username, 'password');
         // Build a sample of 5 groups into the system
@@ -77,7 +77,7 @@ class GroupsTest extends ApiTestCase
     {
        $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id'     => Role::PROCESSMAKER_ADMIN,
         ]);
         $this->auth($user->username, 'password');
         $response = $this->api('GET', self::API_TEST_GROUPS . '?filter=' . urlencode('invalid'));
@@ -96,7 +96,7 @@ class GroupsTest extends ApiTestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id'     => Role::PROCESSMAKER_ADMIN,
         ]);
         $this->auth($user->username, 'password');
         // Now create a group that would match
@@ -122,7 +122,7 @@ class GroupsTest extends ApiTestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id'     => Role::PROCESSMAKER_ADMIN,
         ]);
         $this->auth($user->username, 'password');
         $response = $this->api('get', self::API_TEST_GROUPS . '/invaliduid');
@@ -136,7 +136,7 @@ class GroupsTest extends ApiTestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id'     => Role::PROCESSMAKER_ADMIN,
         ]);
         $this->auth($user->username, 'password');
         $group = factory(Group::class)->create();
@@ -155,7 +155,7 @@ class GroupsTest extends ApiTestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id'     => Role::PROCESSMAKER_ADMIN,
         ]);
         $this->auth($user->username, 'password');
         $group = factory(Group::class)->create();
@@ -176,7 +176,7 @@ class GroupsTest extends ApiTestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id'     => Role::PROCESSMAKER_ADMIN,
         ]);
         $this->auth($user->username, 'password');
         $response = $this->api('post', self::API_TEST_GROUPS, [
@@ -222,7 +222,7 @@ class GroupsTest extends ApiTestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id'     => Role::PROCESSMAKER_ADMIN,
         ]);
         $this->auth($user->username, 'password');
         $response = $this->api('post', self::API_TEST_GROUPS, [
@@ -241,7 +241,7 @@ class GroupsTest extends ApiTestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id'     => Role::PROCESSMAKER_ADMIN,
         ]);
         $this->auth($user->username, 'password');
         // Now, let's create 5 groups
@@ -288,7 +288,7 @@ class GroupsTest extends ApiTestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id'     => Role::PROCESSMAKER_ADMIN,
         ]);
         $this->auth($user->username, 'password');
 

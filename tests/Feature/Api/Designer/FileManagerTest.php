@@ -28,7 +28,7 @@ class FileManagerTest extends ApiTestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_OPERATOR)->first()->id
+            'role_id' => Role::PROCESSMAKER_OPERATOR
         ]);
         $this->auth($user->username, 'password');
 
@@ -74,7 +74,7 @@ class FileManagerTest extends ApiTestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'role_id' => Role::PROCESSMAKER_ADMIN
         ]);
 
         // We need a project
@@ -157,7 +157,7 @@ class FileManagerTest extends ApiTestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'role_id' => Role::PROCESSMAKER_ADMIN
         ]);
         $process = factory(Process::class)->create();
         //
@@ -265,7 +265,7 @@ class FileManagerTest extends ApiTestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'role_id' => Role::PROCESSMAKER_ADMIN
         ]);
         $process = factory(Process::class)->create();
 
@@ -302,7 +302,7 @@ class FileManagerTest extends ApiTestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'role_id' => Role::PROCESSMAKER_ADMIN
         ]);
         $process = factory(Process::class)->create();
 
@@ -382,7 +382,7 @@ class FileManagerTest extends ApiTestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'role_id' => Role::PROCESSMAKER_ADMIN
         ]);
         $process = factory(Process::class)->create();
 
@@ -418,7 +418,7 @@ class FileManagerTest extends ApiTestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'role_id' => Role::PROCESSMAKER_ADMIN
         ]);
         $process = factory(Process::class)->create();
         $this->auth($admin->username, 'password');
@@ -451,7 +451,7 @@ class FileManagerTest extends ApiTestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'role_id' => Role::PROCESSMAKER_ADMIN
         ]);
         $process = factory(Process::class)->create();
         $this->auth($admin->username, 'password');
@@ -475,7 +475,7 @@ class FileManagerTest extends ApiTestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'role_id' => Role::PROCESSMAKER_ADMIN
         ]);
         $process = factory(Process::class)->create();
         $this->auth($admin->username, 'password');

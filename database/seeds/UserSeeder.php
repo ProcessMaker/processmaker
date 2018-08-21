@@ -29,7 +29,7 @@ class UserSeeder extends Seeder
             'firstname' => 'admin',
             'lastname' => 'admin',
             'time_zone' => 'UTC',
-            'role_id' => Role::where('code','PROCESSMAKER_ADMIN')->first()->id
+            'role_id' => Role::PROCESSMAKER_ADMIN
         ]);
 
     }

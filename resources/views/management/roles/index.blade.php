@@ -10,10 +10,6 @@
           <b-modal ref="addModal" size="md" centered title="Create New Role">
       <form>
         <div class="form-group">
-          <label for="add-role-code">Code</label>
-          <input id="add-role-code" class="form-control" v-model="addRoleCode">
-        </div>
-        <div class="form-group">
           <label for="add-role-name">Name</label>
           <input id="add-role-name" class="form-control" v-model="addRoleName">
         </div>

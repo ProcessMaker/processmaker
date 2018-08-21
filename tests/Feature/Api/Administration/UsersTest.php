@@ -54,7 +54,7 @@ class UsersTest extends ApiTestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id' => Role::PROCESSMAKER_ADMIN,
         ]);
         $this->auth($user->username, 'password');
         // Build a sample of 5 users into the system
@@ -82,7 +82,7 @@ class UsersTest extends ApiTestCase
             'firstname' => 'Joe',
             'lastname' => 'Biden',
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id' => Role::PROCESSMAKER_ADMIN,
         ]);
         $this->auth($user->username, 'password');
         $response = $this->api('GET', self::API_TEST_USERS . '?filter=' . urlencode('invalid'));
@@ -104,7 +104,7 @@ class UsersTest extends ApiTestCase
             'firstname' => 'UniqueJoe',
             'lastname' => 'Biden',
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id' => Role::PROCESSMAKER_ADMIN,
         ]);
         $this->auth($user->username, 'password');
         $response = $this->api('GET', self::API_TEST_USERS . '?filter=' . urlencode('UniqueJoe'));
@@ -126,7 +126,7 @@ class UsersTest extends ApiTestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id' => Role::PROCESSMAKER_ADMIN,
         ]);
         $this->auth($user->username, 'password');
         $response = $this->api('get', self::API_TEST_USERS . '/invaliduid');
@@ -140,7 +140,7 @@ class UsersTest extends ApiTestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id' => Role::PROCESSMAKER_ADMIN,
         ]);
         $this->auth($user->username, 'password');
         $response = $this->api('get', self::API_TEST_USERS . '/' . $user->uid->toString());
@@ -159,7 +159,7 @@ class UsersTest extends ApiTestCase
         $avatar = Faker::create()->image(Storage::disk('profile')->getAdapter()->getPathPrefix(), 10, 10, null, true);
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'role_id' => Role::PROCESSMAKER_ADMIN
         ]);
         $this->auth($user->username, 'password');
 
@@ -183,7 +183,7 @@ class UsersTest extends ApiTestCase
         $nameAvatar = 'avatar.jpg';
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id' => Role::PROCESSMAKER_ADMIN,
         ]);
         $this->auth($user->username, 'password');
 
@@ -214,7 +214,7 @@ class UsersTest extends ApiTestCase
         Storage::disk($diskName);
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id' => Role::PROCESSMAKER_ADMIN,
         ]);
         $this->auth($user->username, 'password');
         $user = factory(User::class)->create([
@@ -262,7 +262,7 @@ class UsersTest extends ApiTestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id' => Role::PROCESSMAKER_ADMIN,
         ]);
         $this->auth($user->username, 'password');
         $data = [
@@ -297,13 +297,13 @@ class UsersTest extends ApiTestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id' => Role::PROCESSMAKER_ADMIN,
         ]);
         $this->auth($admin->username, 'password');
 
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'role_id' => Role::PROCESSMAKER_ADMIN,
         ]);
 
         $response = $this->api('delete', self::API_TEST_USERS . '/' . $user->uid);

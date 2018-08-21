@@ -25,7 +25,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_OPERATOR)->first()->id,
+            'role_id' => Role::PROCESSMAKER_OPERATOR,
         ]);
         $this->auth($user->username, 'password');
 
@@ -55,7 +55,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'role_id'     => Role::PROCESSMAKER_ADMIN
         ]);
         $this->auth($admin->username, 'password');
         //Create test categories
@@ -84,7 +84,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'role_id'     => Role::PROCESSMAKER_ADMIN
         ]);
         $this->auth($admin->username, 'password');
         //Create test categories
@@ -115,7 +115,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'role_id'     => Role::PROCESSMAKER_ADMIN
         ]);
         $this->auth($admin->username, 'password');
         //Create test categories
@@ -138,7 +138,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'role_id'     => Role::PROCESSMAKER_ADMIN
         ]);
         $this->auth($admin->username, 'password');
         //Create test categories
@@ -161,7 +161,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'role_id'     => Role::PROCESSMAKER_ADMIN
         ]);
         $this->auth($admin->username, 'password');
         //Create test categories
@@ -184,7 +184,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'role_id'     => Role::PROCESSMAKER_ADMIN
         ]);
         $this->auth($admin->username, 'password');
         //Create test categories
@@ -215,7 +215,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'role_id'     => Role::PROCESSMAKER_ADMIN
         ]);
         $this->auth($admin->username, 'password');
         $faker = Faker::create();
@@ -271,7 +271,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'role_id'     => Role::PROCESSMAKER_ADMIN
         ]);
         $this->auth($admin->username, 'password');
         $faker = Faker::create();
@@ -331,7 +331,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'role_id'     => Role::PROCESSMAKER_ADMIN
         ]);
         $this->auth($admin->username, 'password');
 
@@ -361,7 +361,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'role_id'     => Role::PROCESSMAKER_ADMIN
         ]);
         $this->auth($admin->username, 'password');
 

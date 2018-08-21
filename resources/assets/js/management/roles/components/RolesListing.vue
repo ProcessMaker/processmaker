@@ -21,12 +21,8 @@
         </vuetable>
         <pagination single="Role" plural="Roles" :perPageSelectEnabled="true" @changePerPage="changePerPage"
                     @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
-        <b-modal ref="editItem" size="md" centered title="Create New Role">
+        <b-modal ref="editItem" size="md" centered title="Edit Role">
             <form>
-                <div class="form-group">
-                    <label for="add-role-code">Code</label>
-                    <input id="add-role-code" class="form-control" v-model="code">
-                </div>
                 <div class="form-group">
                     <label for="add-role-name">Name</label>
                     <input id="add-role-name" class="form-control" v-model="name">
@@ -65,20 +61,18 @@
         props: ["filter"],
         data() {
             return {
-                orderBy: "code",
+                orderBy: "name",
                 editData: null,
                 sortOrder: [
                     {
-                        field: "code",
-                        sortField: "code",
+                        field: "name",
+                        sortField: "name",
                         direction: "asc"
                     }
                 ],
                 fields: [
                     {
-                        title: "Code",
-                        name: "code",
-                        sortField: "code"
+                        name: "__checkbox"
                     },
                     {
                         title: "Name",
@@ -120,7 +114,6 @@
                     }
                 ],
                 name: '',
-                code: '',
                 description: '',
                 uid: '',
                 status: '',
@@ -147,7 +140,6 @@
             },
             showEditModal(data, index) {
                 this.name = this.data.data[index].name;
-                this.code = this.data.data[index].code;
                 this.status = this.data.data[index].status;
                 this.description = this.data.data[index].description;
                 this.uid = this.data.data[index].uid;
@@ -161,7 +153,6 @@
                 window.ProcessMaker.apiClient.put('roles/' + this.uid, {
                     'uid': this.uid,
                     'name': this.name,
-                    'code': this.code,
                     'description': this.description,
                     'status': this.status
                 })
@@ -177,7 +168,6 @@
             },
             clearForm(curIndex) {
                 this.name = '',
-                    this.code = '',
                     this.description = '',
                     this.uid = '',
                     this.status = ''

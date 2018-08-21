@@ -22,7 +22,6 @@ new Vue({
     submitAdd() {
       window.ProcessMaker.apiClient.post('roles', {
         'name': this.addRoleName,
-        'code': this.addRoleCode,
         'description': this.addRoleDescription,
         'status': this.addRoleStatus
       })

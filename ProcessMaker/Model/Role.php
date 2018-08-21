@@ -23,10 +23,10 @@ class Role extends Model
     use Notifiable;
     use Uuid;
 
-    const PROCESSMAKER_ADMIN = 'PROCESSMAKER_ADMIN';
-    const PROCESSMAKER_OPERATOR = 'PROCESSMAKER_OPERATOR';
-    const PROCESSMAKER_MANAGER = 'PROCESSMAKER_MANAGER';
-    const PROCESSMAKER_GUEST = 'PROCESSMAKER_GUEST';
+    const PROCESSMAKER_ADMIN = 1;
+    const PROCESSMAKER_OPERATOR = 2;
+    const PROCESSMAKER_MANAGER = 3;
+    const PROCESSMAKER_GUEST = 4;
 
     // If the role is active or not
     const STATUS_INACTIVE = 'INACTIVE';
@@ -35,7 +35,6 @@ class Role extends Model
     protected $fillable = [
         'name',
         'description',
-        'code',
         'created_at',
         'updated_at',
         'status',
@@ -53,7 +52,6 @@ class Role extends Model
         
         return [
         'name' => 'required|max:255',
-        'code' => 'required|max:255',
         'description' => 'max:255',
         'status' => 'required|in:ACTIVE,INACTIVE'
         ];

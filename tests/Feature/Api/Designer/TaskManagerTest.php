@@ -54,7 +54,7 @@ class TaskManagerTest extends ApiTestCase
         parent::setUp();
         $this->user = factory(User::class)->create([
             'password' => Hash::make(self::DEFAULT_PASS),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'role_id' => Role::PROCESSMAKER_ADMIN
         ]);
 
         $this->process = factory(Process::class)->create([
