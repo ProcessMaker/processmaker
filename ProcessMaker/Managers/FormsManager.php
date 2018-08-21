@@ -4,7 +4,6 @@ namespace ProcessMaker\Managers;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 use ProcessMaker\Exception\DoesNotBelongToProcessException;
 use ProcessMaker\Exception\ValidationException;
 use ProcessMaker\Model\Form;
@@ -146,18 +145,6 @@ class FormsManager
          */
 
         if (!isset($data['copy_import'])) {
-            $validator = Validator::make(
-                $data,
-                [
-                    //Validate title unique by process
-                    'title' => ['required', Rule::unique('forms')->where(function ($query) use ($data) {
-                        $query->where('process_id', $data['process_id']);
-                    })]
-                ]
-            );
-            if ($validator->fails()) {
-                throw new ValidationException($validator);
-            }
             return;
         }
 
