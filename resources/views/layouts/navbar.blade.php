@@ -37,12 +37,13 @@
                         $items[] = $newItem;
                     }
                     $items = json_encode($items);
-                    $avatar = 'undefined';
-                    if (\Auth::user()->getAvatar()) {
-                        $avatar = \Auth::user()->getAvatar();
+                    $user = Auth::user();
+                    $user->avatar = null;
+                    if (Auth::user()->getAvatar()) {
+                        $user->avatar  = Auth::user()->getAvatar();
                     }
                 @endphp
-                <navbar-profile :info="{{\Auth::user()}}" :url="{{$avatar}}" :items="{{$items}}"></navbar-profile>
+                <navbar-profile :info="{{$user}}"  :items="{{$items}}"></navbar-profile>
             </li>
         </b-navbar-nav>
     </b-navbar>

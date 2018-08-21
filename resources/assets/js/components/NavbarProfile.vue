@@ -1,8 +1,13 @@
 <template>
     <div id="userMenu">
         <div class="my-3">
-            <b-btn id="avatarMenu" :disabled="popoverShow" class="avatar-circle btn-outline-warning">
-                <span class="avatar-initials"> {{ initials }} </span>
+            <b-btn id="avatarMenu" :disabled="popoverShow" class="avatar-circle btn-warning">
+                <template v-if="sourceImage">
+                    <img class="avatar-image" :src="user.avatar">
+                </template>
+                <template v-else>
+                    <span class="avatar-initials"> {{ initials }} </span>
+                </template>
             </b-btn>
         </div>
 
@@ -14,16 +19,18 @@
                    @hidden="onHidden">
             <template slot="title">
                 <template v-if="sourceImage">
-                    <img class="avatar-small" :src="sourceImage">
+                    <img class="avatar-image-small" :src="user.avatar">
+                    <div class="wrap-name wrap-image">{{fullName}}</div>
                 </template>
                 <template v-else>
                     <div class="avatar-circle-small">
                         <span class="avatar-initials-small text-uppercase">
                         {{initials}}
                         </span>
+                        <div class="wrap-name">{{fullName}}</div>
                     </div>
                 </template>
-                <div class="wrap-name">{{fullName}}</div>
+
             </template>
             <template>
                 <template v-for="item in items">
@@ -42,7 +49,7 @@
         data() {
             return {
                 user: null,
-                sourceImage: null,
+                sourceImage: false,
                 initials: null,
                 fullName: null,
                 popoverShow: false,
@@ -63,8 +70,10 @@
                 this.popoverShow = false;
             },
             formatData() {
-                this.sourceImage = this.avatar;
                 this.user = this.info;
+                if (this.info.avatar) {
+                    this.sourceImage = true;
+                }
                 this.initials = this.user.firstname[0] + this.user.lastname[0];
                 this.fullName = this.user.firstname + ' ' + this.user.lastname;
             }
@@ -94,7 +103,7 @@
         font-size: 20px;
         line-height: 18px;
         color: #fff;
-        margin-left: -15px;
+        margin-left: -13px;
     }
 
     .avatar-circle-small {
@@ -120,9 +129,9 @@
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;
-        margin-top: -30px;
+        margin-top: 10px;
         float: right;
-        margin-right: -10px;
+        margin-right: -125px;
         text-align: left;
     }
 
@@ -135,7 +144,25 @@
     .item {
         font-size: 14px;
         padding: 5px;
-        width: 150px;
+        width: 160px;
+    }
+
+    .avatar-image {
+        width: 40px;
+        height: 40px;
+        margin-left: -16px;
+        margin-top: -7px;
+    }
+
+    .avatar-image-small {
+        width: 40px;
+        height: 40px;
+        margin-left: -5px;
+    }
+    .wrap-image {
+        margin-top: 10px;
+        margin-left: 10px;
+        margin-right: 0px;
     }
 
 </style>
