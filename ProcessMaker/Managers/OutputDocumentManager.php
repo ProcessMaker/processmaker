@@ -3,7 +3,6 @@
 namespace ProcessMaker\Managers;
 
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Exception\ValidationException;
 use ProcessMaker\Model\OutputDocument;
@@ -53,9 +52,8 @@ class OutputDocumentManager
     public function save(Process $process, $data): OutputDocument
     {
         $data['properties'] = $this->dataProperties($data['properties']);
-        $this->validate($data);
-
         $data['process_id'] = $process->id;
+        $this->validate($data);
 
         $outputDocument = new OutputDocument();
         $outputDocument->fill($data);
@@ -80,6 +78,7 @@ class OutputDocumentManager
         if (isset($data['properties'])) {
             $data['properties'] = $this->dataProperties(array_merge($outputDocument->properties, $data['properties']));
         }
+        $this->validate($data);
         $outputDocument->fill($data);
         $this->validate($outputDocument->toArray());
         $outputDocument->saveOrFail();
