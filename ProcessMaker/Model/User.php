@@ -22,7 +22,9 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 class User extends Authenticatable implements UserEntityInterface, CanResetPassword, HasMedia
 {
     use Notifiable;
-    use Uuid;
+    use Uuid{
+        boot as uuidBoot;
+    }
     use CanResetPasswordTrait;
     use HasMediaTrait;
 
@@ -75,8 +77,8 @@ class User extends Authenticatable implements UserEntityInterface, CanResetPassw
      */
     public static function boot()
     {
-        parent::boot();
-        //By default the users should be assigned to a "All Users" group #544
+        self::uuidBoot();
+        //By default the users should be assigned to a "Users" group #544
         static::created(
             function($user)
             {
