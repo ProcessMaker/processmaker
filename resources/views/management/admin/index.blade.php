@@ -5,13 +5,17 @@
 @endsection
 
 @section('content')
-<div>
+<div id="uicustomize">
     <h1 class="page-title">{{__('UI Customization')}}</h1>
-    <div id="ui-customize">
+    <div class="container page-content">
         <p>Add your company logo</p>
     </div>
     <div>
         <p>Create a color scheme to customize your UI</p>
+        <span>
+            <div>
+            </div>
+        </span>
         <customize-color></customize-color>
     </div>
 </div>
