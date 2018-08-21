@@ -24,7 +24,6 @@ Route::group([
     Route::group([
         'middleware' => ['auth:api', 'bindings']
     ], function() {
-<<<<<<< HEAD
         // Environment Variables Group
         Route::group([
             // @todo Identify a new permission for managing environment variables
@@ -39,11 +38,9 @@ Route::group([
         });
 
 
-=======
         
         // TEST SCRIPT PREVIEW/EXECUTION
         Route::post('script/preview', 'Designer\ScriptController@preview');
->>>>>>> poc-scripteditor
 
         Route::group([
             'middleware' => ['permission:PM_USERS']
