@@ -1,6 +1,7 @@
 <?php
-namespace ProcessMaker\Http\Controllers\Cases;
+namespace ProcessMaker\Http\Controllers\Request;
 
+use Illuminate\Support\Facades\Session;
 use ProcessMaker\Http\Controllers\Controller;
 
 class RequestsController extends Controller
