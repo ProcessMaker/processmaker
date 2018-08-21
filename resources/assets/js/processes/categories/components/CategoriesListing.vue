@@ -29,19 +29,32 @@
                     
                     {
                         title: "Category",
-                        name: "name",
+                        name: "cat_name",
                         sortField: "name"
                     },
                     {
                         title: "Status",
-                        name: "status",
+                        name: "cat_uid",
                         sortField: "status"
                     }
                 ]
             }
         },
         methods: {
-            fetch() { },
+            fetch() {
+                this.loading = true;
+
+                // Load from our api client
+                ProcessMaker.apiClient
+                    .get(
+                        "categories",
+                    )
+                    .then(response => {
+                        // this.data = this.transform(response.data);
+                        this.data = response.data;
+                        this.loading = false;
+                    });
+            },
             onPaginationData() { },
         }
     }
