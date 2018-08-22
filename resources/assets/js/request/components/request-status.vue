@@ -63,7 +63,7 @@
                 <div class="row">
                     <div class="col-md-4">
                         <span class="button-space">
-                            <a class="btn-success btn-sm" v-bind:href="openLink(process, delegation)" target="_blank">
+                            <a class="btn-success btn-sm" v-bind:href="openLink(process, delegation)">
                                 View
                             </a>
                         </span>

@@ -22,6 +22,7 @@
       </div>
     </div>
     <vue-form-renderer v-model="formData" v-bind:config="json" />
+    <a class="btn btn-primary" :href="statusURL">Back</a>
   </div>
 </template>
 
@@ -58,7 +59,8 @@
         user: {
           avatar: '',
           fullname: ''
-        }
+        },
+        statusURL: '/request/' + this.instanceUid + '/status'
       };
     },
     watch: {
@@ -96,7 +98,11 @@
       disableForm(json) {
         if (json instanceof Array) {
           for (let item of json) {
-            this.disableForm(item);
+            if (item.component==='FormButton' && item.config.event==='submit') {
+              json.splice(json.indexOf(item), 1);
+            } else {
+              this.disableForm(item);
+            }
           }
         }
         if (json.config !== undefined) {
