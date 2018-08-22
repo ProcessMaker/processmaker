@@ -25,7 +25,7 @@
           <label for="add-role-status">Status</label>
           <select class="form-control" id="add-role-status" v-model="addRoleStatus">
               <option value="ACTIVE">Active</option>
-              <option value="DISABLED">Disabled</option>
+              <option value="INACTIVE">Inactive</option>
 
           </select>
         </div>

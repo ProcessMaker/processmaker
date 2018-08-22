@@ -364,6 +364,32 @@ class OutputDocumentManagerTest extends ApiTestCase
     }
 
     /**
+     * Update Document in process successfully with same title
+     */
+    public function testUpdateDocumentSameTitle()
+    {
+        $document = factory(Document::class)->create([
+            'process_id' => $this->process->id
+        ]);
+
+        $faker = Faker::create();
+
+        $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document/' . $document->uid;
+        $response = $this->api('PUT', $url, [
+            'description' => $faker->sentence(2),
+            'filename' => $faker->sentence(2),
+            'report_generator' => $faker->randomElement(Document::DOC_REPORT_GENERATOR_TYPE),
+            'generate' => $faker->randomElement(Document::DOC_GENERATE_TYPE),
+            'type' => $faker->randomElement(Document::DOC_TYPE),
+            'properties' => [
+                'pdf_security_permissions' => []
+            ]
+        ]);
+        //Validate the answer is correct
+        $response->assertStatus(200);
+    }
+
+    /**
      * Delete document successfully
      */
     public function testDeleteDocument()

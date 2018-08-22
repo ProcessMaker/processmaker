@@ -29,7 +29,7 @@ class Role extends Model
     const PROCESSMAKER_GUEST = 'PROCESSMAKER_GUEST';
 
     // If the role is active or not
-    const STATUS_DISABLED = 'DISABLED';
+    const STATUS_INACTIVE = 'INACTIVE';
     const STATUS_ACTIVE = 'ACTIVE';
 
     protected $fillable = [
@@ -55,7 +55,7 @@ class Role extends Model
         'name' => 'required|max:255',
         'code' => 'required|max:255',
         'description' => 'max:255',
-        'status' => 'required|in:ACTIVE,DISABLED'
+        'status' => 'required|in:ACTIVE,INACTIVE'
         ];
     }
 
