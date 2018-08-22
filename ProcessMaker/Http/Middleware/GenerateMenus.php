@@ -53,7 +53,7 @@ class GenerateMenus
           ]);
           
           $submenu->add(__('menus.sidebar_admin.colors_and_logos'), [
-                'route' => 'home',
+                'route' => 'management-themes-index',
                 'icon' => 'fa-palette',
                 'id' => 'homeid'
           ]);
