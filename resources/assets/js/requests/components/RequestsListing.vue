@@ -72,7 +72,7 @@ export default {
   },
   methods: {
     openRequest(data, index) {
-      window.open('/request/' + data.uid + '/status');
+      window.open('/requests/' + data.uid + '/status');
     },
     formatUid(uid) {
         return uid.split('-').pop();

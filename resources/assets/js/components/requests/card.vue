@@ -28,7 +28,7 @@ export default {
         .then((response) => {
             this.spin = 0;
             var instance = response.data;
-            window.location = '/request/' + instance.uid + '/status';
+            window.location = '/requests/' + instance.uid + '/status';
         })
     }
   },
