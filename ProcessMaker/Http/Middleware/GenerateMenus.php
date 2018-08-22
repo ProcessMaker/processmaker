@@ -73,6 +73,11 @@ class GenerateMenus
                 'icon' => 'fa-desktop',
                 'id' => 'homeid'
           ]);
+          $submenu->add(__('menus.sidebar_admin.queue_management'), [
+                'route' => 'horizon.index',
+                'icon' => 'fa-infinity',
+          ]);
+
         });
         Menu::make('sidebar_task', function ($menu) {
           $submenu = $menu->add(__('menus.sidebar_task.tasks'));

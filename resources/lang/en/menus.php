@@ -34,6 +34,7 @@ return[
     'environment_variables' => 'Environment Variables',
     'colors_and_logos' => 'Colors and Logos',
     'app_version_details' => 'App Version Details',
+    'queue_management' => 'Queue Management',
     'configuration' => 'Configuration',
     'appearance' => 'Appearance',
     'customize' => 'Customize',
