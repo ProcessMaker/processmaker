@@ -5,12 +5,15 @@ namespace ProcessMaker\Managers;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Jobs\CallProcess;
 use ProcessMaker\Jobs\CompleteActivity;
+use ProcessMaker\Jobs\RunScriptTask;
 use ProcessMaker\Jobs\StartEvent;
+use ProcessMaker\Model\Delegation;
+use ProcessMaker\Model\Process as Definitions;
 use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
-use ProcessMaker\Model\Process as Definitions;
 
 class WorkflowManager
 {
@@ -49,7 +52,11 @@ class WorkflowManager
         return CallProcess::dispatchNow($definitions, $process, $data);
     }
 
-    public function runScripTask($filename, $processId, $instanceId, $tokenId)
+    public function runScripTask(ScriptTaskInterface $scriptTask, Delegation $token)
     {
+        $instance = $token->application;
+        $process = $instance->process;
+        //Run the script task with a delay to allow the request response to conclude, before the script runs
+        return RunScriptTask::dispatch($process, $instance, $token, [])->delay(1);
     }
 }

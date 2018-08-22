@@ -69,11 +69,28 @@ class GroupsController extends Controller
     {
         $data = $request->validate([
             'title' => 'required|max:255|unique:groups,title',
-            'status' => 'required|in:ACTIVE,DISABLED'
+            'status' => 'required|in:ACTIVE,INACTIVE'
         ]);
         $group = Group::create($data);
         //$group->refresh();
         return fractal($group, new GroupTransformer())->respond();
+    }
+
+    /**
+     * Update group
+     *
+     * @param Request $request
+     * @param Group $group
+     * @return ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * @throws \Throwable
+     */
+    public function update(Request $request, Group $group)
+    {
+        $data = $request->all();
+        $group->fill($data);
+        $group->saveOrFail();
+
+        return response([], 200);
     }
 
     /**

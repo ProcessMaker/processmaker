@@ -20,11 +20,8 @@ class CreateScriptsTable extends Migration
             $table->text('title');
             $table->text('description')->nullable();
             $table->unsignedInteger('process_id');
-            $table->enum('type', ['SCRIPT'])->default('SCRIPT');
-
-            // @todo Find out what webbot and param are meant for
-            $table->text('webbot');
-            $table->text('param')->nullable();
+            $table->string('language');
+            $table->text('code')->nullable();
 
             // Setup relationship for process we belong to
             $table->foreign('process_id')->references('id')->on('processes')->onDelete('cascade');

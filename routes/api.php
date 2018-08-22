@@ -24,6 +24,10 @@ Route::group([
     Route::group([
         'middleware' => ['auth:api', 'bindings']
     ], function() {
+        
+        // TEST SCRIPT PREVIEW/EXECUTION
+        Route::post('script/preview', 'Designer\ScriptController@preview');
+
         Route::group([
             'middleware' => ['permission:PM_USERS']
         ], function() {
@@ -46,6 +50,7 @@ Route::group([
             Route::post('groups', 'Administration\GroupsController@create');
             Route::get('groups/{group}', 'Administration\GroupsController@get');
             Route::delete('groups/{group}', 'Administration\GroupsController@delete');
+            Route::put('groups/{group}', 'Administration\GroupsController@update');
 
         });
 

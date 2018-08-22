@@ -10,10 +10,8 @@ $factory->define(Script::class, function (Faker $faker) {
         'uid' => Uuid::uuid4(),
         'title' => $faker->sentence,
         'description' => $faker->sentence,
-        // Maybe put in random types? Are there other types of scripts?
-        'type' => Script::SCRIPT_TYPE,
-        'webbot' => $faker->paragraph,
-        'param' => $faker->words($faker->randomDigitNotNull),
+        'language' => $faker->randomElement(['php', 'lua', 'nodejs', 'golang']),
+        'code' => $faker->sentence($faker->randomDigitNotNull),
         'process_id' => function() {
             return factory(Process::class)->create()->id;
         }
