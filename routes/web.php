@@ -48,7 +48,7 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
     })->name('requests');
 
     // For fetching the status of an open request
-    $this->get('/request/{instance}/status', ['uses' => 'Request\StatusController@status'])->name('request-status');
+    $this->get('/requests/{instance}/status', ['uses' => 'Request\StatusController@status'])->name('request-status');
 
     $this->get('/admin', function(){
       return view('admin',['title' => 'Dashboard']);
