@@ -67,11 +67,8 @@ class ProcessCategoryManagerTest extends ApiTestCase
         $this->login();
 
         //Create test categories
-        $processCategory = factory(ProcessCategory::class)->create();
-        factory(ProcessCategory::class)->create();
-        factory(Process::class)->create([
-            'process_category_id' => $processCategory->id
-        ]);
+        $process = factory(Process::class)->create();
+        $processCategory = $process->category;
 
         $response = $this->api('GET', self::API_TEST_CATEGORIES);
         $response->assertStatus(200);
@@ -80,7 +77,8 @@ class ProcessCategoryManagerTest extends ApiTestCase
             [
                 "cat_uid"             => $processCategory->uid,
                 "cat_name"            => $processCategory->name,
-                "cat_total_processes" => 0,
+                "cat_status"          => $processCategory->status,
+                "cat_total_processes" => 1,
             ]
         );
     }
@@ -91,12 +89,12 @@ class ProcessCategoryManagerTest extends ApiTestCase
     public function testGetListOfCategoriesFilter()
     {
         $this->login();
+        $process = factory(Process::class)->create();
+        
         //Create test categories
-        $processCategory = factory(ProcessCategory::class)->create();
-        factory(ProcessCategory::class)->create();
-        factory(Process::class)->create([
-            'process_category_id' => $processCategory->id
-        ]);
+        $processCategory = $process->category;
+        $otherCategory = factory(ProcessCategory::class)->create();
+
         //Test filter
         $response = $this->api('GET', self::API_TEST_CATEGORIES . '?filter=' . urlencode($processCategory->name));
         $response->assertStatus(200);
@@ -106,6 +104,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
             [
                 "cat_uid"             => $processCategory->uid,
                 "cat_name"            => $processCategory->name,
+                "cat_status"          => $processCategory->status,
                 "cat_total_processes" => 0,
             ]
         );
@@ -238,7 +237,8 @@ class ProcessCategoryManagerTest extends ApiTestCase
 
         $processCategory = factory(ProcessCategory::class)->make();
         $data = [
-            "cat_name" => $processCategory->name,
+            "name" => $processCategory->name,
+            "status" => $processCategory->status,
         ];
         $response = $this->api('POST', self::API_TEST_CATEGORY, $data);
         $response->assertStatus(201);
@@ -251,6 +251,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
             [
                 "cat_uid" => $processCategory->uid,
                 "cat_name" => $processCategory->name,
+                "cat_status" => $processCategory->status,
                 "cat_total_processes" => 0,
             ]
         );
@@ -259,24 +260,25 @@ class ProcessCategoryManagerTest extends ApiTestCase
         $response = $this->api('POST', self::API_TEST_CATEGORY, []);
         $response->assertStatus(422);
         $this->assertEquals(
-            __('validation.required', ['attribute' => 'cat name']), $response->json()['error']['message']
+            __('validation.required', ['attribute' => 'name']), $response->json()['error']['message']
         );
 
         //Validate creation of duplicated category
         $response = $this->api('POST', self::API_TEST_CATEGORY, $data);
         $response->assertStatus(422);
         $this->assertEquals(
-            __('validation.custom.cat_name.unique', ['attribute' => 'cat_name']), $response->json()['error']['message']
+            __('validation.unique', ['attribute' => 'name']), $response->json()['error']['message']
         );
 
         //Validate invalid large name
         $data = [
-            "cat_name" => $faker->sentence(100),
+            "name" => $faker->sentence(100),
+            "status" => $processCategory->status,
         ];
         $response = $this->api('POST', self::API_TEST_CATEGORY, $data);
         $response->assertStatus(422);
         $this->assertEquals(
-            __('validation.max.string', ['attribute' => 'cat name', 'max' => 100]), $response->json()['error']['message']
+            __('validation.max.string', ['attribute' => 'name', 'max' => 100]), $response->json()['error']['message']
         );
     }
 
@@ -292,7 +294,8 @@ class ProcessCategoryManagerTest extends ApiTestCase
         $processCategory = factory(ProcessCategory::class)->create();
         $catUid = $processCategory->uid;
         $data = [
-            "cat_name" => $faker->name(),
+            "name" => $faker->name(),
+            "status" => ProcessCategory::STATUS_ACTIVE,
         ];
         $response = $this->api('PUT', self::API_TEST_CATEGORY . $catUid, $data);
         $response->assertStatus(200);
@@ -302,13 +305,13 @@ class ProcessCategoryManagerTest extends ApiTestCase
             ->first();
         $this->assertNotNull($processCategory);
         $this->assertEquals($processCategory->uid, $processCategoryJson['cat_uid']);
-        $this->assertEquals($processCategory->name, $data['cat_name']);
+        $this->assertEquals($processCategory->name, $data['name']);
 
         //Validate required cat_name
         $response = $this->api('PUT', self::API_TEST_CATEGORY . $catUid, []);
         $response->assertStatus(422);
         $this->assertEquals(
-            __('validation.required', ['attribute' => 'cat name']), $response->json()['error']['message']
+            __('validation.required', ['attribute' => 'name']), $response->json()['error']['message']
         );
 
         //Validate 404 if category does not exists
@@ -317,22 +320,22 @@ class ProcessCategoryManagerTest extends ApiTestCase
 
         //Validate that category name is unique
         $data = [
-            "cat_name" => $processCategoryExisting->name,
+            "name" => $processCategoryExisting->name,
         ];
         $response = $this->api('PUT', self::API_TEST_CATEGORY . $catUid, $data);
         $response->assertStatus(422);
         $this->assertEquals(
-            __('validation.custom.cat_name.unique', ['attribute' => 'cat_name']), $response->json()['error']['message']
+            __('validation.unique', ['attribute' => 'name']), $response->json()['error']['message']
         );
 
         //Validate invalid large name
         $data = [
-            "cat_name" => $faker->sentence(100),
+            "name" => $faker->sentence(100),
         ];
         $response = $this->api('PUT', self::API_TEST_CATEGORY . $catUid, $data);
         $response->assertStatus(422);
         $this->assertEquals(
-            __('validation.max.string', ['attribute' => 'cat name', 'max' => 100]), $response->json()['error']['message']
+            __('validation.max.string', ['attribute' => 'name', 'max' => 100]), $response->json()['error']['message']
         );
     }
 

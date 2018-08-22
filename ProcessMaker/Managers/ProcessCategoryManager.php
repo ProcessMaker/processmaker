@@ -33,6 +33,7 @@ class ProcessCategoryManager
         $query = ProcessCategory::select([
                 'uid',
                 'name',
+                'status',
             ])->where('uid', '!=', '')
             ->withCount('processes');
 
@@ -58,15 +59,18 @@ class ProcessCategoryManager
      */
     public function store(array $data)
     {
+        // TODO: Handle in model only
         $this->validate(
             $data,
             [
-                'cat_name' => 'required|string|max:100|unique:process_categories,name',
+                'name' => 'required|string|max:100|unique:process_categories,name',
+                'status' => 'required|string|in:ACTIVE,INACTIVE',
             ]
         );
         return ProcessCategory::create([
             'uid' => str_replace('-', '', Uuid::uuid4()),
-            'name' => $data['cat_name'],
+            'name' => $data['name'],
+            'status' => $data['status'],
         ]);
     }
 
@@ -80,14 +84,17 @@ class ProcessCategoryManager
      */
     public function update(ProcessCategory $processCategory, array $data)
     {
+        // TODO: Handle in model only
         $this->validate(
             $data,
             [
-                'cat_name' => 'required|string|max:100|unique:process_categories,name',
+                'name' => 'required|string|max:100|unique:process_categories,name',
+                'status' => 'required|string|in:ACTIVE,INACTIVE',
             ]
         );
         $processCategory->update([
-            'name' => $data['cat_name'],
+            'name' => $data['name'],
+            'status' => $data['status'],
         ]);
         $processCategory->save();
         return $processCategory;

@@ -107,6 +107,7 @@ class ProcessCategoryController extends Controller
         return [
             "cat_uid" => $processCategory->uid,
             "cat_name" => $processCategory->name,
+            "cat_status" => $processCategory->status,
             "cat_total_processes" => isset($processCategory->processes_count)
                 ? $processCategory->processes_count : 0,
         ];
