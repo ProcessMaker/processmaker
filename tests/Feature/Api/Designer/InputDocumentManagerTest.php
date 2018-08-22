@@ -263,6 +263,28 @@ class InputDocumentManagerTest extends ApiTestCase
     }
 
     /**
+     * Update Input Document in process with same title
+     */
+    public function testUpdateInputDocumentSameTitle()
+    {
+        $faker = Faker::create();
+        //Post saved success
+        $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-document/' . factory(InputDocument::class)->create([
+                'process_id' => $this->process->id
+            ])->uid;
+        $response = $this->api('PUT', $url, [
+            'description' => $faker->sentence(6),
+            'form_needed' => $faker->randomElement(array_keys(InputDocument::FORM_NEEDED_TYPE)),
+            'original' => $faker->randomElement(InputDocument::DOC_ORIGINAL_TYPE),
+            'published' => $faker->randomElement(InputDocument::DOC_PUBLISHED_TYPE),
+            'versioning' => $faker->randomElement([0, 1]),
+            'tags' => $faker->randomElement(InputDocument::DOC_TAGS_TYPE),
+        ]);
+        //Validate the answer is correct
+        $response->assertStatus(200);
+    }
+
+    /**
      * Delete Input Document in process
      */
     public function testDeleteInputDocument()

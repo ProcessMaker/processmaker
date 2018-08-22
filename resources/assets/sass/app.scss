@@ -44,6 +44,10 @@ html {
   margin-left: auto;
 }
 
+.container h1{
+  margin:15px 5px
+}
+
 //topnav
 .navbar {
   height: 60px;
@@ -164,7 +168,7 @@ html {
   box-shadow: none;
   -webkit-box-shadow: none;
   border-color: #b6bfc6;
-} 
+}
 
 select.form-control:not([size]):not([multiple]) {
   height: 32px;

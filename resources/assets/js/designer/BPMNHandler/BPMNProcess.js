@@ -191,7 +191,7 @@ export default class BPMNProcess {
             task.attributes[scriptRefAttrName] = data.scriptRef;
         }
         //Set the scriptConfiguration
-        if (data.scriptRef !== undefined) {
+        if (data.scriptConfiguration !== undefined) {
             task.attributes[scriptConfigurationAttrName] = data.scriptConfiguration;
         }
     }
