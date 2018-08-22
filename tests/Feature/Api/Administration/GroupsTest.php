@@ -301,6 +301,28 @@ class GroupsTest extends ApiTestCase
         $existGroup = Group::where('uid', $group->uid)->first();
         $this->assertNull($existGroup);
     }
+
+    public function testUpdateGroup()
+    {
+        $user = factory(User::class)->create([
+            'password' => Hash::make('password'),
+            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+        ]);
+        $this->auth($user->username, 'password');
+
+        $group = factory(Group::class)->create();
+
+        $title = 'Group Updated';
+        $response = $this->api('put', self::API_TEST_GROUPS . '/' . $group->uid, [
+            'title' => $title
+        ]);
+        $response->assertStatus(200);
+
+        //validating that the group does exist
+        $existGroup = Group::where('uid', $group->uid)->first();
+        $this->assertNotNull($existGroup);
+        $this->assertEquals($existGroup->title, $title);
+    }
 }
 
 

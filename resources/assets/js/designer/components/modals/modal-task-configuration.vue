@@ -147,6 +147,7 @@
                     $type: this.taskType,
                     formRef: (this.taskType === 'task' ? this.taskTypeItem : undefined),
                     scriptRef: (this.taskType === 'scriptTask' ? this.taskTypeItem : undefined),
+                    scriptConfiguration: (this.taskType === 'scriptTask' ? this.configuration : undefined),
                     dueDate: this.taskDueDate,
                     notifyAfterRouting: this.notifyAfterRouting,
                     notifyToRequestCreator: this.notifyToRequestCreator
