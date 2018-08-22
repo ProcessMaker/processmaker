@@ -46,7 +46,6 @@ class ScriptManager
     public function save(Process $process, $data): Script
     {
         $data['process_id'] = $process->id;
-
         $script = new Script();
         $script->fill($data);
         $script->saveOrFail();
