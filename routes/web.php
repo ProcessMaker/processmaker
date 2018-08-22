@@ -54,9 +54,7 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
       return view('admin',['title' => 'Dashboard']);
     })->name('admin');
 
-    $this->get('/manage/customize', function(){
-        return view('/management/admin/index',['title' => 'Dashboard']);
-      })->name('customize');
+    $this->get('/admin/customize', 'Management\PreferencesController@show')->name('management-themes-index');
 
     $this->get('/', function() {
         return view('home', ['title' => 'Dashboard']);
