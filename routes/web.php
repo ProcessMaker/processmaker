@@ -56,7 +56,7 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
 
     $this->get('/manage/customize', function(){
         return view('/management/admin/index',['title' => 'Dashboard']);
-      })->name('admin');
+      })->name('customize');
 
     $this->get('/', function() {
         return view('home', ['title' => 'Dashboard']);
