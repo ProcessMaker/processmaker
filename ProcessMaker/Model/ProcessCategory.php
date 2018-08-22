@@ -22,6 +22,9 @@ class ProcessCategory extends Model
     use ValidatingTrait;
     use Uuid;
 
+    const STATUS_ACTIVE = 'ACTIVE';
+    const STATUS_INACTIVE = 'INACTIVE';
+
     /**
      * Validation rules.
      *
@@ -29,6 +32,7 @@ class ProcessCategory extends Model
      */
     protected $rules = [
         'name' => 'required|string|max:100|unique:process_categories,name',
+        'status' => 'required|string|in:ACTIVE,INACTIVE',
     ];
 
 
@@ -39,6 +43,7 @@ class ProcessCategory extends Model
      */
     protected $fillable = [
         'name',
+        'status',
     ];
 
     /**
