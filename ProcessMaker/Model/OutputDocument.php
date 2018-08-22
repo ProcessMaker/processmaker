@@ -117,7 +117,7 @@ class OutputDocument extends Model
         if ($field === 'title') {
             return Rule::unique('output_documents')->where(function ($query) {
                 $query->where('process_id', $this->process_id);
-            });
+            })->ignore($this->id);
         }
     }
 
