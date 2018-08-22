@@ -13,14 +13,14 @@
                         <h1 class="page-title">{{__('Process Categories')}}</h1>
                     </div>
                     <div class="col-md-4 d-flex justify-content-end align-items-center col-sm-12 actions">
-                        <a href="#"  @click="categoryModal=true" class="btn btn-action">
+                        <a href="#"  @click="showModal" class="btn btn-action">
                             <i class="fas fa-plus"></i>
                             {{__('Category')}}
                         </a>
                     </div>
                 </div>
-                <modal-category-add-edit :show="categoryModal" @close="categoryModal=false"></modal-category-add-edit>
-                <categories-listing />
+                <modal-category-add-edit ref="addEdit" :input-data="formData"></modal-category-add-edit>
+                <categories-listing @edit="editCategory" @delete="deleteCategory"></categories-listing>
             </div>
         </div>
     </div>

@@ -4,6 +4,13 @@
                   @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data"
                   pagination-path="meta">
             <template slot="actions" slot-scope="props">
+            <div class="actions">
+                <i class="fas fa-ellipsis-h"></i>
+                <div class="popout">
+                    <b-btn variant="action" @click="onAction('edit-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="Edit"><i class="fas fa-edit"></i></b-btn>
+                    <b-btn variant="action" @click="onAction('remove-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="Remove"><i class="fas fa-trash-alt"></i></b-btn>
+                </div>
+          </div>
             </template>
         </vuetable>
     </div>
@@ -17,7 +24,6 @@
         data() {
             return {
                 orderBy: "name",
-
                 sortOrder: [
                     {
                         field: "name",
@@ -26,7 +32,6 @@
                     }
                 ],
                 fields: [
-                    
                     {
                         title: "Category",
                         name: "cat_name",
@@ -36,6 +41,10 @@
                         title: "Status",
                         name: "cat_uid",
                         sortField: "status"
+                    },
+                    {
+                        name: "__slot:actions",
+                        title: ""
                     }
                 ]
             }
@@ -50,12 +59,19 @@
                         "categories",
                     )
                     .then(response => {
-                        // this.data = this.transform(response.data);
                         this.data = response.data;
                         this.loading = false;
                     });
             },
             onPaginationData() { },
+            onAction(action, data, index) {
+                switch (action) {
+                    case "edit-item":
+                        this.$emit('edit', data)
+                    case "remove-item":
+                        this.$emit('delete', data)
+                }
+            }
         }
     }
 </script>

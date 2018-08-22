@@ -6,10 +6,23 @@ new Vue({
     el: '#process-categories-listing',
     data: {
         filter: '',
-        categoryModal: false,
+        formData: null,
     },
     components: {
         CategoriesListing,
         ModalCategoryAddEdit,
+    },
+    methods: {
+        editCategory(data) {
+            this.formData = data;
+            this.showModal()
+        },
+        showModal() {
+            this.$refs.addEdit.$refs.modal.show()
+        },
+        deleteCategory(data) {
+            //@todo implement
+            console.log('deleting', data.cat_uid);
+        }
     }
 });
