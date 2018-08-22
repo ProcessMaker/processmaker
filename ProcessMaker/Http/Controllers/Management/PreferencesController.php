@@ -4,7 +4,7 @@ namespace ProcessMaker\Http\Controllers\Management;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Model\User;
 
-class UsersController extends Controller
+class PreferencesController extends Controller
 {
 
     /**
