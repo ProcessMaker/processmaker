@@ -1,4 +1,6 @@
-const {mix} = require('laravel-mix');
+const {
+    mix
+} = require('laravel-mix');
 const MonocoEditorPlugin = require('monaco-editor-webpack-plugin')
 
 /*
@@ -13,16 +15,17 @@ const MonocoEditorPlugin = require('monaco-editor-webpack-plugin')
 */
 
 mix.webpackConfig({
-    plugins: [
-        new MonocoEditorPlugin()
-      ]
-}).js('resources/assets/js/app-layout.js', 'public/js')
+        plugins: [
+            new MonocoEditorPlugin()
+        ]
+    }).js('resources/assets/js/app-layout.js', 'public/js')
     .js('resources/assets/js/designer/main.js', 'public/js/designer')
     .js('resources/assets/js/management/users/index.js', 'public/js/management/users')
     .js('resources/assets/js/management/profile/index.js', 'public/js/management/profile')
     .js('resources/assets/js/management/roles/index.js', 'public/js/management/roles')
     .js('resources/assets/js/management/groups/index.js', 'public/js/management/groups')
-    .js('resources/assets/js/management/admin/index.js', 'public/js/management/admin')
+    .js('resources/assets/js/management/themes/index.js', 'public/js/management/themes')
+    .js('resources/assets/js/management/preferences/index.js', 'public/js/management/preferences')
     .js('resources/assets/js/processes/tasks/index.js', 'public/js/processes/tasks')
     .js('resources/assets/js/processes/index.js', 'public/js/processes')
     .js('resources/assets/js/requests/index.js', 'public/js/requests')
