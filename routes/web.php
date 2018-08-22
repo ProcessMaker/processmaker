@@ -58,6 +58,8 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
       return view('profile',['title' => 'Dashboard']);
     })->name('profile');
 
+    $this->get('/admin/preferences', 'Management\PreferencesController@index')->name('preferences');
+
     $this->get('/', 'HomeController@index')->name('home');
 
     Route::group([
