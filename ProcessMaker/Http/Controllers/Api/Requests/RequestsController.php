@@ -23,7 +23,6 @@ class RequestsController extends Controller
      * @param Request $request
      * @return array $result result of the query
      */
-
     public function index(Request $request)
     {
         $owner = Auth::user();
