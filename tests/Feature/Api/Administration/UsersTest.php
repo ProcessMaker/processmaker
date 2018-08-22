@@ -65,9 +65,9 @@ class UsersTest extends ApiTestCase
         $response->assertStatus(200);
         // Grab users
         $data = json_decode($response->getContent(), true);
-        // Verify we have a total of 9 results (our 5 plus admin plus our created user)
-        $this->assertCount(9, $data['data']);
-        $this->assertEquals(9, $data['meta']['total']);
+        // Verify we have a total of 7 results (our 5 plus admin plus our created user)
+        $this->assertCount(7, $data['data']);
+        $this->assertEquals(7, $data['meta']['total']);
         // Not testing returned data format as we're assuming the single user fetch validates that 
         // output matches transformer
     }
