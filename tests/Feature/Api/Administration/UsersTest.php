@@ -18,11 +18,19 @@ use Tests\Feature\Api\ApiTestCase;
  */
 class UsersTest extends ApiTestCase
 {
+
     use DatabaseTransactions;
 
     const API_TEST_USERS = '/api/1.0/users';
     const API_TEST_PROFILE = '/api/1.0/admin/';
 
+    private function doLogin($username, $password){
+          return $this->call('POST', '/login', [
+            'username' => $username,
+            'password' => $password,
+            '_token' => csrf_token()
+        ]);
+    }
     /**
      * These api endpoints can only work if you are authenticated
      */
@@ -222,7 +230,6 @@ class UsersTest extends ApiTestCase
             'username' => app()->make('Faker\Generator')->text(10),
             'firstname' => app()->make('Faker\Generator')->text(10),
             'lastname' => app()->make('Faker\Generator')->text(10),
-            'status' => 'INACTIVE'
         ]);
         $response = $this->api('get', self::API_TEST_USERS, []);
         $response->assertStatus(200);
@@ -257,6 +264,36 @@ class UsersTest extends ApiTestCase
             '_token' => csrf_token()
         ]);
         $response->assertStatus(302);
+    }
+    /**
+     * test user cannot login when inactive
+     */
+     public function testInactiveUserCantLogIn()
+    {
+        $user = factory(User::class)->create([
+            'password' => Hash::make('password'),
+            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+        ]);
+        $this->auth($user->username, 'password');
+        $user = factory(User::class)->create([
+            'uid' => '1234',
+            'username' => app()->make('Faker\Generator')->text(10),
+            'firstname' => app()->make('Faker\Generator')->text(10),
+            'lastname' => app()->make('Faker\Generator')->text(10),
+            'status' => 'ACTIVE'
+        ]);
+        $response = $this->api('get', self::API_TEST_USERS, []);
+        $response->assertStatus(200);
+        $response = $this->api('put', self::API_TEST_USERS . '/' . $user->uid, [
+            'firstname' => $user->firstname,
+            'status' => 'INACTIVE',
+            'lastname' => $user->lastname,
+            'username' => $user->username,
+            'password' => $user->password,
+        ]);
+        $response->assertStatus(200);
+        $response=$this->doLogin($user->username,'uauau');
+        dd($response);    
     }
 
     public function testCreateUser()
