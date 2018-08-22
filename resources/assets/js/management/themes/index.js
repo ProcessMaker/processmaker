@@ -13,7 +13,7 @@ new Vue({
     methods: {
         keepPickColor() {
             // this.$refs.show();
-            alert('pickcolor')
+
         },
     }
 })
