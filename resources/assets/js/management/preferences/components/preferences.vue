@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h1 style="margin:15px">Preferences</h1>
+    <h1>Preferences</h1>
     <div class="row">
       <div class="col-4">
         <div class="card card-body">
