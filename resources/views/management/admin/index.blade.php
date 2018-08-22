@@ -5,40 +5,40 @@
 @endsection
 
 @section('content')
-<div id="uicustomize" class="container page-content">
-    <h4>UI Customization</h4>
-    <br/>
-    <h6>Add your company logo</h6>
-    <form>
-        <div class="custom-file">
-            <input type="file" class="custom-file-input" id="validatedCustomFile" required>
-            <label class="custom-file-label" for="validatedCustomFile">Choose file...</label>
-            <small class="text-mute">Logo size must be 400x100. File format .jpg or .png</small>
-        </div>
+<div id="uicustomize" class="container">
+    <h1>UI Customization</h1>
+    <div class="row">
+        <div class="col-8">
+        <h6>Add your company logo</h6>
+            <form>
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="validatedCustomFile" required>
+                    <label class="custom-file-label" for="validatedCustomFile">Choose file...</label>
+                    <small class="text-mute">Logo size must be 400x100. File format .jpg or .png</small>
+                </div>
 
-        <div class="custom-file">
-            <input type="file" class="custom-file-input" id="validatedCustomFile" required>
-            <label class="custom-file-label" for="validatedCustomFile">Choose file...</label>
-            <small class="text-mute">Logo size must be 400x100. File format .jpg or .png</small>
-        </div>
-    </form>
-        <h6 style="mt-5">Create a color scheme to customize your UI</h6>
-        <div class="form-group">
-            <label>Enter hex color or chose a color for the left navigation bar</label>
-            <input type="text" class="form-control inline-input dropdown-toggle" id="pickColor1" @click=showPickColor data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <div class="dropdown-menu" aria-labelledby="pickColor1">
-                <customize-color ></customize-color>
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="validatedCustomFile" required>
+                    <label class="custom-file-label" for="validatedCustomFile">Choose file...</label>
+                    <small class="text-mute">Logo size must be 400x100. File format .jpg or .png</small>
+                </div>
+            </form>
+            <h6 style="mt-5">Create a color scheme to customize your UI</h6>
+            <div class="form-group">
+                <label>Enter hex color or chose a color for the left navigation bar</label>
+                <input type="text" class="form-control inline-input dropdown-toggle" id="pickColor1" @click=keepPickColor data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <div class="dropdown-menu" aria-labelledby="pickColor1">
+                    <customize-color ></customize-color>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Enter hex color or chose a color for the action buttons</label>
+                <input type="text" class="form-control inline-input dropdown show" id="pickColor2"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <customize-color class="dropdown-menu p-0" aria-labelledby="pickColor2" multiple  ></customize-color>
             </div>
         </div>
-
-        <div class="form-group dropdown show">
-            <label>Enter hex color or chose a color for the action buttons</label>
-            <input type="text" class="form-control inline-input dropdown-toggle" id="pickColor2" @click=showPickColor data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <div class="dropdown-menu" aria-labelledby="pickColor2">
-                <customize-color ></customize-color>
-            </div>
-        </div>
-    
+    </div>    
 </div>
 @endsection
 

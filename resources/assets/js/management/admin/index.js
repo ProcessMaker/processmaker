@@ -8,8 +8,9 @@ new Vue ({
         CustomizeColor,
     },
     methods: {
-        showPickColor() {
-            this.$refs.show();
-        }
+        keepPickColor() {
+            // this.$refs.show();
+            alert ('pickcolor')
+        },
     }
 })
