@@ -7,13 +7,13 @@
           <h4>Localization</h4>
           <form>
             <form-select label="Time Zone" name="timezone" v-model="timezone"
-                        :options="timezoneSelect" helper="Default Time Zone"></form-select>
+                        :options="timezoneSelect"></form-select>
             <form-select name="globe" v-model="globe"
-                        :options="globalSelect" helper="Global Date Format"></form-select>
+                        :options="globalSelect" label="Date Format"></form-select>
             <form-select label="Languages" name="language" v-model="language"
-                        :options="langSelect" helper="When the domain is loaded the default app language is "></form-select>
+                        :options="langSelect"></form-select>
             <form-select label="Format" name="format" v-model="format"
-                        :options="formatSelect" helper="User Name Display Format"></form-select>
+                        :options="formatSelect"></form-select>
         </form>
       </div>
       </div>
