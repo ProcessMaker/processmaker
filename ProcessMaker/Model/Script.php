@@ -83,7 +83,7 @@ class Script extends Model
         if ($field === 'title') {
             return Rule::unique('scripts')->where(function ($query) {
                 $query->where('process_id', $this->process_id);
-            });
+            })->ignore($this->id);
         }
     }
 
