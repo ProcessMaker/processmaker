@@ -50,6 +50,7 @@ Route::group([
             Route::post('groups', 'Administration\GroupsController@create');
             Route::get('groups/{group}', 'Administration\GroupsController@get');
             Route::delete('groups/{group}', 'Administration\GroupsController@delete');
+            Route::put('groups/{group}', 'Administration\GroupsController@update');
 
         });
 
