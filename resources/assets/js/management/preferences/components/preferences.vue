@@ -4,21 +4,22 @@
     <div class="row">
       <div class="col-4">
         <div class="card card-body">
+          <h4>Localization</h4>
           <form>
             <form-select label="Time Zone" name="timezone" v-model="timezone"
                         :options="timezoneSelect" helper="Default Time Zone"></form-select>
-            <form-select label="Format" name="format" v-model="format"
-                        :options="formatSelect" helper="User Name Display Format"></form-select>
             <form-select name="globe" v-model="globe"
                         :options="globalSelect" helper="Global Date Format"></form-select>
             <form-select label="Languages" name="language" v-model="language"
                         :options="langSelect" helper="When the domain is loaded the default app language is "></form-select>
+            <form-select label="Format" name="format" v-model="format"
+                        :options="formatSelect" helper="User Name Display Format"></form-select>
         </form>
       </div>
       </div>
       <div class="col-4">
         <div class="card card-body">
-        <h4>Outgoing mail server</h4>
+        <h4>Outgoing Mail Server</h4>
         <form-input v-model="userName" label="User Name"></form-input>
         <form-input v-model="password" label="Password" type="password"></form-input>
         <form-input v-model="hostName" label="Host Name"></form-input>
