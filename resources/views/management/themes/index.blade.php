@@ -43,7 +43,7 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/management/admin/index.js')}}"></script>
+    <script src="{{mix('js/management/themes/index.js')}}"></script>
 @endsection
 
 <style lang="scss" scoped>
