@@ -293,7 +293,7 @@ class UsersTest extends ApiTestCase
         ]);
         $response->assertStatus(200);
         $response=$this->doLogin($user->username,'uauau');
-        dd($response);    
+        //@TODO this is redirecting with a bad password as well as being able to log in as an inactive user
     }
 
     public function testCreateUser()
