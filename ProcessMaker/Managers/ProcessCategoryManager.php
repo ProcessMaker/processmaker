@@ -7,6 +7,7 @@ use Illuminate\Validation\Validator as ValidatorImplementation;
 use ProcessMaker\Exception\ValidationException;
 use ProcessMaker\Model\ProcessCategory;
 use Ramsey\Uuid\Uuid;
+use ProcessMaker\Http\Controllers\Api\Designer\ProcessBpmnController;
 
 class ProcessCategoryManager
 {
@@ -59,19 +60,11 @@ class ProcessCategoryManager
      */
     public function store(array $data)
     {
-        // TODO: Handle in model only
-        $this->validate(
-            $data,
-            [
-                'name' => 'required|string|max:100|unique:process_categories,name',
-                'status' => 'required|string|in:ACTIVE,INACTIVE',
-            ]
-        );
-        return ProcessCategory::create([
-            'uid' => str_replace('-', '', Uuid::uuid4()),
-            'name' => $data['name'],
-            'status' => $data['status'],
-        ]);
+        $processCategory = new ProcessCategory();
+        $data['uid'] = str_replace('-', '', Uuid::uuid4());
+        $processCategory->fill($data);
+        $processCategory->saveOrFail();
+        return $processCategory;
     }
 
     /**
@@ -84,19 +77,8 @@ class ProcessCategoryManager
      */
     public function update(ProcessCategory $processCategory, array $data)
     {
-        // TODO: Handle in model only
-        $this->validate(
-            $data,
-            [
-                'name' => 'required|string|max:100|unique:process_categories,name',
-                'status' => 'required|string|in:ACTIVE,INACTIVE',
-            ]
-        );
-        $processCategory->update([
-            'name' => $data['name'],
-            'status' => $data['status'],
-        ]);
-        $processCategory->save();
+        $processCategory->fill($data);
+        $processCategory->saveOrFail();
         return $processCategory;
     }
 

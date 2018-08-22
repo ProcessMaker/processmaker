@@ -69,12 +69,14 @@
                 return this.formData.edit
             },
             request() {
-                console.log("Is Editing is:", this.isEditing())
                 return this.isEditing() ? ProcessMaker.apiClient.put : ProcessMaker.apiClient.post;
+            },
+            savePath() {
+                return this.isEditing() ? 'category/' + this.formData.cat_uid : 'category';
             },
             save() {
                 this.request()(
-                        'category', {
+                        this.savePath(), {
                             uid: this.formData.cat_uid,
                             name: this.formData.cat_name,
                             status: this.formData.cat_status,
@@ -94,7 +96,6 @@
                                 this.errors[field] = error.response.data.errors[field][0];
                             }
                         }
-                        console.log(this.errors.name);
                     });
             }
         }
