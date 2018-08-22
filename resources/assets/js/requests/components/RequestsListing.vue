@@ -95,9 +95,7 @@
                 let that = this;
                 let count = 0;
                 delegations.forEach(function (delegation, key) {
-                    if (key > 1) {
-                        count++;
-                    } else {
+                    if (key <= 4) {
                         let user = delegation.user;
                         assignedTo += user.avatar ? that.createImg({
                                 'src': user.avatar,
@@ -105,6 +103,8 @@
                                 'title': user.fullname
                             })
                             : '<i class="fa fa-user rounded-user"></i>' + '<span>' + user.fullname + '</span>';
+                    } else {
+                        count++;
                     }
                 });
                 if (count) {
@@ -136,13 +136,8 @@
                 return date.format('YYYY-MM-DD hh:mm');
             },
             formatDueDate(delegations) {
-                let dueDate = '';
-                let self = this;
-                if (!delegations) return dueDate;
-                delegations.forEach(function (delegation) {
-                    dueDate += self.formatDateWithDot(delegation.task_due_date) + '<br>';
-                });
-                return dueDate;
+                let status = delegations.due_date ? delegations.due_date : 'ON TIME';
+                return ' <span style="text-transform: uppercase">' + status+ '</span>';
             },
             transform(data) {
                 // Clean up fields for meta pagination so vue table pagination can understand
