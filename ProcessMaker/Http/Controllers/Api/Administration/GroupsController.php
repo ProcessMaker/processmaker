@@ -77,6 +77,23 @@ class GroupsController extends Controller
     }
 
     /**
+     * Update group
+     *
+     * @param Request $request
+     * @param Group $group
+     * @return ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * @throws \Throwable
+     */
+    public function update(Request $request, Group $group)
+    {
+        $data = $request->all();
+        $group->fill($data);
+        $group->saveOrFail();
+
+        return response([], 200);
+    }
+
+    /**
      * Delete group
      *
      * @param Group $group

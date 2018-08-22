@@ -44,6 +44,8 @@ class Group extends Model
     const UX_MOBILE = 'SIMPLIFIED';
     const UX_SWITCHABLE = 'SWITCHABLE';
     const UX_SINGLE = 'SINGLE';
+    
+    const ALL_USERS_GROUP = '6c402862-411f-4e3f-904f-ba8a0a682d85';
 
     protected $fillable = [
         'uid',
