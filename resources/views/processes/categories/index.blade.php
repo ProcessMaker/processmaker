@@ -19,8 +19,8 @@
                         </a>
                     </div>
                 </div>
-                <modal-category-add-edit ref="addEdit" :input-data="formData"></modal-category-add-edit>
-                <categories-listing @edit="editCategory" @delete="deleteCategory"></categories-listing>
+                <modal-category-add-edit ref="addEdit" :input-data="formData" @reload="reload"></modal-category-add-edit>
+                <categories-listing ref="list" @edit="editCategory" @delete="deleteCategory"></categories-listing>
             </div>
         </div>
     </div>

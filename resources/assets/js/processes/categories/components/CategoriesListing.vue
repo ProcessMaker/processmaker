@@ -1,8 +1,6 @@
 <template>
     <div class="data-table">
-        <vuetable :dataManager="dataManager" :sortOrder="sortOrder" :css="css" :api-mode="false"
-                  @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data"
-                  pagination-path="meta">
+        <vuetable :dataManager="dataManager" :sortOrder="sortOrder" :css="css" :api-mode="false"  @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data" pagination-path="meta">
             <template slot="actions" slot-scope="props">
             <div class="actions">
                 <i class="fas fa-ellipsis-h"></i>
@@ -39,8 +37,14 @@
                     },
                     {
                         title: "Status",
-                        name: "cat_uid",
-                        sortField: "status"
+                        name: "cat_status",
+                        sortField: "cat_status",
+                        callback: "capitalize"
+                    },
+                    {
+                        title: "# Processes",
+                        name: "cat_total_processes",
+                        sortField: "cat_total_processes"
                     },
                     {
                         name: "__slot:actions",
@@ -56,7 +60,11 @@
                 // Load from our api client
                 ProcessMaker.apiClient
                     .get(
-                        "categories",
+                        "categories?" +
+                        "&sort_by=" +
+                        this.orderBy +
+                        "&sort_order=" +
+                        this.orderDirection
                     )
                     .then(response => {
                         this.data = response.data;
@@ -68,9 +76,14 @@
                 switch (action) {
                     case "edit-item":
                         this.$emit('edit', data)
+                        break
                     case "remove-item":
                         this.$emit('delete', data)
+                        break
                 }
+            },
+            capitalize(text) {
+                return _.capitalize(text);
             }
         }
     }

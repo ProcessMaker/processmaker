@@ -22,8 +22,8 @@
 
     const newData = {
         cat_uid: null,
-        cat_name: 'def',
-        cat_status: '',
+        cat_name: '',
+        cat_status: 'ACTIVE',
         edit: false,
     };
 
@@ -34,13 +34,14 @@
             return {
                 'title': '',
                 'statusSelectOptions': [
-                    { value: 'active', content: 'Active' },
-                    { value: 'inactive', content: 'Inactive' },
+                    { value: 'ACTIVE', content: 'Active' },
+                    { value: 'INACTIVE', content: 'Inactive' },
                 ],
                 'errors': {
                     'name': null,
                 },
-                'formData': { }
+                'formData': { },
+                'validator': null,
             }
         },
         mounted() {
@@ -62,19 +63,26 @@
                 this.setTitle();
             },
             setTitle() {
-                this.title = this.formData.edit ? 'Edit Category' : 'Add Category'
+                this.title = this.isEditing() ? 'Edit Category' : 'Add Category'
+            },
+            isEditing() {
+                return this.formData.edit
+            },
+            request() {
+                console.log("Is Editing is:", this.isEditing())
+                return this.isEditing() ? ProcessMaker.apiClient.put : ProcessMaker.apiClient.post;
             },
             save() {
-                ProcessMaker.apiClient
-                    .post(
-                        'categories',
-                        {
-                            name: this.name,
-                            status: this.status,
+                this.request()(
+                        'category', {
+                            uid: this.formData.cat_uid,
+                            name: this.formData.cat_name,
+                            status: this.formData.cat_status,
                         }
                     )
                     .then(response => {
                         ProcessMaker.alert('New Category Successfully Created', 'success');
+                        this.$emit('reload')
                         this.close();
                     })
                     .catch(error => {
@@ -86,6 +94,7 @@
                                 this.errors[field] = error.response.data.errors[field][0];
                             }
                         }
+                        console.log(this.errors.name);
                     });
             }
         }

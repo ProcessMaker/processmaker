@@ -14,7 +14,7 @@ new Vue({
     },
     methods: {
         editCategory(data) {
-            this.formData = data;
+            this.formData = Object.assign({}, data);
             this.showModal()
         },
         showModal() {
@@ -23,6 +23,9 @@ new Vue({
         deleteCategory(data) {
             //@todo implement
             console.log('deleting', data.cat_uid);
+        },
+        reload() {
+            this.$refs.list.fetch();
         }
     }
 });
