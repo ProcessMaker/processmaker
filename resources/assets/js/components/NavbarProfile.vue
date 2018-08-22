@@ -18,19 +18,7 @@
                    ref="popover"
                    @hidden="onHidden">
             <template slot="title">
-                <template v-if="sourceImage">
-                    <img class="avatar-image-small" :src="user.avatar">
-                    <div class="wrap-name wrap-image">{{fullName}}</div>
-                </template>
-                <template v-else>
-                    <div class="avatar-circle-small">
-                        <span class="avatar-initials-small text-uppercase">
-                        {{initials}}
-                        </span>
-                        <div class="wrap-name">{{fullName}}</div>
-                    </div>
-                </template>
-
+                <div class="wrap-name">{{fullName}}</div>
             </template>
             <template>
                 <template v-for="item in items">
@@ -84,7 +72,14 @@
     }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+
+    /deep/ .popover-header {
+        background-color: #fff;
+        font-size: 16px;
+        font-weight: 600;
+        color: #333333;
+    }
 
     .avatar-circle {
         width: 40px;
@@ -103,46 +98,26 @@
         font-size: 20px;
         line-height: 18px;
         color: #fff;
-        margin-left: -13px;
+        margin: -12px;
     }
 
-    .avatar-circle-small {
-        width: 40px;
-        height: 40px;
-        background-color: rgb(251, 181, 4);
-        text-align: center;
-        border-radius: 50%;
-        margin-left: -10px;
-    }
-
-    .avatar-initials-small {
-        position: relative;
-        font-size: 20px;
-        line-height: 40px;
-        color: #fff;
-    }
-
-    .wrap-name{
-        font-size: 14px;
+    .wrap-name {
+        font-size: 16px;
         font-weight: 600;
-        width: 120px;
+        width: 140px;
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;
-        margin-top: 10px;
-        float: right;
-        margin-right: -125px;
-        text-align: left;
     }
 
     .wrap-name:hover {
         white-space: initial;
-        overflow:visible;
+        overflow: visible;
         cursor: pointer;
     }
 
     .item {
-        font-size: 14px;
+        font-size: 12px;
         padding: 5px;
         width: 160px;
     }
@@ -152,17 +127,6 @@
         height: 40px;
         margin-left: -16px;
         margin-top: -7px;
-    }
-
-    .avatar-image-small {
-        width: 40px;
-        height: 40px;
-        margin-left: -5px;
-    }
-    .wrap-image {
-        margin-top: 10px;
-        margin-left: 10px;
-        margin-right: 0px;
     }
 
 </style>
