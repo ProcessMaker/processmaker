@@ -327,6 +327,22 @@ class FormManagerTest extends ApiTestCase
     }
 
     /**
+     * Update Form with same title
+     */
+    public function testUpdateSameTitleForm()
+    {
+        //Post saved success
+        $faker = Faker::create();
+        $url = self::API_TEST_FORM . $this->process->uid . '/form/' . factory(Form::class)->create(['process_id' => $this->process->id])->uid;
+        $response = $this->api('PUT', $url, [
+            'description' => $faker->sentence(5),
+            'content' => '',
+        ]);
+        //Validate the answer is correct
+        $response->assertStatus(200);
+    }
+
+    /**
      * Delete Form in process
      */
     public function testDeleteForm()

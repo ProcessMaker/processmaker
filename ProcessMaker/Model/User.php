@@ -7,7 +7,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Auth\Passwords\CanResetPassword as CanResetPasswordTrait;
-
+use ProcessMaker\Model\Group;
 use League\OAuth2\Server\Entities\UserEntityInterface;
 use ProcessMaker\Model\Traits\Uuid;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
@@ -22,7 +22,9 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 class User extends Authenticatable implements UserEntityInterface, CanResetPassword, HasMedia
 {
     use Notifiable;
-    use Uuid;
+    use Uuid{
+        boot as uuidBoot;
+    }
     use CanResetPasswordTrait;
     use HasMediaTrait;
 
@@ -69,6 +71,22 @@ class User extends Authenticatable implements UserEntityInterface, CanResetPassw
         'fullname',
         'avatar',
     ];
+
+    /**
+     * Boot user model.
+     *
+     */
+    public static function boot()
+    {
+        self::uuidBoot();
+        //By default the users should be assigned to a "Users" group #544
+        static::created(
+            function($user)
+            {
+                Group::where('uid', Group::ALL_USERS_GROUP)->first()->users()->attach($user);
+            }
+        );
+    }
 
     /**
      * Returns the validation rules for this model.
