@@ -238,6 +238,26 @@ class ScriptManagerTest extends ApiTestCase
                 'code' => $faker->sentence($faker->randomDigitNotNull)
             ])->uid;
         $response = $this->api('PUT', $url, [
+            'description' => $faker->sentence(6),
+            'language' => 'php',
+            'code' => $faker->sentence(3),
+        ]);
+        //Validate the answer is correct
+        $response->assertStatus(204);
+    }
+
+    /**
+     * Update script in process with same title
+     */
+    public function testUpdateScriptSameTitle()
+    {
+        $faker = Faker::create();
+        //Post saved success
+        $url = self::API_TEST_SCRIPT . $this->process->uid . '/script/' . factory(Script::class)->create([
+                'process_id' => $this->process->id,
+                'code' => $faker->sentence($faker->randomDigitNotNull)
+            ])->uid;
+        $response = $this->api('PUT', $url, [
             'title' => $faker->sentence(2)
         ]);
         //Validate the answer is correct
