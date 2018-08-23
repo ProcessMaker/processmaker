@@ -32,7 +32,7 @@ class ProcessCategory extends Model
      *
      * @var array $rules
      */
-    protected $rules = [
+    public $rules = [
         'name' => 'required|string|max:100|unique:process_categories,name',
         'status' => 'required|string|in:ACTIVE,INACTIVE',
     ];

@@ -18,6 +18,8 @@ class CreateProcessCategoriesTable extends Migration
             $table->increments('id');
             $table->uuid('uid')->unique();
             $table->string('name')->default('');
+            $table->enum('status', ['ACTIVE', 'INACTIVE'])
+                  ->default('ACTIVE');
             $table->timestamps();
         });
     }
