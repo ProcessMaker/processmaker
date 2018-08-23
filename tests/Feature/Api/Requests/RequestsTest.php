@@ -5,13 +5,15 @@ use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\Application;
 use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
-use Tests\Feature\Api\ApiTestCase;
+use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
-class RequestsTest extends ApiTestCase
+class RequestsTest extends TestCase
 {
     use DatabaseTransactions;
+
+    public $user;
 
     /**
      * Test to check that the route is protected
@@ -28,7 +30,7 @@ class RequestsTest extends ApiTestCase
 
     public function test_api_result_failed()
     {
-        $response = $this->api('GET', '/api/1.0/requests');
+        $response = $this->json('GET', '/api/1.0/requests');
         $response->assertStatus(401);
     }
 
@@ -42,7 +44,7 @@ class RequestsTest extends ApiTestCase
 
         factory(\ProcessMaker\Model\Application::class, 1)->create([
             'id' => 10,
-            'creator_user_id' => \Auth::user()->id
+            'creator_user_id' => $this->user->id
         ]);
 
 
@@ -50,7 +52,7 @@ class RequestsTest extends ApiTestCase
             'application_id' => 10
         ]);
 
-        $response = $this->api('GET', '/api/1.0/requests?delay=overdue');
+        $response = $this->actingAs($this->user, 'api')->json('GET', '/api/1.0/requests?delay=overdue');
 
         $response->assertStatus(200);
 
@@ -67,6 +69,5 @@ class RequestsTest extends ApiTestCase
         'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
     ]);
 
-        $this->auth($this->user->username, 'password');
     }
 }

@@ -1,11 +1,15 @@
 @import "../variables";
 
 #sidebar {
-  width: 100%;
-  max-width:58px;
+  width: 58px;
+  min-width: 58px;
   background-color: $primary;
   overflow-y: auto;
-  height: 100vh;
+
+  &.expanded {
+    width: 250px;
+    min-width: 250px;
+  }
 
   .section {
     font-size: 12px;
@@ -36,9 +40,6 @@
 }
 
 #sidebar .closed {
-
-
-
   .section {
     display: none;
   }
