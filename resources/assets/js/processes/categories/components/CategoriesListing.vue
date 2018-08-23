@@ -20,9 +20,9 @@
 
     export default {
         mixins: [datatableMixin],
+        props: ["filter"],
         data() {
             return {
-                filter: '',
                 orderBy: "name",
                 sortOrder: [
                     {
@@ -55,6 +55,7 @@
                 ]
             }
         },
+        mounted() { console.log(this.filter); },
         methods: {
             fetch() {
                 this.loading = true;
@@ -75,15 +76,12 @@
                     )
                     .then(response => {
                         this.data = this.transform(response.data);
-                        console.log("DATA is", this.data);
                         this.loading = false;
                     });
             },
             transform(data) {
                 // format in a way vuetable is expecting
-                console.log("DATA BEFORE", data);
                 data = Object.assign({}, data, data.meta, { meta: null })
-                console.log("DATA AFTER", data);
                 return data;
             },
             onPaginationData() { },
