@@ -24,15 +24,15 @@
                 <div class="mt-3">Selected file: @{{file2 && file2.name}}</div>
               </b-form-group>
               <h4>Create a color scheme to customize your UI</h4>
-              <div class="row">
-                <div class="col-2">
-                  <div class="btn btn-primary" @click="showPrimaryModal">
-                    primary
+              <div>
+                <div class="form-group">
+                  <div class="color-select" @click="showPrimaryModal">
+                    <span class="bg-primary"></span>primary
                   </div>
                 </div>
-                <div class="col-2">
-                  <div class="btn btn-secondary" @click="showSecondaryModal">
-                    secondary
+                <div class="form-group">
+                  <div class="color-select" @click="showSecondaryModal">
+                    <span class="bg-secondary"></span>secondary
                   </div>
                 </div>
              </b-form>
@@ -76,5 +76,15 @@
 @endsection
 
 <style lang="scss" scoped>
-
+.color-select{
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  width: 100%;
+  border-radius: 0.125em;
+  height: calc(1.875rem + 2px);
+}
+span:{
+  width: 50%;
+  border-radius: 0.125em;
+  height: calc(1.875rem + 2px);
+}
 </style>
