@@ -102,7 +102,8 @@
                                 'class': 'rounded-user',
                                 'title': user.fullname
                             })
-                            : '<i class="fa fa-user rounded-user"></i>' + '<span>' + user.fullname + '</span>';
+                            : '<div class="circle"><span style="color: white;" title="' + user.fullname + '">'
+                            + user.firstname[0].toUpperCase() + user.lastname[0].toUpperCase() + '</span></div>';
                     } else {
                         count++;
                     }
@@ -136,8 +137,19 @@
                 return date.format('YYYY-MM-DD hh:mm');
             },
             formatDueDate(delegations) {
-                let status = delegations.due_date ? delegations.due_date : 'ON TIME';
-                return ' <span style="text-transform: uppercase">' + status+ '</span>';
+                let overdue = false;
+                let risk = false;
+                if (delegations) {
+                    delegations.forEach(function (delegation) {
+                        if (delegation.delay.toUpperCase() === 'OVERDUE') {
+                            overdue = true;
+                        } else if (delegation.delay.toUpperCase() === 'AT_RISK') {
+                            risk = true;
+                        }
+                    });
+                }
+                let status = overdue ? 'OVERDUE' : (risk ? 'AT RISK' : 'ON TIME');
+                return ' <span style="text-transform: uppercase">' + status + '</span>';
             },
             transform(data) {
                 // Clean up fields for meta pagination so vue table pagination can understand
@@ -170,7 +182,7 @@
                         "&filter=" +
                         this.filter +
                         "&order_by=" +
-                        this.orderBy +
+                        (this.orderBy === '__slot:ids' ? 'id' : this.orderBy) +
                         "&order_direction=" +
                         this.orderDirection +
                         additionalParams
@@ -191,6 +203,7 @@
         width: 18px;
         background-color: #6c757d;
         display: inline-table;
+        margin-right: 0.5em;
     }
 
     /deep/ .rounded-user {

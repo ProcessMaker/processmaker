@@ -23,20 +23,22 @@ class RequestsController extends Controller
      * @param Request $request
      * @return array $result result of the query
      */
+
     public function index(Request $request)
     {
         $owner = Auth::user();
         $options = [
             'filter' => $request->input('filter', ''),
-            'current_page' => $request->input('current_page', 1),
+            'current_page' => $request->input('page', 1),
             'per_page' => $request->input('per_page', 10),
-            'sort_by' => $request->input('sort_by', 'username'),
-            'order_direction' => $request->input('order_direction', 'ASC'),
+            'sort_by' => $request->input('order_by', 'APP_CREATE_DATE'),
+            'sort_order' => $request->input('order_direction', 'ASC'),
         ];
         $include = $request->input('include');
 
         $requests = Application::where('creator_user_id', $owner->id)
             ->with($include ? explode(',', $include) : [])
+            ->orderBy($options['sort_by'], $options['sort_order'])
             ->paginate($options['per_page'])
             ->appends($options);
 
