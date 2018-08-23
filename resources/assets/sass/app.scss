@@ -22,8 +22,7 @@ html {
 }
 
 #app-container .main {
-  width: 100%;
-  position: absolute;
+  overflow: auto;
 }
 
 .row.no-gutters {
