@@ -8,12 +8,21 @@ new Vue({
         CustomizeColor,
     },
     data: {
-        file: {}
+        file1: null,
+        file2: null,
     },
     methods: {
-        keepPickColor() {
-            // this.$refs.show();
-
+        showPrimaryModal() {
+            this.$refs.myModalRef.show()
         },
+        hidePrimaryModal() {
+            this.$refs.myModalRef.hide()
+        },
+        showSecondaryModal() {
+            this.$refs.myModalRef.show()
+        },
+        hideSecondaryModal() {
+            this.$refs.myModalRef.hide()
+        }
     }
 })
