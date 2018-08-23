@@ -98,7 +98,8 @@ class Delegation extends Model implements TokenInterface
         'user_id'
     ];
     protected $appends = [
-        'definition'
+        'definition',
+        'delay'
     ];
 
     protected $rules = [
@@ -119,6 +120,29 @@ class Delegation extends Model implements TokenInterface
             $this->application()
         ]);
         $this->setId(UuidGenerator::uuid4());
+    }
+
+    /**
+     * Returns the kind of delay (at risk, overdue, on time) that the delegation has
+     *
+     * @return string
+     */
+    public function getDelayAttribute()
+    {
+        $isAtRisk = Carbon::now() >= Carbon::parse($this->risk_date);
+        $isOverdue = Carbon::now() >= Carbon::parse($this->task_due_date);
+
+        if ($this->thread_status === 'CLOSED') {
+            return 'closed';
+        }
+
+        if ($isOverdue) {
+            return 'overdue';
+        } elseif ($isAtRisk) {
+            return 'at_risk';
+        } else {
+            return 'on_time';
+        }
     }
 
     /**
