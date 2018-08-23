@@ -27,6 +27,8 @@ class TasksDelegationManager
         $include = $options['include'] ? explode(',', $options['include']): [];
         $include = array_unique(array_merge(['user', 'application'], $include));
         $query = Delegation::with($include);
+        //only normal type tasks are displayed
+        $query->where('type', '=', 'normal');
         if (!empty($options['status'])) {
             $query = $query->where('thread_status', '=', $options['status']);
         }
