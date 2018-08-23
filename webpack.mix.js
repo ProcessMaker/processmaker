@@ -1,4 +1,7 @@
-const {mix} = require('laravel-mix');
+const {
+    mix
+} = require('laravel-mix');
+const MonocoEditorPlugin = require('monaco-editor-webpack-plugin')
 
 /*
  |--------------------------------------------------------------------------
@@ -11,12 +14,17 @@ const {mix} = require('laravel-mix');
  |
 */
 
-mix.js('resources/assets/js/app-layout.js', 'public/js')
+mix.webpackConfig({
+        plugins: [
+            new MonocoEditorPlugin()
+        ]
+    }).js('resources/assets/js/app-layout.js', 'public/js')
     .js('resources/assets/js/designer/main.js', 'public/js/designer')
     .js('resources/assets/js/management/users/index.js', 'public/js/management/users')
     .js('resources/assets/js/management/profile/index.js', 'public/js/management/profile')
     .js('resources/assets/js/management/roles/index.js', 'public/js/management/roles')
     .js('resources/assets/js/management/groups/index.js', 'public/js/management/groups')
+    .js('resources/assets/js/management/preferences/index.js', 'public/js/management/preferences')
     .js('resources/assets/js/processes/tasks/index.js', 'public/js/processes/tasks')
     .js('resources/assets/js/processes/index.js', 'public/js/processes')
     .js('resources/assets/js/processes/categories/index.js', 'public/js/processes/categories')
@@ -28,6 +36,7 @@ mix.js('resources/assets/js/app-layout.js', 'public/js')
     .js('resources/assets/js/tasks/index.js', 'public/js/tasks/index.js')
     .js('resources/assets/js/tasks/show.js', 'public/js/tasks/show.js')
     .js('resources/assets/js/designer/formBuilder/main.js', 'public/js/formBuilder')
+    .js('resources/assets/js/designer/ScriptEditor/main.js', 'public/js/designer/ScriptEditor')
 
 
 
@@ -37,7 +46,7 @@ mix.js('resources/assets/js/app-layout.js', 'public/js')
     // See: https://github.com/JeffreyWay/laravel-mix/issues/1118
     .js('resources/assets/js/app.js', 'public/js')
 
-    .extract(['vue', 'jquery', 'bootstrap-vue', 'axios', 'popper.js', 'lodash', 'bootstrap', 'imports-loader?this=>window,fix=>module.exports=0!snapsvg/dist/snap.svg.js'])
+    .extract(['vue', 'jquery', 'bootstrap-vue', 'axios', 'popper.js', 'lodash', 'bootstrap'])
     .copy('resources/assets/img/*', 'public/img')
     .sass('resources/assets/sass/sidebar/sidebar.scss', 'public/css')
     .sass('resources/assets/sass/app.scss', 'public/css')

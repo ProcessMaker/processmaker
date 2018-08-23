@@ -46,13 +46,8 @@ class GenerateMenus
           ]);
 
           $submenu = $menu->add(__('menus.sidebar_admin.configuration'));
-          $submenu->add(__('menus.sidebar_admin.notifications_configuration'), [
-                'route' => 'home',
-                'icon' => 'fa-bell',
-                'id' => 'homeid'
-          ]);
           $submenu->add(__('menus.sidebar_admin.preferences'), [
-                'route' => 'home',
+                'route' => 'preferences',
                 'icon' => 'fa-globe',
                 'id' => 'homeid'
           ]);

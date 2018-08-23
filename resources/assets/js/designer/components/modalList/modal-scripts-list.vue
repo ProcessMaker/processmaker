@@ -82,7 +82,8 @@
                 this.$refs.modal.hide()
             },
             onEdit(data, index) {
-                //define action
+                window.location.href =
+                "/processes/" + this.processUid + "/script/" + data.uid;
             },
             onDelete(data, index) {
                 let that = this;
