@@ -4,6 +4,8 @@ namespace ProcessMaker\Repositories;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Model\Delegation as Token;
+use ProcessMaker\Model\Script;
+use ProcessMaker\Nayra\Bpmn\Models\ScriptTask;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\GatewayInterface;
@@ -63,6 +65,10 @@ class TokenRepository implements TokenRepositoryInterface
         $user = User::first();
         $token->uid = $token->getId();
         $token->thread_status = $token->getStatus();
+        $token->type = 'normal';
+        if ($activity instanceof ScriptTask) {
+            $token->type = 'script';
+        }
         $token->element_ref = $activity->getId();
         $token->application_id = $token->getInstance()->id;
         $token->user_id = $user->id;
