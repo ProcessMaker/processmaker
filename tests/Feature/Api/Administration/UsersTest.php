@@ -265,11 +265,11 @@ class UsersTest extends TestCase
      */
      public function testInactiveUserCantLogIn()
     {
-        $user = factory(User::class)->create([
+        $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
             'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
         ]);
-        $this->auth($user->username, 'password');
+        $this->doLogin($admin->username, 'password');
         $user = factory(User::class)->create([
             'uid' => '1234',
             'username' => app()->make('Faker\Generator')->text(10),
@@ -277,9 +277,9 @@ class UsersTest extends TestCase
             'lastname' => app()->make('Faker\Generator')->text(10),
             'status' => 'ACTIVE'
         ]);
-        $response = $this->api('get', self::API_TEST_USERS, []);
+        $response = $this->actingAs($admin, 'api')->json('get', self::API_TEST_USERS, []);
         $response->assertStatus(200);
-        $response = $this->api('put', self::API_TEST_USERS . '/' . $user->uid, [
+        $response = $this->actingAs($admin, 'api')->json('put', self::API_TEST_USERS . '/' . $user->uid, [
             'firstname' => $user->firstname,
             'status' => 'INACTIVE',
             'lastname' => $user->lastname,
@@ -287,8 +287,9 @@ class UsersTest extends TestCase
             'password' => $user->password,
         ]);
         $response->assertStatus(200);
-        $response=$this->doLogin($user->username,'uauau');
-        //@TODO this is redirecting with a bad password as well as being able to log in as an inactive user
+        $response=$this->doLogin($user->username,$user->password);
+        //check to be sure user cannot log in with a status of INACTIVE
+        $response->assertStatus(401);
     }
 
     public function testCreateUser()
