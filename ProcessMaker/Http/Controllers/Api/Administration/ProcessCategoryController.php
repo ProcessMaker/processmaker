@@ -8,6 +8,7 @@ use ProcessMaker\Facades\ProcessCategoryManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Model\Permission;
 use ProcessMaker\Model\ProcessCategory;
+use ProcessMaker\Transformers\ProcessCategoryTransformer;
 
 /**
  * Implements endpoints to manage the process categories.
@@ -30,14 +31,14 @@ class ProcessCategoryController extends Controller
         $start = $request->input("start");
         $limit = $request->input("limit");
         $options = [
-            'filter' => $request->input('filter'),
-            'start' => $request->input('start'),
-            'limit' => $request->input('limit'),
-            'sort_by' => $request->input('sort_by', 'name'),
-            'sort_order' => $request->input('sort_order', 'ASC'),
+            'filter' => $request->input('filter', ''),
+            'current_page' => $request->input('current_page', 1),
+            'per_page' => $request->input('per_page', 10),
+            'order_by' => $request->input('order_by', 'name'),
+            'order_direction' => $request->input('order_direction', 'ASC'),
         ];
         $response = ProcessCategoryManager::index($options);
-        return response($this->formatList($response), 200);
+        return fractal($response, new ProcessCategoryTransformer())->respond();
     }
 
     /**
@@ -52,7 +53,7 @@ class ProcessCategoryController extends Controller
         $this->authorize('has-permission', Permission::PM_SETUP_PROCESS_CATEGORIES);
         $data = $request->json()->all();
         $response = ProcessCategoryManager::store($data);
-        return response($this->format($response), 201);
+        return fractal($response, new ProcessCategoryTransformer())->respond(201);
     }
 
     /**
@@ -67,7 +68,7 @@ class ProcessCategoryController extends Controller
     {
         $data = $request->json()->all();
         $response = ProcessCategoryManager::update($processCategory, $data);
-        return response($this->format($response), 200);
+        return fractal($response, new ProcessCategoryTransformer())->respond(200);
     }
 
     /**
@@ -92,40 +93,7 @@ class ProcessCategoryController extends Controller
      */
     public function show(ProcessCategory $processCategory)
     {
-        return response($this->format($processCategory), 200);
-    }
-
-    /**
-     * Format the process category as a JSON response.
-     *
-     * @param ProcessCategory $processCategory
-     *
-     * @return array
-     */
-    public function format(ProcessCategory $processCategory)
-    {
-        return [
-            "cat_uid" => $processCategory->uid,
-            "cat_name" => $processCategory->name,
-            "cat_status" => $processCategory->status,
-            "cat_total_processes" => isset($processCategory->processes_count)
-                ? $processCategory->processes_count : 0,
-        ];
-    }
-
-    /**
-     * Format the process category index as a JSON response.
-     *
-     * @param Collection $processCategories
-     *
-     * @return array
-     */
-    public function formatList(Collection $processCategories)
-    {
-        $response = [];
-        foreach ($processCategories as $processCategory) {
-            $response[] = $this->format($processCategory);
-        }
-        return $response;
+        return fractal($processCategory, new ProcessCategoryTransformer())
+               ->respond();
     }
 }

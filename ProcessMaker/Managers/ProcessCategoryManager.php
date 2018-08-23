@@ -21,34 +21,35 @@ class ProcessCategoryManager
      */
     public function index(array $options)
     {
+        // Grab pagination data
+        $perPage = $options['per_page'];
+        $currentPage = $options['current_page'];
+        // Filter
+        $filter = $options['filter'];
+        // Default order by
+        $orderBy = $options['order_by'];
+        $orderDirection = $options['order_direction'];
+        
         $this->validate(
             [
-                'start' => $options['start'],
-                'limit' => $options['limit'],
+                'per_page' => $perPage,
+                'current_page' => $currentPage,
             ],
             [
-                'start' => 'nullable|numeric|min:0',
-                'limit' => 'nullable|numeric|min:0',
+                'per_page' => 'nullable|numeric|min:0',
+                'current_page' => 'nullable|numeric|min:0',
             ]
         );
-        $query = ProcessCategory::select([
-                'uid',
-                'name',
-                'status',
-            ])->where('uid', '!=', '')
-            ->withCount('processes');
 
-        $options['filter'] === null ? : $query->where(
-            'name', 'like', '%' . $options['filter'] . '%'
+        $query = ProcessCategory::where('uid', '!=', '')
+                 ->withCount('processes');
+
+        $filter === null ? : $query->where(
+            'name', 'like', '%' . $filter . '%'
         );
+        $orderBy === null ? : $query->orderBy($orderBy, $orderDirection);
 
-        $options['sort_by'] === null ? : $query->orderBy(
-            $options['sort_by'], $options['sort_order']
-        );
-
-        $options['start'] === null ? : $query->offset($options['start']);
-        $options['limit'] === null ? : $query->limit($options['limit']);
-        return $query->get();
+        return $query->paginate($perPage)->appends($options);
     }
 
     /**

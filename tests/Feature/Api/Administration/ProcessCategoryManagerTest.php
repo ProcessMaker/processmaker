@@ -75,10 +75,10 @@ class ProcessCategoryManagerTest extends ApiTestCase
         $response->assertJsonStructure();
         $response->assertJsonFragment(
             [
-                "cat_uid"             => $processCategory->uid,
-                "cat_name"            => $processCategory->name,
-                "cat_status"          => $processCategory->status,
-                "cat_total_processes" => 1,
+                "uid"             => $processCategory->uid,
+                "name"            => $processCategory->name,
+                "status"          => $processCategory->status,
+                "processes_count" => 1,
             ]
         );
     }
@@ -102,10 +102,10 @@ class ProcessCategoryManagerTest extends ApiTestCase
 
         $response->assertJsonFragment(
             [
-                "cat_uid"             => $processCategory->uid,
-                "cat_name"            => $processCategory->name,
-                "cat_status"          => $processCategory->status,
-                "cat_total_processes" => 0,
+                "uid"             => $processCategory->uid,
+                "name"            => $processCategory->name,
+                "status"          => $processCategory->status,
+                "processes_count" => 0,
             ]
         );
 
@@ -126,21 +126,25 @@ class ProcessCategoryManagerTest extends ApiTestCase
         
         // defaults sort to name ASC
         $response = $this->api('GET', self::API_TEST_CATEGORIES . '?filter=test');
-        $json = $response->json();
-        $this->assertEquals($json[0]['cat_name'], 'first test category');
-        $this->assertEquals($json[1]['cat_name'], 'second test category');
+        $json = $response->json()['data'];
+        $this->assertEquals($json[0]['name'], 'first test category');
+        $this->assertEquals($json[1]['name'], 'second test category');
         
         // sort by name ASC
-        $response = $this->api('GET', self::API_TEST_CATEGORIES . '?filter=test&sort_by=name&sort_order=ASC');
-        $json = $response->json();
-        $this->assertEquals($json[0]['cat_name'], 'first test category');
-        $this->assertEquals($json[1]['cat_name'], 'second test category');
+        $response = $this->api(
+            'GET', self::API_TEST_CATEGORIES . '?filter=test&order_by=name&order_direction=ASC'
+        );
+        $json = $response->json()['data'];
+        $this->assertEquals($json[0]['name'], 'first test category');
+        $this->assertEquals($json[1]['name'], 'second test category');
         
         // sort by name DESC
-        $response = $this->api('GET', self::API_TEST_CATEGORIES . '?filter=test&sort_by=name&sort_order=DESC');
-        $json = $response->json();
-        $this->assertEquals($json[0]['cat_name'], 'second test category');
-        $this->assertEquals($json[1]['cat_name'], 'first test category');
+        $response = $this->api(
+            'GET', self::API_TEST_CATEGORIES . '?filter=test&order_by=name&order_direction=DESC'
+        );
+        $json = $response->json()['data'];
+        $this->assertEquals($json[0]['name'], 'second test category');
+        $this->assertEquals($json[1]['name'], 'first test category');
     }
 
     /**
@@ -159,13 +163,13 @@ class ProcessCategoryManagerTest extends ApiTestCase
         $response = $this->api('GET', self::API_TEST_CATEGORIES . '?filter=NOT_FOUND_TEXT');
         $response->assertStatus(200);
         $response->assertJsonStructure();
-        $this->assertCount(0, $response->json());
+        $this->assertCount(0, $response->json()['data']);
     }
 
     /**
      * Test get the list of categories invalid parameter start
      */
-    public function testGetListOfCategoriesInvalidStart()
+    public function testGetListOfCategoriesInvalidPage()
     {
         $this->login();
         //Create test categories
@@ -174,17 +178,17 @@ class ProcessCategoryManagerTest extends ApiTestCase
         factory(Process::class)->create([
             'process_category_id' => $processCategory->id
         ]);
-        $response = $this->api('GET', self::API_TEST_CATEGORIES . '?start=INVALID');
+        $response = $this->api('GET', self::API_TEST_CATEGORIES . '?current_page=invalid&per_page=10');
         $response->assertStatus(422);
         $this->assertEquals(
-            __('validation.numeric', ['attribute' => 'start']), $response->json()['error']['message']
+            __('validation.numeric', ['attribute' => 'current page']), $response->json()['error']['message']
         );
     }
 
     /**
      * Test get the list of categories invalid parameter limit
      */
-    public function testGetListOfCategoriesInvalidLimit()
+    public function testGetListOfCategoriesInvalidPerPage()
     {
         $this->login();
         //Create test categories
@@ -193,10 +197,10 @@ class ProcessCategoryManagerTest extends ApiTestCase
         factory(Process::class)->create([
             'process_category_id' => $processCategory->id
         ]);
-        $response = $this->api('GET', self::API_TEST_CATEGORIES . '?limit=INVALID');
+        $response = $this->api('GET', self::API_TEST_CATEGORIES . '?current_page=1&per_page=invalid');
         $response->assertStatus(422);
         $this->assertEquals(
-            __('validation.numeric', ['attribute' => 'limit']), $response->json()['error']['message']
+            __('validation.numeric', ['attribute' => 'per page']), $response->json()['error']['message']
         );
     }
 
@@ -207,24 +211,21 @@ class ProcessCategoryManagerTest extends ApiTestCase
     {
         $this->login();
         //Create test categories
-        $processCategory = factory(ProcessCategory::class)->create();
-        factory(ProcessCategory::class)->create();
-        factory(Process::class)->create([
-            'process_category_id' => $processCategory->id
-        ]);
+        $processCategory1 = factory(ProcessCategory::class)->create(['name' => "a"]);
+        $processCategory2 = factory(ProcessCategory::class)->create(['name' => "b"]);
 
         //Test start and limit
-        $response = $this->api('GET', self::API_TEST_CATEGORIES . '?filter=' . urlencode($processCategory->name) . '&start=0&limit=1');
+        $response = $this->api('GET', self::API_TEST_CATEGORIES . '?per_page=1');
         $response->assertStatus(200);
         $response->assertJsonStructure();
         $response->assertJsonFragment(
             [
-                "cat_uid"             => $processCategory->uid,
-                "cat_name"            => $processCategory->name,
-                "cat_total_processes" => 0,
+                "uid"             => $processCategory1->uid,
+                "name"            => $processCategory1->name,
+                "processes_count" => 0,
             ]
         );
-        $this->assertCount(1, $response->json());
+        $this->assertCount(1, $response->json()['data']);
     }
 
     /**
@@ -244,19 +245,19 @@ class ProcessCategoryManagerTest extends ApiTestCase
         $response->assertStatus(201);
         $response->assertJsonStructure();
         $processCategoryJson = $response->json();
-        $processCategory = ProcessCategory::where('uid', $processCategoryJson['cat_uid'])
+        $processCategory = ProcessCategory::where('uid', $processCategoryJson['uid'])
             ->first();
         $this->assertNotNull($processCategory);
         $response->assertJsonFragment(
             [
-                "cat_uid" => $processCategory->uid,
-                "cat_name" => $processCategory->name,
-                "cat_status" => $processCategory->status,
-                "cat_total_processes" => 0,
+                "uid" => $processCategory->uid,
+                "name" => $processCategory->name,
+                "status" => $processCategory->status,
+                "processes_count" => 0,
             ]
         );
 
-        //Validate required cat_name
+        //Validate required name
         $response = $this->api('POST', self::API_TEST_CATEGORY, []);
         $response->assertStatus(422);
         $this->assertEquals(
@@ -304,13 +305,13 @@ class ProcessCategoryManagerTest extends ApiTestCase
         $response->assertStatus(200);
         $response->assertJsonStructure();
         $processCategoryJson = $response->json();
-        $processCategory = ProcessCategory::where('uid', $processCategoryJson['cat_uid'])
+        $processCategory = ProcessCategory::where('uid', $processCategoryJson['uid'])
             ->first();
         $this->assertNotNull($processCategory);
-        $this->assertEquals($processCategory->uid, $processCategoryJson['cat_uid']);
+        $this->assertEquals($processCategory->uid, $processCategoryJson['uid']);
         $this->assertEquals($processCategory->name, $data['name']);
 
-        //Validate required cat_name
+        //Validate required name
         $response = $this->api('PUT', self::API_TEST_CATEGORY . $catUid, ["name" => '']);
         $response->assertStatus(422);
         $this->assertEquals(
@@ -385,8 +386,8 @@ class ProcessCategoryManagerTest extends ApiTestCase
         $response->assertStatus(200);
         $response->assertJsonStructure();
         $processCategoryJson = $response->json();
-        $this->assertEquals($processCategory->uid, $processCategoryJson['cat_uid']);
-        $this->assertEquals($processCategory->name, $processCategoryJson['cat_name']);
+        $this->assertEquals($processCategory->uid, $processCategoryJson['uid']);
+        $this->assertEquals($processCategory->name, $processCategoryJson['name']);
 
         //Validate 404 if category does not exists
         $response = $this->api('GET', self::API_TEST_CATEGORY . 'DOES_NOT_EXISTS');

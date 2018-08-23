@@ -11,6 +11,7 @@
           </div>
             </template>
         </vuetable>
+        <pagination single="Category" plural="Categdories" :perPageSelectEnabled="true" @changePerPage="changePerPage" @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
     </div>
 </template>
 
@@ -21,6 +22,7 @@
         mixins: [datatableMixin],
         data() {
             return {
+                filter: '',
                 orderBy: "name",
                 sortOrder: [
                     {
@@ -32,19 +34,19 @@
                 fields: [
                     {
                         title: "Category",
-                        name: "cat_name",
+                        name: "name",
                         sortField: "name"
                     },
                     {
                         title: "Status",
-                        name: "cat_status",
-                        sortField: "cat_status",
+                        name: "status",
+                        sortField: "status",
                         callback: "capitalize"
                     },
                     {
                         title: "# Processes",
-                        name: "cat_total_processes",
-                        sortField: "cat_total_processes"
+                        name: "processes_count",
+                        sortField: "processes_count"
                     },
                     {
                         name: "__slot:actions",
@@ -60,16 +62,29 @@
                 // Load from our api client
                 ProcessMaker.apiClient
                     .get(
-                        "categories?" +
-                        "&sort_by=" +
+                        "categories?current_page=" +
+                        this.page +
+                        "&per_page=" +
+                        this.perPage +
+                        "&filter=" +
+                        this.filter +
+                        "&order_by=" +
                         this.orderBy +
-                        "&sort_order=" +
+                        "&order_direction=" +
                         this.orderDirection
                     )
                     .then(response => {
-                        this.data = response.data;
+                        this.data = this.transform(response.data);
+                        console.log("DATA is", this.data);
                         this.loading = false;
                     });
+            },
+            transform(data) {
+                // format in a way vuetable is expecting
+                console.log("DATA BEFORE", data);
+                data = Object.assign({}, data, data.meta, { meta: null })
+                console.log("DATA AFTER", data);
+                return data;
             },
             onPaginationData() { },
             onAction(action, data, index) {

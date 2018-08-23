@@ -1,8 +1,8 @@
 <template>
     <b-modal ref="modal" size="md" centered @hidden="reset" :title="title" v-cloak>
-        <form-input :error="errors.name" v-model="formData.cat_name" label="Category Name" helper="Category Name must be distinct"
+        <form-input :error="errors.name" v-model="formData.name" label="Category Name" helper="Category Name must be distinct"
                     required="required"></form-input>
-        <form-select label="Status" name="status" v-model="formData.cat_status"
+        <form-select label="Status" name="status" v-model="formData.status"
                      :options="statusSelectOptions"></form-select>
 
         <div slot="modal-footer">
@@ -21,9 +21,9 @@
     import FormInput from "@processmaker/vue-form-elements/src/components/FormInput";
 
     const newData = {
-        cat_uid: null,
-        cat_name: '',
-        cat_status: 'ACTIVE',
+        uid: null,
+        name: '',
+        status: 'ACTIVE',
         edit: false,
     };
 
@@ -72,14 +72,14 @@
                 return this.isEditing() ? ProcessMaker.apiClient.put : ProcessMaker.apiClient.post;
             },
             savePath() {
-                return this.isEditing() ? 'category/' + this.formData.cat_uid : 'category';
+                return this.isEditing() ? 'category/' + this.formData.uid : 'category';
             },
             save() {
                 this.request()(
                         this.savePath(), {
-                            uid: this.formData.cat_uid,
-                            name: this.formData.cat_name,
-                            status: this.formData.cat_status,
+                            uid: this.formData.uid,
+                            name: this.formData.name,
+                            status: this.formData.status,
                         }
                     )
                     .then(response => {
