@@ -63,17 +63,17 @@
                 this.loadCategories();
             },
             loadCategories() {
-                window.ProcessMaker.apiClient.get('categories')
+                window.ProcessMaker.apiClient.get('categories?per_page=1000')
                     .then((response) => {
                         let options = [
                             {
                                 value: null, content: 'None'
                             }
                         ];
-                        response.data.map(function (category) {
+                        response.data.data.map(function (category) {
                             options.push({
-                                value: category.cat_uid,
-                                content: category.cat_name
+                                value: category.uid,
+                                content: category.name
                             })
                         });
                         this.categorySelectOptions = options;

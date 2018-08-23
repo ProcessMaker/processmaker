@@ -21,18 +21,6 @@ class ProcessCategoryManagerTest extends TestCase
     private $testUserRole = Role::PROCESSMAKER_ADMIN;
     private $testUsers = [];
 
-    // /**
-    //  * Create user to test with
-    //  */
-    // protected function setUp()
-    // {
-    //     parent::setUp();
-    //     $this->testUser = factory(User::class)->create([
-    //         'password' => Hash::make('password'),
-    //         'role_id' => Role::where('code', $this->testUserRole)->first()->id,
-    //     ]);
-    // }
-
     /**
      * Create an api that authenticates with the test users
      */

@@ -112,16 +112,16 @@ class GenerateMenus
           ]);
        });
 
-        Menu::make('sidebar_process', function ($menu) {
-          $submenu = $menu->add(__('menus.sidebar_process.process'));
-          $submenu->add(__('menus.sidebar_process.processes'), [
+        Menu::make('sidebar_processes', function ($menu) {
+          $submenu = $menu->add(__('menus.sidebar_processes.processes'));
+          $submenu->add(__('menus.sidebar_processes.processes'), [
               'route' => 'processes',
-              'icon' => 'fa-folder',
+              'icon' => 'fa-play-circle',
               'id' => 'processes'
           ]);
-          $submenu->add(__('menus.sidebar_process.categories'), [
+          $submenu->add(__('menus.sidebar_processes.categories'), [
               'route' => 'process-categories-index',
-              'icon' => 'fa-folder-open',
+              'icon' => 'fa-list',
               'id' => 'process-categories'
           ]);
         });
