@@ -4,13 +4,6 @@ namespace ProcessMaker\Http\Controllers\Api\Administration;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
-
-// TODO remove
-use ProcessMaker\Facades\ProcessCategoryManager;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Validator as ValidatorImplementation;
-use ProcessMaker\Exception\ValidationException;
-
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Model\Permission;
 use ProcessMaker\Model\ProcessCategory;
@@ -98,22 +91,6 @@ class ProcessCategoryController extends Controller
      */
     public function destroy(ProcessCategory $processCategory)
     {
-        $validator = Validator::make([
-            'processCategory' => $processCategory,
-        ], [
-            'processCategory' => 'process_category_manager.category_does_not_have_processes',
-        ]);
-        $validator->addExtension(
-            'process_category_manager.category_does_not_have_processes',
-            function ($attribute, $processCategory, $parameters, ValidatorImplementation $validator) {
-                return $processCategory->processes()->count() === 0;
-            }
-        );
-
-        if ($validator->fails()) {
-            throw new ValidationException($validator);
-        }
-
         $processCategory->delete();
         return response('', 204);
     }

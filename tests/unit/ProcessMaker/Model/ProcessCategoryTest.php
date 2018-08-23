@@ -2,9 +2,10 @@
 
 namespace Tests\Unit;
 
-use Faker\Factory as Faker;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use ProcessMaker\Model\ProcessCategory;
+use ProcessMaker\Model\Process;
+use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
 
 class ProcessCategoryTest extends TestCase
@@ -28,4 +29,13 @@ class ProcessCategoryTest extends TestCase
         $this->assertFalse($pc->isValid());
     }
 
+    public function testHasProcessesValidation()
+    {
+        $process = factory(Process::class)->create();
+        $processCategory = $process->category;
+
+        $this->expectException(ValidationException::class);
+
+        $processCategory->delete();
+    }
 }

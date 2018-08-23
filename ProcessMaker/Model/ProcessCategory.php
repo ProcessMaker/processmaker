@@ -4,6 +4,8 @@ namespace ProcessMaker\Model;
 
 use Illuminate\Database\Eloquent\Model;
 use Watson\Validating\ValidatingTrait;
+use Illuminate\Support\Facades\Validator;
+use ProcessMaker\Exception\ValidationException;
 use ProcessMaker\Model\Traits\Uuid;
 
 /**
@@ -64,5 +66,33 @@ class ProcessCategory extends Model
     public function processes()
     {
         return $this->hasMany(Process::class, 'id', 'id');
+    }
+
+    /**
+     * Check that the category has no processes before deleting 
+     *
+     * @return bool|null
+     *
+     * @throws \Exception
+     */
+    public function delete()
+    {
+        $validator = Validator::make([
+            'processCategory' => $this,
+        ], [
+            'processCategory' => 'process_category_manager.category_does_not_have_processes',
+        ]);
+
+        $validator->addExtension(
+            'process_category_manager.category_does_not_have_processes',
+            function ($attribute, $processCategory, $parameters, $validator) {
+                return $processCategory->processes()->count() === 0;
+            }
+        );
+
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+        parent::delete();
     }
 }
