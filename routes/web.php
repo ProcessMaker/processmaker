@@ -10,7 +10,6 @@ Broadcast::routes();
 $this->get('login', 'Auth\LoginController@showLoginForm')->name('login');
 $this->post('login', 'Auth\LoginController@login');
 $this->get('logout', 'Auth\LoginController@logout')->name('logout');
-$this->post('auth/refresh', 'Auth\RefreshController@refreshSession');
 
 // Password Reset Routes...
 $this->get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
@@ -21,7 +20,7 @@ $this->get('password/success', function(){
   return view('auth.passwords.success',['title' => __('Password Reset')]);
 })->name('password-success');
 
-$this->middleware(['auth', 'apitoken'])->group(function() {
+$this->middleware(['auth'])->group(function() {
     // Test Process Routes for Nayra
     $this->get('/requests/{process}/new', function(ProcessMaker\Model\Process $process) {
         //Find the process
