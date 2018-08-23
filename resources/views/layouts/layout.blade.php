@@ -10,7 +10,6 @@
     <meta name="user-uid" content="{{ Auth::user()->uid }}">
     <meta name="user-id" content="{{ Auth::user()->id }}">
     @endif
-    <meta name="api-token" content="{{ session('apiToken')['access_token']}}">
     @if(config('broadcasting.broadcaster') == 'socket.io')
     <meta name="broadcaster" content="{{config('broadcasting.broadcaster')}}">
     <meta name="broadcasting-host" content="{{config('broadcasting.host')}}">

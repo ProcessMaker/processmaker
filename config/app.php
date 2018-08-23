@@ -80,7 +80,6 @@ return [
         ProcessMaker\Providers\AuthServiceProvider::class,
         ProcessMaker\Providers\EventServiceProvider::class,
         ProcessMaker\Providers\RouteServiceProvider::class,
-        ProcessMaker\Providers\OAuthServiceProvider::class,
         ProcessMaker\Providers\BroadcastServiceProvider::class,
         ProcessMaker\Providers\WorkflowServiceProvider::class,
 

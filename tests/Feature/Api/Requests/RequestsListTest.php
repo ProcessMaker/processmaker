@@ -4,12 +4,14 @@ namespace Tests\Feature\Api\Cases;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
-use Tests\Feature\Api\ApiTestCase;
+use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
-class RequestsListTest extends ApiTestCase
+class RequestsListTest extends TestCase
 {
     use DatabaseTransactions;
+
+    public $user;
 
     /**
      * Test to check that the route is protected     
@@ -26,7 +28,7 @@ class RequestsListTest extends ApiTestCase
 
     public function test_api_result_failed()
     {
-        $response = $this->api('GET', '/api/1.0/requests');
+        $response = $this->json('GET', '/api/1.0/requests');
         $response->assertStatus(401);
     }
 
@@ -42,7 +44,7 @@ class RequestsListTest extends ApiTestCase
             'creator_user_id' => $this->user->id
         ]);
 
-        $response = $this->api('GET', '/api/1.0/requests');
+        $response = $this->actingAs($this->user, 'api')->json('GET', '/api/1.0/requests');
 
         $response->assertStatus(200);
 
@@ -76,7 +78,7 @@ class RequestsListTest extends ApiTestCase
 
         factory(\ProcessMaker\Model\Application::class, 75)->create();
 
-        $response = $this->api('GET', '/api/1.0/requests/?page=2');
+        $response = $this->actingAs($this->user, 'api')->json('GET', '/api/1.0/requests/?page=2');
 
         $response->assertStatus(200);
 
@@ -110,7 +112,7 @@ class RequestsListTest extends ApiTestCase
 
         factory(\ProcessMaker\Model\Application::class, 26)->create();
 
-        $response = $this->api('GET', '/api/1.0/requests/?per_page=21');
+        $response = $this->actingAs($this->user, 'api')->json('GET', '/api/1.0/requests/?per_page=21');
 
         $response->assertStatus(200);
 
@@ -143,7 +145,7 @@ class RequestsListTest extends ApiTestCase
 
         factory(\ProcessMaker\Model\Application::class, 10)->create();
 
-        $response = $this->api('GET', '/api/1.0/requests/?columnSearch=APP_TITLE&search=Test');
+        $response = $this->actingAs($this->user, 'api')->json('GET', '/api/1.0/requests/?columnSearch=APP_TITLE&search=Test');
 
         $response->assertStatus(200);
 
@@ -174,6 +176,5 @@ class RequestsListTest extends ApiTestCase
             'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
 
-        $this->auth($this->user->username, 'password');
     }
 }
