@@ -39,6 +39,9 @@ class ProcessCategoryController extends Controller
         $orderDirection = $request->input('order_direction', 'ASC');
         $orderBy === null ? : $query->orderBy($orderBy, $orderDirection);
 
+        $status = $request->input('status');
+        $status === null ? : $query->where('status', $status);
+
         $perPage = $request->input('per_page', 10);
         $result = $query->paginate($perPage);
         return fractal($result, new ProcessCategoryTransformer())->respond();

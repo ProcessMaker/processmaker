@@ -87,6 +87,35 @@ class ProcessCategoryTest extends TestCase
     }
 
     /**
+     * Test get the list of active categories.
+     */
+    public function testGetListOfCategoriesActive()
+    {
+        // set seeded categories to inactive
+        ProcessCategory::query()->update(
+            ['status' => ProcessCategory::STATUS_INACTIVE]
+        );
+
+        //Create test categories
+        $processCategory1 = factory(ProcessCategory::class)->create(
+            ['status' => ProcessCategory::STATUS_INACTIVE]
+        );
+        $processCategory2 = factory(ProcessCategory::class)->create(
+            ['status' => ProcessCategory::STATUS_ACTIVE]
+        );
+
+        $response = $this->api('GET', self::API_TEST_CATEGORIES . '?status=ACTIVE');
+        $response->assertStatus(200);
+        $response->assertJsonStructure();
+        $this->assertCount(1, $response->json()['data']);
+        $response->assertJsonFragment(
+            [
+                "uid"             => $processCategory2->uid,
+            ]
+        );
+    }
+
+    /**
      * Test get the list of categories filter
      */
     public function testGetListOfCategoriesFilter()

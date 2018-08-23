@@ -63,7 +63,7 @@
                 this.loadCategories();
             },
             loadCategories() {
-                window.ProcessMaker.apiClient.get('categories?per_page=1000')
+                window.ProcessMaker.apiClient.get('categories?per_page=1000&status=ACTIVE')
                     .then((response) => {
                         let options = [
                             {
