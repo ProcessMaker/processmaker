@@ -15,7 +15,7 @@
              <b-form>
               <b-form-group>
                 <label>Logo size must be 400x100. File format .jpg or .png</label>
-                <b-form-file v-model="file1" placeholder="Choose a file..."></b-form-file>
+                <b-form-file @onImgUpload="onImgUpload" v-model="file1" placeholder="Choose a file..."></b-form-file>
                 <div class="mt-3">Selected file: @{{file1 && file1.name}}</div>
               </b-form-group>
               <b-form-group>
@@ -47,7 +47,7 @@
       </div>
     </div>  
     <b-modal ref="primaryModal" title="Using Component Methods" align="center">
-      <customize-color ></customize-color>
+      <customize-color v-model="colors" @changeColor="changeColor"></customize-color>
       <div slot="modal-footer">
         <button @click="hidePrimaryModal" class="btn btn-outline-success btn-sm text-uppercase">
             Cancel
