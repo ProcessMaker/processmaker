@@ -9,9 +9,9 @@ use ProcessMaker\Model\Process;
 use ProcessMaker\Model\ProcessCategory;
 use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
-use Tests\Feature\Api\ApiTestCase;
+use Tests\TestCase;
 
-class ProcessCategoryManagerTest extends ApiTestCase
+class ProcessCategoryManagerTest extends TestCase
 {
     use DatabaseTransactions;
 
@@ -27,24 +27,24 @@ class ProcessCategoryManagerTest extends ApiTestCase
             'password' => Hash::make('password'),
             'role_id' => Role::where('code', Role::PROCESSMAKER_OPERATOR)->first()->id,
         ]);
-        $this->auth($user->username, 'password');
+        
 
         $catUid = factory(ProcessCategory::class)->create()->uid;
 
-        $response = $this->api('GET', self::API_TEST_CATEGORIES);
+        $response = $this->actingAs($user, 'api')->json('GET', self::API_TEST_CATEGORIES);
 
         $response->assertStatus(403);
 
-        $response = $this->api('POST', self::API_TEST_CATEGORY, []);
+        $response = $this->actingAs($user, 'api')->json('POST', self::API_TEST_CATEGORY, []);
         $response->assertStatus(403);
 
-        $response = $this->api('GET', self::API_TEST_CATEGORY . $catUid);
+        $response = $this->actingAs($user, 'api')->json('GET', self::API_TEST_CATEGORY . $catUid);
         $response->assertStatus(403);
 
-        $response = $this->api('PUT', self::API_TEST_CATEGORY . $catUid, []);
+        $response = $this->actingAs($user, 'api')->json('PUT', self::API_TEST_CATEGORY . $catUid, []);
         $response->assertStatus(403);
 
-        $response = $this->api('DELETE', self::API_TEST_CATEGORY . $catUid);
+        $response = $this->actingAs($user, 'api')->json('DELETE', self::API_TEST_CATEGORY . $catUid);
         $response->assertStatus(403);
     }
 
@@ -57,7 +57,6 @@ class ProcessCategoryManagerTest extends ApiTestCase
             'password' => Hash::make('password'),
             'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
-        $this->auth($admin->username, 'password');
         //Create test categories
         $processCategory = factory(ProcessCategory::class)->create();
         factory(ProcessCategory::class)->create();
@@ -65,7 +64,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
             'process_category_id' => $processCategory->id
         ]);
 
-        $response = $this->api('GET', self::API_TEST_CATEGORIES);
+        $response = $this->actingAs($admin, 'api')->json('GET', self::API_TEST_CATEGORIES);
         $response->assertStatus(200);
         $response->assertJsonStructure();
         $response->assertJsonFragment(
@@ -86,7 +85,6 @@ class ProcessCategoryManagerTest extends ApiTestCase
             'password' => Hash::make('password'),
             'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
-        $this->auth($admin->username, 'password');
         //Create test categories
         $processCategory = factory(ProcessCategory::class)->create();
         factory(ProcessCategory::class)->create();
@@ -94,7 +92,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
             'process_category_id' => $processCategory->id
         ]);
         //Test filter
-        $response = $this->api('GET', self::API_TEST_CATEGORIES . '?filter=' . urlencode($processCategory->name));
+        $response = $this->actingAs($admin, 'api')->json('GET', self::API_TEST_CATEGORIES . '?filter=' . urlencode($processCategory->name));
         $response->assertStatus(200);
         $response->assertJsonStructure();
 
@@ -117,7 +115,6 @@ class ProcessCategoryManagerTest extends ApiTestCase
             'password' => Hash::make('password'),
             'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
-        $this->auth($admin->username, 'password');
         //Create test categories
         $processCategory = factory(ProcessCategory::class)->create();
         factory(ProcessCategory::class)->create();
@@ -125,7 +122,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
             'process_category_id' => $processCategory->id
         ]);
         //Test filter not found
-        $response = $this->api('GET', self::API_TEST_CATEGORIES . '?filter=NOT_FOUND_TEXT');
+        $response = $this->actingAs($admin, 'api')->json('GET', self::API_TEST_CATEGORIES . '?filter=NOT_FOUND_TEXT');
         $response->assertStatus(200);
         $response->assertJsonStructure();
         $this->assertCount(0, $response->json());
@@ -140,14 +137,13 @@ class ProcessCategoryManagerTest extends ApiTestCase
             'password' => Hash::make('password'),
             'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
-        $this->auth($admin->username, 'password');
         //Create test categories
         $processCategory = factory(ProcessCategory::class)->create();
         factory(ProcessCategory::class)->create();
         factory(Process::class)->create([
             'process_category_id' => $processCategory->id
         ]);
-        $response = $this->api('GET', self::API_TEST_CATEGORIES . '?start=INVALID');
+        $response = $this->actingAs($admin, 'api')->json('GET', self::API_TEST_CATEGORIES . '?start=INVALID');
         $response->assertStatus(422);
         $this->assertEquals(
             __('validation.numeric', ['attribute' => 'start']), $response->json()['error']['message']
@@ -163,14 +159,13 @@ class ProcessCategoryManagerTest extends ApiTestCase
             'password' => Hash::make('password'),
             'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
-        $this->auth($admin->username, 'password');
         //Create test categories
         $processCategory = factory(ProcessCategory::class)->create();
         factory(ProcessCategory::class)->create();
         factory(Process::class)->create([
             'process_category_id' => $processCategory->id
         ]);
-        $response = $this->api('GET', self::API_TEST_CATEGORIES . '?limit=INVALID');
+        $response = $this->actingAs($admin, 'api')->json('GET', self::API_TEST_CATEGORIES . '?limit=INVALID');
         $response->assertStatus(422);
         $this->assertEquals(
             __('validation.numeric', ['attribute' => 'limit']), $response->json()['error']['message']
@@ -186,7 +181,6 @@ class ProcessCategoryManagerTest extends ApiTestCase
             'password' => Hash::make('password'),
             'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
-        $this->auth($admin->username, 'password');
         //Create test categories
         $processCategory = factory(ProcessCategory::class)->create();
         factory(ProcessCategory::class)->create();
@@ -195,7 +189,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
         ]);
 
         //Test start and limit
-        $response = $this->api('GET', self::API_TEST_CATEGORIES . '?filter=' . urlencode($processCategory->name) . '&start=0&limit=1');
+        $response = $this->actingAs($admin, 'api')->json('GET', self::API_TEST_CATEGORIES . '?filter=' . urlencode($processCategory->name) . '&start=0&limit=1');
         $response->assertStatus(200);
         $response->assertJsonStructure();
         $response->assertJsonFragment(
@@ -217,14 +211,13 @@ class ProcessCategoryManagerTest extends ApiTestCase
             'password' => Hash::make('password'),
             'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
-        $this->auth($admin->username, 'password');
         $faker = Faker::create();
 
         $processCategory = factory(ProcessCategory::class)->make();
         $data = [
             "cat_name" => $processCategory->name,
         ];
-        $response = $this->api('POST', self::API_TEST_CATEGORY, $data);
+        $response = $this->actingAs($admin, 'api')->json('POST', self::API_TEST_CATEGORY, $data);
         $response->assertStatus(201);
         $response->assertJsonStructure();
         $processCategoryJson = $response->json();
@@ -240,14 +233,14 @@ class ProcessCategoryManagerTest extends ApiTestCase
         );
 
         //Validate required cat_name
-        $response = $this->api('POST', self::API_TEST_CATEGORY, []);
+        $response = $this->actingAs($admin, 'api')->json('POST', self::API_TEST_CATEGORY, []);
         $response->assertStatus(422);
         $this->assertEquals(
             __('validation.required', ['attribute' => 'cat name']), $response->json()['error']['message']
         );
 
         //Validate creation of duplicated category
-        $response = $this->api('POST', self::API_TEST_CATEGORY, $data);
+        $response = $this->actingAs($admin, 'api')->json('POST', self::API_TEST_CATEGORY, $data);
         $response->assertStatus(422);
         $this->assertEquals(
             __('validation.custom.cat_name.unique', ['attribute' => 'cat_name']), $response->json()['error']['message']
@@ -257,7 +250,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
         $data = [
             "cat_name" => $faker->sentence(100),
         ];
-        $response = $this->api('POST', self::API_TEST_CATEGORY, $data);
+        $response = $this->actingAs($admin, 'api')->json('POST', self::API_TEST_CATEGORY, $data);
         $response->assertStatus(422);
         $this->assertEquals(
             __('validation.max.string', ['attribute' => 'cat name', 'max' => 100]), $response->json()['error']['message']
@@ -273,7 +266,6 @@ class ProcessCategoryManagerTest extends ApiTestCase
             'password' => Hash::make('password'),
             'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
-        $this->auth($admin->username, 'password');
         $faker = Faker::create();
 
         $processCategoryExisting = factory(ProcessCategory::class)->create();
@@ -282,7 +274,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
         $data = [
             "cat_name" => $faker->name(),
         ];
-        $response = $this->api('PUT', self::API_TEST_CATEGORY . $catUid, $data);
+        $response = $this->actingAs($admin, 'api')->json('PUT', self::API_TEST_CATEGORY . $catUid, $data);
         $response->assertStatus(200);
         $response->assertJsonStructure();
         $processCategoryJson = $response->json();
@@ -293,21 +285,21 @@ class ProcessCategoryManagerTest extends ApiTestCase
         $this->assertEquals($processCategory->name, $data['cat_name']);
 
         //Validate required cat_name
-        $response = $this->api('PUT', self::API_TEST_CATEGORY . $catUid, []);
+        $response = $this->actingAs($admin, 'api')->json('PUT', self::API_TEST_CATEGORY . $catUid, []);
         $response->assertStatus(422);
         $this->assertEquals(
             __('validation.required', ['attribute' => 'cat name']), $response->json()['error']['message']
         );
 
         //Validate 404 if category does not exists
-        $response = $this->api('PUT', self::API_TEST_CATEGORY . 'DOES_NOT_EXISTS', $data);
+        $response = $this->actingAs($admin, 'api')->json('PUT', self::API_TEST_CATEGORY . 'DOES_NOT_EXISTS', $data);
         $response->assertStatus(404);
 
         //Validate that category name is unique
         $data = [
             "cat_name" => $processCategoryExisting->name,
         ];
-        $response = $this->api('PUT', self::API_TEST_CATEGORY . $catUid, $data);
+        $response = $this->actingAs($admin, 'api')->json('PUT', self::API_TEST_CATEGORY . $catUid, $data);
         $response->assertStatus(422);
         $this->assertEquals(
             __('validation.custom.cat_name.unique', ['attribute' => 'cat_name']), $response->json()['error']['message']
@@ -317,7 +309,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
         $data = [
             "cat_name" => $faker->sentence(100),
         ];
-        $response = $this->api('PUT', self::API_TEST_CATEGORY . $catUid, $data);
+        $response = $this->actingAs($admin, 'api')->json('PUT', self::API_TEST_CATEGORY . $catUid, $data);
         $response->assertStatus(422);
         $this->assertEquals(
             __('validation.max.string', ['attribute' => 'cat name', 'max' => 100]), $response->json()['error']['message']
@@ -333,16 +325,15 @@ class ProcessCategoryManagerTest extends ApiTestCase
             'password' => Hash::make('password'),
             'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
-        $this->auth($admin->username, 'password');
 
         $processCategory = factory(ProcessCategory::class)->create();
         $catUid = $processCategory->uid;
 
-        $response = $this->api('DELETE', self::API_TEST_CATEGORY . $catUid);
+        $response = $this->actingAs($admin, 'api')->json('DELETE', self::API_TEST_CATEGORY . $catUid);
         $response->assertStatus(204);
 
         //Validate 404 if category does not exists
-        $response = $this->api('DELETE', self::API_TEST_CATEGORY . 'DOES_NOT_EXISTS');
+        $response = $this->actingAs($admin, 'api')->json('DELETE', self::API_TEST_CATEGORY . 'DOES_NOT_EXISTS');
         $response->assertStatus(404);
 
         //Validate to do not delete category with processes
@@ -363,12 +354,10 @@ class ProcessCategoryManagerTest extends ApiTestCase
             'password' => Hash::make('password'),
             'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
-        $this->auth($admin->username, 'password');
-
         $processCategory = factory(ProcessCategory::class)->create();
         $catUid = $processCategory->uid;
 
-        $response = $this->api('GET', self::API_TEST_CATEGORY . $catUid);
+        $response = $this->actingAs($admin, 'api')->json('GET', self::API_TEST_CATEGORY . $catUid);
         $response->assertStatus(200);
         $response->assertJsonStructure();
         $processCategoryJson = $response->json();
@@ -376,7 +365,7 @@ class ProcessCategoryManagerTest extends ApiTestCase
         $this->assertEquals($processCategory->name, $processCategoryJson['cat_name']);
 
         //Validate 404 if category does not exists
-        $response = $this->api('GET', self::API_TEST_CATEGORY . 'DOES_NOT_EXISTS');
+        $response = $this->actingAs($admin, 'api')->json('GET', self::API_TEST_CATEGORY . 'DOES_NOT_EXISTS');
         $response->assertStatus(404);
     }
 }

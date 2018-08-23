@@ -8,12 +8,12 @@ use ProcessMaker\Model\Group;
 use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
 use ProcessMaker\Transformers\GroupTransformer;
-use Tests\Feature\Api\ApiTestCase;
+use Tests\TestCase;
 
 /**
  * Tests the Groups API Endpoints with expected values
  */
-class GroupsTest extends ApiTestCase
+class GroupsTest extends TestCase
 {
     use DatabaseTransactions;
 
@@ -26,7 +26,7 @@ class GroupsTest extends ApiTestCase
     /*
     public function testUnauthenticated()
     {
-        $response = $this->api('GET', self::API_TEST_GROUPS);
+        $response = $this->actingAs($user, 'api')->json('GET', self::API_TEST_GROUPS);
         $response->assertStatus(401);
     }
     */
@@ -41,8 +41,8 @@ class GroupsTest extends ApiTestCase
             'role_id'     => null,
         ]);
         // No role means it should not be authorized
-        $this->auth($user->username, 'password');
-        $response = $this->api('GET', self::API_TEST_GROUPS);
+        
+        $response = $this->actingAs($user, 'api')->json('GET', self::API_TEST_GROUPS);
         $response->assertStatus(403);
     }
     /**
@@ -54,11 +54,11 @@ class GroupsTest extends ApiTestCase
             'password' => Hash::make('password'),
             'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
         ]);
-        $this->auth($user->username, 'password');
+        
         // Build a sample of 5 groups into the system
         $roles = factory(Group::class, 5)->create();
         // Fetch via API
-        $response = $this->api('GET', self::API_TEST_GROUPS);
+        $response = $this->actingAs($user, 'api')->json('GET', self::API_TEST_GROUPS);
         // Verify 200 status code
         $response->assertStatus(200);
         // Grab users
@@ -79,8 +79,8 @@ class GroupsTest extends ApiTestCase
             'password' => Hash::make('password'),
             'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
         ]);
-        $this->auth($user->username, 'password');
-        $response = $this->api('GET', self::API_TEST_GROUPS . '?filter=' . urlencode('invalid'));
+        
+        $response = $this->actingAs($user, 'api')->json('GET', self::API_TEST_GROUPS . '?filter=' . urlencode('invalid'));
         $response->assertStatus(200);
         $data = json_decode($response->getContent(),true);
         // Ensure we have empty results
@@ -98,12 +98,12 @@ class GroupsTest extends ApiTestCase
             'password' => Hash::make('password'),
             'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
         ]);
-        $this->auth($user->username, 'password');
+        
         // Now create a group that would match
         $group = factory(Group::class)->create([
             'title' => 'Test Matching Group'
         ]);
-        $response = $this->api('GET', self::API_TEST_GROUPS . '?filter=' . urlencode('Matching Gr'));
+        $response = $this->actingAs($user, 'api')->json('GET', self::API_TEST_GROUPS . '?filter=' . urlencode('Matching Gr'));
         $response->assertStatus(200);
         $data = json_decode($response->getContent(),true);
         // Ensure we have empty results
@@ -124,8 +124,8 @@ class GroupsTest extends ApiTestCase
             'password' => Hash::make('password'),
             'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
         ]);
-        $this->auth($user->username, 'password');
-        $response = $this->api('get', self::API_TEST_GROUPS . '/invaliduid');
+        
+        $response = $this->actingAs($user, 'api')->json('get', self::API_TEST_GROUPS . '/invaliduid');
         $response->assertStatus(404);
     }
 
@@ -138,9 +138,9 @@ class GroupsTest extends ApiTestCase
             'password' => Hash::make('password'),
             'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
         ]);
-        $this->auth($user->username, 'password');
+        
         $group = factory(Group::class)->create();
-        $response = $this->api('get', self::API_TEST_GROUPS . '/' . $group->uid);
+        $response = $this->actingAs($user, 'api')->json('get', self::API_TEST_GROUPS . '/' . $group->uid);
         $response->assertStatus(200);
         // Get our expected transformed group
         $expected = (new GroupTransformer())->transform($group);
@@ -153,11 +153,11 @@ class GroupsTest extends ApiTestCase
      */
     public function testGroupGetWithUserAssigned()
     {
-        $user = factory(User::class)->create([
+        $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
             'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
         ]);
-        $this->auth($user->username, 'password');
+        
         $group = factory(Group::class)->create();
         // Create 5 users
         $users = factory(User::class, 5)->create();
@@ -166,7 +166,7 @@ class GroupsTest extends ApiTestCase
             $user->groups()->attach($group);
             $user->save();
         }
-       $response = $this->api('get', self::API_TEST_GROUPS . '/' . $group->uid);
+       $response = $this->actingAs($admin, 'api')->json('get', self::API_TEST_GROUPS . '/' . $group->uid);
         $response->assertStatus(200);
        // Now ensure that we have 1 user assigned
         $response->assertJson(['total_users' => 5]);
@@ -178,8 +178,8 @@ class GroupsTest extends ApiTestCase
             'password' => Hash::make('password'),
             'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
         ]);
-        $this->auth($user->username, 'password');
-        $response = $this->api('post', self::API_TEST_GROUPS, [
+        
+        $response = $this->actingAs($user, 'api')->json('post', self::API_TEST_GROUPS, [
             
         ]);
         // Empty, we should receive validation errors
@@ -191,7 +191,7 @@ class GroupsTest extends ApiTestCase
             ]
         ]);
         // Ensure out of bounds checks on validation
-        $response = $this->api('post', self::API_TEST_GROUPS, [
+        $response = $this->actingAs($user, 'api')->json('post', self::API_TEST_GROUPS, [
             'title' => app()->make('Faker\Generator')->text(500),
             'status' => 'DERP'
         ]);
@@ -206,7 +206,7 @@ class GroupsTest extends ApiTestCase
         $existingGroup = factory(\ProcessMaker\Model\Group::class)->create([
             'title' => 'TESTGROUP'
         ]);
-        $response = $this->api('post', self::API_TEST_GROUPS, [
+        $response = $this->actingAs($user, 'api')->json('post', self::API_TEST_GROUPS, [
             'title' => 'TESTGROUP',
             'status' => 'ACTIVE'
         ]);
@@ -224,8 +224,8 @@ class GroupsTest extends ApiTestCase
             'password' => Hash::make('password'),
             'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
         ]);
-        $this->auth($user->username, 'password');
-        $response = $this->api('post', self::API_TEST_GROUPS, [
+        
+        $response = $this->actingAs($user, 'api')->json('post', self::API_TEST_GROUPS, [
             'title' => 'Test Group',
             'status' => 'ACTIVE'
         ]);
@@ -243,7 +243,7 @@ class GroupsTest extends ApiTestCase
             'password' => Hash::make('password'),
             'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
         ]);
-        $this->auth($user->username, 'password');
+        
         // Now, let's create 5 groups
         factory(\ProcessMaker\Model\Group::class, 5)->create();
         // Now create a single group that we'll add to our user
@@ -253,7 +253,7 @@ class GroupsTest extends ApiTestCase
         // Now, let's attach the group to the user
         $user->groups()->attach($group);
         // Fetch via API
-        $response = $this->api('GET', self::API_TEST_GROUPS, [
+        $response = $this->actingAs($user, 'api')->json('GET', self::API_TEST_GROUPS, [
             'order_by' => 'total_users',
             'order_direction' => 'desc'
         ]);
@@ -266,7 +266,7 @@ class GroupsTest extends ApiTestCase
         $this->assertEquals(7, $data['meta']['total']);
         $this->assertEquals('Test Group', $data['data'][1]['title']);
         // Test the other direction
-        $response = $this->api('GET', self::API_TEST_GROUPS, [
+        $response = $this->actingAs($user, 'api')->json('GET', self::API_TEST_GROUPS, [
             'order_by' => 'total_users',
             'order_direction' => 'asc'
         ]);
@@ -290,11 +290,11 @@ class GroupsTest extends ApiTestCase
             'password' => Hash::make('password'),
             'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
         ]);
-        $this->auth($user->username, 'password');
+        
 
         $group = factory(Group::class)->create();
 
-        $response = $this->api('delete', self::API_TEST_GROUPS . '/' . $group->uid);
+        $response = $this->actingAs($user, 'api')->json('delete', self::API_TEST_GROUPS . '/' . $group->uid);
         $response->assertStatus(204);
 
         //validating that the group does not exist
@@ -308,12 +308,12 @@ class GroupsTest extends ApiTestCase
             'password' => Hash::make('password'),
             'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
         ]);
-        $this->auth($user->username, 'password');
+        
 
         $group = factory(Group::class)->create();
 
         $title = 'Group Updated';
-        $response = $this->api('put', self::API_TEST_GROUPS . '/' . $group->uid, [
+        $response = $this->actingAs($user, 'api')->json('put', self::API_TEST_GROUPS . '/' . $group->uid, [
             'title' => $title
         ]);
         $response->assertStatus(200);
