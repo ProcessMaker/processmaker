@@ -10,6 +10,7 @@ new Vue({
     data: {
         file1: null,
         file2: null,
+        colors: ""
     },
     methods: {
         showPrimaryModal() {
@@ -23,6 +24,20 @@ new Vue({
         },
         hideSecondaryModal() {
             this.$refs.secondaryModal.hide()
+        },
+        changeColor(val) {
+            this.colors = val
+        },
+        onImgUpload(img) {
+            let file = event.target.files[0];
+            let reader = new FileReader();
+            reader.onload = function (img) {
+                // The file's text will be printed here
+                console.log(event.target.result)
+            };
+
+            reader.readAsText(file);
         }
+
     }
 })
