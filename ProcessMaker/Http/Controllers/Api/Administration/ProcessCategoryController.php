@@ -4,11 +4,18 @@ namespace ProcessMaker\Http\Controllers\Api\Administration;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+
+// TODO remove
 use ProcessMaker\Facades\ProcessCategoryManager;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Validator as ValidatorImplementation;
+use ProcessMaker\Exception\ValidationException;
+
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Model\Permission;
 use ProcessMaker\Model\ProcessCategory;
 use ProcessMaker\Transformers\ProcessCategoryTransformer;
+use Ramsey\Uuid\Uuid;
 
 /**
  * Implements endpoints to manage the process categories.
@@ -27,18 +34,21 @@ class ProcessCategoryController extends Controller
     public function index(Request $request)
     {
         $this->authorize('has-permission', Permission::PM_SETUP_PROCESS_CATEGORIES);
+        $query = ProcessCategory::where('uid', '!=', '')
+                 ->withCount('processes');
+
         $filter = $request->input("filter");
-        $start = $request->input("start");
-        $limit = $request->input("limit");
-        $options = [
-            'filter' => $request->input('filter', ''),
-            'current_page' => $request->input('current_page', 1),
-            'per_page' => $request->input('per_page', 10),
-            'order_by' => $request->input('order_by', 'name'),
-            'order_direction' => $request->input('order_direction', 'ASC'),
-        ];
-        $response = ProcessCategoryManager::index($options);
-        return fractal($response, new ProcessCategoryTransformer())->respond();
+        $filter === null ? : $query->where(
+            'name', 'like', '%' . $filter . '%'
+        );
+
+        $orderBy = $request->input('order_by', 'name');
+        $orderDirection = $request->input('order_direction', 'ASC');
+        $orderBy === null ? : $query->orderBy($orderBy, $orderDirection);
+
+        $perPage = $request->input('per_page', 10);
+        $result = $query->paginate($perPage);
+        return fractal($result, new ProcessCategoryTransformer())->respond();
     }
 
     /**
@@ -52,8 +62,14 @@ class ProcessCategoryController extends Controller
     {
         $this->authorize('has-permission', Permission::PM_SETUP_PROCESS_CATEGORIES);
         $data = $request->json()->all();
-        $response = ProcessCategoryManager::store($data);
-        return fractal($response, new ProcessCategoryTransformer())->respond(201);
+
+        $processCategory = new ProcessCategory();
+        $processCategory->uid = str_replace('-', '', Uuid::uuid4());
+        $processCategory->fill($data);
+        $processCategory->saveOrFail();
+
+
+        return fractal($processCategory, new ProcessCategoryTransformer())->respond(201);
     }
 
     /**
@@ -67,8 +83,10 @@ class ProcessCategoryController extends Controller
     public function update(Request $request, ProcessCategory $processCategory)
     {
         $data = $request->json()->all();
-        $response = ProcessCategoryManager::update($processCategory, $data);
-        return fractal($response, new ProcessCategoryTransformer())->respond(200);
+        $processCategory->fill($data);
+        $processCategory->saveOrFail();
+        
+        return fractal($processCategory, new ProcessCategoryTransformer())->respond(200);
     }
 
     /**
@@ -80,7 +98,23 @@ class ProcessCategoryController extends Controller
      */
     public function destroy(ProcessCategory $processCategory)
     {
-        ProcessCategoryManager::remove($processCategory);
+        $validator = Validator::make([
+            'processCategory' => $processCategory,
+        ], [
+            'processCategory' => 'process_category_manager.category_does_not_have_processes',
+        ]);
+        $validator->addExtension(
+            'process_category_manager.category_does_not_have_processes',
+            function ($attribute, $processCategory, $parameters, ValidatorImplementation $validator) {
+                return $processCategory->processes()->count() === 0;
+            }
+        );
+
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+
+        $processCategory->delete();
         return response('', 204);
     }
 

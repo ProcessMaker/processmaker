@@ -11,7 +11,7 @@ use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
 use Tests\TestCase;
 
-class ProcessCategoryManagerTest extends TestCase
+class ProcessCategoryTest extends TestCase
 {
     use DatabaseTransactions;
 
@@ -164,42 +164,6 @@ class ProcessCategoryManagerTest extends TestCase
         $response->assertStatus(200);
         $response->assertJsonStructure();
         $this->assertCount(0, $response->json()['data']);
-    }
-
-    /**
-     * Test get the list of categories invalid parameter start
-     */
-    public function testGetListOfCategoriesInvalidPage()
-    {
-        //Create test categories
-        $processCategory = factory(ProcessCategory::class)->create();
-        factory(ProcessCategory::class)->create();
-        factory(Process::class)->create([
-            'process_category_id' => $processCategory->id
-        ]);
-        $response = $this->api('GET', self::API_TEST_CATEGORIES . '?current_page=invalid&per_page=10');
-        $response->assertStatus(422);
-        $this->assertEquals(
-            __('validation.numeric', ['attribute' => 'current page']), $response->json()['error']['message']
-        );
-    }
-
-    /**
-     * Test get the list of categories invalid parameter limit
-     */
-    public function testGetListOfCategoriesInvalidPerPage()
-    {
-        //Create test categories
-        $processCategory = factory(ProcessCategory::class)->create();
-        factory(ProcessCategory::class)->create();
-        factory(Process::class)->create([
-            'process_category_id' => $processCategory->id
-        ]);
-        $response = $this->api('GET', self::API_TEST_CATEGORIES . '?current_page=1&per_page=invalid');
-        $response->assertStatus(422);
-        $this->assertEquals(
-            __('validation.numeric', ['attribute' => 'per page']), $response->json()['error']['message']
-        );
     }
 
     /**
