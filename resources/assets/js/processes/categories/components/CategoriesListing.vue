@@ -41,7 +41,7 @@
                         title: "Status",
                         name: "status",
                         sortField: "status",
-                        callback: "capitalize"
+                        callback: this.formatStatus
                     },
                     {
                         title: "# Processes",
@@ -99,9 +99,21 @@
                         break
                 }
             },
-            capitalize(text) {
-                return _.capitalize(text);
-            }
+            formatStatus(value) {
+                let response = '<i class="fas fa-circle ' + value.toLowerCase() + '"></i> ';
+                return response + _.capitalize(value);
+            },
         }
     }
 </script>
+
+<style lang="scss" scoped>
+    /deep/ i.fa-circle {
+        &.active {
+            color: green;
+        }
+        &.inactive {
+            color: red;
+        }
+    }
+</style>
