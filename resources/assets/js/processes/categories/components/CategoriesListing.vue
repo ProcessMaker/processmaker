@@ -55,7 +55,6 @@
                 ]
             }
         },
-        mounted() { console.log(this.filter); },
         methods: {
             fetch() {
                 this.loading = true;
@@ -91,7 +90,12 @@
                         this.$emit('edit', data)
                         break
                     case "remove-item":
-                        this.$emit('delete', data)
+                        ProcessMaker.confirmModal(
+                            'Caution!',
+                            '<b>Are you sure to delete the process </b>' + data.name + '?', '', () => {
+                                this.$emit('delete', data)
+                            }
+                        )
                         break
                 }
             },
