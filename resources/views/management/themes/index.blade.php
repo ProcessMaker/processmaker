@@ -26,36 +26,14 @@
               <h4>Create a color scheme to customize your UI</h4>
               <div class="row">
                 <div class="col-2">
-                  <button class="btn btn-primary" @click="showPrimaryModal">
+                  <div class="btn btn-primary" @click="showPrimaryModal">
                     primary
-                  </button>
-                  <b-modal ref="myModalRef" hide-footer title="Using Component Methods" align="center">
-                    <customize-color ></customize-color>
-                    <div slot="modal-footer">
-                      <button @click="hidePrimaryModal" class="btn btn-outline-success btn-sm text-uppercase">
-                          Cancel
-                      </button>
-                      <button @click="showPrimaryModal" class="btn btn-success btn-sm text-uppercase">
-                          Save
-                      </button>
-                    </div>
-                  </b-modal>
+                  </div>
                 </div>
                 <div class="col-2">
-                  <button class="btn btn-secondary" @click="showSecondaryModal">
+                  <div class="btn btn-secondary" @click="showSecondaryModal">
                     secondary
-                  </button>
-                  <b-modal ref="myModalRef" hide-footer title="Using Component Methods" align="center">
-                    <customize-color ></customize-color>
-                    <div slot="modal-footer">
-                      <button @click="hideSecondaryModal" class="btn btn-outline-success btn-sm text-uppercase">
-                          Cancel
-                      </button>
-                      <button @click="showSecondaryModal" class="btn btn-success btn-sm text-uppercase">
-                          Save
-                      </button>
-                    </div>
-                  </b-modal>
+                  </div>
                 </div>
              </b-form>
             </div>
@@ -68,6 +46,28 @@
         </div>
       </div>
     </div>  
+    <b-modal ref="primaryModal" title="Using Component Methods" align="center">
+      <customize-color ></customize-color>
+      <div slot="modal-footer">
+        <button @click="hidePrimaryModal" class="btn btn-outline-success btn-sm text-uppercase">
+            Cancel
+        </button>
+        <button @click="showPrimaryModal" class="btn btn-success btn-sm text-uppercase">
+            Save
+        </button>
+      </div>
+    </b-modal>
+    <b-modal ref="secondaryModal" title="Using Component Methods" align="center">
+      <customize-color ></customize-color>
+      <div slot="modal-footer">
+        <button @click="hideSecondaryModal" class="btn btn-outline-success btn-sm text-uppercase">
+            Cancel
+        </button>
+        <button @click="showSecondaryModal" class="btn btn-success btn-sm text-uppercase">
+            Save
+        </button>
+      </div>
+    </b-modal>
   </div>
 @endsection
 

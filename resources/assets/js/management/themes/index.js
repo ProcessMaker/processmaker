@@ -13,16 +13,16 @@ new Vue({
     },
     methods: {
         showPrimaryModal() {
-            this.$refs.myModalRef.show()
+            this.$refs.primaryModal.show()
         },
         hidePrimaryModal() {
-            this.$refs.myModalRef.hide()
+            this.$refs.primaryModal.hide()
         },
         showSecondaryModal() {
-            this.$refs.myModalRef.show()
+            this.$refs.secondaryModal.show()
         },
         hideSecondaryModal() {
-            this.$refs.myModalRef.hide()
+            this.$refs.secondaryModal.hide()
         }
     }
 })
