@@ -2,11 +2,13 @@
 
 namespace ProcessMaker\Model;
 
+
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Validation\Rule;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Auth\Passwords\CanResetPassword as CanResetPasswordTrait;
+use Laravel\Passport\HasApiTokens;
 use ProcessMaker\Model\Group;
 use League\OAuth2\Server\Entities\UserEntityInterface;
 use ProcessMaker\Model\Traits\Uuid;
@@ -27,6 +29,7 @@ class User extends Authenticatable implements UserEntityInterface, CanResetPassw
     }
     use CanResetPasswordTrait;
     use HasMediaTrait;
+    use HasApiTokens;
 
     const TYPE = 'USER';
 

@@ -11,9 +11,9 @@ use ProcessMaker\Model\Role;
 use ProcessMaker\Model\Task;
 use ProcessMaker\Model\TaskUser;
 use ProcessMaker\Model\User;
-use Tests\Feature\Api\ApiTestCase;
+use Tests\TestCase;
 
-class TaskAssigneeManagerTest extends ApiTestCase
+class TaskAssigneeManagerTest extends TestCase
 {
     use DatabaseTransactions;
 
@@ -56,8 +56,6 @@ class TaskAssigneeManagerTest extends ApiTestCase
             'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
 
-        $this->auth($this->user->username, self::DEFAULT_PASS);
-
         $this->process = factory(Process::class)->create([
             'user_id' => $this->user->id
         ]);
@@ -76,7 +74,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     {
         //validate non-existent Type definided
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee';
-        $response = $this->api('POST', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('POST', $url, [
             'type' => 'OtherType',
             'uid' => '123'
         ]);
@@ -91,7 +89,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     {
         //validate non-existent Type user
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee';
-        $response = $this->api('POST', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('POST', $url, [
             'type' => 'user',
             'uid' => '123'
         ]);
@@ -106,7 +104,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     {
         //validate non-existent Type group
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee';
-        $response = $this->api('POST', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('POST', $url, [
             'type' => 'group',
             'uid' => '123'
         ]);
@@ -121,7 +119,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     {
         //validate non-existent Type user or group
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee';
-        $response = $this->api('POST', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('POST', $url, [
             'type' => 'user',
             'uid' => $this->user->uid
         ]);
@@ -135,7 +133,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     {
         //validate non-existent Type user or group
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee';
-        $response = $this->api('POST', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('POST', $url, [
             'type' => 'group',
             'uid' => $this->group->uid
         ]);
@@ -153,7 +151,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
         ]);
         //validate non-existent Type user or group
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee';
-        $response = $this->api('POST', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('POST', $url, [
             'type' => 'user',
             'uid' => $this->user->uid
         ]);
@@ -172,7 +170,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
         ]);
         //validate non-existent Type user or group
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee';
-        $response = $this->api('POST', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('POST', $url, [
             'type' => 'group',
             'uid' => $this->group->uid
         ]);
@@ -188,7 +186,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
         //load assignee
         $activity = factory(Task::class)->create();
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $activity->uid . '/assignee';
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is incorrect
         $response->assertStatus(404);
         $this->assertArrayHasKey('message', $response->json());
@@ -205,7 +203,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
             'task_id' => $this->activity->id
         ]);
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee';
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
 
@@ -232,7 +230,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
             'user_id' => factory(User::class)->create(['firstname' => $filter])->id
         ]);
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee?filter=' . urlencode($filter);
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         $response->assertStatus(200);
 
         //verify count of data
@@ -252,7 +250,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
             'user_id' => factory(Group::class)->create(['title' => $filter])->id
         ]);
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee?filter=' . urlencode($filter);
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         $response->assertStatus(200);
 
         //verify count of data
@@ -268,7 +266,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     {
         //Filter not exist results
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee?filter=' . 'THERE_ARE_NO_RESULTS';
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         $response->assertStatus(200);
         $this->assertEquals(0, $response->original->meta->total);
     }
@@ -279,7 +277,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     public function testGetInformationUserNoExists()
     {
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee/' . factory(User::class)->make()->uid;
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is incorrect
         $response->assertStatus(404);
         $this->assertArrayHasKey('message', $response->json());
@@ -291,7 +289,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     public function testGetInformationGroupNoExists()
     {
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee/invalidgroupid';
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is incorrect
         $response->assertStatus(404);
         $this->assertArrayHasKey('message', $response->json());
@@ -307,7 +305,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
             'user_id' => $this->user->id
         ]);
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee/' . $this->user->uid;
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         $response->assertStatus(200);
         $response->assertJsonStructure(self::STRUCTURE);
     }
@@ -322,7 +320,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
             'user_id' => $this->group->id
         ]);
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee/' . $this->group->uid;
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         $response->assertStatus(200);
         $response->assertJsonStructure(self::STRUCTURE);
     }
@@ -346,7 +344,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
             'user_id' => $group->id
         ]);
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee/all';
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
 
@@ -374,7 +372,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
             'user_id' => factory(User::class)->create(['firstname' => $filter])->id
         ]);
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee/all?filter=' . urlencode($filter);
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         $response->assertStatus(200);
 
         //verify count of data
@@ -390,7 +388,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
     {
         //Filter not exist results
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee/all?filter=' . 'THERE_ARE_NO_RESULTS';
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         $response->assertStatus(200);
         $this->assertEquals(0, $response->original->meta->total);
     }
@@ -406,7 +404,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
         factory(Group::class, 10 - Group::All()->count())->create();
         factory(User::class, 10 - User::All()->count())->create();
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/available-assignee';
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         $response->assertStatus(200);
 
         //verify count of data
@@ -427,7 +425,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
             'firstname' => $filter
         ]);
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/available-assignee?filter=' . urlencode($filter);
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         $response->assertStatus(200);
 
         //verify count of data
@@ -448,7 +446,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
             'title' => $filter
         ]);
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/available-assignee?filter=' . urlencode($filter);
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         $response->assertStatus(200);
 
         //verify count of data
@@ -465,7 +463,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
         //Other User row not exist
         $assignee = factory(User::class)->make();
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee/' . $assignee->uid;
-        $response = $this->api('DELETE', $url);
+        $response = $this->actingAs($this->user, 'api')->json('DELETE', $url);
         $response->assertStatus(404);
     }
 
@@ -479,7 +477,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
             'user_id' => $this->user->id
         ]);
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee/' . $this->user->uid;
-        $response = $this->api('DELETE', $url);
+        $response = $this->actingAs($this->user, 'api')->json('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(204);
     }
@@ -494,7 +492,7 @@ class TaskAssigneeManagerTest extends ApiTestCase
             'user_id' => $this->group->id
         ]);
         $url = self::API_TEST_ASSIGNEE . $this->process->uid . '/activity/' . $this->activity->uid . '/assignee/' . $this->group->uid;
-        $response = $this->api('DELETE', $url);
+        $response = $this->actingAs($this->user, 'api')->json('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(204);
     }

@@ -6,8 +6,7 @@ use Illuminate\Auth\RequestGuard;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
-use League\OAuth2\Server\ResourceServer;
-use ProcessMaker\Guards\OAuth2Guard;
+use Laravel\Passport\Passport;
 use ProcessMaker\Model\Application;
 use ProcessMaker\Model\Form;
 use ProcessMaker\Model\Delegation;
@@ -22,8 +21,6 @@ use ProcessMaker\Model\Role;
 use ProcessMaker\Model\Task;
 use ProcessMaker\Model\TaskUser;
 use ProcessMaker\Model\Script;
-use ProcessMaker\OAuth2\AccessTokenRepository;
-use ProcessMaker\OAuth2\ClientRepository;
 use ProcessMaker\Policies\ApplicationPolicy;
 use ProcessMaker\Policies\AssigneeTaskPolicy;
 use ProcessMaker\Policies\FormPolicy;
@@ -76,6 +73,8 @@ class AuthServiceProvider extends ServiceProvider
 
         $this->registerPolicies();
 
+        Passport::routes();
+
         Gate::define('has-permission', function ($user, $permissions) {
             // Convert permissions to array and trimmed
             $permissions = explode(',', $permissions);
@@ -106,47 +105,4 @@ class AuthServiceProvider extends ServiceProvider
         });
     }
 
-    /**
-     * Register our processmaker user provider which will assist in finding users
-     */
-    public function register()
-    {
-        // Register our base processmaker user provider
-        Auth::provider('processmaker', function ($app, array $config) {
-            return new UserProvider($app->make('hash'));
-        });
-
-        $this->registerGuard();
-    }
-
-    /**
-     * Register the oauth2 token guard.
-     */
-    protected function registerGuard()
-    {
-        Auth::extend('processmaker-oauth2', function ($app, $name, array $config) {
-            return tap($this->makeGuard($config), function ($guard) {
-                $this->app->refresh('request', $guard, 'setRequest');
-            });
-        });
-    }
-
-    /**
-     * Make an instance of the token guard.
-     *
-     * @param  array  $config
-     * @return \Illuminate\Auth\RequestGuard
-     */
-    protected function makeGuard(array $config)
-    {
-        return new RequestGuard(function ($request) use ($config) {
-            return (new OAuth2Guard(
-                $this->app->make(ResourceServer::class),
-                Auth::createUserProvider($config['provider']),
-                $this->app->make(AccessTokenRepository::class),
-                $this->app->make(ClientRepository::class),
-                $this->app->make('encrypter')
-            ))->user($request);
-        }, $this->app['request']);
-    }
 }

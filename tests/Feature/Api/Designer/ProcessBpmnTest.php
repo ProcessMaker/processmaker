@@ -9,14 +9,14 @@ use ProcessMaker\Model\Process;
 use ProcessMaker\Model\ProcessCategory;
 use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
-use Tests\Feature\Api\ApiTestCase;
+use Tests\TestCase;
 use ProcessMaker\Transformers\ProcessTransformer;
 
 /**
  * Tests routes related to processes / CRUD related methods
  *
  */
-class ProcessesBpmnTest extends ApiTestCase
+class ProcessesBpmnTest extends TestCase
 {
     use DatabaseTransactions;
 
@@ -32,7 +32,7 @@ class ProcessesBpmnTest extends ApiTestCase
         // Now attempt to connect to api
 
         $uri = str_replace('{processUid}', self::API_TEST_PROCESS_UID, self::API_TEST_PROCESS_BPMN);
-        $response = $this->api('GET', $uri);
+        $response = $this->json('GET', $uri);
         $response->assertStatus(401);
     }
 
@@ -41,7 +41,7 @@ class ProcessesBpmnTest extends ApiTestCase
      */
     public function testProcessesGetBpmn(): void
     {
-        $this->authenticateAsAdmin();
+        $user = $this->authenticateAsAdmin();
         // Create some processes
         factory(Process::class)->create([
             'uid' => self::API_TEST_PROCESS_UID,
@@ -49,7 +49,7 @@ class ProcessesBpmnTest extends ApiTestCase
         ]);
 
         $uri = str_replace('{processUid}', self::API_TEST_PROCESS_UID, self::API_TEST_PROCESS_BPMN);
-        $response = $this->api('GET', $uri);
+        $response = $this->actingAs($user, 'api')->json('GET', $uri);
         $response->assertStatus(200);
         $this->assertTrue(str_contains($response->getContent(), 'xml'));
     }
@@ -59,7 +59,7 @@ class ProcessesBpmnTest extends ApiTestCase
      */
     public function testProcessesPutBpmn(): void
     {
-        $this->authenticateAsAdmin();
+        $user = $this->authenticateAsAdmin();
 
         // Create some processes
         factory(Process::class)->create([
@@ -73,7 +73,7 @@ class ProcessesBpmnTest extends ApiTestCase
 
         $bpmn =  'test-bpm-text';
         $uri = str_replace('{processUid}', self::API_TEST_PROCESS_UID, self::API_TEST_PROCESS_BPMN);
-        $response = $this->api('patch', $uri, ['bpmn' => $bpmn]);
+        $response = $this->actingAs($user, 'api')->json('patch', $uri, ['bpmn' => $bpmn]);
         $response->assertStatus(204);
 
         $processInDb = Process::where('uid', '=', self::API_TEST_PROCESS_UID)->first();
@@ -93,7 +93,6 @@ class ProcessesBpmnTest extends ApiTestCase
             'password' => Hash::make('password'),
             'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
-        $this->auth($admin->username, 'password');
         return $admin;
     }
 }
