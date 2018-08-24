@@ -34,13 +34,10 @@ class CreateUsersTable extends Migration
             $table->string('postal')->nullable();
             $table->string('title')->nullable();
             $table->date('birthdate')->nullable();
-            $table->unsignedInteger('role_id')->nullable();
             $table->string('time_zone')->nullable();
             $table->string('lang')->nullable();
             $table->dateTime('last_login')->nullable();
 
-            // setup relationship for Rol we belong to
-            $table->foreign('role_id')->references('id')->on('roles')->ondelete('cascade');
         });
     }
 
