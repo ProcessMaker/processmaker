@@ -50,14 +50,24 @@ window.ProcessMaker = {
  *
  */
 window.ProcessMaker.apiClient = require('axios');
-// Have default endpoint and headers
-let token = document.head.querySelector('meta[name="api-token"]');
+
+window.ProcessMaker.apiClient.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+
+/**
+ * Next we will register the CSRF Token as a common header with Axios so that
+ * all outgoing HTTP requests automatically have it attached. This is just
+ * a simple convenience so we don't have to attach every token manually.
+ */
+
+let token = document.head.querySelector('meta[name="csrf-token"]');
 
 if (token) {
-    window.ProcessMaker.apiClient.defaults.headers.common['Authorization'] = 'Bearer ' + token.content;
+    window.ProcessMaker.apiClient.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
 } else {
-  console.error('ProcessMaker API Token not found in document. API requests via JavaScript may not function.');
+    console.error('CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token');
 }
+
+
 window.ProcessMaker.apiClient.defaults.baseURL = '/api/1.0/';
 // Default to a 5 second timeout, which is an eternity in web app terms
 window.ProcessMaker.apiClient.defaults.timeout = 5000;

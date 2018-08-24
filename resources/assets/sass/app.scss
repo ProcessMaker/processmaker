@@ -22,8 +22,7 @@ html {
 }
 
 #app-container .main {
-  width: 100%;
-  position: absolute;
+  overflow: auto;
 }
 
 .row.no-gutters {
@@ -42,6 +41,10 @@ html {
   padding-left: 0;
   margin-right: auto;
   margin-left: auto;
+}
+
+.container h1{
+  margin:15px 5px
 }
 
 //topnav
@@ -164,7 +167,7 @@ html {
   box-shadow: none;
   -webkit-box-shadow: none;
   border-color: #b6bfc6;
-} 
+}
 
 select.form-control:not([size]):not([multiple]) {
   height: 32px;

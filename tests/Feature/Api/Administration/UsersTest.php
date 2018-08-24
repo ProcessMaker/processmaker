@@ -11,12 +11,12 @@ use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
 use ProcessMaker\Transformers\UserTransformer;
-use Tests\Feature\Api\ApiTestCase;
+use Tests\TestCase;
 
 /**
  * Tests the Users API Endpoints with expected values
  */
-class UsersTest extends ApiTestCase
+class UsersTest extends TestCase
 {
     use DatabaseTransactions;
 
@@ -28,7 +28,7 @@ class UsersTest extends ApiTestCase
      */
     public function testUnauthenticated()
     {
-        $response = $this->api('GET', self::API_TEST_USERS);
+        $response = $this->json('GET', self::API_TEST_USERS);
         $response->assertStatus(401);
     }
 
@@ -42,8 +42,7 @@ class UsersTest extends ApiTestCase
             'role_id' => factory(Role::class)->make(),
         ]);
         // No role means it should not be authorized
-        $this->auth($user->username, 'password');
-        $response = $this->api('GET', self::API_TEST_USERS);
+        $response = $this->actingAs($user, 'api')->json('GET', self::API_TEST_USERS);
         $response->assertStatus(403);
     }
 
@@ -56,11 +55,10 @@ class UsersTest extends ApiTestCase
             'password' => Hash::make('password'),
             'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
         ]);
-        $this->auth($user->username, 'password');
         // Build a sample of 5 users into the system
         $users = factory(User::class, 5)->create();
         // Fetch via API
-        $response = $this->api('GET', self::API_TEST_USERS);
+        $response = $this->actingAs($user, 'api')->json('GET', self::API_TEST_USERS);
         // Verify 200 status code
         $response->assertStatus(200);
         // Grab users
@@ -84,8 +82,7 @@ class UsersTest extends ApiTestCase
             'password' => Hash::make('password'),
             'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
         ]);
-        $this->auth($user->username, 'password');
-        $response = $this->api('GET', self::API_TEST_USERS . '?filter=' . urlencode('invalid'));
+        $response = $this->actingAs($user, 'api')->json('GET', self::API_TEST_USERS . '?filter=' . urlencode('invalid'));
         $response->assertStatus(200);
         $data = json_decode($response->getContent(), true);
         // Ensure we have empty results
@@ -106,8 +103,7 @@ class UsersTest extends ApiTestCase
             'password' => Hash::make('password'),
             'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
         ]);
-        $this->auth($user->username, 'password');
-        $response = $this->api('GET', self::API_TEST_USERS . '?filter=' . urlencode('UniqueJoe'));
+        $response = $this->actingAs($user, 'api')->json('GET', self::API_TEST_USERS . '?filter=' . urlencode('UniqueJoe'));
         $response->assertStatus(200);
         $data = json_decode($response->getContent(), true);
         // Ensure we have empty results
@@ -128,8 +124,7 @@ class UsersTest extends ApiTestCase
             'password' => Hash::make('password'),
             'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
         ]);
-        $this->auth($user->username, 'password');
-        $response = $this->api('get', self::API_TEST_USERS . '/invaliduid');
+        $response = $this->actingAs($user, 'api')->json('get', self::API_TEST_USERS . '/invaliduid');
         $response->assertStatus(404);
     }
 
@@ -142,8 +137,8 @@ class UsersTest extends ApiTestCase
             'password' => Hash::make('password'),
             'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
         ]);
-        $this->auth($user->username, 'password');
-        $response = $this->api('get', self::API_TEST_USERS . '/' . $user->uid->toString());
+        
+        $response = $this->actingAs($user, 'api')->json('get', self::API_TEST_USERS . '/' . $user->uid->toString());
         $response->assertStatus(200);
         // Get our expected transformed user
         $expected = (new UserTransformer())->transform($user->refresh());
@@ -161,13 +156,13 @@ class UsersTest extends ApiTestCase
             'password' => Hash::make('password'),
             'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
-        $this->auth($user->username, 'password');
+        
 
         $user->addMedia(public_path() . '/img/avatar.png')
             ->preservingOriginal()
             ->toMediaCollection(User::COLLECTION_PROFILE, User::DISK_PROFILE);
 
-        $response = $this->api('get', self::API_TEST_PROFILE . 'profile');
+        $response = $this->actingAs($user, 'api')->json('get', self::API_TEST_PROFILE . 'profile');
 
         $response->assertStatus(200);
         $this->assertNotNull($response->json(['avatar']));
@@ -185,9 +180,9 @@ class UsersTest extends ApiTestCase
             'password' => Hash::make('password'),
             'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
         ]);
-        $this->auth($user->username, 'password');
+        
 
-        $response = $this->api('put', self::API_TEST_PROFILE . 'profile', [
+        $response = $this->actingAs($user, 'api')->json('put', self::API_TEST_PROFILE . 'profile', [
             'avatar' => UploadedFile::fake()->image($nameAvatar)
         ]);
         $response->assertStatus(200);
@@ -212,20 +207,20 @@ class UsersTest extends ApiTestCase
     {
         $diskName = User::DISK_PROFILE;
         Storage::disk($diskName);
-        $user = factory(User::class)->create([
+        $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
             'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
         ]);
-        $this->auth($user->username, 'password');
+        
         $user = factory(User::class)->create([
             'uid' => '1234',
             'username' => app()->make('Faker\Generator')->text(10),
             'firstname' => app()->make('Faker\Generator')->text(10),
             'lastname' => app()->make('Faker\Generator')->text(10),
         ]);
-        $response = $this->api('get', self::API_TEST_USERS, []);
+        $response = $this->actingAs($admin, 'api')->json('get', self::API_TEST_USERS, []);
         $response->assertStatus(200);
-        $response = $this->api('put', self::API_TEST_USERS . '/' . $user->uid, [
+        $response = $this->actingAs($admin, 'api')->json('put', self::API_TEST_USERS . '/' . $user->uid, [
             'firstname' => 'User update',
             'status' => 'ACTIVE',
             'lastname' => 'profile',
@@ -264,7 +259,7 @@ class UsersTest extends ApiTestCase
             'password' => Hash::make('password'),
             'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
         ]);
-        $this->auth($user->username, 'password');
+        
         $data = [
             'username' => 'testuser',
             'firstname' => 'Test',
@@ -272,18 +267,18 @@ class UsersTest extends ApiTestCase
             'password' => 'password'
         ];
 
-        $response = $this->api('post', self::API_TEST_USERS, $data);
+        $response = $this->actingAs($user, 'api')->json('post', self::API_TEST_USERS, $data);
         $response->assertStatus(200);
         unset($data['password']);
         $this->assertDatabaseHas('users', $data);	
         // Also check for duplicate user error
         // Just resubmit with same data
         $data['password'] = 'password';
-        $response = $this->api('post', self::API_TEST_USERS, $data);
+        $response = $this->actingAs($user, 'api')->json('post', self::API_TEST_USERS, $data);
         $response->assertStatus(422);
         // Get a 422 with empty payload, with required fields being listed
         $data = [];
-        $response = $this->api('post', self::API_TEST_USERS, $data);
+        $response = $this->actingAs($user, 'api')->json('post', self::API_TEST_USERS, $data);
         $response->assertStatus(422);
         // Check for hashed value for password
         $existingUser = User::where('username', 'testuser')->first();
@@ -299,14 +294,13 @@ class UsersTest extends ApiTestCase
             'password' => Hash::make('password'),
             'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
         ]);
-        $this->auth($admin->username, 'password');
 
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
             'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
         ]);
 
-        $response = $this->api('delete', self::API_TEST_USERS . '/' . $user->uid);
+        $response = $this->actingAs($admin, 'api')->json('delete', self::API_TEST_USERS . '/' . $user->uid);
         $response->assertStatus(204);
 
         //validating that the user does not exist

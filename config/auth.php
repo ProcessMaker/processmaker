@@ -36,7 +36,7 @@ return [
             'provider' => 'users',
         ],
         'api' => [
-            'driver' => 'processmaker-oauth2',
+            'driver' => 'passport',
             'provider' => 'users',
         ],
     ],
@@ -56,7 +56,8 @@ return [
     */
     'providers' => [
         'users' => [
-            'driver' => 'processmaker'
+            'driver' => 'eloquent',
+            'model' => ProcessMaker\Model\User::class
         ]
     ],
     /*

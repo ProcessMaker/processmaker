@@ -38,9 +38,8 @@
                 <div class="form-group">
                     <label for="add-role-status">Status</label>
                     <select class="form-control" id="add-role-status" v-model="status">
-                        <option :value="status">{{status}}</option>
                         <option value="ACTIVE">Active</option>
-                        <option value="DISABLED">Disabled</option>
+                        <option value="INACTIVE">Inactive</option>
                     </select>
                 </div>
             </form>
@@ -186,11 +185,12 @@
             formatActiveUsers(value) {
                 return '<div class="text-center">' + value + "</div>";
             },
-            formatStatus(value) {
-                value = value.toLowerCase();
-                let response = '<i class="fas fa-circle ' + value + '"></i> ';
-                value = value.charAt(0).toUpperCase() + value.slice(1);
-                return response + value;
+            formatStatus(status) {
+                status = status.toLowerCase();
+                let bubbleColor = {'active': 'text-success', 'inactive': 'text-danger', 'draft': 'text-warning', 'archived': 'text-info'};
+                let response = '<i class="fas fa-circle ' + bubbleColor[status] + ' small"></i> ';
+                status = status.charAt(0).toUpperCase() + status.slice(1);
+                return response + status;
             },
             fetch() {
                 this.loading = true;
@@ -240,12 +240,4 @@
         width: 225px;
     }
 
-    /deep/ i.fa-circle {
-        &.active {
-            color: green;
-        }
-        &.inactive {
-            color: red;
-        }
-    }
 </style>
