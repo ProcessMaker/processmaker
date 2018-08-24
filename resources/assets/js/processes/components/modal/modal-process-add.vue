@@ -6,6 +6,8 @@
         </form-input>
         <form-text-area :error="errors.description" :rows="3" v-model="description" value='description' :label="labels.description">
         </form-text-area>
+        <form-select :error="errors.status" :label="labels.status" v-model="status"
+                     :options="statusOptions"></form-select>
         <form-select :error="errors.process_category_id" :label="labels.category" name="category"
                      v-model="categorySelect" :options="categorySelectOptions">
         </form-select>
@@ -34,6 +36,7 @@
             return {
                 'name': '',
                 'description': '',
+                'status': '',
                 'categorySelect': null,
                 'categorySelectOptions': [{value: '', content: ''}],
                 'errors': {
@@ -41,6 +44,16 @@
                     'description': null,
                     'process_category_id': null,
                 },
+                'statusOptions': [
+                    {
+                        'value': 'ACTIVE',
+                        'content': 'Active'
+                    },
+                    {
+                        'value': 'INACTIVE',
+                        'content': 'Disabled'
+                    }
+                ],
                 'opened': this.show
             }
         },
@@ -59,6 +72,7 @@
             onReset() {
                 this.name = '';
                 this.description = '';
+                this.status = 'ACTIVE';
                 this.categorySelect = null;
                 this.errors.name = null;
                 this.errors.description = null;
@@ -91,12 +105,14 @@
                         this.name = response.data.name;
                         this.description = response.data.description;
                         this.categorySelect = response.data.category_uid;
+                        this.status = response.data.status;
                     })
             },
             onUpdate() {
                 ProcessMaker.apiClient.put('processes/' + this.processUid, {
                     name: this.name,
                     description: this.description,
+                    status: this.status,
                     category_uid: this.categorySelect
                 })
                     .then((response) => {
@@ -126,6 +142,7 @@
                         {
                             name: this.name,
                             description: this.description,
+                            status: this.status,
                             category_uid: this.categorySelect
                         }
                     )
