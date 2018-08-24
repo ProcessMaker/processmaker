@@ -64,7 +64,6 @@ class User extends Authenticatable implements UserEntityInterface, CanResetPassw
         'postal',
         'title',
         'birthdate',
-        'role_id',
         'time_zone',
         'lang',
         'last_login'
@@ -93,7 +92,7 @@ class User extends Authenticatable implements UserEntityInterface, CanResetPassw
 
     /**
      * Returns the validation rules for this model.
-     * If this is an update validation rule, pass in the existing 
+     * If this is an update validation rule, pass in the existing
      * user to avoid unique rules clashing.
      */
     public static function rules(User $existing = null) {
@@ -222,16 +221,6 @@ class User extends Authenticatable implements UserEntityInterface, CanResetPassw
     public function getIdentifier()
     {
         return $this->id;
-    }
-
-    /**
-     * Role of the user.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function role()
-    {
-        return $this->belongsTo(Role::class);
     }
 
     /**
