@@ -12,90 +12,88 @@
 </template>
 
 <script>
-    export default {
-        props: [
-            'background',
-            'uid'
-        ],
-        computed: {
-            backgroundColor() {
-                // We could randomize based on label or something
-                return this.background;
-            }
-        },
-        methods: {
-            setImage(image) {
-                this.image = image;
-            },
-            fetch() {
-                // Fetch url
-                // If 404, we'll have a json response with error and user meta data
-                // If 200, then it's actually a valid image url, so let's replace our image
-                // with the data url
-                ProcessMaker.apiClient('admin/profile')
-                    .then((response) => {
-                        this.label = (response.data.firstname[0] + response.data.lastname[0]).toUpperCase();
-                        if (response.data.avatar) {
-                            this.image = response.data.avatar;
-                        }
-                    })
-                    .catch((error) => {
-                        if (error.response.status == 404 && error.response.data.user) {
-                            // We have a 404 and we have a user object returned, let's fetch label
-                            let user = error.response.data.user;
-                            this.label = (user.firstname[0] + user.lastname[0]).toUpperCase();
-                        } else {
-                            this.label = 'n/a'
-                        }
-                    })
-            }
-        },
-        mounted() {
-            this.fetch();
-        },
-        data() {
-            return {
-                // Default to no image
-                image: null,
-                label: ''
-            }
-        }
-
+export default {
+  props: ["background", "uid"],
+  computed: {
+    backgroundColor() {
+      // We could randomize based on label or something
+      return this.background;
     }
+  },
+  methods: {
+    setImage(image) {
+      this.image = image;
+    },
+    fetch() {
+      // Fetch url
+      // If 404, we'll have a json response with error and user meta data
+      // If 200, then it's actually a valid image url, so let's replace our image
+      // with the data url
+      ProcessMaker.apiClient("admin/profile")
+        .then(response => {
+          this.label = (
+            response.data.firstname[0] + response.data.lastname[0]
+          ).toUpperCase();
+          if (response.data.avatar) {
+            this.image = response.data.avatar;
+          }
+        })
+        .catch(error => {
+          if (error.response.status == 404 && error.response.data.user) {
+            // We have a 404 and we have a user object returned, let's fetch label
+            let user = error.response.data.user;
+            this.label = (user.firstname[0] + user.lastname[0]).toUpperCase();
+          } else {
+            this.label = "n/a";
+          }
+        });
+    }
+  },
+  mounted() {
+    this.fetch();
+  },
+  data() {
+    return {
+      // Default to no image
+      image: null,
+      label: ""
+    };
+  }
+};
 </script>
 
 <style lang="scss" scoped>
-    .avatar {
-        display: inline-block;
-        border-radius: 50%;
-        position: relative;
-    }
+.avatar {
+  display: inline-block;
+  border-radius: 50%;
+  position: relative;
+}
 
-    img {
-        max-width: 100%;
-    }
+img {
+  max-width: 100%;
+}
 
-    .profile-avatar-none {
-        max-width: 100%;
-        min-width: 100%;
-        min-height: 100%;
-        max-height: 100%;
-        background-color: rgb(251, 181, 4);
-        text-align: center;
-        font-size: 40px;
-    }
+.profile-avatar-none {
+  max-width: 100%;
+  min-width: 100%;
+  min-height: 100%;
+  max-height: 100%;
+  background-color: rgb(251, 181, 4);
+  text-align: center;
+  font-size: 40px;
+}
 
-    .profile-avatar {
-        max-width: 100%;
-    }
+.profile-avatar {
+  max-width: 100%;
+}
 
-    .profile-overlay {
-        position: absolute;
-        top: 0px;
-        max-width: 100%;
-        max-height: 100%;
-        min-width: 100%;
-        min-height: 100%;
-    }
-
+.profile-overlay {
+  position: absolute;
+  right: 0;
+  top: 0px;
+  max-width: 100%;
+  max-height: 100%;
+  min-width: 100%;
+  min-height: 100%;
+}
 </style>
