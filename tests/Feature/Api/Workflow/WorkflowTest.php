@@ -4,7 +4,6 @@ namespace Tests\Feature\Api\Workflow;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\Process;
-use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
 use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
 use Tests\TestCase;
@@ -33,10 +32,10 @@ class WorkflowTest extends TestCase
         $process = factory(Process::class)->create([
             'bpmn' => file_get_contents(__DIR__ . '/bpmn/Lanes.bpmn'),
         ]);
-        
+
         //Get the process definition
         $definitions = $process->getDefinitions();
-        
+
         //Assertion: Check that $definition exists
         $this->assertNotEmpty($definitions);
 
@@ -66,7 +65,7 @@ class WorkflowTest extends TestCase
             'endDate' => '',
             'comments' => '',
         ];
-        
+
         //Trigger the start event
         $response = $this->actingAs($this->user, 'api')->json(
             'POST',
@@ -107,18 +106,17 @@ class WorkflowTest extends TestCase
 
         //Assertion: Verifica que el primer token esta CLOSED
         $tokens = $instance->delegations()->orderBy('id')->get();
-        
+
         $this->assertEquals('CLOSED', $tokens[0]->thread_status);
 
         //Assertion: Verifica que el segundo token esta ACTIVE
         $this->assertEquals('ACTIVE', $tokens[1]->thread_status);
     }
-    
+
     private function login()
     {
         $this->user = factory(User::class)->create([
-            'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'password' => Hash::make('password')
         ]);
     }
 }

@@ -7,7 +7,6 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\ProcessCategory;
-use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
 use Tests\TestCase;
 
@@ -25,9 +24,9 @@ class ProcessCategoryManagerTest extends TestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_OPERATOR)->first()->id,
+
         ]);
-        
+
 
         $catUid = factory(ProcessCategory::class)->create()->uid;
 
@@ -55,7 +54,7 @@ class ProcessCategoryManagerTest extends TestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+
         ]);
         //Create test categories
         $processCategory = factory(ProcessCategory::class)->create();
@@ -83,7 +82,7 @@ class ProcessCategoryManagerTest extends TestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+
         ]);
         //Create test categories
         $processCategory = factory(ProcessCategory::class)->create();
@@ -113,7 +112,7 @@ class ProcessCategoryManagerTest extends TestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+
         ]);
         //Create test categories
         $processCategory = factory(ProcessCategory::class)->create();
@@ -135,7 +134,7 @@ class ProcessCategoryManagerTest extends TestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+
         ]);
         //Create test categories
         $processCategory = factory(ProcessCategory::class)->create();
@@ -157,7 +156,7 @@ class ProcessCategoryManagerTest extends TestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+
         ]);
         //Create test categories
         $processCategory = factory(ProcessCategory::class)->create();
@@ -179,7 +178,7 @@ class ProcessCategoryManagerTest extends TestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+
         ]);
         //Create test categories
         $processCategory = factory(ProcessCategory::class)->create();
@@ -209,7 +208,7 @@ class ProcessCategoryManagerTest extends TestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+
         ]);
         $faker = Faker::create();
 
@@ -264,7 +263,7 @@ class ProcessCategoryManagerTest extends TestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+
         ]);
         $faker = Faker::create();
 
@@ -323,7 +322,7 @@ class ProcessCategoryManagerTest extends TestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+
         ]);
 
         $processCategory = factory(ProcessCategory::class)->create();
@@ -352,7 +351,7 @@ class ProcessCategoryManagerTest extends TestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+
         ]);
         $processCategory = factory(ProcessCategory::class)->create();
         $catUid = $processCategory->uid;
