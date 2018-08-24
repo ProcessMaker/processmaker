@@ -33,12 +33,13 @@ class RequestsController extends Controller
             'per_page' => $request->input('per_page', 10),
             'sort_by' => $request->input('sort_by', 'username'),
             'order_direction' => $request->input('order_direction', 'ASC'),
+            'status' => $request->input('status', Application::STATUS_TO_DO),
         ];
         $include = $request->input('include');
 
         $requests = Application::where('creator_user_id', $owner->id)
+            ->where('APP_STATUS_ID', $options['status'])
             ->with($include ? explode(',', $include) : [])
-            ->where('APP_STATUS', Application::STATUS_TO_DO)
             ->paginate($options['per_page'])
             ->appends($options);
 
