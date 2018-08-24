@@ -205,6 +205,7 @@ h3 {
 
 .profile-overlay {
   position: absolute;
+  right: 0px;
   top: 0;
   left: 0;
 }
