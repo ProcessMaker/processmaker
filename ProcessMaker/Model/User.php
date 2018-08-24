@@ -43,7 +43,7 @@ class User extends Authenticatable implements UserEntityInterface, CanResetPassw
         'password'
     ];
 
-    protected $fillable = [
+    public $fillable = [
         'uid',
         'username',
         'password',
@@ -98,8 +98,6 @@ class User extends Authenticatable implements UserEntityInterface, CanResetPassw
      */
     public static function rules(User $existing = null) {
         $rules = [
-        'firstname' => 'nullable',
-        'lastname' => 'nullable',
         'password' => 'required',
         'status' => 'required|in:ACTIVE,DISABLED',
         ];
