@@ -5,7 +5,7 @@ namespace Tests\Unit;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use ProcessMaker\Model\ProcessCategory;
 use ProcessMaker\Model\Process;
-use Illuminate\Validation\ValidationException;
+use ProcessMaker\Exception\ValidationException;
 use Tests\TestCase;
 
 class ProcessCategoryTest extends TestCase
@@ -13,7 +13,7 @@ class ProcessCategoryTest extends TestCase
     use DatabaseTransactions;
 
     /**
-     * Tests model validatiions
+     * Tests model validations
      */
     public function testValidations()
     {
@@ -29,6 +29,9 @@ class ProcessCategoryTest extends TestCase
         $this->assertFalse($pc->isValid());
     }
 
+    /**
+     * Test validation when deleting with processes
+     */
     public function testHasProcessesValidation()
     {
         $process = factory(Process::class)->create();

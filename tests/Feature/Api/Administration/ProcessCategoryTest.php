@@ -136,7 +136,7 @@ class ProcessCategoryTest extends TestCase
                 "uid"             => $processCategory->uid,
                 "name"            => $processCategory->name,
                 "status"          => $processCategory->status,
-                "processes_count" => 0,
+                "processes_count" => 1,
             ]
         );
 
