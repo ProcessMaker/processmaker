@@ -46,7 +46,7 @@
 import FormInput from "@processmaker/vue-form-elements/src/components/FormInput";
 import FormSelect from "@processmaker/vue-form-elements/src/components/FormSelect";
 import FormCheckbox from "@processmaker/vue-form-elements/src/components/FormCheckbox";
-import timezone from "timezones.json";
+import timezones from "../../../data/timezones.json";
 
 export default {
   components: { FormSelect, FormInput, FormCheckbox },
