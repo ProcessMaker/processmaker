@@ -4,6 +4,7 @@ namespace Tests\Feature\Api\Cases;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
+use ProcessMaker\Model\Application;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
@@ -40,7 +41,7 @@ class RequestsListTest extends TestCase
     {
         $this->login();
 
-        factory(\ProcessMaker\Model\Application::class, 51)->create([
+        factory(Application::class, 51)->create([
             'creator_user_id' => $this->user->id
         ]);
 
@@ -76,7 +77,7 @@ class RequestsListTest extends TestCase
     {
         $this->login();
 
-        factory(\ProcessMaker\Model\Application::class, 75)->create();
+        factory(Application::class, 75)->create();
 
         $response = $this->actingAs($this->user, 'api')->json('GET', '/api/1.0/requests/?page=2');
 
@@ -110,7 +111,7 @@ class RequestsListTest extends TestCase
     {
         $this->login();
 
-        factory(\ProcessMaker\Model\Application::class, 26)->create();
+        factory(Application::class, 26)->create();
 
         $response = $this->actingAs($this->user, 'api')->json('GET', '/api/1.0/requests/?per_page=21');
 
@@ -143,32 +144,24 @@ class RequestsListTest extends TestCase
     {
         $this->login();
 
-        factory(\ProcessMaker\Model\Application::class, 10)->create();
+        factory(Application::class, 5)->create([
+            'APP_STATUS_ID' => Application::STATUS_TO_DO,
+            'creator_user_id' => $this->user->id
+        ]);
+        factory(Application::class, 2)->create([
+            'APP_STATUS_ID' => Application::STATUS_COMPLETED,
+            'creator_user_id' => $this->user->id
+        ]);
 
-        $response = $this->actingAs($this->user, 'api')->json('GET', '/api/1.0/requests/?columnSearch=APP_TITLE&search=Test');
-
+        $response = $this->actingAs($this->user, 'api')->json('GET', '/api/1.0/requests?status=3');
         $response->assertStatus(200);
-
-        $response->assertJsonStructure([
-            'data',
-            'meta' => [
-                'count',
-                'current_page',
-                'filter',
-                'per_page',
-                'sort_by',
-                'sort_order',
-                'total',
-                'total_pages'
-            ],
-      ]);
-
-        $data = json_decode($response->getContent());
-
-        $this->assertTrue(is_array($data->data));
+        $this->assertCount(2, $response->json()['data']);
         
+        $response = $this->actingAs($this->user, 'api')->json('GET', '/api/1.0/requests?status=2');
+        $response->assertStatus(200);
+        $this->assertCount(5, $response->json()['data']);
     }
-    
+
     private function login()
     {
         $this->user = factory(User::class)->create([
