@@ -19,7 +19,6 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  * Represents an Eloquent model of a User
  * @package ProcessMaker\Model
  *
- * @property \ProcessMaker\Model\Role $role
  */
 class User extends Authenticatable implements UserEntityInterface, CanResetPassword, HasMedia
 {
