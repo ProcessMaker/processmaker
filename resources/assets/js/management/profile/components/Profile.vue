@@ -116,12 +116,9 @@ export default {
       image: "",
       uid: window.ProcessMaker.user.uid,
       data: {},
-      states: [],
-      timezones: [],
-      countries: [],
-      loadStates: states,
-      loadTimezones: timezones,
-      loadCountries: countries,
+      states: states,
+      timezones: timezones,
+      countries: countries,
       languages: [{ value: "en", content: "English" }]
     };
   },
@@ -129,14 +126,6 @@ export default {
     this.load(), this.set_json_objects();
   },
   methods: {
-    set_json_objects() {
-      // parse the states json into a usable object
-      for (let index in this.loadStates) {
-        this.states.push({ value: index, content: this.loadStates[index] });
-      }
-      // parse timezone and countries. Can we use the correct format for the start?
-    },
-
     // Loads data from our profile api to fetch data and populate fields
     load() {
       ProcessMaker.apiClient.get("admin/profile").then(response => {
