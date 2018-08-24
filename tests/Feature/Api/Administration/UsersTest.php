@@ -27,6 +27,7 @@ class UsersTest extends TestCase
      */
     public function testUnauthenticated()
     {
+
         $response = $this->json('GET', self::API_TEST_USERS);
         $response->assertStatus(401);
     }
@@ -36,6 +37,9 @@ class UsersTest extends TestCase
      */
     public function testUnauthorized()
     {
+
+      $this->markTestSkipped('Access control via permissions and roles removed');
+      
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
         ]);

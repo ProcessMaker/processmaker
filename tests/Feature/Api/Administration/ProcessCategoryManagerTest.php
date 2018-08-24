@@ -22,6 +22,9 @@ class ProcessCategoryManagerTest extends TestCase
      */
     public function testAccessControl()
     {
+
+      $this->markTestSkipped('Access control via permissions and roles removed');
+
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
 
@@ -53,8 +56,7 @@ class ProcessCategoryManagerTest extends TestCase
     public function testGetListOfCategories()
     {
         $admin = factory(User::class)->create([
-            'password' => Hash::make('password'),
-
+            'password' => Hash::make('password')
         ]);
         //Create test categories
         $processCategory = factory(ProcessCategory::class)->create();

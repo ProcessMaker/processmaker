@@ -25,6 +25,9 @@ class FileManagerTest extends TestCase
      */
     public function testAccessControl()
     {
+
+      $this->markTestSkipped('Access control via permissions and roles removed');
+
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
 

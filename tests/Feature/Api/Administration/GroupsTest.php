@@ -33,8 +33,11 @@ class GroupsTest extends TestCase
     /**
      * Ensure our API endpoint is protected by required permission
      */
-    public function testUnauthorized()
+    public function testAuthorized()
     {
+
+      $this->markTestSkipped('Access control via permissions and roles removed');
+
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
         ]);
