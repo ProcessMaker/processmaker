@@ -92,12 +92,12 @@
 </template>
 
 <script>
-import VueCroppie from 'vue-croppie';
-import modalProfileAvatar from './modal-profile-avatar.vue'
-import avatar from '../../../components/common/avatar.vue'
-import states from '../../../data/states_hash.json'
-import timezones from 'timezones.json'
-let countries = require('country-json/src/country-by-abbreviation.json')
+import VueCroppie from "vue-croppie";
+import modalProfileAvatar from "./modal-profile-avatar.vue";
+import avatar from "../../../components/common/avatar.vue";
+import states from "../../../data/usstates.json";
+import timezones from "../../../data/timezones.json";
+import countries from "../../../data/countries.json";
 import FormInput from "@processmaker/vue-form-elements/src/components/FormInput";
 import FormSelect from "@processmaker/vue-form-elements/src/components/FormSelect";
 
@@ -108,13 +108,12 @@ export default {
     avatar,
     FormInput,
     FormSelect
-
   },
   data() {
     return {
       loaded: false,
       // Points to a url of the image
-      image: '',
+      image: "",
       uid: window.ProcessMaker.user.uid,
       data: {},
       states: [],
@@ -123,95 +122,90 @@ export default {
       loadStates: states,
       loadTimezones: timezones,
       loadCountries: countries,
-      languages: [{'value':'en','content':'English'}]
-    }
+      languages: [{ value: "en", content: "English" }]
+    };
   },
   mounted() {
-    this.load(),
-    this.set_json_objects()
+    this.load(), this.set_json_objects();
   },
   methods: {
     set_json_objects() {
-
       // parse the states json into a usable object
-      for(let index in this.loadStates){
-        this.states.push({'value':index,'content':this.loadStates[index]});
+      for (let index in this.loadStates) {
+        this.states.push({ value: index, content: this.loadStates[index] });
       }
       // parse timezone and countries. Can we use the correct format for the start?
     },
 
     // Loads data from our profile api to fetch data and populate fields
     load() {
-      ProcessMaker.apiClient.get('admin/profile')
-        .then((response) => {
-          // Copy everything into our data
-          this.data = response.data
-          this.loaded = true;
-        });
+      ProcessMaker.apiClient.get("admin/profile").then(response => {
+        // Copy everything into our data
+        this.data = response.data;
+        this.loaded = true;
+      });
     },
     save() {
       delete this.data.avatar;
       if (this.image) {
         this.data.avatar = this.image;
       }
-      ProcessMaker.apiClient.put('admin/profile', this.data)
-        .then((response) => {
-          ProcessMaker.alert('Save profile success', 'success');
-          location.reload();
-        });
+      ProcessMaker.apiClient.put("admin/profile", this.data).then(response => {
+        ProcessMaker.alert("Save profile success", "success");
+        location.reload();
+      });
     },
     updateImage(newImage) {
       this.image = newImage;
       this.$refs.avatar.setImage(newImage);
     },
     openModal() {
-      this.$refs.profileModal.openModal()
+      this.$refs.profileModal.openModal();
     },
     hideModal() {
-      this.$refs.modalProfileAvatar.hide()
+      this.$refs.modalProfileAvatar.hide();
     },
     onFileChange(e) {
       let files = e.target.files || e.dataTransfer.files;
-      if (!files.length)
-        return;
+      if (!files.length) return;
       this.createImage(files[0]);
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
 #browse {
-    padding: 0;
-    margin-bottom: 0;
+  padding: 0;
+  margin-bottom: 0;
 }
 
 form {
-    margin-top: 44px;
+  margin-top: 44px;
 }
 
 .form-wrap {
-    max-width: 620px;
+  max-width: 620px;
 }
 
 h3 {
-    font-size: 24px;
+  font-size: 24px;
 }
 
 .profile-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 .avatar-wrapper {
-    width: 82px;
-    height: 82px;
+  width: 82px;
+  height: 82px;
 }
 
 .modal-wrapper {
-    width: 82px;
-    margin: auto;
-    position: relative;
+  width: 82px;
+  margin: auto;
+  position: relative;
 }
 </style>
