@@ -4,7 +4,6 @@ namespace ProcessMaker\Http\Controllers\Api\Requests;
 
 use Auth;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Model\Application;
 use ProcessMaker\Model\Process;
@@ -61,17 +60,9 @@ class RequestsController extends Controller
             'sort_order' => $request->input('order_direction', 'ASC'),
         ];
 
-        $sortingField = [
-            'status' => 'status',
-            'user' => 'user_id',
-            'category' => 'process_category_id',
-            'due_date' => 'updated_at',
-            'name' => 'name',
-            'description' => 'description'
-        ];
-
        $processTable = with(new Process)->getTable();
        $categoryTable = with(new ProcessCategory)->getTable();
+       $userTable = with(new User)->getTable();
 
         if (empty($request->input('order_by'))) {
             // if no sort option is sent
@@ -96,20 +87,19 @@ class RequestsController extends Controller
             // Cannot join on table because of Eloquent's lack of specific table column names in generated SQL
             // See: https://github.com/laravel/ideas/issues/347
             $filter = '%' . $options['filter'] . '%';
-            $user = new User();
-            $query->where(function ($query) use ($filter, $user, $processTable, $categoryTable) {
+            $query->where(function ($query) use ($filter, $userTable, $processTable, $categoryTable) {
                 $query->Where("$processTable.name", 'like', $filter)
                     ->orWhere("$processTable.description", 'like', $filter)
                     ->orWhere("$processTable.status", 'like', $filter)
                     ->orWhere(function ($q) use ($filter, $categoryTable) {
                         $q->whereHas('category', function ($query) use ($filter, $categoryTable) {
-                            $query->where($categoryTable->getTable() . '.name', 'like', $filter);
+                            $query->where("$categoryTable.name", 'like', $filter);
                         });
                     })
-                    ->orWhere(function ($q) use ($filter, $user) {
-                        $q->whereHas('user', function ($query) use ($filter, $user) {
-                            $query->where($user->getTable() . '.firstname', 'like', $filter)
-                                ->where($user->getTable() . '.lastname', 'like', $filter);
+                    ->orWhere(function ($q) use ($filter, $userTable) {
+                        $q->whereHas('user', function ($query) use ($filter, $userTable) {
+                            $query->where("$userTable.firstname", 'like', $filter)
+                                ->where("$userTable.lastname", 'like', $filter);
                         });
                     });
             });
