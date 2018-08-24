@@ -4,7 +4,7 @@
                   @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data"
                   pagination-path="meta">
             <template slot="name" slot-scope="props">
-                <b-btn variant="link text-capitalize" @click="onAction('edit-item', props.rowData, props.rowIndex)">
+                <b-btn variant="link text-capitalize" @click="onAction('edit-designer', props.rowData, props.rowIndex)">
                     {{props.rowData.name}}
                 </b-btn>
             </template>
@@ -99,7 +99,7 @@
                 return (data.status === 'ACTIVE') ? 'Deactivate' : 'Activate'
             },
             onAction(actionType, data, index) {
-                if (actionType === 'edit-item') {
+                if (actionType === 'edit-designer') {
                     window.open('/designer/' + data.uid,'_self');
                 }
 
@@ -113,6 +113,10 @@
                             this.loading = false;
                             document.location.reload();
                         });
+                }
+
+                if (actionType === 'edit-item') {
+                    this.$emit('edit', data.uid);
                 }
 
                 if (actionType === 'remove-item') {

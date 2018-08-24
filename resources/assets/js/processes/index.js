@@ -6,10 +6,29 @@ new Vue({
     el: '#processes-listing',
     data: {
         filter: '',
-        processModal: false
+        processUid: null,
+        processModal: false,
+        labels: {
+            panel: 'Create New Process',
+            title: 'Title',
+            description: 'Description',
+            category: 'Category'
+        }
     },
     components: {
         ProcessesListing,
         ModalCreateProcess
+    },
+    methods: {
+        showModal() {
+            this.labels.panel = 'Create New Process';
+            this.processUid = null;
+            this.processModal = true;
+        },
+        edit(uid) {
+            this.labels.panel = 'Edit Process';
+            this.processUid = uid;
+            this.processModal = true;
+        }
     }
 });
