@@ -38,6 +38,7 @@ class RequestsController extends Controller
 
         $requests = Application::where('creator_user_id', $owner->id)
             ->with($include ? explode(',', $include) : [])
+            ->where('APP_STATUS', Application::STATUS_TO_DO)
             ->paginate($options['per_page'])
             ->appends($options);
 
