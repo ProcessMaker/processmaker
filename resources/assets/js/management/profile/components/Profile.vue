@@ -98,6 +98,7 @@ import avatar from "../../../components/common/avatar.vue";
 import states from "../../../data/usstates.json";
 import timezones from "../../../data/timezones.json";
 import countries from "../../../data/countries.json";
+import languages from "../../../data/languages.json";
 import FormInput from "@processmaker/vue-form-elements/src/components/FormInput";
 import FormSelect from "@processmaker/vue-form-elements/src/components/FormSelect";
 
@@ -119,7 +120,7 @@ export default {
       states: states,
       timezones: timezones,
       countries: countries,
-      languages: [{ value: "en", content: "English" }]
+      languages: languages
     };
   },
   mounted() {
