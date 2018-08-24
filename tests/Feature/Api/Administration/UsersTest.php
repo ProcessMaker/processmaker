@@ -289,7 +289,7 @@ class UsersTest extends TestCase
         $response->assertStatus(200);
         $response=$this->doLogin($user->username,$user->password);
         //check to be sure user cannot log in with a status of INACTIVE
-        $response->assertStatus(401);
+        $response->assertRedirect('/');
     }
 
     public function testCreateUser()
