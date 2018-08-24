@@ -37,7 +37,7 @@
 
         <div class="row">
           <div class="col">
-            <form-input label="Postal Code" v-model="data.zipcode" :error="this.addError"></form-input>
+            <form-input label="Postal Code" v-model="data.postal" :error="this.addError"></form-input>
           </div>
           <div class="col">
             <form-select label="Country" v-model="data.country" :options="countries" :error="this.addError"></form-select>
@@ -56,7 +56,7 @@
         </div>
         <hr>
         <div align="right">
-          <b-button variant="success">Save Profile</b-button>
+          <b-button @click="onSave" variant="success">Save Profile</b-button>
         </div>
       </div>
     </div>
@@ -124,7 +124,7 @@ export default {
     };
   },
   mounted() {
-    this.load(), this.set_json_objects();
+    this.load();
   },
   methods: {
     // Loads data from our profile api to fetch data and populate fields
@@ -159,6 +159,27 @@ export default {
       let files = e.target.files || e.dataTransfer.files;
       if (!files.length) return;
       this.createImage(files[0]);
+    },
+    onSave() {
+      window.ProcessMaker.apiClient
+        .put("users/" + this.uid, {
+          username: this.data.username,
+          firstname: this.data.firstname,
+          lastname: this.data.lastname,
+          email: this.data.email,
+          password: this.data.password,
+          phone: this.data.phone,
+          address: this.data.address,
+          city: this.data.city,
+          state: this.data.state,
+          postal: this.data.postal,
+          country: this.data.country,
+          timezone: this.data.timezone,
+          language: this.data.language
+        })
+        .then(response => {
+          ProcessMaker.alert("Saved", "success");
+        });
     }
   }
 };
