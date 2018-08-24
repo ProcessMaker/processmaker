@@ -50,7 +50,7 @@
                         '/complete',
                         this.formData)
                   .then(function () {
-                      document.location.href = '/requests/' + self.instanceUid + '/submitted';
+                      document.location.href = '/tasks?successfulRouting=true';
                    });
             },
             update(data) {
