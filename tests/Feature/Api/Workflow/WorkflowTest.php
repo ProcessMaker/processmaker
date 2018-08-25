@@ -7,19 +7,21 @@ use ProcessMaker\Model\Process;
 use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
 use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
-use Tests\Feature\Api\ApiTestCase;
+use Tests\TestCase;
 
 /**
  * Tests of Nayra engine
  *
  */
-class WorkflowTest extends ApiTestCase
+class WorkflowTest extends TestCase
 {
 
     use DatabaseTransactions;
 
     const API_TRIGGER_START_EVENT = '/api/1.0/processes/%s/events/%s/trigger';
     const API_COMPLETE_DELEGATION = '/api/1.0/processes/%s/instances/%s/tokens/%s/complete';
+
+    public $user;
 
     /**
      * Tests access to definitions in a process row.
@@ -66,7 +68,7 @@ class WorkflowTest extends ApiTestCase
         ];
         
         //Trigger the start event
-        $response = $this->api(
+        $response = $this->actingAs($this->user, 'api')->json(
             'POST',
             sprintf(
                 self::API_TRIGGER_START_EVENT,
@@ -88,7 +90,7 @@ class WorkflowTest extends ApiTestCase
         $token = $instance->delegations()->first();
 
         //Complete a delegation
-        $response = $this->api(
+        $response = $this->actingAs($this->user, 'api')->json(
             'POST',
             sprintf(
                 self::API_COMPLETE_DELEGATION,
@@ -114,10 +116,9 @@ class WorkflowTest extends ApiTestCase
     
     private function login()
     {
-        $admin = factory(User::class)->create([
+        $this->user = factory(User::class)->create([
             'password' => Hash::make('password'),
             'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
         ]);
-        $this->auth($admin->username, 'password');
     }
 }

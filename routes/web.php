@@ -10,7 +10,6 @@ Broadcast::routes();
 $this->get('login', 'Auth\LoginController@showLoginForm')->name('login');
 $this->post('login', 'Auth\LoginController@login');
 $this->get('logout', 'Auth\LoginController@logout')->name('logout');
-$this->post('auth/refresh', 'Auth\RefreshController@refreshSession');
 
 // Password Reset Routes...
 $this->get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
@@ -21,7 +20,7 @@ $this->get('password/success', function(){
   return view('auth.passwords.success',['title' => __('Password Reset')]);
 })->name('password-success');
 
-$this->middleware(['auth', 'apitoken'])->group(function() {
+$this->middleware(['auth'])->group(function() {
     // Test Process Routes for Nayra
     $this->get('/requests/{process}/new', function(ProcessMaker\Model\Process $process) {
         //Find the process
@@ -48,7 +47,7 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
     })->name('requests');
 
     // For fetching the status of an open request
-    $this->get('/request/{instance}/status', ['uses' => 'Request\StatusController@status'])->name('request-status');
+    $this->get('/requests/{instance}/status', ['uses' => 'Request\StatusController@status'])->name('request-status');
 
     $this->get('/admin', function(){
       return view('admin',['title' => 'Dashboard']);
@@ -57,6 +56,8 @@ $this->middleware(['auth', 'apitoken'])->group(function() {
     $this->get('/admin/profile', function(){
       return view('profile',['title' => 'Dashboard']);
     })->name('profile');
+
+    $this->get('/admin/preferences', 'Management\PreferencesController@index')->name('preferences');
 
     $this->get('/', 'HomeController@index')->name('home');
 

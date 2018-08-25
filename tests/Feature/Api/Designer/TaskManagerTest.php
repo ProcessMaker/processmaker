@@ -9,9 +9,9 @@ use ProcessMaker\Model\Task;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
-use Tests\Feature\Api\ApiTestCase;
+use Tests\TestCase;
 
-class TaskManagerTest extends ApiTestCase
+class TaskManagerTest extends TestCase
 {
     use DatabaseTransactions;
 
@@ -61,7 +61,6 @@ class TaskManagerTest extends ApiTestCase
             'user_id' => $this->user->id
         ]);
 
-        $this->auth($this->user->username, self::DEFAULT_PASS);
     }
 
     /**
@@ -71,7 +70,7 @@ class TaskManagerTest extends ApiTestCase
     {
         //Post should have the parameter required
         $url = self::API_TEST_TASK . $this->process->uid . '/task';
-        $response = $this->api('POST', $url, []);
+        $response = $this->actingAs($this->user, 'api')->json('POST', $url, []);
 
         //validating the answer is an error
         $response->assertStatus(422);
@@ -87,7 +86,7 @@ class TaskManagerTest extends ApiTestCase
         $faker = Faker::create();
 
         $url = self::API_TEST_TASK . $this->process->uid . '/task';
-        $response = $this->api('POST', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('POST', $url, [
             'title' => 'Title Task',
             'description' => $faker->sentence(10),
             'type' => $faker->randomElement([Task::TYPE_NORMAL, Task::TYPE_ADHOC, Task::TYPE_SUB_PROCESS, Task::TYPE_HIDDEN, Task::TYPE_GATEWAY, Task::TYPE_WEB_ENTRY_EVENT, Task::TYPE_END_MESSAGE_EVENT, Task::TYPE_START_MESSAGE_EVENT, Task::TYPE_INTERMEDIATE_THROW_MESSAGE_EVENT, Task::TYPE_INTERMEDIATE_CATCH_MESSAGE_EVENT, Task::TYPE_SCRIPT_TASK, Task::TYPE_START_TIMER_EVENT, Task::TYPE_INTERMEDIATE_CATCH_TIMER_EVENT, Task::TYPE_END_EMAIL_EVENT, Task::TYPE_INTERMEDIATE_THROW_EMAIL_EVENT, Task::TYPE_SERVICE_TASK]),
@@ -120,7 +119,7 @@ class TaskManagerTest extends ApiTestCase
         //Post title duplicated
         $faker = Faker::create();
         $url = self::API_TEST_TASK . $this->process->uid . '/task';
-        $response = $this->api('POST', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('POST', $url, [
             'title' => $title,
             'description' => $faker->sentence(10),
             'type' => $faker->randomElement([Task::TYPE_NORMAL, Task::TYPE_ADHOC, Task::TYPE_SUB_PROCESS, Task::TYPE_HIDDEN, Task::TYPE_GATEWAY, Task::TYPE_WEB_ENTRY_EVENT, Task::TYPE_END_MESSAGE_EVENT, Task::TYPE_START_MESSAGE_EVENT, Task::TYPE_INTERMEDIATE_THROW_MESSAGE_EVENT, Task::TYPE_INTERMEDIATE_CATCH_MESSAGE_EVENT, Task::TYPE_SCRIPT_TASK, Task::TYPE_START_TIMER_EVENT, Task::TYPE_INTERMEDIATE_CATCH_TIMER_EVENT, Task::TYPE_END_EMAIL_EVENT, Task::TYPE_INTERMEDIATE_THROW_EMAIL_EVENT, Task::TYPE_SERVICE_TASK]),
@@ -144,7 +143,7 @@ class TaskManagerTest extends ApiTestCase
 
         //List Task
         $url = self::API_TEST_TASK . $this->process->uid . '/tasks';
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
         //verify count of data
@@ -175,7 +174,7 @@ class TaskManagerTest extends ApiTestCase
         $perPage = Faker::create()->randomDigitNotNull;
         $query = '?page=1&per_page=' . $perPage . '&order_by=description&order_direction=DESC&filter=' . urlencode($title);
         $url = self::API_TEST_TASK . $this->process->uid . '/tasks?' . $query;
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
         //verify structure paginate
@@ -203,7 +202,7 @@ class TaskManagerTest extends ApiTestCase
     {
         //load Task
         $url = self::API_TEST_TASK . $this->process->uid . '/task/' . factory(Task::class)->create(['process_id' => $this->process->id])->uid;
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
 
@@ -218,7 +217,7 @@ class TaskManagerTest extends ApiTestCase
     {
         $task = factory(Task::class)->create();
         $url = self::API_TEST_TASK . $this->process->uid . '/task/' . $task->uid;
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         $response->assertStatus(404);
     }
 
@@ -229,7 +228,7 @@ class TaskManagerTest extends ApiTestCase
     {
         //Post should have the parameter title
         $url = self::API_TEST_TASK . $this->process->uid . '/task/' . factory(Task::class)->create(['process_id' => $this->process->id])->uid;
-        $response = $this->api('PUT', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('PUT', $url, [
             'title' => '',
             'description' => ''
         ]);
@@ -246,7 +245,7 @@ class TaskManagerTest extends ApiTestCase
         //Post saved success
         $faker = Faker::create();
         $url = self::API_TEST_TASK . $this->process->uid . '/task/' . factory(Task::class)->create(['process_id' => $this->process->id])->uid;
-        $response = $this->api('PUT', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('PUT', $url, [
             'title' => $faker->sentence(2),
             'description' => $faker->sentence(5),
             'type' => $faker->randomElement([Task::TYPE_NORMAL, Task::TYPE_ADHOC, Task::TYPE_SUB_PROCESS, Task::TYPE_HIDDEN, Task::TYPE_GATEWAY, Task::TYPE_WEB_ENTRY_EVENT, Task::TYPE_END_MESSAGE_EVENT, Task::TYPE_START_MESSAGE_EVENT, Task::TYPE_INTERMEDIATE_THROW_MESSAGE_EVENT, Task::TYPE_INTERMEDIATE_CATCH_MESSAGE_EVENT, Task::TYPE_SCRIPT_TASK, Task::TYPE_START_TIMER_EVENT, Task::TYPE_INTERMEDIATE_CATCH_TIMER_EVENT, Task::TYPE_END_EMAIL_EVENT, Task::TYPE_INTERMEDIATE_THROW_EMAIL_EVENT, Task::TYPE_SERVICE_TASK]),
@@ -264,7 +263,7 @@ class TaskManagerTest extends ApiTestCase
     {
         //Remove Task
         $url = self::API_TEST_TASK . $this->process->uid . '/task/' . factory(Task::class)->create(['process_id' => $this->process->id])->uid;
-        $response = $this->api('DELETE', $url);
+        $response = $this->actingAs($this->user, 'api')->json('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(204);
     }
@@ -276,7 +275,7 @@ class TaskManagerTest extends ApiTestCase
     {
         //task not exist
         $url = self::API_TEST_TASK . $this->process->uid . '/task/' . factory(Task::class)->make()->uid;
-        $response = $this->api('DELETE', $url);
+        $response = $this->actingAs($this->user, 'api')->json('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(404);
     }

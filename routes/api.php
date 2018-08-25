@@ -1,20 +1,9 @@
 <?php
+Route::get('api/1.0/test', function() {
+    return ['message' => 'Hello World'];
+})->middleware('auth:api');
 
-/**
- * OAuth2 Server Related routes
- */
-Route::group(['namespace' => 'ProcessMaker\Http\Controllers\OAuth2'], function() {
-    // Password Grant and Auth Code Step #2
-    Route::post('/oauth2/token', 'OAuth2Controller@token');
-    // Auth Code Grant Step #1 (Session is required to redirect to login page and remember user)
-    Route::get('/oauth2/authorize', 'OAuth2Controller@getAuthorization')
-        ->middleware(['session'])
-        ->name('oauth2-authorize');
-    // Auth Code Grant Step #1 (Session is required to redirect to login page and remember user)
-    Route::post('/oauth2/authorize', 'OAuth2Controller@postAuthorization')->middleware(['session']);
-});
-
-Route::get('api/1.0/requests','ProcessMaker\Http\Controllers\Api\Requests\RequestsController@index')->middleware('auth');
+Route::get('api/1.0/requests','ProcessMaker\Http\Controllers\Api\Requests\RequestsController@index')->middleware('auth:api');
 
 // Our standard API calls
 Route::group([
@@ -50,6 +39,7 @@ Route::group([
             Route::post('groups', 'Administration\GroupsController@create');
             Route::get('groups/{group}', 'Administration\GroupsController@get');
             Route::delete('groups/{group}', 'Administration\GroupsController@delete');
+            Route::put('groups/{group}', 'Administration\GroupsController@update');
 
         });
 
@@ -182,7 +172,7 @@ Route::group([
         Route::delete('process/{process}/task/{task}', 'Designer\TaskController@remove')->middleware('can:delete,ProcessMaker\Model\Task');
 
         //Requests endpoints
-        Route::get('requests','Requests\RequestsController@index')->middleware('auth');
+        Route::get('requests','Requests\RequestsController@index')->middleware('auth:api');
 
         // Cases group
         Route::group([

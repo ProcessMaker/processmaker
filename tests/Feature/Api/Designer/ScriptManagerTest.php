@@ -9,9 +9,9 @@ use ProcessMaker\Model\Process;
 use ProcessMaker\Model\Role;
 use ProcessMaker\Model\Script;
 use ProcessMaker\Model\User;
-use Tests\Feature\Api\ApiTestCase;
+use Tests\TestCase;
 
-class ScriptManagerTest extends ApiTestCase
+class ScriptManagerTest extends TestCase
 {
     use DatabaseTransactions;
 
@@ -44,7 +44,6 @@ class ScriptManagerTest extends ApiTestCase
             'user_id' => $this->user->id
         ]);
 
-        $this->auth($this->user->username, self::DEFAULT_PASS);
     }
 
     /**
@@ -54,7 +53,7 @@ class ScriptManagerTest extends ApiTestCase
     {
         //Post should have the parameter required
         $url = self::API_TEST_SCRIPT . $this->process->uid . '/script';
-        $response = $this->api('POST', $url, []);
+        $response = $this->actingAs($this->user, 'api')->json('POST', $url, []);
 
         //validating the answer is an error
         $response->assertStatus(422);
@@ -69,7 +68,7 @@ class ScriptManagerTest extends ApiTestCase
         $faker = Faker::create();
         //Post saved correctly
         $url = self::API_TEST_SCRIPT . $this->process->uid . '/script';
-        $response = $this->api('POST', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('POST', $url, [
             'title' => 'Script Title',
             'description' => $faker->sentence(6),
             'language' => 'php'
@@ -93,7 +92,7 @@ class ScriptManagerTest extends ApiTestCase
         //Post title duplicated
         $faker = Faker::create();
         $url = self::API_TEST_SCRIPT . $this->process->uid . '/script';
-        $response = $this->api('POST', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('POST', $url, [
             'title' => 'Script Title',
             'description' => $faker->sentence(6),
             'code' => $faker->sentence($faker->randomDigitNotNull)
@@ -117,7 +116,7 @@ class ScriptManagerTest extends ApiTestCase
 
         //List scripts
         $url = self::API_TEST_SCRIPT . $this->process->uid . '/scripts';
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
 
@@ -148,7 +147,7 @@ class ScriptManagerTest extends ApiTestCase
         $perPage = Faker::create()->randomDigitNotNull;
         $query = '?page=1&per_page=' . $perPage . '&order_by=description&order_direction=DESC&filter=' . urlencode($title);
         $url = self::API_TEST_SCRIPT . $this->process->uid . '/scripts?' . $query;
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
         //verify structure paginate
@@ -184,7 +183,7 @@ class ScriptManagerTest extends ApiTestCase
 
         //load script
         $url = self::API_TEST_SCRIPT . $this->process->uid . '/script/' . $script->uid;
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
 
@@ -199,7 +198,7 @@ class ScriptManagerTest extends ApiTestCase
     {
         //load script
         $url = self::API_TEST_SCRIPT . $this->process->uid . '/script/' . factory(Script::class)->create()->uid;
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is incorrect
         $response->assertStatus(404);
         $this->assertArrayHasKey('message', $response->json());
@@ -216,7 +215,7 @@ class ScriptManagerTest extends ApiTestCase
                 'process_id' => $this->process->id,
                 'code' => $faker->sentence($faker->randomDigitNotNull)
             ])->uid;
-        $response = $this->api('PUT', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('PUT', $url, [
             'title' => '',
             'description' => $faker->sentence(6),
             'language' => 'php', 
@@ -237,7 +236,27 @@ class ScriptManagerTest extends ApiTestCase
                 'process_id' => $this->process->id,
                 'code' => $faker->sentence($faker->randomDigitNotNull)
             ])->uid;
-        $response = $this->api('PUT', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('PUT', $url, [
+            'description' => $faker->sentence(6),
+            'language' => 'php',
+            'code' => $faker->sentence(3),
+        ]);
+        //Validate the answer is correct
+        $response->assertStatus(204);
+    }
+
+    /**
+     * Update script in process with same title
+     */
+    public function testUpdateScriptSameTitle()
+    {
+        $faker = Faker::create();
+        //Post saved success
+        $url = self::API_TEST_SCRIPT . $this->process->uid . '/script/' . factory(Script::class)->create([
+                'process_id' => $this->process->id,
+                'code' => $faker->sentence($faker->randomDigitNotNull)
+            ])->uid;
+        $response = $this->actingAs($this->user, 'api')->json('PUT', $url, [
             'title' => $faker->sentence(2)
         ]);
         //Validate the answer is correct
@@ -251,7 +270,7 @@ class ScriptManagerTest extends ApiTestCase
     {
         //Remove script
         $url = self::API_TEST_SCRIPT . $this->process->uid . '/script/' . factory(Script::class)->create(['process_id' => $this->process->id])->uid;
-        $response = $this->api('DELETE', $url);
+        $response = $this->actingAs($this->user, 'api')->json('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(204);
     }
@@ -263,7 +282,7 @@ class ScriptManagerTest extends ApiTestCase
     {
         //Script not exist
         $url = self::API_TEST_SCRIPT . $this->process->uid . '/script/' . factory(Script::class)->make()->uid;
-        $response = $this->api('DELETE', $url);
+        $response = $this->actingAs($this->user, 'api')->json('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(404);
     }
