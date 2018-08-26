@@ -56,8 +56,8 @@ class RequestsController extends Controller
             'filter' => $request->input('filter', ''),
             'current_page' => $request->input('current_page', 1),
             'per_page' => $request->input('per_page', 10),
-            'sort_by' => $request->input('order_by', 'name'),
-            'sort_order' => $request->input('order_direction', 'ASC'),
+            'sort_by' => $request->input('sort_by', 'name'),
+            'sort_order' => $request->input('sort_order', 'ASC'),
         ];
 
         $sortingField = [
@@ -69,15 +69,10 @@ class RequestsController extends Controller
             'description' => 'description'
         ];
 
-        $query = Process::with(['category', 'user'])
-                ->select(
-                'processes.*',
-                \DB::raw('(SELECT name from process_categories where processes.process_category_id = process_categories.id) as categoryName'));
-
+        $query = Process::with(['category', 'user']);
         $query->where(function ($query) {
             $query->where('status', '=', 'ACTIVE');
         });
-
         if (!empty($options['filter'])) {
             // We want to search off of name and description and category name
             // Cannot join on table because of Eloquent's lack of specific table column names in generated SQL
@@ -103,19 +98,12 @@ class RequestsController extends Controller
             });
         }
 
-        $sortColumn = 'name';
-        $sortDirection = $options['sort_order'];
-
-        if (empty($request->input('order_by'))) {
-            $query->orderBy('categoryName', 'asc');
-            $sortDirection = 'ASC';
-        }
-
+        $sort = 'name';
         if (isset($sortingField[$options['sort_by']])) {
-            $sortColumn = $sortingField[$options['sort_by']];
+            $sort = $sortingField[$options['sort_by']];
         }
 
-        $query->orderBy($sortColumn, $sortDirection);
+        $query->orderBy($sort, $options['sort_order']);
 
         $processes = $query->paginate($options['per_page'])
             ->appends($options);
