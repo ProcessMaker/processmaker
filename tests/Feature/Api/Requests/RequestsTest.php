@@ -6,14 +6,14 @@ use ProcessMaker\Model\ProcessCategory;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
-use Tests\Feature\Api\ApiTestCase;
+use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
-class RequestsTest extends ApiTestCase
+class RequestsTest extends TestCase
 {
     use DatabaseTransactions;
 
-    const URL_USER_PROCESSES = '/api/1.0/user/processes';
+    public $user;
 
     /**
      * Test to check that the route is protected
@@ -44,7 +44,7 @@ class RequestsTest extends ApiTestCase
 
         factory(\ProcessMaker\Model\Application::class, 1)->create([
             'id' => 10,
-            'creator_user_id' => \Auth::user()->id
+            'creator_user_id' => $this->user->id
         ]);
 
 
@@ -52,7 +52,7 @@ class RequestsTest extends ApiTestCase
             'application_id' => 10
         ]);
 
-        $response = $this->api('GET', '/api/1.0/requests?delay=overdue');
+        $response = $this->actingAs($this->user, 'api')->json('GET', '/api/1.0/requests?delay=overdue');
 
         $response->assertStatus(200);
 
@@ -85,7 +85,7 @@ class RequestsTest extends ApiTestCase
         ]);
 
         // We call the process list endpoint with sort conditions
-        $response = $this->api('GET', self::URL_USER_PROCESSES . '?order_by=name&order_direction=desc');
+        $response = $this->actingAs($this->user, 'api')->json('GET', '/api/1.0/user/processes?order_by=name&order_direction=desc');
 
         // Assert that the response is correct and the sorting is correct
         $response->assertStatus(200);
@@ -93,7 +93,7 @@ class RequestsTest extends ApiTestCase
         $this->assertEquals('X name', $data['data'][0]['name']);
 
         // We call the process list endpoint without sort conditions
-        $response = $this->api('GET', self::URL_USER_PROCESSES);
+        $response = $response = $this->actingAs($this->user, 'api')->json('GET', '/api/1.0/user/processes');
 
         // Assert that the response is correct when no sorting is applied
         $response->assertStatus(200);
@@ -104,11 +104,9 @@ class RequestsTest extends ApiTestCase
 
     private function login()
     {
-        $this->user = factory(User::class)->create([
-        'password' => Hash::make('password'),
-        'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
-    ]);
-
-        $this->auth($this->user->username, 'password');
+      $this->user = factory(User::class)->create([
+          'password' => Hash::make('password'),
+          'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+      ]);
     }
 }
