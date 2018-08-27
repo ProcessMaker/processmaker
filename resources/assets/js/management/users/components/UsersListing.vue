@@ -74,11 +74,6 @@ export default {
           callback: this.formatStatus
         },
         {
-          title: "Role",
-          name: "role",
-          sortField: "role"
-        },
-        {
           title: "Login",
           name: "last_login",
           sortField: "last_login",
@@ -129,11 +124,17 @@ export default {
   },
   methods: {
     formatStatus(status) {
-    status = status.toLowerCase();
-    let bubbleColor = {'active': 'text-success', 'inactive': 'text-danger', 'draft': 'text-warning', 'archived': 'text-info'};
-    let response = '<i class="fas fa-circle ' + bubbleColor[status] + ' small"></i> ';
-    status = status.charAt(0).toUpperCase() + status.slice(1);
-    return response + status;
+      status = status.toLowerCase();
+      let bubbleColor = {
+        active: "text-success",
+        inactive: "text-danger",
+        draft: "text-warning",
+        archived: "text-info"
+      };
+      let response =
+        '<i class="fas fa-circle ' + bubbleColor[status] + ' small"></i> ';
+      status = status.charAt(0).toUpperCase() + status.slice(1);
+      return response + status;
     },
     onAction(action, data, index) {
       switch (action) {
@@ -234,6 +235,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 </style>
 
