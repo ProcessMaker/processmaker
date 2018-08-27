@@ -43,14 +43,15 @@
 </head>
 
 <body>
-<div class="container-fluid" id="app-container">
-  <div class="row no-gutters">
-    <div id="sidebar">
-        @yield('sidebar')
-    </div>
-    <div class="col" id="mainbody">
-      @include('layouts.navbar')
-      <div class="main">
+<div class="d-flex w-100 mw-100 h-100 mh-100" id="app-container">
+  <div id="sidebar" :class="{expanded: expanded}">
+      @yield('sidebar')
+  </div>
+
+  <div class="d-flex flex-grow-1 flex-column" style="overflow: hidden;">
+    @include('layouts.navbar')
+    <div class="flex-grow-1 d-flex flex-column h-100" id="mainbody">
+      <div class="main flex-grow-1">
         @yield('content')
       </div>
     </div>

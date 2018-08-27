@@ -72,11 +72,6 @@ export default {
           callback: this.formatStatus
         },
         {
-          title: "Role",
-          name: "role",
-          sortField: "role"
-        },
-        {
           title: "Login",
           name: "last_login",
           sortField: "last_login",
@@ -122,6 +117,19 @@ export default {
     };
   },
   methods: {
+    formatStatus(status) {
+      status = status.toLowerCase();
+      let bubbleColor = {
+        active: "text-success",
+        inactive: "text-danger",
+        draft: "text-warning",
+        archived: "text-info"
+      };
+      let response =
+        '<i class="fas fa-circle ' + bubbleColor[status] + ' small"></i> ';
+      status = status.charAt(0).toUpperCase() + status.slice(1);
+      return response + status;
+    },
     onAction(action, data, index) {
       switch (action) {
         case "edit-item":
@@ -176,12 +184,7 @@ export default {
     hideEditModal() {
       this.$refs.editItem.hide();
     },
-    formatStatus(value) {
-      value = value.toLowerCase();
-      let response = '<i class="fas fa-circle ' + value + '"></i> ';
-      value = value.charAt(0).toUpperCase() + value.slice(1);
-      return response + value;
-    },
+
     transform(data) {
       // Bring in our mixin version, but we have to do additional transformation to create a full_name field
       // Clean up fields for meta pagination so vue table pagination can understand
@@ -226,13 +229,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/deep/ i.fa-circle {
-  &.active {
-    color: green;
-  }
-  &.inactive {
-    color: red;
-  }
-}
 </style>
 
