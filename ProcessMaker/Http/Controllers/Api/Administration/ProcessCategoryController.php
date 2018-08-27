@@ -26,7 +26,6 @@ class ProcessCategoryController extends Controller
      */
     public function index(Request $request)
     {
-        $this->authorize('has-permission', Permission::PM_SETUP_PROCESS_CATEGORIES);
         $query = ProcessCategory::where('uid', '!=', '')
                  ->withCount('processes');
 
@@ -56,7 +55,6 @@ class ProcessCategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize('has-permission', Permission::PM_SETUP_PROCESS_CATEGORIES);
         $data = $request->json()->all();
 
         $processCategory = new ProcessCategory();

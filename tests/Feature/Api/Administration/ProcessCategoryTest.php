@@ -7,7 +7,6 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\ProcessCategory;
-use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
 use Tests\TestCase;
 
@@ -18,50 +17,21 @@ class ProcessCategoryTest extends TestCase
     const API_TEST_CATEGORY = '/api/1.0/category/';
     const API_TEST_CATEGORIES = '/api/1.0/categories';
     
-    private $testUserRole = Role::PROCESSMAKER_ADMIN;
-    private $testUsers = [];
+    private $testUser = null;
 
     /**
      * Create an api that authenticates with the test users
      */
     private function api()
     {
-        if (!array_key_exists($this->testUserRole, $this->testUsers)) {
-            $this->testUsers[$this->testUserRole] = factory(User::class)->create([
+        if (!$this->testUser) {
+            $this->testUser = factory(User::class)->create([
                 'password' => Hash::make('password'),
-                'role_id' => Role::where('code', $this->testUserRole)->first()->id,
             ]);
         }
-        $user = $this->testUsers[$this->testUserRole];
         return call_user_func_array(
-            [$this->actingAs($user, 'api'), 'json'], func_get_args()
+            [$this->actingAs($this->testUser, 'api'), 'json'], func_get_args()
         );
-    }
-
-    /**
-     * Test access control for the process category endpoints.
-     */
-    public function testAccessControl()
-    {
-        $this->testUserRole = Role::PROCESSMAKER_OPERATOR;
-
-        $catUid = factory(ProcessCategory::class)->create()->uid;
-
-        $response = $this->api('GET', self::API_TEST_CATEGORIES);
-
-        $response->assertStatus(403);
-
-        $response = $this->api('POST', self::API_TEST_CATEGORY, []);
-        $response->assertStatus(403);
-
-        $response = $this->api('GET', self::API_TEST_CATEGORY . $catUid);
-        $response->assertStatus(403);
-
-        $response = $this->api('PUT', self::API_TEST_CATEGORY . $catUid, []);
-        $response->assertStatus(403);
-
-        $response = $this->api('DELETE', self::API_TEST_CATEGORY . $catUid);
-        $response->assertStatus(403);
     }
 
     /**
