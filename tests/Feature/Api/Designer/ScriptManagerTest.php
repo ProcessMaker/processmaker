@@ -6,7 +6,6 @@ use Faker\Factory as Faker;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\Process;
-use ProcessMaker\Model\Role;
 use ProcessMaker\Model\Script;
 use ProcessMaker\Model\User;
 use Tests\TestCase;
@@ -36,8 +35,7 @@ class ScriptManagerTest extends TestCase
     {
         parent::setUp();
         $this->user = factory(User::class)->create([
-            'password' => Hash::make(self::DEFAULT_PASS),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'password' => Hash::make(self::DEFAULT_PASS)
         ]);
 
         $this->process = factory(Process::class)->create([
@@ -218,7 +216,7 @@ class ScriptManagerTest extends TestCase
         $response = $this->actingAs($this->user, 'api')->json('PUT', $url, [
             'title' => '',
             'description' => $faker->sentence(6),
-            'language' => 'php', 
+            'language' => 'php',
             'code' => $faker->sentence(3),
         ]);
         //Validate the answer is incorrect

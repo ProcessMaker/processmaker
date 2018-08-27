@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\DbSource;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\ProcessVariable;
-use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
 use Tests\TestCase;
 
@@ -51,11 +50,9 @@ class ProcessControllerTest extends TestCase
 
         // we need an user and authenticate him
         $this->user = factory(User::class)->create([
-            'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'password' => Hash::make('password')
         ]);
 
-        
     }
 
 }

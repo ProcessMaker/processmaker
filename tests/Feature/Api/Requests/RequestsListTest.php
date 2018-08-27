@@ -3,7 +3,6 @@ namespace Tests\Feature\Api\Cases;
 
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\Application;
-use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -15,7 +14,7 @@ class RequestsListTest extends TestCase
     public $user;
 
     /**
-     * Test to check that the route is protected     
+     * Test to check that the route is protected
      */
 
     public function test_route_token_missing()
@@ -24,8 +23,8 @@ class RequestsListTest extends TestCase
     }
 
     /**
-     * Test to check that the route is protected     
-     */    
+     * Test to check that the route is protected
+     */
 
     public function test_api_result_failed()
     {
@@ -34,8 +33,8 @@ class RequestsListTest extends TestCase
     }
 
     /**
-     * Test to check that the route returns the correct response    
-     */    
+     * Test to check that the route returns the correct response
+     */
 
     public function test_api_access()
     {
@@ -63,7 +62,7 @@ class RequestsListTest extends TestCase
                 'total_pages'
             ],
         ]);
-      
+
         $data = json_decode($response->getContent());
         $this->assertEquals($data->meta->current_page, 1);
         $this->assertTrue(count($data->data) > 0);
@@ -71,8 +70,8 @@ class RequestsListTest extends TestCase
     }
 
     /**
-     * Test to check that the route returns the correct response when paging    
-     */    
+     * Test to check that the route returns the correct response when paging
+     */
 
     public function test_api_paging()
     {
@@ -102,11 +101,11 @@ class RequestsListTest extends TestCase
 
         $this->assertEquals($data->meta->current_page, 2);
     }
-    
+
     /**
-     * Test to check that the route returns the correct response when the number of 
-     * requested records is correct. 
-     */    
+     * Test to check that the route returns the correct response when the number of
+     * requested records is correct.
+     */
 
     public function test_api_per_page()
     {
@@ -168,14 +167,13 @@ class RequestsListTest extends TestCase
         $data = json_decode($response->getContent());
 
         $this->assertTrue(is_array($data->data));
-        
+
     }
-    
+
     private function login()
     {
         $this->user = factory(User::class)->create([
-            'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'password' => Hash::make('password')
         ]);
 
     }

@@ -6,7 +6,6 @@ use ProcessMaker\Model\Application;
 use ProcessMaker\Model\Delegation;
 use ProcessMaker\Model\ProcessCategory;
 use ProcessMaker\Model\Process;
-use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -16,6 +15,8 @@ class RequestsTest extends TestCase
     use DatabaseTransactions;
 
     const URL_USER_PROCESSES = '/api/1.0/user/processes';
+
+    public $user;
 
     /**
      * Test to check that the route is protected
@@ -60,7 +61,6 @@ class RequestsTest extends TestCase
             'creator_user_id' => $this->user->id,
             'APP_STATUS' => Application::STATUS_COMPLETED
         ]);
-
         $response = $this->actingAs($this->user, 'api')->json('GET', '/api/1.0/requests?delay=overdue');
         $parsedResponse = json_decode($response->getContent());
         $response->assertStatus(200);
@@ -117,10 +117,8 @@ class RequestsTest extends TestCase
     private function login()
     {
         $this->user = factory(User::class)->create([
-        'password' => Hash::make('password'),
-        'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
-    ]);
+            'password' => Hash::make('password')
+        ]);
 
-        //$this->auth($this->user->username, 'password');
     }
 }

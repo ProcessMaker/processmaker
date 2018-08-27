@@ -5,7 +5,6 @@ namespace Tests\Feature\Api\Administration;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\Group;
-use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
 use ProcessMaker\Transformers\GroupTransformer;
 use Tests\TestCase;
@@ -20,7 +19,7 @@ class GroupsTest extends TestCase
     const API_TEST_GROUPS = '/api/1.0/groups';
 
     /**
-     * 
+     *
      * These api endpoints can only work if you are authenticated
      */
     /*
@@ -34,14 +33,15 @@ class GroupsTest extends TestCase
     /**
      * Ensure our API endpoint is protected by required permission
      */
-    public function testUnauthorized()
+    public function testAuthorized()
     {
+
+      $this->markTestSkipped('Access control via permissions and roles removed');
+
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => null,
         ]);
-        // No role means it should not be authorized
-        
+
         $response = $this->actingAs($user, 'api')->json('GET', self::API_TEST_GROUPS);
         $response->assertStatus(403);
     }
@@ -52,9 +52,9 @@ class GroupsTest extends TestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+
         ]);
-        
+
         // Build a sample of 5 groups into the system
         $roles = factory(Group::class, 5)->create();
         // Fetch via API
@@ -66,7 +66,7 @@ class GroupsTest extends TestCase
         // Verify we have a total of 5 results + 1 default group
         $this->assertCount(6, $data['data']);
         $this->assertEquals(6, $data['meta']['total']);
-        // Not testing returned data format as we're assuming the single role fetch validates that 
+        // Not testing returned data format as we're assuming the single role fetch validates that
         // output matches transformer
     }
 
@@ -77,9 +77,9 @@ class GroupsTest extends TestCase
     {
        $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+
         ]);
-        
+
         $response = $this->actingAs($user, 'api')->json('GET', self::API_TEST_GROUPS . '?filter=' . urlencode('invalid'));
         $response->assertStatus(200);
         $data = json_decode($response->getContent(),true);
@@ -96,9 +96,9 @@ class GroupsTest extends TestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+
         ]);
-        
+
         // Now create a group that would match
         $group = factory(Group::class)->create([
             'title' => 'Test Matching Group'
@@ -122,9 +122,9 @@ class GroupsTest extends TestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+
         ]);
-        
+
         $response = $this->actingAs($user, 'api')->json('get', self::API_TEST_GROUPS . '/invaliduid');
         $response->assertStatus(404);
     }
@@ -136,9 +136,9 @@ class GroupsTest extends TestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+
         ]);
-        
+
         $group = factory(Group::class)->create();
         $response = $this->actingAs($user, 'api')->json('get', self::API_TEST_GROUPS . '/' . $group->uid);
         $response->assertStatus(200);
@@ -155,9 +155,9 @@ class GroupsTest extends TestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+
         ]);
-        
+
         $group = factory(Group::class)->create();
         // Create 5 users
         $users = factory(User::class, 5)->create();
@@ -176,11 +176,11 @@ class GroupsTest extends TestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+
         ]);
-        
+
         $response = $this->actingAs($user, 'api')->json('post', self::API_TEST_GROUPS, [
-            
+
         ]);
         // Empty, we should receive validation errors
         $response->assertJson([
@@ -222,9 +222,9 @@ class GroupsTest extends TestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+
         ]);
-        
+
         $response = $this->actingAs($user, 'api')->json('post', self::API_TEST_GROUPS, [
             'title' => 'Test Group',
             'status' => 'ACTIVE'
@@ -241,9 +241,9 @@ class GroupsTest extends TestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+
         ]);
-        
+
         // Now, let's create 5 groups
         factory(\ProcessMaker\Model\Group::class, 5)->create();
         // Now create a single group that we'll add to our user
@@ -278,7 +278,7 @@ class GroupsTest extends TestCase
         $this->assertCount(7, $data['data']);
         $this->assertEquals(7, $data['meta']['total']);
         $this->assertEquals('Test Group', $data['data'][5]['title']);
-  
+
     }
 
     /**
@@ -288,9 +288,9 @@ class GroupsTest extends TestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+
         ]);
-        
+
 
         $group = factory(Group::class)->create();
 
@@ -306,9 +306,9 @@ class GroupsTest extends TestCase
     {
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+
         ]);
-        
+
 
         $group = factory(Group::class)->create();
 
@@ -324,7 +324,3 @@ class GroupsTest extends TestCase
         $this->assertEquals($existGroup->title, $title);
     }
 }
-
-
-
- 
