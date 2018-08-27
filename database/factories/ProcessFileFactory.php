@@ -4,7 +4,6 @@ use Ramsey\Uuid\Uuid;
 use Faker\Generator as Faker;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\ProcessFile;
-use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
 
 /**
@@ -19,14 +18,10 @@ $factory->define(ProcessFile::class, function (Faker $faker) {
             return factory(Process::class)->create()->id;
         },
         'user_id' => function () {
-            return factory(User::class)->create([
-                'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
-            ])->id;
+            return factory(User::class)->create()->id;
         },
         'update_user_id' => function () {
-            return factory(User::class)->create([
-                'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
-            ])->id;
+            return factory(User::class)->create()->id;
         },
         'path' => $filePath,
         'type' => 'file',

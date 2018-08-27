@@ -50,11 +50,9 @@ class PermissionCheck
      * @throws \Illuminate\Auth\AuthenticationException
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function handle($request, Closure $next, $permission)
+    public function handle($request, Closure $next)
     {
         $this->auth->authenticate();
-
-        $this->gate->authorize('has-permission', $permission);
 
         return $next($request);
     }

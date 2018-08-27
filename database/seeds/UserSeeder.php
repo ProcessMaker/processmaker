@@ -28,8 +28,7 @@ class UserSeeder extends Seeder
             'password' => Hash::make('admin'),
             'firstname' => 'admin',
             'lastname' => 'admin',
-            'time_zone' => 'UTC',
-            'role_id' => Role::where('code','PROCESSMAKER_ADMIN')->first()->id
+            'time_zone' => 'UTC'
         ]);
 
     }
