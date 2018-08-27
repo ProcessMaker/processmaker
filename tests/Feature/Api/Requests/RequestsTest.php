@@ -4,7 +4,6 @@ namespace Tests\Feature\Api\Requests;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\ProcessCategory;
 use ProcessMaker\Model\Process;
-use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -105,8 +104,7 @@ class RequestsTest extends TestCase
     private function login()
     {
       $this->user = factory(User::class)->create([
-          'password' => Hash::make('password'),
-          'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+          'password' => Hash::make('password')
       ]);
     }
 }
