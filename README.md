@@ -1,28 +1,22 @@
-![ProcessMaker logo](http://www.processmaker.com/themes/processmaker/images/logo.jpg "ProcessMaker")
+---
+description: Welcome to ProcessMaker 4 product documentation. Let's get started.
+---
 
-README
-======
+# ProcessMaker 4 Product Documentation
 
-ProcessMaker v4.0
-----------------
+![ProcessMaker](http://www.processmaker.com/themes/processmaker/images/logo.jpg)
 
+## README
 
-Overview
---------
+### ProcessMaker v4.0
 
-ProcessMaker is an open source, workflow management software suite, which
-includes tools to automate your workflow, design forms, create documents, assign
-roles and users, create routing rules, and map an individual process quickly and
-easily. It's relatively lightweight and doesn't require any kind of installation
-on the client computer. This file describes the requirements and installation
-steps for the server.
+### Overview
 
-License
--------
+ProcessMaker is an open source, workflow management software suite, which includes tools to automate your workflow, design forms, create documents, assign roles and users, create routing rules, and map an individual process quickly and easily. It's relatively lightweight and doesn't require any kind of installation on the client computer. This file describes the requirements and installation steps for the server.
 
-ProcessMaker - Automate your Workflow
-Copyright (C) 2002 - 2018 ProcessMaker Inc.
+### License
 
+ProcessMaker - Automate your Workflow Copyright \(C\) 2002 - 2018 ProcessMaker Inc.
 
-For further information visit:
-http://www.processmaker.com/
+For further information visit: [http://www.processmaker.com/](http://www.processmaker.com/)
+
