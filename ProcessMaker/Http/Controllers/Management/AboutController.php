@@ -1,7 +1,7 @@
 <?php
+namespace ProcessMaker\Http\Controllers\Management;
 
-namespace ProcessMaker\Http\Controllers;
-
+use ProcessMaker\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 class AboutController extends Controller
