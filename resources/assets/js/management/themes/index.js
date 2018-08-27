@@ -32,27 +32,21 @@ new Vue({
             let file = event.target.files[0];
             let reader = new FileReader();
             reader.onload = function (input) {
-                // The file's text will be printed here
-                // console.log("pic", event.target.result)
                 $('#file1Img')
-                    .attr('src', input.target.result);
-                console.log(input.target.result)
+                    .attr('src', reader.result);
             };
 
-            reader.readAsText(file);
+            reader.readAsDataURL(file);
         },
         onImgUpload2(input) {
             let file = event.target.files[0];
             let reader = new FileReader();
             reader.onload = function (input) {
-                // The file's text will be printed here
-                // console.log("pic", event.target.result)
-                $('#file1Img')
-                    .attr('src', input.target.result);
-                console.log(input.target.result)
+                $('#file2Img')
+                    .attr('src', reader.result);
             };
 
-            reader.readAsText(file);
+            reader.readAsDataURL(file);
         }
 
     }
