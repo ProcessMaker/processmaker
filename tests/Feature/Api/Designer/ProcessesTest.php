@@ -7,7 +7,6 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\ProcessCategory;
-use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
 use Tests\TestCase;
 use ProcessMaker\Transformers\ProcessTransformer;
@@ -86,12 +85,14 @@ class ProcessesTest extends TestCase
      */
     public function testUnauthorized()
     {
+
+      $this->markTestSkipped('Access control via permissions and roles removed');
+      
         // Create our user we will log in with, but not have the needed permissions
         $user = factory(User::class)->create([
-            'role_id' => null,
             'password' => Hash::make('password'),
         ]);
-        
+
         // Now try our api endpoint, but this time, will get a 403 Unauthorized
         $response = $this->actingAs($user, 'api')->json('GET', self::API_TEST_PROCESS);
         $response->assertStatus(403);
@@ -390,8 +391,7 @@ class ProcessesTest extends TestCase
     private function authenticateAsAdmin(): User
     {
         $admin = factory(User::class)->create([
-            'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'password' => Hash::make('password')
         ]);
         return $admin;
     }
