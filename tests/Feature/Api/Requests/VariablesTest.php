@@ -18,13 +18,14 @@ class VariablesTest extends TestCase
      */
     public function testVariablesGet()
     {
+
+      $this->markTestSkipped('Access control via permissions and roles removed');
+
         $user = factory(User::class)->create([
             'password' => Hash::make('password')
         ]);
         // We need an application
         $application = factory(Application::class)->create();
-
-        
 
         $response = $this->actingAs($user, 'api')->json('GET', '/api/1.0/requests/' . $application->uid . '/variables');
 

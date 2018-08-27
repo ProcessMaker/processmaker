@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\Application;
 use ProcessMaker\Model\Delegation;
 use ProcessMaker\Model\Process;
-use ProcessMaker\Model\Role;
 use ProcessMaker\Model\Task;
 use ProcessMaker\Model\User;
 use Tests\TestCase;
@@ -58,8 +57,7 @@ class TaskDelegationManagerTest extends TestCase
     {
         parent::setUp();
         $this->user = factory(User::class)->create([
-            'password' => Hash::make(self::DEFAULT_PASS),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'password' => Hash::make(self::DEFAULT_PASS)
         ]);
 
         $this->process = factory(Process::class)->create([
@@ -152,8 +150,7 @@ class TaskDelegationManagerTest extends TestCase
         $filter = 'First name filter';
         $user = factory(User::class)->create([
             'firstname' => $filter,
-            'password' => Hash::make(self::DEFAULT_PASS),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'password' => Hash::make(self::DEFAULT_PASS)
         ]);
         factory(Delegation::class)->create([
             'user_id' => $user->id,
