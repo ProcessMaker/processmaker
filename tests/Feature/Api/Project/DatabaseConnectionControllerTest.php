@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\DbSource;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\User;
-use ProcessMaker\Model\Role;
 use Tests\TestCase;
 
 class DatabaseConnectionControllerTest extends TestCase
@@ -269,8 +268,7 @@ class DatabaseConnectionControllerTest extends TestCase
 
         // we need an user and authenticate hime
         $this->user = factory(User::class)->create([
-            'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'password' => Hash::make('password')
         ]);
 
         // we fill the default connection data to be used in the tests

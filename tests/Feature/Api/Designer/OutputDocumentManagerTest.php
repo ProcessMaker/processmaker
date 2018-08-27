@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\OutputDocument as Document;
 use ProcessMaker\Model\OutputDocument;
 use ProcessMaker\Model\Process;
-use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
 use Tests\TestCase;
 
@@ -47,8 +46,7 @@ class OutputDocumentManagerTest extends TestCase
     {
         parent::setUp();
         $this->user = factory(User::class)->create([
-            'password' => Hash::make(self::DEFAULT_PASS),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'password' => Hash::make(self::DEFAULT_PASS),            
         ]);
 
         $this->process = factory(Process::class)->create([
