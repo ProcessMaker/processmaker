@@ -28,12 +28,15 @@ new Vue({
         changeColor(val) {
             this.colors = val
         },
-        onImgUpload(image) {
+        onImgUpload(input) {
             let file = event.target.files[0];
             let reader = new FileReader();
-            reader.onload = function (image) {
+            reader.onload = function (input) {
                 // The file's text will be printed here
-                console.log(event.target.result)
+                // console.log("pic", event.target.result)
+                $('#file1Img')
+                    .attr('src', input.target.result);
+                console.log(input.target.result)
             };
 
             reader.readAsText(file);
