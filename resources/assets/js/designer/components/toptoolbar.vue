@@ -25,7 +25,7 @@
           <a href="#" title="Help"><i class="fas fa-info"></i></a>
         </li>
         <li class="nav-item ">
-          <a href="#" title="Close Designer"><i class="fas fa-times"></i></a>
+          <a href="/processes" title="Close Designer"><i class="fas fa-times"></i></a>
         </li>
       </ul>
     </div>
