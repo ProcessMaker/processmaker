@@ -117,25 +117,14 @@ class Install extends Command
         $this->info(__("Installing ProcessMaker Database, OAuth SSL Keys and configuration file"));
 
         // The database should already exist and is tested by the fetchDatabaseCredentials call
+        // Set the database default connection to install
+        config(['database.default' => 'install']);
+        \DB::reconnect();
+
         // Install migrations
         $this->call('migrate:fresh', ['--seed' => true]);
 
-        // Generate the required oauth private/public keys
-        $privateKey = openssl_pkey_new();
-        // Generate a CSR then sign it so we have a cert to extract public from
-        $csr = openssl_csr_new([], $privateKey);
-        $cert = openssl_csr_sign($csr, null, $privateKey, 365);
-        openssl_x509_export($cert, $signedCert);
-        $publicKey = openssl_pkey_get_public($signedCert);
-
-        openssl_pkey_export($privateKey, $privateKeyString);
-        $publicKeyData = openssl_pkey_get_details($publicKey);
-        $publicKeyString = $publicKeyData['key'];
-
-        // Now write the keys out to our key filesystem
-        Storage::disk('keys')->put('private.key', $privateKeyString);
-        Storage::disk('keys')->put('public.key', $publicKeyString);
-        $this->info(__("Finished creating public/private oauth2 ssl keys"));
+        $this->call('passport:install', ['--force' => true]);
 
         // Now generate the .env file
         $contents = '';
