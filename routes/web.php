@@ -59,6 +59,9 @@ $this->middleware(['auth'])->group(function() {
 
     $this->get('/admin/preferences', 'Management\PreferencesController@index')->name('preferences');
 
+    $this->get('/admin/about', 'Management\aboutController@index')->name('about');
+
+
     $this->get('/', 'HomeController@index')->name('home');
 
     Route::group([
