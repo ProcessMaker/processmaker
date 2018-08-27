@@ -1,10 +1,12 @@
 <template>
  <div class="container">
-    <h1 style="margin:15px">Page One</h1>
+    <h1>About ProcessMaker</h1>
     <div class="row">
       <div class="col-8">
         <div class="card card-body">
         <img class="logo" src="/img/lg-blk-logo.png">
+        <hr>
+        <div>ProcessMaker v4.0</div>
         <hr>
         <a href="https://github.com/ProcessMaker/bpm/issues">Report an issue  <i class="fas fa-bug float-right"></i></a>
         <hr>
