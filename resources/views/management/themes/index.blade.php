@@ -15,24 +15,24 @@
              <b-form>
               <b-form-group>
                 <label>Logo size must be 400x100. File format .jpg or .png</label>
-                <b-form-file @onImgUpload="onImgUpload" v-model="file1" placeholder="Choose a file..."></b-form-file>
-                <div class="mt-3">Selected file: @{{file1 && file1.name}}</div>
+                <b-form-file @change="onImgUpload(this)" accept="image/jpeg, image/png" v-model="file1" placeholder="Choose a file..."></b-form-file>
+                <div class="mt-3"><img src="#" id="file1Img"></div>
               </b-form-group>
               <b-form-group>
                 <label>Logo size must be 100x100. File format .jpg or .png</label>
-                <b-form-file v-model="file2" placeholder="Choose a file..."></b-form-file>
+                <b-form-file accept="image/jpeg, image/png" v-model="file2" placeholder="Choose a file..."></b-form-file>
                 <div class="mt-3">Selected file: @{{file2 && file2.name}}</div>
               </b-form-group>
               <h4>Create a color scheme to customize your UI</h4>
               <div>
                 <div class="form-group">
                   <div class="color-select" @click="showPrimaryModal">
-                    <span class="bg-primary"></span>primary
+                    <span class="bg-primary color-preview"></span>primary
                   </div>
                 </div>
                 <div class="form-group">
                   <div class="color-select" @click="showSecondaryModal">
-                    <span class="bg-secondary"></span>secondary
+                    <span class="bg-secondary color-preview"></span>secondary
                   </div>
                 </div>
              </b-form>
@@ -81,6 +81,11 @@
   width: 100%;
   border-radius: 0.125em;
   height: calc(1.875rem + 2px);
+}
+.color-preview{
+  height: calc(1.875rem + 2px);
+  width: 20%;
+   display: inline-block;
 }
 span:{
   width: 50%;
