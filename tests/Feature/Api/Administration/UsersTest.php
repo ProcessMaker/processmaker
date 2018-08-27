@@ -47,7 +47,7 @@ class UsersTest extends TestCase
     {
 
       $this->markTestSkipped('Access control via permissions and roles removed');
-      
+
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
         ]);
@@ -268,8 +268,7 @@ class UsersTest extends TestCase
      public function testInactiveUserCantLogIn()
     {
         $admin = factory(User::class)->create([
-            'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
+            'password' => Hash::make('password')
         ]);
         $this->doLogin($admin->username, 'password');
         $user = factory(User::class)->create([
