@@ -39,11 +39,6 @@ class GenerateMenus
               'icon' => 'fa-users',
               'id' => 'homeid'
           ]);
-            $submenu->add(__('menus.sidebar_admin.roles'), [
-              'route' => 'management-roles-index',
-              'icon' => 'fa-key',
-              'id' => 'homeid'
-          ]);
 
           $submenu = $menu->add(__('menus.sidebar_admin.configuration'));
           $submenu->add(__('menus.sidebar_admin.preferences'), [
