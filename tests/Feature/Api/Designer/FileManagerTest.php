@@ -11,7 +11,6 @@ use ProcessMaker\Facades\ProcessFileManager;
 use ProcessMaker\Model\EmailEvent;
 use ProcessMaker\Model\ProcessFile;
 use ProcessMaker\Model\Process;
-use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
 use Tests\TestCase;
 
@@ -26,11 +25,14 @@ class FileManagerTest extends TestCase
      */
     public function testAccessControl()
     {
+
+      $this->markTestSkipped('Access control via permissions and roles removed');
+
         $user = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_OPERATOR)->first()->id
+
         ]);
-        
+
 
         // We need a project
         $process = factory(Process::class)->create();
@@ -74,7 +76,7 @@ class FileManagerTest extends TestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+
         ]);
 
         // We need a project
@@ -155,7 +157,7 @@ class FileManagerTest extends TestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+
         ]);
         $process = factory(Process::class)->create();
 
@@ -261,7 +263,7 @@ class FileManagerTest extends TestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+
         ]);
         $process = factory(Process::class)->create();
 
@@ -296,7 +298,7 @@ class FileManagerTest extends TestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+
         ]);
         $process = factory(Process::class)->create();
 
@@ -374,7 +376,7 @@ class FileManagerTest extends TestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+
         ]);
         $process = factory(Process::class)->create();
 
@@ -391,7 +393,7 @@ class FileManagerTest extends TestCase
         $processFile = $response->json();
         $prfUid = $processFile['uid'];
 
-        //Delete file 
+        //Delete file
         $response = $this->actingAs($admin, 'api')->json('DELETE', self::API_TEST_PROJECT . $process->uid . '/file-manager/folder?path=public/folder5');
         $response->assertStatus(200);
         Storage::disk('public')->assertMissing($process->uid . '/folder5/file5.html');
@@ -408,7 +410,7 @@ class FileManagerTest extends TestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+
         ]);
         $process = factory(Process::class)->create();
         Storage::fake('public');
@@ -439,7 +441,7 @@ class FileManagerTest extends TestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+
         ]);
         $process = factory(Process::class)->create();
 
@@ -462,7 +464,7 @@ class FileManagerTest extends TestCase
     {
         $admin = factory(User::class)->create([
             'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+
         ]);
         $process = factory(Process::class)->create();
 
