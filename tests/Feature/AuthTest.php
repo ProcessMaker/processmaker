@@ -5,7 +5,6 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\Permission;
-use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
 use Illuminate\Support\Facades\Auth;
 use Tests\TestCase;
@@ -52,38 +51,4 @@ class AuthTest extends TestCase
         $this->assertEquals($user->id, Auth::id());
     }
 
-    /**
-     * Tests the has-permission gate functionality to ensure functionality
-     */
-    public function testHasPermissionGate()
-    {
-        $user = factory(User::class)->create();
-        // First, check with an invalid permission and test that it returns false
-        $this->assertFalse($user->can('has-permission', 'invalid-perm'));
-        // Now, let's add a Permission
-        $permission = factory(Permission::class)->create([
-            'code' => 'valid-test-perm'
-        ]);
-
-        // Now let's add a role
-        $role = factory(Role::class)->create([
-            'code' => 'test-role'
-        ]);
-        $user->role()->associate($role);
-        $user->save();
-        $role->permissions()->attach($permission);
-
-        $this->assertTrue($user->can('has-permission', 'valid-test-perm'));
-        // Test multiple permission checks
-        $permission = factory(Permission::class)->create([
-            'code' => 'another-valid-test-perm'
-        ]);
-        $role->permissions()->attach($permission);
-        // Now there should be two permissions for the role
-        $this->assertTrue($user->can('has-permission', 'valid-test-perm,another-valid-test-perm'));
-        // Now test to see if we fail having an additional permission not set
-        $this->assertFalse($user->can('has-permission', 'valid-test-perm,another-valid-test-perm,invalid-perm'));
-        // Now test with spaces in the arguments
-        $this->assertTrue($user->can('has-permission', 'valid-test-perm , another-valid-test-perm'));
-    }
 }

@@ -116,7 +116,7 @@
                 let now = moment();
                 let diff = duedate.diff(now, 'hours');
                 let color = diff < 0 ? 'text-danger' : (diff <= 48 ? 'text-warning' : 'text-primary');
-                let circle = '<i class="fas fa-circle ' + color + '"></i>';
+                let circle = '<i class="fas fa-circle ' + color + ' small"></i> ';
                 return circle + moment(value).fromNow();
             },
             fetch() {

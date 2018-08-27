@@ -1,5 +1,5 @@
 <div id="sidebar-inner" class="closed">
-  <ul class="nav flex-column" id="menu-toggle">
+  <ul class="nav flex-column" @click="expanded = !expanded" id="menu-toggle">
     <div>
       <li class="logo">
         <a href="#" >

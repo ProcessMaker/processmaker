@@ -4,15 +4,17 @@ namespace Tests\Feature\Api\User;
 
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\User;
-use Tests\Feature\Api\ApiTestCase;
+use Tests\TestCase;
 
 /**
  * Tests the User Profile API Endpoints with expected values
  */
-class UserProfileTest extends ApiTestCase
+class UserProfileTest extends TestCase
 {
 
     const API_TEST_PROFILE = '/api/1.0/admin/profile';
+
+    public $user;
 
     /**
      *
@@ -20,7 +22,7 @@ class UserProfileTest extends ApiTestCase
      */
     public function testUnauthenticated()
     {
-        $response = $this->api('GET', self::API_TEST_PROFILE);
+        $response = $this->json('GET', self::API_TEST_PROFILE);
         $response->assertStatus(401);
     }
 
@@ -31,7 +33,7 @@ class UserProfileTest extends ApiTestCase
     {
         $this->login();
         // Fetch via API
-        $response = $this->api('GET', self::API_TEST_PROFILE);
+        $response = $this->actingAs($this->user, 'api')->json('GET', self::API_TEST_PROFILE);
         // Verify 200 status code
         $response->assertStatus(200);
         // Grab profile data
@@ -45,10 +47,8 @@ class UserProfileTest extends ApiTestCase
     private function login()
     {
         $this->user = factory(User::class)->create([
-        'password' => Hash::make('password')
-    ]);
-
-        $this->auth($this->user->username, 'password');
+            'password' => Hash::make('password'),
+        ]);
     }
 
 }

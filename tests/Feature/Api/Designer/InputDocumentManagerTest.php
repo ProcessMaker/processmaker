@@ -7,11 +7,10 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\InputDocument;
 use ProcessMaker\Model\Process;
-use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
-use Tests\Feature\Api\ApiTestCase;
+use Tests\TestCase;
 
-class InputDocumentManagerTest extends ApiTestCase
+class InputDocumentManagerTest extends TestCase
 {
     use DatabaseTransactions;
 
@@ -40,15 +39,13 @@ class InputDocumentManagerTest extends ApiTestCase
     {
         parent::setUp();
         $this->user = factory(User::class)->create([
-            'password' => Hash::make(self::DEFAULT_PASS),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'password' => Hash::make(self::DEFAULT_PASS),            
         ]);
 
         $this->process = factory(Process::class)->create([
             'user_id' => $this->user->id
         ]);
 
-        $this->auth($this->user->username, self::DEFAULT_PASS);
     }
 
     /**
@@ -58,7 +55,7 @@ class InputDocumentManagerTest extends ApiTestCase
     {
         //Post should have the parameter required
         $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-document';
-        $response = $this->api('POST', $url, []);
+        $response = $this->actingAs($this->user, 'api')->json('POST', $url, []);
 
         //validating the answer is an error
         $response->assertStatus(422);
@@ -72,7 +69,7 @@ class InputDocumentManagerTest extends ApiTestCase
     {
         //Post should have the parameter required
         $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-document';
-        $response = $this->api('POST', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('POST', $url, [
             'title' => 'Title Test Input Document',
             'form_needed' => 'other type'
         ]);
@@ -90,7 +87,7 @@ class InputDocumentManagerTest extends ApiTestCase
         $faker = Faker::create();
         //Post saved correctly
         $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-document';
-        $response = $this->api('POST', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('POST', $url, [
             'title' => 'Title Test Input Document',
             'form_needed' => $faker->randomElement(array_keys(InputDocument::FORM_NEEDED_TYPE))
         ]);
@@ -113,7 +110,7 @@ class InputDocumentManagerTest extends ApiTestCase
         //Post title duplicated
         $faker = Faker::create();
         $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-document';
-        $response = $this->api('POST', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('POST', $url, [
             'title' => 'Title Test Input Document',
             'form_needed' => $faker->randomElement(array_keys(InputDocument::FORM_NEEDED_TYPE))
         ]);
@@ -134,7 +131,7 @@ class InputDocumentManagerTest extends ApiTestCase
 
         //List Input Document
         $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-documents';
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
         //verify count of data
@@ -165,7 +162,7 @@ class InputDocumentManagerTest extends ApiTestCase
         $perPage = Faker::create()->randomDigitNotNull;
         $query = '?page=1&per_page=' . $perPage . '&order_by=description&order_direction=DESC&filter=' . urlencode($title);
         $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-documents?' . $query;
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
         //verify structure paginate
@@ -195,7 +192,7 @@ class InputDocumentManagerTest extends ApiTestCase
         $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-document/' . factory(InputDocument::class)->create([
                 'process_id' => $this->process->id
             ])->uid;
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
 
@@ -210,7 +207,7 @@ class InputDocumentManagerTest extends ApiTestCase
     {
         //load Input Document
         $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-document/' . factory(InputDocument::class)->create()->uid;
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is incorrect
         $response->assertStatus(404);
         $this->assertArrayHasKey('message', $response->json());
@@ -226,7 +223,7 @@ class InputDocumentManagerTest extends ApiTestCase
         $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-document/' . factory(InputDocument::class)->create([
                 'process_id' => $this->process->id
             ])->uid;
-        $response = $this->api('PUT', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('PUT', $url, [
             'title' => '',
             'description' => $faker->sentence(6),
             'form_needed' => $faker->randomElement(array_keys(InputDocument::FORM_NEEDED_TYPE)),
@@ -249,7 +246,7 @@ class InputDocumentManagerTest extends ApiTestCase
         $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-document/' . factory(InputDocument::class)->create([
                 'process_id' => $this->process->id
             ])->uid;
-        $response = $this->api('PUT', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('PUT', $url, [
             'title' => $faker->sentence(2),
             'description' => $faker->sentence(6),
             'form_needed' => $faker->randomElement(array_keys(InputDocument::FORM_NEEDED_TYPE)),
@@ -272,7 +269,7 @@ class InputDocumentManagerTest extends ApiTestCase
         $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-document/' . factory(InputDocument::class)->create([
                 'process_id' => $this->process->id
             ])->uid;
-        $response = $this->api('PUT', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('PUT', $url, [
             'description' => $faker->sentence(6),
             'form_needed' => $faker->randomElement(array_keys(InputDocument::FORM_NEEDED_TYPE)),
             'original' => $faker->randomElement(InputDocument::DOC_ORIGINAL_TYPE),
@@ -291,7 +288,7 @@ class InputDocumentManagerTest extends ApiTestCase
     {
         //Remove InputDocument
         $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-document/' . factory(InputDocument::class)->create(['process_id' => $this->process->id])->uid;
-        $response = $this->api('DELETE', $url);
+        $response = $this->actingAs($this->user, 'api')->json('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(204);
     }
@@ -303,7 +300,7 @@ class InputDocumentManagerTest extends ApiTestCase
     {
         //InputDocument not exist
         $url = self::API_TEST_INPUT_DOCUMENT . $this->process->uid . '/input-document/' . factory(InputDocument::class)->make()->uid;
-        $response = $this->api('DELETE', $url);
+        $response = $this->actingAs($this->user, 'api')->json('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(404);
     }
