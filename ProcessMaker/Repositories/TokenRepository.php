@@ -11,6 +11,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ThrowEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Repositories\TokenRepositoryInterface;
 use ProcessMaker\Repositories\ExecutionInstanceRepository;
+use ProcessMaker\Model\User;
 
 /**
  * Execution Instance Repository.
@@ -59,18 +60,19 @@ class TokenRepository implements TokenRepositoryInterface
      */
     public function persistActivityActivated(ActivityInterface $activity, TokenInterface $token)
     {
+        $user = User::first();
         $token->uid = $token->getId();
         $token->thread_status = $token->getStatus();
         $token->element_ref = $activity->getId();
         $token->application_id = $token->getInstance()->id;
-        $token->user_id = Auth::id();
+        $token->user_id = $user->id;
         $token->delegate_date = Carbon::now();
         //@todo calculate the due date
         $token->task_due_date = Carbon::now()->addDays(3);
         $token->started = false;
         $token->finished = false;
         $token->delayed = false;
-        $token->save();
+        $token->saveOrFail();
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
     }
 

@@ -41,7 +41,10 @@
                 <div class="row">
                     <div class="col-md-4">
                         <span class="button-space">
-                            <a class="btn-primary btn-sm" v-bind:href="openLink(process, delegation)" target="_blank">
+                            <a v-if="delegation.definition.scriptFormat!==undefined" class="btn-primary btn-sm" href="javascript:void(0)">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </a>
+                            <a v-else class="btn-primary btn-sm" v-bind:href="openLink(process, delegation)" target="_blank">
                                 Open
                             </a>
                         </span>
@@ -59,18 +62,21 @@
 
             <h2>Completed Tasks</h2>
             <hr>
-            <div :key="index" v-for="(delegation, index) in completed">
+            <div :key="delegation.uid" v-for="delegation in completed">
                 <div class="row">
                     <div class="col-md-4">
                         <span class="button-space">
-                            <a class="btn-success btn-sm" v-bind:href="openLink(process, delegation)">
+                            <a v-if="delegation.definition.scriptFormat!==undefined" class="btn-success btn-sm" href="javascript:void(0)">
+                                Done
+                            </a>
+                            <a v-else class="btn-success btn-sm" v-bind:href="openLink(process, delegation)">
                                 View
                             </a>
                         </span>
                         <strong>{{delegation.definition.name}}</strong>
                     </div>
                     <div class="col-md">
-                        {{delegation.user.firstname}} {{delegation.user.lastname}}
+                        {{delegation.user ? delegation.user.firstname : ''}} {{delegation.user ? delegation.user.lastname : ''}}
                     </div>
                     <div class="col-md">
                         {{formatDate(delegation.delegate_date)}}

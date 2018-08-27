@@ -38,7 +38,7 @@ class CreateDelegationsTable extends Migration
             $table->boolean('finished')->default(0);
             $table->boolean('delayed')->default(0);
             $table->float('app_overdue_percentage', 10, 0)->default(0);
-            $table->unsignedInteger('user_id')->default(null)->index('userididx');
+            $table->unsignedInteger('user_id')->default(null)->nullable()->index('userididx');
             $table->index(['application_id', 'index']);
 
             $table->foreign('application_id')->references('id')->on('APPLICATION')->onDelete('cascade');

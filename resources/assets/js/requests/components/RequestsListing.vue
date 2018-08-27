@@ -72,7 +72,7 @@ export default {
   },
   methods: {
     openRequest(data, index) {
-      window.open('/request/' + data.uid + '/status');
+      window.open('/requests/' + data.uid + '/status');
     },
     formatUid(uid) {
         return uid.split('-').pop();
@@ -82,9 +82,11 @@ export default {
       if (!delegations) return assignedTo;
       delegations.forEach(function (delegation) {
         let user = delegation.user;
-        let avatar = user.avatar ? '<img class="avatar" src="' + user.avatar + '">'
-                : '<i class="fas fa-user"></i>';
-        assignedTo +=  avatar + ' ' + user.fullname + '<br>';
+        if (user) {
+          let avatar = user.avatar ? '<img class="rounded-user" src="' + user.avatar + '">'
+                  : '<i class="rounded-user fas fa-user"></i>';
+          assignedTo +=  avatar + ' ' + user.fullname + '<br>';
+        }
       });
       return assignedTo;
     },
@@ -96,7 +98,8 @@ export default {
       let now = moment();
       let diff = duedate.diff(now, 'hours');
       let color = diff < 0 ? 'text-danger' : (diff <= 48 ? 'text-warning' : 'text-primary');
-      return '<i class="fas fa-circle '+color+'"></i> ' + duedate.format('YYYY-MM-DD hh:mm');
+
+      return '<i class="fas fa-circle '+color+' small"></i> ' + duedate.format('YYYY-MM-DD hh:mm');
     },
     formatDate(value) {
       let date = moment(value);
@@ -157,7 +160,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 /deep/ i.fa-circle {
   &.active {
     color: green;
@@ -165,5 +168,10 @@ export default {
   &.inactive {
     color: red;
   }
+}
+.rounded-user {
+    border-radius: 50%!important;
+    height: 1.5em;
+    margin-right: 0.5em;
 }
 </style>

@@ -5,6 +5,7 @@
 version: 2
 jobs:
   build:
+    resource_class: large
     docker:
       # specify the version you desire here
       - image: circleci/php:7.2.8-fpm-node-browsers

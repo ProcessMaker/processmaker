@@ -18,17 +18,9 @@ class FormController extends Controller
      */
     public function show(Process $process = null, Form $form = null)
     {
-        if (!$process) {
-            request()->session()->flash('_alert', json_encode(['danger', __('The process was not found.')]));
-            return view('processes.index');
-        }
-        if (!$form) {
-            request()->session()->flash('_alert', json_encode(['danger', __('The form was not found.')]));
-            return view('designer.designer', compact('process'));
-        }
-
         if ($process->id !== $form->process_id) {
             request()->session()->flash('_alert', json_encode(['danger', __('The form does not belong to process.')]));
+            // @todo  This should actually redirect to designer url
             return view('designer.designer', compact('process'));
         }
         return view('designer.form', compact(['process', 'form']));

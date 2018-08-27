@@ -3,6 +3,7 @@
 namespace ProcessMaker\Model;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Validation\Rule;
 use ProcessMaker\Model\Traits\Uuid;
 use Watson\Validating\ValidatingTrait;
 
@@ -31,6 +32,8 @@ class OutputDocument extends Model
 {
     use ValidatingTrait;
     use Uuid;
+
+    protected $injectUniqueIdentifier = true;
 
     /**
      * Values for report_generator
@@ -97,8 +100,26 @@ class OutputDocument extends Model
     ];
 
     protected $validationMessages = [
-        'title.unique' => 'A output document with the same name already exists in this process.'
+        'title.unique' => 'A Input Document with the same name already exists in this process.',
+        'process_id.exists' => 'Process not found.'
     ];
+
+    /**
+     * Validating fields unique
+     *
+     * @param $parameters
+     * @param $field
+     *
+     * @return \Illuminate\Validation\Rules\Unique
+     */
+    protected function prepareUniqueRule($parameters, $field)
+    {
+        if ($field === 'title') {
+            return Rule::unique('output_documents')->where(function ($query) {
+                $query->where('process_id', $this->process_id);
+            })->ignore($this->id);
+        }
+    }
 
     /**
      * Get the route key for the model.

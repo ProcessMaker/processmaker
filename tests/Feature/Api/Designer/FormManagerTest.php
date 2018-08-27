@@ -7,11 +7,10 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\Form;
 use ProcessMaker\Model\Process;
-use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
-use Tests\Feature\Api\ApiTestCase;
+use Tests\TestCase;
 
-class FormManagerTest extends ApiTestCase
+class FormManagerTest extends TestCase
 {
     use DatabaseTransactions;
 
@@ -43,14 +42,12 @@ class FormManagerTest extends ApiTestCase
         parent::setUp();
         $this->user = factory(User::class)->create([
             'password' => Hash::make(self::DEFAULT_PASS),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+
         ]);
 
         $this->process = factory(Process::class)->create([
             'user_id' => $this->user->id
         ]);
-
-        $this->auth($this->user->username, self::DEFAULT_PASS);
     }
 
     /**
@@ -60,7 +57,7 @@ class FormManagerTest extends ApiTestCase
     {
         //Post should have the parameter required
         $url = self::API_TEST_FORM . $this->process->uid . '/form';
-        $response = $this->api('POST', $url, []);
+        $response = $this->actingAs($this->user, 'api')->json('POST', $url, []);
 
         //validating the answer is an error
         $response->assertStatus(422);
@@ -75,7 +72,7 @@ class FormManagerTest extends ApiTestCase
         //Post title duplicated
         $faker = Faker::create();
         $url = self::API_TEST_FORM . $this->process->uid . '/form';
-        $response = $this->api('POST', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('POST', $url, [
             'title' => 'Title Form',
             'description' => $faker->sentence(10)
         ]);
@@ -96,7 +93,7 @@ class FormManagerTest extends ApiTestCase
         //Post title duplicated
         $faker = Faker::create();
         $url = self::API_TEST_FORM . $this->process->uid . '/form';
-        $response = $this->api('POST', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('POST', $url, [
             'title' => 'Title Form',
             'description' => $faker->sentence(10)
         ]);
@@ -110,7 +107,7 @@ class FormManagerTest extends ApiTestCase
     public function testCopyImportFormWithErrorParameters()
     {
         $url = self::API_TEST_FORM . $this->process->uid . '/form';
-        $response = $this->api('POST', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('POST', $url, [
             'copy_import' => 'test'
         ]);
         $response->assertStatus(422);
@@ -124,7 +121,7 @@ class FormManagerTest extends ApiTestCase
     {
         //Process not exist
         $url = self::API_TEST_FORM . $this->process->uid . '/form';
-        $response = $this->api('POST', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('POST', $url, [
             'copy_import' => [
                 'process_uid' => 'processNotExists',
                 'form_uid' => factory(Form::class)->create()->uid
@@ -141,7 +138,7 @@ class FormManagerTest extends ApiTestCase
     {
         //Process not exist
         $url = self::API_TEST_FORM . $this->process->uid . '/form';
-        $response = $this->api('POST', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('POST', $url, [
             'copy_import' => [
                 'process_uid' => factory(Process::class)->create()->uid,
                 'form_uid' => 'formNotExists'
@@ -158,7 +155,7 @@ class FormManagerTest extends ApiTestCase
     {
         //Process not exist
         $url = self::API_TEST_FORM . $this->process->uid . '/form';
-        $response = $this->api('POST', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('POST', $url, [
             'copy_import' => [
                 'process_uid' => factory(Process::class)->create()->uid,
                 'form_uid' => factory(Form::class)->create()->uid
@@ -176,7 +173,7 @@ class FormManagerTest extends ApiTestCase
         $faker = Faker::create();
 
         $url = self::API_TEST_FORM . factory(Process::class)->create()->uid . '/form';
-        $response = $this->api('POST', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('POST', $url, [
             'title' => $faker->sentence(3),
             'description' => $faker->sentence(10),
             'copy_import' => [
@@ -204,7 +201,7 @@ class FormManagerTest extends ApiTestCase
 
         //List Form
         $url = self::API_TEST_FORM . $this->process->uid . '/forms';
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
         //verify count of data
@@ -235,7 +232,7 @@ class FormManagerTest extends ApiTestCase
         $perPage = Faker::create()->randomDigitNotNull;
         $query = '?page=1&per_page=' . $perPage . '&order_by=description&order_direction=DESC&filter=' . urlencode($title);
         $url = self::API_TEST_FORM . $this->process->uid . '/forms?' . $query;
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
         //verify structure paginate
@@ -272,7 +269,7 @@ class FormManagerTest extends ApiTestCase
                     ]
                 ]
             ])->uid;
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
 
@@ -287,7 +284,7 @@ class FormManagerTest extends ApiTestCase
     {
         //load Form
         $url = self::API_TEST_FORM . $this->process->uid . '/form/' . factory(Form::class)->create()->uid;
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(404);
         $this->assertArrayHasKey('message', $response->json());
@@ -300,7 +297,7 @@ class FormManagerTest extends ApiTestCase
     {
         //Post should have the parameter title
         $url = self::API_TEST_FORM . $this->process->uid . '/form/' . factory(Form::class)->create(['process_id' => $this->process->id])->uid;
-        $response = $this->api('PUT', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('PUT', $url, [
             'title' => '',
             'description' => ''
         ]);
@@ -317,8 +314,24 @@ class FormManagerTest extends ApiTestCase
         //Post saved success
         $faker = Faker::create();
         $url = self::API_TEST_FORM . $this->process->uid . '/form/' . factory(Form::class)->create(['process_id' => $this->process->id])->uid;
-        $response = $this->api('PUT', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('PUT', $url, [
             'title' => $faker->sentence(2),
+            'description' => $faker->sentence(5),
+            'content' => '',
+        ]);
+        //Validate the answer is correct
+        $response->assertStatus(200);
+    }
+
+    /**
+     * Update Form with same title
+     */
+    public function testUpdateSameTitleForm()
+    {
+        //Post saved success
+        $faker = Faker::create();
+        $url = self::API_TEST_FORM . $this->process->uid . '/form/' . factory(Form::class)->create(['process_id' => $this->process->id])->uid;
+        $response = $this->actingAs($this->user, 'api')->json('PUT', $url, [
             'description' => $faker->sentence(5),
             'content' => '',
         ]);
@@ -333,7 +346,7 @@ class FormManagerTest extends ApiTestCase
     {
         //Remove Form
         $url = self::API_TEST_FORM . $this->process->uid . '/form/' . factory(Form::class)->create(['process_id' => $this->process->id])->uid;
-        $response = $this->api('DELETE', $url);
+        $response = $this->actingAs($this->user, 'api')->json('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(204);
     }
@@ -345,7 +358,7 @@ class FormManagerTest extends ApiTestCase
     {
         //form not exist
         $url = self::API_TEST_FORM . $this->process->uid . '/form/' . factory(Form::class)->make()->uid;
-        $response = $this->api('DELETE', $url);
+        $response = $this->actingAs($this->user, 'api')->json('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(404);
     }
