@@ -10,19 +10,22 @@ new Vue({
     data: {
         file1: null,
         file2: null,
-        colors: ""
+        colorOne: "#3397e1",
+        colorTwo: "#788793"
     },
     methods: {
         showPrimaryModal() {
             this.$refs.primaryModal.show()
         },
         hidePrimaryModal() {
+            this.colorOne = "#3397e1"
             this.$refs.primaryModal.hide()
         },
         showSecondaryModal() {
             this.$refs.secondaryModal.show()
         },
         hideSecondaryModal() {
+            this.colorTwo = "#788793"
             this.$refs.secondaryModal.hide()
         },
         changeColor(val) {
