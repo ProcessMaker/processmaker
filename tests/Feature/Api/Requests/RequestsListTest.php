@@ -148,6 +148,7 @@ class RequestsListTest extends TestCase
             'APP_STATUS' => Application::STATUS_TO_DO,
             'creator_user_id' => $this->user->id
         ]);
+
         factory(Application::class, 2)->create([
             'APP_STATUS' => Application::STATUS_COMPLETED,
             'creator_user_id' => $this->user->id
@@ -155,7 +156,7 @@ class RequestsListTest extends TestCase
 
         $response = $this->actingAs($this->user, 'api')->json('GET', '/api/1.0/requests?status=3');
         $response->assertStatus(200);
-        $this->assertCount(5, $response->json()['data']);
+        $this->assertCount(2, $response->json()['data']);
 
         $response->assertJsonStructure([
             'data',
