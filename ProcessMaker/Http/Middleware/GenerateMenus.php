@@ -86,27 +86,40 @@ class GenerateMenus
         Menu::make('sidebar_request', function ($menu) {
           $submenu = $menu->add(__('menus.sidebar_request.request'));
           $submenu->add(__('menus.sidebar_request.in_progress'), [
-                'route' => 'home',
+                'route' => 'requests',
                 'icon' => 'icon-assigned',
                 'id' => 'homeid'
           ]);
           $submenu->add(__('menus.sidebar_request.draft'), [
-              'route' => 'home',
+              'route' => 'requests.drafts',
               'icon' => 'icon-draft',
               'id' => 'homeid'
           ]);
           $submenu->add(__('menus.sidebar_request.completed'), [
-              'route' => 'home',
+              'route' => 'requests.completed',
               'icon' => 'icon-completed-1',
               'id' => 'homeid'
           ]);
           $submenu->add(__('menus.sidebar_request.paused'), [
-              'route' => 'home',
+              'route' => 'requests.paused',
               'icon' => 'icon-paused-2',
               'id' => 'homeid'
           ]);
        });
-        Menu::make('sidebar_process', function ($menu) {});
+
+        Menu::make('sidebar_processes', function ($menu) {
+          $submenu = $menu->add(__('menus.sidebar_processes.processes'));
+          $submenu->add(__('menus.sidebar_processes.processes'), [
+              'route' => 'processes',
+              'icon' => 'fa-play-circle',
+              'id' => 'processes'
+          ]);
+          $submenu->add(__('menus.sidebar_processes.categories'), [
+              'route' => 'process-categories-index',
+              'icon' => 'fa-list',
+              'id' => 'process-categories'
+          ]);
+        });
 
         Menu::make('sidebar_designer', function ($menu) {});
 
