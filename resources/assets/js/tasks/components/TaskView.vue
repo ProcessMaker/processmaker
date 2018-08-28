@@ -60,7 +60,7 @@
           avatar: '',
           fullname: ''
         },
-        statusURL: '/request/' + this.instanceUid + '/status'
+        statusURL: '/requests/' + this.instanceUid + '/status'
       };
     },
     watch: {
