@@ -42,7 +42,7 @@
                     }
                 ],
                 fields: [
-                    
+
                     {
                         title: "Process",
                         name: "name",
@@ -98,7 +98,7 @@
             },
             onAction (actionType, data, index) {
                 if (actionType === 'edit-item') {
-                    window.open('/designer/' + data.uid);
+                    window.open('/designer/' + data.uid,'_self');
                 }
 
                 if (actionType === 'toggle-status') {
@@ -115,7 +115,7 @@
 
                 if (actionType === 'remove-item') {
                     let that = this;
-                    ProcessMaker.confirmModal('Caution!', '<b>Are you sure to delete the process </b>' + data.name + '?', '', function () {
+                    ProcessMaker.confirmModal('Caution!', '<b>Are you sure to delete the category </b>' + data.name + '?', '', function () {
                         ProcessMaker.apiClient
                             .delete('processes/' + data.uid)
                             .then(response => {
@@ -183,4 +183,3 @@
         width: 250px;
     }
 </style>
-

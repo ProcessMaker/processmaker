@@ -46,4 +46,9 @@ class LoginController extends Controller
     {
         return 'username';
     }
+
+     protected function credentials(\Illuminate\Http\Request $request)
+    {
+        return array_merge($request->only($this->username(), 'password'), ['status' => 'ACTIVE']);
+    }
 }

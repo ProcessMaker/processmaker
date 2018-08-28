@@ -96,8 +96,14 @@ class User extends Authenticatable implements UserEntityInterface, CanResetPassw
      */
     public static function rules(User $existing = null) {
         $rules = [
+<<<<<<< HEAD
         'password' => 'required',
         'status' => 'required|in:ACTIVE,DISABLED',
+=======
+        'firstname' => 'nullable',
+        'lastname' => 'nullable',
+        'status' => 'required|in:ACTIVE,INACTIVE',
+>>>>>>> develop
         ];
         if($existing) {
             $rules['username'] = [

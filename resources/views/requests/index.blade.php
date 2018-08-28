@@ -9,19 +9,21 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="row">
-                <div class="col-md-8 d-flex align-items-center col-sm-12">
-                    <h1 class="page-title">In Progress</h1>
-                    <a href="#" class="btn btn-action" @click="loadRequestsOverdue"> OVERDUE </a>
-                    &nbsp;
-                    <a href="#" class="btn btn-action" @click="loadRequestsAtRisk"> AT RISK </a>
-                    &nbsp;
-                    <a href="#" class="btn btn-action" @click="loadRequestsOnTime"> ON TIME </a>
-                </div>
+                    <div class="col-md-8 d-flex align-items-center col-sm-12">
+                        <h1 class="page-title">{{ $title }}</h1>
+                        @if ($status == ProcessMaker\Model\Application::STATUS_TO_DO)
+                            <a href="#" class="btn btn-action" @click="loadRequestsOverdue"> OVERDUE </a>
+                            &nbsp;
+                            <a href="#" class="btn btn-action" @click="loadRequestsAtRisk"> AT RISK </a>
+                            &nbsp;
+                            <a href="#" class="btn btn-action" @click="loadRequestsOnTime"> ON TIME </a>
+                        @endif
+                    </div>
                 <div class="col-md-4 d-flex justify-content-end align-items-center col-sm-12 actions">
                     <input v-model="filter" class="form-control" placeholder="{{__('Search')}}...">
                 </div>
             </div>
-            <requests-listing :filter="filter"></requests-listing>
+            <requests-listing :filter="filter" status="{{ $status }}"></requests-listing>
         </div>
     </div>
     </div>
