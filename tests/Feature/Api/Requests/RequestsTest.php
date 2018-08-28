@@ -2,6 +2,8 @@
 namespace Tests\Feature\Api\Requests;
 
 use Illuminate\Support\Facades\Hash;
+use ProcessMaker\Model\Application;
+use ProcessMaker\Model\Delegation;
 use ProcessMaker\Model\ProcessCategory;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\User;
@@ -43,24 +45,31 @@ class RequestsTest extends TestCase
     {
         $this->login();
 
-        factory(\ProcessMaker\Model\Application::class, 1)->create([
+        factory(Application::class, 1)->create([
             'id' => 10,
-            'creator_user_id' => $this->user->id
+            'creator_user_id' => $this->user->id,
+            'APP_STATUS' => Application::STATUS_TO_DO
         ]);
 
 
-        factory(\ProcessMaker\Model\Delegation::class, 2)->create([
+        factory(Delegation::class, 2)->create([
             'application_id' => 10
         ]);
 
+        // We create an instance with status completed
+        factory(Application::class, 1)->create([
+            'creator_user_id' => $this->user->id,
+            'APP_STATUS' => Application::STATUS_COMPLETED
+        ]);
         $response = $this->actingAs($this->user, 'api')->json('GET', '/api/1.0/requests?delay=overdue');
-
+        $parsedResponse = json_decode($response->getContent());
         $response->assertStatus(200);
-
         $response->assertJsonStructure([
             'data',
             'meta'
-      ]);
+        ]);
+        $this->assertCount(1, $parsedResponse->data,
+            'The number of results should be 1, because just one application has status TO_DO ');
     }
 
     /**
