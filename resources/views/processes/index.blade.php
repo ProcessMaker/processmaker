@@ -22,9 +22,9 @@
                     </div>
                 </div>
                 <modal-create-process :show="processModal" @close="processModal=false" :labels="labels"
-                                      :process-uid="processUid">
+                                      :process-uid="processUid" v-on:reload="reload">
                 </modal-create-process>
-                <processes-listing :filter="filter" v-on:edit="edit"></processes-listing>
+                <processes-listing ref="processListing" :filter="filter" v-on:edit="edit"></processes-listing>
             </div>
         </div>
     </div>

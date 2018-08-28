@@ -117,8 +117,9 @@
                 })
                     .then((response) => {
                         // Close modal
+                        this.$emit('reload', 'reload');
                         ProcessMaker.alert('Update Process Successfully', 'success');
-                        window.location.reload();
+                        this.onClose();
                     })
                     .catch(error => {
                         //define how display errors
@@ -152,6 +153,7 @@
                         if (response.data && response.data.uid) {
                             //Change way to open the designer
                             window.location.href = '/designer/' + response.data.uid;
+                            this.$emit('reload', 'reload');
                         }
                     })
                     .catch(error => {

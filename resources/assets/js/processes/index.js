@@ -29,6 +29,14 @@ new Vue({
             this.labels.panel = 'Edit Process';
             this.processUid = uid;
             this.processModal = true;
+        },
+        reload() {
+            this.$refs.processListing.dataManager([
+                {
+                    field: 'updated_at',
+                    direction: 'desc'
+                }
+            ]);
         }
     }
 });
