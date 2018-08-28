@@ -13,26 +13,30 @@
           <div class="card card-body">
              <h4>Add your company logos</h4>
              <b-form>
-              <b-form-group>
-                <label>Logo size must be 400x100. File format .jpg or .png</label>
-                <b-form-file @change="onImgUpload1(this)" accept="image/jpeg, image/png" v-model="file1" placeholder="Choose a file..."></b-form-file>
-                <div class="mt-3"><img src="#" id="file1Img"></div>
-              </b-form-group>
-              <b-form-group>
-                <label>Logo size must be 100x100. File format .jpg or .png</label>
-                <b-form-file @change="onImgUpload2(this)" accept="image/jpeg, image/png" v-model="file2" placeholder="Choose a file..."></b-form-file>
-                <div class="mt-3"><img src="#" id="file2Img"></div>
-              </b-form-group>
+              <div class="form-group row">
+                <div class="col-4">
+                  <label>Logo size must be 400x100. File format .jpg or .png</label>
+                  <b-form-file @change="onImgUpload1(this)" accept="image/jpeg, image/png" v-model="file1" placeholder="Choose a file..."></b-form-file>
+                </div>
+                <div class="mt-3 col-6"><img class="img-1" src="#" id="file1Img"></div>
+              </div>
+              <div class="form-group row">
+                <div class="col-6">
+                  <label>Logo size must be 100x100. File format .jpg or .png</label>
+                  <b-form-file @change="onImgUpload2(this)" accept="image/jpeg, image/png" v-model="file2" placeholder="Choose a file..."></b-form-file>
+                </div>
+                <div class="mt-3 col-6"><img class="img-2" src="#" id="file2Img"></div>
+              </div>
               <h4>Create a color scheme to customize your UI</h4>
               <div>
                 <div class="form-group">
                   <div class="color-select" @click="showPrimaryModal">
-                    <span class="bg-primary color-preview"></span>
+                    <span class="color-preview new-bg"></span>
                   </div>
                 </div>
                 <div class="form-group">
                   <div class="color-select" @click="showSecondaryModal">
-                    <span class="bg-secondary color-preview"></span>
+                    <span class="color-preview new-bg"></span>
                   </div>
                 </div>
              </b-form>
@@ -76,20 +80,31 @@
 @endsection
 
 <style lang="scss" scoped>
-.color-select{
+.color-select {
   border: 1px solid rgba(0, 0, 0, 0.125);
   width: 100%;
   border-radius: 0.125em;
   height: calc(1.875rem + 2px);
 }
-.color-preview{
+.color-preview {
   height: calc(1.875rem + 2px);
   width: 20%;
    display: inline-block;
 }
-span:{
+span {
   width: 50%;
   border-radius: 0.125em;
   height: calc(1.875rem + 2px);
+}
+.img-1 {
+  width: 400px;
+  height: 100px;
+}
+.img-2 {
+  width: 100px;
+  height: 100px;
+}
+.new-bg {
+  background-color: #000;
 }
 </style>
