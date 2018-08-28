@@ -48,7 +48,7 @@ class RequestsTest extends TestCase
         factory(Application::class, 1)->create([
             'id' => 10,
             'creator_user_id' => $this->user->id,
-            'APP_STATUS_ID' => Application::STATUS_TO_DO
+            'APP_STATUS' => Application::STATUS_TO_DO
         ]);
 
 

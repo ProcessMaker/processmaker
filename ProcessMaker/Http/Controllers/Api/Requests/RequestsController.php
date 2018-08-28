@@ -38,7 +38,7 @@ class RequestsController extends Controller
         $include = $request->input('include');
 
         $requests = Application::where('creator_user_id', $owner->id)
-            ->where('APP_STATUS_ID', $options['status'])
+            ->where('APP_STATUS', $options['status'])
             ->with($include ? explode(',', $include) : [])
             ->paginate($options['per_page'])
             ->appends($options);
