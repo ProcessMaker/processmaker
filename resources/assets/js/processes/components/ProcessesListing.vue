@@ -42,7 +42,7 @@
                     }
                 ],
                 fields: [
-                    
+
                     {
                         title: "Process",
                         name: "name",
@@ -98,7 +98,7 @@
             },
             onAction (actionType, data, index) {
                 if (actionType === 'edit-item') {
-                    window.open('/designer/' + data.uid);
+                    window.open('/designer/' + data.uid,'_self');
                 }
 
                 if (actionType === 'toggle-status') {
@@ -183,4 +183,3 @@
         width: 250px;
     }
 </style>
-
