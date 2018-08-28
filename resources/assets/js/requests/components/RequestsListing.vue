@@ -24,7 +24,7 @@ import moment from "moment"
 
 export default {
   mixins: [datatableMixin],
-  props: ["filter"],
+  props: ["filter", "status"],
   data() {
     return {
       orderBy: "id",
@@ -72,7 +72,7 @@ export default {
   },
   methods: {
     openRequest(data, index) {
-      window.open('/requests/' + data.uid + '/status');
+      window.open('/requests/' + data.uid + '/status','_self');
     },
     formatUid(uid) {
         return uid.split('-').pop();
@@ -133,6 +133,9 @@ export default {
       let additionalParams = '';
       if (urlParts.length === 2) {
         additionalParams = '&' + urlParts[1];
+      }
+      if (this.status) {
+        additionalParams += "&status=" + this.status;
       }
 
       // Load from our api client
