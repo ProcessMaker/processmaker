@@ -88,7 +88,7 @@ class UsersController extends Controller
         $expected = $user->fillable;
 
         $insert = [];
-        
+
         $rules = $user->rules();
 
         foreach($expected as $expect){
@@ -96,7 +96,7 @@ class UsersController extends Controller
                 unset($rules[$expect]);
                 unset($expected[$expect]);
             } else {
-                $insert[$expect] = $expect;
+                $insert[$expect] = $request->$expect;
             }
         }
 
@@ -108,16 +108,18 @@ class UsersController extends Controller
         }
 
         if($request->has('password') && strlen($request->password) > 0){
-            $expect['password'] = Hash::make($request->password);
+
+            $insert['password'] = Hash::make($request->password);
+
         } else {
             unset($rules['password']);
-            unset($insert['password']);            
+            unset($insert['password']);
         }
 
         $request->validate($rules);
 
-        foreach($insert as $data){
-            $user->$data = $request->$data;
+        foreach($insert as $key => $data){
+            $user->$key = $data;
         }
 
         $user->save();
