@@ -83,7 +83,11 @@
                         }
                     )
                     .then(response => {
-                        ProcessMaker.alert('New Category Successfully Created', 'success');
+                        if (this.isEditing()) {
+                            ProcessMaker.alert('Category Updated Successfully', 'success');
+                        } else {
+                            ProcessMaker.alert('New Category Successfully Created', 'success');
+                        }
                         this.$emit('reload')
                         this.close();
                     })
