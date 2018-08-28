@@ -42,7 +42,7 @@ class RequestsListTest extends TestCase
 
         factory(\ProcessMaker\Model\Application::class, 51)->create([
             'creator_user_id' => $this->user->id,
-            'APP_STATUS' => Application::STATUS_TO_DO
+            'APP_STATUS_ID' => Application::STATUS_TO_DO
         ]);
 
         $response = $this->actingAs($this->user, 'api')->json('GET', '/api/1.0/requests');
