@@ -4,7 +4,6 @@ namespace Tests\Feature\Api\Cases;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\Application;
 use ProcessMaker\Model\User;
-use ProcessMaker\Model\Application;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
