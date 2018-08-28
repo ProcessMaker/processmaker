@@ -21,7 +21,7 @@
                 <div class="mt-3 col-6"><img class="img-1" src="#" id="file1Img"></div>
               </div>
               <div class="form-group row">
-                <div class="col-6">
+                <div class="col-4">
                   <label>Logo size must be 100x100. File format .jpg or .png</label>
                   <b-form-file @change="onImgUpload2(this)" accept="image/jpeg, image/png" v-model="file2" placeholder="Choose a file..."></b-form-file>
                 </div>
@@ -97,12 +97,10 @@ span {
   height: calc(1.875rem + 2px);
 }
 .img-1 {
-  width: 400px;
-  height: 100px;
+  max-width: 400px;
 }
 .img-2 {
-  width: 100px;
-  height: 100px;
+  max-width: 100px;
 }
 .new-bg {
   background-color: #000;
