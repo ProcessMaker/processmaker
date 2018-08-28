@@ -31,12 +31,12 @@
               <div>
                 <div class="form-group">
                   <div class="color-select" @click="showPrimaryModal">
-                    <span class="color-preview new-bg"></span>
+                    <span class="color-preview new-bg" v-bind:style="{ backgroundColor: colorOne }"></span>
                   </div>
                 </div>
                 <div class="form-group">
                   <div class="color-select" @click="showSecondaryModal">
-                    <span class="color-preview new-bg"></span>
+                    <span class="color-preview new-bg" v-bind:style="{ backgroundColor: colorTwo }"></span>
                   </div>
                 </div>
              </b-form>
@@ -51,24 +51,18 @@
       </div>
     </div>  
     <b-modal ref="primaryModal" title="Using Component Methods" align="center">
-      <customize-color v-model="colors" @changeColor="changeColor"></customize-color>
+      <customize-color v-model="colorOne" @changeColor="changeColor"></customize-color>
       <div slot="modal-footer">
         <button @click="hidePrimaryModal" class="btn btn-outline-success btn-sm text-uppercase">
             Cancel
         </button>
-        <button @click="showPrimaryModal" class="btn btn-success btn-sm text-uppercase">
-            Save
-        </button>
       </div>
     </b-modal>
     <b-modal ref="secondaryModal" title="Using Component Methods" align="center">
-      <customize-color ></customize-color>
+      <customize-color v-model="colorTwo" @changeColor="changeColor"></customize-color>
       <div slot="modal-footer">
         <button @click="hideSecondaryModal" class="btn btn-outline-success btn-sm text-uppercase">
             Cancel
-        </button>
-        <button @click="showSecondaryModal" class="btn btn-success btn-sm text-uppercase">
-            Save
         </button>
       </div>
     </b-modal>
