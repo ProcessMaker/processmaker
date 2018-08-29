@@ -102,14 +102,14 @@
                                 'class': 'rounded-user',
                                 'title': user.fullname
                             })
-                            : '<div class="circle"><span style="color: white;" title="' + user.fullname + '">'
+                            : '<div class="circle"><span class="initials" title="' + user.fullname + '">'
                             + user.firstname[0].toUpperCase() + user.lastname[0].toUpperCase() + '</span></div>';
                     } else {
                         count++;
                     }
                 });
                 if (count) {
-                    assignedTo += '<div class="circle"><span style="color: white;">+' + count + '</span></div>';
+                    assignedTo += '<div class="circle"><span class="initials">+' + count + '</span></div>';
                 }
                 return assignedTo;
             },
@@ -141,15 +141,15 @@
                 let risk = false;
                 if (delegations) {
                     delegations.forEach(function (delegation) {
-                        if (delegation.delay.toUpperCase() === 'OVERDUE') {
+                        if (delegation.delay && delegation.delay.toUpperCase() === 'OVERDUE') {
                             overdue = true;
-                        } else if (delegation.delay.toUpperCase() === 'AT_RISK') {
+                        } else if (delegation.delay && delegation.delay.toUpperCase() === 'AT_RISK') {
                             risk = true;
                         }
                     });
                 }
                 let status = overdue ? 'OVERDUE' : (risk ? 'AT RISK' : 'ON TIME');
-                return ' <span style="text-transform: uppercase">' + status + '</span>';
+                return ' <span style="text-transform: uppercase; ">' + status + '</span>';
             },
             transform(data) {
                 // Clean up fields for meta pagination so vue table pagination can understand
@@ -201,8 +201,7 @@
 <style lang="scss" scoped>
     /deep/ .circle {
         border-radius: 50px/50px;
-        height: 18px;
-        width: 18px;
+        height: 1.5em;
         background-color: #6c757d;
         display: inline-table;
         margin-right: 0.5em;
@@ -212,6 +211,12 @@
         border-radius: 50% !important;
         height: 1.5em;
         margin-right: 0.5em;
+    }
+
+    /deep/ .initials {
+        color: white;
+        padding: 3px;
+        font-size: 10px;
     }
 
     /deep/ i.fa-circle {
