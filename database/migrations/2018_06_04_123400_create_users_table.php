@@ -26,6 +26,7 @@ class CreateUsersTable extends Migration
             $table->enum('status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
             $table->string('country')->nullable();
             $table->string('city')->nullable();
+            $table->string('state')->nullable();
             $table->string('location')->nullable();
             $table->string('address')->nullable();
             $table->string('phone')->nullable();
