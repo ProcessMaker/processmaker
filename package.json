@@ -91,6 +91,12 @@
       "^.+\\.js$": "<rootDir>/node_modules/babel-jest",
       ".*\\.(vue)$": "<rootDir>/node_modules/vue-jest"
     },
+    "moduleNameMapper": {
+      "@pmjs(.*)$": "<rootDir>/resources/assets/js/$1"
+    },
+    "transformIgnorePatterns": [
+      "node_modules/(?!(vuetable-2)/)"
+    ],
     "roots": [
       "<rootDir>/resources/assets/js/",
       "<rootDir>/tests/js/"
