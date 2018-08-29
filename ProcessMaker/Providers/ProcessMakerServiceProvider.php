@@ -21,6 +21,8 @@ use ProcessMaker\Managers\ScriptManager;
 use ProcessMaker\Managers\UserManager;
 use ProcessMaker\Model\Group;
 use ProcessMaker\Model\User;
+use Laravel\Horizon\Horizon;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Provide our ProcessMaker specific services
@@ -116,6 +118,11 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         $this->app->singleton('task_delegation.manager', function ($app) {
             return new TasksDelegationManager();
+        });
+
+        //Enable 
+        Horizon::auth(function ($request) {
+            return !empty(Auth::user());
         });
     }
 }

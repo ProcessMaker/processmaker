@@ -47,7 +47,14 @@
       <incoming>_3</incoming>
       <outgoing>_14</outgoing>
       <script><![CDATA[<?php
-return ['availableDays' => rand(0, 5)];]]></script>
+$credits = rand(0, 50);
+$hoursOfWork = getenv('hours_of_work');
+$availableDays = round($credits / $hoursOfWork);
+sleep(3);
+return [
+    'credits' => $credits,
+    'availableDays' => $availableDays
+];]]></script>
     </scriptTask>
     <sequenceFlow id="_14" sourceRef="_12" targetRef="_13"/>
     <sequenceFlow id="_15" sourceRef="_13" targetRef="request">
