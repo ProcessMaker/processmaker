@@ -48,7 +48,7 @@
         <h3>Localization</h3>
         <div class="row">
           <div class="col">
-            <form-select label="Timezone" v-model="data.timezone" :options="timezones" :error="this.addError"></form-select>
+            <form-select label="Timezone" v-model="data.time_zone" :options="timezones" :error="this.addError"></form-select>
           </div>
           <div class="col">
             <form-select label="Language" v-model="data.language" :options="languages" :error="this.addError"></form-select>
@@ -174,7 +174,7 @@ export default {
           state: this.data.state,
           postal: this.data.postal,
           country: this.data.country,
-          timezone: this.data.timezone,
+          time_zone: this.data.time_zone,
           language: this.data.language
         })
         .then(response => {
