@@ -4,7 +4,7 @@
     <div class="row">
       <div class="col-8">
         <div class="card card-body">
-        <img class="logo" src="/img/lg-blk-logo.png">
+        <img class="logo" src="/img/md-blk-logo.png">
         <hr>
         <div>ProcessMaker v4.0</div>
         <hr>
@@ -46,7 +46,6 @@ export default {
 
 <style lang="scss" scoped>
 .logo {
-  width: 400px;
-  height: 100px;
+  max-width: 300px;
 }
 </style>
