@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layout', ['title' => __('About')])
 
 @section('content')
   <div id="about">
