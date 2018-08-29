@@ -61,6 +61,7 @@ class TokenRepository implements TokenRepositoryInterface
     public function persistActivityActivated(ActivityInterface $activity, TokenInterface $token)
     {
         $user = User::first();
+        $currentTime = Carbon::now();
         $token->uid = $token->getId();
         $token->thread_status = $token->getStatus();
         $token->element_ref = $activity->getId();
@@ -68,7 +69,9 @@ class TokenRepository implements TokenRepositoryInterface
         $token->user_id = $user->id;
         $token->delegate_date = Carbon::now();
         //@todo calculate the due date
-        $token->task_due_date = Carbon::now()->addDays(3);
+        //$token->task_due_date = Carbon::now()->addDays(3);
+        $token->task_due_date = $this->calculateRiskAndDueDates($activity, $currentTime)['dueDate'];
+        $token->risk_date = $this->calculateRiskAndDueDates($activity, $currentTime)['riskDate'];
         $token->started = false;
         $token->finished = false;
         $token->delayed = false;
@@ -177,5 +180,32 @@ class TokenRepository implements TokenRepositoryInterface
     public function store(TokenInterface $token, $saveChildElements = false): \this
     {
         
+    }
+
+    /**
+     * Calculated due and risk dates bases in the activity timing configuration and the passed date
+     *
+     * @param $activity
+     * @param Carbon $date
+     * @return array
+     */
+    private function calculateRiskAndDueDates($activity, Carbon $date)
+    {
+        $timeLimit = null;
+
+        if (key_exists('dueDate', $activity->getProperties())) {
+            $timeLimit = $activity->getProperties()['dueDate'];
+            return [
+                'dueDate' => new Carbon($date->addHours($timeLimit)),
+                'riskDate' => new Carbon($date->addHours(round($timeLimit * 0.5)))
+            ];
+        }
+        else {
+            return [
+                'dueDate' => '9999-01-01',
+                'riskDate' => '9999-01-01'
+            ];
+        }
+
     }
 }
