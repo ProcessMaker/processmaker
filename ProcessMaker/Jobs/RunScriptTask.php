@@ -18,11 +18,17 @@ class RunScriptTask extends TokenAction implements ShouldQueue
     public function action(TokenInterface $token, ScriptTaskInterface $activity)
     {
         $scriptRef = $activity->getProperty('scriptRef');
-        $configuration = json_decode($activity->getProperty('scriptConfiguration'), true);
         Log::info('Script started: ' . $scriptRef);
+        $configuration = json_decode($activity->getProperty('scriptConfiguration'), true);
+
+        // Check to see if we've failed parsing.  If so, let's convert to empty array.
+        if($configuration === null) {
+            $configuration = [];
+        }
         $dataStore = $token->getInstance()->getDataStore();
         $data = $dataStore->getData();
         $script = Script::where('uid', $scriptRef)->firstOrFail();
+
         $response = $script->runScript($data, $configuration);
         if (is_array($response['output'])) {
             foreach ($response['output'] as $key => $value) {
