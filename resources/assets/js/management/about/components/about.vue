@@ -28,18 +28,18 @@ export default {
   data() {
     return {};
   },
-  mounted() {
-    this.load();
-  },
+  // mounted() {
+  //   this.load();
+  // },
   methods: {
     //@TODO update the version number once we have tags in our api
-    load() {
-      ProcessMaker.apiClient
-        .get("https://api.github.com/repos/ProcessMaker/bpm/tags")
-        .then(response => {
-          console.log(response);
-        });
-    }
+    // load() {
+    //   ProcessMaker.apiClient
+    //     .get("https://api.github.com/repos/ProcessMaker/bpm/tags")
+    //     .then(response => {
+    //       console.log(response);
+    //     });
+    // }
   }
 };
 </script>
