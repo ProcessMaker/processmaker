@@ -32,6 +32,7 @@ export default {
     this.load();
   },
   methods: {
+    //@TODO update the version number once we have tags in our api
     load() {
       ProcessMaker.apiClient
         .get("https://api.github.com/repos/ProcessMaker/bpm/tags")
