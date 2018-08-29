@@ -55,7 +55,11 @@ class RequestsController extends Controller
                 }
 
                 if ($delay === 'on_time') {
-                    $q->where('risk_date', '>=', Carbon::now()->toDateString());
+                    $q->where(function($q) {
+                        $q->where('risk_date', '>=', Carbon::now()->toDateString())
+                            ->orWhereNull('task_due_date');
+
+                    });
                 }
             }]);
 
@@ -71,7 +75,11 @@ class RequestsController extends Controller
                 }
 
                 if ($delay === 'on_time') {
-                    $q->where('risk_date', '>=', Carbon::now()->toDateString());
+                    $q->where(function($q) {
+                        $q->where('risk_date', '>=', Carbon::now()->toDateString())
+                            ->orWhereNull('task_due_date');
+
+                    });
                 }
             });
         }

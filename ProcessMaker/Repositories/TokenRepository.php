@@ -202,8 +202,8 @@ class TokenRepository implements TokenRepositoryInterface
         }
         else {
             return [
-                'dueDate' => '9999-01-01',
-                'riskDate' => '9999-01-01'
+                'dueDate' => null,
+                'riskDate' => null
             ];
         }
 
