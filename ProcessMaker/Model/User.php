@@ -53,6 +53,7 @@ class User extends Authenticatable implements UserEntityInterface, CanResetPassw
         'created_at',
         'updated_at',
         'status',
+        'state',
         'country',
         'city',
         'location',
