@@ -8,9 +8,9 @@
         <hr>
         <div>ProcessMaker v4.0</div>
         <hr>
-        <a href="https://github.com/ProcessMaker/bpm/issues">Report an issue  <i class="fas fa-bug float-right"></i></a>
+        <a href="https://github.com/ProcessMaker/bpm/issues">Report an issue  <i class="fas fa-caret-right fa-lg float-right mr-1"></i></a>
         <hr>
-        <a href="https://github.com/ProcessMaker/bpm">Get Help  <i class="fas fa-info float-right"></i></a>
+        <a href="https://github.com/ProcessMaker/bpm">Get Help  <i class="fas fa-caret-right fa-lg float-right mr-1"></i></a>
         <hr>
       </div>
     </div>
@@ -27,7 +27,8 @@
 export default {
   data() {
     return {};
-  }
+  },
+  methods: {}
 };
 </script>
 
