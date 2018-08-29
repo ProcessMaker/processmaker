@@ -64,7 +64,7 @@ class RequestsTest extends TestCase
             'creator_user_id' => $this->user->id,
             'APP_STATUS' => Application::STATUS_COMPLETED
         ]);
-        $response = $this->actingAs($this->user, 'api')->json('GET', '/api/1.0/requests?delay=overdue');
+        $response = $this->actingAs($this->user, 'api')->json('GET', '/api/1.0/requests');
         $parsedResponse = json_decode($response->getContent());
         $response->assertStatus(200);
         $response->assertJsonStructure([
@@ -86,63 +86,67 @@ class RequestsTest extends TestCase
 
         factory(Application::class, 1)->create([
             'id' => 10,
-            'creator_user_id' => $userId
+            'creator_user_id' => $userId,
+            'APP_STATUS' => Application::STATUS_TO_DO
         ]);
 
         // Task on time
         factory(Delegation::class)->create([
             'application_id' => 10,
-            'uid' => 'onTimeId',
             'task_due_date' => Carbon::now()->addDays(5),
-            'risk_date' => Carbon::now()->addDays(3)
+            'risk_date' => Carbon::now()->addDays(3),
+            'thread_status' => 'ACTIVE'
         ]);
 
-        // Task on risk
+        // Task at risk
         factory(Delegation::class)->create([
             'application_id' => 10,
-            'uid' => 'atRiskId',
             'task_due_date' => Carbon::now()->addDays(2),
-            'risk_date' => Carbon::now()->subDays(2)
+            'risk_date' => Carbon::now()->subDays(2),
+            'thread_status' => 'ACTIVE'
         ]);
 
         // Task on risk
         factory(Delegation::class)->create([
             'application_id' => 10,
-            'uid' => 'overdueId',
             'task_due_date' => Carbon::now()->subDays(2),
-            'risk_date' => Carbon::now()->subDays(3)
+            'risk_date' => Carbon::now()->subDays(3),
+            'thread_status' => 'ACTIVE'
         ]);
 
         // Without filters all the tasks of the request should be returned
-        $response = $this->api('GET', '/api/1.0/requests?include=process,delegations,delegations.user');
+        $response = $this->actingAs($this->user, 'api')
+                            ->json('GET', '/api/1.0/requests?include=process,delegations,delegations.user');
         $response->assertStatus(200);
         $parsedResponse = json_decode($response->getContent());
         $this->assertCount(3, $parsedResponse->data[0]->delegations);
 
-        // If the delay parameter is = overdue just the overdue delegation should be returned
-        $response = $this->api('GET', '/api/1.0/requests?include=process,delegations,delegations.user&delay=overdue');
+        // If the delay parameter is = overdue just the overdue delegations should be returned
+        $response = $this->actingAs($this->user, 'api')
+                            ->json('GET', '/api/1.0/requests?include=process,delegations,delegations.user&delay=overdue');
         $response->assertStatus(200);
         $parsedResponse = json_decode($response->getContent());
         $this->assertCount(1, $parsedResponse->data[0]->delegations);
-        $this->assertEquals('overdueId', $parsedResponse->data[0]->delegations[0]->uid);
+        $this->assertEquals('overdue', $parsedResponse->data[0]->delegations[0]->delay);
 
-
-        // If the delay parameter is = atRisk just the atRisk delegation should be returned
-        $response = $this->api('GET', '/api/1.0/requests?include=process,delegations,delegations.user&delay=atRisk');
+        // If the delay parameter is = atRisk just the atRisk delegations should be returned
+        $response = $this->actingAs($this->user, 'api')
+                            ->json('GET', '/api/1.0/requests?include=process,delegations,delegations.user&delay=at_risk');
         $response->assertStatus(200);
         $parsedResponse = json_decode($response->getContent());
         $this->assertCount(1, $parsedResponse->data[0]->delegations);
-        $this->assertEquals('atRiskId', $parsedResponse->data[0]->delegations[0]->uid);
+        $this->assertEquals('at_risk', $parsedResponse->data[0]->delegations[0]->delay);
 
-        // If the delay parameter is = onTime just the onTime delegation should be returned
-        $response = $this->api('GET', '/api/1.0/requests?include=process,delegations,delegations.user&delay=onTime');
+        // If the delay parameter is = onTime just the onTime delegations should be returned
+        $response = $this->actingAs($this->user, 'api')
+                            ->json('GET', '/api/1.0/requests?include=process,delegations,delegations.user&delay=on_time');
         $response->assertStatus(200);
         $parsedResponse = json_decode($response->getContent());
         $this->assertCount(1, $parsedResponse->data[0]->delegations);
-        $this->assertEquals('onTimeId', $parsedResponse->data[0]->delegations[0]->uid);
+        $this->assertEquals('on_time', $parsedResponse->data[0]->delegations[0]->delay);
     }
 
-    /*
+    /**
      * Tests that the sorting and default sorting works.
      */
     public function testUserProcessesListSorting()

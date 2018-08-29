@@ -145,6 +145,22 @@ class Delegation extends Model implements TokenInterface
         }
     }
 
+    public static function isInDelayType($query, $delayType)
+    {
+        if ($delayType === 'overdue') {
+            return $query->whereBetween('task_due_date', '<=', Carbon::now()->toDateString());
+        }
+
+        if ($delayType === 'at_risk') {
+            return $query->whereBetween('risk_date', '<=', Carbon::now()->toDateString());
+        }
+
+        if ($delayType === 'on_time') {
+
+            return $query->where('risk_date', '>=', Carbon::now()->toDateString());
+        }
+    }
+
     /**
      * Returns the relationship of the parent application
      *
