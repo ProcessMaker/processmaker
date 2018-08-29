@@ -66,7 +66,7 @@ class Form extends Model
         if ($field === 'title') {
             return Rule::unique('forms')->where(function ($query) {
                 $query->where('process_id', $this->process_id);
-            });
+            })->ignore($this->id);
         }
     }
 

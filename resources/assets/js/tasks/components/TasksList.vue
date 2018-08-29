@@ -71,6 +71,13 @@
                 ]
             };
         },
+        mounted: function mounted() {
+            let params = (new URL(document.location)).searchParams;
+            let successRouting = params.get('successfulRouting') === 'true';
+            if (successRouting) {
+                ProcessMaker.alert('The request was completed successfully.', 'success' )
+            }
+        },
         methods: {
             formatCreatorName(token) {
                 return (token.application.creator.avatar
@@ -116,7 +123,7 @@
                 let now = moment();
                 let diff = duedate.diff(now, 'hours');
                 let color = diff < 0 ? 'text-danger' : (diff <= 48 ? 'text-warning' : 'text-primary');
-                let circle = '<i class="fas fa-circle ' + color + '"></i>';
+                let circle = '<i class="fas fa-circle ' + color + ' small"></i> ';
                 return circle + moment(value).fromNow();
             },
             fetch() {

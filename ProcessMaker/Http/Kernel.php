@@ -16,6 +16,7 @@ class Kernel extends HttpKernel
     protected $middleware = [
         \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
+        \ProcessMaker\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         \ProcessMaker\Http\Middleware\TrustProxies::class,
     ];
@@ -34,6 +35,8 @@ class Kernel extends HttpKernel
             //\ProcessMaker\Http\Middleware\VerifyCsrfToken::class,         // This is disabled until all routes are handled by our new engine
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \ProcessMaker\Http\Middleware\GenerateMenus::class,
+            \Laravel\Passport\Http\Middleware\CreateFreshApiToken::class,
+
 
         ],
         'api' => [
@@ -60,6 +63,5 @@ class Kernel extends HttpKernel
         'setlang' => \ProcessMaker\Http\Middleware\SetLanguage::class,
         'setskin' => \ProcessMaker\Http\Middleware\SetSkin::class,
         'session' => \Illuminate\Session\Middleware\StartSession::class,
-        'apitoken' => \ProcessMaker\Http\Middleware\GenerateApiToken::class
     ];
 }

@@ -39,7 +39,7 @@ class GroupsController extends Controller
                 // Need to include number of users associations with this group
                 $groups = $groups->leftJoin('group_users', 'group_users.group_id', 'groups.id')
                     ->groupBy('groups.id')
-                    ->select(DB::raw('groups.*, count(group_users.id) as total_users'));
+                    ->select(DB::raw('`groups`.*, count(group_users.id) as total_users'));
             }
             $groups = $groups->paginate($perPage);
         } else {
@@ -47,7 +47,7 @@ class GroupsController extends Controller
                 // Need to include users count with roles
                 $groups = Group::leftJoin('group_users', 'group_users.group_id', 'groups.id')
                     ->groupBy('groups.id')
-                    ->select(DB::raw('groups.*, count(group_users.id) as total_users'))
+                    ->select(DB::raw('`groups`.*, count(group_users.id) as total_users'))
                     ->orderBy($orderBy, $orderDirection)->paginate($perPage);
             } else {
                 $groups = Group::orderBy($orderBy, $orderDirection)->paginate($perPage);
@@ -74,6 +74,23 @@ class GroupsController extends Controller
         $group = Group::create($data);
         //$group->refresh();
         return fractal($group, new GroupTransformer())->respond();
+    }
+
+    /**
+     * Update group
+     *
+     * @param Request $request
+     * @param Group $group
+     * @return ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * @throws \Throwable
+     */
+    public function update(Request $request, Group $group)
+    {
+        $data = $request->all();
+        $group->fill($data);
+        $group->saveOrFail();
+
+        return response([], 200);
     }
 
     /**

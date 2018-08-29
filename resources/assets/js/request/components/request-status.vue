@@ -44,7 +44,7 @@
                             <a v-if="delegation.definition.scriptFormat!==undefined" class="btn-primary btn-sm" href="javascript:void(0)">
                                 <i class="fa fa-spinner fa-spin"></i>
                             </a>
-                            <a v-else class="btn-primary btn-sm" v-bind:href="openLink(process, delegation)" target="_blank">
+                            <a v-else class="btn-primary btn-sm" v-bind:href="openLink(process, delegation)">
                                 Open
                             </a>
                         </span>
@@ -69,7 +69,7 @@
                             <a v-if="delegation.definition.scriptFormat!==undefined" class="btn-success btn-sm" href="javascript:void(0)">
                                 Done
                             </a>
-                            <a v-else class="btn-success btn-sm" v-bind:href="openLink(process, delegation)" target="_blank">
+                            <a v-else class="btn-success btn-sm" v-bind:href="openLink(process, delegation)">
                                 View
                             </a>
                         </span>
@@ -167,5 +167,3 @@
         text-align: center;
     }
 </style>
-
-

@@ -9,11 +9,10 @@ use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\OutputDocument as Document;
 use ProcessMaker\Model\OutputDocument;
 use ProcessMaker\Model\Process;
-use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
-use Tests\Feature\Api\ApiTestCase;
+use Tests\TestCase;
 
-class OutputDocumentManagerTest extends ApiTestCase
+class OutputDocumentManagerTest extends TestCase
 {
     use DatabaseTransactions;
 
@@ -47,15 +46,13 @@ class OutputDocumentManagerTest extends ApiTestCase
     {
         parent::setUp();
         $this->user = factory(User::class)->create([
-            'password' => Hash::make(self::DEFAULT_PASS),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'password' => Hash::make(self::DEFAULT_PASS),            
         ]);
 
         $this->process = factory(Process::class)->create([
             'user_id' => $this->user->id
         ]);
 
-        $this->auth($this->user->username, self::DEFAULT_PASS);
     }
 
     /**
@@ -96,7 +93,7 @@ class OutputDocumentManagerTest extends ApiTestCase
     {
         //Post should have the parameter title, description, filename
         $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document';
-        $response = $this->api('POST', $url, []);
+        $response = $this->actingAs($this->user, 'api')->json('POST', $url, []);
         $response->assertStatus(422);
     }
 
@@ -110,7 +107,7 @@ class OutputDocumentManagerTest extends ApiTestCase
     {
         $faker = Faker::create();
         $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document';
-        $response = $this->api('POST', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('POST', $url, [
             'report_generator' => $faker->sentence(1),
             'generate' => $faker->sentence(1),
             'type' => $faker->sentence(1),
@@ -128,7 +125,7 @@ class OutputDocumentManagerTest extends ApiTestCase
         $faker = Faker::create();
 
         $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document';
-        $response = $this->api('POST', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('POST', $url, [
             'title' => $faker->sentence(3),
             'description' => $faker->sentence(3),
             'filename' => $faker->sentence(3),
@@ -164,7 +161,7 @@ class OutputDocumentManagerTest extends ApiTestCase
         $faker = Faker::create();
 
         $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document';
-        $response = $this->api('POST', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('POST', $url, [
             'title' => $title,
             'description' => $faker->sentence(3),
             'filename' => $faker->sentence(3),
@@ -193,7 +190,7 @@ class OutputDocumentManagerTest extends ApiTestCase
 
         //List Document
         $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-documents';
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
 
@@ -223,7 +220,7 @@ class OutputDocumentManagerTest extends ApiTestCase
         $perPage = Faker::create()->randomDigitNotNull;
         $query = '?page=1&per_page=' . $perPage . '&order_by=description&order_direction=DESC&filter=' . urlencode($title);
         $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-documents?' . $query;
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
         //verify structure paginate
@@ -260,7 +257,7 @@ class OutputDocumentManagerTest extends ApiTestCase
         $perPage = Faker::create()->randomDigitNotNull;
         $query = '?page=1&per_page=' . $perPage . '&order_by=description&order_direction=DESC&filter=' . urlencode($title);
         $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-documents' . $query;
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
 
@@ -293,7 +290,7 @@ class OutputDocumentManagerTest extends ApiTestCase
 
         //load Document
         $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document/' . $document->uid;
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
 
@@ -308,7 +305,7 @@ class OutputDocumentManagerTest extends ApiTestCase
     {
         $document = factory(Document::class)->create();
         $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document/' . $document->uid;
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         $response->assertStatus(404);
     }
 
@@ -324,7 +321,7 @@ class OutputDocumentManagerTest extends ApiTestCase
         $faker = Faker::create();
 
         $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document/' . $document->uid;
-        $response = $this->api('PUT', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('PUT', $url, [
             'title' => '',
             'description' => '',
             'filename' => '',
@@ -348,8 +345,34 @@ class OutputDocumentManagerTest extends ApiTestCase
         $faker = Faker::create();
 
         $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document/' . $document->uid;
-        $response = $this->api('PUT', $url, [
+        $response = $this->actingAs($this->user, 'api')->json('PUT', $url, [
             'title' => $faker->sentence(2),
+            'description' => $faker->sentence(2),
+            'filename' => $faker->sentence(2),
+            'report_generator' => $faker->randomElement(Document::DOC_REPORT_GENERATOR_TYPE),
+            'generate' => $faker->randomElement(Document::DOC_GENERATE_TYPE),
+            'type' => $faker->randomElement(Document::DOC_TYPE),
+            'properties' => [
+                'pdf_security_permissions' => []
+            ]
+        ]);
+        //Validate the answer is correct
+        $response->assertStatus(200);
+    }
+
+    /**
+     * Update Document in process successfully with same title
+     */
+    public function testUpdateDocumentSameTitle()
+    {
+        $document = factory(Document::class)->create([
+            'process_id' => $this->process->id
+        ]);
+
+        $faker = Faker::create();
+
+        $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document/' . $document->uid;
+        $response = $this->actingAs($this->user, 'api')->json('PUT', $url, [
             'description' => $faker->sentence(2),
             'filename' => $faker->sentence(2),
             'report_generator' => $faker->randomElement(Document::DOC_REPORT_GENERATOR_TYPE),
@@ -374,7 +397,7 @@ class OutputDocumentManagerTest extends ApiTestCase
 
         //Remove Document
         $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document/' . $document->uid;
-        $response = $this->api('DELETE', $url);
+        $response = $this->actingAs($this->user, 'api')->json('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(204);
     }
@@ -387,7 +410,7 @@ class OutputDocumentManagerTest extends ApiTestCase
     {
         $document = factory(Document::class)->make();
         $url = self::API_OUTPUT_DOCUMENT_ROUTE . $this->process->uid . '/output-document/' . $document->uid;
-        $response = $this->api('DELETE', $url);
+        $response = $this->actingAs($this->user, 'api')->json('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(404);
     }

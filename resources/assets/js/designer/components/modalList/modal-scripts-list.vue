@@ -3,7 +3,7 @@
         <div class="form-group">
             <div class="d-flex justify-content-between">
                 <input v-model="filter" class="form-control  col-sm-3" placeholder="Search..." @keyup="fetch">
-                <button type="submit" class="btn btn-secondary"><i class="fas fa-plus fa-md"></i> Create</button>
+                <button type="button" class="btn btn-secondary" @click="onCreate()"><i class="fas fa-plus fa-md"></i> Create</button>
             </div>
             <div class="data-table">
                 <vuetable :dataManager="dataManager" :sortOrder="sortOrder" :css="css" :api-mode="false"
@@ -75,6 +75,9 @@
             };
         },
         methods: {
+            onCreate() {
+                this.$parent.openAddDialog('scripts');
+            },
             onHidden() {
                 this.$emit('hidden')
             },

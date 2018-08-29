@@ -2,17 +2,19 @@
 namespace Tests\Feature\Api\Cases;
 
 use Illuminate\Support\Facades\Hash;
-use ProcessMaker\Model\Role;
+use ProcessMaker\Model\Application;
 use ProcessMaker\Model\User;
-use Tests\Feature\Api\ApiTestCase;
+use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
-class RequestsListTest extends ApiTestCase
+class RequestsListTest extends TestCase
 {
     use DatabaseTransactions;
 
+    public $user;
+
     /**
-     * Test to check that the route is protected     
+     * Test to check that the route is protected
      */
 
     public function test_route_token_missing()
@@ -21,28 +23,29 @@ class RequestsListTest extends ApiTestCase
     }
 
     /**
-     * Test to check that the route is protected     
-     */    
+     * Test to check that the route is protected
+     */
 
     public function test_api_result_failed()
     {
-        $response = $this->api('GET', '/api/1.0/requests');
+        $response = $this->json('GET', '/api/1.0/requests');
         $response->assertStatus(401);
     }
 
     /**
-     * Test to check that the route returns the correct response    
-     */    
+     * Test to check that the route returns the correct response
+     */
 
     public function test_api_access()
     {
         $this->login();
 
         factory(\ProcessMaker\Model\Application::class, 51)->create([
-            'creator_user_id' => $this->user->id
+            'creator_user_id' => $this->user->id,
+            'APP_STATUS' => Application::STATUS_TO_DO
         ]);
 
-        $response = $this->api('GET', '/api/1.0/requests');
+        $response = $this->actingAs($this->user, 'api')->json('GET', '/api/1.0/requests');
 
         $response->assertStatus(200);
 
@@ -59,7 +62,7 @@ class RequestsListTest extends ApiTestCase
                 'total_pages'
             ],
         ]);
-      
+
         $data = json_decode($response->getContent());
         $this->assertEquals($data->meta->current_page, 1);
         $this->assertTrue(count($data->data) > 0);
@@ -67,16 +70,16 @@ class RequestsListTest extends ApiTestCase
     }
 
     /**
-     * Test to check that the route returns the correct response when paging    
-     */    
+     * Test to check that the route returns the correct response when paging
+     */
 
     public function test_api_paging()
     {
         $this->login();
 
-        factory(\ProcessMaker\Model\Application::class, 75)->create();
+        factory(Application::class, 75)->create();
 
-        $response = $this->api('GET', '/api/1.0/requests/?page=2');
+        $response = $this->actingAs($this->user, 'api')->json('GET', '/api/1.0/requests/?page=2');
 
         $response->assertStatus(200);
 
@@ -98,19 +101,19 @@ class RequestsListTest extends ApiTestCase
 
         $this->assertEquals($data->meta->current_page, 2);
     }
-    
+
     /**
-     * Test to check that the route returns the correct response when the number of 
-     * requested records is correct. 
-     */    
+     * Test to check that the route returns the correct response when the number of
+     * requested records is correct.
+     */
 
     public function test_api_per_page()
     {
         $this->login();
 
-        factory(\ProcessMaker\Model\Application::class, 26)->create();
+        factory(Application::class, 26)->create();
 
-        $response = $this->api('GET', '/api/1.0/requests/?per_page=21');
+        $response = $this->actingAs($this->user, 'api')->json('GET', '/api/1.0/requests/?per_page=21');
 
         $response->assertStatus(200);
 
@@ -141,11 +144,19 @@ class RequestsListTest extends ApiTestCase
     {
         $this->login();
 
-        factory(\ProcessMaker\Model\Application::class, 10)->create();
+        factory(Application::class, 5)->create([
+            'APP_STATUS' => Application::STATUS_TO_DO,
+            'creator_user_id' => $this->user->id
+        ]);
 
-        $response = $this->api('GET', '/api/1.0/requests/?columnSearch=APP_TITLE&search=Test');
+        factory(Application::class, 2)->create([
+            'APP_STATUS' => Application::STATUS_COMPLETED,
+            'creator_user_id' => $this->user->id
+        ]);
 
+        $response = $this->actingAs($this->user, 'api')->json('GET', '/api/1.0/requests?status=3');
         $response->assertStatus(200);
+        $this->assertCount(2, $response->json()['data']);
 
         $response->assertJsonStructure([
             'data',
@@ -159,21 +170,22 @@ class RequestsListTest extends ApiTestCase
                 'total',
                 'total_pages'
             ],
-      ]);
+        ]);
 
         $data = json_decode($response->getContent());
-
         $this->assertTrue(is_array($data->data));
-        
+        $this->assertCount(2, $response->json()['data']);
+
+        $response = $this->actingAs($this->user, 'api')->json('GET', '/api/1.0/requests?status=2');
+        $response->assertStatus(200);
+        $this->assertCount(5, $response->json()['data']);
     }
-    
+
     private function login()
     {
         $this->user = factory(User::class)->create([
-            'password' => Hash::make('password'),
-            'role_id'     => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'password' => Hash::make('password')
         ]);
 
-        $this->auth($this->user->username, 'password');
     }
 }
