@@ -71,7 +71,7 @@ window.ProcessMaker.apiClient.interceptors.response.use(function (response) {
     return response;
 }, function (error) {
     let elem = document.getElementById('content-inner');
-    if (error.response.status != 422 && error.response.status != 404 && elem !== null) {
+    if (error.response && error.response.status != 422 && error.response.status != 404 && elem !== null) {
         // Replace our content div with our error div
         // Remove our #content-inner
         elem.parentNode.removeChild(elem);
@@ -79,7 +79,7 @@ window.ProcessMaker.apiClient.interceptors.response.use(function (response) {
         elem = document.getElementById('api-error');
         elem.setAttribute('style', 'display: block');
     }
-    if (error.response.data && error.response.data.message) {
+    if (error.response && error.response.data && error.response.data.message) {
         window.ProcessMaker.alert(error.response.data.message, 'danger');
     }
     return Promise.reject(error);
