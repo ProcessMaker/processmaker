@@ -42,13 +42,16 @@
         },
         methods: {
             submit() {
+                var self = this;
                 ProcessMaker.apiClient.post(
                         'processes/' + this.processUid +
                         '/instances/' + this.instanceUid +
                         '/tokens/' + this.tokenUid +
                         '/complete',
-                        this.formData
-                        )
+                        this.formData)
+                  .then(function () {
+                      document.location.href = '/tasks?successfulRouting=true';
+                   });
             },
             update(data) {
                 this.formData = data;

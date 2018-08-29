@@ -22,52 +22,28 @@
             </li>
 
             <li class="nav-notification">
-                <notifications id="navbar-notifications-button" v-bind:is="'notifications'"
-                               v-bind:messages="messages"></notifications>
+                <notifications id="navbar-notifications-button" v-bind:is="'notifications'" v-bind:messages="messages">
+                </notifications>
             </li>
             <li class="seperator"></li>
-            <li class="dropdown">
-                @if(\Auth::user()->getAvatar())
-                    <img class="avatar dropdown-toggle" id="topnav-avatar" src="{{\Auth::user()->getAvatar()}}"
-                         role="button"
-                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item drop-header">
-                            <img class="avatar-small" src="{{\Auth::user()->getAvatar()}}">
-                            <div class="wrap-name">{{\Auth::user()->firstname}} {{\Auth::user()->lastname}}</div>
-                        </a>
-                        @foreach($dropdown_nav->items as $row)
-                            <a class="dropdown-item" href="{{ $row->url() }}">
-                                <i class="fas {{$row->attr('icon')}} fa-fw fa-lg"></i>
-                                {{$row->title}}
-                            </a>
-                        @endforeach
-                    </div>
-                @else
-                    <div class="avatar-circle">
-                        <span class="initials dropdown-toggle text-uppercase" id="topnav-avatar" role="button"
-                              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        {{Auth::user()->firstname[0]}}{{Auth::user()->lastname[0]}}
-                        </span>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item drop-header">
-                                <div class="avatar-circle small">
-                                    <div class="initials-small text-uppercase" aria-haspopup="true"
-                                          aria-expanded="false">
-                                    {{Auth::user()->firstname[0]}}{{Auth::user()->lastname[0]}}
-                                    </div>
-                                    <div class="wrap-name avatar-name">{{\Auth::user()->firstname}} {{\Auth::user()->lastname}}</div>
-                                </div>
-                            </a>
-                            @foreach($dropdown_nav->items as $row)
-                                <a class="dropdown-item" href="{{ $row->url() }}">
-                                    <i class="fas {{$row->attr('icon')}} fa-fw fa-lg"></i>{{$row->title}}
-                                </a>
-                            @endforeach
-                        </div>
-                    </div>
-                @endif
-
+            <li>
+                @php
+                    $items = [];
+                    foreach ($dropdown_nav->items as $item ) {
+                        $newItem = new stdClass();
+                        $newItem->class = 'fas ' . $item->attr('icon') . ' fa-fw fa-lg';
+                        $newItem->title = $item->title;
+                        $newItem->url = $item->url();
+                        $items[] = $newItem;
+                    }
+                    $items = json_encode($items);
+                    $user = Auth::user();
+                    $user->avatar = null;
+                    if (Auth::user()->getAvatar()) {
+                        $user->avatar  = Auth::user()->getAvatar();
+                    }
+                @endphp
+                <navbar-profile :info="{{$user}}"  :items="{{$items}}"></navbar-profile>
             </li>
         </b-navbar-nav>
     </b-navbar>
@@ -87,59 +63,4 @@
     .nav-notification {
         padding-top: 8px;
     }
-
-    .avatar-circle {
-        width: 40px;
-        height: 40px;
-        background-color: rgb(251,181,4);
-        text-align: center;
-        border-radius: 50%;
-        -webkit-border-radius: 50%;
-        -moz-border-radius: 50%;
-        margin-top: 5px;
-        margin-left: 10px;
-    }
-
-    .avatar-circle .small {
-        margin-left: -15px;
-    }
-
-    .initials {
-        position: relative;
-        font-size: 21px;
-        line-height: 40px;
-        color: #fff;
-    }
-
-    .initials-small {
-        position: relative;
-        font-size: 21px;
-        line-height: 40px;
-        color: #fff;
-    }
-
-    .wrap-name{
-        font-size: 14px;
-        font-weight: 600;
-        width: 120px;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
-        margin-top: -35px;
-        float: right;
-        margin-right: -10px;
-        text-align: left;
-    }
-
-    .avatar-name {
-        margin-right: -130px;
-        margin-left: 0px;
-    }
-
-    .wrap-name:hover {
-        white-space: initial;
-        overflow:visible;
-        cursor: pointer;
-    }
-
 </style>

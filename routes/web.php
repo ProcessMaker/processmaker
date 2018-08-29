@@ -61,6 +61,9 @@ $this->middleware(['auth'])->group(function() {
     // For fetching the status of an open request
     $this->get('/requests/{instance}/status', ['uses' => 'Request\StatusController@status'])->name('request-status');
 
+    // To execute actions after a request/task has been processed
+    $this->get('/requests/{instance}/submitted', 'Request\RequestsController@requestSubmitted');
+
     $this->get('/admin', function(){
       return view('admin',['title' => 'Dashboard']);
     })->name('admin');

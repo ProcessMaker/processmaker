@@ -1,5 +1,5 @@
 <?php
-namespace ProcessMaker\Http\Controllers\Cases;
+namespace ProcessMaker\Http\Controllers\Requests;
 
 use ProcessMaker\Http\Controllers\Controller;
 
