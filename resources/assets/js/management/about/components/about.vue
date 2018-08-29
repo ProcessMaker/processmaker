@@ -28,7 +28,18 @@ export default {
   data() {
     return {};
   },
-  methods: {}
+  mounted() {
+    this.load();
+  },
+  methods: {
+    load() {
+      ProcessMaker.apiClient
+        .get("https://api.github.com/repos/ProcessMaker/bpm/tags")
+        .then(response => {
+          console.log(response);
+        });
+    }
+  }
 };
 </script>
 
