@@ -33,7 +33,8 @@ class RequestsTest extends TestCase
 
     public function restApiResultFailed()
     {
-        $response = $this->api('GET', '/api/1.0/requests');
+        $response = $this->actingAs($this->user, 'api')
+                            ->json('GET', '/api/1.0/requests');
         $response->assertStatus(401);
     }
 
@@ -105,7 +106,7 @@ class RequestsTest extends TestCase
 
         // We call the process list endpoint without sort conditions
         $response = $this->actingAs($this->user, 'api')
-            ->json('GET', self::URL_USER_PROCESSES);
+                            ->json('GET', self::URL_USER_PROCESSES);
 
         // Assert that the response is correct when no sorting is applied
         $response->assertStatus(200);
