@@ -8,6 +8,15 @@ Route::group([
     'middleware' => ['auth:api', 'bindings']
     ], function () {
 
+        // Environment Variables routes
+        Route::get('environment-variables', 'Administration\EnvironmentVariablesController@index');
+        Route::post('environment-variables', 'Administration\EnvironmentVariablesController@create');
+        Route::get('environment-variables/{variable}', 'Administration\EnvironmentVariablesController@get');
+        Route::put('environment-variables/{variable}', 'Administration\EnvironmentVariablesController@update');
+        Route::delete('environment-variables/{variable}', 'Administration\EnvironmentVariablesController@delete');
+
+
+        
         // TEST SCRIPT PREVIEW/EXECUTION
         Route::post('script/preview', 'Designer\ScriptController@preview');
 

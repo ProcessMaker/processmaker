@@ -1,8 +1,9 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use ProcessMaker\Model\Process;
+use ProcessMaker\Model\EnvironmentVariable;
 use ProcessMaker\Model\Form;
+use ProcessMaker\Model\Process;
 use ProcessMaker\Model\Script;
 use ProcessMaker\Providers\WorkflowServiceProvider;
 
@@ -104,6 +105,13 @@ class ProcessSeeder extends Seeder
             }
 
             echo 'Process created: ', $process->uid, "\n";
+            
+            //Create environment variables for the default processes
+            factory(EnvironmentVariable::class)->create([
+                'name' => 'hours_of_work',
+                'description' => 'Regular schedule of hours of work for employees',
+                'value' => '8'
+            ]);
         }
     }
 
