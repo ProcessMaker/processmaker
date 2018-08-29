@@ -64,12 +64,6 @@ Route::group([
         Route::put('pmtable/{pmTable}/data', 'Settings\PmTableController@updateDataRow');
         Route::delete('pmtable/{pmTable}/data/{key1}/{value1}/{key2?}/{value2?}/{key3?}/{value3?}', 'Settings\PmTableController@deleteDataRow');
 
-        //Process Variables endpoints.
-        Route::get('project/{process}/process-variables', 'Project\ProcessVariableController@index');
-        Route::get('project/{process}/process-variables/{variable}', 'Project\ProcessVariableController@show');
-        Route::post('project/{process}/process-variables', 'Project\ProcessVariableController@store');
-        Route::put('project/{process}/process-variables/{variable}', 'Project\ProcessVariableController@update');
-        Route::delete('project/{process}/process-variables/{variable}', 'Project\ProcessVariableController@remove');
 
         Route::get('processes', 'Designer\ProcessesController@index');
         Route::get('processes/{process}', 'Designer\ProcessesController@show');
@@ -134,7 +128,6 @@ Route::group([
 
         //Requests endpoints
         Route::get('requests', 'Requests\RequestsController@index');
-        Route::get('requests/{application}/variables', 'Requests\VariableController@get');
 
         //Task Delegations endpoints
         Route::get('tasks', 'Designer\TaskDelegationController@index');
