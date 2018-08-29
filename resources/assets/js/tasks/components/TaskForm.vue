@@ -1,20 +1,10 @@
 <template>
 <div class="container">
-  <h1>{{loading === false ? 'Task Details' : 'Loading Task Details...'}}</h1>  
+  <h1>{{loading === false ? 'Task Details' : 'Loading Task Details...'}}</h1>
   <div class="row" v-if="loading === false">
-    <div class="col-8">
+    <div class="col">
       <div class="card card-body">
         <vue-form-renderer @submit="submit" v-model="formData" :config="json" />
-      </div>
-    </div>
-    <div class="col-4">
-      <div class="card card-body">
-        <h4>Debug</h4>
-        processUid: {{processUid}}<br>
-        instanceUid: {{instanceUid}}<br>
-        tokenUid: {{tokenUid}}<br>
-        formUid: {{formUid}}<br>
-        data: {{data}}
       </div>
     </div>
   </div>
