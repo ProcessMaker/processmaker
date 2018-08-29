@@ -38,70 +38,29 @@ class RequestsController extends Controller
         ];
 
         $delay = $request->query('delay');
-        $include = $request->input('include');
-        $query = Application::with(['delegations', 'delegations.user']);
-        $query->where('APP_STATUS', $options['status']);
+        $include = $request->input('include')
+                    ? explode(',', $request->input('include'))
+                    : [];
 
+        $query = Application::with($include)
+                    ->where('APP_STATUS', $options['status'])
+                    ->where('creator_user_id', $owner->id);
+
+        // if there is a filter by delay type (at risk, overdue, etc.) delegations are filtered
         if ($delay) {
             $query->with(['delegations' => function($q) use($delay) {
-                //$q->where('delay', '=', $options['delay']);
-                if ($delay === 'overdue') {
-                    $q->where('task_due_date', '<=', Carbon::now()->toDateString());
-                }
-
-                if ($delay === 'at_risk') {
-                    $q->where('risk_date', '<', Carbon::now()->toDateString())
-                        ->where('task_due_date', '>', Carbon::now()->toDateString());
-                }
-
-                if ($delay === 'on_time') {
-                    $q->where(function($q) {
-                        $q->where('risk_date', '>=', Carbon::now()->toDateString())
-                            ->orWhereNull('task_due_date');
-
-                    });
-                }
+                $this->addDelayConditionsToQuery($q, $delay);
             }]);
-
             $query->whereHas('delegations', function($q) use($delay) {
-                //$q->where('delay', '=', $options['delay']);
-                if ($delay === 'overdue') {
-                    $q->where('task_due_date', '<=', Carbon::now()->toDateString());
-                }
-
-                if ($delay === 'at_risk') {
-                    $q->where('risk_date', '<', Carbon::now()->toDateString())
-                        ->where('task_due_date', '>', Carbon::now()->toDateString());
-                }
-
-                if ($delay === 'on_time') {
-                    $q->where(function($q) {
-                        $q->where('risk_date', '>=', Carbon::now()->toDateString())
-                            ->orWhereNull('task_due_date');
-
-                    });
-                }
+                $this->addDelayConditionsToQuery($q, $delay);
             });
         }
 
-        $list = $query->paginate($options['per_page']);
-
-//        if (isset($delay)) {
-//            foreach($list->items() as $application) {
-//                $application->delegations = $application->delegations->filter(function ($item) use($delay) {
-//                    $item->aaaa = $delay;
-//                    return $item->delay === $delay;
-//                });
-//            }
-//        }
-
-//        $requests = Application::where('creator_user_id', $owner->id)
-//            ->with($include ? explode(',', $include) : [])
-//            ->paginate($options['per_page'])
-//            ->appends($options);
+        $requests = $query->paginate($options['per_page'])
+                        ->appends($options);
 
         // Return fractal representation of paged data
-        return fractal($list, new ApplicationTransformer())->respond();
+        return fractal($requests, new ApplicationTransformer())->respond();
     }
 
     /**
@@ -169,5 +128,29 @@ class RequestsController extends Controller
 
         return fractal($processes, new ProcessTransformer())->respond();
     }
-}
 
+    /**
+     * Adds where conditions to the passed query, depending of the delay value
+     * @param $query
+     * @param $delay
+     */
+    private function addDelayConditionsToQuery($query, $delay)
+    {
+        if ($delay === 'overdue') {
+            $query->where('task_due_date', '<=', Carbon::now()->toDateString());
+        }
+
+        if ($delay === 'at_risk') {
+            $query->where('risk_date', '<', Carbon::now()->toDateString())
+                ->where('task_due_date', '>', Carbon::now()->toDateString());
+        }
+
+        if ($delay === 'on_time') {
+            $query->where(function($q) {
+                $q->where('risk_date', '>=', Carbon::now()->toDateString())
+                    ->orWhereNull('task_due_date');
+
+            });
+        }
+    }
+}
