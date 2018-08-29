@@ -3,9 +3,9 @@ namespace Tests\Feature\Api\Cases;
 
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use ProcessMaker\Managers\DatabaseManager;
-use Tests\Feature\Api\ApiTestCase;
+use Tests\TestCase;
 
-class DatabaseManagerTest extends ApiTestCase
+class DatabaseManagerTest extends TestCase
 {
     use DatabaseTransactions;
 

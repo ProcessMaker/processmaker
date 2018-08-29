@@ -2,11 +2,13 @@
 
 namespace ProcessMaker\Model;
 
+
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Validation\Rule;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Auth\Passwords\CanResetPassword as CanResetPasswordTrait;
+use Laravel\Passport\HasApiTokens;
 use ProcessMaker\Model\Group;
 use League\OAuth2\Server\Entities\UserEntityInterface;
 use ProcessMaker\Model\Traits\Uuid;
@@ -17,7 +19,6 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  * Represents an Eloquent model of a User
  * @package ProcessMaker\Model
  *
- * @property \ProcessMaker\Model\Role $role
  */
 class User extends Authenticatable implements UserEntityInterface, CanResetPassword, HasMedia
 {
@@ -27,6 +28,7 @@ class User extends Authenticatable implements UserEntityInterface, CanResetPassw
     }
     use CanResetPasswordTrait;
     use HasMediaTrait;
+    use HasApiTokens;
 
     const TYPE = 'USER';
 
@@ -61,7 +63,6 @@ class User extends Authenticatable implements UserEntityInterface, CanResetPassw
         'postal',
         'title',
         'birthdate',
-        'role_id',
         'time_zone',
         'lang',
         'last_login'
@@ -90,15 +91,14 @@ class User extends Authenticatable implements UserEntityInterface, CanResetPassw
 
     /**
      * Returns the validation rules for this model.
-     * If this is an update validation rule, pass in the existing 
+     * If this is an update validation rule, pass in the existing
      * user to avoid unique rules clashing.
      */
     public static function rules(User $existing = null) {
         $rules = [
         'firstname' => 'nullable',
         'lastname' => 'nullable',
-        'password' => 'required',
-        'status' => 'required|in:ACTIVE,DISABLED',
+        'status' => 'required|in:ACTIVE,INACTIVE',
         ];
         if($existing) {
             $rules['username'] = [
@@ -219,16 +219,6 @@ class User extends Authenticatable implements UserEntityInterface, CanResetPassw
     public function getIdentifier()
     {
         return $this->id;
-    }
-
-    /**
-     * Role of the user.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function role()
-    {
-        return $this->belongsTo(Role::class);
     }
 
     /**

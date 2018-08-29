@@ -8,12 +8,11 @@ use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\Application;
 use ProcessMaker\Model\Delegation;
 use ProcessMaker\Model\Process;
-use ProcessMaker\Model\Role;
 use ProcessMaker\Model\Task;
 use ProcessMaker\Model\User;
-use Tests\Feature\Api\ApiTestCase;
+use Tests\TestCase;
 
-class TaskDelegationManagerTest extends ApiTestCase
+class TaskDelegationManagerTest extends TestCase
 {
     use DatabaseTransactions;
 
@@ -58,8 +57,7 @@ class TaskDelegationManagerTest extends ApiTestCase
     {
         parent::setUp();
         $this->user = factory(User::class)->create([
-            'password' => Hash::make(self::DEFAULT_PASS),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'password' => Hash::make(self::DEFAULT_PASS)
         ]);
 
         $this->process = factory(Process::class)->create([
@@ -69,8 +67,6 @@ class TaskDelegationManagerTest extends ApiTestCase
         $this->task = factory(Task::class)->create([
             'process_id' => $this->process->id
         ]);
-
-        $this->auth($this->user->username, self::DEFAULT_PASS);
     }
 
     /**
@@ -84,7 +80,7 @@ class TaskDelegationManagerTest extends ApiTestCase
         ]);
 
         $url = self::API_ROUTE_TASK . '/' . $this->task->uid;
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
         //verify structure paginate
@@ -100,7 +96,7 @@ class TaskDelegationManagerTest extends ApiTestCase
         factory(Delegation::class, 11)->create();
         //List Delegations
         $url = self::API_ROUTE_TASK;
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
         //verify structure paginate
@@ -127,7 +123,7 @@ class TaskDelegationManagerTest extends ApiTestCase
         $perPage = Faker::create()->randomDigitNotNull;
         $query = '?page=2&per_page=' . $perPage . '&order_by=delegate_date&order_direction=DESC';
         $url = self::API_ROUTE_TASK . $query;
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
         //verify structure paginate
@@ -154,8 +150,7 @@ class TaskDelegationManagerTest extends ApiTestCase
         $filter = 'First name filter';
         $user = factory(User::class)->create([
             'firstname' => $filter,
-            'password' => Hash::make(self::DEFAULT_PASS),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'password' => Hash::make(self::DEFAULT_PASS)
         ]);
         factory(Delegation::class)->create([
             'user_id' => $user->id,
@@ -166,7 +161,7 @@ class TaskDelegationManagerTest extends ApiTestCase
         $perPage = Faker::create()->randomDigitNotNull;
         $query = '?page=1&per_page=' . $perPage . '&order_by=delegate_date&order_direction=DESC&filter=' . urlencode($filter);
         $url = self::API_ROUTE_TASK . $query;
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
         //verify structure paginate
@@ -202,7 +197,7 @@ class TaskDelegationManagerTest extends ApiTestCase
         $perPage = Faker::create()->randomDigitNotNull;
         $query = '?page=1&per_page=' . $perPage . '&order_by=delegate_date&order_direction=DESC&filter=' . urlencode($this->task->title);
         $url = self::API_ROUTE_TASK . $query;
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
         //verify structure paginate
@@ -243,7 +238,7 @@ class TaskDelegationManagerTest extends ApiTestCase
         $perPage = Faker::create()->randomDigitNotNull;
         $query = '?page=1&per_page=' . $perPage . '&order_by=delegate_date&order_direction=DESC&filter=' . urlencode($title);
         $url = self::API_ROUTE_TASK . $query;
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
         //verify structure paginate

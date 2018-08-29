@@ -4,22 +4,23 @@ namespace Tests\Feature\Api\Workflow;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\Process;
-use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
 use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
-use Tests\Feature\Api\ApiTestCase;
+use Tests\TestCase;
 
 /**
  * Tests of Nayra engine
  *
  */
-class WorkflowTest extends ApiTestCase
+class WorkflowTest extends TestCase
 {
 
     use DatabaseTransactions;
 
     const API_TRIGGER_START_EVENT = '/api/1.0/processes/%s/events/%s/trigger';
     const API_COMPLETE_DELEGATION = '/api/1.0/processes/%s/instances/%s/tokens/%s/complete';
+
+    public $user;
 
     /**
      * Tests access to definitions in a process row.
@@ -31,10 +32,10 @@ class WorkflowTest extends ApiTestCase
         $process = factory(Process::class)->create([
             'bpmn' => file_get_contents(__DIR__ . '/bpmn/Lanes.bpmn'),
         ]);
-        
+
         //Get the process definition
         $definitions = $process->getDefinitions();
-        
+
         //Assertion: Check that $definition exists
         $this->assertNotEmpty($definitions);
 
@@ -64,9 +65,9 @@ class WorkflowTest extends ApiTestCase
             'endDate' => '',
             'comments' => '',
         ];
-        
+
         //Trigger the start event
-        $response = $this->api(
+        $response = $this->actingAs($this->user, 'api')->json(
             'POST',
             sprintf(
                 self::API_TRIGGER_START_EVENT,
@@ -88,7 +89,7 @@ class WorkflowTest extends ApiTestCase
         $token = $instance->delegations()->first();
 
         //Complete a delegation
-        $response = $this->api(
+        $response = $this->actingAs($this->user, 'api')->json(
             'POST',
             sprintf(
                 self::API_COMPLETE_DELEGATION,
@@ -105,19 +106,17 @@ class WorkflowTest extends ApiTestCase
 
         //Assertion: Verifica que el primer token esta CLOSED
         $tokens = $instance->delegations()->orderBy('id')->get();
-        
+
         $this->assertEquals('CLOSED', $tokens[0]->thread_status);
 
         //Assertion: Verifica que el segundo token esta ACTIVE
         $this->assertEquals('ACTIVE', $tokens[1]->thread_status);
     }
-    
+
     private function login()
     {
-        $admin = factory(User::class)->create([
-            'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+        $this->user = factory(User::class)->create([
+            'password' => Hash::make('password')
         ]);
-        $this->auth($admin->username, 'password');
     }
 }

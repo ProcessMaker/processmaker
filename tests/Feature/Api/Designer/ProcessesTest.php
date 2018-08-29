@@ -7,16 +7,15 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\ProcessCategory;
-use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
-use Tests\Feature\Api\ApiTestCase;
+use Tests\TestCase;
 use ProcessMaker\Transformers\ProcessTransformer;
 
 /**
  * Tests routes related to processes / CRUD related methods
  *
  */
-class ProcessesTest extends ApiTestCase
+class ProcessesTest extends TestCase
 {
     use DatabaseTransactions;
 
@@ -77,7 +76,7 @@ class ProcessesTest extends ApiTestCase
     {
         // Not creating a user, not logging in
         // Now attempt to connect to api
-        $response = $this->api('GET', self::API_TEST_PROCESS);
+        $response = $this->json('GET', self::API_TEST_PROCESS);
         $response->assertStatus(401);
     }
 
@@ -86,14 +85,16 @@ class ProcessesTest extends ApiTestCase
      */
     public function testUnauthorized()
     {
+
+      $this->markTestSkipped('Access control via permissions and roles removed');
+      
         // Create our user we will log in with, but not have the needed permissions
         $user = factory(User::class)->create([
-            'role_id' => null,
             'password' => Hash::make('password'),
         ]);
-        $this->auth($user->username, 'password');
+
         // Now try our api endpoint, but this time, will get a 403 Unauthorized
-        $response = $this->api('GET', self::API_TEST_PROCESS);
+        $response = $this->actingAs($user, 'api')->json('GET', self::API_TEST_PROCESS);
         $response->assertStatus(403);
     }
 
@@ -102,11 +103,11 @@ class ProcessesTest extends ApiTestCase
      */
     public function testCreateProcessTemplate()
     {
-        $this->authenticateAsAdmin();
+        $user = $this->authenticateAsAdmin();
         $faker = Faker::create();
 
         $url = self::API_TEST_PROCESS . '/create';
-        $response = $this->api('POST', $url, [
+        $response = $this->actingAs($user, 'api')->json('POST', $url, [
             'name' => $faker->sentence(3),
             'description' => $faker->sentence(3),
             'category_uid' => factory(ProcessCategory::class)->create()->uid
@@ -126,7 +127,7 @@ class ProcessesTest extends ApiTestCase
         $user = $this->authenticateAsAdmin();
         // Create some processes
         factory(Process::class, 5)->create();
-        $response = $this->api('GET', self::API_TEST_PROCESS);
+        $response = $this->actingAs($user, 'api')->json('GET', self::API_TEST_PROCESS);
         $response->assertStatus(200);
         $data = json_decode($response->getContent(), true);
         // Verify we have a total of 5 results
@@ -143,7 +144,7 @@ class ProcessesTest extends ApiTestCase
         // Create some processes
         // Chances are the title/description will not include our invalid filter
         factory(Process::class, 5)->create();
-        $response = $this->api('GET', self::API_TEST_PROCESS . '?filter=invalidfilter');
+        $response = $this->actingAs($user, 'api')->json('GET', self::API_TEST_PROCESS . '?filter=invalidfilter');
         $response->assertStatus(200);
         $data = json_decode($response->getContent(), true);
         // Make sure we get no results.
@@ -165,7 +166,7 @@ class ProcessesTest extends ApiTestCase
             'description' => 'A test description'
         ]);
         // Test filtering, matching middle of name
-        $response = $this->api('GET', self::API_TEST_PROCESS . '?filter=' . urlencode('is a test'));
+        $response = $this->actingAs($user, 'api')->json('GET', self::API_TEST_PROCESS . '?filter=' . urlencode('is a test'));
         $response->assertStatus(200);
         $data = json_decode($response->getContent(), true);
         // Make sure we get 1 result.
@@ -191,7 +192,7 @@ class ProcessesTest extends ApiTestCase
             'description' => 'Another test process'
         ]);
         // Test filtering, matching middle of description
-        $response = $this->api('GET', self::API_TEST_PROCESS . '?filter=' . urlencode('other test'));
+        $response = $this->actingAs($user, 'api')->json('GET', self::API_TEST_PROCESS . '?filter=' . urlencode('other test'));
         $response->assertStatus(200);
         $data = json_decode($response->getContent(), true);
         // Make sure we get 1 result.
@@ -215,7 +216,7 @@ class ProcessesTest extends ApiTestCase
         $process = factory(Process::class)->create([
             'process_category_id' => $category->id
         ]);
-        $response = $this->api('GET', self::API_TEST_PROCESS . '?filter=' . urlencode('Test Cat'));
+        $response = $this->actingAs($user, 'api')->json('GET', self::API_TEST_PROCESS . '?filter=' . urlencode('Test Cat'));
         $response->assertStatus(200);
         $data = json_decode($response->getContent(), true);
         // Make sure we get 1 result.
@@ -229,7 +230,7 @@ class ProcessesTest extends ApiTestCase
     public function testProcessesSingleItemNotFound()
     {
         $user = $this->authenticateAsAdmin();
-        $response = $this->api('GET', self::API_TEST_PROCESS . '/invalid-uid');
+        $response = $this->actingAs($user, 'api')->json('GET', self::API_TEST_PROCESS . '/invalid-uid');
         $response->assertStatus(404);
     }
 
@@ -242,7 +243,7 @@ class ProcessesTest extends ApiTestCase
         $process = factory(Process::class)->create();
         // Fetch from DB to ensure we're getting all columns
         $process = Process::with(['category', 'user'])->find($process->id);
-        $response = $this->api('GET', self::API_TEST_PROCESS . '/' . $process->uid);
+        $response = $this->actingAs($user, 'api')->json('GET', self::API_TEST_PROCESS . '/' . $process->uid);
         $response->assertStatus(200);
         $data = json_decode($response->getContent(), true);
         $expected = fractal($process, new ProcessTransformer())->toArray();
@@ -259,7 +260,7 @@ class ProcessesTest extends ApiTestCase
         ]);
         // Fetch from DB to ensure we're getting all columns
         $process = Process::with(['category', 'user'])->find($process->id);
-        $response = $this->api('GET', self::API_TEST_PROCESS . '/' . $process->uid);
+        $response = $this->actingAs($user, 'api')->json('GET', self::API_TEST_PROCESS . '/' . $process->uid);
         $response->assertStatus(200);
         $data = json_decode($response->getContent(), true);
         $expected = fractal($process, new ProcessTransformer())->toArray();
@@ -273,12 +274,12 @@ class ProcessesTest extends ApiTestCase
      */
     public function testGetPublic()
     {
-
+        $admin = $this->authenticateAsAdmin();
         //Create a test process using factories
         factory(Process::class)->create([
-            'user_id' => $this->authenticateAsAdmin()->id
+            'user_id' => $admin->id
         ]);
-        $response = $this->api('GET', self::API_TEST_PROCESS);
+        $response = $this->actingAs($admin, 'api')->json('GET', self::API_TEST_PROCESS);
         $response->assertStatus(200);
         // Verify we have a total of 1 result
         $this->assertEquals(1, $response->original->meta->total);
@@ -290,12 +291,12 @@ class ProcessesTest extends ApiTestCase
      */
     public function testGetPublicFilter()
     {
-
+        $user = $this->authenticateAsAdmin();
         //Create a test process using factories
         $process = factory(Process::class)->create([
-            'user_id' => $this->authenticateAsAdmin()->id
+            'user_id' => $user->id
         ]);
-        $response = $this->api('GET', self::API_TEST_PROCESS. '?filter=' . urlencode($process->name));
+        $response = $this->actingAs($user, 'api')->json('GET', self::API_TEST_PROCESS. '?filter=' . urlencode($process->name));
         $response->assertStatus(200);
 
         $this->assertEquals(1, $response->original->meta->total);
@@ -307,17 +308,17 @@ class ProcessesTest extends ApiTestCase
      */
     public function testGetPublicFilterWithParameters()
     {
-
+        $user = $this->authenticateAsAdmin();
         //Create a test process using factories
         $name = 'Name process Test';
         factory(Process::class)->create([
             'name' => $name,
-            'user_id' => $this->authenticateAsAdmin()->id
+            'user_id' => $user->id
         ]);
         $perPage = Faker::create()->randomDigitNotNull;
         $query = '?page=1&per_page=' . $perPage . '&order_by=delegate_date&order_direction=DESC&filter=' . urlencode($name);
 
-        $response = $this->api('GET', self::API_TEST_PROCESS. '?filter=' . $query);
+        $response = $this->actingAs($user, 'api')->json('GET', self::API_TEST_PROCESS. '?filter=' . $query);
         $response->assertStatus(200);
 
         //verify response in meta
@@ -342,9 +343,8 @@ class ProcessesTest extends ApiTestCase
             'user_id' => $admin->id
         ]);
 
-
         //Get the json from the end point
-        $response = $this->api('GET', self::API_TEST_PROCESS . '/' . $process->uid);
+        $response = $this->actingAs($admin, 'api')->json('GET', self::API_TEST_PROCESS . '/' . $process->uid);
         $response->assertStatus(200);
         $response->assertJsonStructure(self::STRUCTURE);
     }
@@ -362,7 +362,7 @@ class ProcessesTest extends ApiTestCase
         ]);
 
         //Delete process
-        $response = $this->api('DELETE', self::API_TEST_PROCESS . '/' . $process->uid);
+        $response = $this->actingAs($admin, 'api')->json('DELETE', self::API_TEST_PROCESS . '/' . $process->uid);
         $response->assertStatus(204);
         $this->assertDatabaseMissing($process->getTable(), [
             'id' => $process->id
@@ -376,10 +376,10 @@ class ProcessesTest extends ApiTestCase
      */
     public function testDeleteProcessNotExists()
     {
-        $this->authenticateAsAdmin();
+        $user = $this->authenticateAsAdmin();
 
         //Delete process
-        $response = $this->api('DELETE', self::API_TEST_PROCESS . '/' . factory(Process::class)->make()->uid);
+        $response = $this->actingAs($user, 'api')->json('DELETE', self::API_TEST_PROCESS . '/' . factory(Process::class)->make()->uid);
         $response->assertStatus(404);
     }
 
@@ -391,10 +391,8 @@ class ProcessesTest extends ApiTestCase
     private function authenticateAsAdmin(): User
     {
         $admin = factory(User::class)->create([
-            'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+            'password' => Hash::make('password')
         ]);
-        $this->auth($admin->username, 'password');
         return $admin;
     }
 }

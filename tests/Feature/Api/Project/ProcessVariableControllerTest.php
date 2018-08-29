@@ -7,13 +7,14 @@ use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\DbSource;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\ProcessVariable;
-use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
-use Tests\Feature\Api\ApiTestCase;
+use Tests\TestCase;
 
-class ProcessVariableControllerTest extends ApiTestCase
+class ProcessVariableControllerTest extends TestCase
 {
     use DatabaseTransactions;
+
+    public $user;
 
     /**
      * Tests that all variables of a process are returned
@@ -27,7 +28,7 @@ class ProcessVariableControllerTest extends ApiTestCase
         ]);
 
         $url = "/api/1.0/project/" . $process->uid . "/process-variables";
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         $response->assertStatus(200);
         $returnedList = json_decode($response->getContent());
         $this->assertGreaterThanOrEqual(1, count($returnedList), 'At least one additional variable exists should exist');
@@ -58,12 +59,12 @@ class ProcessVariableControllerTest extends ApiTestCase
 
         // test the validation that the process must own the variable
         $url = "/api/1.0/project/" . $randomProcess->uid . "/process-variables/" . $variable->uid;
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         $response->assertStatus(422);
 
         // we retrieve the process variable using the endpoint
         $url = "/api/1.0/project/" . $variable->process->uid . "/process-variables/" . $variable->uid;
-        $response = $this->api('GET', $url);
+        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         $response->assertStatus(200);
         $returnedModel = json_decode($response->getContent());
         $this->assertTrue($returnedModel->uid == $variable->uid);
@@ -90,18 +91,18 @@ class ProcessVariableControllerTest extends ApiTestCase
         // a wrong field must return an validation error
         $process = factory(Process::class)->create();
         $url = "/api/1.0/project/" . $process->uid . "/process-variables";
-        $response = $this->api('POST', $url, $newVarData);
+        $response = $this->actingAs($this->user, 'api')->json('POST', $url, $newVarData);
         $response->assertStatus(422);
 
         $newVarData['field_type'] = 'string';
-        $response = $this->api('POST', $url, $newVarData);
+        $response = $this->actingAs($this->user, 'api')->json('POST', $url, $newVarData);
         $response->assertStatus(201);
         $returnedModel = json_decode($response->getContent());
         $this->assertEquals($returnedModel->name, $newVarData['name']);
         $this->assertEquals($returnedModel->process_id, $process->id, 'The variable should be owned by the process');
 
         // a duplicated variable (with the same name) should return an error should return an error
-        $response = $this->api('POST', $url, $newVarData);
+        $response = $this->actingAs($this->user, 'api')->json('POST', $url, $newVarData);
         $response->assertStatus(400);
     }
 
@@ -124,11 +125,11 @@ class ProcessVariableControllerTest extends ApiTestCase
 
         //test the validation that the process must own the variable
         $url = "/api/1.0/project/" . $process->uid . "/process-variables/" . $variable->uid;
-        $response = $this->api('PUT', $url, $newVarData);
+        $response = $this->actingAs($this->user, 'api')->json('PUT', $url, $newVarData);
         $response->assertStatus(422);
 
         $url = "/api/1.0/project/" . $variable->process->uid . "/process-variables/" . $variable->uid;
-        $response = $this->api('PUT', $url, $newVarData);
+        $response = $this->actingAs($this->user, 'api')->json('PUT', $url, $newVarData);
         $response->assertStatus(200);
         $returnedModel = json_decode($response->getContent());
         $this->assertEquals($returnedModel->name, $newVarData['name'],
@@ -148,12 +149,12 @@ class ProcessVariableControllerTest extends ApiTestCase
 
         //test the validation that the process must own the variable
         $url = "/api/1.0/project/" . $process->uid . "/process-variables/" . $variable->uid;
-        $response = $this->api('DELETE', $url);
+        $response = $this->actingAs($this->user, 'api')->json('DELETE', $url);
         $response->assertStatus(422);
 
         $countBefore = ProcessVariable::count();
         $url = "/api/1.0/project/" . $variable->process->uid . "/process-variables/" . $variable->uid;
-        $response = $this->api('DELETE', $url);
+        $response = $this->actingAs($this->user, 'api')->json('DELETE', $url);
         $response->assertStatus(204);
         $countAfter = ProcessVariable::count();
         $this->assertEquals($countAfter + 1, $countBefore, 'The should be on less variable after the deletion');
@@ -167,12 +168,10 @@ class ProcessVariableControllerTest extends ApiTestCase
         parent::setUp();
 
         // we need an user and authenticate him
-        $user = factory(User::class)->create([
-            'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id
+        $this->user = factory(User::class)->create([
+            'password' => Hash::make('password')
         ]);
 
-        $this->auth($user->username, 'password');
     }
 
 }

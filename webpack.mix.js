@@ -1,4 +1,6 @@
-const {mix} = require('laravel-mix');
+const {
+    mix
+} = require('laravel-mix');
 const MonocoEditorPlugin = require('monaco-editor-webpack-plugin')
 
 /*
@@ -13,15 +15,15 @@ const MonocoEditorPlugin = require('monaco-editor-webpack-plugin')
 */
 
 mix.webpackConfig({
-    plugins: [
-        new MonocoEditorPlugin()
-      ],
-    resolve: {
-        alias:  {
-            Horizon: path.resolve(__dirname, 'vendor/laravel/horizon/resources/assets/js/')
+        plugins: [
+            new MonocoEditorPlugin()
+        ],
+        resolve: {
+            alias:  {
+                Horizon: path.resolve(__dirname, 'vendor/laravel/horizon/resources/assets/js/')
+            }
         }
-    }
-}).js('resources/assets/js/app-layout.js', 'public/js')
+    }).js('resources/assets/js/app-layout.js', 'public/js')
     .js('resources/assets/js/designer/main.js', 'public/js/designer')
     .js('resources/assets/js/management/users/index.js', 'public/js/management/users')
     .js('resources/assets/js/management/environment-variables/index.js', 'public/js/management/environment-variables')
@@ -30,8 +32,10 @@ mix.webpackConfig({
     .js('resources/assets/js/management/groups/index.js', 'public/js/management/groups')
     .js('resources/assets/js/management/queues/index.js', 'public/js/management/queues')
 
+    .js('resources/assets/js/management/preferences/index.js', 'public/js/management/preferences')
     .js('resources/assets/js/processes/tasks/index.js', 'public/js/processes/tasks')
     .js('resources/assets/js/processes/index.js', 'public/js/processes')
+    .js('resources/assets/js/processes/categories/index.js', 'public/js/processes/categories')
     .js('resources/assets/js/requests/index.js', 'public/js/requests')
 
     .js('resources/assets/js/nayra/start.js', 'public/js/nayra')
