@@ -8,7 +8,7 @@ class StatusController extends Controller
 {
 
     public function status(Application $instance)
-    {
+    {      
         return view('requests.status', ['instance' => $instance]);
     }
 
