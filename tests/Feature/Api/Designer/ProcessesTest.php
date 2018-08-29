@@ -124,6 +124,7 @@ class ProcessesTest extends TestCase
      */
     public function testProcessesListing(): void
     {
+        Process::whereNotNull('id')->delete();
         $user = $this->authenticateAsAdmin();
         // Create some processes
         factory(Process::class, 5)->create();
@@ -274,6 +275,7 @@ class ProcessesTest extends TestCase
      */
     public function testGetPublic()
     {
+        Process::whereNotNull('id')->delete();
         $admin = $this->authenticateAsAdmin();
         //Create a test process using factories
         factory(Process::class)->create([

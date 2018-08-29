@@ -2,31 +2,39 @@
 
 namespace Tests\Feature\Api\Administration;
 
-use Tests\Feature\Api\ApiTestCase;
+use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\User;
-use ProcessMaker\Model\Role;
 use ProcessMaker\Model\EnvironmentVariable;
 
 
-class EnvironmentVariablesTest extends ApiTestCase
+class EnvironmentVariablesTest extends TestCase
 {
     use DatabaseTransactions;
 
     const API_TEST_VARIABLES = '/api/1.0/environment-variables';
-
-    public function setUp()
+    
+    /**
+     * User that will be making the request to the API
+     */
+    private $testUser = null;
+    
+    /**
+     * Create an api that authenticates with the test users
+     */
+    private function api()
     {
-        parent::setUp();
-        $user = factory(User::class)->create([
-            'password' => Hash::make('password'),
-            'role_id' => Role::where('code', Role::PROCESSMAKER_ADMIN)->first()->id,
-        ]);
-        $this->auth($user->username, 'password');
+        if (!$this->testUser) {
+            $this->testUser = factory(User::class)->create([
+                'password' => Hash::make('password'),
+            ]);
+        }
+        return call_user_func_array(
+            [$this->actingAs($this->testUser, 'api'), 'json'], func_get_args()
+        );
     }
-
 
     /** @test */
     public function it_should_create_an_environment_variable()
@@ -52,12 +60,12 @@ class EnvironmentVariablesTest extends ApiTestCase
     /** @test */
     public function it_should_store_values_as_encrypted()
     {
-        factory(EnvironmentVariable::class)->create([
+        $variable = factory(EnvironmentVariable::class)->create([
             'value' => 'testvalue'
         ]);
         $this->assertDatabaseMissing('environment_variables', ['value' => 'testvalue']);
         // Now fetch record
-        $variable = EnvironmentVariable::first();
+        $variable->refresh();
         $this->assertEquals('testvalue', $variable->value);
     }
 
@@ -178,6 +186,9 @@ class EnvironmentVariablesTest extends ApiTestCase
     /** @test */
     public function it_should_return_paginated_environment_variables_during_index()
     {
+        // Can't truncate because of DatabaseTransactions
+        EnvironmentVariable::whereNotNull('id')->delete();
+
         $this->withoutExceptionHandling();
         factory(EnvironmentVariable::class, 50)->create();
         // Fetch from index
