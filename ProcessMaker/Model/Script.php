@@ -4,6 +4,7 @@ namespace ProcessMaker\Model;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
+use ProcessMaker\Model\EnvironmentVariable;
 use ProcessMaker\Model\Traits\Uuid;
 use Watson\Validating\ValidatingTrait;
 
@@ -137,13 +138,26 @@ class Script extends Model
         $outputfname = tempnam("/home/vagrant", "output.json");
         chmod($outputfname, 0660);
 
+        $variablesParameter = [];
+        EnvironmentVariable::chunk(50, function($variables) use(&$variablesParameter) {
+            foreach($variables as $variable) {
+                $variablesParameter[] = $variable['name'] . '=' . $variable['value'];
+            }
+        });
+
+        if($variablesParameter) {
+            $variablesParameter = "-e " . implode(" -e ", $variablesParameter);
+        } else {
+            $variablesParameter = '';
+        }
+
         // So we have the files, let's execute the docker container
         switch($language) {
             case 'php':
-                $cmd = "/usr/bin/docker run -v " . $datafname . ":/opt/executor/data.json -v " . $configfname . ":/opt/executor/config.json -v " . $scriptfname . ":/opt/executor/script.php -v " . $outputfname . ":/opt/executor/output.json processmaker/executor:php php /opt/executor/bootstrap.php 2>&1";
+                $cmd = "/usr/bin/docker run " . $variablesParameter . " -v " . $datafname . ":/opt/executor/data.json -v " . $configfname . ":/opt/executor/config.json -v " . $scriptfname . ":/opt/executor/script.php -v " . $outputfname . ":/opt/executor/output.json processmaker/executor:php php /opt/executor/bootstrap.php 2>&1";
                 break;
             case 'lua':
-                $cmd = "/usr/bin/docker run -v " . $datafname . ":/opt/executor/data.json -v " . $configfname . ":/opt/executor/config.json -v " . $scriptfname . ":/opt/executor/script.lua -v " . $outputfname . ":/opt/executor/output.json processmaker/executor:lua lua5.3 /opt/executor/bootstrap.lua 2>&1";
+                $cmd = "/usr/bin/docker run " . $variablesParameter . " -v " . $datafname . ":/opt/executor/data.json -v " . $configfname . ":/opt/executor/config.json -v " . $scriptfname . ":/opt/executor/script.lua -v " . $outputfname . ":/opt/executor/output.json processmaker/executor:lua lua5.3 /opt/executor/bootstrap.lua 2>&1";
                 break;
         }
 
