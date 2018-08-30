@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers\Api\Requests;
 
 use Auth;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Model\Application;
@@ -35,13 +36,28 @@ class RequestsController extends Controller
             'order_direction' => $request->input('order_direction', 'ASC'),
             'status' => $request->input('status', Application::STATUS_TO_DO),
         ];
-        $include = $request->input('include');
 
-        $requests = Application::where('creator_user_id', $owner->id)
-            ->where('APP_STATUS', $options['status'])
-            ->with($include ? explode(',', $include) : [])
-            ->paginate($options['per_page'])
-            ->appends($options);
+        $delay = $request->query('delay');
+        $include = $request->input('include')
+                    ? explode(',', $request->input('include'))
+                    : [];
+
+        $query = Application::with($include)
+                    ->where('APP_STATUS', $options['status'])
+                    ->where('creator_user_id', $owner->id);
+
+        // if there is a filter by delay type (at risk, overdue, etc.) delegations are filtered
+        if ($delay) {
+            $query->with(['delegations' => function($q) use($delay) {
+                $this->addDelayConditionsToQuery($q, $delay);
+            }]);
+            $query->whereHas('delegations', function($q) use($delay) {
+                $this->addDelayConditionsToQuery($q, $delay);
+            });
+        }
+
+        $requests = $query->paginate($options['per_page'])
+                        ->appends($options);
 
         // Return fractal representation of paged data
         return fractal($requests, new ApplicationTransformer())->respond();
@@ -62,22 +78,26 @@ class RequestsController extends Controller
             'sort_order' => $request->input('order_direction', 'ASC'),
         ];
 
-        $sortingField = [
-            'status' => 'status',
-            'user' => 'user_id',
-            'category' => 'process_category_id',
-            'due_date' => 'updated_at',
-            'name' => 'name',
-            'description' => 'description'
-        ];
+        $processTable = with(new Process)->getTable();
+        $categoryTable = with(new ProcessCategory)->getTable();
+        $userTable = with(new User)->getTable();
 
-        $query = Process::with(['category', 'user'])
-                ->select(
-                'processes.*',
-                \DB::raw('(SELECT name from process_categories where processes.process_category_id = process_categories.id) as categoryName'));
+        if (empty($request->input('order_by'))) {
+            // if no sort option is sent
+            $query = Process::with(['category', 'user'])
+                ->select("$processTable.*")
+                ->leftJoin($categoryTable, function ($join) use ($processTable, $categoryTable) {
+                    $join->on("$categoryTable.id", "=", "$processTable.process_category_id");
+                })->orderBy("$categoryTable.name")
+                ->orderBy("$processTable.name");
+        }
+        else {
+            $query = Process::with(['category', 'user'])
+                ->orderBy($options['sort_by'], $options['sort_order']);
+        }
 
-        $query->where(function ($query) {
-            $query->where('status', '=', 'ACTIVE');
+        $query->where(function ($query) use ($processTable) {
+            $query->where("$processTable.status", '=', 'ACTIVE');
         });
 
         if (!empty($options['filter'])) {
@@ -85,43 +105,52 @@ class RequestsController extends Controller
             // Cannot join on table because of Eloquent's lack of specific table column names in generated SQL
             // See: https://github.com/laravel/ideas/issues/347
             $filter = '%' . $options['filter'] . '%';
-            $category = new ProcessCategory();
-            $user = new User();
-            $query->where(function ($query) use ($filter, $category, $user) {
-                $query->Where('name', 'like', $filter)
-                    ->orWhere('description', 'like', $filter)
-                    ->orWhere('status', 'like', $filter)
-                    ->orWhere(function ($q) use ($filter, $category) {
-                        $q->whereHas('category', function ($query) use ($filter, $category) {
-                            $query->where($category->getTable() . '.name', 'like', $filter);
+            $query->where(function ($query) use ($filter, $userTable, $processTable, $categoryTable) {
+                $query->Where("$processTable.name", 'like', $filter)
+                    ->orWhere("$processTable.description", 'like', $filter)
+                    ->orWhere("$processTable.status", 'like', $filter)
+                    ->orWhere(function ($q) use ($filter, $categoryTable) {
+                        $q->whereHas('category', function ($query) use ($filter, $categoryTable) {
+                            $query->where("$categoryTable.name", 'like', $filter);
                         });
                     })
-                    ->orWhere(function ($q) use ($filter, $user) {
-                        $q->whereHas('user', function ($query) use ($filter, $user) {
-                            $query->where($user->getTable() . '.firstname', 'like', $filter)
-                                ->where($user->getTable() . '.lastname', 'like', $filter);
+                    ->orWhere(function ($q) use ($filter, $userTable) {
+                        $q->whereHas('user', function ($query) use ($filter, $userTable) {
+                            $query->where("$userTable.firstname", 'like', $filter)
+                                ->where("$userTable.lastname", 'like', $filter);
                         });
                     });
             });
         }
 
-        $sortColumn = 'name';
-        $sortDirection = $options['sort_order'];
-
-        if (empty($request->input('order_by'))) {
-            $query->orderBy('categoryName', 'asc');
-            $sortDirection = 'ASC';
-        }
-
-        if (isset($sortingField[$options['sort_by']])) {
-            $sortColumn = $sortingField[$options['sort_by']];
-        }
-
-        $query->orderBy($sortColumn, $sortDirection);
-
         $processes = $query->paginate($options['per_page'])
             ->appends($options);
 
         return fractal($processes, new ProcessTransformer())->respond();
+    }
+
+    /**
+     * Adds where conditions to the passed query, depending of the delay value
+     * @param $query
+     * @param $delay
+     */
+    private function addDelayConditionsToQuery($query, $delay)
+    {
+        if ($delay === 'overdue') {
+            $query->where('task_due_date', '<=', Carbon::now()->toDateString());
+        }
+
+        if ($delay === 'at_risk') {
+            $query->where('risk_date', '<', Carbon::now()->toDateString())
+                ->where('task_due_date', '>', Carbon::now()->toDateString());
+        }
+
+        if ($delay === 'on_time') {
+            $query->where(function($q) {
+                $q->where('risk_date', '>=', Carbon::now()->toDateString())
+                    ->orWhereNull('task_due_date');
+
+            });
+        }
     }
 }

@@ -1,11 +1,13 @@
 <?php
 namespace Tests\Feature\Api\Requests;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\Application;
 use ProcessMaker\Model\Delegation;
 use ProcessMaker\Model\ProcessCategory;
 use ProcessMaker\Model\Process;
+use ProcessMaker\Model\Role;
 use ProcessMaker\Model\User;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -62,7 +64,7 @@ class RequestsTest extends TestCase
             'creator_user_id' => $this->user->id,
             'APP_STATUS' => Application::STATUS_COMPLETED
         ]);
-        $response = $this->actingAs($this->user, 'api')->json('GET', '/api/1.0/requests?delay=overdue');
+        $response = $this->actingAs($this->user, 'api')->json('GET', '/api/1.0/requests');
         $parsedResponse = json_decode($response->getContent());
         $response->assertStatus(200);
         $response->assertJsonStructure([
@@ -71,6 +73,77 @@ class RequestsTest extends TestCase
         ]);
         $this->assertCount(1, $parsedResponse->data,
             'The number of results should be 1, because just one application has status TO_DO ');
+    }
+
+    /**
+     * Test to check that the list of requests filters requests by risk, overdue, etc.
+     */
+
+    public function testIndex()
+    {
+        $this->login();
+        $userId = $this->user->id;
+
+        factory(Application::class, 1)->create([
+            'id' => 10,
+            'creator_user_id' => $userId,
+            'APP_STATUS' => Application::STATUS_TO_DO
+        ]);
+
+        // Task on time
+        factory(Delegation::class)->create([
+            'application_id' => 10,
+            'task_due_date' => Carbon::now()->addDays(5),
+            'risk_date' => Carbon::now()->addDays(3),
+            'thread_status' => 'ACTIVE'
+        ]);
+
+        // Task at risk
+        factory(Delegation::class)->create([
+            'application_id' => 10,
+            'task_due_date' => Carbon::now()->addDays(2),
+            'risk_date' => Carbon::now()->subDays(2),
+            'thread_status' => 'ACTIVE'
+        ]);
+
+        // Task on risk
+        factory(Delegation::class)->create([
+            'application_id' => 10,
+            'task_due_date' => Carbon::now()->subDays(2),
+            'risk_date' => Carbon::now()->subDays(3),
+            'thread_status' => 'ACTIVE'
+        ]);
+
+        // Without filters all the tasks of the request should be returned
+        $response = $this->actingAs($this->user, 'api')
+                            ->json('GET', '/api/1.0/requests?include=process,delegations,delegations.user');
+        $response->assertStatus(200);
+        $parsedResponse = json_decode($response->getContent());
+        $this->assertCount(3, $parsedResponse->data[0]->delegations);
+
+        // If the delay parameter is = overdue just the overdue delegations should be returned
+        $response = $this->actingAs($this->user, 'api')
+                            ->json('GET', '/api/1.0/requests?include=process,delegations,delegations.user&delay=overdue');
+        $response->assertStatus(200);
+        $parsedResponse = json_decode($response->getContent());
+        $this->assertCount(1, $parsedResponse->data[0]->delegations);
+        $this->assertEquals('overdue', $parsedResponse->data[0]->delegations[0]->delay);
+
+        // If the delay parameter is = atRisk just the atRisk delegations should be returned
+        $response = $this->actingAs($this->user, 'api')
+                            ->json('GET', '/api/1.0/requests?include=process,delegations,delegations.user&delay=at_risk');
+        $response->assertStatus(200);
+        $parsedResponse = json_decode($response->getContent());
+        $this->assertCount(1, $parsedResponse->data[0]->delegations);
+        $this->assertEquals('at_risk', $parsedResponse->data[0]->delegations[0]->delay);
+
+        // If the delay parameter is = onTime just the onTime delegations should be returned
+        $response = $this->actingAs($this->user, 'api')
+                            ->json('GET', '/api/1.0/requests?include=process,delegations,delegations.user&delay=on_time');
+        $response->assertStatus(200);
+        $parsedResponse = json_decode($response->getContent());
+        $this->assertCount(1, $parsedResponse->data[0]->delegations);
+        $this->assertEquals('on_time', $parsedResponse->data[0]->delegations[0]->delay);
     }
 
     /**
