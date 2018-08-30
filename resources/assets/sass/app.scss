@@ -8,8 +8,11 @@
 @import '~@fortawesome/fontawesome-free-webfonts/scss/fa-regular';
 @import '~@fortawesome/fontawesome-free-webfonts/scss/fa-solid';
 @import '~@fortawesome/fontawesome-free-webfonts/scss/fontawesome';
-//Font Open sans
-@import '~npm-font-open-sans/open-sans';
+@font-face{
+  font-family: 'Open Sans';
+	src: url('/fonts/OpenSans.ttf')
+	     format('truetype');
+}
 body,
 html {
   width: 100%;
@@ -28,6 +31,7 @@ html {
 .row.no-gutters {
   margin-right: 0;
   margin-left: 0;
+
   &>[class^="col-"],
   &>[class*=" col-"] {
     padding-right: 0;
@@ -43,66 +47,79 @@ html {
   margin-left: auto;
 }
 
-.container h1{
-  margin:15px 5px
+.container h1 {
+  margin: 15px 5px
 }
 
 //topnav
 .navbar {
   height: 60px;
   border-bottom: 1px solid #e9edf1;
+
   .dropdown-menu-right {
     width: 200px;
     border: none;
     top: 56px;
   }
+
   .drop-header {
     background-color: #e9edf1;
     margin-top: -8px;
     font-weight: 600;
   }
+
   .dropdown a {
     color: #333333;
     font-size: 14px;
     padding-top: 7px;
     padding-bottom: 7px;
+
     &:hover {
       background-color: #e9edf1;
     }
   }
+
   .avatar-small {
     width: 46px;
     height: 46px;
     margin: 0px 8px 3px -10px;
   }
+
   .avatar {
     width: 64px;
     padding: 10px;
     margin-left: 6px;
   }
+
   .dropdown-item i {
     margin-right: 6px;
     margin-left: -13px;
     color: #788793;
   }
+
   .dropdown-menu-right {
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.23);
   }
+
   .nav_icon {
     color: #7e8ba1;
   }
+
   .nav-link.active {
     color: $primary !important;
   }
+
   .nav-link {
     font-size: 18px;
     font-weight: normal;
     color: #333333;
+
     &:hover {
       color: $primary !important;
       padding-bottom: 20px;
       margin-bottom: -20px;
     }
+
     .active a {
       color: $primary !important;
     }
@@ -110,7 +127,6 @@ html {
 }
 
 /*modal style*/
-
 .modal-title {
   margin-left: 15px;
   font-size: 18px;
@@ -121,6 +137,7 @@ html {
   border: none;
   padding-top: 16px;
   margin-bottom: 15px;
+
   .close {
     padding: 20px;
     margin-right: -3px;
@@ -160,9 +177,11 @@ html {
   border-color: #b6bfc6;
   border-radius: 2px;
 }
+
 .form-control::placeholder {
   color: #b6bfc6;
 }
+
 .form-control:focus {
   box-shadow: none;
   -webkit-box-shadow: none;
@@ -206,6 +225,7 @@ select.form-control:not([size]):not([multiple]) {
 
 a.btn-action {
   color: white;
+
   &:hover {
     color: white;
   }
@@ -227,16 +247,20 @@ h1.page-title {
 table.vuetable {
   margin-top: 16px;
   font-size: $font-size-base;
+
   tr:hover td {
     background-color: $grey-bg;
   }
+
   .vuetable-slot {
     position: relative;
   }
+
   .actions {
     cursor: pointer;
     text-align: right;
     color: #788793;
+
     .popout {
       display: none;
       align-items: center;
@@ -246,6 +270,7 @@ table.vuetable {
       top: 0;
       margin: 3px;
       font-size: $font-size-large;
+
       button.btn-action {
         color: #788793;
         height: 32px;
@@ -256,27 +281,32 @@ table.vuetable {
         border: 0;
         text-align: center;
         padding: 0;
+
         &:hover {
           background-color: white;
           border-radius: 2px;
         }
       }
     }
+
     &:hover {
       .popout {
         display: flex;
       }
     }
   }
+
   th {
     background-color: $grey-bg;
     color: $secondary;
     text-transform: uppercase;
+
     &.ascending,
     &.descending {
       color: #333333;
     }
   }
+
   .vuetable-pagination {
     color: $secondary;
   }
@@ -375,6 +405,7 @@ table.vuetable {
   text-align: center;
   color: #788793;
   margin-top: 40px;
+
   div:first-child {
     height: 200px;
     width: 260px;
@@ -382,11 +413,13 @@ table.vuetable {
     background-image: url('/img/gears-big.png');
     background-repeat: no-repeat;
   }
+
   h1 {
     font-weight: 600;
     font-size: 31px;
     line-height: 46px;
   }
+
   p {
     font-size: 23px;
   }
