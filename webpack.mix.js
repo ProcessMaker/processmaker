@@ -19,7 +19,7 @@ mix.webpackConfig({
             new MonocoEditorPlugin()
         ],
         resolve: {
-            alias:  {
+            alias: {
                 Horizon: path.resolve(__dirname, 'vendor/laravel/horizon/resources/assets/js/')
             }
         }
@@ -33,7 +33,6 @@ mix.webpackConfig({
     .js('resources/assets/js/management/queues/index.js', 'public/js/management/queues')
 
     .js('resources/assets/js/management/preferences/index.js', 'public/js/management/preferences')
-    .js('resources/assets/js/management/about/index.js', 'public/js/management/about')
     .js('resources/assets/js/processes/tasks/index.js', 'public/js/processes/tasks')
     .js('resources/assets/js/processes/index.js', 'public/js/processes')
     .js('resources/assets/js/processes/categories/index.js', 'public/js/processes/categories')
