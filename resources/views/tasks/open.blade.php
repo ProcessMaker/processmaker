@@ -1,4 +1,4 @@
-@extends('layouts.layout', ['title' => __("{$process->name}")])
+@extends('layouts.layout', ['title' => "$process->name"])
 
 @section('content')
 <div id="task">
