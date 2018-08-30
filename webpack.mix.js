@@ -19,7 +19,7 @@ mix.webpackConfig({
             new MonocoEditorPlugin()
         ],
         resolve: {
-            alias:  {
+            alias: {
                 Horizon: path.resolve(__dirname, 'vendor/laravel/horizon/resources/assets/js/')
             }
         }
@@ -65,6 +65,7 @@ mix.webpackConfig({
     .copy('resources/assets/js/components/inbox.vue', 'public/js')
     .copy('resources/assets/js/components/CustomActions.vue', 'public/js')
     .copy('resources/assets/js/components/DetailRow.vue', 'public/js')
+    .copy('resources/assets/fonts/Open_Sans/', 'public/fonts')
     .copy('resources/assets/js/components/FilterBar.vue', 'public/js')
 
     .version()
