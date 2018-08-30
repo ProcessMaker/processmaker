@@ -109,3 +109,10 @@ $("#menu-toggle").click(function (e) {
 
     }
 });
+
+// Listen for user notifications
+let userId = document.head.querySelector('meta[name="user-id"]').content;
+Echo.private(`ProcessMaker.Model.User.${userId}`)
+        .notification((notification) => {
+            ProcessMaker.pushNotification(notification);
+        });
