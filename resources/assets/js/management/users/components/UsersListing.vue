@@ -17,6 +17,7 @@
       <form-input :error="errors.username" v-model="username" label="Username" helper="Username must be distinct"></form-input>
       <form-input v-model="firstname" label="First Name"></form-input>
       <form-input v-model="lastname" label="Last Name"></form-input>
+      <form-select v-model="status" label="Status" name="status" :options="statusOptions"></form-select>
       <form-input :error="errors.password" v-model="password" type="password" label="Password"></form-input>
       <form-input :error="errors.confpassword" v-model="confpassword" type="password" 
                   label="Confirm Password" :validationData="data" validation="same:password"></form-input>
@@ -38,11 +39,12 @@ import Vuetable from "vuetable-2/src/components/Vuetable";
 import datatableMixin from "../../../components/common/mixins/datatable";
 import Pagination from "../../../components/common/Pagination";
 import FormInput from "@processmaker/vue-form-elements/src/components/FormInput";
+import FormSelect from "@processmaker/vue-form-elements/src/components/FormSelect";
 
 export default {
   mixins: [datatableMixin],
   props: ["filter"],
-  components: { FormInput },
+  components: { FormInput, FormSelect },
   data() {
     return {
       orderBy: "username",
@@ -104,6 +106,10 @@ export default {
       firstname: "",
       lastname: "",
       status: "",
+      statusOptions: [
+        { value: "ACTIVE", content: "active" },
+        { value: "INACTIVE", content: "inactive" }
+      ],
       curIndex: "",
       password: "",
       confpassword: "",

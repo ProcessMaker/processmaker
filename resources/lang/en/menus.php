@@ -45,5 +45,9 @@ return[
     'manage_cache' => 'Manage Cache ',
     'audit_log' => 'Audit Log',
     'schedule_jobs' => 'Schedule Jobs',
+  ],
+  'sidebar_processes' => [
+    'processes' => 'Processes',
+    'categories' => 'Process Categories',
   ]
 ];

@@ -24,7 +24,7 @@ import moment from "moment"
 
 export default {
   mixins: [datatableMixin],
-  props: ["filter"],
+  props: ["filter", "status"],
   data() {
     return {
       orderBy: "id",
@@ -72,7 +72,7 @@ export default {
   },
   methods: {
     openRequest(data, index) {
-      window.open('/requests/' + data.uid + '/status');
+      window.open('/requests/' + data.uid + '/status','_self');
     },
     formatUid(uid) {
         return uid.split('-').pop();
@@ -82,9 +82,11 @@ export default {
       if (!delegations) return assignedTo;
       delegations.forEach(function (delegation) {
         let user = delegation.user;
-        let avatar = user.avatar ? '<img class="avatar" src="' + user.avatar + '">'
-                : '<i class="fas fa-user"></i>';
-        assignedTo +=  avatar + ' ' + user.fullname + '<br>';
+        if (user) {
+          let avatar = user.avatar ? '<img class="rounded-user" src="' + user.avatar + '">'
+                  : '<i class="rounded-user fas fa-user"></i>';
+          assignedTo +=  avatar + ' ' + user.fullname + '<br>';
+        }
       });
       return assignedTo;
     },
@@ -132,6 +134,9 @@ export default {
       if (urlParts.length === 2) {
         additionalParams = '&' + urlParts[1];
       }
+      if (this.status) {
+        additionalParams += "&status=" + this.status;
+      }
 
       // Load from our api client
       ProcessMaker.apiClient
@@ -158,7 +163,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 /deep/ i.fa-circle {
   &.active {
     color: green;
@@ -166,5 +171,10 @@ export default {
   &.inactive {
     color: red;
   }
+}
+.rounded-user {
+    border-radius: 50%!important;
+    height: 1.5em;
+    margin-right: 0.5em;
 }
 </style>

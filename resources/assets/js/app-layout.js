@@ -6,6 +6,7 @@ import requestModal from './components/requests/modal'
 import notifications from './components/requests/notifications'
 import {Navbar} from 'bootstrap-vue/es/components';
 import ConfirmationModal from './components/Confirm';
+import NavbarProfile from "./components/NavbarProfile";
 
 
 // Assign our navbar component to our global ProcessMaker object
@@ -16,7 +17,8 @@ window.ProcessMaker.navbar = new Vue({
         requestModal,
         notifications,
         avatar,
-        ConfirmationModal
+        ConfirmationModal,
+        NavbarProfile
     },
     data() {
         return {
