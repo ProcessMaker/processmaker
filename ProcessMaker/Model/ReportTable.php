@@ -101,21 +101,6 @@ class ReportTable extends Model
         return $this->belongsTo(Process::class);
     }
 
-    /**
-     * Eloquent relation that return the collection of variables associated to the report table
-     *
-     * @return $this
-     */
-    public function variables()
-    {
-        return $this->belongsToMany(
-            ProcessVariable::class,
-            'report_table_columns',
-            'report_table_id',
-            'process_variable_id'
-        )
-            ->withPivot('name');
-    }
 
     /**
      * Returns the PmTable of the report table

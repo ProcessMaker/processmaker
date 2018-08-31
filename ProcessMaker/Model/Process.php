@@ -380,15 +380,6 @@ class Process extends Model
         return $this->hasMany(Lane::class);
     }
 
-    /**
-     * Collection of ProcessVariables configured in the process
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function variables()
-    {
-        return $this->hasMany(ProcessVariable::class, 'process_id', 'id');
-    }
 
     /**
      * Get the creator/author of this process.
