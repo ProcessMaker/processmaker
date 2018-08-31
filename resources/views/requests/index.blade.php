@@ -8,7 +8,7 @@
     <div class="container" id="requests-listing">
     <div class="row">
           <div class="col-3">
-                      <h1>{{ $title }}</h1>
+                      <h1>{{__($title)}}</h1>
                       </div>
                         @if ($status == ProcessMaker\Model\Application::STATUS_TO_DO)
                           <div class="col-5" style="margin-top:20px">
