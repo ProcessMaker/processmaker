@@ -1,22 +1,19 @@
 @extends('layouts.layout')
 
 @section('content')
-
-    <div class="container page-content" id="tasks">
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="row">
-                    <div class="col-md-8 d-flex align-items-center col-sm-12">
-                        <h1 class="page-title">{{__('Tasks')}}</h1>
-                        <input id="tasks-listing-search" v-model="filter" class="form-control col-sm-3"
-                               placeholder="{{__('Search')}}...">
-                    </div>
+  <div class="container" id="tasks">
+    <div class="row">
+          <div class="col">
+                      <h1>{{__('Tasks')}}</h1>
+                      </div>
+                <div class="col-4" style="margin-top:20px">
+                    <input v-model="filter" class="form-control" placeholder="{{__('Search')}}...">
                 </div>
-                <tasks-list :filter="filter"></tasks-list>
             </div>
-        </div>
-    </div>
-
+            <div style="margin-top:-20px;">
+                  <tasks-list :filter="filter"></tasks-list>
+              </div>
+          </div>
 @endsection
 
 @section('sidebar')
