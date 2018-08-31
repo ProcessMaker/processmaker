@@ -2,6 +2,8 @@
 namespace Tests\Feature\Api\Requests;
 
 use Illuminate\Support\Facades\Hash;
+use ProcessMaker\Model\Application;
+use ProcessMaker\Model\Delegation;
 use ProcessMaker\Model\ProcessCategory;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\User;
@@ -11,6 +13,8 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 class RequestsTest extends TestCase
 {
     use DatabaseTransactions;
+
+    const URL_USER_PROCESSES = '/api/1.0/user/processes';
 
     public $user;
 
@@ -29,7 +33,8 @@ class RequestsTest extends TestCase
 
     public function restApiResultFailed()
     {
-        $response = $this->api('GET', '/api/1.0/requests');
+        $response = $this->actingAs($this->user, 'api')
+                            ->json('GET', '/api/1.0/requests');
         $response->assertStatus(401);
     }
 
@@ -41,24 +46,31 @@ class RequestsTest extends TestCase
     {
         $this->login();
 
-        factory(\ProcessMaker\Model\Application::class, 1)->create([
+        factory(Application::class, 1)->create([
             'id' => 10,
-            'creator_user_id' => $this->user->id
+            'creator_user_id' => $this->user->id,
+            'APP_STATUS' => Application::STATUS_TO_DO
         ]);
 
 
-        factory(\ProcessMaker\Model\Delegation::class, 2)->create([
+        factory(Delegation::class, 2)->create([
             'application_id' => 10
         ]);
 
+        // We create an instance with status completed
+        factory(Application::class, 1)->create([
+            'creator_user_id' => $this->user->id,
+            'APP_STATUS' => Application::STATUS_COMPLETED
+        ]);
         $response = $this->actingAs($this->user, 'api')->json('GET', '/api/1.0/requests?delay=overdue');
-
+        $parsedResponse = json_decode($response->getContent());
         $response->assertStatus(200);
-
         $response->assertJsonStructure([
             'data',
             'meta'
-      ]);
+        ]);
+        $this->assertCount(1, $parsedResponse->data,
+            'The number of results should be 1, because just one application has status TO_DO ');
     }
 
     /**
@@ -84,7 +96,8 @@ class RequestsTest extends TestCase
         ]);
 
         // We call the process list endpoint with sort conditions
-        $response = $this->actingAs($this->user, 'api')->json('GET', '/api/1.0/user/processes?order_by=name&order_direction=desc');
+        $response = $this->actingAs($this->user, 'api')
+                            ->json('GET', self::URL_USER_PROCESSES . '?order_by=name&order_direction=desc');
 
         // Assert that the response is correct and the sorting is correct
         $response->assertStatus(200);
@@ -92,7 +105,8 @@ class RequestsTest extends TestCase
         $this->assertEquals('X name', $data['data'][0]['name']);
 
         // We call the process list endpoint without sort conditions
-        $response = $response = $this->actingAs($this->user, 'api')->json('GET', '/api/1.0/user/processes');
+        $response = $this->actingAs($this->user, 'api')
+                            ->json('GET', self::URL_USER_PROCESSES);
 
         // Assert that the response is correct when no sorting is applied
         $response->assertStatus(200);
@@ -103,8 +117,9 @@ class RequestsTest extends TestCase
 
     private function login()
     {
-      $this->user = factory(User::class)->create([
-          'password' => Hash::make('password')
-      ]);
+        $this->user = factory(User::class)->create([
+            'password' => Hash::make('password')
+        ]);
+
     }
 }

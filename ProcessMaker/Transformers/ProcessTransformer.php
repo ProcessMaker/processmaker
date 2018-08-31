@@ -47,7 +47,7 @@ class ProcessTransformer extends TransformerAbstract
                 'id' => $innerProcess->getAttribute('id'),
             ];
             foreach ($startEvents as $startEvent) {
-                $definition['starEvents'][] = [
+                $definition['startEvents'][] = [
                     'id' => $startEvent->getAttribute('id')
                 ];
             }

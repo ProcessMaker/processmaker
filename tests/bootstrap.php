@@ -85,3 +85,5 @@ if (env('POPULATE_DATABASE')) {
     Artisan::call('migrate:fresh', ['--seed' => true]);
 }
 
+//Create the oauth keys if they do not exists
+Artisan::call('passport:install');
