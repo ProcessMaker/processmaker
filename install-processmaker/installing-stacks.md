@@ -1,6 +1,6 @@
 ---
-description: Install prerequisite applications.
+description: Install the supported stack.
 ---
 
-# Install Stacks
+# Install Stack
 
