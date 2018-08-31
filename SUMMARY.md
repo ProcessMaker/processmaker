@@ -1,6 +1,6 @@
 # Table of contents
 
-* [ProcessMaker 4 Product Documentation](README.md)
+* [ProcessMaker 4.1 Community Edition Documentation](README.md)
 * [Getting Started](getting-started/README.md)
   * [Prerequisites](getting-started/prerequisites.md)
   * [Installing Stacks](getting-started/installing-stacks.md)
