@@ -94,7 +94,13 @@
                 if (!delegations) return assignedTo;
                 let that = this;
                 let count = 0;
-                delegations.forEach(function (delegation, key) {
+                let usedAvatar = [];
+                delegations.forEach(function (delegation, key){
+
+                  if(usedAvatar.includes(delegation.user.uid) === false) {
+
+                    usedAvatar.push(delegation.user.uid);
+
                     if (key <= 4) {
                         let user = delegation.user;
                         assignedTo += user.avatar ? that.createImg({
@@ -107,6 +113,9 @@
                     } else {
                         count++;
                     }
+
+                  }
+
                 });
                 if (count) {
                     assignedTo += '<div class="circle"><span class="initials">+' + count + '</span></div>';
