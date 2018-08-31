@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layout',['title'=>'Task Detail'])
 
 @section('content')
 <div id="status">

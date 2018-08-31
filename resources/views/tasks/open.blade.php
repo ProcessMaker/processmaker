@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layout',['title'=>'Task Detail'])
 @section('sidebar')
     @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_task')])
 @endsection

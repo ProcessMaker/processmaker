@@ -208,24 +208,33 @@
     };
 </script>
 <style lang="scss" scoped>
+
+  /deep/ .table td {
+    vertical-align: middle !important;
+    padding: 3px;
+  }
+
     /deep/ .circle {
-        border-radius: 50px/50px;
-        height: 1.5em;
-        background-color: #6c757d;
-        display: inline-table;
-        margin-right: 0.5em;
+      border-radius: 100%;
+      height: 32px;
+      width: 32px;
+      background-color: #6c757d;
+      display: inline-table;
+      margin-right: 0.5em;
+      text-align: center;
+      vertical-align: middle;
+      margin:0;
     }
 
     /deep/ .rounded-user {
         border-radius: 50% !important;
-        height: 1.5em;
-        margin-right: 0.5em;
+        height: 32px;
+        margin:0;
     }
 
     /deep/ .initials {
         color: white;
-        padding: 3px;
-        font-size: 10px;
+        line-height: 2.5em;
     }
 
     /deep/ i.fa-circle {
