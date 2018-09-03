@@ -181,15 +181,16 @@ class ProcessesTest extends TestCase
      */
     public function testProcessesListing(): void
     {
+        Process::whereNotNull('id')->delete();
         $user = $this->authenticateAsAdmin();
         // Create some processes
         factory(Process::class, 5)->create();
         $response = $this->actingAs($user, 'api')->json('GET', self::API_TEST_PROCESS);
         $response->assertStatus(200);
         $data = json_decode($response->getContent(), true);
-        // Verify we have a total of 7 results (our 5 plus processes plus our created processes)
-        $this->assertCount(7, $data['data']);
-        $this->assertEquals(7, $data['meta']['total']);
+        // Verify we have a total of 5 results
+        $this->assertCount(5, $data['data']);
+        $this->assertEquals(5, $data['meta']['total']);
     }
 
     /**
@@ -331,6 +332,7 @@ class ProcessesTest extends TestCase
      */
     public function testGetPublic()
     {
+        Process::whereNotNull('id')->delete();
         $admin = $this->authenticateAsAdmin();
         //Create a test process using factories
         factory(Process::class)->create([
@@ -338,8 +340,8 @@ class ProcessesTest extends TestCase
         ]);
         $response = $this->actingAs($admin, 'api')->json('GET', self::API_TEST_PROCESS);
         $response->assertStatus(200);
-        // Verify we have a total of 3 results (our 2 plus processes plus our created processes)
-        $this->assertEquals(3, $response->original->meta->total);
+        // Verify we have a total of 1 result
+        $this->assertEquals(1, $response->original->meta->total);
         $response->assertJsonStructure(['*' => self::STRUCTURE], $response->json('data'));
     }
 

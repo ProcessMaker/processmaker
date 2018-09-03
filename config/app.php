@@ -14,7 +14,7 @@ return [
     'url' => env('APP_URL', 'http://localhost'),
 
     // The application key to be used for hashing secrets
-    'key' => env('APP_KEY', 'x80I9vQNxwllSuwBkTwfUa5qkgPTRdwqHCPSz7zHi1U='),
+    'key' => env('APP_KEY', 'base64:x80I9vQNxwllSuwBkTwfUa5qkgPTRdwqHCPSz7zHi1U='),
 
     // The encryption cipher to use, industry standard
     'cipher' => 'AES-256-CBC',
