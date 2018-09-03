@@ -37,10 +37,11 @@ class RequestsController extends Controller
 
         ];
         $include = $request->input('include');
-
         $requests = Application::where('creator_user_id', $owner->id)
-            ->where('APP_STATUS', $options['status'])
+            ->join('processes as process', 'APPLICATION.process_id', '=', 'process.id')
             ->with($include ? explode(',', $include) : [])
+            ->select('APPLICATION.*', 'process.name as process.name')
+            ->where('APP_STATUS', $options['status'])
             ->orderBy($options['sort_by'], $options['sort_order'])
             ->paginate($options['per_page'])
             ->appends($options);

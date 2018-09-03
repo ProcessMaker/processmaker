@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import Preferences from './components/preferences'
+import Preferences from './components/Preferences'
 
 
 new Vue({
