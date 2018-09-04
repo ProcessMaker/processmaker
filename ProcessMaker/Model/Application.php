@@ -47,7 +47,6 @@ class Application extends Model implements ExecutionInstanceInterface
      * Hidden properties
      */
     protected $hidden = [
-        'id',
         'creator_user_id',
         'process_id',
         'APP_DATA'

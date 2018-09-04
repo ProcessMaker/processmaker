@@ -1,6 +1,6 @@
 import {JointElements} from "../jointElements"
 import {Shape} from "../Shape"
-import {EndEvent} from "./endEvent/"
+import {EndEvent} from "./endEvent/index"
 import _ from "lodash"
 /**
  * EndEvent class

@@ -19,7 +19,6 @@
       doFilter () {
         if (this.filterText.length > 3) {
          this.$events.fire('filter-set', this.filterText)
-         console.log(this.filterText)
         }
       }
     }
