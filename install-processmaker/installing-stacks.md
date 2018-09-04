@@ -1,6 +1,6 @@
 ---
-description: Install the supported stack.
+description: Install the supported software before installing ProcessMaker.
 ---
 
-# Install Stack
+# Install Supported Software
 

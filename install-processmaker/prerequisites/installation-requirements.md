@@ -4,52 +4,35 @@ description: Understand hardware requirements and the supported monitoring tool.
 
 # Installation Requirements
 
-## Server Hardware Requirements
+## Hardware Requirements
 
-For personal use \(non-production\), ProcessMaker supports any computer with a modern CPU, an Internet connection, and 2GB of RAM.
+For Community Edition use \(non-production use\), ProcessMaker supports any computer with a modern CPU, an Internet connection, and 2 GB of RAM.
 
-For production use \(using live data\), the hardware requirements may vary based on the number of concurrent users, repository size and system configuration. ~~Larger implementations may require some configuration tuning to perform optimally. For more information, see~~ [~~ProcessMaker Server Sizing~~](https://wiki.processmaker.com/3.2/ProcessMaker_Server_Sizing)~~.~~
+## Software Requirements
 
-For production use, install ProcessMaker on a dedicated server or virtual machine with a dedicated Internet connection.
+The following are software requirements for ProcessMaker 4 Community Edition.
 
-## New Relic: Supported Monitoring Tool
+{% tabs %}
+{% tab title="Linux/Unix" %}
+Any Linux distribution that supports PHP 7.2 or greater. Red Hat distributions are preferred.
+{% endtab %}
 
-[New Relic](https://newrelic.com/) is the recommended monitoring tool to use with ProcessMaker.
+{% tab title="PHP" %}
+Version 7.2 or greater
+{% endtab %}
 
-### Disable the "Browser Application Monitoring" Instrumentation Feature
+{% tab title="Database" %}
+MySQL 5.7 or greater
+{% endtab %}
 
-To work with ProcessMaker, the "Browser Application Monitoring" instrumentation feature must be disabled in the New Relic configurations.
+{% tab title="Web Server" %}
+NGINX Open Source version 1.15.2 or greater
+{% endtab %}
 
-{% hint style="warning" %}
- If the "Browser Application Monitoring" instrumentation feature is enabled, ProcessMaker behavior will be affected. Disable this feature.
-{% endhint %}
+{% tab title="Redis" %}
+Version 4.0.x
+{% endtab %}
+{% endtabs %}
 
-To disable the "Browser Application Monitoring" instrumentation feature, follow these steps:
 
-**1.** Log in to New Relic.
-
-**2.** Go to the **Browser** panel.
-
-![Accessing the Browser panel](https://wiki.processmaker.com/sites/default/files/3.1NewRelicBrowser.png)
-
-**3.** Select the ProcessMaker workspaces that are being monitored.
-
-![Monitored ProcesMaker workspaces](https://wiki.processmaker.com/sites/default/files/3.1NewRelicWorkspace.png)
-
-**4.** Go to **Settings &gt; Application settings** in the menu on the left side of the window.
-
-![Select Application settings](https://wiki.processmaker.com/sites/default/files/3.1NewRelicApplicationSettings.png)
-
-**5.** Select the **Off - Disables Browser Application Monitoring Instrumentation** option to disable the Browser Application Monitoring instrumentation.
-
-![Disabling the Browser Application Monitoring instrumentation](https://wiki.processmaker.com/sites/default/files/3.1NewRelicOption.png)
-
-**6.** Click on the **Save application settings** button at the end of the page to save the changes.
-
-## Considerations for Production Servers
-
-For production servers, it is NOT recommended to have different ProcessMaker instances installed on different ports in the same server using:
-
-* The same server domain \(IP\)
-* The same workspace name
 
