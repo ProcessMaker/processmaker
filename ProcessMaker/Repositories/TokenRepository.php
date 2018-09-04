@@ -4,13 +4,13 @@ namespace ProcessMaker\Repositories;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Model\Delegation as Token;
+use ProcessMaker\Nayra\Bpmn\Models\ScriptTask;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\GatewayInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ThrowEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Repositories\TokenRepositoryInterface;
-use ProcessMaker\Repositories\ExecutionInstanceRepository;
 use ProcessMaker\Model\User;
 
 /**
@@ -63,6 +63,7 @@ class TokenRepository implements TokenRepositoryInterface
         $user = User::first();
         $token->uid = $token->getId();
         $token->thread_status = $token->getStatus();
+        $token->type = $this->getTypeActivityInterface($activity);
         $token->element_ref = $activity->getId();
         $token->application_id = $token->getInstance()->id;
         $token->user_id = $user->id;
@@ -74,6 +75,22 @@ class TokenRepository implements TokenRepositoryInterface
         $token->delayed = false;
         $token->saveOrFail();
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
+    }
+
+    /**
+     * Verify type of Activity
+     *
+     * @param ActivityInterface $activity
+     *
+     * @return string type activity
+     */
+    private function getTypeActivityInterface(ActivityInterface $activity)
+    {
+        if ($activity instanceof ScriptTask) {
+            return 'script';
+        }
+
+        return 'normal';
     }
 
     /**
