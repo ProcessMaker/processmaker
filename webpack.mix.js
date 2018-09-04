@@ -17,14 +17,21 @@ const MonocoEditorPlugin = require('monaco-editor-webpack-plugin')
 mix.webpackConfig({
         plugins: [
             new MonocoEditorPlugin()
-        ]
+        ],
+        resolve: {
+            alias: {
+                Horizon: path.resolve(__dirname, 'vendor/laravel/horizon/resources/assets/js/')
+            }
+        }
     }).js('resources/assets/js/app-layout.js', 'public/js')
     .js('resources/assets/js/designer/main.js', 'public/js/designer')
     .js('resources/assets/js/management/users/index.js', 'public/js/management/users')
+    .js('resources/assets/js/management/environment-variables/index.js', 'public/js/management/environment-variables')
     .js('resources/assets/js/management/profile/index.js', 'public/js/management/profile')
     .js('resources/assets/js/management/roles/index.js', 'public/js/management/roles')
     .js('resources/assets/js/management/groups/index.js', 'public/js/management/groups')
     .js('resources/assets/js/management/themes/index.js', 'public/js/management/themes')
+    .js('resources/assets/js/management/queues/index.js', 'public/js/management/queues')
     .js('resources/assets/js/management/preferences/index.js', 'public/js/management/preferences')
     .js('resources/assets/js/processes/tasks/index.js', 'public/js/processes/tasks')
     .js('resources/assets/js/processes/index.js', 'public/js/processes')
@@ -51,12 +58,14 @@ mix.webpackConfig({
     .copy('resources/assets/img/*', 'public/img')
     .sass('resources/assets/sass/sidebar/sidebar.scss', 'public/css')
     .sass('resources/assets/sass/app.scss', 'public/css')
+    .sass('resources/assets/sass/management/queues.scss', 'public/css/management')
     .copy('resources/assets/js/designer/skins', 'public/js/designer/skins')
     .copy('resources/assets/js/designer/plugins', 'public/js/designer/plugins')
     .copy('node_modules/snapsvg/dist/snap.svg.js', 'public/js')
     .copy('resources/assets/js/components/inbox.vue', 'public/js')
     .copy('resources/assets/js/components/CustomActions.vue', 'public/js')
     .copy('resources/assets/js/components/DetailRow.vue', 'public/js')
+    .copy('resources/assets/fonts/Open_Sans/', 'public/fonts')
     .copy('resources/assets/js/components/FilterBar.vue', 'public/js')
 
     .version()
