@@ -1,6 +1,6 @@
 import {JointElements} from "../jointElements"
 import {Shape} from "../Shape"
-import {IntermediateThrowEvent} from "./intermediateThrowEvent/"
+import {IntermediateThrowEvent} from "./intermediateThrowEvent/index"
 import _ from "lodash"
 /**
  * IntermediateThrowEvent class
