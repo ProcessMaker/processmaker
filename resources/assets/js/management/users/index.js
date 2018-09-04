@@ -61,7 +61,7 @@ new Vue({
         return
       }
       this.addUserValidationError = null
-      ProcessMaker.apiClient.post('users', this.addUser)
+      ProcessMaker.apiClient.post('admin/users', this.addUser)
         .then((response) => {
           this.$refs.addModal.hide()
           this.resetAddUser()
@@ -90,7 +90,7 @@ new Vue({
         });
     }
   },
-  components: { 
+  components: {
     UsersListing ,
     FormInput
   }

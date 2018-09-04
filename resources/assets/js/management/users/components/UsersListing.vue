@@ -1,7 +1,7 @@
 <template>
   <div>
     <vuetable :dataManager="dataManager" :sortOrder="sortOrder" :css="css" :api-mode="false"  @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data" pagination-path="meta">
-        <template slot="actions" slot-scope="props"> 
+        <template slot="actions" slot-scope="props">
           <div class="actions">
             <i class="fas fa-ellipsis-h"></i>
             <div class="popout">
@@ -9,7 +9,7 @@
               <b-btn variant="action" @click="onAction('remove-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="Remove"><i class="fas fa-trash-alt"></i></b-btn>
             </div>
           </div>
-      </template>  
+      </template>
     </vuetable>
     <pagination single="User" plural="Users" :perPageSelectEnabled="true" @changePerPage="changePerPage" @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
     <b-modal ref="editItem" size="md" centered title="Edit User">
@@ -19,7 +19,7 @@
       <form-input v-model="lastname" label="Last Name"></form-input>
       <form-select v-model="status" label="Status" name="status" :options="statusOptions"></form-select>
       <form-input :error="errors.password" v-model="password" type="password" label="Password"></form-input>
-      <form-input :error="errors.confpassword" v-model="confpassword" type="password" 
+      <form-input :error="errors.confpassword" v-model="confpassword" type="password"
                   label="Confirm Password" :validationData="data" validation="same:password"></form-input>
     </form>
     <div slot="modal-footer">
@@ -156,7 +156,7 @@ export default {
     },
     submitEdit(rowIndex) {
       window.ProcessMaker.apiClient
-        .put("users/" + this.uid, {
+        .put("admin/users/" + this.uid, {
           username: this.username,
           firstname: this.firstname,
           lastname: this.lastname,
@@ -214,7 +214,7 @@ export default {
       // Load from our api client
       ProcessMaker.apiClient
         .get(
-          "users?page=" +
+          "admin/users?page=" +
             this.page +
             "&per_page=" +
             this.perPage +
