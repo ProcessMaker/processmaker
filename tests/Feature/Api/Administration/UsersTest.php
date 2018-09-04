@@ -20,7 +20,7 @@ class UsersTest extends TestCase
 
     use DatabaseTransactions;
 
-    const API_TEST_USERS = '/api/1.0/users';
+    const API_TEST_USERS = '/api/1.0/admin/users';
     const API_TEST_PROFILE = '/api/1.0/admin/';
 
     private function doLogin($username, $password){
