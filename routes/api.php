@@ -16,16 +16,16 @@ Route::group([
         Route::delete('environment-variables/{variable}', 'Administration\EnvironmentVariablesController@delete');
 
 
-        
+
         // TEST SCRIPT PREVIEW/EXECUTION
         Route::post('script/preview', 'Designer\ScriptController@preview');
 
         // Users API Endpoints
-        Route::get('users', 'Administration\UsersController@index');
-        Route::get('users/{user}', 'Administration\UsersController@get');
-        Route::put('users/{user}', 'Administration\UsersController@update');
-        Route::post('users', 'Administration\UsersController@create');
-        Route::delete('users/{user}', 'Administration\UsersController@delete');
+        Route::get('admin/users', 'Administration\UsersController@index');
+        Route::get('admin/users/{user}', 'Administration\UsersController@get');
+        Route::put('admin/users/{user}', 'Administration\UsersController@update');
+        Route::post('admin/users', 'Administration\UsersController@create');
+        Route::delete('admin/users/{user}', 'Administration\UsersController@delete');
 
         // Groups API Endpoints
         Route::get('groups', 'Administration\GroupsController@index');
