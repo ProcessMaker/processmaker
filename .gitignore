@@ -19,3 +19,4 @@ public/*
 tests/js/coverage
 .DS_Store
 /nbproject
+/tests/js/coverage/*
