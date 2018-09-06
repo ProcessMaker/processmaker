@@ -4,7 +4,7 @@ namespace ProcessMaker\Http\Controllers\Api\Administration;
 
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Model\EnvironmentVariable;
+use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Transformers\EnvironmentVariableTransformer;
 
 class EnvironmentVariablesController extends Controller

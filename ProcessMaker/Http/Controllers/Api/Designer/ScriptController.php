@@ -9,7 +9,7 @@ use ProcessMaker\Facades\ScriptManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\Script;
-use ProcessMaker\Model\EnvironmentVariable;
+use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Transformers\ScriptTransformer;
 use Symfony\Component\HttpFoundation\Response;
 

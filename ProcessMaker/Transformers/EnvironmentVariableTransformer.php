@@ -3,7 +3,7 @@
 namespace ProcessMaker\Transformers;
 
 use League\Fractal\TransformerAbstract;
-use ProcessMaker\Model\EnvironmentVariable;
+use ProcessMaker\Models\EnvironmentVariable;
 
 /**
  * Transform a Environment Variable

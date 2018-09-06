@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use ProcessMaker\Model\EnvironmentVariable;
+use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Model\Form;
 use ProcessMaker\Model\Process;
 use ProcessMaker\Model\Script;

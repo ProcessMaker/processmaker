@@ -1,17 +1,15 @@
 <?php
-/**
-* DEPRECATED - Use Models (plural) folder and namespace
-**/
-namespace ProcessMaker\Model;
+
+namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
-use ProcessMaker\Model\Traits\Uuid;
+use Spatie\BinaryUuid\HasBinaryUuid;
 
 
 class EnvironmentVariable extends Model
 {
-    use Uuid;
+    use HasBinaryUuid;
 
     protected $fillable = [
         'name',
@@ -20,7 +18,6 @@ class EnvironmentVariable extends Model
     ];
 
     protected $hidden = [
-        'id',
         'value'
     ];
 

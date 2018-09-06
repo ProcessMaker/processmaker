@@ -4,7 +4,7 @@ namespace ProcessMaker\Model;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
-use ProcessMaker\Model\EnvironmentVariable;
+use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Model\Traits\Uuid;
 use Watson\Validating\ValidatingTrait;
 

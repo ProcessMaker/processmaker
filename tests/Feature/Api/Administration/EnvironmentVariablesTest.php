@@ -7,8 +7,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Model\User;
-use ProcessMaker\Model\EnvironmentVariable;
-
+use ProcessMaker\Models\EnvironmentVariable;
 
 class EnvironmentVariablesTest extends TestCase
 {
@@ -117,12 +116,12 @@ class EnvironmentVariablesTest extends TestCase
         ]);
         $variable->fresh();
         // Is now fetch the variable and see if success
-        $response = $this->api('get', self::API_TEST_VARIABLES . '/' . $variable->uid);
+        $response = $this->api('get', self::API_TEST_VARIABLES . '/' . $variable->uuid_text);
 
         $response->assertStatus(200);
 
         $response->assertJsonStructure([
-            'uid',
+            'uuid',
             'name',
             'description',
         ]);
@@ -150,7 +149,7 @@ class EnvironmentVariablesTest extends TestCase
             'description' => 'testdescription',
             'value' => 'differentvalue'
         ];
-        $response = $this->api('PUT', self::API_TEST_VARIABLES . '/' . $variable->uid, $data);
+        $response = $this->api('PUT', self::API_TEST_VARIABLES . '/' . $variable->uuid_text, $data);
 
         // Check for validation error status code
         $response->assertStatus(422);
@@ -170,11 +169,11 @@ class EnvironmentVariablesTest extends TestCase
             'description' => 'newdescription',
             'value' => 'newvalue'
         ];
-        $response = $this->api('PUT', self::API_TEST_VARIABLES . '/' . $variable->uid, $data);
+        $response = $this->api('PUT', self::API_TEST_VARIABLES . '/' . $variable->uuid_text, $data);
 
         $response->assertStatus(200);
 
-        $data['uid'] = $variable->uid;
+        $data['uuid'] = $variable->uuid;
         unset($data['value']);
         $this->assertDatabaseHas('environment_variables', $data);
 
@@ -187,7 +186,7 @@ class EnvironmentVariablesTest extends TestCase
     public function it_should_return_paginated_environment_variables_during_index()
     {
         // Can't truncate because of DatabaseTransactions
-        EnvironmentVariable::whereNotNull('id')->delete();
+        EnvironmentVariable::whereNotNull('uuid')->delete();
 
         $this->withoutExceptionHandling();
         factory(EnvironmentVariable::class, 50)->create();
@@ -229,7 +228,7 @@ class EnvironmentVariablesTest extends TestCase
             'value' => 'testvalue'
         ]);
         $variable->fresh();
-        $response = $this->api('DELETE', self::API_TEST_VARIABLES . '/' . $variable->uid);
+        $response = $this->api('DELETE', self::API_TEST_VARIABLES . '/' . $variable->uuid_text);
 
         $response->assertStatus(200);
 
