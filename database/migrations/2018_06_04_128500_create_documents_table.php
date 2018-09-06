@@ -15,7 +15,7 @@ class CreateDocumentsTable extends Migration
     {
         Schema::create('documents', function (Blueprint $table) {
             $table->increments('id');
-            $table->uuid('uid')->unique();
+            $table->char('uid', 36)->unique();
             $table->integer('application_id')->unsigned();
             $table->integer('user_id')->unsigned();
             $table->integer('folder_id')->nullable()->unsigned();

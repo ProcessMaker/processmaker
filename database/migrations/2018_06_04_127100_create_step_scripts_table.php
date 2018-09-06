@@ -16,7 +16,7 @@ class CreateStepScriptsTable extends Migration
     {
         Schema::create('step_scripts', function (Blueprint $table) {
             $table->increments('id');
-            $table->uuid('uid')->unique();
+            $table->char('uid', 36)->unique();
             $table->integer('step_id')->unsigned();
             $table->integer('script_id')->unsigned();
             $table->enum('TYPE', ['AFTER', 'BEFORE'])->default('AFTER');

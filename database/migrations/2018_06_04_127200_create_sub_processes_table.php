@@ -16,7 +16,7 @@ class CreateSubProcessesTable extends Migration
     {
         Schema::create('sub_processes', function (Blueprint $table) {
             $table->increments('id');
-            $table->uuid('uid')->unique();
+            $table->char('uid', 36)->unique();
             $table->integer('process_id')->unsigned();
             $table->integer('task_id')->unsigned();
             $table->integer('parent_task_id')->unsigned();

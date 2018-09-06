@@ -16,7 +16,7 @@ class CreateProcessUsersTable extends Migration
         Schema::create('process_users', function(Blueprint $table)
         {
             $table->increments('id');
-            $table->uuid('uid')->unique();
+            $table->char('uid', 36)->unique();
             $table->integer('process_id')->unsigned();
             $table->integer('user_id')->unsigned();
             $table->string('type', 20);

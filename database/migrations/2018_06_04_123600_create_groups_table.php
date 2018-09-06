@@ -16,7 +16,7 @@ class CreateGroupsTable extends Migration
     {
         Schema::create('groups', function (Blueprint $table) {
             $table->increments('id');
-            $table->uuid('uid')->unique();
+            $table->char('uid', 36)->unique();
             $table->string('title')->unique();
             $table->char('status', 8)->default(Group::STATUS_ACTIVE);
             // @todo Determine if following two columns are needed anymore

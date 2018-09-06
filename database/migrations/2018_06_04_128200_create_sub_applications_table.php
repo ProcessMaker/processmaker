@@ -16,7 +16,7 @@ class CreateSubApplicationsTable extends Migration
     {
         Schema::create('sub_applications', function (Blueprint $table) {
             $table->increments('id');
-            $table->uuid('uid')->unique();
+            $table->char('uid', 36)->unique();
             $table->integer('application_id')->unsigned();
             $table->integer('del_index_parent')->default(0);
             $table->integer('del_thread_parent')->default(0);

@@ -15,7 +15,7 @@ class CreateDelegationsTable extends Migration
     {
         Schema::create('delegations', function (Blueprint $table) {
             $table->increments('id');
-            $table->uuid('uid')->unique();
+            $table->char('uid', 36)->unique();
             $table->unsignedInteger('application_id');
             $table->string('element_ref')->nullable();
             $table->integer('index')->default(0);

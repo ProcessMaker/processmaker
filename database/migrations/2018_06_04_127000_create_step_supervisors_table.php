@@ -17,7 +17,7 @@ class CreateStepSupervisorsTable extends Migration
 
         Schema::create('step_supervisors', function (Blueprint $table) {
             $table->increments('id');
-            $table->uuid('uid')->unique();
+            $table->char('uid', 36)->unique();
             $table->integer('step_id')->unsigned();
             //relation with form, input, output document.
             $table->integer('object_id')->unsigned();

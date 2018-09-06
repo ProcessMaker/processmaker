@@ -16,7 +16,7 @@ class CreateMessageEventDefinitionsTable extends Migration
     {
         Schema::create('message_event_definitions', function (Blueprint $table) {
             $table->increments('id');
-            $table->uuid('uid')->unique();
+            $table->char('uid', 36)->unique();
             $table->integer('message_application_id')->unsigned();
             $table->integer('user_id')->unsigned();
             $table->text('variables');

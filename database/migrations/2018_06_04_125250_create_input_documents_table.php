@@ -16,7 +16,7 @@ class CreateInputDocumentsTable extends Migration
     {
         Schema::create('input_documents', function (Blueprint $table) {
             $table->increments('id');
-            $table->uuid('uid')->unique();
+            $table->char('uid', 36)->unique();
             $table->integer('process_id')->unsigned();
             $table->text('title', 16777215);
             $table->text('description', 16777215)->nullable();

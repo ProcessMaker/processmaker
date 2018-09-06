@@ -16,7 +16,7 @@ class CreateDelaysTable extends Migration
     {
         Schema::create('delays', function (Blueprint $table) {
             $table->increments('id');
-            $table->uuid('uid')->unique();
+            $table->char('uid', 36)->unique();
             $table->unsignedInteger('application_id');
             $table->unsignedInteger('task_id');
 

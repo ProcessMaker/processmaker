@@ -15,7 +15,7 @@ class CreateReportTableColumnsTable extends Migration
     {
         Schema::create('report_table_columns', function (Blueprint $table) {
             $table->increments('id');
-            $table->uuid('uid')->unique();
+            $table->char('uid', 36)->unique();
             $table->integer('report_table_id')->unsigned();
             $table->string('name');
             $table->string('dynaform_name')->nullable();

@@ -16,7 +16,7 @@ class CreateHistoriesTable extends Migration
     {
         Schema::create('histories', function (Blueprint $table) {
             $table->increments('id');
-            $table->uuid('uid')->unique();
+            $table->char('uid', 36)->unique();
             $table->unsignedInteger('task_id');
             $table->unsignedInteger('process_id');
             $table->unsignedInteger('form_id');

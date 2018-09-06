@@ -15,7 +15,7 @@ class CreateAdditionalTablesTable extends Migration
     {
         Schema::create('additional_tables', function (Blueprint $table) {
             $table->increments('id');
-            $table->uuid('uid')->unique();
+            $table->char('uid', 36)->unique();
             $table->string('name');
             $table->text('description')->nullable();
             $table->enum('type', ['PMTABLE', 'NORMAL', 'GRID'])->default('PMTABLE');

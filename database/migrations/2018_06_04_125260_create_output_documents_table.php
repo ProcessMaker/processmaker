@@ -15,7 +15,7 @@ class CreateOutputDocumentsTable extends Migration
     {
         Schema::create('output_documents', function (Blueprint $table) {
             $table->increments('id');
-            $table->uuid('uid')->unique();
+            $table->char('uid', 36)->unique();
             $table->integer('process_id')->unsigned();
             $table->text('title');
             $table->text('description')->nullable();

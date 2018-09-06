@@ -16,7 +16,7 @@ class CreateScriptTasksTable extends Migration
     {
         Schema::create('script_tasks', function (Blueprint $table) {
             $table->increments('id');
-            $table->uuid('uid')->unique();
+            $table->char('uid', 36)->unique();
             $table->integer('tasks_id')->unsigned();
             //Id Relations with scripts, services
             $table->integer('object_id')->unsigned();

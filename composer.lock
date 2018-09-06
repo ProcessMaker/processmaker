@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "75785d07b2183f38dc322fff8656a9b6",
+    "content-hash": "ba7d3ebc4bb27018906222571032160a",
     "packages": [
         {
             "name": "cakephp/chronos",
@@ -1301,6 +1301,74 @@
             "time": "2018-08-21T13:44:37+00:00"
         },
         {
+            "name": "laravel/horizon",
+            "version": "v1.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/horizon.git",
+                "reference": "342c4ddf6dda7c7ed21e57566f202b96e28afb6b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/horizon/zipball/342c4ddf6dda7c7ed21e57566f202b96e28afb6b",
+                "reference": "342c4ddf6dda7c7ed21e57566f202b96e28afb6b",
+                "shasum": ""
+            },
+            "require": {
+                "cakephp/chronos": "^1.0",
+                "ext-pcntl": "*",
+                "ext-posix": "*",
+                "illuminate/contracts": "~5.5",
+                "illuminate/queue": "~5.5",
+                "illuminate/support": "~5.5",
+                "php": ">=7.1.0",
+                "predis/predis": "^1.1",
+                "ramsey/uuid": "^3.5",
+                "symfony/debug": "~3.3|~4.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "~1.0",
+                "orchestra/database": "~3.5",
+                "orchestra/testbench": "~3.5",
+                "phpunit/phpunit": "~6.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                },
+                "laravel": {
+                    "providers": [
+                        "Laravel\\Horizon\\HorizonServiceProvider"
+                    ],
+                    "aliases": {
+                        "Horizon": "Laravel\\Horizon\\Horizon"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Laravel\\Horizon\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylor@laravel.com"
+                }
+            ],
+            "description": "Dashboard and code-driven configuration for Laravel queues.",
+            "keywords": [
+                "laravel",
+                "queue"
+            ],
+            "time": "2018-06-21T09:19:40+00:00"
+        },
+        {
             "name": "laravel/passport",
             "version": "v7.0.1",
             "source": {
@@ -1368,74 +1436,6 @@
                 "passport"
             ],
             "time": "2018-08-13T14:45:04+00:00"
-        },
-        {
-            "name": "laravel/horizon",
-            "version": "v1.3.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/laravel/horizon.git",
-                "reference": "342c4ddf6dda7c7ed21e57566f202b96e28afb6b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/laravel/horizon/zipball/342c4ddf6dda7c7ed21e57566f202b96e28afb6b",
-                "reference": "342c4ddf6dda7c7ed21e57566f202b96e28afb6b",
-                "shasum": ""
-            },
-            "require": {
-                "cakephp/chronos": "^1.0",
-                "ext-pcntl": "*",
-                "ext-posix": "*",
-                "illuminate/contracts": "~5.5",
-                "illuminate/queue": "~5.5",
-                "illuminate/support": "~5.5",
-                "php": ">=7.1.0",
-                "predis/predis": "^1.1",
-                "ramsey/uuid": "^3.5",
-                "symfony/debug": "~3.3|~4.0"
-            },
-            "require-dev": {
-                "mockery/mockery": "~1.0",
-                "orchestra/database": "~3.5",
-                "orchestra/testbench": "~3.5",
-                "phpunit/phpunit": "~6.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.0-dev"
-                },
-                "laravel": {
-                    "providers": [
-                        "Laravel\\Horizon\\HorizonServiceProvider"
-                    ],
-                    "aliases": {
-                        "Horizon": "Laravel\\Horizon\\Horizon"
-                    }
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Laravel\\Horizon\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Taylor Otwell",
-                    "email": "taylor@laravel.com"
-                }
-            ],
-            "description": "Dashboard and code-driven configuration for Laravel queues.",
-            "keywords": [
-                "laravel",
-                "queue"
-            ],
-            "time": "2018-06-21T09:19:40+00:00"
         },
         {
             "name": "laravel/tinker",
@@ -2456,11 +2456,6 @@
         {
             "name": "processmaker/nayra",
             "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ProcessMaker/nayra.git",
-                "reference": "5a8e39041aa0ff730849ec9459683b896b697a9c"
-            },
             "dist": {
                 "type": "zip",
                 "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/5a8e39041aa0ff730849ec9459683b896b697a9c",
@@ -3021,6 +3016,62 @@
                 "spatie"
             ],
             "time": "2018-06-05T07:36:17+00:00"
+        },
+        {
+            "name": "spatie/laravel-binary-uuid",
+            "version": "1.2.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spatie/laravel-binary-uuid.git",
+                "reference": "023321f519e8b4c8fa2d834dcdfe672f40ba6934"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spatie/laravel-binary-uuid/zipball/023321f519e8b4c8fa2d834dcdfe672f40ba6934",
+                "reference": "023321f519e8b4c8fa2d834dcdfe672f40ba6934",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/queue": "~5.5.28|~5.6.0|~5.7.0",
+                "php": "^7.1",
+                "ramsey/uuid": "^3.7"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^3.5|~3.6.0|~3.7.0",
+                "phpunit/phpunit": "^6.5|^7.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Spatie\\BinaryUuid\\UuidServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Spatie\\BinaryUuid\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Brent Roose",
+                    "email": "brent@spatie.be",
+                    "homepage": "https://spatie.be",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Binary support for UUIDs in Laravel",
+            "homepage": "https://github.com/spatie/laravel-binary-uuid",
+            "keywords": [
+                "laravel-binary-uuid",
+                "spatie"
+            ],
+            "time": "2018-08-28T12:03:37+00:00"
         },
         {
             "name": "spatie/laravel-fractal",

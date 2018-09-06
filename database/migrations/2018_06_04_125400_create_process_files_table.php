@@ -16,7 +16,7 @@ class CreateProcessFilesTable extends Migration
         Schema::create('process_files', function(Blueprint $table)
         {
             $table->increments('id');
-            $table->uuid('uid')->unique();
+            $table->char('uid', 36)->unique();
             $table->integer('process_id')->unsigned();
             $table->integer('user_id')->unsigned();
             $table->unsignedInteger('update_user_id')->nullable();

@@ -16,7 +16,7 @@ class CreateMessageTypesTable extends Migration
     {
         Schema::create('message_types', function (Blueprint $table) {
             $table->increments('id');
-            $table->uuid('uid')->unique();
+            $table->char('uid', 36)->unique();
             $table->integer('process_id')->unsigned();
             $table->string('name', 512)->nullable()->default('');
             $table->timestamps();

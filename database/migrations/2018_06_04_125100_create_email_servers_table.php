@@ -15,7 +15,7 @@ class CreateEmailServersTable extends Migration
     {
         Schema::create('email_servers', function (Blueprint $table) {
             $table->increments('id');
-            $table->uuid('uid');
+            $table->char('uid', 36);
             $table->integer('process_id')->unsigned();
             $table->enum('engine', ['MAIL', 'PHPMAILER'])->default('MAIL');
             $table->string('server')->default('');

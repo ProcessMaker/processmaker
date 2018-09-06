@@ -15,7 +15,7 @@ class CreateProcessVariablesTable extends Migration
     {
         Schema::create('process_variables', function (Blueprint $table) {
             $table->increments('id');
-            $table->uuid('uid');
+            $table->char('uid', 36);
             $table->integer('process_id')->nullable()->unsigned();
             $table->integer('input_document_id')->nullable()->unsigned();
             $table->integer('db_source_id')->nullable()->unsigned();

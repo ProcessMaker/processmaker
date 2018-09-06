@@ -16,7 +16,7 @@ class CreateExecuteTimeoutActionsTable extends Migration
     {
         Schema::create('execute_timeout_actions', function (Blueprint $table) {
             $table->increments('id');
-            $table->uuid('uid')->unique();
+            $table->char('uid', 36)->unique();
             $table->unsignedInteger('application_id');
             $table->integer('index')->default(0);
             $table->dateTime('execution_date')->nullable();

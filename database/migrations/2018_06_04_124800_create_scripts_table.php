@@ -16,7 +16,7 @@ class CreateScriptsTable extends Migration
         Schema::create('scripts', function (Blueprint $table) {
             $table->increments('id');
             $table->timestamps();
-            $table->uuid('uid');
+            $table->char('uid', 36);
             $table->text('title');
             $table->text('description')->nullable();
             $table->unsignedInteger('process_id');

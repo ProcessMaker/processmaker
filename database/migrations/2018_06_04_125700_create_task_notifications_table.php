@@ -15,7 +15,7 @@ class CreateTaskNotificationsTable extends Migration
     {
         Schema::create('task_notifications', function (Blueprint $table) {
             $table->increments('id');
-            $table->uuid('uid');
+            $table->char('uid', 36);
             $table->unsignedInteger('task_id');
 
             //task description

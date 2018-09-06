@@ -16,7 +16,7 @@ class CreateDbSourcesTable extends Migration
         Schema::create('db_sources', function(Blueprint $table)
         {
             $table->increments('id');
-            $table->uuid('uid')->unique();
+            $table->char('uid', 36)->unique();
             $table->unsignedInteger('process_id')->nullable()->index('indexDBSource');
             $table->string('type', 8)->default('mysql');
             $table->string('server')->nullable();

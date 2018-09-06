@@ -16,7 +16,7 @@ class CreateProcessCategoriesTable extends Migration
         Schema::create('process_categories', function(Blueprint $table)
         {
             $table->increments('id');
-            $table->uuid('uid')->unique();
+            $table->char('uid', 36)->unique();
             $table->string('name')->default('');
             $table->enum('status', ['ACTIVE', 'INACTIVE'])
                   ->default('ACTIVE');

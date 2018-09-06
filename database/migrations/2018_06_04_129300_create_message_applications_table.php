@@ -15,7 +15,7 @@ class CreateMessageApplicationsTable extends Migration
     {
         Schema::create('message_applications', function (Blueprint $table) {
             $table->increments('id');
-            $table->uuid('uid')->unique();
+            $table->char('uid', 36)->unique();
             $table->integer('application_id')->unsigned();
             $table->text('variables');
             $table->string('correlation', 512)->default('');

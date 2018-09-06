@@ -15,7 +15,7 @@ class CreateMessageTypeVariablesTable extends Migration
     {
         Schema::create('message_type_variables', function (Blueprint $table) {
             $table->increments('id');
-            $table->uuid('uid')->unique();
+            $table->char('uid', 36)->unique();
             $table->integer('message_type_id')->unsigned();
             $table->string('name', 512)->default('');
             $table->string('default_value', 512)->default('');

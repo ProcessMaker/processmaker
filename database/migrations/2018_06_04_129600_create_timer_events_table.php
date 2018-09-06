@@ -16,7 +16,7 @@ class CreateTimerEventsTable extends Migration
     {
         Schema::create('timer_events', function (Blueprint $table) {
             $table->increments('id');
-            $table->uuid('uid')->unique();
+            $table->char('uid', 36)->unique();
             $table->integer('process_id')->unsigned();
             $table->integer('event_id')->unsigned();
             $table->string('option', 50)->default('DAILY');

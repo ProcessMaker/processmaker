@@ -16,7 +16,7 @@ class CreateMessageEventRelationsTable extends Migration
     {
         Schema::create('message_event_relations', function (Blueprint $table) {
             $table->increments('id');
-            $table->uuid('uid')->unique();
+            $table->char('uid', 36)->unique();
             $table->integer('process_id')->unsigned();
             $table->integer('throw_event_id')->unsigned();
             $table->integer('catch_event_id')->unsigned();

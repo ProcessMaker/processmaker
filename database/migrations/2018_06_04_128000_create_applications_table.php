@@ -15,7 +15,7 @@ class CreateApplicationsTable extends Migration
     {
         Schema::create('APPLICATION', function (Blueprint $table) {
             $table->increments('id');
-            $table->uuid('uid')->unique();
+            $table->char('uid', 36)->unique();
             $table->integer('process_id')->unsigned();
             $table->string('callable')->nullable();
             $table->text('APP_TITLE', 16777215);

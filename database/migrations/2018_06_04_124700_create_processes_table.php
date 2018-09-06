@@ -15,7 +15,7 @@ class CreateProcessesTable extends Migration
     {
         Schema::create('processes', function (Blueprint $table) {
             $table->increments('id')->unsigned();
-            $table->uuid('uid')->unique();
+            $table->char('uid', 36)->unique();
             $table->string('name');
             $table->text('description')->nullable();
             // Null value means no parent
