@@ -16,11 +16,11 @@ class CreateProcessVersionsTable extends Migration
         Schema::create('process_versions', function (Blueprint $table) {
             // columns
             $table->uuid('uuid');
-            $table->uuid('process_uuid');
-            $table->uuid('process_category_uuid');
-            $table->string('name');
-            $table->enum('status', ['ACTIVE', 'INACTIVE']);
             $table->text('bpmn');
+            $table->string('name');
+            $table->uuid('process_category_uuid');
+            $table->uuid('process_uuid');
+            $table->enum('status', ['ACTIVE', 'INACTIVE']);
             $table->timestamps();
 
             // indexes
