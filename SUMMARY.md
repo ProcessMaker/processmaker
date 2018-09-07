@@ -9,13 +9,13 @@
 
 ## Using ProcessMaker
 
-* [Log In](using-processes/log-in-to-processmaker.md)
-* [Profile Settings](using-processes/profile-settings.md)
-* [Make a Request](using-processes/make-a-request.md)
-* [View Requests Made of You](using-processes/view-requests-made-of-you.md)
-* [Task Management](using-processes/task-management.md)
-* [Notifications](using-processes/notifications.md)
-* [Log Out](using-processes/log-out.md)
+* [Log In](using-processmaker/log-in.md)
+* [Profile Settings](using-processmaker/profile-settings.md)
+* [Make a Request](using-processmaker/make-a-request.md)
+* [View Requests Made of You](using-processmaker/view-requests-made-of-you.md)
+* [Task Management](using-processmaker/task-management.md)
+* [Notifications](using-processmaker/notifications.md)
+* [Log Out](using-processmaker/log-out.md)
 
 ## Designing Processes
 
