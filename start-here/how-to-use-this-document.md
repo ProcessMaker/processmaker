@@ -36,7 +36,7 @@ A ProcessMaker user is a person whose only interaction with ProcessMaker is to m
 
 * [How to log in to ProcessMaker](../using-processmaker/log-in.md)
 * [How to make a request](../using-processmaker/requests/make-a-request.md)
-* [How to view requests made of you](../using-processmaker/requests/view-requests-made-of-you.md)
+* [How to view requests made of you](../using-processmaker/requests/view-in-progress-requests.md)
 
 
 

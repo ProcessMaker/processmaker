@@ -6,6 +6,8 @@ description: Make a request by starting a process.
 
 Follow these steps to make a request:
 
-1. [Log in](../log-in.md#log-in) to ProcessMaker. The **Requests** page displays. The **Started By Me** tab displays by default.
+1. Do one of the following:
+   * [Log in](../log-in.md#log-in) to ProcessMaker. The **Started by Me** tab in the **Requests** page displays.
+   * Click the **Requests** page if it is not currently displayed.
 2. Click **+ Request**.
 
