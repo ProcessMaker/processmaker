@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+use ProcessMaker\Models\ProcessRequest;
 
 class CreateProcessRequestsTable extends Migration
 {
@@ -20,8 +21,8 @@ class CreateProcessRequestsTable extends Migration
             $table->uuid('process_uuid');
             $table->uuid('process_collaboration_uuid')->nullable();
             $table->uuid('user_uuid')->nullable();
-            $table->string('participant_uuid', 36);
-            $table->enum('status', ['ACTIVE,COMPLETED']);
+            $table->string('participant_uuid', 36)->nullable();
+            $table->enum('status', [ProcessRequest::STATUS_ACTIVE, ProcessRequest::STATUS_COMPLETED]);
             $table->json('data');
             $table->string('name');
             $table->timestamp('completed_at')->nullable();
