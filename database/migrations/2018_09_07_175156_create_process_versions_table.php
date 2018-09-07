@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateProcessTable extends Migration
+class CreateProcessVersionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,21 +13,21 @@ class CreateProcessTable extends Migration
      */
     public function up()
     {
-        Schema::create('processes', function (Blueprint $table) {
+        Schema::create('process_versions', function (Blueprint $table) {
             // columns
             $table->uuid('uuid');
+            $table->uuid('process_uuid');
             $table->uuid('process_category_uuid');
-            $table->uuid('user_uuid');
-            $table->text('bpmn');
             $table->string('name');
             $table->enum('status', ['ACTIVE', 'INACTIVE']);
+            $table->text('bpmn');
             $table->timestamps();
 
             // indexes
             $table->primary('uuid');
 
             // foreign keys
-            $table->foreign('user_uuid')->references('uuid')->on('users')->onDelete('cascade');
+            $table->foreign('process_uuid')->references('uuid')->on('processes')->onDelete('cascade');
             $table->foreign('process_category_uuid')->references('uuid')->on('process_categories')->onDelete('cascade');
         });
     }
@@ -39,6 +39,6 @@ class CreateProcessTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('processes');
+        Schema::dropIfExists('process_versions');
     }
 }
