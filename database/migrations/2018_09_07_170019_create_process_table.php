@@ -16,9 +16,10 @@ class CreateProcessTable extends Migration
         Schema::create('processes', function (Blueprint $table) {
             // columns
             $table->uuid('uuid');
-            $table->uuid('process_category_uuid');
+            $table->uuid('process_category_uuid')->nullable();
             $table->uuid('user_uuid');
             $table->text('bpmn');
+            $table->string('description');
             $table->string('name');
             $table->enum('status', ['ACTIVE', 'INACTIVE']);
             $table->timestamps();

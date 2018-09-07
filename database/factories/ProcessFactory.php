@@ -1,27 +1,25 @@
 <?php
 
 use Faker\Generator as Faker;
-use ProcessMaker\Model\Process;
-use ProcessMaker\Model\ProcessCategory;
-use ProcessMaker\Model\User;
-use Ramsey\Uuid\Uuid;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\User;
 
 /**
  * Model factory for a process
  */
 $factory->define(Process::class, function (Faker $faker) {
-
+    $emptyProcess = $faker->file(Process::getProcessTemplatesPath());
     return [
-        'uid' => Uuid::uuid4(),
         'name' => $faker->sentence(3),
+        'bpmn' => file_get_contents($emptyProcess),
         'description' => $faker->paragraph(3),
-        'status' => 'ACTIVE',
-        'type' => 'NORMAL',
-        'user_id' => function () {
-            return factory(User::class)->create()->id;
+        'status' => Process::STATUS_ACTIVE,
+        'user_uuid' => function () {
+            return factory(User::class)->create()->uuid;
         },
-        'process_category_id' => function () {
-            return factory(ProcessCategory::class)->create()->id;
+        'process_category_uuid' => function () {
+            return factory(ProcessCategory::class)->create()->uuid;
         }
     ];
 });
