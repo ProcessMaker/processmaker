@@ -86,7 +86,7 @@ export default {
       name: "",
       description: "",
       value: "",
-      uid: "",
+      uuid: "",
       errors: {
         name: null,
         description: null,
@@ -107,13 +107,13 @@ export default {
       this.description = this.data.data[index].description;
       // Do not load value, always reset it to empty string
       this.value = "";
-      this.uid = this.data.data[index].uid;
+      this.uuid = this.data.data[index].uuid;
       this.curIndex = index;
       this.$refs.editItem.show();
     },
     submitEdit(rowIndex) {
       window.ProcessMaker.apiClient
-        .put("environment-variables/" + this.uid, {
+        .put("environment-variables/" + this.uuid, {
           name: this.name,
           description: this.description,
           value: this.value
