@@ -4,7 +4,7 @@ description: View a tabular list of your processes.
 
 # View the List of Processes
 
-The following information displays about processes in tabular format:
+The **Processes** page displays the following information about processes in tabular format:
 
 * **Process:** The **Process** column displays the process name.
 * **Category:** The **Category** column displays in which category the process was assigned when the process was created.
@@ -12,28 +12,26 @@ The following information displays about processes in tabular format:
   * **Draft:** A process is in Draft status prior to when it is published.
   * **Active:** A process is in Active status after it has been published. 
   * **Inactive:** A process is in Inactive status when it is changed from Active status. 
-  * **Archived:** - A process is in Archived status when it is neither in Active or Inactive statuses. Any active or inactive process can be archived.
+  * **Archived:** A process is in Archived status when it is neither in Active or Inactive statuses. Any active or inactive process can be archived.
 
-For information how to change the process status, see Change the Status of a Process.
+For information how to change the process status, see [Change the Status of a Process](change-the-status-of-a-process.md).
 
 * **Modified By:** The **Modified By** column displays the user name of who last modified the process.
-* **Created:** The **Created** column displays the date and time the process was created in the user's set time zone setting.
+* **Created:** The **Created** column displays the date and time the process was created. The time is displayed according to your time zone setting.
 * **Actions:** Hover your cursor over this unlabeled column to display a list of actions you can use on the process:
   * **Edit:** Select **Edit** to edit the process. Note that this action does not display if the process has Active status. To edit the process, first deactivate it.
   * **Activate/Deactivate:** Select **Activate/Deactivate** to activate or deactivate the process. This option displays **Activate** when the process is inactive, and vice versa.
-  * **Export:** Select **Export** to export the process. For information how to export a process, see Export a Process.
-  * **Archive:** Select **Archive** to archive the process. For information how to archive a process, see Archive a Process. Note that this action does not display if the process has Active status. To archive the process, first deactivate it.
-  * **Delete:** Select **Delete** to delete the process. For information how to delete a process see Delete a Process. Note that this action does not display if the process has Active status. To delete the process, first deactivate it. In the Beta of the Community edition, any user can delete a process. In the Enterprise edition, you must have appropriate permissions.
-
-Open a process by clicking on its row in the table.
+  * **Export:** Select **Export** to export the process. For information how to export a process, see [Export a Process](export-a-process.md).
+  * **Archive:** Select **Archive** to archive the process. For information how to archive a process, see [Archive a Process](archive-a-process.md). Note that this action does not display if the process has Active status. To archive the process, first deactivate it.
+  * **Delete:** Select **Delete** to delete the process. For information how to delete a process see [Delete a Process](delete-a-process.md). Note that this action does not display if the process has Active status. To delete the process, first deactivate it. You must have appropriate permissions to delete a process.
 
 To view the list of processes, click the **Processes** tab. The table of processes displays.
 
-By default, processes are ordered by creation date and display 10 processes per page.
+Open a process by clicking on its row in the table.
 
 If no processes exist, the following message displays: **You don't have any processes. Please click on '+Process' to get started.**
 
-Use these tips to control how process information displays in this table:
+Use these tips to control how process information displays in the table:
 
 * If the tabular list is wider than the page, use the two \(2\) arrows on the upper right to vertically scroll the table. Click the right arrow to move the table left. Click the left arrow to move the table right.
 * To change the column order of the tabular list, click a header column and then drag to another position.

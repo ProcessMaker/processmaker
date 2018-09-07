@@ -32,6 +32,7 @@
   * [View the List of Processes](designing-processes/viewing-processes/view-the-list-of-processes.md)
   * [Search for a Process](designing-processes/viewing-processes/search-for-a-process.md)
   * [Edit a Process](designing-processes/viewing-processes/edit-a-process.md)
+  * [Change the Status of a Process](designing-processes/viewing-processes/change-the-status-of-a-process.md)
   * [Archive a Process](designing-processes/viewing-processes/archive-a-process.md)
   * [Delete a Process](designing-processes/viewing-processes/delete-a-process.md)
 * [Process Design](designing-processes/process-design/README.md)
