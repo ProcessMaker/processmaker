@@ -38,6 +38,8 @@ class ProcessVersion extends Model
     protected $guarded = [
         'uuid',
         'bpmn',
+        'updated_at',
+        'created_at',
     ];
 
     /**
