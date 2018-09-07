@@ -17,7 +17,7 @@ class CreateProcessCategoriesTable extends Migration
             // columns
             $table->uuid('uuid');
             $table->string('name');
-            $table->rememberToken();
+            $table->enum('status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
             $table->timestamps();
 
             // indexes
