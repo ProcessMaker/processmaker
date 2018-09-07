@@ -35,15 +35,13 @@ class Process extends Model
     public $incrementing = false;
 
     /**
-     * The attributes that are mass assignable.
+     * The attributes that aren't mass assignable.
      *
-     * @var array $fillable
+     * @var array
      */
-    protected $fillable = [
+    protected $guarded = [
+        'uuid',
         'bpmn',
-        'description',
-        'name',
-        'status',
     ];
 
     /**
@@ -93,6 +91,7 @@ class Process extends Model
     {
         return [
             'name' => 'required',
+            'description' => 'required',
             'status' => 'in:' . self::STATUS_ACTIVE . ',' . self::STATUS_INACTIVE,
             'process_category_uuid' => 'nullable|exists:process_categories,uuid',
             'user_uuid' => 'exists:users,uuid',
