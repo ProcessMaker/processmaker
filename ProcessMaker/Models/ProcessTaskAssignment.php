@@ -30,6 +30,15 @@ class ProcessTaskAssignment extends Model
         'assignment_type'
     ];
 
+    /**
+     * The binary UUID attributes that should be converted to text.
+     *
+     * @var array
+     */
+    protected $uuids = [
+        'assignment_uuid',
+    ];
+
     public static function rules($existing = null)
     {
         return [
