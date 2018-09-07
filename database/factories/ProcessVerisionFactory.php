@@ -6,7 +6,7 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 
 /**
- * Model factory for a process
+ * Model factory for a ProcessVersion
  */
 $factory->define(ProcessVersion::class, function (Faker $faker) {
     $emptyProcess = $faker->file(Process::getProcessTemplatesPath());
