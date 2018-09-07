@@ -2,6 +2,8 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
+use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
 use Spatie\BinaryUuid\HasBinaryUuid;
 
 /**
@@ -25,9 +27,10 @@ use Spatie\BinaryUuid\HasBinaryUuid;
  * @property \Carbon\Carbon $created_at
  *
  */
-class ProcessRequest extends Model
+class ProcessRequest extends Model implements ExecutionInstanceInterface
 {
 
+    use ExecutionInstanceTrait;
     use HasBinaryUuid;
 
     /**
@@ -73,6 +76,18 @@ class ProcessRequest extends Model
     ];
 
     /**
+     * Boot application as a process instance.
+     *
+     * @param array $argument
+     */
+    public function __construct(array $argument=[])
+    {
+        parent::__construct($argument);
+        $this->bootElement([]);
+        $this->setId(self::generateUuid());
+    }
+
+    /**
      * Validation rules.
      *
      * @return array
@@ -87,6 +102,39 @@ class ProcessRequest extends Model
             'process_collaboration_uuid' => 'nullable|exists:process_collaborations,uuid',
             'user_uuid' => 'exists:users,uuid',
         ];
+    }
+
+    /**
+     * Returns the unserialized data model for this application
+     * @return mixed
+     */
+    public function getData()
+    {
+        return json_decode($this->data);
+    }
+
+    /**
+     * Determines if a user has participated in this application.  This is done by checking if any delegations
+     * match this application and passed in user.
+     *
+     * @param User $user User to check
+     *
+     * @return boolean True if the user participated in this Case in some way
+     */
+    public function hasUserParticipated(User $user)
+    {
+        return $this->tokens()
+            ->where('user_uuid', $user->uuid)
+            ->exists();
+    }
+
+    /**
+     * Get tokens of the request.
+     *
+     */
+    public function tokens()
+    {
+        return $this->hasMany(ProcessRequestTokens::class);
     }
 
     /**
