@@ -19,17 +19,19 @@ class CreateProcessRequestsTable extends Migration
             $table->uuid('uuid');
             $table->uuid('process_uuid');
             $table->uuid('process_collaboration_uuid')->nullable();
+            $table->uuid('user_uuid')->nullable();
             $table->string('participant_uuid', 36);
             $table->enum('status', ['ACTIVE,COMPLETED']);
             $table->json('data');
             $table->string('name');
-            $table->timestamp('completed_date')->nullable();
-            $table->timestamp('init_date')->nullable();
+            $table->timestamp('completed_at')->nullable();
+            $table->timestamp('initiated_at')->nullable();
             $table->timestamps();
 
             //Indexes
             $table->primary('uuid');
             $table->index('process_uuid');
+            $table->index('user_uuid');
             $table->index('process_collaboration_uuid');
             $table->index('participant_uuid');
 
@@ -41,6 +43,10 @@ class CreateProcessRequestsTable extends Migration
             //A process can not be deleted if it has requests
             $table->foreign('process_uuid')
                 ->references('uuid')->on('processes')
+                ->onDelete('restrict');
+            //An user can not be deleted if it has requests
+            $table->foreign('user_uuid')
+                ->references('uuid')->on('users')
                 ->onDelete('restrict');
         });
     }
