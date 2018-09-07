@@ -40,7 +40,6 @@ class Process extends Model
      * @var array $fillable
      */
     protected $fillable = [
-        'bpmn',
         'description',
         'name',
         'status',
