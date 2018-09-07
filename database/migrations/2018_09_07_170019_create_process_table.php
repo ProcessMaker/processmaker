@@ -18,7 +18,7 @@ class CreateProcessTable extends Migration
             $table->uuid('uuid');
             $table->uuid('process_category_uuid');
             $table->uuid('user_uuid');
-            $table->string('bpmn');
+            $table->text('bpmn');
             $table->string('name');
             $table->enum('status', ['ACTIVE', 'INACTIVE']);
             $table->timestamps();
