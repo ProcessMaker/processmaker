@@ -7,7 +7,7 @@ description: Log in to ProcessMaker using your ProcessMaker credentials.
 {% hint style="info" %}
 Please contact your ProcessMaker Administrator if you do not know either of the following:
 
-* the web address to access the ProcessMaker log in screen
+* the web address to access the ProcessMaker log in page
 * your ProcessMaker log in credentials
 
 Did you forget your password? See [Reset Your Password](log-in.md#reset-your-password).  
@@ -24,7 +24,7 @@ Follow these steps to log in to ProcessMaker:
 
    For example, if running ProcessMaker at the IP address 192.168.1.110 from the port 3018, then enter: `http://192.168.1.110:3018`.
 
-   The ProcessMaker log in screen displays.  
+   The ProcessMaker log in page displays.  
 
    ![](../.gitbook/assets/pm4-log-in-screen.png)
 
@@ -37,12 +37,12 @@ Follow these steps to log in to ProcessMaker:
 
 Follow these steps to log in to ProcessMaker:
 
-1. Access the ProcessMaker log in screen as described in [Log In](log-in.md#log-in).
+1. Access the ProcessMaker log in page as described in [Log In](log-in.md#log-in).
 2. Click the **Forgot Password?** link as highlighted below.  
 
    ![](../.gitbook/assets/forgot-password-link.png)
 
-   The **Forgot Your Password?** screen displays.  
+   The **Forgot Your Password?** page displays.  
 
    ![](../.gitbook/assets/forgot-password-screen.png)
 
@@ -52,6 +52,6 @@ Follow these steps to log in to ProcessMaker:
 
 4. Click **REQUEST RESET LINK**.
 5. Check your email for the instructions to reset your password.
-6. After you click the link in that email to reset your password, click the **Back to Login link** to return to the log in screen.
+6. After you click the link in that email to reset your password, click the **Back to Login link** to return to the log in page.
 7. Log in to ProcessMaker as described in [Log In](log-in.md#log-in).
 

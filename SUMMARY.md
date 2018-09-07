@@ -12,6 +12,7 @@
 * [Log In](using-processmaker/log-in.md)
 * [Profile Settings](using-processmaker/profile-settings.md)
 * [Make a Request](using-processmaker/make-a-request.md)
+* [View Requests You Started](using-processmaker/view-requests-you-started.md)
 * [View Requests Made of You](using-processmaker/view-requests-made-of-you.md)
 * [Task Management](using-processmaker/task-management.md)
 * [Notifications](using-processmaker/notifications.md)
