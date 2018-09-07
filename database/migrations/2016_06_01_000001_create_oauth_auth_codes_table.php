@@ -16,8 +16,8 @@ class CreateOauthAuthCodesTable extends Migration
         Schema::create('oauth_auth_codes', function (Blueprint $table) {
           $table->uuid('uuid');
           $table->primary('uuid');
-            $table->char('user_uuid', 36);
-            $table->char('client_uuid', 36);            
+            $table->uuid('user_uuid');
+            $table->uuid('client_uuid'); 
             $table->text('scopes')->nullable();
             $table->boolean('revoked');
             $table->dateTime('expires_at')->nullable();
