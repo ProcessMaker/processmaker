@@ -1,5 +1,5 @@
 ---
-description: Search for any request of which you started or participated.
+description: Search for any request in which you started or participated.
 ---
 
 # Search for a Request
@@ -7,7 +7,7 @@ description: Search for any request of which you started or participated.
 You can search for any request of which you started or participated.
 
 {% hint style="info" %}
-Search results display only for requests within the request type you are viewing. For example, performing a search from within the **Started by Me** tab displays results only for requests within that tab.
+Search results display only for requests within the **Request** page tab you are viewing. For example, performing a search from within the **Started by Me** tab displays results only for requests within that tab.
 {% endhint %}
 
 Follow these steps to search for a request:
