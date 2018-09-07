@@ -35,8 +35,8 @@ A process designer creates and maintains processes that ProcessMaker users use t
 A ProcessMaker user is a person whose only interaction with ProcessMaker is to make and participate in requests. Refer to the **Using ProcessMaker** section that includes the following topics:
 
 * [How to log in to ProcessMaker](../using-processmaker/log-in.md)
-* [How to make a request](../using-processmaker/make-a-request.md)
-* [How to view requests made of you](../using-processmaker/view-requests-made-of-you.md)
+* [How to make a request](../using-processmaker/profile-settings/requests/make-a-request.md)
+* [How to view requests made of you](../using-processmaker/profile-settings/requests/view-requests-made-of-you.md)
 
 
 
