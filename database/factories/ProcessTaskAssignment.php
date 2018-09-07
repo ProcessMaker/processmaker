@@ -21,8 +21,9 @@ $factory->define(ProcessTaskAssignment::class, function (Faker $faker) {
 
     return [
         'process_task_uuid' => $faker->uuid,
-        'assignment_uuid' => $model->uiid,
-        'assignment_type' => $model->assignment_type
+        'assignment_uuid' => $model->uuid,
+        'assignment_type' => $model instanceof User ? ProcessTaskAssignment::TYPE_USER
+            : ProcessTaskAssignment::TYPE_GROUP
     ];
 });
 

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use ProcessMaker\Models\ProcessTaskAssignment;
 
 class CreateProcessTaskAssignments extends Migration
 {
@@ -16,16 +17,13 @@ class CreateProcessTaskAssignments extends Migration
         Schema::create('process_task_assignments', function (Blueprint $table) {
             // columns
             $table->uuid('uuid');
-            $table->uuid('process_task_uuid');
+            $table->string('process_task_uuid', 36);
             $table->uuid('assignment_uuid');
-            $table->enum('assignment_type', ['USER', 'GROUP', 'EXPRESSION']);
+            $table->enum('assignment_type', [ProcessTaskAssignment::TYPE_USER, ProcessTaskAssignment::TYPE_GROUP]);
             $table->timestamps();
 
             // indexes
             $table->primary('uuid');
-
-            // foreign keys
-            $table->foreign('process_task_uuid')->references('uuid')->on('processes')->onDelete('cascade');
         });
     }
 

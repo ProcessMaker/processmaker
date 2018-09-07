@@ -42,6 +42,8 @@ class Process extends Model
     protected $guarded = [
         'uuid',
         'bpmn',
+        'created_at',
+        'updated_at',
     ];
 
     /**
