@@ -17,11 +17,11 @@ The **Started by Me** tab displays the following information:
 * **Completed:** The **Completed** column displays the date and time the request was completed. The time is displayed according to your time zone setting.
 * **Duration:** The **Duration** column displays the amount of time that transpired from when you made the request to when it was completed.
 * **Actions:** Hover your cursor over this unlabeled column to display a list of actions you can use on the process:
-  * **Edit:** Select **Edit** to edit the process. Note that this action does not display if the process has Active status. To edit the process, first deactivate it.
-  * **Activate/Deactivate:** Select **Activate/Deactivate** to activate or deactivate the process. This option displays Activate when the process is inactive, and vice versa.
-  * **Export:** Select **Export** to export the process. For information how to export a process, see Export a Process.
-  * **Archive:** Select **Archive** to archive the process. For information how to archive a process, see Archive a Process. Note that this action does not display if the process has Active status. To archive the process, first deactivate it.
-  * **Delete:** Select **Delete** to delete the process. For information how to delete a process see Delete a Process. Note that this action does not display if the process has Active status. To delete the process, first deactivate it. You must have appropriate permissions to delete a process.
+  * ~~**Edit:** Select **Edit** to edit the process. Note that this action does not display if the process has Active status. To edit the process, first deactivate it.~~
+  * ~~**Activate/Deactivate:** Select **Activate/Deactivate** to activate or deactivate the process. This option displays **Activate** when the process is inactive, and vice versa.~~
+  * ~~**Export:** Select **Export** to export the process. For information how to export a process, see Export a Process.~~
+  * ~~**Archive:** Select **Archive** to archive the process. For information how to archive a process, see Archive a Process. Note that this action does not display if the process has Active status. To archive the process, first deactivate it.~~
+  * ~~**Delete:** Select **Delete** to delete the process. For information how to delete a process see Delete a Process. Note that this action does not display if the process has Active status. To delete the process, first deactivate it. You must have appropriate permissions to delete a process.~~
 
 Do one of the following to view requests you started:
 
