@@ -17,6 +17,7 @@ class CreateGroupsTable extends Migration
             $table->uuid('uuid');
             $table->primary('uuid');
             $table->string('name');
+            $table->enum('status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
             $table->timestamps();
         });
     }
