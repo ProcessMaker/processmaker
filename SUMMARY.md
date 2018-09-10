@@ -13,7 +13,7 @@
 * [Profile Settings](using-processmaker/profile-settings.md)
 * [Requests](using-processmaker/requests/README.md)
   * [Make a Request](using-processmaker/requests/make-a-request.md)
-  * [Delete a Request](using-processmaker/requests/delete-a-request.md)
+  * [Cancel a Request](using-processmaker/requests/delete-a-request.md)
   * [View Requests You Started](using-processmaker/requests/view-started-requests.md)
   * [View Requests That Are In Progress](using-processmaker/requests/view-in-progress-requests.md)
   * [View Completed Requests](using-processmaker/requests/view-completed-requests.md)
