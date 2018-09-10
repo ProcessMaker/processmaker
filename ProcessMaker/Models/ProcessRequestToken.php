@@ -57,7 +57,8 @@ class ProcessRequestToken extends Model
      * @var array
      */
     protected $uuids = [
-        'process_request_uuid'
+        'process_request_uuid',
+        'user_uuid',
     ];
 
     /**
