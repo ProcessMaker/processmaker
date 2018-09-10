@@ -22,6 +22,8 @@ class CreateFormVersionsTable extends Migration
             $table->string('type', 20)->default('FORM');
             $table->text('content')->nullable();
             $table->timestamps();
+
+            $table->foreign('form_uuid')->references('uuid')->on('forms');
         });
     }
 

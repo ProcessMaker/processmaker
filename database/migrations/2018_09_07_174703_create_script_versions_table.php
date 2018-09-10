@@ -22,6 +22,8 @@ class CreateScriptVersionsTable extends Migration
             $table->string('type', 20)->default('FORM');
             $table->text('content')->nullable();
             $table->timestamps();
+
+            $table->foreign('script_uuid')->references('uuid')->on('scripts');
         });
     }
 
