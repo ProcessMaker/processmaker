@@ -1,8 +1,9 @@
 <?php
 
 use Faker\Generator as Faker;
-use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCollaboration;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\User;
 
 /**
@@ -19,8 +20,8 @@ $factory->define(ProcessRequest::class, function (Faker $faker) {
         'process_uuid' => function () {
             return factory(Process::class)->create()->uuid;
         },
-        //'process_collaboration_uuid' => function () {
-        //    return factory(Process::class)->create()->uuid;
-        //}
+        'process_collaboration_uuid' => function () {
+            return factory(ProcessCollaboration::class)->create()->uuid;
+        }
     ];
 });
