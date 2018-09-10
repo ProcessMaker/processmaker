@@ -9,7 +9,7 @@ use ProcessMaker\Models\User;
 $factory->define(User::class, function (Faker $faker) {
 
     return [
-        'name' => $faker->userName,
+        'username' => $faker->userName,
         'email' => $faker->email,
         'password' => Hash::make($faker->password),
 
