@@ -16,9 +16,15 @@ class CreateGroupMembersTable extends Migration
         Schema::create('group_members', function (Blueprint $table) {
             $table->uuid('uuid');
             $table->primary('uuid');
+            $table->uuid('group_uuid');
             $table->uuid('member_uuid');
-            $table->string('member_type',100);
+            $table->enum('member_type',['user','group']);
             $table->timestamps();
+
+            $table->index('group_uuid');
+            $table->index(['member_uuid','member_type']);
+
+            $table->foreign('group_uuid')->references('uuid')->on('groups');
         });
     }
 
