@@ -10,7 +10,7 @@ $factory->define(ProcessCategory::class, function (Faker $faker) {
     return [
         'name' => $faker->name(),
         'status' => $faker->randomElement(
-            [ProcessCategory::STATUS_ACTIVE, ProcessCategory::STATUS_INACTIVE]
+            ['ACTIVE', 'INACTIVE']
         )
     ];
 });

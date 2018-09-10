@@ -20,10 +20,6 @@ class ProcessCategory extends Model
 {
     use HasBinaryUuid;
 
-    //values for status
-    const STATUS_ACTIVE = 'ACTIVE';
-    const STATUS_INACTIVE = 'INACTIVE';
-
     protected $fillable = [
         'name',
         'status'
@@ -33,7 +29,7 @@ class ProcessCategory extends Model
     {
         $rules = [
             'name' => 'required|string|max:100|unique:process_categories,name',
-            'status' => 'required|string|in:' . self::STATUS_ACTIVE . ',' . self::STATUS_INACTIVE
+            'status' => 'required|string|in:ACTIVE,INACTIVE'
         ];
 
         if ($existing) {
