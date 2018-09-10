@@ -14,7 +14,7 @@ class CreateProcessTable extends Migration
     public function up()
     {
         Schema::create('processes', function (Blueprint $table) {
-            // columns
+            // Columns
             $table->uuid('uuid');
             $table->uuid('process_category_uuid')->nullable();
             $table->uuid('user_uuid');
@@ -24,10 +24,11 @@ class CreateProcessTable extends Migration
             $table->enum('status', ['ACTIVE', 'INACTIVE']);
             $table->timestamps();
 
-            // indexes
+            // Indexes
             $table->primary('uuid');
+            $table->index('process_category_uuid');
 
-            // foreign keys
+            // Foreign keys
             $table->foreign('user_uuid')->references('uuid')->on('users')->onDelete('cascade');
             $table->foreign('process_category_uuid')->references('uuid')->on('process_categories')->onDelete('cascade');
         });
