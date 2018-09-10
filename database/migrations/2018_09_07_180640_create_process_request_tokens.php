@@ -23,7 +23,8 @@ class CreateProcessRequestTokens extends Migration
             $table->timestamp('initiated_at')->nullable();
             $table->uuid('process_request_uuid');
             $table->timestamp('riskchanges_at')->nullable();
-            $table->enum('status', ['ACTIVE', 'FAILING', 'COMPLETED', 'CLOSED', 'EVENT_CATCH']);
+            $table->enum('status', ['ACTIVE', 'FAILING', 'COMPLETED', 'CLOSED', 'EVENT_CATCH'])
+                    ->default('ACTIVE');
             $table->uuid('user_uuid')->nullable();
             $table->timestamps();
 
