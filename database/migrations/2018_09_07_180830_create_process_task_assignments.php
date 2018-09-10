@@ -19,7 +19,7 @@ class CreateProcessTaskAssignments extends Migration
             $table->uuid('uuid');
             $table->string('process_task_uuid', 36);
             $table->uuid('assignment_uuid');
-            $table->enum('assignment_type', [ProcessTaskAssignment::TYPE_USER, ProcessTaskAssignment::TYPE_GROUP]);
+            $table->enum('assignment_type',['user','group']);
             $table->timestamps();
 
             // indexes
