@@ -4,6 +4,8 @@ description: Make a request by starting a process.
 
 # Make a Request
 
+In ProcessMaker 4, a "request" represents when you initiate a process to make a request of one or more people in your organization. Likewise, someone can make a request of you. A request represents an incident or case of a process. For example, you might seek approval for a budget or time off next week.
+
 Follow these steps to make a request:
 
 1. Do one of the following:
