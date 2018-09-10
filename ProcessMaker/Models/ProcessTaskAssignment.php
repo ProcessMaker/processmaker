@@ -20,10 +20,6 @@ class ProcessTaskAssignment extends Model
 {
     use HasBinaryUuid;
 
-    //values for assignment_type
-    const TYPE_USER = 'USER';
-    const TYPE_GROUP = 'GROUP';
-
     protected $fillable = [
         'process_task_uuid',
         'assignment_uuid',
@@ -44,7 +40,7 @@ class ProcessTaskAssignment extends Model
         return [
             'process_task_uuid' => 'required|exists:processes,uuid',
             'assignment_uuid' => 'required',
-            'assignment_type' => 'required|in:' . self::TYPE_USER . ',' . self::TYPE_GROUP,
+            'assignment_type' => 'required|in:USER,GROUP',
         ];
     }
 
