@@ -22,12 +22,6 @@ class ProcessVersion extends Model
 {
     use HasBinaryUuid;
 
-    /**
-     * Statuses:
-     */
-    const STATUS_ACTIVE = 'ACTIVE';
-    const STATUS_INACTIVE = 'INACTIVE';
-
     public $incrementing = false;
 
     /**
