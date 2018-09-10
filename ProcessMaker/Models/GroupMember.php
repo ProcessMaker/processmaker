@@ -24,4 +24,9 @@ class GroupMember extends Model
 
     }
 
+    public function member()
+    {
+        return $this->morphTo();
+    }
+
 }

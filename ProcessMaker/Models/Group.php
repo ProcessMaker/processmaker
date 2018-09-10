@@ -40,4 +40,8 @@ class Group extends Model
         return $rules;
     }
 
+    public function memberships()
+    {
+        return $this->morphMany('ProcessMaker\Models\GroupMember', 'member');
+    }
 }
