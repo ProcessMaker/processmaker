@@ -29,4 +29,9 @@ class GroupMember extends Model
         return $this->morphTo();
     }
 
+    public function group()
+    {
+        return $this->belongsTo('ProcessMaker\Models\Group','group_uuid');
+    }
+
 }
