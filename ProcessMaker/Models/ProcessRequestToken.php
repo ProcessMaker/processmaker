@@ -27,15 +27,6 @@ class ProcessRequestToken extends Model
 {
     use HasBinaryUuid;
 
-    /**
-     * Statuses:
-     */
-    const STATUS_ACTIVE = 'ACTIVE';
-    const STATUS_FAILING = 'FAILING';
-    const STATUS_COMPLETED = 'COMPLETED';
-    const STATUS_CLOSED = 'CLOSED';
-    const STATUS_EVENT_CATCH = 'EVENT_CATCH';
-
     public $incrementing = false;
 
     /**
@@ -66,7 +57,8 @@ class ProcessRequestToken extends Model
      * @var array
      */
     protected $uuids = [
-        'process_request_uuid'
+        'process_request_uuid',
+        'user_uuid',
     ];
 
     /**
@@ -79,11 +71,7 @@ class ProcessRequestToken extends Model
         return [
             'element_uuid' => 'required',
             'element_type' => 'required',
-            'status' => 'required|in:' . self::STATUS_ACTIVE
-                                . ',' . self::STATUS_FAILING
-                                . ', '. self::STATUS_COMPLETED
-                                . ', '. self::STATUS_FAILING
-                                . ', '. self::STATUS_EVENT_CATCH,
+            'status' => 'required|in:ACTIVE,FAILING,COMPLETED,CLOSED,EVENT_CATCH',
             'process_request_uuid' => 'required|exists:process_requests,uuid',
         ];
     }

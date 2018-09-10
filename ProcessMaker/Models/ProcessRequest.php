@@ -33,12 +33,6 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
     use ExecutionInstanceTrait;
     use HasBinaryUuid;
 
-    /**
-     * Statuses:
-     */
-    const STATUS_ACTIVE = 'ACTIVE';
-    const STATUS_COMPLETED = 'COMPLETED';
-
     public $incrementing = false;
 
     /**
@@ -97,7 +91,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
         return [
             'name' => 'required',
             'data' => 'required',
-            'status' => 'in:' . self::STATUS_ACTIVE . ',' . self::STATUS_COMPLETED,
+            'status' => 'in:ACTIVE,COMPLETED',
             'process_uuid' => 'required|exists:processes,uuid',
             'process_collaboration_uuid' => 'nullable|exists:process_collaborations,uuid',
             'user_uuid' => 'exists:users,uuid',
@@ -144,5 +138,14 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
     public function user()
     {
         return $this->belongsTo(User::class, 'user_uuid');
+    }
+
+    /**
+     * Get collaboration of this request.
+     *
+     */
+    public function collaboration()
+    {
+        return $this->belongsTo(ProcessCollaboration::class, 'process_collaboration_uuid');
     }
 }
