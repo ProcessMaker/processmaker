@@ -1,14 +1,18 @@
 <?php
 
 namespace ProcessMaker\Models;
+
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+
 use Spatie\BinaryUuid\HasBinaryUuid;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, Notifiable, HasBinaryUuid;
+    use HasApiTokens;
+    use Notifiable;
+    use HasBinaryUuid;
 
     /**
      * The attributes that are mass assignable.
@@ -16,7 +20,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'firstname', 'lastname', 'status', 'address', 'city', 'state', 'postal', 'country', 'phone', 'fax', 'cell', 'title', 'birthdate', 'timezone', 'language', 'expires_at',
     ];
 
     /**

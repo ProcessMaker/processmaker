@@ -21,6 +21,7 @@ class CreateUsersTable extends Migration
 
             $table->string('firstname', 50)->nullable();
             $table->string('lastname', 50)->nullable();
+            $table->string('name', 50)->nullable();
 
             $table->enum('status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
 
