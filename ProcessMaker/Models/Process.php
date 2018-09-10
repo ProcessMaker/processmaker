@@ -26,12 +26,6 @@ class Process extends Model
 
     use HasBinaryUuid;
 
-    /**
-     * Statuses:
-     */
-    const STATUS_ACTIVE = 'ACTIVE';
-    const STATUS_INACTIVE = 'INACTIVE';
-
     public $incrementing = false;
 
     /**
@@ -94,7 +88,7 @@ class Process extends Model
         return [
             'name' => 'required',
             'description' => 'required',
-            'status' => 'in:' . self::STATUS_ACTIVE . ',' . self::STATUS_INACTIVE,
+            'status' => 'in:ACTIVE,INACTIVE',
             'process_category_uuid' => 'nullable|exists:process_categories,uuid',
             'user_uuid' => 'exists:users,uuid',
         ];

@@ -13,7 +13,7 @@ $factory->define(ProcessVersion::class, function (Faker $faker) {
     return [
         'bpmn' => file_get_contents($emptyProcess),
         'name' => $faker->sentence(3),
-        'status' => ProcessVersion::STATUS_ACTIVE,
+        'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
         'process_category_uuid' => function () {
             return factory(ProcessCategory::class)->create()->uuid;
         },
