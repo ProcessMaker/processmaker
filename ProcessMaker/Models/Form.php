@@ -31,7 +31,7 @@ class Form extends Model
     protected $fillable = [
         'title',
         'description',
-        'content',
+        'config',
         'label',
         'type',
         'created_at',

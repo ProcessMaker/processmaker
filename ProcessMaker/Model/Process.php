@@ -1,6 +1,6 @@
 <?php
 
-namespace ProcessMaker\Model;
+//namespace ProcessMaker\Model;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

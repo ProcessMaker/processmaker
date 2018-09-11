@@ -2,6 +2,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use Spatie\BinaryUuid\HasBinaryUuid;
 
 /**

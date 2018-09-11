@@ -1,7 +1,7 @@
 <?php
 namespace ProcessMaker\Repositories;
 
-use ProcessMaker\Model\Application as Instance;
+use ProcessMaker\Models\ProcessRequest as Instance;
 use ProcessMaker\Model\FormalExpression;
 use ProcessMaker\Nayra\Contracts\Repositories\StorageInterface;
 use ProcessMaker\Nayra\Contracts\RepositoryInterface;
