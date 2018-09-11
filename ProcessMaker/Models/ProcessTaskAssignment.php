@@ -35,7 +35,12 @@ class ProcessTaskAssignment extends Model
         'assignment_uuid',
     ];
 
-    public static function rules($existing = null)
+    /**
+     * Validation rules
+     *
+     * @return array
+     */
+    public static function rules()
     {
         return [
             'process_task_uuid' => 'required|exists:processes,uuid',

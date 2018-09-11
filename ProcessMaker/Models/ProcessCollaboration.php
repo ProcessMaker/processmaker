@@ -57,7 +57,7 @@ class ProcessCollaboration extends Model
      *
      * @return array
      */
-    public static function getRules()
+    public static function rules()
     {
         return [
             'process_uuid' => 'required|exists:processes,uuid',

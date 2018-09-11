@@ -66,7 +66,7 @@ class ProcessRequestToken extends Model
      *
      * @return array
      */
-    public static function getRules()
+    public static function rules()
     {
         return [
             'element_uuid' => 'required',
