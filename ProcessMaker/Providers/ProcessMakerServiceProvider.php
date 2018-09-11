@@ -4,7 +4,6 @@ namespace ProcessMaker\Providers;
 
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use ProcessMaker\Config\Repository;
 use ProcessMaker\Managers\DatabaseManager;
 use ProcessMaker\Managers\FormsManager;
 use ProcessMaker\Managers\InputDocumentManager;
@@ -46,11 +45,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $old  = $this->app['config'];
-        $new = new Repository($old->all());
-        $this->app->instance('config', $new);
-
-
         // Dusk, if env is appropriate
         if(!$this->app->environment('production')) {
             $this->app->register(\Laravel\Dusk\DuskServiceProvider::class);
