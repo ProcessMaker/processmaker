@@ -2,7 +2,7 @@
 namespace ProcessMaker\Repositories;
 
 use ProcessMaker\Models\ProcessRequest as Instance;
-use ProcessMaker\Model\FormalExpression;
+use ProcessMaker\Models\FormalExpression;
 use ProcessMaker\Nayra\Contracts\Repositories\StorageInterface;
 use ProcessMaker\Nayra\Contracts\RepositoryInterface;
 use ProcessMaker\Nayra\RepositoryTrait;
