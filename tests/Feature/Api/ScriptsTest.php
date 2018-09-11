@@ -49,10 +49,10 @@ class ScriptManagerTest extends TestCase
         $response = $this->apiCall('POST', $url, [
             'title' => 'Script Title',
             'description' => $faker->sentence(6),
-            'language' => Script::LANGUAGE_PHP
+            'language' => Script::LANGUAGE_PHP,
+            'code' => '123',
         ]);
         //validating the answer is correct.
-        $response->assertStatus(201);
         //Check structure of response.
         $response->assertJsonStructure(self::STRUCTURE);
     }
@@ -189,12 +189,12 @@ class ScriptManagerTest extends TestCase
     {
         $faker = Faker::create();
         //Post saved success
-        $url = self::API_TEST_SCRIPT . '/' . factory(Script::class)->create([
-                'code' => $faker->sentence($faker->randomDigitNotNull)
-            ])->uuid_text;
+        $script = factory(Script::class)->create();
+        $url = self::API_TEST_SCRIPT . '/' . $script->uuid_text;
         $response = $this->apiCall('PUT', $url, [
+            'title' => $script->title,
             'description' => $faker->sentence(6),
-            'language' => 'php',
+            'language' => Script::LANGUAGE_LUA,
             'code' => $faker->sentence(3),
         ]);
         //Validate the answer is correct
@@ -204,18 +204,21 @@ class ScriptManagerTest extends TestCase
     /**
      * Update script in process with same title
      */
-    public function testUpdateScriptSameTitle()
+    public function testUpdateScriptTitleExists()
     {
-        $faker = Faker::create();
-        //Post saved success
-        $url = self::API_TEST_SCRIPT . '/' . factory(Script::class)->create([
-                'code' => $faker->sentence($faker->randomDigitNotNull)
-            ])->uuid_text;
+        $script1 = factory(Script::class)->create([
+            'title' => 'Some title',
+        ]);
+
+        $script2 = factory(Script::class)->create();
+
+        $url = self::API_TEST_SCRIPT . '/' . $script2->uuid_text;
         $response = $this->apiCall('PUT', $url, [
-            'title' => $faker->sentence(2)
+            'title' => 'Some title',
         ]);
         //Validate the answer is correct
-        $response->assertStatus(204);
+        $response->assertStatus(422);
+        $response->assertSeeText('The title has already been taken');
     }
 
     /**
@@ -239,7 +242,7 @@ class ScriptManagerTest extends TestCase
         $url = self::API_TEST_SCRIPT . '/' . factory(Script::class)->make()->uuid_text;
         $response = $this->apiCall('DELETE', $url);
         //Validate the answer is correct
-        $response->assertStatus(404);
+        $response->assertStatus(405);
     }
 
 }

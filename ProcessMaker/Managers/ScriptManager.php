@@ -4,6 +4,7 @@ namespace ProcessMaker\Managers;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 use ProcessMaker\Models\Script;
+use Illuminate\Support\Facades\Request;
 
 class ScriptManager
 {

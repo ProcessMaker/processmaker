@@ -86,7 +86,6 @@ class FormManagerTest extends TestCase
             'description' => $faker->sentence(10)
         ]);
         $response->assertStatus(422);
-        var_dump($response);
         $this->assertArrayHasKey('message', $response->json());
     }
 
@@ -95,6 +94,7 @@ class FormManagerTest extends TestCase
      */
     public function testListForm()
     {
+        Form::query()->delete();
         //add Form to process
         $faker = Faker::create();
         factory(Form::class, 10)->create();

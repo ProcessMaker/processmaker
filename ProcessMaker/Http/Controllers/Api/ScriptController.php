@@ -132,8 +132,8 @@ class ScriptController extends Controller
     public function store(Request $request)
     {
         $request->validate(Script::rules());
-        $response = ScriptManager::save($request->all());
-        return fractal($response, new ScriptTransformer())->respond(201);
+        $script = ScriptManager::save($request->input());
+        return fractal($script, new ScriptTransformer())->respond(201);
     }
 
     /**
@@ -148,7 +148,7 @@ class ScriptController extends Controller
     public function update(Script $script, Request $request)
     {
         $request->validate(Script::rules($script));
-        ScriptManager::update($script, $data);
+        ScriptManager::update($script, $request->input());
         return response([], 204);
     }
 
@@ -159,7 +159,7 @@ class ScriptController extends Controller
      *
      * @return ResponseFactory|Response
      */
-    public function remove(Script $script)
+    public function destroy(Script $script)
     {
         ScriptManager::remove($script);
         return response([], 204);
