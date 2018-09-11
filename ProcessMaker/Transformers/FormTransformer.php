@@ -20,7 +20,6 @@ class FormTransformer extends TransformerAbstract
     public function transform(Form $item)
     {
         $data = $item->toArray();
-        unset($data['uuid'], $data['process_uuid'], $data['created_at'], $data['updated_at']);
         return $data;
     }
 }

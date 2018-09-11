@@ -4,11 +4,9 @@ namespace ProcessMaker\Http\Controllers\Api\Designer;
 
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
-use ProcessMaker\Exception\DoesNotBelongToProcessException;
 use ProcessMaker\Facades\ScriptManager;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Model\Process;
-use ProcessMaker\Model\Script;
+use ProcessMaker\Models\Script;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Transformers\ScriptTransformer;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,11 +17,10 @@ class ScriptController extends Controller
      * Get a list of scripts in a process.
      *
      * @param Process $process
-     * @param Request $request
      *
      * @return ResponseFactory|Response
      */
-    public function index(Process $process, Request $request)
+    public function index(Request $request)
     {
         $options = [
             'filter' => $request->input('filter', ''),
@@ -32,7 +29,7 @@ class ScriptController extends Controller
             'sort_by' => $request->input('order_by', 'title'),
             'sort_order' => $request->input('order_direction', 'ASC'),
         ];
-        $response = ScriptManager::index($process, $options);
+        $response = ScriptManager::index($options);
         return fractal($response, new ScriptTransformer())->respond();
     }
 
@@ -118,29 +115,25 @@ class ScriptController extends Controller
     /**
      * Get a single script in a process.
      *
-     * @param Process $process
      * @param Script $script
      *
      * @return ResponseFactory|Response
-     * @throws DoesNotBelongToProcessException
      */
-    public function show(Process $process, Script $script)
+    public function show(Script $script)
     {
-        $this->belongsToProcess($process, $script);
         return fractal($script, new ScriptTransformer())->respond(200);
     }
 
     /**
      * Create a new script in a process.
      *
-     * @param Process $process
      * @param Request $request
      *
      * @return ResponseFactory|Response
      */
-    public function store(Process $process, Request $request)
+    public function store(Request $request)
     {
-        $response = ScriptManager::save($process, $request->all());
+        $response = ScriptManager::save($request->all());
         return fractal($response, new ScriptTransformer())->respond(201);
     }
 
@@ -152,11 +145,9 @@ class ScriptController extends Controller
      * @param Request $request
      *
      * @return ResponseFactory|Response
-     * @throws DoesNotBelongToProcessException
      */
-    public function update(Process $process, Script $script, Request $request)
+    public function update(Script $script, Request $request)
     {
-        $this->belongsToProcess($process, $script);
         $data = [];
         if ($request->has('title')) {
             $data['title'] = $request->input('title');
@@ -168,7 +159,7 @@ class ScriptController extends Controller
             $data['code'] = $request->input('code');
         }
         if($data) {
-            ScriptManager::update($process, $script, $data);
+            ScriptManager::update($script, $data);
         }
         return response([], 204);
     }
@@ -176,32 +167,13 @@ class ScriptController extends Controller
     /**
      * Delete a script in a process.
      *
-     * @param Process $process
      * @param Script $script
      *
      * @return ResponseFactory|Response
-     * @throws DoesNotBelongToProcessException
      */
-    public function remove(Process $process, Script $script)
+    public function remove(Script $script)
     {
-        $this->belongsToProcess($process, $script);
         ScriptManager::remove($script);
         return response([], 204);
     }
-
-    /**
-     * Validate if script belong to process.
-     *
-     * @param Process $process
-     * @param Script $script
-     *
-     * @throws DoesNotBelongToProcessException|void
-     */
-    private function belongsToProcess(Process $process, Script $script)
-    {
-        if($process->id !== $script->process_id) {
-            Throw new DoesNotBelongToProcessException(__('The script does not belong to this process.'));
-        }
-    }
-
 }

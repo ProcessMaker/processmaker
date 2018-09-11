@@ -4,8 +4,7 @@ namespace ProcessMaker\Facades;
 
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Facade;
-use ProcessMaker\Model\Process;
-use ProcessMaker\Model\Script;
+use ProcessMaker\Models\Script;
 
 /**
  * Facade for our Task Manager
@@ -13,11 +12,11 @@ use ProcessMaker\Model\Script;
  * @package ProcessMaker\Facades
  * @see \ProcessMaker\Managers\ScriptManager
  *
- * @method static Paginator index(Process $process, array $options)
- * @method static Script save(Process $process, array $data)
- * @method static array update(Process $process, Script $script, array $data)
+ * @method static Paginator index(array $options)
+ * @method static Script save(array $data)
+ * @method static array update(Script $script, array $data)
  * @method static boolean|null remove(Script $script)
- * @method static array getScript(Process $process)
+ * @method static array getScript()
  *
  */
 class ScriptManager extends Facade

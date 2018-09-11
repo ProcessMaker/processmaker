@@ -5,23 +5,21 @@ namespace Tests\Feature\Api\Designer;
 use Faker\Factory as Faker;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
-use ProcessMaker\Model\Process;
-use ProcessMaker\Model\Script;
-use ProcessMaker\Model\User;
+use ProcessMaker\Models\Script;
+use ProcessMaker\Models\User;
 use Tests\TestCase;
 
 class ScriptManagerTest extends TestCase
 {
     use DatabaseTransactions;
 
-    const API_TEST_SCRIPT = '/api/1.0/process/';
+    const API_TEST_SCRIPT = '/api/1.0/scripts/';
     const DEFAULT_PASS = 'password';
 
     protected $user;
-    protected $process;
 
     const STRUCTURE = [
-        'uid',
+        'uuid',
         'title',
         'description',
         'language',
@@ -37,11 +35,6 @@ class ScriptManagerTest extends TestCase
         $this->user = factory(User::class)->create([
             'password' => Hash::make(self::DEFAULT_PASS)
         ]);
-
-        $this->process = factory(Process::class)->create([
-            'user_id' => $this->user->id
-        ]);
-
     }
 
     /**
@@ -50,9 +43,9 @@ class ScriptManagerTest extends TestCase
     public function testNotCreatedForParameterRequired()
     {
         //Post should have the parameter required
-        $url = self::API_TEST_SCRIPT . $this->process->uid . '/script';
+        $url = self::API_TEST_SCRIPT;
         $response = $this->actingAs($this->user, 'api')->json('POST', $url, []);
-
+var_dump($response);
         //validating the answer is an error
         $response->assertStatus(422);
         $this->assertArrayHasKey('message', $response->json());
@@ -65,7 +58,7 @@ class ScriptManagerTest extends TestCase
     {
         $faker = Faker::create();
         //Post saved correctly
-        $url = self::API_TEST_SCRIPT . $this->process->uid . '/script';
+        $url = self::API_TEST_SCRIPT;
         $response = $this->actingAs($this->user, 'api')->json('POST', $url, [
             'title' => 'Script Title',
             'description' => $faker->sentence(6),
@@ -84,12 +77,11 @@ class ScriptManagerTest extends TestCase
     {
         factory(Script::class)->create([
             'title' => 'Script Title',
-            'process_id' => $this->process->id
         ]);
 
         //Post title duplicated
         $faker = Faker::create();
-        $url = self::API_TEST_SCRIPT . $this->process->uid . '/script';
+        $url = self::API_TEST_SCRIPT;
         $response = $this->actingAs($this->user, 'api')->json('POST', $url, [
             'title' => 'Script Title',
             'description' => $faker->sentence(6),
@@ -108,12 +100,11 @@ class ScriptManagerTest extends TestCase
         $faker = Faker::create();
         $total = $faker->randomDigitNotNull;
         factory(Script::class, $total)->create([
-            'process_id' => $this->process->id,
             'code' => $faker->sentence($faker->randomDigitNotNull)
         ]);
 
         //List scripts
-        $url = self::API_TEST_SCRIPT . $this->process->uid . '/scripts';
+        $url = self::API_TEST_SCRIPT;
         $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
@@ -138,13 +129,12 @@ class ScriptManagerTest extends TestCase
         $title = 'search script title';
         factory(Script::class)->create([
             'title' => $title,
-            'process_id' => $this->process->id
         ]);
 
         //List Document with filter option
         $perPage = Faker::create()->randomDigitNotNull;
         $query = '?page=1&per_page=' . $perPage . '&order_by=description&order_direction=DESC&filter=' . urlencode($title);
-        $url = self::API_TEST_SCRIPT . $this->process->uid . '/scripts?' . $query;
+        $url = self::API_TEST_SCRIPT . $query;
         $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
@@ -180,7 +170,7 @@ class ScriptManagerTest extends TestCase
         ]);
 
         //load script
-        $url = self::API_TEST_SCRIPT . $this->process->uid . '/script/' . $script->uid;
+        $url = self::API_TEST_SCRIPT . '/' . $script->uuid;
         $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
@@ -195,7 +185,7 @@ class ScriptManagerTest extends TestCase
     public function testGetScriptNotBelongToProcess()
     {
         //load script
-        $url = self::API_TEST_SCRIPT . $this->process->uid . '/script/' . factory(Script::class)->create()->uid;
+        $url = self::API_TEST_SCRIPT . '/' . factory(Script::class)->create()->uuid;
         $response = $this->actingAs($this->user, 'api')->json('GET', $url);
         //Validate the answer is incorrect
         $response->assertStatus(404);
@@ -209,10 +199,9 @@ class ScriptManagerTest extends TestCase
     {
         $faker = Faker::create();
         //The post must have the required parameters
-        $url = self::API_TEST_SCRIPT . $this->process->uid . '/script/' . factory(Script::class)->create([
-                'process_id' => $this->process->id,
+        $url = self::API_TEST_SCRIPT . '/' . factory(Script::class)->create([
                 'code' => $faker->sentence($faker->randomDigitNotNull)
-            ])->uid;
+            ])->uuid;
         $response = $this->actingAs($this->user, 'api')->json('PUT', $url, [
             'title' => '',
             'description' => $faker->sentence(6),
@@ -230,10 +219,9 @@ class ScriptManagerTest extends TestCase
     {
         $faker = Faker::create();
         //Post saved success
-        $url = self::API_TEST_SCRIPT . $this->process->uid . '/script/' . factory(Script::class)->create([
-                'process_id' => $this->process->id,
+        $url = self::API_TEST_SCRIPT . '/' . factory(Script::class)->create([
                 'code' => $faker->sentence($faker->randomDigitNotNull)
-            ])->uid;
+            ])->uuid;
         $response = $this->actingAs($this->user, 'api')->json('PUT', $url, [
             'description' => $faker->sentence(6),
             'language' => 'php',
@@ -250,10 +238,9 @@ class ScriptManagerTest extends TestCase
     {
         $faker = Faker::create();
         //Post saved success
-        $url = self::API_TEST_SCRIPT . $this->process->uid . '/script/' . factory(Script::class)->create([
-                'process_id' => $this->process->id,
+        $url = self::API_TEST_SCRIPT . '/' . factory(Script::class)->create([
                 'code' => $faker->sentence($faker->randomDigitNotNull)
-            ])->uid;
+            ])->uuid;
         $response = $this->actingAs($this->user, 'api')->json('PUT', $url, [
             'title' => $faker->sentence(2)
         ]);
@@ -267,7 +254,7 @@ class ScriptManagerTest extends TestCase
     public function testDeleteScript()
     {
         //Remove script
-        $url = self::API_TEST_SCRIPT . $this->process->uid . '/script/' . factory(Script::class)->create(['process_id' => $this->process->id])->uid;
+        $url = self::API_TEST_SCRIPT . '/' . factory(Script::class)->create()->uuid;
         $response = $this->actingAs($this->user, 'api')->json('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(204);
@@ -279,7 +266,7 @@ class ScriptManagerTest extends TestCase
     public function testDeleteScriptNotExist()
     {
         //Script not exist
-        $url = self::API_TEST_SCRIPT . $this->process->uid . '/script/' . factory(Script::class)->make()->uid;
+        $url = self::API_TEST_SCRIPT . '/' . factory(Script::class)->make()->uuid;
         $response = $this->actingAs($this->user, 'api')->json('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(404);

@@ -3,23 +3,21 @@
 namespace ProcessMaker\Managers;
 
 use Illuminate\Pagination\LengthAwarePaginator;
-use ProcessMaker\Model\Process;
-use ProcessMaker\Model\Script;
+use ProcessMaker\Models\Script;
 
 class ScriptManager
 {
     /**
      * Get a list of All scripts in a process.
      *
-     * @param Process $process
      * @param array $options
      *
      * @return LengthAwarePaginator
      */
-    public function index(Process $process, array $options): LengthAwarePaginator
+    public function index(array $options): LengthAwarePaginator
     {
         $start = $options['current_page'];
-        $query = Script::where('process_id', $process->id);
+        $query = Script::query();
         $filter = $options['filter'];
         if (!empty($filter)) {
             $filter = '%' . $filter . '%';
@@ -37,17 +35,16 @@ class ScriptManager
     /**
      * Create a new script in a process.
      *
-     * @param Process $process
      * @param array $data
      *
      * @return Script
      * @throws \Throwable
      */
-    public function save(Process $process, $data): Script
+    public function save($data): Script
     {
-        $data['process_id'] = $process->id;
         $script = new Script();
         $script->fill($data);
+        eval(\Psy\sh());
         $script->saveOrFail();
 
         return $script;
@@ -56,16 +53,14 @@ class ScriptManager
     /**
      * Update script in a process.
      *
-     * @param Process $process
      * @param Script $script
      * @param array $data
      *
      * @return Script
      * @throws \Throwable
      */
-    public function update(Process $process, Script $script, $data): Script
+    public function update(Script $script, $data): Script
     {
-        $data['process_id'] = $process->id;
         $script->fill($data);
         $script->saveOrFail();
         return $script;

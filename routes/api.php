@@ -101,11 +101,12 @@ Route::group([
         Route::resource('forms', 'Designer\FormController');
 
         //Trigger endpoints
-        Route::get('process/{process}/scripts', 'Designer\ScriptController@index');
-        Route::get('process/{process}/script/{script}', 'Designer\ScriptController@show');
-        Route::post('process/{process}/script', 'Designer\ScriptController@store');
-        Route::put('process/{process}/script/{script}', 'Designer\ScriptController@update');
-        Route::delete('process/{process}/script/{script}', 'Designer\ScriptController@remove');
+        // Route::get('process/{process}/scripts', 'Designer\ScriptController@index');
+        // Route::get('process/{process}/script/{script}', 'Designer\ScriptController@show');
+        // Route::post('process/{process}/script', 'Designer\ScriptController@store');
+        // Route::put('process/{process}/script/{script}', 'Designer\ScriptController@update');
+        // Route::delete('process/{process}/script/{script}', 'Designer\ScriptController@remove');
+        Route::resource('scripts', 'Designer\ScriptController');
 
         //Assignee users o groups to Activity endpoints
         Route::get('process/{process}/activity/{activity}/assignee', 'Designer\AssigneeController@getActivityAssignees');

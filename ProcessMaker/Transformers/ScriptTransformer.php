@@ -23,6 +23,7 @@ class ScriptTransformer extends TransformerAbstract
      */
     public function transform(Script $script)
     {
-        return $script->toArray();
+        $data = $script->toArray();
+        return $data;
     }
 }
