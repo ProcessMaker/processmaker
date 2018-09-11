@@ -23,12 +23,12 @@ The **Started by Me** tab displays the following information:
   * ~~**Archive:** Select **Archive** to archive the process. For information how to archive a process, see Archive a Process. Note that this action does not display if the process has Active status. To archive the process, first deactivate it.~~
   * ~~**Delete:** Select **Delete** to delete the process. For information how to delete a process see Delete a Process. Note that this action does not display if the process has Active status. To delete the process, first deactivate it. You must have appropriate permissions to delete a process.~~
 
-Do one of the following to view requests you started:
+Follow these steps to view requests you started:
 
-* [Log in](../log-in.md#log-in) to ProcessMaker. The **Started by Me** tab in the **Requests** page displays.
-* Click the **Requests** page if it is not currently displayed. The **Started by Me** tab displays.
-
-Open a request by clicking on its row in the table.
+1. Do one of the following:
+   * [Log in](../log-in.md#log-in) to ProcessMaker. The **Started by Me** tab in the **Requests** page displays.
+   * Click the **Requests** page if it is not currently displayed. The **Started by Me** tab displays.
+2. Click a row in the table to [view detailed information](request-details.md) about the request.
 
 Use these tips to control how request information displays in the table:
 

@@ -32,7 +32,7 @@ Follow these steps to search for a request within the displayed tab:
    * **Started date:** Search for the date in which the request started.
    * **Completed date:** Search for the date in which the request completed.
 4. Press `Enter`. Search results that meet the search criteria within that tab display.
-5. Select a row in the search results, and then click the **Request Details** link to [view detailed information](view-request-details.md) about the selected request.
+5. Select a row in the search results, and then click the **Request Details** link to [view detailed information](request-details.md) about the selected request.
 
 {% hint style="info" %}
 If there are no search results, the following message displays: **There are no requests in the search**.
@@ -56,11 +56,11 @@ Follow these steps to do an advanced search:
    * **User:** Filter your search against a username participating in a request.
    * **Request Title:** Filter your search against the title of a request.
    * **Request Number:** Filter your search against a request number.
-   * **Process Task:** Filter your search against the process task. ~~\(What is a process task?\)~~
+   * **Process Task:** Filter your search against a process task associated with a request.
    * **Date From:** Filter your search from a date you specify. The search does not filter prior to the date you specify. ~~Select the date using the calendar beside this option.~~
    * **Date To:** Filter the search to a date you specify. The search does not filter after the date you specify. ~~Select the date using the calendar beside this option.~~
 5. Click **Search**. Search results that meet the search filters display.
-6. Select a row in the search results, and then click the **Request Details** link to [view detailed information](view-request-details.md) about the selected request.
+6. Select a row in the search results, and then click the **Request Details** link to [view detailed information](request-details.md) about the selected request.
 
 {% hint style="info" %}
 If there are no search results, the following message displays: **There are no requests in the search**.

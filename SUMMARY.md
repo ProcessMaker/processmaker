@@ -20,7 +20,7 @@
   * [View Completed Requests](using-processmaker/requests/view-completed-requests.md)
   * [Watch a Request](using-processmaker/requests/view-watched-requests.md)
   * [Search for a Request](using-processmaker/requests/search-for-a-request.md)
-  * [View Request Details](using-processmaker/requests/view-request-details.md)
+  * [Request Details](using-processmaker/requests/request-details.md)
 * [Task Management](using-processmaker/task-management.md)
 * [Notifications](using-processmaker/notifications.md)
 * [Log Out](using-processmaker/log-out.md)
