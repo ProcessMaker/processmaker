@@ -1,11 +1,10 @@
 <?php
 
-namespace ProcessMaker\Http\Controllers\Api;
+namespace ProcessMaker\Http\Controllers;
 
-use ProcessMaker\Models\Group;
 use Illuminate\Http\Request;
 
-class ApiGroupController extends Controller
+class FileController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -41,10 +40,10 @@ class ApiGroupController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \ProcessMaker\Group  $group
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Group $group)
+    public function show($id)
     {
         //
     }
@@ -52,10 +51,10 @@ class ApiGroupController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \ProcessMaker\Group  $group
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Group $group)
+    public function edit($id)
     {
         //
     }
@@ -64,10 +63,10 @@ class ApiGroupController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \ProcessMaker\Group  $group
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Group $group)
+    public function update(Request $request, $id)
     {
         //
     }
@@ -75,10 +74,10 @@ class ApiGroupController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \ProcessMaker\Group  $group
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Group $group)
+    public function destroy($id)
     {
         //
     }
