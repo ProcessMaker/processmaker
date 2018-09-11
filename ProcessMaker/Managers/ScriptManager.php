@@ -44,7 +44,6 @@ class ScriptManager
     {
         $script = new Script();
         $script->fill($data);
-        eval(\Psy\sh());
         $script->saveOrFail();
 
         return $script;

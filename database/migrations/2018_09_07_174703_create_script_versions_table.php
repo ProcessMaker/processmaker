@@ -23,7 +23,7 @@ class CreateScriptVersionsTable extends Migration
             $table->text('content')->nullable();
             $table->timestamps();
 
-            $table->foreign('script_uuid')->references('uuid')->on('scripts');
+            // $table->foreign('script_uuid')->references('uuid')->on('scripts');
         });
     }
 

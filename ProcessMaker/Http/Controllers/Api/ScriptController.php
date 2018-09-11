@@ -2,14 +2,12 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
-use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use ProcessMaker\Facades\ScriptManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Transformers\ScriptTransformer;
-use Symfony\Component\HttpFoundation\Response;
 
 class ScriptController extends Controller
 {
@@ -133,6 +131,7 @@ class ScriptController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate(Script::rules());
         $response = ScriptManager::save($request->all());
         return fractal($response, new ScriptTransformer())->respond(201);
     }
@@ -148,19 +147,8 @@ class ScriptController extends Controller
      */
     public function update(Script $script, Request $request)
     {
-        $data = [];
-        if ($request->has('title')) {
-            $data['title'] = $request->input('title');
-        }
-        if ($request->has('description')) {
-            $data['description'] = $request->input('description');
-        }
-        if ($request->has('code')) {
-            $data['code'] = $request->input('code');
-        }
-        if($data) {
-            ScriptManager::update($script, $data);
-        }
+        $request->validate(Script::rules($script));
+        ScriptManager::update($script, $data);
         return response([], 204);
     }
 
