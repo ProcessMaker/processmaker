@@ -98,13 +98,7 @@ Route::group([
         Route::get('process/{process}/report-table/{reportTable}/data', 'Project\ReportTableController@getAllDataRows');
 
         //DynaForm endpoints
-        Route::get('process/{process}/forms', 'Designer\FormController@index');
-        Route::get('process/{process}/form/{form}', 'Designer\FormController@show');
-        Route::get('process/{process}/form/{form}/grid/{gridName}/field-definitions', 'Designer\FormController@index');
-        Route::get('process/{process}/form/{form}/grid/{gridName}/field-definition/{fld_id}', 'Designer\FormController@index');
-        Route::post('process/{process}/form', 'Designer\FormController@store');
-        Route::put('process/{process}/form/{form}', 'Designer\FormController@update');
-        Route::delete('process/{process}/form/{form}', 'Designer\FormController@remove');
+        Route::resource('forms', 'Designer\FormController');
 
         //Trigger endpoints
         Route::get('process/{process}/scripts', 'Designer\ScriptController@index');

@@ -13,10 +13,9 @@ use ProcessMaker\Model\Process;
  * @package ProcessMaker\Facades
  * @see \ProcessMaker\Managers\FormsManager
  *
- * @method static Paginator index(Process $process, array $options)
- * @method static Form copyImport(Process $process, array $data)
- * @method static Form createBasedPmTable(Process $process, array $data)
- * @method static array update(Process $process, Form $form, array $data)
+ * @method static Paginator index(array $options)
+ * @method static Form createBasedPmTable(array $data)
+ * @method static array update(Form $form, array $data)
  * @method static boolean|null remove(Form $form)
  *
  */

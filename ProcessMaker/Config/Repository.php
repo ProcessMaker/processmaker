@@ -5,7 +5,7 @@ use Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Config\Repository as BaseRepository;
 use Illuminate\Support\Facades\Cache;
-use ProcessMaker\Model\Configuration;
+use ProcessMaker\Models\Configuration;
 
 /**
  * A Configuration Repository which extends the base Laravel Config Repository

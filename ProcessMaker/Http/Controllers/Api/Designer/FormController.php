@@ -5,23 +5,20 @@ namespace ProcessMaker\Http\Controllers\Api\Designer;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use ProcessMaker\Exception\DoesNotBelongToProcessException;
 use ProcessMaker\Facades\FormManager;
-use ProcessMaker\Model\Form;
-use ProcessMaker\Model\Process;
+use ProcessMaker\Models\Form;
 use ProcessMaker\Transformers\FormTransformer;
 
 class FormController
 {
     /**
-     * Get a list of Forms in a process.
+     * Get a list of Forms.
      *
-     * @param Process $process
      * @param Request $request
      *
      * @return ResponseFactory|Response
      */
-    public function index(Process $process, Request $request)
+    public function index(Request $request)
     {
         $options = [
             'filter' => $request->input('filter', ''),
@@ -30,99 +27,72 @@ class FormController
             'sort_by' => $request->input('order_by', 'title'),
             'sort_order' => $request->input('order_direction', 'ASC'),
         ];
-        $response = FormManager::index($process, $options);
+        $response = FormManager::index($options);
         return fractal($response, new FormTransformer())->respond();
     }
 
     /**
-     * Get a single Form in a process.
+     * Get a single Form.
      *
-     * @param Process $process
      * @param Form $form
      *
      * @return ResponseFactory|Response
-     * @throws DoesNotBelongToProcessException
      */
-    public function show(Process $process, Form $form)
+    public function show(Form $form)
     {
-        $this->belongsToProcess($process, $form);
         return fractal($form, new FormTransformer())->respond();
     }
 
     /**
-     * Create a new Form in a process.
+     * Create a new Form.
      *
-     * @param Process $process
      * @param Request $request
      *
      * @return ResponseFactory|Response
      */
-    public function store(Process $process, Request $request)
+    public function store(Request $request)
     {
+        $request->validate(Form::rules());
         $data = [
             'title' => $request->input('title', ''),
             'description' => $request->input('description', '')
         ];
         $data = array_merge($data, $this->formatData($request, ['content']));
 
-        if ($request->has('copy_import')) {
-            $data['copy_import'] = $request->input('copy_import');
-            return fractal(FormManager::copyImport($process, $data), new FormTransformer())->respond(201);
-        }
-        $response = FormManager::save($process, $data);
+        $response = FormManager::save($data);
         return fractal($response, new FormTransformer())->respond(201);
     }
 
     /**
-     * Update a Form in a process.
+     * Update a Form.
      *
-     * @param Process $process
      * @param Form $form
      * @param Request $request
      *
      * @return ResponseFactory|Response
-     * @throws DoesNotBelongToProcessException
      */
-    public function update(Process $process, Form $form, Request $request)
+    public function update(Form $form, Request $request)
     {
-        $this->belongsToProcess($process, $form);
+        $request->validate(Form::rules($form));
         $data = $this->formatData($request, ['title', 'description', 'content']);
 
         if ($data) {
-            FormManager::update($process, $form, $data);
+            FormManager::update($form, $data);
         }
         return response([], 200);
     }
 
     /**
-     * Delete a Form in a process.
+     * Delete a Form.
      *
-     * @param Process $process
      * @param Form $form
      *
      * @return ResponseFactory|Response
-     * @throws DoesNotBelongToProcessException
      */
-    public function remove(Process $process, Form $form)
+    public function destroy(Form $form)
     {
-        $this->belongsToProcess($process, $form);
         FormManager::remove($form);
         return response([], 204);
-    }
-
-    /**
-     * Validate if Form belong to process.
-     *
-     * @param Process $process
-     * @param Form $form
-     *
-     * @throws DoesNotBelongToProcessException|void
-     */
-    private function belongsToProcess(Process $process, Form $form)
-    {
-        if ($process->id !== $form->process_id) {
-            Throw new DoesNotBelongToProcessException(__('The Form does not belong to this process.'));
-        }
     }
 
     /**

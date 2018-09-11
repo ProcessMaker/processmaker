@@ -19,7 +19,7 @@ class CreateFormsTable extends Migration
             $table->text('title');
             $table->text('description')->nullable();
             $table->string('type', 20)->default('FORM');
-            $table->text('content')->nullable();
+            $table->json('config')->nullable();
             $table->timestamps();
         });
     }
