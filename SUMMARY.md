@@ -12,6 +12,7 @@
 * [Log In](using-processmaker/log-in.md)
 * [Profile Settings](using-processmaker/profile-settings.md)
 * [Requests](using-processmaker/requests/README.md)
+  * [What is a Request?](using-processmaker/requests/what-is-a-request.md)
   * [Make a Request](using-processmaker/requests/make-a-request.md)
   * [Cancel a Request](using-processmaker/requests/delete-a-request.md)
   * [View Requests You Started](using-processmaker/requests/view-started-requests.md)
