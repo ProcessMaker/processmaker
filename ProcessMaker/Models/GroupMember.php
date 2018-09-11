@@ -14,6 +14,16 @@ class GroupMember extends Model
         'group_uuid', 'member_uuid', 'member_type',
     ];
 
+    /**
+     * The binary UUID attributes that should be converted to text.
+     *
+     * @var array
+     */
+    protected $uuids = [
+        'group_uuid',
+        'member_uuid',
+    ];
+
     public static function rules()
     {
         return [
