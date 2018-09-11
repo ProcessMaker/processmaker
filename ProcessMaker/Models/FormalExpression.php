@@ -1,6 +1,6 @@
 <?php
 
-namespace ProcessMaker\Model;
+namespace ProcessMaker\Models;
 
 use ProcessMaker\Nayra\Bpmn\BaseTrait;
 use ProcessMaker\Nayra\Contracts\Bpmn\FormalExpressionInterface;
