@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Providers;
 
-use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use ProcessMaker\Managers\DatabaseManager;
 use ProcessMaker\Managers\FormsManager;
@@ -18,8 +17,6 @@ use ProcessMaker\Managers\TaskManager;
 use ProcessMaker\Managers\TasksDelegationManager;
 use ProcessMaker\Managers\ScriptManager;
 use ProcessMaker\Managers\UserManager;
-use ProcessMaker\Model\Group;
-use ProcessMaker\Model\User;
 use Laravel\Horizon\Horizon;
 use Illuminate\Support\Facades\Auth;
 
@@ -80,15 +77,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->app->singleton('form.manager', function ($app) {
             return new FormsManager();
         });
-
-        /**
-         * Mapping
-         *
-         */
-        Relation::morphMap([
-            User::TYPE => User::class,
-            Group::TYPE => Group::class,
-        ]);
 
         $this->app->singleton('task.manager', function ($app) {
             return new TaskManager();
