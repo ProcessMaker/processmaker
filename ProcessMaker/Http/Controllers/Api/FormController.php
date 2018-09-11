@@ -1,6 +1,6 @@
 <?php
 
-namespace ProcessMaker\Http\Controllers\Api\Designer;
+namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
