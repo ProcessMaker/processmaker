@@ -17,16 +17,13 @@ class ProcessController extends Controller
      */
     public function index(Request $request)
     {
-        $fractal = fractal();
-        $fractal->parseIncludes($request->input('include'));
-        
-        \Illuminate\Support\Facades\Log::info(print_r($fractal, true));
-        $relations = $this->getRequestInclude($request);
-        $conditions = $this->getRequestFilter($request);
-        $processes = Process::with($relations)
-            ->where($conditions)
+        $where = $this->getRequestFilterBy($request, ['name', 'description','status']);
+        $oderBy = $this->getRequestSortBy($request, 'name');
+        $processes = Process::whereOr($where)
+            ->orderBy(...$oderBy)
             ->paginate();
-        return fractal($processes, new ProcessTransformer());
+        return fractal($processes, new ProcessTransformer)
+            ->parseIncludes($request->input('include'));
     }
 
     /**
@@ -95,17 +92,30 @@ class ProcessController extends Controller
         //
     }
 
-    protected function getRequestFilter(Request $request)
+    protected function getRequestFilterBy(Request $request, array $searchableColumns)
     {
-        $filter = json_decode($request->input('filter', '{}'), true);
-        $conditions = [];
-        foreach ($filter as $name => $value) {
-            $conditions[] = [
-                $name,
-                $value,
-            ];
+        $where = [];
+        $filter = $request->input('filter');
+        if ($filter) {
+            foreach ($searchableColumns as $column) {
+                $where[] = [$column, 'like', "%$filter%"];
+            }
         }
-        return $conditions;
+        return $where;
+    }
+
+    /**
+     * Get included relationships.
+     *
+     * @param Request $request
+     *
+     * @return array
+     */
+    protected function getRequestSortBy(Request $request, $default)
+    {
+        $column = $request->input('order_by', $default);
+        $direction = $request->input('order_dir', 'asc');
+        return [$column, $direction];
     }
 
     /**
@@ -120,5 +130,4 @@ class ProcessController extends Controller
         $include = $request->input('include');
         return $include ? explode(',', $include) : [];
     }
-
 }

@@ -39,7 +39,7 @@ class ProcessControllerTest extends TestCase
         // Create some processes
         factory(Process::class, 5)->create();
         $response = $this->actingAs($user, 'api')->json('GET', route('processes.index')
-            . '?filter={"status":"ACTIVE"}&include=category,category.processes');
+            . '?filter=ACTIVE&include=category,category.processes');
         $response->assertStatus(200);
         $data = json_decode($response->getContent(), true);
         dump($data);
