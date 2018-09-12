@@ -12,14 +12,14 @@ class ProcessController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * 
+     *
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
     {
         $where = $this->getRequestFilterBy($request, ['name', 'description','status']);
         $oderBy = $this->getRequestSortBy($request, 'name');
-        $processes = Process::whereOr($where)
+        $processes = Process::where($where)
             ->orderBy(...$oderBy)
             ->paginate();
         return fractal($processes, new ProcessTransformer)
@@ -98,7 +98,7 @@ class ProcessController extends Controller
         $filter = $request->input('filter');
         if ($filter) {
             foreach ($searchableColumns as $column) {
-                $where[] = [$column, 'like', "%$filter%"];
+                $where[] = [$column, 'like', $filter, 'or'];
             }
         }
         return $where;
@@ -114,7 +114,7 @@ class ProcessController extends Controller
     protected function getRequestSortBy(Request $request, $default)
     {
         $column = $request->input('order_by', $default);
-        $direction = $request->input('order_dir', 'asc');
+        $direction = $request->input('order_direction', 'asc');
         return [$column, $direction];
     }
 
