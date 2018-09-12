@@ -15,7 +15,6 @@ use ProcessMaker\Managers\SchemaManager;
 use ProcessMaker\Managers\TaskAssigneeManager;
 use ProcessMaker\Managers\TaskManager;
 use ProcessMaker\Managers\TasksDelegationManager;
-use ProcessMaker\Managers\ScriptManager;
 use ProcessMaker\Managers\UserManager;
 use Laravel\Horizon\Horizon;
 use Illuminate\Support\Facades\Auth;
@@ -90,10 +89,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
             return new InputDocumentManager();
         });
         
-        $this->app->singleton('script.manager', function ($app) {
-            return new ScriptManager();
-        });
-
         $this->app->singleton('output_document.manager', function ($app) {
             return new OutputDocumentManager();
         });

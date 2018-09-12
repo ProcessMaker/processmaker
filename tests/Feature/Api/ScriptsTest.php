@@ -9,7 +9,7 @@ use ProcessMaker\Models\User;
 use Tests\TestCase;
 use Tests\Feature\Shared\ApiCallWithUser;
 
-class ScriptManagerTest extends TestCase
+class ScriptTest extends TestCase
 {
     use DatabaseTransactions;
     use ApiCallWithUser;

@@ -3,7 +3,6 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use ProcessMaker\Facades\ScriptManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\EnvironmentVariable;
@@ -20,14 +19,26 @@ class ScriptController extends Controller
      */
     public function index(Request $request)
     {
-        $options = [
-            'filter' => $request->input('filter', ''),
-            'current_page' => $request->input('page', 1),
-            'per_page' => $request->input('per_page', 10),
-            'sort_by' => $request->input('order_by', 'title'),
-            'sort_order' => $request->input('order_direction', 'ASC'),
-        ];
-        $response = ScriptManager::index($options);
+        $query = Script::query();
+
+        $filter = $request->input('filter', '');
+        if (!empty($filter)) {
+            $filter = '%' . $filter . '%';
+            $query->where(function ($query) use ($filter) {
+                $query->Where('title', 'like', $filter)
+                    ->orWhere('description', 'like', $filter)
+                    ->orWhere('language', 'like', $filter);
+            });
+        }
+
+        $response =
+            $query->orderBy(
+                $request->input('sort_by', 'title'),
+                $request->input('sort_order', 'ASC')
+            )
+            ->paginate($request->input('per_page', 10))
+            ->appends($request->input());
+
         return fractal($response, new ScriptTransformer())->respond();
     }
 
@@ -132,7 +143,9 @@ class ScriptController extends Controller
     public function store(Request $request)
     {
         $request->validate(Script::rules());
-        $script = ScriptManager::save($request->input());
+        $script = new Script();
+        $script->fill($request->input());
+        $script->saveOrFail();
         return fractal($script, new ScriptTransformer())->respond(201);
     }
 
@@ -148,7 +161,10 @@ class ScriptController extends Controller
     public function update(Script $script, Request $request)
     {
         $request->validate(Script::rules($script));
-        ScriptManager::update($script, $request->input());
+
+        $script->fill($request->input());
+        $script->saveOrFail();
+
         return response([], 204);
     }
 
@@ -161,7 +177,7 @@ class ScriptController extends Controller
      */
     public function destroy(Script $script)
     {
-        ScriptManager::remove($script);
+        $script->delete();
         return response([], 204);
     }
 }
