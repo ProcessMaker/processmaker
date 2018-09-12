@@ -49,7 +49,8 @@ class Process extends Model
      * @var array
      */
     protected $hidden = [
-        'bpmn'
+        'bpmn',
+        'bpmnDefinitions'
     ];
 
     /**

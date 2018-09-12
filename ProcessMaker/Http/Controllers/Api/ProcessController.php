@@ -1,20 +1,32 @@
 <?php
-
-namespace ProcessMaker\Http\Controllers;
+namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Transformers\ProcessTransformer;
 
 class ProcessController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      *
+     * 
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $fractal = fractal();
+        $fractal->parseIncludes($request->input('include'));
+        
+        \Illuminate\Support\Facades\Log::info(print_r($fractal, true));
+        $relations = $this->getRequestInclude($request);
+        $conditions = $this->getRequestFilter($request);
+        $processes = Process::with($relations)
+            ->where($conditions)
+            ->paginate();
+        return fractal($processes, new ProcessTransformer());
     }
 
     /**
@@ -82,4 +94,31 @@ class ProcessController extends Controller
     {
         //
     }
+
+    protected function getRequestFilter(Request $request)
+    {
+        $filter = json_decode($request->input('filter', '{}'), true);
+        $conditions = [];
+        foreach ($filter as $name => $value) {
+            $conditions[] = [
+                $name,
+                $value,
+            ];
+        }
+        return $conditions;
+    }
+
+    /**
+     * Get included relationships.
+     *
+     * @param Request $request
+     *
+     * @return array
+     */
+    protected function getRequestInclude(Request $request)
+    {
+        $include = $request->input('include');
+        return $include ? explode(',', $include) : [];
+    }
+
 }
