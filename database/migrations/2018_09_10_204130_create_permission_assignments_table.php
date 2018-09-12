@@ -21,7 +21,7 @@ class CreatePermissionAssignmentsTable extends Migration
           $table->enum('assignment_type',['user','group']);
           $table->timestamps();
 
-          $table->foreign('permission_uuid')->references('uuid')->on('processes');
+          $table->foreign('permission_uuid')->references('uuid')->on('permissions');
         });
     }
 
