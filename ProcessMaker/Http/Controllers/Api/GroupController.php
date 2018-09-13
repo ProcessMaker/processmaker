@@ -2,10 +2,11 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
+use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Group;
 use Illuminate\Http\Request;
 
-class ApiGroupController extends Controller
+class GroupController extends Controller
 {
     /**
      * Display a listing of the resource.

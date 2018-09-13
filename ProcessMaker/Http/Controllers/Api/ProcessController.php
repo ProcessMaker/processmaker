@@ -6,12 +6,12 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Transformers\ProcessTransformer;
 
+
 class ProcessController extends Controller
 {
 
     /**
      * Display a listing of the resource.
-     *
      *
      * @return \Illuminate\Http\Response
      */
@@ -27,69 +27,69 @@ class ProcessController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Display the specified resource.
+     *
+     * @param $process
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function show(Process $process)
     {
-        //
+        $process->category = $process->category()->first();
+        $process->user = $process->user()->first();
+        return fractal($process, new ProcessTransformer())->respond(200);
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
+     *
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->json()->all();
+        $process = new Process();
+        $process->fill($data);
+        if (isset($data['bpmn'])) {
+            $process->bpmn = $data['bpmn'];
+        }
+        $process->saveOrFail();
+        $process->refresh();
+        return fractal($process, new ProcessTransformer())->respond(201);
     }
 
     /**
-     * Display the specified resource.
+     * Updates the current element
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
+     * @param Request $request
+     * @param Process $process
      *
-     * @param  int  $id
      * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Process $process)
     {
-        //
+        $data = $request->json()->all();
+        $process->fill($data);
+        $process->saveOrFail();
+        $process->refresh();
+        return response('', 204);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param Process $process
+     *
      * @return \Illuminate\Http\Response
+     *
      */
-    public function destroy($id)
+    public function destroy(Process $process)
     {
-        //
+        $process->delete();
+        return response('', 204);
     }
 
     protected function getRequestFilterBy(Request $request, array $searchableColumns)
