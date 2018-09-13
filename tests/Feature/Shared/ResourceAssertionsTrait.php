@@ -83,6 +83,25 @@ trait ResourceAssertionsTrait
     }
 
     /**
+     * Verify model update.
+     * 
+     * @param string $modelClass
+     * @param array $attributes
+     *
+     * @return \Illuminate\Foundation\Testing\TestResponse
+     */
+    protected function assertModelShow($modelClass, array $attributes = [])
+    {
+        $base = factory($modelClass)->create();
+        //$base = factory($modelClass)->make($attributes);
+        $route = route($this->resource . '.show', [$base->uuid_text]);
+        $response = $this->json('GET', $route);
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['data' =>  $this->structure]);
+        return $response;
+    }
+
+    /**
      * Verify the deletion of a model.
      *
      * @param type $uuid
