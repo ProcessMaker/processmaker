@@ -5,14 +5,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Transformers\ProcessTransformer;
-use Spatie\BinaryUuid\HasBinaryUuid;
-
 
 class ProcessController extends Controller
 {
-
+    use ResourceRequestsTrait;
+    
     /**
      * Display a listing of the resource.
      *
@@ -21,10 +19,11 @@ class ProcessController extends Controller
     public function index(Request $request)
     {
         $where = $this->getRequestFilterBy($request, ['name', 'description','status']);
-        $oderBy = $this->getRequestSortBy($request, 'name');
+        $orderBy = $this->getRequestSortBy($request, 'name');
+        $perPage = $this->getPerPage($request);
         $processes = Process::where($where)
-            ->orderBy(...$oderBy)
-            ->paginate();
+            ->orderBy(...$orderBy)
+            ->paginate($perPage);
         return fractal($processes, new ProcessTransformer)
             ->parseIncludes($request->input('include'));
     }
@@ -52,6 +51,7 @@ class ProcessController extends Controller
      */
     public function store(Request $request)
     {
+        //Convert the string uuid to binary uuid
         $this->encodeRequestUuids($request, ['process_category_uuid']);
 
         $request->validate(Process::rules());
@@ -60,11 +60,7 @@ class ProcessController extends Controller
         $process = new Process();
         $process->fill($data);
 
-
-        if (empty($data['user_uuid'])) {
-            $process->user_uuid = Auth::user()->uuid;
-        }
-
+        $process->user_uuid = Auth::user()->uuid;
 
         if (isset($data['bpmn'])) {
             $process->bpmn = $data['bpmn'];
@@ -108,60 +104,5 @@ class ProcessController extends Controller
     {
         $process->delete();
         return response('', 204);
-    }
-
-    protected function getRequestFilterBy(Request $request, array $searchableColumns)
-    {
-        $where = [];
-        $filter = $request->input('filter');
-        if ($filter) {
-            foreach ($searchableColumns as $column) {
-                $where[] = [$column, 'like', $filter, 'or'];
-            }
-        }
-        return $where;
-    }
-
-    /**
-     * Get included relationships.
-     *
-     * @param Request $request
-     *
-     * @return array
-     */
-    protected function getRequestSortBy(Request $request, $default)
-    {
-        $column = $request->input('order_by', $default);
-        $direction = $request->input('order_direction', 'asc');
-        return [$column, $direction];
-    }
-
-    /**
-     * Get included relationships.
-     *
-     * @param Request $request
-     *
-     * @return array
-     */
-    protected function getRequestInclude(Request $request)
-    {
-        $include = $request->input('include');
-        return $include ? explode(',', $include) : [];
-    }
-
-    /**
-     * Change uuid text to uuid binary
-     *
-     * @param Request $request
-     * @param array $fields
-     */
-    protected function encodeRequestUuids(Request $request, array $fields = [])
-    {
-        foreach ($fields as $field) {
-            $value = $request->input($field);
-            if ($value) {
-                $request->merge([$field => HasBinaryUuid::encodeUuid($value)]);
-            }
-        }
     }
 }
