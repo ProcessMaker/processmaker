@@ -69,4 +69,15 @@ trait ResourceAssertionsTrait
         $response->assertJsonStructure(['errors' => $errors]);
         return $response;
     }
+
+    protected function assertModelShow($modelClass, array $attributes = [])
+    {
+        $base = factory($modelClass)->create();
+        //$base = factory($modelClass)->make($attributes);
+        $route = route($this->resource . '.show', [$base->uuid_text]);
+        $response = $this->json('GET', $route);
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['data' =>  $this->structure]);
+        return $response;
+    }
 }

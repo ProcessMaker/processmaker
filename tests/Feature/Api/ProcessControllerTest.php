@@ -226,4 +226,13 @@ class ProcessControllerTest extends TestCase
             ]
         );
     }
+
+    public function testShowProcess()
+    {
+        $user = $this->authenticateAsAdmin();
+        $this->actingAs($user, 'api');
+
+        //Test that a model is correctly displayed
+        $this->assertModelShow(Process::class, []);
+    }
 }
