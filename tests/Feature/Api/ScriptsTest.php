@@ -54,7 +54,7 @@ class ScriptTest extends TestCase
         ]);
         //validating the answer is correct.
         //Check structure of response.
-        $response->assertJsonStructure(self::STRUCTURE);
+        $response->assertJsonStructure(['data' => self::STRUCTURE]);
     }
 
     /**
@@ -99,14 +99,12 @@ class ScriptTest extends TestCase
 
         //verify structure paginate
         $response->assertJsonStructure([
-            'data',
+            'data' => ['*' => self::STRUCTURE],
             'meta',
         ]);
 
         //verify count of data
-        $this->assertEquals($total, $response->original->meta->total);
-        //Verify the structure
-        $response->assertJsonStructure(['*' => self::STRUCTURE], $response->json('data'));
+        $this->assertEquals($total, $response->json()['meta']['total']);
     }
 
     /**
@@ -128,20 +126,21 @@ class ScriptTest extends TestCase
         $response->assertStatus(200);
         //verify structure paginate
         $response->assertJsonStructure([
-            'data',
+            'data' => ['*' => self::STRUCTURE],
+            'links',
             'meta',
         ]);
         //verify response in meta
-        $this->assertEquals(1, $response->original->meta->total);
-        $this->assertEquals(1, $response->original->meta->count);
-        $this->assertEquals($perPage, $response->original->meta->per_page);
-        $this->assertEquals(1, $response->original->meta->current_page);
-        $this->assertEquals(1, $response->original->meta->total_pages);
-        $this->assertEquals($title, $response->original->meta->filter);
-        $this->assertEquals('description', $response->original->meta->sort_by);
-        $this->assertEquals('DESC', $response->original->meta->sort_order);
-        //verify structure of model
-        $response->assertJsonStructure(['*' => self::STRUCTURE], $response->json('data'));
+        $json = $response->json();
+        $meta = $json['meta'];
+        $this->assertEquals(1, $meta['total']);
+        $this->assertEquals($perPage, $meta['per_page']);
+        $this->assertEquals(1, $meta['current_page']);
+        $this->assertEquals(1, $meta['last_page']);
+        
+        $this->assertEquals($title, $meta['filter']);
+        $this->assertEquals('description', $meta['sort_by']);
+        $this->assertEquals('DESC', $meta['sort_order']);
     }
 
     /**
@@ -159,7 +158,7 @@ class ScriptTest extends TestCase
         $response->assertStatus(200);
 
         //verify structure paginate
-        $response->assertJsonStructure(self::STRUCTURE);
+        $response->assertJsonStructure(['data' => self::STRUCTURE]);
     }
 
     /**

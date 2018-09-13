@@ -7,6 +7,8 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Transformers\ScriptTransformer;
+use ProcessMaker\Http\Resources\ApiCollection;
+use ProcessMaker\Http\Resources\Script as ScriptResource;
 
 class ScriptController extends Controller
 {
@@ -33,13 +35,12 @@ class ScriptController extends Controller
 
         $response =
             $query->orderBy(
-                $request->input('sort_by', 'title'),
-                $request->input('sort_order', 'ASC')
+                $request->input('order_by', 'title'),
+                $request->input('order_direction', 'ASC')
             )
-            ->paginate($request->input('per_page', 10))
-            ->appends($request->input());
+            ->paginate($request->input('per_page', 10));
 
-        return fractal($response, new ScriptTransformer())->respond();
+        return new ApiCollection($response);
     }
 
     /**
@@ -130,7 +131,7 @@ class ScriptController extends Controller
      */
     public function show(Script $script)
     {
-        return fractal($script, new ScriptTransformer())->respond(200);
+        return new ScriptResource($script);
     }
 
     /**
@@ -146,7 +147,7 @@ class ScriptController extends Controller
         $script = new Script();
         $script->fill($request->input());
         $script->saveOrFail();
-        return fractal($script, new ScriptTransformer())->respond(201);
+        return new ScriptResource($script);
     }
 
     /**
