@@ -5,7 +5,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Transformers\ProcessTransformer;
+use Spatie\BinaryUuid\HasBinaryUuid;
 
 
 class ProcessController extends Controller
@@ -50,6 +52,8 @@ class ProcessController extends Controller
      */
     public function store(Request $request)
     {
+        $this->encodeRequestUuids($request, ['process_category_uuid']);
+
         $request->validate(Process::rules());
         $data = $request->json()->all();
 
@@ -60,6 +64,7 @@ class ProcessController extends Controller
         if (empty($data['user_uuid'])) {
             $process->user_uuid = Auth::user()->uuid;
         }
+
 
         if (isset($data['bpmn'])) {
             $process->bpmn = $data['bpmn'];
@@ -142,5 +147,21 @@ class ProcessController extends Controller
     {
         $include = $request->input('include');
         return $include ? explode(',', $include) : [];
+    }
+
+    /**
+     * Change uuid text to uuid binary
+     *
+     * @param Request $request
+     * @param array $fields
+     */
+    protected function encodeRequestUuids(Request $request, array $fields = [])
+    {
+        foreach ($fields as $field) {
+            $value = $request->input($field);
+            if ($value) {
+                $request->merge([$field => HasBinaryUuid::encodeUuid($value)]);
+            }
+        }
     }
 }

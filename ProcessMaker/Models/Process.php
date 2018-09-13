@@ -45,7 +45,7 @@ class Process extends Model
 
     /**
      * The attributes that should be hidden for serialization.
-     * 
+     *
      * BPMN data will be hidden. It will be able by its getter.
      *
      * @var array
@@ -57,7 +57,7 @@ class Process extends Model
     /**
      * Parsed process BPMN definitions.
      *
-     * @var \ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface 
+     * @var \ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface
      */
     private $bpmnDefinitions;
 

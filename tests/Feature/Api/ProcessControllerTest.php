@@ -175,7 +175,7 @@ class ProcessControllerTest extends TestCase
     /**
      * Test the required fields
      */
-    public function testCreateProcessFieldsRequired()
+    public function testCreateProcessFieldsValidation()
     {
         $user = $this->authenticateAsAdmin();
         $this->actingAs($user, 'api');
@@ -190,6 +190,18 @@ class ProcessControllerTest extends TestCase
             //Fields that should fail
             [
                 'name'
+            ]
+        );
+        //Test to create a process with a process category uuid that does not exist
+        $this->assertModelCreationFails(
+            Process::class,
+            [
+                'user_uuid' => static::$DO_NOT_SEND,
+                'process_category_uuid' => 'uuid-not-exists'
+            ],
+            //Fields that should fail
+            [
+                'process_category_uuid'
             ]
         );
     }
