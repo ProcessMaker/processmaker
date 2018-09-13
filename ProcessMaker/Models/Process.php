@@ -148,5 +148,23 @@ class Process extends Model
         return file_get_contents($path);
     }
 
+    /**
+     * Category of the process.
+     *
+     * @return BelongsTo
+     */
+    public function requests()
+    {
+        return $this->hasMany(ProcessRequest::class);
+    }
 
+    /**
+     * Category of the process.
+     *
+     * @return BelongsTo
+     */
+    public function collaborations()
+    {
+        return $this->hasMany(ProcessCollaboration::class);
+    }
 }

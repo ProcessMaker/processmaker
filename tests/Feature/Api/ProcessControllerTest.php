@@ -5,6 +5,8 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\ProcessCollaboration;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
@@ -225,5 +227,48 @@ class ProcessControllerTest extends TestCase
                 'process_category_uuid'
             ]
         );
+    }
+
+    /**
+     * Process deletion
+     * 
+     * Test the process deletion
+     */
+    public function testsProcessDeletion()
+    {
+        $user = $this->authenticateAsAdmin();
+        $this->actingAs($user, 'api');
+
+        //Create a new process
+        $process = factory(Process::class)->create([
+            'process_category_uuid' => null
+        ]);
+
+        //Delete the process created
+        $this->assertCorrectModelDeletion($process->uuid_text);
+
+        //Create a request without collaboration
+        $request = factory(ProcessRequest::class)->create([
+            'process_collaboration_uuid' => null
+        ]);
+        $process = $request->process;
+
+        //Delete the process created
+        $this->assertModelDeletionFails($process->uuid_text, [
+            'requests'
+        ]);
+
+        //Create a request with collaboration
+        $process = factory(Process::class)->create([
+            'process_category_uuid' => null
+        ]);
+        factory(ProcessCollaboration::class)->create([
+            'process_uuid' => $process->uuid
+        ]);
+
+        //Delete the process created
+        $this->assertModelDeletionFails($process->uuid_text, [
+            'collaborations'
+        ]);
     }
 }

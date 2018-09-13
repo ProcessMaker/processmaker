@@ -53,7 +53,6 @@ class ProcessController extends Controller
     {
         //Convert the string uuid to binary uuid
         $this->encodeRequestUuids($request, ['process_category_uuid']);
-
         $request->validate(Process::rules());
         $data = $request->json()->all();
 
@@ -102,6 +101,10 @@ class ProcessController extends Controller
      */
     public function destroy(Process $process)
     {
+        $this->validateModel($process, [
+            'collaborations' => 'empty',
+            'requests' => 'empty',
+        ]);
         $process->delete();
         return response('', 204);
     }

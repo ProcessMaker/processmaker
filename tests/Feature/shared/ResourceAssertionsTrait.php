@@ -15,6 +15,14 @@ trait ResourceAssertionsTrait
         'errors'
     ];
 
+    /**
+     * Verify the list returned by the index API.
+     *
+     * @param type $query
+     * @param type $expectedMeta
+     *
+     * @return \Illuminate\Foundation\Testing\TestResponse
+     */
     protected function assertCorrectModelListing($query, $expectedMeta = [])
     {
         $route = route($this->resource . '.index');
@@ -37,6 +45,8 @@ trait ResourceAssertionsTrait
      *
      * @param string $modelClass
      * @param array $attributes
+     *
+     * @return \Illuminate\Foundation\Testing\TestResponse
      */
     protected function assertCorrectModelCreation($modelClass, array $attributes = [])
     {
@@ -57,6 +67,8 @@ trait ResourceAssertionsTrait
      * @param string $modelClass
      * @param array $attributes
      * @param array $errors
+     *
+     * @return \Illuminate\Foundation\Testing\TestResponse
      */
     protected function assertModelCreationFails($modelClass, array $attributes = [], array $errors = [])
     {
@@ -64,6 +76,39 @@ trait ResourceAssertionsTrait
         $base = factory($modelClass)->make($attributes);
         $array = array_diff($base->toArray(), [static::$DO_NOT_SEND]);
         $response = $this->json('POST', $route, $array);
+        $response->assertStatus(422);
+        $response->assertJsonStructure($this->errorStructure);
+        $response->assertJsonStructure(['errors' => $errors]);
+        return $response;
+    }
+
+    /**
+     * Verify the deletion of a model.
+     *
+     * @param type $uuid
+     *
+     * @return \Illuminate\Foundation\Testing\TestResponse
+     */
+    protected function assertCorrectModelDeletion($uuid)
+    {
+        $route = route($this->resource . '.destroy', [$uuid]);
+        $response = $this->json('DELETE', $route);
+        $response->assertStatus(204);
+        $this->assertEmpty($response->getContent());
+        return $response;
+    }
+
+    /**
+     * Verify the deletion of a model.
+     *
+     * @param type $uuid
+     *
+     * @return \Illuminate\Foundation\Testing\TestResponse
+     */
+    protected function assertModelDeletionFails($uuid, array $errors = [])
+    {
+        $route = route($this->resource . '.destroy', [$uuid]);
+        $response = $this->json('DELETE', $route);
         $response->assertStatus(422);
         $response->assertJsonStructure($this->errorStructure);
         $response->assertJsonStructure(['errors' => $errors]);
