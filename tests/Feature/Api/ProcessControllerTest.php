@@ -13,6 +13,8 @@ use Tests\TestCase;
 class ProcessControllerTest extends TestCase
 {
 
+    const DO_NOT_SEND = 'DO_NOT_SEND';
+    const RESOURCE = 'processes';
     const STRUCTURE = [
         'id',
         'type',
@@ -137,10 +139,8 @@ class ProcessControllerTest extends TestCase
         $user = $this->authenticateAsAdmin();
         $this->actingAs($user, 'api');
         $this->assertCorrectModelCreation(
-            route('processes.store'),
-            Process::class,
-            [
-                'user_uuid' => null,
+            Process::class, [
+                'user_uuid' => static::DO_NOT_SEND,
                 'process_category_uuid' => null,
             ]
         );
@@ -152,14 +152,15 @@ class ProcessControllerTest extends TestCase
      * @param string $modelClass
      * @param array $attributes
      */
-    protected function assertCorrectModelCreation($route, $modelClass, array $attributes = [])
+    protected function assertCorrectModelCreation($modelClass, array $attributes = [])
     {
+        $route = route(static::RESOURCE . '.store');
         $base = factory($modelClass)->make($attributes);
-        $array = $base->toArray();
+        $array = array_diff($base->toArray(), [static::DO_NOT_SEND]);
         $response = $this->json('POST', $route, $array);
-        $response->assertStatus(200);
+        $response->assertStatus(201);
         $response->assertJsonStructure(['data' => static::STRUCTURE]);
-        $response->assertJsonFragment(['attributes' => $array]);
-        
+        $data = $response->json('data');
+        $this->assertArraySubset($array, $data['attributes']);
     }
 }
