@@ -17,7 +17,7 @@ class CreateFormsTable extends Migration
             $table->uuid('uuid');
             $table->primary('uuid');
             $table->text('title');
-            $table->text('description')->nullable();
+            $table->text('description');
             $table->string('type', 20)->default('FORM');
             $table->json('config')->nullable();
             $table->timestamps();

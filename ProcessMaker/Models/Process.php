@@ -83,17 +83,24 @@ class Process extends Model
     /**
      * Validation rules.
      *
+     * @param null $existing
+     *
      * @return array
      */
-    public static function getRules()
+    public static function rules($existing = null)
     {
-        return [
-            'name' => 'required',
+        $rules = [
+            'name' => 'required|unique:processes,name',
             'description' => 'required',
             'status' => 'in:ACTIVE,INACTIVE',
             'process_category_uuid' => 'nullable|exists:process_categories,uuid',
             'user_uuid' => 'exists:users,uuid',
         ];
+
+        if ($existing) {
+            // ignore the unique rule for this id
+            $rules['name'] .= ',' . $existing->uuid . ',uuid';
+        }
     }
 
     /**

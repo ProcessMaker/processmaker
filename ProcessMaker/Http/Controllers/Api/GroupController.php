@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Group;
 use Illuminate\Http\Request;
+use ProcessMaker\Http\Controllers\Controller;
 
 class GroupController extends Controller
 {

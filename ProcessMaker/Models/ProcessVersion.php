@@ -62,11 +62,11 @@ class ProcessVersion extends Model
      *
      * @return array
      */
-    public static function getRules()
+    public static function rules()
     {
         return [
             'name' => 'required',
-            'status' => 'in:' . self::STATUS_ACTIVE . ',' . self::STATUS_INACTIVE,
+            'status' => 'in:ACTIVE,INACTIVE',
             'process_category_uuid' => 'exists:process_categories,uuid',
             'process_uuid' => 'exists:processes,uuid',
         ];

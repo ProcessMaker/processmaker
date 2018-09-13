@@ -25,25 +25,10 @@ class Script extends Model
     const LANGUAGE_PHP = 'PHP';
     const LANGUAGE_LUA = 'LUA';
 
-    protected $fillable = [
-        'title',
-        'description',
-        'language',
-        'code'
-    ];
-
-    protected $attributes = [
-        'title' => '',
-        'description' => '',
-        'language' => '',
-        'code' => ''
-    ];
-
-    protected $casts = [
-        'title' => 'string',
-        'description' => 'string',
-        'language' => 'string',
-        'code' => 'string'
+    protected $guarded = [
+        'uuid',
+        'created_at',
+        'updated_at',
     ];
 
     /**

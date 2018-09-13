@@ -17,9 +17,9 @@ class CreateScriptsTable extends Migration
             $table->uuid('uuid');
             $table->primary('uuid');
             $table->text('title');
-            $table->text('description')->nullable();
+            $table->text('description');
             $table->string('language', 20)->default('PHP');
-            $table->text('code')->nullable();
+            $table->text('code');
             $table->timestamps();
         });
     }

@@ -84,18 +84,25 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
     /**
      * Validation rules.
      *
+     * @param null $existing
+     *
      * @return array
      */
-    public static function getRules()
+    public static function rules($existing = null)
     {
-        return [
-            'name' => 'required',
+        $rules = [
+            'name' => 'required|unique:process_requests,name',
             'data' => 'required',
             'status' => 'in:ACTIVE,COMPLETED',
             'process_uuid' => 'required|exists:processes,uuid',
             'process_collaboration_uuid' => 'nullable|exists:process_collaborations,uuid',
             'user_uuid' => 'exists:users,uuid',
         ];
+
+        if ($existing) {
+            // ignore the unique rule for this id
+            $rules['name'] .= ',' . $existing->uuid . ',uuid';
+        }
     }
 
     /**
