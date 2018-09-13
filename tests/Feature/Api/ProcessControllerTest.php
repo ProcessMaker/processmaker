@@ -139,7 +139,6 @@ class ProcessControllerTest extends TestCase
 
     public function testProcessCreation()
     {
-        //d(static::$DO_NOT_SEND);
         //Login as an admin user
         $user = $this->authenticateAsAdmin();
         $this->actingAs($user, 'api');
@@ -159,7 +158,7 @@ class ProcessControllerTest extends TestCase
                 'process_category_uuid' => static::$DO_NOT_SEND,
             ]
         );
-        
+
         //Create a process with a category
         $category = factory(ProcessCategory::class)->create();
         $this->assertCorrectModelCreation(
@@ -168,6 +167,26 @@ class ProcessControllerTest extends TestCase
                 'process_category_uuid' => $category->uuid_text,
             ]
         );
-        
+
+    }
+
+    /**
+     * Validate field required
+     */
+    public function testCreateProcessFieldsRequired()
+    {
+        $user = $this->authenticateAsAdmin();
+        $this->actingAs($user, 'api');
+        $this->assertModelCreationFails(
+            Process::class,
+            [
+                'name' => null,
+                'user_uuid' => static::$DO_NOT_SEND,
+                'process_category_uuid' => static::$DO_NOT_SEND
+            ],
+            [
+                'name'
+            ]
+        );
     }
 }
