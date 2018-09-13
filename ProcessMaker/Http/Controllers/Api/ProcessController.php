@@ -2,6 +2,7 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Transformers\ProcessTransformer;
@@ -49,12 +50,24 @@ class ProcessController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate(Process::rules());
         $data = $request->json()->all();
+
         $process = new Process();
         $process->fill($data);
+
+
+        if (empty($data['user_uuid'])) {
+            $process->user_uuid = Auth::user()->uuid;
+        }
+
         if (isset($data['bpmn'])) {
             $process->bpmn = $data['bpmn'];
         }
+        else {
+            $process->bpmn = Process::getProcessTemplate('OnlyStartElement.bpmn');
+        }
+
         $process->saveOrFail();
         $process->refresh();
         return fractal($process, new ProcessTransformer())->respond(201);
