@@ -129,7 +129,6 @@ class ProcessControllerTest extends TestCase
     /**
      * Create an login API as an administrator user.
      *
-     * @return User
      */
     private function authenticateAsAdmin(): User
     {
@@ -137,6 +136,9 @@ class ProcessControllerTest extends TestCase
         return $admin;
     }
 
+    /**
+     * Test the creation of processes
+     */
     public function testProcessCreation()
     {
         //Login as an admin user
@@ -171,12 +173,13 @@ class ProcessControllerTest extends TestCase
     }
 
     /**
-     * Validate field required
+     * Test the required fields
      */
     public function testCreateProcessFieldsRequired()
     {
         $user = $this->authenticateAsAdmin();
         $this->actingAs($user, 'api');
+        //Test to create a process with an empty name
         $this->assertModelCreationFails(
             Process::class,
             [
@@ -184,6 +187,7 @@ class ProcessControllerTest extends TestCase
                 'user_uuid' => static::$DO_NOT_SEND,
                 'process_category_uuid' => static::$DO_NOT_SEND
             ],
+            //Fields that should fail
             [
                 'name'
             ]
