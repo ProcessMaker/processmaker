@@ -1,7 +1,8 @@
 <?php
 namespace Tests\Feature\Api;
 
-use Faker\Factory as Faker;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\User;
@@ -15,6 +16,8 @@ use Tests\TestCase;
 class ProcessControllerTest extends TestCase
 {
 
+    use DatabaseTransactions;
+    use WithFaker;
     use ResourceAssertionsTrait;
 
     protected $resource = 'processes';
@@ -38,53 +41,71 @@ class ProcessControllerTest extends TestCase
      */
     public function testProcessesListing()
     {
-        Process::query()->delete();
         $user = $this->authenticateAsAdmin();
+        $this->actingAs($user, 'api');
+        $initialCount = Process::count();
         // Create some processes
-        $faker = Faker::create();
-        $numProcess = $faker->randomDigitNotNull;
-        factory(Process::class, $numProcess)->create();
-        $response = $this->actingAs($user, 'api')->json('GET', route('processes.index'));
-        $response->assertStatus(200);
-        // Verify we have a total of 5 results
-        $this->assertCount($numProcess, $response->json('data'));
-        $this->assertEquals($numProcess, $response->json('meta')['total']);
-        $response->assertJsonStructure(['*' => $this->structure], $response->json('data'));
+        $countProcesses = 20;
+        factory(Process::class, $countProcesses)->create();
+        //Get a page of processes
+        $page = 2;
+        $perPage = 10;
+        $this->assertCorrectModelListing(
+            '?page=' . $page . '&per_page=' . $perPage,
+            [
+                'total' => $initialCount + $countProcesses,
+                'count' => $perPage,
+                'per_page' => $perPage,
+                'current_page' => $page,
+                'total_pages' => ceil(($initialCount + $countProcesses) / $perPage),
+            ]
+        );
     }
 
     /**
-     * Test to verify our processes listing api endpoint works without any filters
+     * Test to verify our processes listing API endpoint works without any filters
      */
     public function testFiltering()
     {
-        //clear process
-        Process::query()->delete();
-        $faker = Faker::create();
         $user = $this->authenticateAsAdmin();
-
+        $this->actingAs($user, 'api');
+        $perPage = 10;
+        $initialActiveCount = Process::where('status','ACTIVE')->count();
+        $initialInactiveCount = Process::where('status','INACTIVE')->count();
+        
         // Create some processes
         $processActive = [
-            'num' => $faker->randomDigitNotNull,
+            'num' => 10,
             'status' => 'ACTIVE'
         ];
-
         $processInactive = [
-            'num' => $faker->randomDigitNotNull,
+            'num' => 15,
             'status' => 'INACTIVE'
         ];
         factory(Process::class, $processActive['num'])->create(['status' => $processActive['status']]);
         factory(Process::class, $processInactive['num'])->create(['status' => $processInactive['status']]);
-        $processRandom = $faker->randomElement([$processActive, $processInactive]);
-        $response = $this->actingAs($user, 'api')->json('GET', route('processes.index')
-            . '?filter=' . $processRandom["status"] . '&include=category,category.processes');
-        $response->assertStatus(200);
 
-        //dd($response->json('data'));
-        //verify count of data
-        $this->assertCount($processRandom['num'], $response->json('data'));
+        //Get active processes
+        $response = $this->assertCorrectModelListing(
+            '?filter=ACTIVE&include=category&per_page=' . $perPage,
+            [
+                'total' => $initialActiveCount + $processActive['num'],
+                'count' => $perPage,
+                'per_page' => $perPage,
+            ]
+        );
+        //verify include
+        $response->assertJsonStructure(['*' => ['relationships' => ['category']]], $response->json('data'));
 
-        //Verify the structure
-        $response->assertJsonStructure(['*' => $this->structure], $response->json('data'));
+        //Get active processes
+        $response = $this->assertCorrectModelListing(
+            '?filter=INACTIVE&include=category&per_page=' . $perPage,
+            [
+                'total' => $initialInactiveCount + $processInactive['num'],
+                'count' => $perPage,
+                'per_page' => $perPage,
+            ]
+        );
         //verify include
         $response->assertJsonStructure(['*' => ['relationships' => ['category']]], $response->json('data'));
     }

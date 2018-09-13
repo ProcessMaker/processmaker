@@ -15,6 +15,23 @@ trait ResourceAssertionsTrait
         'errors'
     ];
 
+    protected function assertCorrectModelListing($query, $expectedMeta = [])
+    {
+        $route = route($this->resource . '.index');
+        $response = $this->json('GET', $route . $query);
+        //Verify the status
+        $response->assertStatus(200);
+        //Verify the structure
+        $response->assertJsonStructure(['data' => ['*' => $this->structure]]);
+        $data = $response->json('data');
+        $meta = $response->json('meta');
+        // Verify the meta values
+        $this->assertArraySubset($expectedMeta, $meta);
+        //Verify the data size
+        $this->assertCount($meta['count'], $data);
+        return $response;
+    }
+
     /**
      * Verify the creation of a model using valid attributes.
      *
@@ -31,6 +48,7 @@ trait ResourceAssertionsTrait
         $response->assertJsonStructure(['data' => $this->structure]);
         $data = $response->json('data');
         $this->assertArraySubset($array, $data['attributes']);
+        return $response;
     }
 
     /**
@@ -49,5 +67,6 @@ trait ResourceAssertionsTrait
         $response->assertStatus(422);
         $response->assertJsonStructure($this->errorStructure);
         $response->assertJsonStructure(['errors' => $errors]);
+        return $response;
     }
 }
