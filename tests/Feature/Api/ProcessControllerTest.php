@@ -5,6 +5,7 @@ use Faker\Factory as Faker;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
+use ProcessMaker\Models\ProcessCategory;
 
 /**
  * Tests routes related to processes / CRUD related methods
@@ -136,14 +137,27 @@ class ProcessControllerTest extends TestCase
 
     public function testProcessCreation()
     {
+        //Login as an admin user
         $user = $this->authenticateAsAdmin();
         $this->actingAs($user, 'api');
+
+        //Create a process without category
         $this->assertCorrectModelCreation(
             Process::class, [
                 'user_uuid' => static::DO_NOT_SEND,
                 'process_category_uuid' => null,
             ]
         );
+        
+        //Create a process with a category
+        $category = factory(ProcessCategory::class)->create();
+        $this->assertCorrectModelCreation(
+            Process::class, [
+                'user_uuid' => static::DO_NOT_SEND,
+                'process_category_uuid' => $category->uuid_text,
+            ]
+        );
+        
     }
 
     /**
