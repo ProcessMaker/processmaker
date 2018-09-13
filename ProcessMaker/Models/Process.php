@@ -36,6 +36,7 @@ class Process extends Model
      */
     protected $guarded = [
         'uuid',
+        'user_uuid',
         'bpmn',
         'created_at',
         'updated_at',
@@ -49,8 +50,7 @@ class Process extends Model
      * @var array
      */
     protected $hidden = [
-        'bpmn',
-        'bpmnDefinitions'
+        'bpmn'
     ];
 
     /**

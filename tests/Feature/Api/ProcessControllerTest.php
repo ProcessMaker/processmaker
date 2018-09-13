@@ -17,7 +17,7 @@ class ProcessControllerTest extends TestCase
         'id',
         'type',
         'attributes' => [
-            'uuid' ,
+            'uuid',
             'process_category_uuid',
             'user_uuid',
             'description',
@@ -71,7 +71,7 @@ class ProcessControllerTest extends TestCase
         factory(Process::class, $processInactive['num'])->create(['status' => $processInactive['status']]);
         $processRandom = $faker->randomElement([$processActive, $processInactive]);
         $response = $this->actingAs($user, 'api')->json('GET', route('processes.index')
-            . '?filter=' . $processRandom["status"] .'&include=category,category.processes');
+            . '?filter=' . $processRandom["status"] . '&include=category,category.processes');
         $response->assertStatus(200);
 
         //dd($response->json('data'));
@@ -130,5 +130,36 @@ class ProcessControllerTest extends TestCase
     {
         $admin = factory(User::class)->create([]);
         return $admin;
+    }
+
+    public function testProcessCreation()
+    {
+        $user = $this->authenticateAsAdmin();
+        $this->actingAs($user, 'api');
+        $this->assertCorrectModelCreation(
+            route('processes.store'),
+            Process::class,
+            [
+                'user_uuid' => null,
+                'process_category_uuid' => null,
+            ]
+        );
+    }
+
+    /**
+     * Verify the creation of a model using valid attributes.
+     *
+     * @param string $modelClass
+     * @param array $attributes
+     */
+    protected function assertCorrectModelCreation($route, $modelClass, array $attributes = [])
+    {
+        $base = factory($modelClass)->make($attributes);
+        $array = $base->toArray();
+        $response = $this->json('POST', $route, $array);
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['data' => static::STRUCTURE]);
+        $response->assertJsonFragment(['attributes' => $array]);
+        
     }
 }
