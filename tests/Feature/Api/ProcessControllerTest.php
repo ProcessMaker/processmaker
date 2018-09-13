@@ -3,9 +3,10 @@ namespace Tests\Feature\Api;
 
 use Faker\Factory as Faker;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\User;
-use Tests\TestCase;
 use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\User;
+use Tests\Feature\Shared\ResourceAssertionsTrait;
+use Tests\TestCase;
 
 /**
  * Tests routes related to processes / CRUD related methods
@@ -14,9 +15,10 @@ use ProcessMaker\Models\ProcessCategory;
 class ProcessControllerTest extends TestCase
 {
 
-    const DO_NOT_SEND = 'DO_NOT_SEND';
-    const RESOURCE = 'processes';
-    const STRUCTURE = [
+    use ResourceAssertionsTrait;
+
+    protected $resource = 'processes';
+    protected $structure = [
         'id',
         'type',
         'attributes' => [
@@ -47,7 +49,7 @@ class ProcessControllerTest extends TestCase
         // Verify we have a total of 5 results
         $this->assertCount($numProcess, $response->json('data'));
         $this->assertEquals($numProcess, $response->json('meta')['total']);
-        $response->assertJsonStructure(['*' => self::STRUCTURE], $response->json('data'));
+        $response->assertJsonStructure(['*' => $this->structure], $response->json('data'));
     }
 
     /**
@@ -82,7 +84,7 @@ class ProcessControllerTest extends TestCase
         $this->assertCount($processRandom['num'], $response->json('data'));
 
         //Verify the structure
-        $response->assertJsonStructure(['*' => self::STRUCTURE], $response->json('data'));
+        $response->assertJsonStructure(['*' => $this->structure], $response->json('data'));
         //verify include
         $response->assertJsonStructure(['*' => ['relationships' => ['category']]], $response->json('data'));
     }
@@ -137,6 +139,7 @@ class ProcessControllerTest extends TestCase
 
     public function testProcessCreation()
     {
+        //d(static::$DO_NOT_SEND);
         //Login as an admin user
         $user = $this->authenticateAsAdmin();
         $this->actingAs($user, 'api');
@@ -144,8 +147,16 @@ class ProcessControllerTest extends TestCase
         //Create a process without category
         $this->assertCorrectModelCreation(
             Process::class, [
-                'user_uuid' => static::DO_NOT_SEND,
+                'user_uuid' => static::$DO_NOT_SEND,
                 'process_category_uuid' => null,
+            ]
+        );
+
+        //Create a process without sending the category
+        $this->assertCorrectModelCreation(
+            Process::class, [
+                'user_uuid' => static::$DO_NOT_SEND,
+                'process_category_uuid' => static::$DO_NOT_SEND,
             ]
         );
         
@@ -153,28 +164,10 @@ class ProcessControllerTest extends TestCase
         $category = factory(ProcessCategory::class)->create();
         $this->assertCorrectModelCreation(
             Process::class, [
-                'user_uuid' => static::DO_NOT_SEND,
+                'user_uuid' => static::$DO_NOT_SEND,
                 'process_category_uuid' => $category->uuid_text,
             ]
         );
         
-    }
-
-    /**
-     * Verify the creation of a model using valid attributes.
-     *
-     * @param string $modelClass
-     * @param array $attributes
-     */
-    protected function assertCorrectModelCreation($modelClass, array $attributes = [])
-    {
-        $route = route(static::RESOURCE . '.store');
-        $base = factory($modelClass)->make($attributes);
-        $array = array_diff($base->toArray(), [static::DO_NOT_SEND]);
-        $response = $this->json('POST', $route, $array);
-        $response->assertStatus(201);
-        $response->assertJsonStructure(['data' => static::STRUCTURE]);
-        $data = $response->json('data');
-        $this->assertArraySubset($array, $data['attributes']);
     }
 }
