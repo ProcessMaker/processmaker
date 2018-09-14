@@ -54,9 +54,14 @@ Refer to the following sections about information regarding a Request.
 
 ### Request Summary
 
-The **Summary** tab displays ~~what?~~ The following information displays about the Request:
+The **Summary** tab displays data entered into the Request from participants who have completed their tasks. ~~How does the user select which completed task information to view?~~ The following information displays about the Request:
 
-* 
+* **First Name:** The **First Name** field displays the first name of the user who completed the selected task.
+* **Last Name:** The **Last Name** field displays the last name of the user who completed the selected task.
+* **Username:** The **Username** field displays the username of the user who completed the selected task.
+* **Email Address:** The **Email Address** field displays the email address for the user who completed the selected task.
+* **Information:** Below the **Email Address** field displays information as entered into the selected completed task.
+
 ### Request Timeline
 
 
