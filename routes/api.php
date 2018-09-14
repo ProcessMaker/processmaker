@@ -11,6 +11,7 @@ Route::group(
     Route::resource('forms', 'FormController');
     Route::resource('scripts', 'ScriptController');
     Route::resource('processes', 'ProcessController');
+    Route::resource('process_categories', 'ProcessCategoryController');
 
   }
 );

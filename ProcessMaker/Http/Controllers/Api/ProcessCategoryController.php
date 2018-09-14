@@ -1,85 +1,102 @@
 <?php
 
-namespace ProcessMaker\Http\Controllers;
+namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Transformers\ProcessCategoryTransformer;
 
 class ProcessCategoryController extends Controller
 {
+    use ResourceRequestsTrait;
     /**
-     * Display a listing of the resource.
+     * Display a listing of the Process Categories.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $where = $this->getRequestFilterBy($request, ['name','status']);
+        $orderBy = $this->getRequestSortBy($request, 'name');
+        $perPage = $this->getPerPage($request);
+        $processes = ProcessCategory::where($where)
+            ->orderBy(...$orderBy)
+            ->paginate($perPage);
+        return fractal($processes, new ProcessCategoryTransformer())
+            ->parseIncludes($request->input('include'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Display the specified Process category.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param ProcessCategory $ProcessCategory
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function create()
+    public function show(Request $request, ProcessCategory $ProcessCategory)
     {
-        //
+        return fractal($ProcessCategory, new ProcessCategoryTransformer())
+            ->parseIncludes($request->input('include', []))
+            ->respond(200);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created Process Category in storage
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
-        //
+        $category = new ProcessCategory();
+        $category->fill($request->json()->all());
+
+        //validate model trait
+        $this->validateModel($category, ProcessCategory::rules());
+        $category->save();
+        return fractal($category->refresh(), new ProcessCategoryTransformer())->respond(201);
     }
 
     /**
-     * Display the specified resource.
+     * Updates the current element
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
+     * @param Request $request
+     * @param ProcessCategory $processCategory
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function edit($id)
+    public function update(Request $request, ProcessCategory $processCategory)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
+        $processCategory->fill($request->json()->all());
+        //validate model trait
+        $this->validateModel($processCategory, ProcessCategory::rules($processCategory));
+        $processCategory->save();
+        return response($processCategory->refresh(), 200);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param ProcessCategory $processCategory
+     *
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(ProcessCategory $processCategory)
     {
-        //
+        /*$this->validateModel($processCategory, [
+            'collaborations' => 'empty',
+            'requests' => 'empty',
+        ]);*/
+        //$process = $processCategory->processes()->count();
+
+        $this->validateModel($processCategory, [
+            'processes' => 'empty'
+        ]);
+
+        $processCategory->delete();
+        return response('', 204);
     }
 }

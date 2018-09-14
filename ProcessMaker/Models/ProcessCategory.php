@@ -38,13 +38,18 @@ class ProcessCategory extends Model
                 'required',
                 'string',
                 'max:100',
-                Rule::unique('process_categories')->ignore($existing->uuid)
+                Rule::unique('process_categories')->ignore($existing->uuid, 'uuid')
             ];
         }
 
         return $rules;
     }
 
+    /**
+     * Get processes
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function processes()
     {
         return $this->hasMany(Process::class);
