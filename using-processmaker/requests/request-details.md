@@ -11,17 +11,42 @@ You can view details about a Request in the following ways:
 
 Refer to the sections below about Request details.
 
-## Request Title
+## Request Header
 
+The Request header is a gray-colored bar near the top of the page. The Request header displays the following:
 
+* **Request title:** The Request title is the title of the Request as entered by the person who started the Request.
+* **Status:** The status of the request displays as one of the following:
+  * **In Progress:** The Request is in progress. View the current and pending tasks for that Request in the [Current Tasks](request-details.md#current-tasks) pane.
+  * **Completed:** The Request is completed.
+  * **Canceled:** The Request has been canceled by the Request initiator.
+* **Back:** Click the **Back** button to return to the previous page.
 
 ## Current Tasks
 
+The **Current Tasks** pane displays current and pending tasks associated with the Request, as well as the status of each. Tasks that are open or pending display above tasks that are waiting.
 
+{% hint style="info" %}
+The **Current Tasks** pane does not display completed tasks associated with the Request. View the [Timeline](request-details.md#request-timeline) tab to view the history of the Request.
+{% endhint %}
+
+The **Current Tasks** pane displays the following:
+
+* **Task recipient and task name:** The name of the current or pending task displays to the right of the task recipient's avatar.
+* **Task status:** A representation of the task's status displays as a colored dot to the right of the task name. The dot's color represents the task's status as follows:
+  * **&lt;screenshot&gt;:** The task is pending. A task is pending when the task recipient can work on the task now. Mouse hover over the dot to see the task recipient's name and for how long the task has been pending.
+  * **&lt;screenshot&gt;:** The task is waiting. A task is waiting when it is not pending.
+* **Open Task:** The **Open Task** button displays to the right of the task status if you are the task recipient and the task is currently pending. Click **Open Task** to open the task. The task displays.
 
 ## Request Statistics
 
+Request statistics display the following:
 
+* **Created by:** The **Created by** field displays the full name of the person who started the Request.
+* **Date Created:** The **Date Created** field displays the date and time the Request was created in the following format: `MM/DD/YYYY HH:MM`.
+* **Created:** The **Created** field displays how old the Request is.
+* **Last Modification:** The **Last Modification** field displays how long ago the Request was last modified.
+* **Duration:** The **Duration** field displays the duration of the Request. ~~How is this different than what the Created field displays other than its format as shown in the mock-up?~~
 
 ## Request Information
 
