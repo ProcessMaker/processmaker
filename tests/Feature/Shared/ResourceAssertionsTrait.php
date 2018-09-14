@@ -39,6 +39,14 @@ trait ResourceAssertionsTrait
         $this->assertCount($meta['count'], $data);
         return $response;
     }
+    
+    protected function assertModelSorting($query, $expectedFirstRow)
+    {
+        $data = $this->assertCorrectModelListing($query)
+            ->json('data');
+        $firstRow = $this->getDataAttributes($data[0]);
+        $this->assertArraySubset($expectedFirstRow, $firstRow);
+    }
 
     /**
      * Verify the creation of a model using valid attributes.
@@ -57,7 +65,7 @@ trait ResourceAssertionsTrait
         $response->assertStatus(201);
         $response->assertJsonStructure(['data' => $this->structure]);
         $data = $response->json('data');
-        $this->assertArraySubset($array, $data['attributes']);
+        $this->assertArraySubset($array, $this->getDataAttributes($data));
         return $response;
     }
 
@@ -95,7 +103,11 @@ trait ResourceAssertionsTrait
         $route = route($this->resource . '.show', [$uuid]);
         $structure = $this->structure;
         if ($includes) {
-            $structure['relationships'] = $includes;
+            if ($this->isJsonApi()) {
+                $structure['relationships'] = $includes;
+            } else {
+                $structure = array_merge($structure, $includes);
+            }
             $route .= '?include=' . implode(',', $includes);
         }
         $response = $this->json('GET', $route);
@@ -159,6 +171,7 @@ trait ResourceAssertionsTrait
         foreach ($fields as $key => $value) {
             $this->assertEquals($value, $data[$key]);
         }
+        return $response;
     }
 
     /**
@@ -180,6 +193,28 @@ trait ResourceAssertionsTrait
         $response->assertStatus(422);
         $response->assertJsonStructure($this->errorStructure);
         $response->assertJsonStructure(['errors' => $errors]);
+        return $response;
+    }
 
+    /**
+     * Return true is the structure has a JSON API format.
+     *
+     * @return bool
+     */
+    private function isJsonApi()
+    {
+        return isset($this->structure['attributes']);
+    }
+
+    /**
+     * Get the attributes of the response.
+     *
+     * @param type $row
+     *
+     * @return array
+     */
+    private function getDataAttributes($row)
+    {
+        return $this->isJsonApi() ? $row['attributes'] : $row;
     }
 }

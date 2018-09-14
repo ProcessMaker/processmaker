@@ -22,6 +22,7 @@ class ProcessControllerTest extends TestCase
     use WithFaker;
     use ResourceAssertionsTrait;
 
+    protected $user;
     protected $resource = 'processes';
     protected $structure = [
         'id',
@@ -39,12 +40,22 @@ class ProcessControllerTest extends TestCase
     ];
 
     /**
+     * Initialize the controller tests
+     *
+     */
+    protected function setUp()
+    {
+        parent::setUp();
+        //Login as an valid user
+        $this->user = factory(User::class)->create();
+        $this->actingAs($this->user, 'api');
+    }
+
+    /**
      * Test to verify our processes listing api endpoint works without any filters
      */
     public function testProcessesListing()
     {
-        $user = $this->authenticateAsAdmin();
-        $this->actingAs($user, 'api');
         $initialCount = Process::count();
         // Create some processes
         $countProcesses = 20;
@@ -69,8 +80,6 @@ class ProcessControllerTest extends TestCase
      */
     public function testFiltering()
     {
-        $user = $this->authenticateAsAdmin();
-        $this->actingAs($user, 'api');
         $perPage = 10;
         $initialActiveCount = Process::where('status','ACTIVE')->count();
         $initialInactiveCount = Process::where('status','INACTIVE')->count();
@@ -117,7 +126,6 @@ class ProcessControllerTest extends TestCase
      */
     public function testSorting()
     {
-        $user = $this->authenticateAsAdmin();
         // Create some processes
         factory(Process::class)->create([
             'name' => 'aaaaaa',
@@ -127,36 +135,21 @@ class ProcessControllerTest extends TestCase
             'name' => 'zzzzz',
             'description' => 'yyyyy'
         ]);
-        $response = $this->actingAs($user, 'api')->json('GET', route('processes.index')
-            . '?order_by=name&order_direction=asc');
-        $response->assertStatus(200);
-        $data = $response->json('data')[0]['attributes'];
-        $this->assertEquals('aaaaaa', $data['name']);
-        $this->assertEquals('bbbbbb', $data['description']);
 
-        $response = $this->actingAs($user, 'api')->json('GET', route('processes.index')
-            . '?order_by=name&order_direction=DESC');
-        $response->assertStatus(200);
-        $data = $response->json('data')[0]['attributes'];
-        $this->assertEquals('zzzzz', $data['name']);
-        $this->assertEquals('yyyyy', $data['description']);
+        //Test the list sorted by name returns as first row {"name": "aaaaaa"}
+        $this->assertModelSorting('?order_by=name&order_direction=asc', [
+            'name' => 'aaaaaa'
+        ]);
 
-        $response = $this->actingAs($user, 'api')->json('GET', route('processes.index')
-            . '?order_by=description&order_direction=desc');
-        $response->assertStatus(200);
-        $data = $response->json('data')[0]['attributes'];
-        $this->assertEquals('zzzzz', $data['name']);
-        $this->assertEquals('yyyyy', $data['description']);
-    }
+        //Test the list sorted desc returns as first row {"name": "zzzzz"}
+        $this->assertModelSorting('?order_by=name&order_direction=DESC', [
+            'name' => 'zzzzz'
+        ]);
 
-    /**
-     * Create an login API as an administrator user.
-     *
-     */
-    private function authenticateAsAdmin(): User
-    {
-        $admin = factory(User::class)->create([]);
-        return $admin;
+        //Test the list sorted by description in desc returns as first row {"description": "yyyyy"}
+        $this->assertModelSorting('?order_by=description&order_direction=desc', [
+            'description' => 'yyyyy'
+        ]);
     }
 
     /**
@@ -164,10 +157,6 @@ class ProcessControllerTest extends TestCase
      */
     public function testProcessCreation()
     {
-        //Login as an admin user
-        $user = $this->authenticateAsAdmin();
-        $this->actingAs($user, 'api');
-
         //Create a process without category
         $this->assertCorrectModelCreation(
             Process::class, [
@@ -200,8 +189,6 @@ class ProcessControllerTest extends TestCase
      */
     public function testCreateProcessFieldsValidation()
     {
-        $user = $this->authenticateAsAdmin();
-        $this->actingAs($user, 'api');
         //Test to create a process with an empty name
         $this->assertModelCreationFails(
             Process::class,
@@ -235,9 +222,6 @@ class ProcessControllerTest extends TestCase
      */
     public function testShowProcess()
     {
-        $user = $this->authenticateAsAdmin();
-        $this->actingAs($user, 'api');
-
         //Create a new process without category
         $process = factory(Process::class)->create([
             'process_category_uuid' => null
@@ -264,9 +248,6 @@ class ProcessControllerTest extends TestCase
      */
     public function testsProcessDeletion()
     {
-        $user = $this->authenticateAsAdmin();
-        $this->actingAs($user, 'api');
-
         //Create a new process
         $process = factory(Process::class)->create();
 
@@ -303,19 +284,17 @@ class ProcessControllerTest extends TestCase
      */
     public function testUpdateProcess()
     {
-        $user = $this->authenticateAsAdmin();
-        $this->actingAs($user, 'api');
         //Test to update name process
         $this->assertModelUpdate(
             Process::class,
             [
-                'name' => 'marquito',
+                'name' => $this->faker()->name,
                 'user_uuid' => static::$DO_NOT_SEND,
                 'process_category_uuid' => static::$DO_NOT_SEND,
             ]
         );
 
-        //Test update process category of null
+        //Test update process category to null
         $this->assertModelUpdate(
             Process::class,
             [
@@ -340,8 +319,6 @@ class ProcessControllerTest extends TestCase
      */
     public function testUpdateProcessFails()
     {
-        $user = $this->authenticateAsAdmin();
-        $this->actingAs($user, 'api');
         //Test to update name and description if required
         $this->assertModelUpdateFails(
             Process::class,
