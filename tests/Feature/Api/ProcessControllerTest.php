@@ -1,7 +1,6 @@
 <?php
 namespace Tests\Feature\Api;
 
-use Faker\Factory;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Process;

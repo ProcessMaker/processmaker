@@ -73,8 +73,7 @@ class ProcessController extends Controller
         //validate model trait
         $this->validateModel($process, Process::rules());
         $process->save();
-        $process->refresh();
-        return fractal($process, new ProcessTransformer())->respond(201);
+        return fractal($process->refresh(), new ProcessTransformer())->respond(201);
     }
 
     /**
@@ -93,7 +92,7 @@ class ProcessController extends Controller
         //validate model trait
         $this->validateModel($process, Process::rules($process));
         $process->save();
-        return response('', 204);
+        return response($process->refresh(), 200);
     }
 
     /**
