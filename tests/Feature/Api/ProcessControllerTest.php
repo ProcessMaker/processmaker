@@ -153,6 +153,30 @@ class ProcessControllerTest extends TestCase
     }
 
     /**
+     * Test pagination of process list
+     *
+     */
+    public function testPagination()
+    {
+        // Number of processes in the tables at the moment of starting the test
+        $initialRows = Process::all()->count();
+
+        // Number of rows to be created for the test
+        $rowsToAdd = 7;
+
+        // Now we create the specified number of processes
+        factory(Process::class, $rowsToAdd)->create();
+
+        // The first page should have 5 items;
+        $response = $this->json('GET', route('processes.index', ['per_page' => 5, 'page' => 1]));
+        $response->assertJsonCount(5, 'data');
+
+        // The second page should have the modulus of 2+$initialRows
+        $response = $this->json('GET', route('processes.index', ['per_page' => 5, 'page' => 2]));
+        $response->assertJsonCount((2 + $initialRows) % 5, 'data');
+    }
+
+    /**
      * Test the creation of processes
      */
     public function testProcessCreation()
@@ -202,6 +226,23 @@ class ProcessControllerTest extends TestCase
                 'name'
             ]
         );
+
+        //Test to create a process with duplicate name
+        $name = 'Some name';
+        factory(Process::class)->create(['name' => $name]);
+        $this->assertModelCreationFails(
+            Process::class,
+            [
+                'name' => $name,
+                'user_uuid' => static::$DO_NOT_SEND,
+                'process_category_uuid' => static::$DO_NOT_SEND
+            ],
+            //Fields that should fail
+            [
+                'name'
+            ]
+        );
+
         //Test to create a process with a process category uuid that does not exist
         $this->assertModelCreationFails(
             Process::class,
@@ -285,10 +326,11 @@ class ProcessControllerTest extends TestCase
     public function testUpdateProcess()
     {
         //Test to update name process
+        $name = $this->faker->name;
         $this->assertModelUpdate(
             Process::class,
             [
-                'name' => $this->faker()->name,
+                'name' => $name,
                 'user_uuid' => static::$DO_NOT_SEND,
                 'process_category_uuid' => static::$DO_NOT_SEND,
             ]
