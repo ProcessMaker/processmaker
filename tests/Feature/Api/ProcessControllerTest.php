@@ -150,6 +150,30 @@ class ProcessControllerTest extends TestCase
         $this->assertEquals('yyyyy', $data['description']);
     }
 
+    public function testPagination()
+    {
+        $user = $this->authenticateAsAdmin();
+
+        // Number of processes in the tables at the moment of starting the test
+        $initialRows = Process::all()->count();
+
+        // Number of rows to be created for the test
+        $rowsToAdd = 7;
+
+        // Now we create the specified number of processes
+        factory(Process::class, $rowsToAdd)->create();
+
+        // The first page should have 5 items;
+        $response = $this->actingAs($user, 'api')
+                            ->json('GET', route('processes.index', ['per_page' => 5, 'page' => 1]));
+        $response->assertJsonCount(5, 'data');
+
+        // The second page should have the modulus of 2+$initialRows
+        $response = $this->actingAs($user, 'api')
+            ->json('GET', route('processes.index', ['per_page' => 5, 'page' => 2]));
+        $response->assertJsonCount((2 + $initialRows) % 5, 'data');
+    }
+
     /**
      * Create an login API as an administrator user.
      *
