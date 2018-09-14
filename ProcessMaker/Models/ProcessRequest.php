@@ -155,4 +155,13 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
     {
         return $this->belongsTo(ProcessCollaboration::class, 'process_collaboration_uuid');
     }
+
+    /**
+     * Get the creator/author of this request.
+     *
+     */
+    public function process()
+    {
+        return $this->belongsTo(Process::class);
+    }
 }

@@ -2,6 +2,8 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use Spatie\BinaryUuid\HasBinaryUuid;
 
@@ -36,6 +38,7 @@ class Process extends Model
      */
     protected $guarded = [
         'uuid',
+        'user_uuid',
         'bpmn',
         'created_at',
         'updated_at',
@@ -43,7 +46,7 @@ class Process extends Model
 
     /**
      * The attributes that should be hidden for serialization.
-     * 
+     *
      * BPMN data will be hidden. It will be able by its getter.
      *
      * @var array
@@ -55,7 +58,7 @@ class Process extends Model
     /**
      * Parsed process BPMN definitions.
      *
-     * @var \ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface 
+     * @var \ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface
      */
     private $bpmnDefinitions;
 
@@ -98,8 +101,13 @@ class Process extends Model
 
         if ($existing) {
             // ignore the unique rule for this id
-            $rules['name'] .= ',' . $existing->uuid . ',uuid';
+            $rules['name'] = [
+                'required',
+                Rule::unique('processes')->ignore($existing->uuid, 'uuid')
+            ];
         }
+
+        return $rules;
     }
 
     /**
@@ -135,5 +143,32 @@ class Process extends Model
     public static function getProcessTemplatesPath()
     {
         return database_path('processes/templates');
+    }
+
+    public static function getProcessTemplate($name)
+    {
+        $path = self::getProcessTemplatesPath() . '/' . $name;
+        //return Storage::disk('local')->get($path);
+        return file_get_contents($path);
+    }
+
+    /**
+     * Category of the process.
+     *
+     * @return BelongsTo
+     */
+    public function requests()
+    {
+        return $this->hasMany(ProcessRequest::class);
+    }
+
+    /**
+     * Category of the process.
+     *
+     * @return BelongsTo
+     */
+    public function collaborations()
+    {
+        return $this->hasMany(ProcessCollaboration::class);
     }
 }

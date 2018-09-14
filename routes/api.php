@@ -10,6 +10,7 @@ Route::group(
     Route::resource('groups', 'GroupController');
     Route::resource('forms', 'FormController');
     Route::resource('scripts', 'ScriptController');
+    Route::resource('processes', 'ProcessController');
 
   }
 );

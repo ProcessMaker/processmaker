@@ -4,6 +4,7 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
+use ProcessMaker\Models\Process;
 use Spatie\BinaryUuid\HasBinaryUuid;
 
 /**
@@ -44,4 +45,8 @@ class ProcessCategory extends Model
         return $rules;
     }
 
+    public function processes()
+    {
+        return $this->hasMany(Process::class);
+    }
 }
