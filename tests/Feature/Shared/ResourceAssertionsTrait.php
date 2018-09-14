@@ -84,7 +84,7 @@ trait ResourceAssertionsTrait
 
     /**
      * Verify model update.
-     * 
+     *
      * @param string $modelClass
      * @param array $attributes
      *
@@ -132,5 +132,51 @@ trait ResourceAssertionsTrait
         $response->assertJsonStructure($this->errorStructure);
         $response->assertJsonStructure(['errors' => $errors]);
         return $response;
+    }
+
+    /**
+     * Verify update of a model using valid attributes
+     *
+     * @param $modelClass
+     * @param array $attributes
+     */
+    protected function assertModelUpdate($modelClass, array $attributes = [])
+    {
+
+        $base = factory($modelClass)->create();
+
+        $route = route($this->resource . '.update', [$base->uuid_text]);
+        $fields = array_diff($attributes, [static::$DO_NOT_SEND]);
+        $response = $this->json('PUT', $route, $fields);
+        //validate status
+        $response->assertStatus(204);
+
+        $data = $modelClass::where('uuid', $base->uuid)->first()->toArray();
+
+        foreach ($fields as $key => $value) {
+            $this->assertEquals($value, $data[$key]);
+        }
+    }
+
+    /**
+     * Verify update of a model using invalid attributes
+     *
+     * @param $modelClass
+     * @param array $attributes
+     * @param array $errors
+     */
+    protected function assertModelUpdateFails($modelClass, array $attributes = [], array $errors = [])
+    {
+
+        $base = factory($modelClass)->create();
+
+        $route = route($this->resource . '.update', [$base->uuid_text]);
+        $fields = array_diff($attributes, [static::$DO_NOT_SEND]);
+        $response = $this->json('PUT', $route, $fields);
+        //validate status
+        $response->assertStatus(422);
+        $response->assertJsonStructure($this->errorStructure);
+        $response->assertJsonStructure(['errors' => $errors]);
+
     }
 }

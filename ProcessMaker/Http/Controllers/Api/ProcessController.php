@@ -1,20 +1,24 @@
 <?php
 namespace ProcessMaker\Http\Controllers\Api;
 
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Transformers\ProcessTransformer;
 
+
 class ProcessController extends Controller
 {
     use ResourceRequestsTrait;
-    
+
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index(Request $request)
     {
@@ -33,7 +37,7 @@ class ProcessController extends Controller
      *
      * @param $process
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function show(Process $process)
     {
@@ -45,20 +49,21 @@ class ProcessController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function store(Request $request)
     {
         //Convert the string uuid to binary uuid
         $this->encodeRequestUuids($request, ['process_category_uuid']);
-        $request->validate(Process::rules());
         $data = $request->json()->all();
 
         $process = new Process();
         $process->fill($data);
 
+        //set current user
         $process->user_uuid = Auth::user()->uuid;
 
         if (isset($data['bpmn'])) {
@@ -67,8 +72,9 @@ class ProcessController extends Controller
         else {
             $process->bpmn = Process::getProcessTemplate('OnlyStartElement.bpmn');
         }
-
-        $process->saveOrFail();
+        //validate model trait
+        $this->validateModel($process, Process::rules());
+        $process->save();
         $process->refresh();
         return fractal($process, new ProcessTransformer())->respond(201);
     }
@@ -78,16 +84,17 @@ class ProcessController extends Controller
      *
      * @param Request $request
      * @param Process $process
-     *
-     * @return \Illuminate\Http\Response
-     *
+     * @return ResponseFactory|Response
+     * @throws \Throwable
      */
     public function update(Request $request, Process $process)
     {
-        $data = $request->json()->all();
-        $process->fill($data);
-        $process->saveOrFail();
-        $process->refresh();
+        //Convert the string uuid to binary uuid
+        $this->encodeRequestUuids($request, ['process_category_uuid']);
+        $process->fill($request->json()->all());
+        //validate model trait
+        $this->validateModel($process, Process::rules($process));
+        $process->save();
         return response('', 204);
     }
 
@@ -96,8 +103,8 @@ class ProcessController extends Controller
      *
      * @param Process $process
      *
-     * @return \Illuminate\Http\Response
-     *
+     * @return ResponseFactory|Response
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function destroy(Process $process)
     {

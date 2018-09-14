@@ -74,7 +74,7 @@ class ProcessControllerTest extends TestCase
         $perPage = 10;
         $initialActiveCount = Process::where('status','ACTIVE')->count();
         $initialInactiveCount = Process::where('status','INACTIVE')->count();
-        
+
         // Create some processes
         $processActive = [
             'num' => 10,
@@ -244,7 +244,7 @@ class ProcessControllerTest extends TestCase
 
     /**
      * Process deletion
-     * 
+     *
      * Test the process deletion
      */
     public function testsProcessDeletion()
@@ -284,4 +284,92 @@ class ProcessControllerTest extends TestCase
             'collaborations'
         ]);
     }
+
+    /*
+    + Test update process
+     */
+    public function testUpdateProcess()
+    {
+        $user = $this->authenticateAsAdmin();
+        $this->actingAs($user, 'api');
+        //Test to update name process
+        $this->assertModelUpdate(
+            Process::class,
+            [
+                'name' => 'marquito',
+                'user_uuid' => static::$DO_NOT_SEND,
+                'process_category_uuid' => static::$DO_NOT_SEND,
+            ]
+        );
+
+        //Test update process category of null
+        $this->assertModelUpdate(
+            Process::class,
+            [
+                'user_uuid' => static::$DO_NOT_SEND,
+                'process_category_uuid' => null
+            ]
+        );
+
+        //Test update process category
+        $this->assertModelUpdate(
+            Process::class,
+            [
+                'user_uuid' => static::$DO_NOT_SEND,
+                'process_category_uuid' => factory(ProcessCategory::class)->create()->uuid_text
+            ]
+        );
+    }
+
+
+    /**
+     * Test update process
+     */
+    public function testUpdateProcessFails()
+    {
+        $user = $this->authenticateAsAdmin();
+        $this->actingAs($user, 'api');
+        //Test to update name and description if required
+        $this->assertModelUpdateFails(
+            Process::class,
+            [
+                'name' => '',
+                'description' => '',
+                'user_uuid' => static::$DO_NOT_SEND,
+                'process_category_uuid' => static::$DO_NOT_SEND,
+            ],
+            [
+                'name',
+                'description'
+            ]
+        );
+
+        //Test update process category of null
+        $this->assertModelUpdateFails(
+            Process::class,
+            [
+                'user_uuid' => static::$DO_NOT_SEND,
+                'process_category_uuid' => 'process_category_uuid_not_exists'
+            ],
+            [
+                'process_category_uuid'
+            ]
+        );
+
+        //Test validate name is unique
+        $name = 'Some name';
+        factory(Process::class)->create(['name' => $name]);
+        $this->assertModelUpdateFails(
+            Process::class,
+            [
+                'name' => $name,
+                'user_uuid' => static::$DO_NOT_SEND,
+                'process_category_uuid' => static::$DO_NOT_SEND,
+            ],
+            [
+                'name'
+            ]
+        );
+    }
+
 }

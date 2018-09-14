@@ -42,6 +42,8 @@ class ProcessTransformer extends TransformerAbstract
      */
     public function includeCategory(Process $process)
     {
-        return $this->item($process->category, new ProcessCategoryTransformer);
+        return empty($process->category)
+            ? $this->null()
+            : $this->item($process->category, new ProcessCategoryTransformer);
     }
 }
