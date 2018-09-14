@@ -152,13 +152,9 @@ trait ResourceAssertionsTrait
         $fields = array_diff($attributes, [static::$DO_NOT_SEND]);
         $response = $this->json('PUT', $route, $fields);
         //validate status
-        $response->assertStatus(204);
-
-        $data = $modelClass::where('uuid', $base->uuid)->first()->toArray();
-
-        foreach ($fields as $key => $value) {
-            $this->assertEquals($value, $data[$key]);
-        }
+        $response->assertStatus(200);
+        $response->assertJsonStructure($this->structure['attributes']);
+        $this->assertArraySubset($fields, $response->json());
     }
 
     /**
