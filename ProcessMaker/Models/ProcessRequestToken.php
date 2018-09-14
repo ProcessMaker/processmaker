@@ -9,18 +9,19 @@ use Spatie\BinaryUuid\HasBinaryUuid;
  * ProcessRequestToken is used to store the state of a token of the
  * Nayra engine
  *
- * @property string uuid
- * @property \Carbon\Carbon completed_at
- * @property \Carbon\Carbon due_at
- * @property string element_uuid
- * @property string element_type
- * @property \Carbon\Carbon initiated_at
- * @property string process_request_uuid
- * @property \Carbon\Carbon riskchanges_at
- * @property string status
- * @property string user_uuid
+ * @property string $uuid
+ * @property string $process_request_uuid
+ * @property string $user_uuid
+ * @property string $element_uuid
+ * @property string $element_type
+ * @property string $status
+ * @property \Carbon\Carbon $completed_at
+ * @property \Carbon\Carbon $due_at
+ * @property \Carbon\Carbon $initiated_at
+ * @property \Carbon\Carbon $riskchanges_at
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
+ * @property ProcessRequest $request
  *
  */
 class ProcessRequestToken extends Model
@@ -32,7 +33,7 @@ class ProcessRequestToken extends Model
     /**
      * Attributes that are not mass assignable.
      *
-     * @var array $fillable
+     * @var array $guarded
      */
     protected $guarded = [
         'uuid',
@@ -62,6 +63,15 @@ class ProcessRequestToken extends Model
     ];
 
     /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [
+        'definition'
+    ];
+
+    /**
      * Validation rules.
      *
      * @return array
@@ -83,5 +93,32 @@ class ProcessRequestToken extends Model
     public function processRequest()
     {
         return $this->belongsTo(ProcessRequest::class, 'process_request_uuid');
+    }
+
+    /**
+     * Get the creator/author of this request.
+     *
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_uuid');
+    }
+
+    /**
+     * Get the BPMN definition of the element where the token is.
+     *
+     * @return array
+     */
+    public function getDefinitionAttribute()
+    {
+        if (!$this->request) {
+            return [];
+        }
+        $definitions = $this->request->process->getDefinitions();
+        $element = $definitions->findElementById($this->element_uuid);
+        if (!$element) {
+            return [];
+        }
+        return $element->getBpmnElementInstance()->getProperties();
     }
 }

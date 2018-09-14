@@ -12,6 +12,9 @@ Route::group(
     Route::resource('scripts', 'ScriptController');
     Route::resource('processes', 'ProcessController');
     Route::resource('process_categories', 'ProcessCategoryController');
+    Route::resource('requests.tokens', 'ProcessRequestTokenController')->except([
+        'create', 'store', 'update', 'destroy'
+    ]);
 
   }
 );

@@ -20,7 +20,8 @@ class ProcessTransformer extends TransformerAbstract
      * @var array
      */
     protected $availableIncludes = [
-        'category'
+        'category',
+        'user',
     ];
 
     /**
@@ -36,7 +37,9 @@ class ProcessTransformer extends TransformerAbstract
     }
 
     /**
-     * Include Author
+     * Include Category
+     *
+     * @param Process $process
      *
      * @return \League\Fractal\Resource\Item
      */
@@ -45,5 +48,19 @@ class ProcessTransformer extends TransformerAbstract
         return empty($process->category)
             ? $this->null()
             : $this->item($process->category, new ProcessCategoryTransformer);
+    }
+
+    /**
+     * Include User
+     *
+     * @param \ProcessMaker\Transformers\ProcessRequestToken $token
+     *
+     * @return \League\Fractal\Resource\Item
+     */
+    public function includeUser(ProcessRequestToken $token)
+    {
+        return empty($token->user)
+            ? $this->null()
+            : $this->item($token->user, new UserTransformer);
     }
 }

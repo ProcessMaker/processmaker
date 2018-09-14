@@ -25,6 +25,7 @@ use Spatie\BinaryUuid\HasBinaryUuid;
  * @property \Carbon\Carbon $completed_at
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
+ * @property Process $process
  *
  */
 class ProcessRequest extends Model implements ExecutionInstanceInterface
@@ -135,7 +136,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
      */
     public function tokens()
     {
-        return $this->hasMany(ProcessRequestTokens::class);
+        return $this->hasMany(ProcessRequestToken::class);
     }
 
     /**

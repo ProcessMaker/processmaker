@@ -18,6 +18,10 @@ $factory->define(ProcessRequestToken::class, function (Faker $faker) {
         },
         'user_uuid' => function () {
             return factory(User::class)->create()->uuid;
-        }
+        },
+        'completed_at' => $faker->dateTime,
+        'due_at' => $faker->dateTime,
+        'initiated_at' => $faker->dateTime,
+        'riskchanges_at' => $faker->dateTime,
     ];
 });

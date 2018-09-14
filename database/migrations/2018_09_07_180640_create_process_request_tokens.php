@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateProcessRequestTokens extends Migration
 {
@@ -16,16 +16,16 @@ class CreateProcessRequestTokens extends Migration
         Schema::create('process_request_tokens', function (Blueprint $table) {
             // Columns
             $table->uuid('uuid');
-            $table->timestamp('completed_at')->nullable();
-            $table->timestamp('due_at')->nullable();
+            $table->uuid('user_uuid')->nullable();
             $table->string('element_uuid', 36);
             $table->string('element_type', 36);
-            $table->timestamp('initiated_at')->nullable();
             $table->uuid('process_request_uuid');
-            $table->timestamp('riskchanges_at')->nullable();
             $table->enum('status', ['ACTIVE', 'FAILING', 'COMPLETED', 'CLOSED', 'EVENT_CATCH'])
                     ->default('ACTIVE');
-            $table->uuid('user_uuid')->nullable();
+            $table->timestamp('completed_at')->nullable();
+            $table->timestamp('due_at')->nullable();
+            $table->timestamp('initiated_at')->nullable();
+            $table->timestamp('riskchanges_at')->nullable();
             $table->timestamps();
 
             // Indexes
