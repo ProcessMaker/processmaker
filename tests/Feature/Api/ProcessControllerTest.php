@@ -1,6 +1,7 @@
 <?php
 namespace Tests\Feature\Api;
 
+use Faker\Factory;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Process;
@@ -215,6 +216,23 @@ class ProcessControllerTest extends TestCase
                 'name'
             ]
         );
+
+        //Test to create a process with duplicate name
+        $name = 'Some name';
+        factory(Process::class)->create(['name' => $name]);
+        $this->assertModelCreationFails(
+            Process::class,
+            [
+                'name' => $name,
+                'user_uuid' => static::$DO_NOT_SEND,
+                'process_category_uuid' => static::$DO_NOT_SEND
+            ],
+            //Fields that should fail
+            [
+                'name'
+            ]
+        );
+
         //Test to create a process with a process category uuid that does not exist
         $this->assertModelCreationFails(
             Process::class,
@@ -306,10 +324,11 @@ class ProcessControllerTest extends TestCase
         $user = $this->authenticateAsAdmin();
         $this->actingAs($user, 'api');
         //Test to update name process
+        $name = $this->faker->name;
         $this->assertModelUpdate(
             Process::class,
             [
-                'name' => 'marquito',
+                'name' => $name,
                 'user_uuid' => static::$DO_NOT_SEND,
                 'process_category_uuid' => static::$DO_NOT_SEND,
             ]

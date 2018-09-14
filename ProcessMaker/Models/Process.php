@@ -3,6 +3,7 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use Spatie\BinaryUuid\HasBinaryUuid;
 
@@ -100,7 +101,10 @@ class Process extends Model
 
         if ($existing) {
             // ignore the unique rule for this id
-            $rules['name'] .= ',' . $existing->uuid . ',uuid';
+            $rules['name'] = [
+                'required',
+                Rule::unique('processes')->ignore($existing->uuid, 'uuid')
+            ];
         }
 
         return $rules;
