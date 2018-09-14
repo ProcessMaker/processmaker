@@ -54,8 +54,9 @@ Refer to the following sections about information regarding a Request.
 
 ### Request Summary
 
+The **Summary** tab displays ~~what?~~ The following information displays about the Request:
 
-
+* 
 ### Request Timeline
 
 
@@ -66,9 +67,25 @@ Refer to the following sections about information regarding a Request.
 
 ## Documents Associated with the Request
 
+The **Documents** pane displays documents associated with the Request. Documents become associated with a Request when a Recipient participant uploads a document in a task.
 
+Click on a document to download it to your computer. If you do not have permission to download documents, you cannot click on any document.
+
+{% hint style="info" %}
+Contact your ProcessMaker Administrator to request permission to download documents from the Request details page.
+{% endhint %}
 
 ## Request Comments
 
+The Request details displays each comment that has been entered into a task Dynaform in the order that they were entered. The oldest comment displays at the top of the comment list.
 
+The following information displays for each comment:
+
+* the username of the person who entered the comment
+* the date the person entered the comment
+* the comment
+
+To enter a comment, enter the content of your comment into the comment field, and then click **Comment**.
+
+If you have not entered any comments into the Request, the following message displays: **You have not posted any comments yet.**
 
