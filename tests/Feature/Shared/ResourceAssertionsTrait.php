@@ -85,19 +85,22 @@ trait ResourceAssertionsTrait
     /**
      * Verify model update.
      *
-     * @param string $modelClass
-     * @param array $attributes
+     * @param string $uuid
+     * @param array $includes
      *
      * @return \Illuminate\Foundation\Testing\TestResponse
      */
-    protected function assertModelShow($modelClass, array $attributes = [])
+    protected function assertModelShow($uuid, array $includes = [])
     {
-        $base = factory($modelClass)->create();
-        //$base = factory($modelClass)->make($attributes);
-        $route = route($this->resource . '.show', [$base->uuid_text]);
+        $route = route($this->resource . '.show', [$uuid]);
+        $structure = $this->structure;
+        if ($includes) {
+            $structure['relationships'] = $includes;
+            $route .= '?include=' . implode(',', $includes);
+        }
         $response = $this->json('GET', $route);
         $response->assertStatus(200);
-        $response->assertJsonStructure(['data' =>  $this->structure]);
+        $response->assertJsonStructure(['data' =>  $structure]);
         return $response;
     }
 

@@ -238,8 +238,23 @@ class ProcessControllerTest extends TestCase
         $user = $this->authenticateAsAdmin();
         $this->actingAs($user, 'api');
 
-        //Test that a model is correctly displayed
-        $this->assertModelShow(Process::class, []);
+        //Create a new process without category
+        $process = factory(Process::class)->create([
+            'process_category_uuid' => null
+        ]);
+
+        //Test that is correctly displayed
+        $this->assertModelShow($process->uuid_text, []);
+
+        //Test that is correctly displayed with null category
+        $this->assertModelShow($process->uuid_text, ['category'])
+            ->assertJsonFragment([['category' => ['data' => null]]]);
+
+        //Create a new process with category
+        $process = factory(Process::class)->create();
+
+        //Test that is correctly displayed with category
+        $this->assertModelShow($process->uuid_text, ['category']);
     }
 
     /**
@@ -253,9 +268,7 @@ class ProcessControllerTest extends TestCase
         $this->actingAs($user, 'api');
 
         //Create a new process
-        $process = factory(Process::class)->create([
-            'process_category_uuid' => null
-        ]);
+        $process = factory(Process::class)->create();
 
         //Delete the process created
         $this->assertCorrectModelDeletion($process->uuid_text);

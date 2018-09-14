@@ -5,11 +5,9 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Transformers\ProcessTransformer;
-
 
 class ProcessController extends Controller
 {
@@ -39,11 +37,11 @@ class ProcessController extends Controller
      *
      * @return Response
      */
-    public function show(Process $process)
+    public function show(Request $request, Process $process)
     {
-        $process->category = $process->category()->first();
-        $process->user = $process->user()->first();
-        return fractal($process, new ProcessTransformer())->respond(200);
+        return fractal($process, new ProcessTransformer())
+            ->parseIncludes($request->input('include'))
+            ->respond(200);
     }
 
     /**
