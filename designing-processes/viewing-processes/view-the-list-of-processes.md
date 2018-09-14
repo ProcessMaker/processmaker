@@ -14,7 +14,9 @@ The **Processes** page displays the following information about processes in tab
   * **Inactive:** A process is in Inactive status when it is changed from Active status. 
   * **Archived:** A process is in Archived status when it is neither in Active or Inactive statuses. Any active or inactive process can be archived.
 
+{% hint style="info" %}
 For information how to change the process status, see [Change the Status of a Process](change-the-status-of-a-process.md).
+{% endhint %}
 
 * **Modified By:** The **Modified By** column displays the user name of who last modified the process.
 * **Created:** The **Created** column displays the date and time the process was created. The time is displayed according to your time zone setting.

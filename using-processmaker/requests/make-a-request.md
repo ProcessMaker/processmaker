@@ -1,10 +1,10 @@
 ---
-description: Make a request by starting a process.
+description: Start a Request by starting a process.
 ---
 
-# Make a Request
+# Start a Request
 
-Follow these steps to make a request:
+Follow these steps to start a Request:
 
 1. Do one of the following:
    * [Log in](../log-in.md#log-in) to ProcessMaker. The **Started by Me** tab in the **Requests** page displays.
