@@ -39,7 +39,7 @@ trait ResourceAssertionsTrait
         $this->assertCount($meta['count'], $data);
         return $response;
     }
-    
+
     protected function assertModelSorting($query, $expectedFirstRow)
     {
         $data = $this->assertCorrectModelListing($query)
@@ -63,9 +63,9 @@ trait ResourceAssertionsTrait
         $array = array_diff($base->toArray(), [static::$DO_NOT_SEND]);
         $response = $this->json('POST', $route, $array);
         $response->assertStatus(201);
-        $response->assertJsonStructure(['data' => $this->structure]);
-        $data = $response->json('data');
-        $this->assertArraySubset($array, $this->getDataAttributes($data));
+        $response->assertJsonStructure($this->structure);
+        $data = $response->json();
+        $this->assertArraySubset($array, $data);
         return $response;
     }
 
@@ -103,16 +103,12 @@ trait ResourceAssertionsTrait
         $route = route($this->resource . '.show', [$uuid]);
         $structure = $this->structure;
         if ($includes) {
-            if ($this->isJsonApi()) {
-                $structure['relationships'] = $includes;
-            } else {
-                $structure = array_merge($structure, $includes);
-            }
+            $structure = array_merge($structure, $includes);
             $route .= '?include=' . implode(',', $includes);
         }
         $response = $this->json('GET', $route);
         $response->assertStatus(200);
-        $response->assertJsonStructure(['data' =>  $structure]);
+        $response->assertJsonStructure($structure);
         return $response;
     }
 
@@ -165,7 +161,7 @@ trait ResourceAssertionsTrait
         $response = $this->json('PUT', $route, $fields);
         //validate status
         $response->assertStatus(200);
-        $response->assertJsonStructure($this->structure['attributes']);
+        $response->assertJsonStructure($this->structure);
         $this->assertArraySubset($fields, $response->json());
     }
 

@@ -25,18 +25,14 @@ class ProcessControllerTest extends TestCase
     protected $user;
     protected $resource = 'processes';
     protected $structure = [
-        'id',
-        'type',
-        'attributes' => [
-            'uuid',
-            'process_category_uuid',
-            'user_uuid',
-            'description',
-            'name',
-            'status',
-            'created_at',
-            'updated_at'
-        ]
+        'uuid',
+        'process_category_uuid',
+        'user_uuid',
+        'description',
+        'name',
+        'status',
+        'created_at',
+        'updated_at'
     ];
 
     /**
@@ -106,7 +102,7 @@ class ProcessControllerTest extends TestCase
             ]
         );
         //verify include
-        $response->assertJsonStructure(['*' => ['relationships' => ['category']]], $response->json('data'));
+        $response->assertJsonStructure(['*' => ['category']], $response->json('data'));
 
         //Get active processes
         $response = $this->assertCorrectModelListing(
@@ -118,7 +114,7 @@ class ProcessControllerTest extends TestCase
             ]
         );
         //verify include
-        $response->assertJsonStructure(['*' => ['relationships' => ['category']]], $response->json('data'));
+        $response->assertJsonStructure(['*' => ['category']], $response->json('data'));
     }
 
     /**
@@ -273,7 +269,7 @@ class ProcessControllerTest extends TestCase
 
         //Test that is correctly displayed with null category
         $this->assertModelShow($process->uuid_text, ['category'])
-            ->assertJsonFragment([['category' => ['data' => null]]]);
+            ->assertJsonFragment(['category' => null]);
 
         //Create a new process with category
         $process = factory(Process::class)->create();
