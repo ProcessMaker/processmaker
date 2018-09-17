@@ -20,8 +20,47 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'firstname', 'lastname', 'status', 'address', 'city', 'state', 'postal', 'country', 'phone', 'fax', 'cell', 'title', 'birthdate', 'timezone', 'language', 'expires_at',
+      'username',
+      'email',
+      'password',
+      'firstname',
+      'lastname',
+      'status',
+      'address',
+      'city',
+      'state',
+      'postal',
+      'country',
+      'phone',
+      'fax',
+      'cell',
+      'title',
+      'birthdate',
+      'timezone',
+      'language',
+      'expires_at'
+
     ];
+
+    /**
+     * Validation rules
+     *
+     * @param $existing
+     *
+     * @return array
+     */
+    public static function rules($existing = null)
+    {
+        $rules = [
+            'username' => 'required|unique:users,username',
+            'email' => 'required|email',
+        ];
+        if ($existing) {
+            // ignore the unique rule for this id
+            $rules['username'] .= ',' . $existing->uuid . ',uuid';
+        }
+        return $rules;
+    }
 
     /**
      * The attributes that should be hidden for arrays.
@@ -36,5 +75,5 @@ class User extends Authenticatable
     {
         return $this->morphMany('ProcessMaker\Models\GroupMember', 'member');
     }
-        
+
 }

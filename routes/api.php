@@ -7,6 +7,7 @@ Route::group(
     'namespace' => 'ProcessMaker\Http\Controllers\Api'
   ], function() {
 
+    Route::resource('users', 'UserController');
     Route::resource('groups', 'GroupController');
     Route::resource('forms', 'FormController');
     Route::resource('scripts', 'ScriptController');
