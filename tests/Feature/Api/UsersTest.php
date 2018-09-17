@@ -188,20 +188,20 @@ class UsersTest extends TestCase
   /**
    * Get a user with the memberships
    */
-  public function testGetUserIncledMembership()
-  {
-      //get the uuid from the factory
-      $user = factory(User::class)->create()->uuid_text;
-
-      //load api
-      $response = $this->apiCall('GET', self::API_TEST_URL. '/' . $user . '?include=memberships');
-
-      //Validate the status is correct
-      $response->assertStatus(200);
-
-      //verify structure
-      $response->assertJsonFragment(['memberships']);
-  }
+  // public function testGetUserIncledMembership()
+  // {
+  //     //get the uuid from the factory
+  //     $user = factory(User::class)->create()->uuid_text;
+  //
+  //     //load api
+  //     $response = $this->apiCall('GET', self::API_TEST_URL. '/' . $user . '?include=memberships');
+  //
+  //     //Validate the status is correct
+  //     $response->assertStatus(200);
+  //
+  //     //verify structure
+  //     $response->assertJsonFragment(['memberships']);
+  // }
 
   /**
    * Parameters required for update of user
