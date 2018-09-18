@@ -36,9 +36,7 @@ class FormController extends Controller
             $query->orderBy(
                 $request->input('order_by', 'title'),
                 $request->input('order_direction', 'ASC')
-            )
-            ->paginate($request->input('per_page', 10));
-
+            )->paginate($request->input('per_page', 10));
         return new ApiCollection($response);
     }
 

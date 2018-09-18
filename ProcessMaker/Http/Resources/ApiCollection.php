@@ -3,6 +3,8 @@
 namespace ProcessMaker\Http\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Pagination\AbstractPaginator;
 
 class ApiCollection extends ResourceCollection
 {
@@ -14,13 +16,28 @@ class ApiCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        return [
+        $payload = [
             'data' => $this->collection,
             'meta' => [
                 'filter' => $request->input('filter', ''),
                 'sort_by' => $request->input('order_by', ''),
-                'sort_order' => $request->input('order_direction', ''),
+                'sort_order' => $request->input('order_direction', '')
             ]
         ];
+
+        return $payload;
+    }
+
+    /**
+     * Create an HTTP response that represents the object.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function toResponse($request)
+    {
+        return $this->resource instanceof AbstractPaginator
+                    ? (new ApiPaginatedResourceResponse($this))->toResponse($request)
+                    : parent::toResponse($request);
     }
 }

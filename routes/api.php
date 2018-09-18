@@ -14,5 +14,6 @@ Route::group(
     Route::apiResource('processes', 'ProcessController');
     Route::apiResource('process_categories', 'ProcessCategoryController');
     Route::apiResource('tasks', 'TaskController')->only(['index', 'show']);
+    Route::apiResource('requests', 'ProcessRequestController');
 }
 );
