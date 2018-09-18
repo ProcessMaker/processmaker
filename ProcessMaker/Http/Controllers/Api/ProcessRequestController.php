@@ -4,10 +4,11 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Http\Resources\ApiCollection;
+use ProcessMaker\Http\Resources\ProcessRequests;
 use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Transformers\ProcessRequestTransformer;
+use ProcessMaker\Http\Resources\ProcessRequests as ProcessRequestResource;
 
 class ProcessRequestController extends Controller
 {
@@ -16,95 +17,90 @@ class ProcessRequestController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param Request $httpRequest
+     *
      * @return Response
      */
-    public function index(Request $request)
+    public function index(Request $httpRequest)
     {
-        $where = $this->getRequestFilterBy($request, ['name', 'description','status']);
-        $orderBy = $this->getRequestSortBy($request, 'name');
-        $perPage = $this->getPerPage($request);
-        $processRequestes = ProcessRequest::where($where)
-            ->orderBy(...$orderBy)
-            ->paginate($perPage);
-        return fractal($processRequestes, new ProcessRequestTransformer)
-            ->parseIncludes($request->input('include'));
+        $query = ProcessRequest::query();
+
+        $filter = $httpRequest->input('filter', '');
+        if (!empty($filter)) {
+            $filter = '%' . $filter . '%';
+            $query->where(function ($query) use ($filter) {
+                $query->Where('name', 'like', $filter);
+            });
+        }
+
+        $response =
+            $query->orderBy(
+                $httpRequest->input('order_by', 'name'),
+                $httpRequest->input('order_direction', 'ASC')
+            )
+                ->paginate($httpRequest->input('per_page', 10));
+
+        return new ApiCollection($response);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param $processRequest
+     * @param ProcessRequest $request
      *
      * @return Response
+     *
      */
-    public function show(Request $request, ProcessRequest $processRequest)
+    public function show(ProcessRequest $request)
     {
-        return fractal($processRequest, new ProcessRequestTransformer())
-            ->parseIncludes($request->input('include'))
-            ->respond(200);
+        return new ProcessRequestResource($request);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
+     * @param Request $httpRequest
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request)
+    public function store(Request $httpRequest)
     {
-        //Convert the string uuid to binary uuid
-        $this->encodeRequestUuids($request, ['process_uuid', 'process_collaboration_uuid', 'user_uuid']);
-
-        $data = $request->json()->all();
-
+        $this->encodeRequestUuids($httpRequest, ['process_uuid', 'process_collaboration_uuid', 'user_uuid']);
+        $httpRequest->validate(ProcessRequest::rules());
         $processRequest = new ProcessRequest();
-        $processRequest->fill($data);
-
-        //set current user
-        $processRequest->user_uuid = Auth::user()->uuid;
-
-        //validate model trait
-        $this->validateModel($processRequest, ProcessRequest::rules());
-        $processRequest->save();
-        return fractal($processRequest->refresh(), new ProcessRequestTransformer())->respond(201);
+        $processRequest->fill($httpRequest->input());
+        $processRequest->saveOrFail();
+        return new ProcessRequests($processRequest);
     }
 
     /**
-     * Updates the current element
+     * Update a request
      *
-     * @param Request $request
-     * @param ProcessRequest $processRequest
+     * @param ProcessRequest $request
+     * @param Request|ProcessRequest $httpRequest
+     *
      * @return ResponseFactory|Response
-     * @throws \Throwable
      */
-    public function update(Request $request, ProcessRequest $processRequest)
+    public function update(ProcessRequest $request, Request $httpRequest)
     {
-        //Convert the string uuid to binary uuid
-        $this->encodeRequestUuids($request, ['processRequest_category_uuid']);
-        $processRequest->fill($request->json()->all());
-        //validate model trait
-        $this->validateModel($processRequest, ProcessRequest::rules($processRequest));
-        $processRequest->save();
-        return response($processRequest->refresh(), 200);
+        $this->encodeRequestUuids($httpRequest, ['process_uuid', 'process_collaboration_uuid', 'user_uuid']);
+        $request->fill($httpRequest->json()->all());
+        $this->validateModel($request, ProcessRequest::rules($request));
+        $request->saveOrFail();
+        return response([], 204);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Delete a request
      *
-     * @param ProcessRequest $processRequest
+     * @param ProcessRequest $request
      *
      * @return ResponseFactory|Response
-     * @throws \Illuminate\Validation\ValidationException
      */
-    public function destroy(ProcessRequest $processRequest)
+    public function destroy(ProcessRequest $request)
     {
-        $this->validateModel($processRequest, [
-            'collaborations' => 'empty',
-            'requests' => 'empty',
-        ]);
-        $processRequest->delete();
-        return response('', 204);
+        $request->delete();
+        return response([], 204);
     }
 }
