@@ -12,6 +12,7 @@ $factory->define(ProcessRequestToken::class, function (Faker $faker) {
     return [
         'element_type' => 'TASK',
         'element_uuid' => $faker->uuid,
+        'element_name' => $faker->name,
         'status' => $faker->randomElement(['ACTIVE','FAILING','COMPLETED','CLOSED','EVENT_CATCH']),
         'process_request_uuid' => function () {
             return factory(ProcessRequest::class)->create()->uuid;

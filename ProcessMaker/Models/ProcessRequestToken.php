@@ -68,7 +68,6 @@ class ProcessRequestToken extends Model
      * @var array
      */
     protected $appends = [
-        'definition'
     ];
 
     /**
@@ -109,7 +108,7 @@ class ProcessRequestToken extends Model
      *
      * @return array
      */
-    public function getDefinitionAttribute()
+    public function getDefinition()
     {
         if (!$this->request) {
             return [];
