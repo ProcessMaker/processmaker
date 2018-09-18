@@ -4,7 +4,6 @@ namespace ProcessMaker\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use ProcessMaker\Managers\DatabaseManager;
-use ProcessMaker\Managers\FormsManager;
 use ProcessMaker\Managers\InputDocumentManager;
 use ProcessMaker\Managers\OutputDocumentManager;
 use ProcessMaker\Managers\ProcessCategoryManager;
@@ -33,7 +32,10 @@ class ProcessMakerServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+
         parent::boot();
+        \ProcessMaker\Http\Resources\ApiResource::withoutWrapping();
+
     }
 
     /**
@@ -73,10 +75,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
             return new ReportTableManager();
         });
 
-        $this->app->singleton('form.manager', function ($app) {
-            return new FormsManager();
-        });
-
         $this->app->singleton('task.manager', function ($app) {
             return new TaskManager();
         });
@@ -88,7 +86,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->app->singleton('input_document.manager', function ($app) {
             return new InputDocumentManager();
         });
-        
+
         $this->app->singleton('output_document.manager', function ($app) {
             return new OutputDocumentManager();
         });
@@ -97,7 +95,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
             return new TasksDelegationManager();
         });
 
-        //Enable 
+        //Enable
         Horizon::auth(function ($request) {
             return !empty(Auth::user());
         });

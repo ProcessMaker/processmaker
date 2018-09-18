@@ -29,52 +29,26 @@ class UserController extends Controller
             });
         }
 
+        $order_by = 'username';
+        $order_direction = 'ASC';
+
+        if($request->has('order_by')){
+          $order_by = $request->input('order_by');
+        }
+
+        if($request->has('order_direction')){
+          $order_by = $request->input('order_direction');
+        }
+
         $response =
             $query->orderBy(
-                $request->input('order_by', 'username'),
-                $request->input('order_direction', 'ASC')
+                $request->input('order_by', $order_by),
+                $request->input('order_direction', $order_direction)
             )
             ->paginate($request->input('per_page', 10));
 
         return new ApiCollection($response);
     }
-
-    // /**
-    //  * Create a new user
-    //  *
-    //  * @param Request $request
-    //  *
-    //  * @return ResponseFactory|Response
-    //  */
-    // public function store(Request $request)
-    // {
-    //     $request->validate(User::rules());
-    //
-    //     $data = [
-    //       'username' => $request->input('username', ''),
-    //       'email' => $request->input('email', ''),
-    //       'password' => $request->input('password', ''),
-    //       'firstname' => $request->input('firstname', ''),
-    //       'lastname' => $request->input('lastname', ''),
-    //       'status' => $request->input('status', ''),
-    //       'address' => $request->input('address', ''),
-    //       'city' => $request->input('city', ''),
-    //       'state' => $request->input('state', ''),
-    //       'postal' => $request->input('postal', ''),
-    //       'country' => $request->input('country', ''),
-    //       'phone' => $request->input('phone', ''),
-    //       'fax' => $request->input('fax', ''),
-    //       'cell' => $request->input('cell', ''),
-    //       'title' => $request->input('title', ''),
-    //       'birthdate' => $request->input('birthdate', ''),
-    //       'timezone' => $request->input('timezone', ''),
-    //       'language' => $request->input('language', ''),
-    //       'expires_at' => $request->input('expires_at', ''),
-    //     ];
-    //
-    //     $user = User::save($data);
-    //     return new UserResource($user);
-    // }
 
     /**
      * Store a newly created resource in storage.
@@ -103,19 +77,8 @@ class UserController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
      * Update a user
-     *     
+     *
      * @param User $user
      * @param Request $request
      *

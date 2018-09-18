@@ -3,11 +3,12 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use ProcessMaker\Facades\FormManager;
+use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Form;
-use ProcessMaker\Transformers\FormTransformer;
+use ProcessMaker\Http\Resources\ApiResource;
+use ProcessMaker\Http\Resources\ApiCollection;
 
-class FormController
+class FormController extends Controller
 {
     /**
      * Get a list of Forms.
@@ -18,15 +19,25 @@ class FormController
      */
     public function index(Request $request)
     {
-        $options = [
-            'filter' => $request->input('filter', ''),
-            'current_page' => $request->input('page', 1),
-            'per_page' => $request->input('per_page', 10),
-            'sort_by' => $request->input('order_by', 'title'),
-            'sort_order' => $request->input('order_direction', 'ASC'),
-        ];
-        $response = FormManager::index($options);
-        return fractal($response, new FormTransformer())->respond();
+        $query = Form::query();
+
+        $filter = $request->input('filter', '');
+        if (!empty($filter)) {
+            $filter = '%' . $filter . '%';
+            $query->where(function ($query) use ($filter) {
+                $query->where('title', 'like', $filter)
+                    ->orWhere('description', 'like', $filter)
+                    ->orWhere('type', 'like', $filter)
+                    ->orWhere('config', 'like', $filter);
+            });
+        }
+
+        $response =
+            $query->orderBy(
+                $request->input('order_by', 'title'),
+                $request->input('order_direction', 'ASC')
+            )->paginate($request->input('per_page', 10));
+        return new ApiCollection($response);
     }
 
     /**
@@ -38,7 +49,7 @@ class FormController
      */
     public function show(Form $form)
     {
-        return fractal($form, new FormTransformer())->respond();
+        return new ApiResource($form);
     }
 
     /**
@@ -51,14 +62,10 @@ class FormController
     public function store(Request $request)
     {
         $request->validate(Form::rules());
-        $data = [
-            'title' => $request->input('title', ''),
-            'description' => $request->input('description', '')
-        ];
-        $data = array_merge($data, $this->formatData($request, ['content']));
-
-        $response = FormManager::save($data);
-        return fractal($response, new FormTransformer())->respond(201);
+        $form = new Form();
+        $form->fill($request->input());
+        $form->saveOrFail();
+        return new ApiResource($form);
     }
 
     /**
@@ -72,11 +79,9 @@ class FormController
     public function update(Form $form, Request $request)
     {
         $request->validate(Form::rules($form));
-        $data = $this->formatData($request, ['title', 'description', 'content']);
+        $form->fill($request->input());
+        $form->saveOrFail();
 
-        if ($data) {
-            FormManager::update($form, $data);
-        }
         return response([], 200);
     }
 
@@ -89,27 +94,8 @@ class FormController
      */
     public function destroy(Form $form)
     {
-        FormManager::remove($form);
+        $form->delete();
         return response([], 204);
-    }
-
-    /**
-     * Format in capital letters to send information.
-     *
-     * @param Request $request
-     * @param array $fields
-     *
-     * @return array
-     */
-    private function formatData(Request $request, array $fields): array
-    {
-        $data = [];
-        foreach ($fields as $field) {
-            if ($request->has($field)) {
-                $data[$field] = $request->input($field);
-            }
-        }
-        return $data;
     }
 
 }
