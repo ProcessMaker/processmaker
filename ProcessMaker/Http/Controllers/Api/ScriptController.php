@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\EnvironmentVariable;
-use ProcessMaker\Transformers\ScriptTransformer;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Script as ScriptResource;
 
