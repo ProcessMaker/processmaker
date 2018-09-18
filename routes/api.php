@@ -13,7 +13,7 @@ Route::group(
     Route::apiResource('scripts', 'ScriptController');
     Route::apiResource('processes', 'ProcessController');
     Route::apiResource('process_categories', 'ProcessCategoryController');
-    Route::apiResource('requests.tokens', 'ProcessRequestTokenController')->only([
+    Route::apiResource('tasks', 'TaskController')->only([
         'index', 'show'
     ]);
   }

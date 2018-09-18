@@ -17,9 +17,10 @@ class CreateProcessRequestTokens extends Migration
             // Columns
             $table->uuid('uuid');
             $table->uuid('user_uuid')->nullable();
+            $table->uuid('process_request_uuid');
             $table->string('element_uuid', 36);
             $table->string('element_type', 36);
-            $table->uuid('process_request_uuid');
+            $table->string('element_name');
             $table->enum('status', ['ACTIVE', 'FAILING', 'COMPLETED', 'CLOSED', 'EVENT_CATCH'])
                     ->default('ACTIVE');
             $table->timestamp('completed_at')->nullable();
