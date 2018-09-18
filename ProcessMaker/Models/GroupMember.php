@@ -10,25 +10,19 @@ class GroupMember extends Model
 {
     use HasBinaryUuid;
 
-    protected $fillable = [
-        'group_uuid', 'member_uuid', 'member_type',
+    protected $uuids = [
+        'group_uuid', 'member_uuid'
     ];
 
-    /**
-     * The binary UUID attributes that should be converted to text.
-     *
-     * @var array
-     */
-    protected $uuids = [
-        'group_uuid',
-        'member_uuid',
+    protected $fillable = [
+        'group_uuid', 'member_uuid', 'member_type',
     ];
 
     public static function rules()
     {
         return [
-            'group_uuid' => 'required|string',
-            'member_uuid' => 'required|string',
+            'group_uuid' => 'required',
+            'member_uuid' => 'required',
             'member_type' => 'required|in:user,group',
         ];
 
