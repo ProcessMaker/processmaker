@@ -32,7 +32,10 @@ class ProcessMakerServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+
         parent::boot();
+        \ProcessMaker\Http\Resources\ApiResource::withoutWrapping();
+
     }
 
     /**
@@ -83,7 +86,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->app->singleton('input_document.manager', function ($app) {
             return new InputDocumentManager();
         });
-        
+
         $this->app->singleton('output_document.manager', function ($app) {
             return new OutputDocumentManager();
         });
@@ -92,7 +95,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
             return new TasksDelegationManager();
         });
 
-        //Enable 
+        //Enable
         Horizon::auth(function ($request) {
             return !empty(Auth::user());
         });
