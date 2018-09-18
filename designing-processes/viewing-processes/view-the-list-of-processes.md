@@ -29,7 +29,7 @@ For information how to change the process status, see [Change the Status of a Pr
 
 To view the list of processes, click the **Processes** tab. The table of processes displays.
 
-Open a process by clicking on its row in the table.
+Open a process by clicking its row in the table.
 
 If no processes exist, the following message displays: **You don't have any processes. Please click on '+Process' to get started.**
 

@@ -13,8 +13,6 @@ Follow these steps to view Requests you started:
    * Click the **Requests** page if it is not currently displayed. The **Started by Me** tab displays.
 2. Click a row in the table to [view detailed information](request-details.md) about the request.
 
-
-
 The **Started by Me** tab displays the following information:
 
 * **Row number:** The \# column displays the row number in the table.
@@ -24,7 +22,7 @@ The **Started by Me** tab displays the following information:
 * **Participants:** The **Participants** column displays thumbnails of each participant in the Request.
 * **Started:** The **Started** column displays the date and time you made the Request. The time is displayed according to your time zone setting.
 * **Completed:** The **Completed** column displays the date and time the Request was completed. The time is displayed according to your time zone setting.
-* **Duration:** The **Duration** column displays the amount of time that transpired from when you made the Request to when it was completed.
+* **Duration:** The **Duration** column displays the amount of time that transpired from when you made the Request to now.
 * **Actions:** Hover your cursor over this unlabeled column to display a list of actions you can use on the Request:
   * ~~**Edit:** Select **Edit** to edit the process. Note that this action does not display if the process has Active status. To edit the process, first deactivate it.~~
   * ~~**Activate/Deactivate:** Select **Activate/Deactivate** to activate or deactivate the process. This option displays **Activate** when the process is inactive, and vice versa.~~
