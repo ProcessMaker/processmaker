@@ -19,7 +19,8 @@ class CreateGroupsTable extends Migration
             $table->string('name');
             $table->enum('status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
             $table->timestamps();
-        });
+        });      
+
     }
 
     /**

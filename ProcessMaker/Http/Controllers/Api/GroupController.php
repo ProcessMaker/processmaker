@@ -2,85 +2,107 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
-use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Models\Group;
 use Illuminate\Http\Request;
+use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Http\Resources\ApiCollection;
+use ProcessMaker\Models\Group;
+use ProcessMaker\Http\Resources\Groups as GroupResource;
 
 class GroupController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
+  /**
+   * Display a listing of the resource.
+   *
+   * @return \Illuminate\Http\Response
+   */
+  public function index(Request $request)
+  {
+      $query = Group::query();
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
+      $filter = $request->input('filter', '');
+      if (!empty($filter)) {
+          $filter = '%' . $filter . '%';
+          $query->where(function ($query) use ($filter) {
+              $query->Where('name', 'like', $filter);
+          });
+      }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+      $response =
+          $query->orderBy(
+              $request->input('order_by', 'name'),
+              $request->input('order_direction', 'ASC')
+          )
+          ->paginate($request->input('per_page', 10));
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \ProcessMaker\Group  $group
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Group $group)
-    {
-        //
-    }
+      return new ApiCollection($response);
+  }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \ProcessMaker\Group  $group
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Group $group)
-    {
-        //
-    }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \ProcessMaker\Group  $group
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Group $group)
-    {
-        //
-    }
+  /**
+   * Store a newly created resource in storage.
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @return \Illuminate\Http\Response
+   */
+  public function store(Request $request)
+  {
+      $request->validate(Group::rules());
+      $group = new Group();
+      $group->fill($request->input());
+      $group->saveOrFail();
+      return new GroupResource($group);
+  }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \ProcessMaker\Group  $group
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Group $group)
-    {
-        //
-    }
+  /**
+   * Display the specified resource.
+   *
+   * @param  uuid  $id
+   * @return \Illuminate\Http\Response
+   */
+  public function show(Group $group)
+  {
+      return new GroupResource($group);
+  }
+
+  /**
+   * Show the form for editing the specified resource.
+   *
+   * @param  int  $id
+   * @return \Illuminate\Http\Response
+   */
+  public function edit($id)
+  {
+      //
+  }
+
+  /**
+   * Update a user
+   *
+   * @param Group $user
+   * @param Request $request
+   *
+   * @return ResponseFactory|Response
+   */
+  public function update(Group $group, Request $request)
+  {
+      $request->validate(Group::rules());
+
+      $group->fill($request->input());
+      $group->saveOrFail();
+
+      return response([], 204);
+  }
+
+  /**
+   * Delete a user
+   *
+   * @param Group $user
+   *
+   * @return ResponseFactory|Response
+   */
+  public function destroy(Group $group)
+  {
+      $group->delete();
+      return response([], 204);
+  }
 }
