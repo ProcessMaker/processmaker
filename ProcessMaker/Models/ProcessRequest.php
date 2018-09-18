@@ -43,7 +43,6 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
      */
     protected $guarded = [
         'uuid',
-        'data',
         'created_at',
         'updated_at',
     ];
@@ -104,13 +103,15 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
             // ignore the unique rule for this id
             $rules['name'] .= ',' . $existing->uuid . ',uuid';
         }
+
+        return $rules;
     }
 
     /**
      * Returns the unserialized data model for this application
      * @return mixed
      */
-    public function getData()
+    public function getDataAsObject()
     {
         return json_decode($this->data);
     }

@@ -7,7 +7,7 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\User;
 
 /**
- * Model factory for a process
+ * Model factory for a process request
  */
 $factory->define(ProcessRequest::class, function (Faker $faker) {
     return [

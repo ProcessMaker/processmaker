@@ -16,5 +16,6 @@ Route::group(
     Route::apiResource('requests.tokens', 'ProcessRequestTokenController')->only([
         'index', 'show'
     ]);
+    Route::apiResource('requests', 'ProcessRequestController');
   }
 );
