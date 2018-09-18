@@ -4,7 +4,6 @@ namespace ProcessMaker\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use ProcessMaker\Managers\DatabaseManager;
-use ProcessMaker\Managers\FormsManager;
 use ProcessMaker\Managers\InputDocumentManager;
 use ProcessMaker\Managers\OutputDocumentManager;
 use ProcessMaker\Managers\ProcessCategoryManager;
@@ -71,10 +70,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         $this->app->singleton('report_table.manager', function ($app) {
             return new ReportTableManager();
-        });
-
-        $this->app->singleton('form.manager', function ($app) {
-            return new FormsManager();
         });
 
         $this->app->singleton('task.manager', function ($app) {

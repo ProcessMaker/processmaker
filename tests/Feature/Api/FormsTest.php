@@ -8,18 +8,15 @@ use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\Form;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
+use Tests\Feature\Shared\ApiCallWithUser;
 
 class FormManagerTest extends TestCase
 {
     use DatabaseTransactions;
+    use ApiCallWithUser;
 
     const API_TEST_FORM = '/api/1.0/forms';
     const DEFAULT_PASS = 'password';
-
-    /**
-     * @var User
-     */
-    protected $user;
 
     const STRUCTURE = [
         'title',
@@ -28,24 +25,13 @@ class FormManagerTest extends TestCase
     ];
 
     /**
-     * Create user and process
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-        $this->user = factory(User::class)->create([
-            'password' => Hash::make(self::DEFAULT_PASS),
-        ]);
-    }
-
-    /**
      * Test verify the parameter required for create form
      */
     public function testNotCreatedForParameterRequired()
     {
         //Post should have the parameter required
         $url = self::API_TEST_FORM;
-        $response = $this->actingAs($this->user, 'api')->json('POST', $url, []);
+        $response = $this->apiCall('POST', $url, []);
 
         //validating the answer is an error
         $response->assertStatus(422);
@@ -60,7 +46,7 @@ class FormManagerTest extends TestCase
         //Post title duplicated
         $faker = Faker::create();
         $url = self::API_TEST_FORM;
-        $response = $this->actingAs($this->user, 'api')->json('POST', $url, [
+        $response = $this->apiCall('POST', $url, [
             'title' => 'Title Form',
             'description' => $faker->sentence(10)
         ]);
@@ -81,7 +67,7 @@ class FormManagerTest extends TestCase
         //Post title duplicated
         $faker = Faker::create();
         $url = self::API_TEST_FORM;
-        $response = $this->actingAs($this->user, 'api')->json('POST', $url, [
+        $response = $this->apiCall('POST', $url, [
             'title' => 'Title Form',
             'description' => $faker->sentence(10)
         ]);
@@ -101,11 +87,12 @@ class FormManagerTest extends TestCase
 
         //List Form
         $url = self::API_TEST_FORM;
-        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
+        $response = $this->apiCall('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
         //verify count of data
-        $this->assertEquals(10, $response->original->meta->total);
+        $json = $response->json();
+        $this->assertEquals(10, $json['meta']['total']);
 
         //verify structure paginate
         $response->assertJsonStructure([
@@ -114,7 +101,7 @@ class FormManagerTest extends TestCase
         ]);
 
         //Verify the structure
-        $response->assertJsonStructure(['*' => self::STRUCTURE], $response->json('data'));
+        $response->assertJsonStructure(['*' => self::STRUCTURE], $json['data']);
     }
 
     /**
@@ -131,7 +118,7 @@ class FormManagerTest extends TestCase
         $perPage = Faker::create()->randomDigitNotNull;
         $query = '?page=1&per_page=' . $perPage . '&order_by=description&order_direction=DESC&filter=' . urlencode($title);
         $url = self::API_TEST_FORM . $query;
-        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
+        $response = $this->apiCall('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
         //verify structure paginate
@@ -139,17 +126,19 @@ class FormManagerTest extends TestCase
             'data',
             'meta',
         ]);
+
+        $json = $response->json();
+
         //verify response in meta
-        $this->assertEquals(1, $response->original->meta->total);
-        $this->assertEquals(1, $response->original->meta->count);
-        $this->assertEquals($perPage, $response->original->meta->per_page);
-        $this->assertEquals(1, $response->original->meta->current_page);
-        $this->assertEquals(1, $response->original->meta->total_pages);
-        $this->assertEquals($title, $response->original->meta->filter);
-        $this->assertEquals('description', $response->original->meta->sort_by);
-        $this->assertEquals('DESC', $response->original->meta->sort_order);
+        $this->assertEquals(1, $json['meta']['total']);
+        $this->assertEquals($perPage, $json['meta']['per_page']);
+        $this->assertEquals(1, $json['meta']['current_page']);
+        
+        $this->assertEquals($title, $json['meta']['filter']);
+        $this->assertEquals('description', $json['meta']['sort_by']);
+        $this->assertEquals('DESC', $json['meta']['sort_order']);
         //verify structure of model
-        $response->assertJsonStructure(['*' => self::STRUCTURE], $response->json('data'));
+        $response->assertJsonStructure(['*' => self::STRUCTURE], $json['data']);
     }
 
     /**
@@ -167,12 +156,12 @@ class FormManagerTest extends TestCase
                     ]
                 ]
             ])->uuid_text;
-        $response = $this->actingAs($this->user, 'api')->json('GET', $url);
+        $response = $this->apiCall('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
 
         //verify structure paginate
-        $response->assertJsonStructure(self::STRUCTURE);
+        $response->assertJsonStructure(['data' => self::STRUCTURE]);
     }
 
     /**
@@ -182,7 +171,7 @@ class FormManagerTest extends TestCase
     {
         //Post should have the parameter title
         $url = self::API_TEST_FORM . '/' . factory(Form::class)->create()->uuid_text;
-        $response = $this->actingAs($this->user, 'api')->json('PUT', $url, [
+        $response = $this->apiCall('PUT', $url, [
             'title' => '',
             'description' => ''
         ]);
@@ -199,7 +188,7 @@ class FormManagerTest extends TestCase
         //Post saved success
         $faker = Faker::create();
         $url = self::API_TEST_FORM . '/' . factory(Form::class)->create()->uuid_text;
-        $response = $this->actingAs($this->user, 'api')->json('PUT', $url, [
+        $response = $this->apiCall('PUT', $url, [
             'title' => $faker->sentence(2),
             'description' => $faker->sentence(5),
             'config' => '',
@@ -219,7 +208,7 @@ class FormManagerTest extends TestCase
         $url = self::API_TEST_FORM . '/' . factory(Form::class)->create([
             'title' => $title,
         ])->uuid_text;
-        $response = $this->actingAs($this->user, 'api')->json('PUT', $url, [
+        $response = $this->apiCall('PUT', $url, [
             'title' => $title,
             'description' => $faker->sentence(5),
             'config' => '',
@@ -235,7 +224,7 @@ class FormManagerTest extends TestCase
     {
         //Remove Form
         $url = self::API_TEST_FORM . '/' . factory(Form::class)->create()->uuid_text;
-        $response = $this->actingAs($this->user, 'api')->json('DELETE', $url);
+        $response = $this->apiCall('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(204);
     }
@@ -247,7 +236,7 @@ class FormManagerTest extends TestCase
     {
         //form not exist
         $url = self::API_TEST_FORM . '/' . factory(Form::class)->make()->uuid_text;
-        $response = $this->actingAs($this->user, 'api')->json('DELETE', $url);
+        $response = $this->apiCall('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(405);
     }
