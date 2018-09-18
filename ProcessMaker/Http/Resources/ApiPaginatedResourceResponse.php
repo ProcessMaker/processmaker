@@ -15,7 +15,6 @@ class ApiPaginatedResourceResponse extends PaginatedResourceResponse {
     {
         $paginated = $this->resource->resource->toArray();
         return [
-            // 'links' => $this->paginationLinks($paginated),
             'meta' => $this->meta($paginated),
         ];
     }

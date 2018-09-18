@@ -17,6 +17,7 @@ use ProcessMaker\Managers\TasksDelegationManager;
 use ProcessMaker\Managers\UserManager;
 use Laravel\Horizon\Horizon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Resources\Json\Resource;
 
 /**
  * Provide our ProcessMaker specific services
@@ -32,9 +33,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-
         parent::boot();
-
     }
 
     /**

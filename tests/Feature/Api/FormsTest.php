@@ -162,7 +162,7 @@ class FormManagerTest extends TestCase
         $response->assertStatus(200);
 
         //verify structure paginate
-        $response->assertJsonStructure(['data' => self::STRUCTURE]);
+        $response->assertJsonStructure(self::STRUCTURE);
     }
 
     /**

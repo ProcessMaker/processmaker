@@ -54,7 +54,7 @@ class ScriptTest extends TestCase
         ]);
         //validating the answer is correct.
         //Check structure of response.
-        $response->assertJsonStructure(['data' => self::STRUCTURE]);
+        $response->assertJsonStructure(self::STRUCTURE);
     }
 
     /**
@@ -158,7 +158,7 @@ class ScriptTest extends TestCase
         $response->assertStatus(200);
 
         //verify structure paginate
-        $response->assertJsonStructure(['data' => self::STRUCTURE]);
+        $response->assertJsonStructure(self::STRUCTURE);
     }
 
     /**
