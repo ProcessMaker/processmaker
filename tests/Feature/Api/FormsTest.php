@@ -99,6 +99,7 @@ class FormManagerTest extends TestCase
             'data',
             'meta',
         ]);
+        $this->assertArrayNotHasKey('links', $json);
 
         //Verify the structure
         $response->assertJsonStructure(['*' => self::STRUCTURE], $json['data']);
