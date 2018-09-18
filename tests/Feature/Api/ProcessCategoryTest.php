@@ -14,7 +14,7 @@ use Tests\TestCase;
  *
  * @group process_tests
  */
-class ProcessCategoryControllerTest extends TestCase
+class ProcessCategoryTest extends TestCase
 {
 
     use DatabaseTransactions;
