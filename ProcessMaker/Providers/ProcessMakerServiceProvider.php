@@ -34,7 +34,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
     {
 
         parent::boot();
-        \ProcessMaker\Http\Resources\ApiResource::withoutWrapping();
 
     }
 
