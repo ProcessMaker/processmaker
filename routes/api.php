@@ -7,15 +7,14 @@ Route::group(
     'namespace' => 'ProcessMaker\Http\Controllers\Api'
   ], function() {
 
-    Route::resource('users', 'UserController');
-    Route::resource('groups', 'GroupController');
-    Route::resource('forms', 'FormController');
-    Route::resource('scripts', 'ScriptController');
-    Route::resource('processes', 'ProcessController');
-    Route::resource('process_categories', 'ProcessCategoryController');
-    Route::resource('requests.tokens', 'ProcessRequestTokenController')->except([
-        'create', 'store', 'update', 'destroy'
+    Route::apiResource('users', 'UserController');
+    Route::apiResource('groups', 'GroupController');
+    Route::apiResource('forms', 'FormController');
+    Route::apiResource('scripts', 'ScriptController');
+    Route::apiResource('processes', 'ProcessController');
+    Route::apiResource('process_categories', 'ProcessCategoryController');
+    Route::apiResource('requests.tokens', 'ProcessRequestTokenController')->only([
+        'index', 'show'
     ]);
-
   }
 );
