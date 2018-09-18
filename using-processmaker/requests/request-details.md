@@ -9,7 +9,16 @@ You can view details about a Request in the following ways:
 * Click a Request from any of the tabs in the **Requests** page.
 * Click the **Request Details** link from an [advanced search](search-for-a-request.md#advanced-search).
 
-Refer to the sections below about Request details.
+Refer to the topics about Request details:
+
+* [Request Header](request-details.md#request-header): See the Request title and status at a glance.
+* [Current Tasks](request-details.md#current-tasks): See current and pending tasks associated with the Request.
+* [Statistics](request-details.md#statistics): See statistics about the Request at a glance.
+* [Summary](request-details.md#summary): View data entered into the Request from participants who have completed their tasks.
+* [Timeline](request-details.md#timeline): View a vertical timeline of all interactions that have occurred in the Request.
+* [Workflow](request-details.md#workflow): View process workflow associated with the Request in a BPMN 2.0 diagram.
+* [Documents](request-details.md#documents): View documents associated with the Request.
+* [Comments](request-details.md#comments): View comments associated with the Request.
 
 ## Request Header
 
@@ -38,7 +47,7 @@ The **Current Tasks** pane displays the following:
   * **&lt;screenshot&gt;:** The task is waiting. A task is waiting when it is not pending.
 * **Open Task:** The **Open Task** button displays to the right of the task status if you are the task recipient and the task is currently pending. Click **Open Task** to open the task. The task displays.
 
-## Request Statistics
+## Statistics
 
 Request statistics display the following:
 
@@ -50,9 +59,9 @@ Request statistics display the following:
 
 ## Request Information
 
-Refer to the following sections about information regarding a Request.
+Refer to the following topics about information regarding a Request.
 
-### Request Summary
+### Summary
 
 The **Summary** tab displays data entered into the Request from participants who have completed their tasks. ~~How does the user select which completed task information to view?~~ The following information displays about the Request:
 
@@ -62,15 +71,22 @@ The **Summary** tab displays data entered into the Request from participants who
 * **Email Address:** The **Email Address** field displays the email address for the user who completed the selected task.
 * **Information:** Below the **Email Address** field displays information as entered into the selected completed task.
 
-### Request Timeline
+### Timeline
 
+The **Timeline** tab displays a vertical timeline of all interactions that have occurred in the Request. The Timeline displays each point of interaction in the Request as a dot. Older interaction points display at the top of the Timeline. The Request's current state displays at the bottom.
 
+The Timeline displays both user and automatic interactions with the Request in the following ways:
 
-### Request Workflow
+* **User interactions:** User interactions display to the left of the Timeline. Each user interaction displays that user's avatar, that user's first and last name, and the date of that user's interaction.
+* **Automatic interactions:** Automatic interactions are those performed by a script. Automatic interactions display to the right of the Timeline as a robot avatar. Beside the robot avatar displays the the date the script executed.
 
+### Workflow
 
+The **Workflow** tab displays process workflow associated with the Request in a BPMN 2.0 diagram. The process diagram displays using the following color scheme:
 
-## Documents Associated with the Request
+* ~~&lt;Color&gt;: Document each color and what it represents in process workflow.~~
+
+## Documents
 
 The **Documents** pane displays documents associated with the Request. Documents become associated with a Request when a Recipient participant uploads a document in a task.
 
@@ -80,7 +96,7 @@ Click on a document to download it to your computer. If you do not have permissi
 Contact your ProcessMaker Administrator to request permission to download documents from the Request details page.
 {% endhint %}
 
-## Request Comments
+## Comments
 
 The Request details displays each comment that has been entered into a task Dynaform in the order that they were entered. The oldest comment displays at the top of the comment list.
 
