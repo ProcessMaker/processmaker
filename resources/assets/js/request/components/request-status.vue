@@ -103,11 +103,10 @@ export default {
         this.process = response.data;
         this.update();
       })
-    // Listen for notifications
+    // Listen for notifications to update the status
     let userId = document.head.querySelector('meta[name="user-id"]').content;
     Echo.private(`ProcessMaker.Model.User.${userId}`)
       .notification((token) => {
-        ProcessMaker.pushNotification(token);
         this.update();
       });
   },
