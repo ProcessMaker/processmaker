@@ -27,10 +27,6 @@ trait ApiCallWithUser
         if ($this->hasFailed() && isset($this->_debug_response)) {
             $json = $this->_debug_response->json();
             unset($json['trace']);
-            
-            echo "\nResponse Debug Information:\n";
-            var_dump($json);
-            echo "\n";
         }
     }
 
