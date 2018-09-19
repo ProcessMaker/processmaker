@@ -24,7 +24,9 @@ class ProcessController extends Controller
         $where = $this->getRequestFilterBy($request, ['name', 'description','status']);
         $orderBy = $this->getRequestSortBy($request, 'name');
         $perPage = $this->getPerPage($request);
-        $processes = Process::where($where)
+        $include = $this->getRequestInclude($request);
+        $processes = Process::with($include)
+            ->where($where)
             ->orderBy(...$orderBy)
             ->paginate($perPage);
         return new ApiCollection($processes);
@@ -71,7 +73,7 @@ class ProcessController extends Controller
         //validate model trait
         $this->validateModel($process, Process::rules());
         $process->saveOrFail();
-        return new Resource($process);
+        return new Resource($process->refresh());
     }
 
     /**
@@ -90,7 +92,7 @@ class ProcessController extends Controller
         //validate model
         $this->validateModel($process, Process::rules($process));
         $process->saveOrFail();
-        return new Resource($process);
+        return new Resource($process->refresh());
     }
 
     /**

@@ -15,6 +15,7 @@ use Tests\TestCase;
 /**
  * Tests routes related to processes / CRUD related methods
  *
+ * @group process_tests
  */
 class ProcessRequestsTest extends TestCase
 {
