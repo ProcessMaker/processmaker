@@ -22,25 +22,25 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-      'username',
-      'email',
-      'password',
-      'firstname',
-      'lastname',
-      'status',
-      'address',
-      'city',
-      'state',
-      'postal',
-      'country',
-      'phone',
-      'fax',
-      'cell',
-      'title',
-      'birthdate',
-      'timezone',
-      'language',
-      'expires_at'
+        'username',
+        'email',
+        'password',
+        'firstname',
+        'lastname',
+        'status',
+        'address',
+        'city',
+        'state',
+        'postal',
+        'country',
+        'phone',
+        'fax',
+        'cell',
+        'title',
+        'birthdate',
+        'timezone',
+        'language',
+        'expires_at'
 
     ];
 
@@ -81,7 +81,7 @@ class User extends Authenticatable
 
     public function memberships()
     {
-        return $this->hasMany('ProcessMaker\Models\GroupMember','member_uuid','uuid');
+        return $this->morphMany(GroupMember::class, 'member', null, 'member_uuid');
     }
 
 }
