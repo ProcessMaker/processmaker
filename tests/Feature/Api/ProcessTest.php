@@ -107,7 +107,7 @@ class ProcessTest extends TestCase
 
         //Get active processes
         $response = $this->assertCorrectModelListing(
-            '?filter=INACTIVE&include=category&per_page=' . $perPage,
+            '?filter=INACTIVE&include=category,user&per_page=' . $perPage,
             [
                 'total' => $initialInactiveCount + $processInactive['num'],
                 'count' => $perPage,
@@ -115,7 +115,7 @@ class ProcessTest extends TestCase
             ]
         );
         //verify include
-        $response->assertJsonStructure(['*' => ['category']], $response->json('data'));
+        $response->assertJsonStructure(['*' => ['category','user']], $response->json('data'));
     }
 
     /**
@@ -204,6 +204,27 @@ class ProcessTest extends TestCase
         );
 
     }
+    
+    /**
+     * Test the creation of processes with BPMN definition
+     */
+    public function testCreateProcessWithBPMN()
+    {
+        $route = route($this->resource . '.store');
+        $base = factory(Process::class)->make([
+                'user_uuid' => static::$DO_NOT_SEND,
+                'process_category_uuid' => static::$DO_NOT_SEND,
+            ]);
+        $array = array_diff($base->toArray(), [static::$DO_NOT_SEND]);
+        //Add a bpmn content
+        $array['bpmn'] = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><bpmn:definitions></bpmn:definitions>';
+        $response = $this->json('POST', $route, $array);
+        $response->assertStatus(201);
+        $response->assertJsonStructure($this->structure);
+        $data = $response->json();
+        $process = Process::withUuid($data['uuid'])->first();
+        $this->assertEquals($array['bpmn'], $process->bpmn);
+    }
 
     /**
      * Test the required fields
@@ -275,8 +296,8 @@ class ProcessTest extends TestCase
         //Create a new process with category
         $process = factory(Process::class)->create();
 
-        //Test that is correctly displayed with category
-        $this->assertModelShow($process->uuid_text, ['category']);
+        //Test that is correctly displayed including category and user
+        $this->assertModelShow($process->uuid_text, ['category','user']);
     }
 
     /**
