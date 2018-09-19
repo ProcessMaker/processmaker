@@ -30,12 +30,12 @@ class GroupMember extends Model
 
     public function member()
     {
-        return $this->morphTo();
+        return $this->belongsTo('ProcessMaker\Models\User','member_uuid','uuid');
     }
 
     public function group()
     {
-        return $this->belongsTo('ProcessMaker\Models\Group','group_uuid');
+        return $this->belongsTo('ProcessMaker\Models\Group','member_uuid','uuid');
     }
 
 }
