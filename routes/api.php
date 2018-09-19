@@ -9,6 +9,7 @@ Route::group(
     Route::apiResource('users', 'UserController');
     Route::apiResource('groups', 'GroupController');
     Route::apiResource('group_members', 'GroupMemberController')->only(['index', 'show', 'delete', 'store']);
+    Route::apiResource('environment_variables', 'EnvironmentVariablesController');
     Route::apiResource('forms', 'FormController');
     Route::apiResource('scripts', 'ScriptController');
     Route::apiResource('processes', 'ProcessController');
