@@ -4,10 +4,12 @@ description: Search for a process.
 
 # Search for a Process
 
-Introductory paragraph that describes the different ways to search for a process:
+~~Introductory paragraph that describes the different ways to search for a process:~~
 
-* Name
-* Others?
+* ~~Name~~
+* ~~Others?~~
+
+## Search for a Process
 
 Follow these steps to search for a process:
 
@@ -21,5 +23,7 @@ If no processes exist, the following message displays: **Oops, no processes were
 The **Processes** search box is not case sensitive.
 {% endhint %}
 
+## Related Topics
 
+{% page-ref page="what-is-a-process.md" %}
 

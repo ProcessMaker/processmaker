@@ -66,3 +66,7 @@ Follow these steps to do an advanced search:
 If there are no search results, the following message displays: **There are no requests in the search**. ~~Note: The word "Requests" must be capitalized in the app.~~
 {% endhint %}
 
+## Related Topics
+
+{% page-ref page="what-is-a-request.md" %}
+

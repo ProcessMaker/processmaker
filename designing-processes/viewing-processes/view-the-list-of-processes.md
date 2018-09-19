@@ -4,6 +4,8 @@ description: View a tabular list of your processes.
 
 # View the List of Processes
 
+## View the List of Processes
+
 The **Processes** page displays the following information about processes in tabular format:
 
 * **Process:** The **Process** column displays the process name.
@@ -40,4 +42,10 @@ Use these tips to control how process information displays in the table:
 * To view the next or previous page of processes, click the **Next** or **Previous** pagination buttons, respectively. If the first page of processes is displayed, the **Previous** pagination button is disabled. If the last page is displayed, the **Next** pagination button is disabled. If all records display on one page, both pagination buttons are disabled.
 * To adjust how many table rows display in each page, click the drop-down beside the pagination buttons, and then select to display 25, 50 or 100 rows per page. Ten rows per page is the default.
 * To adjust the sort order of process information, click the column header in which to sort the records. By default process information is sorted by creation date. When the sort arrow points down, sort order is in descending order. When the sort arrow points up, sort order is in ascending order.
+
+## Related Topics
+
+{% page-ref page="what-is-a-process.md" %}
+
+
 

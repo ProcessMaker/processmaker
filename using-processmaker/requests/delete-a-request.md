@@ -13,6 +13,8 @@ You may only cancel Requests in the following circumstances:
 * You may only cancel Requests that you started.
 {% endhint %}
 
+## Cancel a Request
+
 Follow these steps to cancel a Request:
 
 1. Do one of the following:
@@ -20,4 +22,8 @@ Follow these steps to cancel a Request:
    * Click the **Requests** page if it is not currently displayed. The **Started by Me** tab displays.
 2. Mouse hover over the Request you want to cancel, and then click the **Cancel** button.
 3. Click to confirm the cancellation of this Request. ~~\(I assume this happens.\)~~ The Request is canceled.
+
+## Related Topics
+
+{% page-ref page="what-is-a-request.md" %}
 

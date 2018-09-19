@@ -4,7 +4,9 @@ description: Begin your process design.
 
 # Create a Process
 
+~~Introductory paragraph?~~
 
+## Create a New Process
 
 Follow these steps to create a new process:
 
@@ -24,4 +26,10 @@ Follow these steps to create a new process:
    * Technology
    * Uncategorized
 6. Click the **Create** button. ~~What happens? \(Describe what happens.\)~~
+
+## Related Topics
+
+{% page-ref page="what-is-a-process.md" %}
+
+
 

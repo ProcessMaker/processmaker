@@ -10,9 +10,15 @@ Prior to deleting a process, ensure that the process is not in Active status. Ot
 This action cannot be undone.
 {% endhint %}
 
+## Delete a Process
+
 Follow these steps to delete a process:
 
 1. Click the **Processes** tab. The table of processes displays.
 2. Hover your cursor over the process to delete, and then select the **Delete** icon. A message displays **Are you sure you want to delete this process?**.
 3. Click to confirm to delete the process.
+
+## Related Topics
+
+{% page-ref page="what-is-a-process.md" %}
 
