@@ -13,7 +13,7 @@ class EnvironmentVariablesTest extends TestCase
 {
     use DatabaseTransactions;
 
-    const API_TEST_VARIABLES = '/api/1.0/environment-variables';
+    const API_TEST_VARIABLES = '/api/1.0/environment_variables';
 
     /**
      * User that will be making the request to the API

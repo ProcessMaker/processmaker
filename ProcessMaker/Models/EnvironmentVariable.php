@@ -11,6 +11,8 @@ class EnvironmentVariable extends Model
 {
     use HasBinaryUuid;
 
+    public $incrementing = false;
+
     protected $fillable = [
         'name',
         'description',
