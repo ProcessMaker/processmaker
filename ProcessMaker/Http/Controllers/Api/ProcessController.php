@@ -6,8 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Http\Resources\ApiCollection;
+use ProcessMaker\Http\Resources\Process as Resource;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Transformers\ProcessTransformer;
 
 class ProcessController extends Controller
 {
@@ -26,8 +27,7 @@ class ProcessController extends Controller
         $processes = Process::where($where)
             ->orderBy(...$orderBy)
             ->paginate($perPage);
-        return fractal($processes, new ProcessTransformer)
-            ->parseIncludes($request->input('include'));
+        return new ApiCollection($processes);
     }
 
     /**
@@ -39,9 +39,7 @@ class ProcessController extends Controller
      */
     public function show(Request $request, Process $process)
     {
-        return fractal($process, new ProcessTransformer())
-            ->parseIncludes($request->input('include'))
-            ->respond(200);
+        return new Resource($process);
     }
 
     /**
@@ -72,8 +70,8 @@ class ProcessController extends Controller
         }
         //validate model trait
         $this->validateModel($process, Process::rules());
-        $process->save();
-        return fractal($process->refresh(), new ProcessTransformer())->respond(201);
+        $process->saveOrFail();
+        return new Resource($process);
     }
 
     /**
@@ -89,10 +87,10 @@ class ProcessController extends Controller
         //Convert the string uuid to binary uuid
         $this->encodeRequestUuids($request, ['process_category_uuid']);
         $process->fill($request->json()->all());
-        //validate model trait
+        //validate model
         $this->validateModel($process, Process::rules($process));
-        $process->save();
-        return response($process->refresh(), 200);
+        $process->saveOrFail();
+        return new Resource($process);
     }
 
     /**

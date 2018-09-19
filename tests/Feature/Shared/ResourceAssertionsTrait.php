@@ -23,7 +23,7 @@ trait ResourceAssertionsTrait
      *
      * @return \Illuminate\Foundation\Testing\TestResponse
      */
-    protected function assertCorrectModelListing($query, $expectedMeta = [])
+    protected function assertCorrectModelListing($query, $expectedMeta = ['count'])
     {
         $route = route($this->resource . '.index');
         $response = $this->json('GET', $route . $query);
