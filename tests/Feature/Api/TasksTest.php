@@ -197,12 +197,13 @@ class TasksTest extends TestCase
         ]);
 
         //Test that is correctly displayed
-        $route = route($this->resource . '.show', [$token->uuid_text, 'include' => 'user']);
+        $route = route($this->resource . '.show', [$token->uuid_text, 'include' => 'user,definition']);
         $response = $this->json('GET', $route);
         //Check the status
         $response->assertStatus(200);
         //Check the structure
         $response->assertJsonStructure($this->structure);
-        $response->assertJsonStructure(['user'=>['uuid', 'email']]);
+        dd($response->json());
+        $response->assertJsonStructure(['user'=>['uuid', 'email'],'definition'=>['name']]);
     }
 }
