@@ -203,7 +203,6 @@ class TasksTest extends TestCase
         $response->assertStatus(200);
         //Check the structure
         $response->assertJsonStructure($this->structure);
-        dd($response->json());
-        $response->assertJsonStructure(['user'=>['uuid', 'email'],'definition'=>['name']]);
+        $response->assertJsonStructure(['user'=>['uuid', 'email'],'definition'=>[]]);
     }
 }
