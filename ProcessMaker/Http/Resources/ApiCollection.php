@@ -3,7 +3,6 @@
 namespace ProcessMaker\Http\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Pagination\AbstractPaginator;
 
 class ApiCollection extends ResourceCollection
@@ -22,7 +21,14 @@ class ApiCollection extends ResourceCollection
                 'filter' => $request->input('filter', ''),
                 'sort_by' => $request->input('order_by', ''),
                 'sort_order' => $request->input('order_direction', ''),
-                'count' => count($this->collection)
+                /**
+                 * count: (integer, total items in current response)
+                 */
+                'count' => $this->resource->count(),
+                /**
+                 * total_pages: (integer, the total number of pages available, based on per_page and total)
+                 */
+                'total_pages' => ceil($this->resource->total() / $this->resource->perPage())
             ]
         ];
 
