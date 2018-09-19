@@ -185,6 +185,46 @@ class ProcessCategoriesTest extends TestCase
     }
 
     /**
+     * Test list categories by status
+     */
+    public function testFilteringStatus()
+    {
+        $perPage = 10;
+        $initialActiveCount = ProcessCategory::where('status','ACTIVE')->count();
+        $initialInactiveCount = ProcessCategory::where('status','INACTIVE')->count();
+
+        // Create some processes
+        $processActive = [
+            'num' => 10,
+            'status' => 'ACTIVE'
+        ];
+        $processInactive = [
+            'num' => 15,
+            'status' => 'INACTIVE'
+        ];
+        factory(ProcessCategory::class, $processActive['num'])->create(['status' => $processActive['status']]);
+        factory(ProcessCategory::class, $processInactive['num'])->create(['status' => $processInactive['status']]);
+
+        //Get active processes
+        $route = route($this->resource . '.index');
+        $response = $this->json('GET', $route . '?status=ACTIVE&per_page=' . $perPage);
+        //Verify the status
+        $response->assertStatus(200);
+        //Verify the structure
+        $response->assertJsonStructure(['data' => ['*' => $this->structure]]);
+        $data = $response->json('data');
+        $meta = $response->json('meta');
+        // Verify the meta values
+        $this->assertArraySubset( [
+            'total' => $initialActiveCount + $processActive['num'],
+            'count' => $perPage,
+            'per_page' => $perPage,
+        ], $meta);
+        //Verify the data size
+        $this->assertCount($meta['count'], $data);
+    }
+
+    /**
      * Test to verify our process categories listing api endpoint works with sorting
      */
     public function testSorting()
