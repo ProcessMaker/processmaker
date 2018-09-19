@@ -5,7 +5,8 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\ProcessCategory;
-use ProcessMaker\Transformers\ProcessCategoryTransformer;
+use ProcessMaker\Http\Resources\ApiCollection;
+use ProcessMaker\Http\Resources\ProcessCategory as Resource;
 
 class ProcessCategoryController extends Controller
 {
@@ -17,29 +18,36 @@ class ProcessCategoryController extends Controller
      */
     public function index(Request $request)
     {
-        $where = $this->getRequestFilterBy($request, ['name','status']);
-        $orderBy = $this->getRequestSortBy($request, 'name');
-        $perPage = $this->getPerPage($request);
-        $processes = ProcessCategory::where($where)
-            ->orderBy(...$orderBy)
-            ->paginate($perPage);
-        return fractal($processes, new ProcessCategoryTransformer())
-            ->parseIncludes($request->input('include'));
+        $query = ProcessCategory::query();
+        $filter = $request->input('filter', '');
+        if (!empty($filter)) {
+            $filter = '%' . $filter . '%';
+            $query->where(function ($query) use ($filter) {
+                $query->Where('name', 'like', $filter)
+                    ->orWhere('status', 'like', $filter);
+            });
+        }
+        if ($request->has('status')) {
+            $query->where('status', 'like', $request->input('status'));
+        }
+        $query->orderBy(
+            $request->input('order_by', 'name'),
+            $request->input('order_direction', 'asc')
+        );
+        $response = $query->paginate($request->input('per_page', 10));
+        return new ApiCollection($response);
     }
 
     /**
      * Display the specified Process category.
      *
-     * @param Request $request
-     * @param ProcessCategory $ProcessCategory
+     * @param ProcessCategory $processCategory
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show(Request $request, ProcessCategory $ProcessCategory)
+    public function show(ProcessCategory $processCategory)
     {
-        return fractal($ProcessCategory, new ProcessCategoryTransformer())
-            ->parseIncludes($request->input('include', []))
-            ->respond(200);
+        return new Resource($processCategory);
     }
 
     /**
@@ -51,13 +59,11 @@ class ProcessCategoryController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate(ProcessCategory::rules());
         $category = new ProcessCategory();
         $category->fill($request->json()->all());
-
-        //validate model trait
-        $this->validateModel($category, ProcessCategory::rules());
-        $category->save();
-        return fractal($category->refresh(), new ProcessCategoryTransformer())->respond(201);
+        $category->saveOrFail();
+        return new Resource($category);
     }
 
     /**
@@ -73,8 +79,8 @@ class ProcessCategoryController extends Controller
         $processCategory->fill($request->json()->all());
         //validate model trait
         $this->validateModel($processCategory, ProcessCategory::rules($processCategory));
-        $processCategory->save();
-        return response($processCategory->refresh(), 200);
+        $processCategory->saveOrFail();
+        return new Resource($processCategory);
     }
 
     /**
@@ -86,12 +92,6 @@ class ProcessCategoryController extends Controller
      */
     public function destroy(ProcessCategory $processCategory)
     {
-        /*$this->validateModel($processCategory, [
-            'collaborations' => 'empty',
-            'requests' => 'empty',
-        ]);*/
-        //$process = $processCategory->processes()->count();
-
         $this->validateModel($processCategory, [
             'processes' => 'empty'
         ]);
