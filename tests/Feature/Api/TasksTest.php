@@ -58,7 +58,7 @@ class TasksTest extends TestCase
     /**
      * Test to get the list of tokens
      */
-    public function testGetListOfTokens()
+    public function testGetListOfTasks()
     {
         $request = factory(ProcessRequest::class)->create();
         // Create some tokens
@@ -77,7 +77,7 @@ class TasksTest extends TestCase
     /**
      * Test the filtering getting active tokens
      */
-    public function testFilteringGetActiveTokens()
+    public function testFilteringGetActiveTasks()
     {
         $request = factory(ProcessRequest::class)->create();
         // Create some tokens
@@ -154,12 +154,10 @@ class TasksTest extends TestCase
         $this->assertArraySubset(
             [
                 'total' => $initialRows + $rowsToAdd,
-                //@todo: Commented until Resource collections returns count
-                //'count' => $perPage,
+                'count' => $perPage,
                 'per_page' => $perPage,
                 'current_page' => $page,
-                //@todo: Commented until Resource collections returns total_pages
-                //'total_pages' => ceil(($initialRows + $rowsToAdd) / $perPage),
+                'total_pages' => ceil(($initialRows + $rowsToAdd) / $perPage),
             ],
             $response->json('meta')
         );
@@ -169,7 +167,7 @@ class TasksTest extends TestCase
      * Test show a token
      *
      */
-    public function testShowToken()
+    public function testShowTask()
     {
         $request = factory(ProcessRequest::class)->create();
         //Create a new process without category
@@ -183,15 +181,14 @@ class TasksTest extends TestCase
         //Check the status
         $response->assertStatus(200);
         //Check the structure
-        //@todo Commented until the Resource response fit the specification.
-        //$response->assertJsonStructure($this->structure);
+        $response->assertJsonStructure($this->structure);
     }
 
     /**
      * Test get a token including user child.
      *
      */
-    public function testShowTokenWithUser()
+    public function testShowTaskWithUser()
     {
         $request = factory(ProcessRequest::class)->create();
         //Create a new process without category
@@ -205,9 +202,7 @@ class TasksTest extends TestCase
         //Check the status
         $response->assertStatus(200);
         //Check the structure
-        //@todo Uncomment when the Resource response fit the specification.
-        //$response->assertJsonStructure($this->structure);
-        //@todo Uncomment when the Resource response fit the specification.
-        //$response->assertJsonStructure(['user'=>['uuid', 'email']]);
+        $response->assertJsonStructure($this->structure);
+        $response->assertJsonStructure(['user'=>['uuid', 'email']]);
     }
 }
