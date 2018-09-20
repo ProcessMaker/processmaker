@@ -49,7 +49,7 @@ class ScriptsTest extends TestCase
         $response = $this->apiCall('POST', $url, [
             'title' => 'Script Title',
             'description' => $faker->sentence(6),
-            'language' => Script::LANGUAGE_PHP,
+            'language' => 'PHP',
             'code' => '123',
         ]);
         //validating the answer is correct.
@@ -195,7 +195,7 @@ class ScriptsTest extends TestCase
         $response = $this->apiCall('PUT', $url, [
             'title' => $script->title,
             'description' => $faker->sentence(6),
-            'language' => Script::LANGUAGE_LUA,
+            'language' => 'LUA',
             'code' => $faker->sentence(3),
         ]);
         //Validate the answer is correct
@@ -227,7 +227,15 @@ class ScriptsTest extends TestCase
     */
     public function testPreviewScript()
     {
-        $url = self::API_TEST_SCRIPT.'/preview';
+        $url = self::API_TEST_SCRIPT.'/preview/?data=adkasdlasj&config=&code=adkasdlasj&language=LUA';
+
+        // $data = $request->get('data');
+        // $config = $request->get('config');
+        // $code = $request->get('code');
+        // $language = $request->get('language');
+
+
+
         $response = $this->apiCall('GET', $url, []);
         $response->assertStatus(200);
     }

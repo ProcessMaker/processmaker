@@ -2,10 +2,9 @@
 
 namespace ProcessMaker\Http\Resources;
 
+use Illuminate\Http\Resources\Json\ResourceCollection;
+
 class Script extends ApiResource
 {
-    /**
-     * Override toArray() here if you need
-     * to customize how this resource is output
-     */
+
 }

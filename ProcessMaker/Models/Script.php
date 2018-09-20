@@ -14,16 +14,15 @@ use Spatie\BinaryUuid\HasBinaryUuid;
  * @property string uuid
  * @property string title
  * @property text description
- * @property string language 
- * @property text code 
+ * @property string language
+ * @property text code
  *
  */
 class Script extends Model
 {
     use HasBinaryUuid;
-    
-    const LANGUAGE_PHP = 'PHP';
-    const LANGUAGE_LUA = 'LUA';
+
+    public $incrementing = false;
 
     protected $guarded = [
         'uuid',
@@ -42,7 +41,7 @@ class Script extends Model
     {
         $rules = [
             'title' => 'required|unique:scripts,title',
-            'language' => 'required|in:' . self::LANGUAGE_LUA . ',' . self::LANGUAGE_PHP
+            'language' => 'required|in:PHP,LUA'
         ];
         if ($existing) {
             // ignore the unique rule for this id
@@ -84,20 +83,20 @@ class Script extends Model
         chmod($outputfname, 0660);
 
         $variablesParameter = [];
-        EnvironmentVariable::chunk(50, function($variables) use(&$variablesParameter) {
-            foreach($variables as $variable) {
+        EnvironmentVariable::chunk(50, function ($variables) use (&$variablesParameter) {
+            foreach ($variables as $variable) {
                 $variablesParameter[] = $variable['name'] . '=' . $variable['value'];
             }
         });
 
-        if($variablesParameter) {
+        if ($variablesParameter) {
             $variablesParameter = "-e " . implode(" -e ", $variablesParameter);
         } else {
             $variablesParameter = '';
         }
 
         // So we have the files, let's execute the docker container
-        switch($language) {
+        switch ($language) {
             case 'php':
                 $cmd = "/usr/bin/docker run " . $variablesParameter . " -v " . $datafname . ":/opt/executor/data.json -v " . $configfname . ":/opt/executor/config.json -v " . $scriptfname . ":/opt/executor/script.php -v " . $outputfname . ":/opt/executor/output.json processmaker/executor:php php /opt/executor/bootstrap.php 2>&1";
                 break;
@@ -107,7 +106,7 @@ class Script extends Model
         }
 
         $response = exec($cmd, $output, $returnCode);
-        if($returnCode) {
+        if ($returnCode) {
             // Non-zero, there is an error!
             unlink($datafname);
             unlink($configfname);
