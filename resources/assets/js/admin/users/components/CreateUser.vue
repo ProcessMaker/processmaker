@@ -81,9 +81,9 @@ export default {
     return {
        value: [],
         options: [
-          {	title: 'People', desc: 'HR', img: '../avatar_placeholder_small.png' },
-        { title: 'Humans', desc: 'HR',  img: '../avatar_placeholder_small.png'},
-        { title: 'Workers', desc: 'HR', img: '../avatar_placeholder_small.png'}
+          {	title: 'People', desc: 'HR', img: '/img/avatar-placeholder.gif' },
+        { title: 'Humans', desc: 'HR',  img: '/img/avatar-placeholder.gif'},
+        { title: 'Workers', desc: 'HR', img: '/img/avatar-placeholder.gif'}
         ]
       };
     },
