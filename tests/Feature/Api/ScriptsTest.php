@@ -228,14 +228,10 @@ class ScriptsTest extends TestCase
     public function testPreviewScript()
     {
         $url = self::API_TEST_SCRIPT.'/preview/?data=adkasdlasj&config=&code=adkasdlasj&language=LUA';
+        $response = $this->apiCall('GET', $url, []);
+        $response->assertStatus(200);
 
-        // $data = $request->get('data');
-        // $config = $request->get('config');
-        // $code = $request->get('code');
-        // $language = $request->get('language');
-
-
-
+        $url = self::API_TEST_SCRIPT.'/preview/?data=adkasdlasj&config=&code=adkasdlasj&language=PHP';
         $response = $this->apiCall('GET', $url, []);
         $response->assertStatus(200);
     }
