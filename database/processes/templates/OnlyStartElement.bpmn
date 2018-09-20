@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+s<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <bpmn:definitions
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
         xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
         xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
         xmlns:di="http://www.omg.org/spec/BPMN/20100524/DI"
-        xmlns:pm="https://bpm4.processmaker.local/definition/ProcessMaker.xsd"
+        xmlns:pm="https://bpm4.processmaker.local/definitions/ProcessMaker.xsd"
         id="DefinitionsId"
         targetNamespace="http://bpmn.io/schema/bpmn">
     <bpmn:process id="ProcessId" isExecutable="true" name="ProcessName">

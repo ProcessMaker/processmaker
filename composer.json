@@ -25,6 +25,7 @@
     "processmaker/nayra": "dev-master",
     "ralouphie/getallheaders": "^2.0",
     "ramsey/uuid": "^3.7",
+    "spatie/laravel-binary-uuid": "^1.2",
     "spatie/laravel-fractal": "^5.3",
     "spatie/laravel-medialibrary": "^7.0.0",
     "symfony/psr-http-message-bridge": "1.*",
