@@ -180,7 +180,7 @@ class ProcessRequestsTest extends TestCase
         $response->assertStatus(200);
 
         //verify structure
-        $response->assertJsonStructure(['data' => self::STRUCTURE]);
+        $response->assertJsonStructure(self::STRUCTURE);
     }
 
     /**
