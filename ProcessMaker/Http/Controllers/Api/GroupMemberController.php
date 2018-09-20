@@ -28,7 +28,7 @@ class GroupMemberController extends Controller
         if (!empty($filter)) {
             $filter = '%' . $filter . '%';
             $query->where(function ($query) use ($filter) {
-                $query->Where('name', 'like', $filter);
+                $query->Where('member_uuid', '=', $filter);
             });
         }
 
