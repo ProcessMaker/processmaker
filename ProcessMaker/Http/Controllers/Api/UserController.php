@@ -87,10 +87,8 @@ class UserController extends Controller
     public function update(User $user, Request $request)
     {
         $request->validate(User::rules($user));
-
         $user->fill($request->input());
         $user->saveOrFail();
-
         return response([], 204);
     }
 
