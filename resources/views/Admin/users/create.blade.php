@@ -2,7 +2,6 @@
 
 @section('content')
 <div class="container" id="createUser">
-  <h1>Hello</h1>
 <create-user></create-user>
 </div>
 @endsection
