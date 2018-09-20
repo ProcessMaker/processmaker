@@ -104,7 +104,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
         $rules = [
             'name' => 'required|unique:process_requests,name',
             'data' => 'required',
-            'status' => 'in:ACTIVE,COMPLETED',
+            'status' => 'in:DRAFT,ACTIVE,COMPLETED',
             'process_uuid' => 'required|exists:processes,uuid',
             'process_collaboration_uuid' => 'nullable|exists:process_collaborations,uuid',
             'user_uuid' => 'exists:users,uuid',
