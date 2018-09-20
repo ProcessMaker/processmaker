@@ -2,7 +2,9 @@
 
 // Routes related to Authentication (password reset, etc)
 Auth::routes();
-
+Route::namespace('Admin')->prefix('admin')->group(function(){
+  Route::resource('users', 'UsersController');
+});
 // Add our broadcasting routes
 Broadcast::routes();
 

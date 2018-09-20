@@ -45,7 +45,7 @@ mix.webpackConfig({
     .js('resources/assets/js/tasks/show.js', 'public/js/tasks/show.js')
     .js('resources/assets/js/designer/formBuilder/main.js', 'public/js/formBuilder')
     .js('resources/assets/js/designer/ScriptEditor/main.js', 'public/js/designer/ScriptEditor')
-
+    .js('resources/assets/js/admin/users/index.js', 'public/js/admin/users')
 
 
 
