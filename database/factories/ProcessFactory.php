@@ -11,7 +11,7 @@ use ProcessMaker\Models\User;
 $factory->define(Process::class, function (Faker $faker) {
     $emptyProcess = $faker->file(Process::getProcessTemplatesPath());
     return [
-        'name' => $faker->sentence(3),
+        'name' => $faker->unique()->sentence(3),
         'bpmn' => file_get_contents($emptyProcess),
         'description' => $faker->paragraph(3),
         'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),

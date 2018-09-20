@@ -338,8 +338,8 @@ class ProcessTest extends TestCase
         ]);
     }
 
-    /*
-    + Test update process
+    /**
+     * Test update process
      */
     public function testUpdateProcess()
     {
@@ -353,29 +353,42 @@ class ProcessTest extends TestCase
                 'process_category_uuid' => static::$DO_NOT_SEND,
             ]
         );
+    }
 
+    /**
+     * Test update process
+     */
+    public function testUpdateProcessWithCategoryNull()
+    {
         //Test update process category to null
         $this->assertModelUpdate(
             Process::class,
             [
                 'user_uuid' => static::$DO_NOT_SEND,
+                'name' => 'A new name',
                 'process_category_uuid' => null
             ]
         );
+    }
 
+    /**
+     * Test update process
+     */
+    public function testUpdateProcessWithCategory()
+    {
         //Test update process category
         $this->assertModelUpdate(
             Process::class,
             [
                 'user_uuid' => static::$DO_NOT_SEND,
+                'name' => 'Another name',
                 'process_category_uuid' => factory(ProcessCategory::class)->create()->uuid_text
             ]
         );
     }
 
-
     /**
-     * Test update process
+     * Test update process with invalid parameters
      */
     public function testUpdateProcessFails()
     {
@@ -421,5 +434,4 @@ class ProcessTest extends TestCase
             ]
         );
     }
-
 }

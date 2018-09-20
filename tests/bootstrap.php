@@ -82,7 +82,7 @@ if (env('RUN_MSSQL_TESTS')) {
 
 // THIS IS FOR STANDARD PROCESSMAKER TABLES
 if (env('POPULATE_DATABASE')) {
-    Artisan::call('migrate:fresh', ['--seed' => true]);
+    Artisan::call('migrate:fresh', []);
 }
 
 //Create the oauth keys if they do not exists

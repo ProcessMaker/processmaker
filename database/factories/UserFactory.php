@@ -9,8 +9,8 @@ use ProcessMaker\Models\User;
 $factory->define(User::class, function (Faker $faker) {
 
     return [
-        'username' => $faker->userName,
-        'email' => $faker->email,
+        'username' => $faker->unique()->userName,
+        'email' => $faker->unique()->email,
         'password' => Hash::make($faker->password),
 
         'status' => $faker->randomElement(['ACTIVE','INACTIVE']),

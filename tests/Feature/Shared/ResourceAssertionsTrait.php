@@ -1,6 +1,8 @@
 <?php
 namespace Tests\Feature\Shared;
 
+use Illuminate\Foundation\Testing\TestResponse;
+
 /**
  * This trait add assertions to test a Resource Controller
  *
@@ -28,7 +30,7 @@ trait ResourceAssertionsTrait
         $route = route($this->resource . '.index');
         $response = $this->json('GET', $route . $query);
         //Verify the status
-        $response->assertStatus(200);
+        $this->assertStatus(200, $response);
         //Verify the structure
         $response->assertJsonStructure(['data' => ['*' => $this->structure]]);
         $data = $response->json('data');
@@ -62,7 +64,7 @@ trait ResourceAssertionsTrait
         $base = factory($modelClass)->make($attributes);
         $array = array_diff($base->toArray(), [static::$DO_NOT_SEND]);
         $response = $this->json('POST', $route, $array);
-        $response->assertStatus(201);
+        $this->assertStatus(201, $response);
         $response->assertJsonStructure($this->structure);
         $data = $response->json();
         $this->assertArraySubset($array, $data);
@@ -107,7 +109,7 @@ trait ResourceAssertionsTrait
             $route .= '?include=' . implode(',', $includes);
         }
         $response = $this->json('GET', $route);
-        $response->assertStatus(200);
+        $this->assertStatus(200, $response);
         $response->assertJsonStructure($structure);
         return $response;
     }
@@ -160,7 +162,7 @@ trait ResourceAssertionsTrait
         $fields = array_diff($attributes, [static::$DO_NOT_SEND]);
         $response = $this->json('PUT', $route, $fields);
         //validate status
-        $response->assertStatus(200);
+        $this->assertStatus(200, $response);
         $response->assertJsonStructure($this->structure);
         $this->assertArraySubset($fields, $response->json());
     }
@@ -207,5 +209,20 @@ trait ResourceAssertionsTrait
     private function getDataAttributes($row)
     {
         return $this->isJsonApi() ? $row['attributes'] : $row;
+    }
+
+    /**
+     * Assert that the response has the given status code.
+     * 
+     * @param string $expected
+     * @param \Illuminate\Foundation\Testing\TestResponse $response
+     */
+    protected function assertStatus($expected, TestResponse $response)
+    {
+        $status = $response->getStatusCode();
+        $this->assertEquals(
+            $expected, $status, "Expected status code {$expected} but received {$status}.\n"
+            . $response->getContent()
+        );
     }
 }

@@ -8,7 +8,7 @@ use ProcessMaker\Models\ProcessCategory;
  */
 $factory->define(ProcessCategory::class, function (Faker $faker) {
     return [
-        'name' => $faker->name(),
+        'name' => $faker->unique()->name(),
         'status' => $faker->randomElement(
             ['ACTIVE', 'INACTIVE']
         )
