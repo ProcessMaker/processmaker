@@ -237,6 +237,16 @@ class ScriptsTest extends TestCase
     }
 
     /**
+    * Test the preview function
+    */
+    public function testPreviewScriptFail()
+    {
+        $url = self::API_TEST_SCRIPT.'/preview/?data=adkasdlasj&config=&code=adkasdlasj&language=JAVA';
+        $response = $this->apiCall('GET', $url, []);
+        $response->assertStatus(500);
+    }
+
+    /**
      * Delete script in process
      */
     public function testDeleteScript()
