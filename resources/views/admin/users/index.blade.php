@@ -41,5 +41,5 @@
 @endsection
 
 @section('js')
-<script src="{{mix('js/management/users/index.js')}}"></script>
+{{-- <script src="{{mix('js/management/users/index.js')}}"></script> --}}
 @endsection

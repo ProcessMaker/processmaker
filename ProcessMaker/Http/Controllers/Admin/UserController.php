@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\User;
 
-class UserController.php extends Controller
+class UserController extends Controller
 {
   /**
    * Get the list of users.
@@ -18,7 +18,7 @@ class UserController.php extends Controller
       return view('admin.users.index');
   }
 
-  public function show(User $user)
+  public function edit(User $user)
   {
     return view('admin.users.edit',compact($user));
   }

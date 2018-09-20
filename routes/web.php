@@ -85,5 +85,8 @@ $this->middleware(['auth'])->group(function () {
     $this->get('/designer/{process}/form/{form}', 'Designer\FormController@show')->name('designer-edit-form');
     $this->get('/processes/{process}/script/{script}', 'Designer\ScriptController@show')->name('designer-edit-script');
 
-    
+    $this->get('admin/users','Admin\UserController@index')->name('admin.users');
+    $this->get('admin/users/{id}','Admin\UserController@edit')->name('admin.user.edit');
+
+
 });

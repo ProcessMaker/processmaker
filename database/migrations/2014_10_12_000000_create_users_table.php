@@ -40,8 +40,10 @@ class CreateUsersTable extends Migration
             $table->string('timezone')->nullable();
             $table->string('language')->nullable();
 
-            $table->rememberToken();
             $table->date('expires_at')->nullable();
+            $table->date('loggedin_at')->nullable();
+
+            $table->rememberToken();
             $table->timestamps();
 
         });
