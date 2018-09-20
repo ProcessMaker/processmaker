@@ -98,9 +98,9 @@ export default {
 }
 </script>
 <style>
-.multiselect__tag {
+/* .multiselect__tag {
   background: #788793 !important;
-}
+} */
 
 .multiselect__element span img {
   border-radius: 50%;
@@ -119,9 +119,9 @@ export default {
 .multiselect__tag-icon:after {
   color: white !important;
 }
-.multiselect__tag-icon:focus, .multiselect__tag-icon:hover {
-   background: gray !important;
-}
+/* .multiselect__tag-icon:focus, .multiselect__tag-icon:hover {
+   background: #788793 !important;
+} */
 .multiselect__option--highlight {
    background: #00bf9c !important;
 }
@@ -139,20 +139,20 @@ export default {
  .multiselect__tag-icon:after {
    color: white !important;
  }
- .multiselect__tag-icon:focus, .multiselect__tag-icon:hover {
+ /* .multiselect__tag-icon:focus, .multiselect__tag-icon:hover {
     background: gray !important;
-}
-.multiselect__option--highlight {
+} */
+/* .multiselect__option--highlight {
     background: #00bf9c !important;
-}
-.multiselect__option--selected.multiselect__option--highlight {
+} */
+/* .multiselect__option--selected.multiselect__option--highlight {
     background: #00bf9c !important;
-}
-.multiselect__tags {
+} */
+/* .multiselect__tags {
     border: 1px solid #b6bfc6 !important;
     border-radius: 0.125em !important;
     height: calc(1.875rem + 2px) !important;
-}
+} */
 </style>
 
 
