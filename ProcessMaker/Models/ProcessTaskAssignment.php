@@ -21,6 +21,7 @@ class ProcessTaskAssignment extends Model
     use HasBinaryUuid;
 
     protected $fillable = [
+        'process_uuid',
         'process_task_uuid',
         'assignment_uuid',
         'assignment_type'
@@ -32,6 +33,7 @@ class ProcessTaskAssignment extends Model
      * @var array
      */
     protected $uuids = [
+        'process_uuid',
         'assignment_uuid',
     ];
 

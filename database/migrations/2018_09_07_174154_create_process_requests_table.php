@@ -22,7 +22,8 @@ class CreateProcessRequestsTable extends Migration
             $table->uuid('process_collaboration_uuid')->nullable();
             $table->uuid('user_uuid')->nullable();
             $table->string('participant_uuid', 36)->nullable();
-            $table->enum('status', ['ACTIVE', 'COMPLETED']);
+            $table->string('callable_uuid', 36);
+            $table->enum('status', ['DRAFT', 'ACTIVE', 'COMPLETED']);
             $table->json('data');
             $table->string('name');
             $table->timestamp('completed_at')->nullable();

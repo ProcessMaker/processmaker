@@ -3,6 +3,8 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use ProcessMaker\Nayra\Bpmn\TokenTrait;
+use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use Spatie\BinaryUuid\HasBinaryUuid;
 
 /**
@@ -24,9 +26,10 @@ use Spatie\BinaryUuid\HasBinaryUuid;
  * @property ProcessRequest $request
  *
  */
-class ProcessRequestToken extends Model
+class ProcessRequestToken extends Model implements TokenInterface
 {
     use HasBinaryUuid;
+    use TokenTrait;
 
     public $incrementing = false;
 
@@ -58,6 +61,7 @@ class ProcessRequestToken extends Model
      * @var array
      */
     protected $uuids = [
+        'process_uuid',
         'process_request_uuid',
         'user_uuid',
     ];
@@ -69,6 +73,18 @@ class ProcessRequestToken extends Model
      */
     protected $appends = [
     ];
+
+    /**
+     * Boot application as a process instance.
+     *
+     * @param array $argument
+     */
+    public function __construct(array $argument=[])
+    {
+        parent::__construct($argument);
+        $this->bootElement([]);
+        $this->setId(self::generateUuid());
+    }
 
     /**
      * Validation rules.
@@ -87,6 +103,15 @@ class ProcessRequestToken extends Model
 
     /**
      * Get the process to which this version points to.
+     *
+     */
+    public function process()
+    {
+        return $this->belongsTo(Process::class, 'process_uuid');
+    }
+
+    /**
+     * Get the request of the token.
      *
      */
     public function processRequest()

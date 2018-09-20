@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Facade;
  * @see \ProcessMaker\Managers\WorkflowManager
  * 
  * @method mixed callProcess($filename, $processId)
+ * @method mixed triggerStartEvent($definitions, $event, array $data)
  */
 class WorkflowManager extends Facade
 {

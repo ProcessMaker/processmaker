@@ -2,6 +2,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Validation\Rule;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
 use Spatie\BinaryUuid\HasBinaryUuid;
@@ -70,6 +71,16 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
     ];
 
     /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'completed_at' => 'datetime',
+        'initiated_at' => 'datetime',
+    ];
+
+    /**
      * Boot application as a process instance.
      *
      * @param array $argument
@@ -101,7 +112,12 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
 
         if ($existing) {
             // ignore the unique rule for this id
-            $rules['name'] .= ',' . $existing->uuid . ',uuid';
+            $rules['name'] = [
+                'required',
+                'string',
+                'max:100',
+                Rule::unique('process_requests')->ignore($existing->uuid, 'uuid')
+            ];
         }
 
         return $rules;

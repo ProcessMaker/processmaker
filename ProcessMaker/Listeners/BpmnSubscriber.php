@@ -48,7 +48,7 @@ class BpmnSubscriber
     public function ProcessCompleted(ProcessInstanceCompletedEvent $event)
     {
         //client events
-        $user = $event->instance->creator;
+        $user = $event->instance->user;
         $notification = new ProcessCompletedNotification($event->instance);
         $user->notify($notification);
 

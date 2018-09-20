@@ -13,7 +13,8 @@ $factory->define(ProcessRequest::class, function (Faker $faker) {
     return [
         'name' => $faker->sentence(3),
         'data' => '{}',
-        'status' => $faker->randomElement(['ACTIVE', 'COMPLETED']),
+        'status' => $faker->randomElement(['DRAFT', 'ACTIVE', 'COMPLETED']),
+        'callable_uuid' => $faker->uuid,
         'user_uuid' => function () {
             return factory(User::class)->create()->uuid;
         },

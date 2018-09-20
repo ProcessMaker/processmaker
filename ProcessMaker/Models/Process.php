@@ -2,8 +2,9 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
+use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use Spatie\BinaryUuid\HasBinaryUuid;
 
@@ -170,5 +171,103 @@ class Process extends Model
     public function collaborations()
     {
         return $this->hasMany(ProcessCollaboration::class);
+    }
+
+    /**
+     * Get the user to whom to assign a task.
+     *
+     * @param ActivityInterface $activity
+     *
+     * @return User
+     */
+    public function getNextUser(ActivityInterface $activity)
+    {
+        $assignmentType = $activity->getProperty('assignment_type', 'cyclical');
+        switch ($assignmentType) {
+            case 'cyclical':
+                $user = $this->getNextUserCyclicalAssignment($activity->getId());
+                break;
+            case 'manual':
+            case 'self_service':
+                $user = null;
+                break;
+            default:
+                $user = null;
+        }
+        return $user ? User::withUuid($user)->first() : null;
+    }
+
+    /**
+     * Get the next user in a cyclical assignment.
+     *
+     * @param string $processTaskUuid
+     * 
+     * @return binary
+     * @throws TaskDoesNotHaveUsersException
+     */
+    private function getNextUserCyclicalAssignment($processTaskUuid)
+    {
+        $last = ProcessRequestToken::where('process_uuid', $this->uuid)
+            ->where('element_uuid', $processTaskUuid)
+            ->orderBy('created_at', 'desc')
+            ->first();
+        $users = $this->getAssignableUsers($processTaskUuid);
+        if (empty($users)) {
+            throw new TaskDoesNotHaveUsersException($processTaskUuid);
+        }
+        sort($users);
+        if ($last) {
+            foreach ($users as $user) {
+                if ($user > $last->user_uuid) {
+                    return $user;
+                }
+            }
+        }
+        return $users[0];
+    }
+
+    /**
+     * Get an array of all assignable users to a task.
+     * 
+     * @param string $processTaskUuid
+     * 
+     * @return array
+     */
+    public function getAssignableUsers($processTaskUuid)
+    {
+        $assignments = ProcessTaskAssignment::select(['assignment_uuid', 'assignment_type'])
+                ->where('process_uuid', $this->uuid)
+                ->where('process_task_uuid', $processTaskUuid)
+                ->get();
+        $users = [];
+        foreach ($assignments as $assignment) {
+            if ($assignment->assignment_type === 'user') {
+                $users[$assignment->assignment_uuid] = $assignment->assignment_uuid;
+            } else {
+                $this->getConsolidatedUsers($assignment->assignment_uuid, $users);
+            }
+        }
+        return array_values($users);
+    }
+
+    /**
+     * Get a consolidated list of users within groups.
+     *
+     * @param binary $group_uuid
+     * @param array $users
+     * 
+     * @return array
+     */
+    private function getConsolidatedUsers($group_uuid, array &$users)
+    {
+        $groupMembers = GroupMember::where('group_uuid', $group_uuid)->get();
+        foreach ($groupMembers as $groupMember) {
+            if ($groupMember->member_type === 'user') {
+                $users[$groupMember->member_uuid] = $groupMember->member_uuid;
+            } else {
+                $this->getConsolidatedUsers($groupMember->member_uuid, $users);
+            }
+        }
+        return $users;
     }
 }

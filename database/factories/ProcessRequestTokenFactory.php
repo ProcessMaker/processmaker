@@ -1,6 +1,7 @@
 <?php
 
 use Faker\Generator as Faker;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
@@ -14,6 +15,9 @@ $factory->define(ProcessRequestToken::class, function (Faker $faker) {
         'element_uuid' => $faker->uuid,
         'element_name' => $faker->name,
         'status' => $faker->randomElement(['ACTIVE','FAILING','COMPLETED','CLOSED','EVENT_CATCH']),
+        'process_uuid' => function () {
+            return factory(Process::class)->create()->uuid;
+        },
         'process_request_uuid' => function () {
             return factory(ProcessRequest::class)->create()->uuid;
         },

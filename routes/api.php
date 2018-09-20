@@ -13,7 +13,8 @@ Route::group(
     Route::apiResource('scripts', 'ScriptController');
     Route::apiResource('processes', 'ProcessController');
     Route::apiResource('process_categories', 'ProcessCategoryController');
-    Route::apiResource('tasks', 'TaskController')->only(['index', 'show']);
+    Route::apiResource('tasks', 'TaskController')->only(['index', 'show', 'update']);
     Route::apiResource('requests', 'ProcessRequestController');
+    Route::post('processes/{process}/events/{event}/trigger', 'ProcessController@triggerStartEvent')->name('process_event');
 }
 );

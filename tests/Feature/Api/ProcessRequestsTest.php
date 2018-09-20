@@ -23,6 +23,7 @@ class ProcessRequestsTest extends TestCase
     use DatabaseTransactions;
     use ApiCallWithUser;
     use ResourceRequestsTrait;
+    use WithFaker;
 
     const API_TEST_URL = '/api/1.0/requests';
     const DEFAULT_PASS = 'password';
@@ -76,6 +77,7 @@ class ProcessRequestsTest extends TestCase
         $response = $this->actingAs($this->user, 'api')->json('POST', self::API_TEST_URL, [
             'process_uuid' => $process->uuid_text,
             'process_collaboration_uuid' => null,
+            'callable_uuid' => $this->faker->uuid,
             'status' => 'ACTIVE',
             'name' => 'RequestName',
             'data' => '{}'
@@ -215,7 +217,7 @@ class ProcessRequestsTest extends TestCase
 
         //Post saved success
         $response = $this->actingAs($this->user, 'api')->json('PUT', $url, [
-            'name' => $faker->name,
+            'name' => $faker->unique()->name,
             'data' => '{"test":1}'
         ]);
 

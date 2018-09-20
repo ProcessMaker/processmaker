@@ -5,9 +5,11 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Process as Resource;
+use ProcessMaker\Http\Resources\ProcessRequests;
 use ProcessMaker\Models\Process;
 
 class ProcessController extends Controller
@@ -111,5 +113,24 @@ class ProcessController extends Controller
         ]);
         $process->delete();
         return response('', 204);
+    }
+
+    /**
+     * Trigger an start event within a process.
+     *
+     * @param Process $process
+     * @param string $event
+     *
+     * @return \ProcessMaker\Http\Resources\ProcessRequests
+     */
+    public function triggerStartEvent(Process $process, $event)
+    {
+        //Get required references
+        $definitions = $process->getDefinitions();
+        $event = $definitions->getEvent($event);
+        $data = request()->input();
+        //Call the manager to trigger the start event
+        $request = WorkflowManager::triggerStartEvent($process, $event, $data);
+        return new ProcessRequests($request);
     }
 }

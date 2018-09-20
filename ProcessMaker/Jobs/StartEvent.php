@@ -3,7 +3,7 @@ namespace ProcessMaker\Jobs;
 
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
-use ProcessMaker\Model\Process as Definitions;
+use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Nayra\Contracts\Bpmn\EventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
@@ -24,7 +24,7 @@ class StartEvent extends BpmnAction
      */
     public function __construct(Definitions $definitions, StartEventInterface $event, array $data)
     {
-        $this->definitionsId = $definitions->id;
+        $this->definitionsId = $definitions->uuid_text;
         $this->processId = $event->getOwnerProcess()->getId();
         $this->eventId = $event->getId();
         $this->data = $data;
@@ -37,27 +37,23 @@ class StartEvent extends BpmnAction
      */
     public function handle()
     {
-        try {
-            //Load the process definition
-            $definitions = Definitions::find($this->definitionsId);
-            $workflow = $definitions->getDefinitions();
+        //Load the process definition
+        $definitions = Definitions::withUuid($this->definitionsId)->first();
+        $workflow = $definitions->getDefinitions();
 
-            //Get the reference to the process
-            $process = $workflow->getProcess($this->processId);
+        //Get the reference to the process
+        $process = $workflow->getProcess($this->processId);
 
-            //Get the reference to the event
-            $event = $workflow->getEvent($this->eventId);
+        //Get the reference to the event
+        $event = $workflow->getEvent($this->eventId);
 
-            //Do the action
-            $response = App::call([$this, 'action'], compact('workflow', 'process', 'event'));
+        //Do the action
+        $response = App::call([$this, 'action'], compact('workflow', 'process', 'event'));
 
-            //Run engine to the next state
-            $workflow->getEngine()->runToNextState();
-            
-            return $response;
-        } catch (Throwable $t) {
-            Log::error($t->getMessage());
-        }
+        //Run engine to the next state
+        $workflow->getEngine()->runToNextState();
+
+        return $response;
     }
 
     /**

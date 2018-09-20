@@ -8,7 +8,7 @@ use ProcessMaker\Nayra\Contracts\RepositoryInterface;
 use ProcessMaker\Nayra\RepositoryTrait;
 use ProcessMaker\Repositories\ExecutionInstanceRepository;
 use ProcessMaker\Repositories\TokenRepository;
-use ProcessMaker\Model\DataStore;
+use ProcessMaker\Models\DataStore;
 
 /**
  * Definitions Repository

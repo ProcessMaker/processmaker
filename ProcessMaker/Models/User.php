@@ -71,6 +71,20 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    /**
+     * Return the full name for this user which is the first name and last
+     * name separated with a space.
+     *
+     * @return string
+     */
+    public function getFullName()
+    {
+        return implode(" ", [
+            $this->firstname,
+            $this->lastname
+        ]);
+    }
+
     public function memberships()
     {
         return $this->morphMany('ProcessMaker\Models\GroupMember', 'member');

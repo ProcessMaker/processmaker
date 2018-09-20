@@ -3,13 +3,12 @@ namespace ProcessMaker\Repositories;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use ProcessMaker\Model\Application as Instance;
-use ProcessMaker\Model\Delegation as Token;
+use Illuminate\Support\Facades\Log;
+use ProcessMaker\Models\ProcessRequest as Instance;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Contracts\Repositories\ExecutionInstanceRepositoryInterface;
 use ProcessMaker\Nayra\Contracts\Repositories\StorageInterface;
 use ProcessMaker\Nayra\RepositoryTrait;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Execution Instance Repository.
@@ -35,30 +34,30 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
     /**
      * Load an execution instance from a persistent storage.
      *
-     * @param string $uid
+     * @param string $uuid
      *
      * @return \ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface
      */
-    public function loadExecutionInstanceByUid($uid, StorageInterface $storage)
+    public function loadExecutionInstanceByUid($uuid, StorageInterface $storage)
     {
-        $instance = Instance::where('uid', $uid)->first();
+        $instance = Instance::withUuid($uuid)->first();
         if (!$instance) {
             abort(404, 'Instance not found');
         }
-        $callableId = $instance->callable;
+        $callableId = $instance->callable_uuid;
         $process = $storage->getProcess($callableId);
         $dataStore = $storage->getFactory()->createDataStore();
-        $dataStore->setData(json_decode($instance->APP_DATA, true));
+        $dataStore->setData(json_decode($instance->data, true));
         $instance->setProcess($process);
         $instance->setDataStore($dataStore);
         $process->getTransitions($storage->getFactory());
 
         //Load tokens:
-        foreach ($instance->delegations as $token) {
+        foreach ($instance->tokens as $token) {
             $tokenInfo = [
-                'id' => $token->uid,
-                'status' => $token->thread_status,
-                'element_ref' => $token->element_ref,
+                'id' => $token->uuid_text,
+                'status' => $token->status,
+                'element_ref' => $token->element_uuid,
             ];
             $token->setProperties($tokenInfo);
             $element = $storage->getElementInstanceById($tokenInfo['element_ref']);
@@ -92,16 +91,18 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $data = $instance->getDataStore()->getData();
         //Get the process
         $process = $instance->getProcess();
+        //Get process definition
+        $definition = $process->getEngine()->getProcess();
 
         //Save the row
-        $instance->uid = $instance->getId();
-        $instance->callable = $process->getId();
-        $instance->process_id = $process->getEngine()->getProcess()->id;
-        $instance->creator_user_id = 1;
-        $instance->APP_TITLE = '';
-        $instance->APP_STATUS = Instance::STATUS_DRAFT;
-        $instance->APP_INIT_DATE = Carbon::now();
-        $instance->APP_DATA = json_encode($data);
+        $instance->uuid_text = $instance->getId();
+        $instance->callable_uuid = $process->getId();
+        $instance->process_uuid = $definition->uuid;
+        $instance->user_uuid = Auth::user()->uuid;
+        $instance->name = $definition->name;
+        $instance->status = 'DRAFT';
+        $instance->initiated_at = Carbon::now();
+        $instance->data = json_encode($data);
         $instance->save();
     }
 
@@ -117,8 +118,8 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         //Get instance data
         $data = $instance->getDataStore()->getData();
         //Save instance
-        $instance->APP_STATUS = Instance::STATUS_TO_DO;
-        $instance->APP_DATA = json_encode($data);
+        $instance->status = 'ACTIVE';
+        $instance->data = json_encode($data);
         $instance->save();
     }
 
@@ -135,9 +136,9 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $data = $instance->getDataStore()->getData();
         //Save instance
         Log::info("persistInstanceCompleted");
-        $instance->APP_STATUS = Instance::STATUS_COMPLETED;
-        $instance->APP_FINISH_DATE = Carbon::now();
-        $instance->APP_DATA = json_encode($data);
+        $instance->status = 'COMPLETED';
+        $instance->completed_at = Carbon::now();
+        $instance->data = json_encode($data);
         $instance->save();
     }
 }

@@ -1,9 +1,9 @@
 <?php
-
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Task as Resource;
@@ -32,14 +32,13 @@ class TaskController extends Controller
         }
         $filterByFields = ['process_uuid', 'user_uuid', 'status', 'element_uuid', 'element_name'];
         $parameters = $request->all();
-        foreach($parameters as $column => $filter) {
+        foreach ($parameters as $column => $filter) {
             if (in_array($column, $filterByFields)) {
                 $query->where($column, 'like', $filter);
             }
         }
         $query->orderBy(
-            $request->input('order_by', 'updated_at'),
-            $request->input('order_direction', 'asc')
+            $request->input('order_by', 'updated_at'), $request->input('order_direction', 'asc')
         );
         $response = $query->paginate($request->input('per_page', 10));
         return new ApiCollection($response);
@@ -50,10 +49,36 @@ class TaskController extends Controller
      *
      * @param ProcessRequestToken $task
      *
-     * @return Response
+     * @return Resource
      */
     public function show(ProcessRequestToken $task)
     {
         return new Resource($task);
+    }
+
+    /**
+     * Updates the current element
+     *
+     * @param Request $request
+     * @param ProcessRequestToken $task
+     *
+     * @return Resource
+     * @throws \Throwable
+     */
+    public function update(Request $request, ProcessRequestToken $task)
+    {
+        if ($request->input('status') === 'COMPLETED') {
+            if ($task->thread_status === 'CLOSED') {
+                return abort(410, __('Task already closed'));
+            }
+            $data = $request->input();
+            //Call the manager to trigger the start event
+            $process = $task->process;
+            $instance = $task->processRequest;
+            WorkflowManager::completeTask($process, $instance, $task, $data);
+            return new Resource($task->refresh());
+        } else {
+            return abort(422);
+        }
     }
 }

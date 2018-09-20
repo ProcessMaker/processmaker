@@ -17,6 +17,7 @@ class CreateProcessRequestTokens extends Migration
             // Columns
             $table->uuid('uuid');
             $table->uuid('user_uuid')->nullable();
+            $table->uuid('process_uuid');
             $table->uuid('process_request_uuid');
             $table->string('element_uuid', 36);
             $table->string('element_type', 36);
@@ -31,12 +32,14 @@ class CreateProcessRequestTokens extends Migration
 
             // Indexes
             $table->primary('uuid');
+            $table->index('process_uuid');
             $table->index('process_request_uuid');
             $table->index('user_uuid');
 
             // Foreign keys
             $table->foreign('user_uuid')->references('uuid')->on('users')->onDelete('cascade');
             $table->foreign('process_request_uuid')->references('uuid')->on('process_requests')->onDelete('cascade');
+            $table->foreign('process_uuid')->references('uuid')->on('processes')->onDelete('cascade');
         });
     }
 

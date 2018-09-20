@@ -7,8 +7,8 @@ use ProcessMaker\Jobs\CallProcess;
 use ProcessMaker\Jobs\CompleteActivity;
 use ProcessMaker\Jobs\RunScriptTask;
 use ProcessMaker\Jobs\StartEvent;
-use ProcessMaker\Model\Delegation;
-use ProcessMaker\Model\Process as Definitions;
+use ProcessMaker\Models\ProcessRequest as Instance;
+use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
@@ -33,7 +33,7 @@ class WorkflowManager
     {
         //@todo Validate user permissions
         //Log BPMN actions
-        Log::info(sprintf('Schedule start "%s" at "%s"', $event->getId(), $definitions->title));
+        Log::info(sprintf('Schedule start "%s" at "%s"', $event->getId(), $definitions->name));
         //Schedule BPMN Action
         return StartEvent::dispatchNow($definitions, $event, $data);
     }
@@ -52,7 +52,7 @@ class WorkflowManager
         return CallProcess::dispatchNow($definitions, $process, $data);
     }
 
-    public function runScripTask(ScriptTaskInterface $scriptTask, Delegation $token)
+    public function runScripTask(ScriptTaskInterface $scriptTask, Instance $token)
     {
         $instance = $token->application;
         $process = $instance->process;

@@ -1,6 +1,7 @@
 <?php
 
 use ProcessMaker\Models\Group;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\User;
 
@@ -18,9 +19,12 @@ $factory->define(ProcessTaskAssignment::class, function (Faker $faker) {
     ]))->create();
 
     return [
+        'process_uuid' => function () {
+            return factory(Process::class)->create()->uuid;
+        },
         'process_task_uuid' => $faker->uuid,
         'assignment_uuid' => $model->uuid,
-        'assignment_type' => $model instanceof User ? 'USER' : 'GROUP'
+        'assignment_type' => $model instanceof User ? 'user' : 'group'
     ];
 });
 
@@ -30,7 +34,7 @@ $factory->defineAs(ProcessTaskAssignment::class, 'user', function (Faker $faker)
         'uuid' => function () {
             return factory(User::class)->create()->uuid;
         },
-        'assignment_type' => 'USER'
+        'assignment_type' => 'user'
     ];
     return array_merge($follow, $extras);
 });
@@ -41,7 +45,7 @@ $factory->defineAs(ProcessTaskAssignment::class, 'group', function (Faker $faker
         'uuid' => function () {
             return factory(Group::class)->create()->uuid;
         },
-        'assignment_type' => 'GROUP'
+        'assignment_type' => 'group'
     ];
     return array_merge($follow, $extras);
 });
