@@ -19,6 +19,16 @@
   background: #788793 !important;
 }
 
+.multiselect__tags {
+  min-height: 35px;
+  padding: 7px 40px 0 7px;
+}
+.multiselect__select {
+  height: 35px;
+}
+.multiselect, .multiselect__input, .multiselect__single {
+  font-size: 14px;
+}
 
 body,
 html {

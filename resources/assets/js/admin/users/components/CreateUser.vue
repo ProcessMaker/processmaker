@@ -91,9 +91,6 @@ export default {
       customLabel(option) {
         return ` ${option.img} ${option.title} ${option.desc} `
       },
-    },
-    mounted(){
-        alert ('hi!')
     }
 }
 </script>
