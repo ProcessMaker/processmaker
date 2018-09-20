@@ -5,7 +5,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\User;
 
-trait ApiCallWithUser 
+trait ApiCallWithUser
 {
     protected $user;
     private $_debug_response;
@@ -26,7 +26,11 @@ trait ApiCallWithUser
         parent::tearDown();
         if ($this->hasFailed() && isset($this->_debug_response)) {
             $json = $this->_debug_response->json();
-            unset($json['trace']);
+            // unset($json['trace']);
+            //
+            // echo "\nResponse Debug Information:\n";
+            // var_dump($json);
+            // echo "\n";
         }
     }
 

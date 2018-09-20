@@ -14,32 +14,40 @@ class User extends Authenticatable
     use Notifiable;
     use HasBinaryUuid;
 
+    public $incrementing = false;
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-      'username',
-      'email',
-      'password',
-      'firstname',
-      'lastname',
-      'status',
-      'address',
-      'city',
-      'state',
-      'postal',
-      'country',
-      'phone',
-      'fax',
-      'cell',
-      'title',
-      'birthdate',
-      'timezone',
-      'language',
-      'expires_at'
+        'username',
+        'email',
+        'password',
+        'firstname',
+        'lastname',
+        'status',
+        'address',
+        'city',
+        'state',
+        'postal',
+        'country',
+        'phone',
+        'fax',
+        'cell',
+        'title',
+        'birthdate',
+        'timezone',
+        'language',
+        'expires_at'
 
+    ];
+
+    protected $guarded = [
+        'uuid',
+        'created_at',
+        'updated_at',
     ];
 
     /**
@@ -87,7 +95,7 @@ class User extends Authenticatable
 
     public function memberships()
     {
-        return $this->morphMany('ProcessMaker\Models\GroupMember', 'member');
+        return $this->morphMany(GroupMember::class, 'member', null, 'member_uuid');
     }
 
 }

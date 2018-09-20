@@ -56,17 +56,50 @@ class GroupMembersTest extends TestCase
   /**
    * Create new group successfully
    */
-  public function testCreateGroupMembership()
+  public function testCreateGroupMembershipForUser()
   {
+      GroupMember::query()->delete();
+      $user = factory(User::class)->create();
+      $group = factory(Group::class)->create();
 
       $response = $this->actingAs($this->user, 'api')->json('POST', self::API_TEST_URL, [
-          'group_uuid' => factory(Group::class)->create()->uuid_text,
-          'member_uuid' => factory(User::class)->create()->uuid_text,
-          'member_type' => 'user',
+          'group_uuid' => $group->uuid_text, 
+          'member_uuid' => $user->uuid_text,
+          'member_type' => User::class,
       ]);
-
+      
       //Validate the header status code
       $response->assertStatus(201);
+      
+      // make sure it saved the relationship
+      $related_group = $user->memberships()->first()->group;
+      $this->assertTrue($related_group->is($group));
+
+      $member_user = $group->members()->first()->member;
+      $this->assertTrue($member_user->is($user));
+  }
+  
+  public function testCreateGroupMembershipForGroup()
+  {
+      GroupMember::query()->delete();
+      $group1 = factory(Group::class)->create();
+      $group2 = factory(Group::class)->create();
+
+      $response = $this->actingAs($this->user, 'api')->json('POST', self::API_TEST_URL, [
+          'group_uuid' => $group1->uuid_text, 
+          'member_uuid' => $group2->uuid_text,
+          'member_type' => Group::class,
+      ]);
+      
+      //Validate the header status code
+      $response->assertStatus(201);
+
+      // make sure it saved the relationship
+      $related_group = $group1->members()->first()->member;
+      $this->assertTrue($related_group->is($group2));
+
+      $member_group = $group2->memberships()->first()->group;
+      $this->assertTrue($member_group->is($group1));
   }
 
   /**
@@ -84,7 +117,7 @@ class GroupMembersTest extends TestCase
       $response->assertStatus(200);
 
       //verify structure
-      $response->assertJsonStructure(['data' => self::STRUCTURE]);
+      $response->assertJsonStructure(self::STRUCTURE);
   }
 
   /**

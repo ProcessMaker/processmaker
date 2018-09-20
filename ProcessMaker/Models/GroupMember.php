@@ -23,19 +23,19 @@ class GroupMember extends Model
         return [
             'group_uuid' => 'required',
             'member_uuid' => 'required',
-            'member_type' => 'required|in:user,group',
+            'member_type' => 'required|in:' . User::class . ',' . Group::class,
         ];
 
     }
 
     public function member()
     {
-        return $this->morphTo();
+        return $this->morphTo(null, null, 'member_uuid');
     }
 
     public function group()
     {
-        return $this->belongsTo('ProcessMaker\Models\Group','group_uuid');
+        return $this->belongsTo(Group::class);
     }
 
 }

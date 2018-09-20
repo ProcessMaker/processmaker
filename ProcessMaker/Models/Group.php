@@ -40,8 +40,13 @@ class Group extends Model
         return $rules;
     }
 
+    public function members()
+    {
+        return $this->hasMany(GroupMember::class);
+    }
+    
     public function memberships()
     {
-        return $this->morphMany('ProcessMaker\Models\GroupMember', 'member');
+        return $this->morphMany(GroupMember::class, 'member', null, 'member_uuid');
     }
 }

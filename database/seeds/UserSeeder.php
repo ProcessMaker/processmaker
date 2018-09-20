@@ -30,7 +30,7 @@ class UserSeeder extends Seeder
 
         factory(GroupMember::class)->create([
           'member_uuid' => $user_uuid,
-          'member_type' => 'user',
+          'member_type' => User::class,
           'group_uuid' => $group_uuid,
         ]);
 
