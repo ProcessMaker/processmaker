@@ -106,6 +106,11 @@ jobs:
           name: "Front-End Asset Build"
           command: "npm run dev"
 
+      #
+      - run:
+          name: "Media Storage Link"
+          command: "php artisan storage:link"
+
       # run tests!
       - run:
           name: "PHPUnit"
@@ -152,13 +157,6 @@ jobs:
             php artisan key:generate --force
             # Copy over our test oauth keys. Regular install will create new ones
             cp tests/storage/keys/* storage/keys/
-            
-            # Setup Horizon
-            php artisan vendor:publish --provider="Laravel\Horizon\HorizonServiceProvider"
-            # Setup File Storage
-            php artisan vendor:publish --provider="Spatie\MediaLibrary\MediaLibraryServiceProvider" --tag="config"
-            # Setup Public Disk
-            php artisan storage:link
 
       - run:
           name: "QA Package"
@@ -182,6 +180,8 @@ jobs:
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "mysql -h ${QA_RDS_HOST} -u ${QA_RDS_USERNAME} -p${QA_RDS_PASSWORD} -e \"CREATE DATABASE IF NOT EXISTS ${QA_DB_NAME}\""
             # Run php artisan migrate:fresh --seed to have a clean installed database in RDS
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "php ~/builds/$BUILD_NAME/artisan migrate:fresh --seed --force"
+            # Setup Media Link
+            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "php ~/builds/$BUILD_NAME/artisan storage:link"
             echo "Deployed to https://${BUILD_NAME}.bpm4.qa.processmaker.net/"
 
       #- run:
