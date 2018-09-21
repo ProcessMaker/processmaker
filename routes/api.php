@@ -17,7 +17,7 @@ Route::group(
     Route::apiResource('process_categories', 'ProcessCategoryController');
     Route::apiResource('tasks', 'TaskController')->only(['index', 'show', 'update']);
     Route::apiResource('requests', 'ProcessRequestController');
-    Route::post('processes/{process}/events/{event}/trigger', 'ProcessController@triggerStartEvent')->name('process_event');
+    Route::post('process_events/{process}', 'ProcessController@triggerStartEvent')->name('process_events.trigger');
 
 }
 );
