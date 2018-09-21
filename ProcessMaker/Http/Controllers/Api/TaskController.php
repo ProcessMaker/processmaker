@@ -68,8 +68,8 @@ class TaskController extends Controller
     public function update(Request $request, ProcessRequestToken $task)
     {
         if ($request->input('status') === 'COMPLETED') {
-            if ($task->thread_status === 'CLOSED') {
-                return abort(410, __('Task already closed'));
+            if ($task->status === 'CLOSED') {
+                return abort(422, __('Task already closed'));
             }
             $data = $request->input();
             //Call the manager to trigger the start event

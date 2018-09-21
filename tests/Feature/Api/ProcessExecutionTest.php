@@ -134,4 +134,64 @@ class ProcessExecutionTest extends TestCase
         $response = $this->json('POST', $route, $data);
         $response->assertStatus(404);
     }
+
+    /**
+     * Try to close an already closed task
+     */
+    public function testCloseAClosedTask()
+    {
+        //Start a process request
+        $route = route('process_events.trigger', [$this->process->uuid_text, 'event' => 'StartEventUID']);
+        $data = [];
+        $response = $this->json('POST', $route, $data);
+        //Verify status
+        $response->assertStatus(201);
+        //Verify the structure
+        $response->assertJsonStructure($this->requestStructure);
+        $request = $response->json();
+        //Get the active tasks of the request
+        $route = route('tasks.index');
+        $response = $this->json('GET', $route);
+        $tasks = $response->json('data');
+        //Complete the task
+        $route = route('tasks.update', [$tasks[0]['uuid'], 'status' => 'COMPLETED']);
+        $response = $this->json('PUT', $route, $data);
+        $task = $response->json();
+        //Check the task is closed
+        $this->assertEquals('CLOSED', $task['status']);
+        $this->assertNotNull($task['completed_at']);
+        //Try to complete the task again
+        $route = route('tasks.update', [$tasks[0]['uuid'], 'status' => 'COMPLETED']);
+        $response = $this->json('PUT', $route, $data);
+        $task = $response->json();
+        $response->assertStatus(422);
+    }
+
+    /**
+     * Try to update a task status
+     */
+    public function testUpdateTaskInvalidStatus()
+    {
+        //Start a process request
+        $route = route('process_events.trigger', [$this->process->uuid_text, 'event' => 'StartEventUID']);
+        $data = [];
+        $response = $this->json('POST', $route, $data);
+        //Verify status
+        $response->assertStatus(201);
+        //Verify the structure
+        $response->assertJsonStructure($this->requestStructure);
+        $request = $response->json();
+        //Get the active tasks of the request
+        $route = route('tasks.index');
+        $response = $this->json('GET', $route);
+        $tasks = $response->json('data');
+        //Update to a FAILING status
+        $route = route('tasks.update', [$tasks[0]['uuid'], 'status' => 'FAILING']);
+        $response = $this->json('PUT', $route, $data);
+        $response->assertStatus(422);
+        //Update to a *invalid* status
+        $route = route('tasks.update', [$tasks[0]['uuid'], 'status' => '*invalid*']);
+        $response = $this->json('PUT', $route, $data);
+        $response->assertStatus(422);
+    }
 }
