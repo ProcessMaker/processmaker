@@ -20,6 +20,9 @@ class Process extends ApiResource
         if (in_array('category', $include)) {
             $array['category'] = new ProcessCategory($this->category);
         }
+        if (in_array('events', $include)) {
+            $array['events'] = $this->getStartEvents();
+        }
         return $array;
     }
 }

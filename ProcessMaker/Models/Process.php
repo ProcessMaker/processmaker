@@ -278,4 +278,20 @@ class Process extends Model
         }
         return $users;
     }
+
+    /**
+     * Get a list of the process start events.
+     *
+     * @return array
+     */
+    public function getStartEvents()
+    {
+        $definitions = $this->getDefinitions();
+        $response = [];
+        $startEvents = $definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'startEvent');
+        foreach ($startEvents as $startEvent) {
+            $response[] = $startEvent->getBpmnElementInstance()->getProperties();
+        }
+        return $response;
+    }
 }

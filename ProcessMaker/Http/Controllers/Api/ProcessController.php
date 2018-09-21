@@ -119,18 +119,27 @@ class ProcessController extends Controller
      * Trigger an start event within a process.
      *
      * @param Process $process
-     * @param string $event
+     * @param Request $request
      *
      * @return \ProcessMaker\Http\Resources\ProcessRequests
      */
-    public function triggerStartEvent(Process $process, $event)
+    public function triggerStartEvent(Process $process, Request $request)
     {
-        //Get required references
+        //Get the event BPMN element
+        $id = $request->input('event');
+        if (!$id) {
+            return abort(404);
+        }
         $definitions = $process->getDefinitions();
-        $event = $definitions->getEvent($event);
+        if (!$definitions->findElementById($id)) {
+            return abort(404);
+        }
+        $event = $definitions->getEvent($id);
         $data = request()->input();
-        //Call the manager to trigger the start event
-        $request = WorkflowManager::triggerStartEvent($process, $event, $data);
-        return new ProcessRequests($request);
+        //Trigger the start event
+        $processRequest = WorkflowManager::triggerStartEvent($process, $event, $data);
+        return new ProcessRequests($processRequest);
     }
+    
+    
 }
