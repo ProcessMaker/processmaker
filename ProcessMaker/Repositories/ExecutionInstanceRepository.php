@@ -3,7 +3,7 @@ namespace ProcessMaker\Repositories;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
+use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest as Instance;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Contracts\Repositories\ExecutionInstanceRepositoryInterface;
@@ -28,7 +28,10 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
 
     public function createExecutionInstance()
     {
-        return new Instance();
+        $instance = new Instance();
+        $instance->uuid_text = Instance::generateUuid();
+        $instance->setId($instance->uuid_text);
+        return $instance;
     }
 
     /**
@@ -95,7 +98,6 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $definition = $process->getEngine()->getProcess();
 
         //Save the row
-        $instance->uuid_text = $instance->getId();
         $instance->callable_uuid = $process->getId();
         $instance->process_uuid = $definition->uuid;
         $instance->user_uuid = Auth::user()->uuid;
@@ -103,7 +105,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $instance->status = 'DRAFT';
         $instance->initiated_at = Carbon::now();
         $instance->data = json_encode($data);
-        $instance->save();
+        $instance->saveOrFail();
     }
 
     /**
@@ -120,7 +122,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         //Save instance
         $instance->status = 'ACTIVE';
         $instance->data = json_encode($data);
-        $instance->save();
+        $instance->saveOrFail();
     }
 
     /**
@@ -135,10 +137,31 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         //Get instance data
         $data = $instance->getDataStore()->getData();
         //Save instance
-        Log::info("persistInstanceCompleted");
         $instance->status = 'COMPLETED';
         $instance->completed_at = Carbon::now();
         $instance->data = json_encode($data);
-        $instance->save();
+        $instance->saveOrFail();
+    }
+
+    /**
+     * Persists collaboration between two instances.
+     *
+     * @param ExecutionInstanceInterface $instance Target instance
+     * @param ParticipantInterface $participant Participant related to the target instance
+     * @param ExecutionInstanceInterface $source Source instance
+     * @param ParticipantInterface $sourceParticipant
+     */
+    public function persistInstanceCollaboration(ExecutionInstanceInterface $instance, $participant, ExecutionInstanceInterface $source, $sourceParticipant)
+    {
+        if ($source->process_collaboration_uuid === null) {
+            $collaboration = new ProcessCollaboration();
+            $collaboration->process_uuid = $instance->process->uuid;
+            $collaboration->saveOrFail();
+            $source->process_collaboration_uuid = $collaboration->uuid;
+            $source->saveOrFail();
+        }
+        $instance->process_collaboration_uuid = $source->process_collaboration_uuid;
+        $instance->participant_uuid = $participant ? $participant->getId() : null;
+        $instance->saveOrFail();
     }
 }

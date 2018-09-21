@@ -6,6 +6,7 @@ use Illuminate\Validation\Rule;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
+use ProcessMaker\Nayra\Storage\BpmnDocument;
 use Spatie\BinaryUuid\HasBinaryUuid;
 
 /**
@@ -131,6 +132,11 @@ class Process extends Model
             $this->bpmnDefinitions = app(BpmnDocumentInterface::class, ['process' => $this]);
             if ($this->bpmn) {
                 $this->bpmnDefinitions->loadXML($this->bpmn);
+                //Load the collaborations if exists
+                $collaborations = $this->bpmnDefinitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'collaboration');
+                foreach($collaborations as $collaboration) {
+                    $collaboration->getBpmnElementInstance();
+                }
             }
         }
         return $this->bpmnDefinitions;

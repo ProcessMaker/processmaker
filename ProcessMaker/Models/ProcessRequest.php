@@ -81,7 +81,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
     ];
 
     /**
-     * Boot application as a process instance.
+     * Boot the model as a process instance.
      *
      * @param array $argument
      */
@@ -89,7 +89,6 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
     {
         parent::__construct($argument);
         $this->bootElement([]);
-        $this->setId(self::generateUuid());
     }
 
     /**

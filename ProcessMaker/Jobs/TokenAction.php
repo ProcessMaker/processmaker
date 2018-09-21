@@ -40,8 +40,15 @@ abstract class TokenAction extends BpmnAction
         $definitions = Definitions::withUuid($this->definitionsId)->first();
         $workflow = $definitions->getDefinitions();
 
-        //Load process instance
+        //Load the instances of the process and its collaborators
         $instance = $workflow->getEngine()->loadExecutionInstance($this->instanceId);
+        if ($instance->collaboration) {
+            foreach ($instance->collaboration->requests as $request) {
+                if ($request->uuid !== $instance->uuid) {
+                    $workflow->getEngine()->loadExecutionInstance($request->uuid_text);
+                }
+            }
+        }
         if (!$instance) {
             return;
         }
