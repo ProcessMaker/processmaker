@@ -41,6 +41,22 @@ class GroupMembersTest extends TestCase
   }
 
   /**
+   * List group memberships
+   */
+
+   public function testGetGroupMemberList()
+   {
+     $response = $this->actingAs($this->user, 'api')->json('GET', self::API_TEST_URL);
+     $response->assertStatus(200);
+
+     $groupmembership = factory(GroupMember::class)->create();
+
+     $response = $this->actingAs($this->user, 'api')->json('GET', self::API_TEST_URL.'/?filter='.$groupmembership->member_uuid_text);
+     $response->assertStatus(200);
+
+   }
+
+  /**
    * Test verify the parameter required for create form
    */
   public function testNotCreatedForParameterRequired()
@@ -63,14 +79,14 @@ class GroupMembersTest extends TestCase
       $group = factory(Group::class)->create();
 
       $response = $this->actingAs($this->user, 'api')->json('POST', self::API_TEST_URL, [
-          'group_uuid' => $group->uuid_text, 
+          'group_uuid' => $group->uuid_text,
           'member_uuid' => $user->uuid_text,
           'member_type' => User::class,
       ]);
-      
+
       //Validate the header status code
       $response->assertStatus(201);
-      
+
       // make sure it saved the relationship
       $related_group = $user->memberships()->first()->group;
       $this->assertTrue($related_group->is($group));
@@ -78,7 +94,7 @@ class GroupMembersTest extends TestCase
       $member_user = $group->members()->first()->member;
       $this->assertTrue($member_user->is($user));
   }
-  
+
   public function testCreateGroupMembershipForGroup()
   {
       GroupMember::query()->delete();
@@ -86,11 +102,11 @@ class GroupMembersTest extends TestCase
       $group2 = factory(Group::class)->create();
 
       $response = $this->actingAs($this->user, 'api')->json('POST', self::API_TEST_URL, [
-          'group_uuid' => $group1->uuid_text, 
+          'group_uuid' => $group1->uuid_text,
           'member_uuid' => $group2->uuid_text,
           'member_type' => Group::class,
       ]);
-      
+
       //Validate the header status code
       $response->assertStatus(201);
 
