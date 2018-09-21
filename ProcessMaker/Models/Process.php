@@ -8,6 +8,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use Spatie\BinaryUuid\HasBinaryUuid;
+use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
 /**
  * Represents a business process definition.
@@ -30,6 +31,7 @@ class Process extends Model
 {
 
     use HasBinaryUuid;
+    use HasMediaTrait;
 
     public $incrementing = false;
 
