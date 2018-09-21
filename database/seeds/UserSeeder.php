@@ -25,7 +25,8 @@ class UserSeeder extends Seeder
             'password' => Hash::make('admin'),
             'firstname' => 'admin',
             'lastname' => 'admin',
-            'timezone' => 'UTC'
+            'timezone' => 'UTC',
+            'status' => 'ACTIVE'
         ]);
 
         factory(GroupMember::class)->create([
