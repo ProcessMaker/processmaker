@@ -14,7 +14,7 @@ class User extends Authenticatable implements HasMedia
 {
     use HasApiTokens;
     use Notifiable;
-    use PMBinaryUuid;
+    use HasBinaryUuid;
     use HasMediaTrait;
 
     public $incrementing = false;
