@@ -113,7 +113,7 @@ return [
         'Redirect' => Illuminate\Support\Facades\Redirect::class,
         'Redis' => Illuminate\Support\Facades\Redis::class,
         'Request' => Illuminate\Support\Facades\Request::class,
-        'Response' => Illuminate\Support\Facades\Response::class,
+        'Response' => Illuminate\Support\Facades\Response::class, // here
         'Route' => Illuminate\Support\Facades\Route::class,
         'Schema' => Illuminate\Support\Facades\Schema::class,
         'Session' => Illuminate\Support\Facades\Session::class,
@@ -127,6 +127,7 @@ return [
          */
         'WorkspaceManager' => ProcessMaker\Facades\WorkspaceManager::class,
         'SkinManager' => ProcessMaker\Facades\SkinManager::class,
+        // 'Response'  => ProcessMaker\Facades\Response::class,
 
         /**
          * Other Facades

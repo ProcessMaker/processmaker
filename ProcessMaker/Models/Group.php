@@ -4,7 +4,6 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
-use Spatie\BinaryUuid\HasBinaryUuid;
 
 /**
  * Represents a group definition.
@@ -17,7 +16,7 @@ use Spatie\BinaryUuid\HasBinaryUuid;
  */
 class Group extends Model
 {
-    use HasBinaryUuid;
+    use PMBinaryUuid;
 
     protected $fillable = [
         'name',

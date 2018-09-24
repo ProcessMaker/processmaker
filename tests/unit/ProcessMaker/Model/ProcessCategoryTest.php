@@ -3,8 +3,8 @@
 namespace Tests\Unit;
 
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use ProcessMaker\Model\ProcessCategory;
-use ProcessMaker\Model\Process;
+use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Exception\ValidationException;
 use Tests\TestCase;
 
