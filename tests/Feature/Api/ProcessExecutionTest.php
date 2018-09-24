@@ -227,4 +227,38 @@ class ProcessExecutionTest extends TestCase
             ]
             ], $list);
     }
+
+    /**
+     * Test to get the status information of a task
+     */
+    public function testGetTaskStatusPage()
+    {
+        //Start a process request
+        $route = route('process_events.trigger', [$this->process->uuid_text, 'event' => 'StartEventUID']);
+        $data = [];
+        $response = $this->json('POST', $route, $data);
+        //Verify status
+        $response->assertStatus(201);
+        //Verify the structure
+        $response->assertJsonStructure($this->requestStructure);
+        $request = $response->json();
+        //Get the active tasks of the request
+        $route = route('tasks.index');
+        $response = $this->json('GET', $route);
+        $tasks = $response->json('data');
+        //Get the task information
+        $route = route('tasks.show', [$tasks[0]['uuid'], 'include' => 'definition']);
+        $response = $this->json('GET', $route, $data);
+        $response->assertJsonStructure([
+            'uuid',
+            'status',
+            'created_at',
+            'element_uuid',
+            'element_name',
+            'definition' => [
+                'id',
+                'name'
+            ]
+        ]);
+    }
 }
