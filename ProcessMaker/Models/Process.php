@@ -295,4 +295,16 @@ class Process extends Model implements HasMedia
         }
         return $response;
     }
+
+    /**
+     * Process events relationship.
+     *
+     * @return \ProcessMaker\Models\ProcessEvents
+     */
+    public function events()
+    {
+        $query = $this->newQuery();
+        $query->where('uuid', $this->uuid);
+        return new ProcessEvents($query, $this);
+    }
 }
