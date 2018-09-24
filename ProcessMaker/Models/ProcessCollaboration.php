@@ -53,18 +53,6 @@ class ProcessCollaboration extends Model
     ];
 
     /**
-     * Validation rules.
-     *
-     * @return array
-     */
-    public static function rules()
-    {
-        return [
-            'process_uuid' => 'required|exists:processes,uuid',
-        ];
-    }
-
-    /**
      * Get requests in the collaboration.
      *
      */

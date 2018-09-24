@@ -234,6 +234,9 @@ class ScriptsTest extends TestCase
         $url = self::API_TEST_SCRIPT.'/preview/?data=adkasdlasj&config=&code=adkasdlasj&language=PHP';
         $response = $this->apiCall('GET', $url, []);
         $response->assertStatus(200);
+
+        $response->assertJsonStructure(['output']);
+
     }
 
     /**

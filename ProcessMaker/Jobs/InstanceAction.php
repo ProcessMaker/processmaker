@@ -30,24 +30,20 @@ abstract class InstanceAction extends BpmnAction
      */
     public function handle()
     {
-        try {
-            //Load the process definition
-            $definitions = Definitions::find($this->definitionsId);
-            $workflow = $definitions->getDefinitions();
+        //Load the process definition
+        $definitions = Definitions::find($this->definitionsId);
+        $workflow = $definitions->getDefinitions();
 
-            //Get the reference to the process
-            $process = $workflow->getProcess($this->processId);
+        //Get the reference to the process
+        $process = $workflow->getProcess($this->processId);
 
-            //Load process instance
-            $instance = $workflow->getEngine()->loadExecutionInstance($this->instanceId);
+        //Load process instance
+        $instance = $workflow->getEngine()->loadExecutionInstance($this->instanceId);
 
-            //Do the action
-            App::call([$this, 'action'], compact('workflow', 'process', 'instance'));
+        //Do the action
+        App::call([$this, 'action'], compact('workflow', 'process', 'instance'));
 
-            //Run engine to the next state
-            $workflow->getEngine()->runToNextState();
-        } catch (Throwable $t) {
-            Log::error($t->getMessage());
-        }
+        //Run engine to the next state
+        $workflow->getEngine()->runToNextState();
     }
 }

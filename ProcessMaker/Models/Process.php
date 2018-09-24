@@ -6,7 +6,10 @@ use Illuminate\Validation\Rule;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
+use ProcessMaker\Nayra\Storage\BpmnDocument;
 use Spatie\BinaryUuid\HasBinaryUuid;
+use Spatie\MediaLibrary\HasMedia\HasMedia;
+use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
 /**
  * Represents a business process definition.
@@ -25,10 +28,11 @@ use Spatie\BinaryUuid\HasBinaryUuid;
  * @property \Carbon\Carbon $created_at
  *
  */
-class Process extends Model
+class Process extends Model implements HasMedia
 {
 
     use HasBinaryUuid;
+    use HasMediaTrait;
 
     public $incrementing = false;
 
@@ -131,6 +135,11 @@ class Process extends Model
             $this->bpmnDefinitions = app(BpmnDocumentInterface::class, ['process' => $this]);
             if ($this->bpmn) {
                 $this->bpmnDefinitions->loadXML($this->bpmn);
+                //Load the collaborations if exists
+                $collaborations = $this->bpmnDefinitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'collaboration');
+                foreach($collaborations as $collaboration) {
+                    $collaboration->getBpmnElementInstance();
+                }
             }
         }
         return $this->bpmnDefinitions;
@@ -269,5 +278,33 @@ class Process extends Model
             }
         }
         return $users;
+    }
+
+    /**
+     * Get a list of the process start events.
+     *
+     * @return array
+     */
+    public function getStartEvents()
+    {
+        $definitions = $this->getDefinitions();
+        $response = [];
+        $startEvents = $definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'startEvent');
+        foreach ($startEvents as $startEvent) {
+            $response[] = $startEvent->getBpmnElementInstance()->getProperties();
+        }
+        return $response;
+    }
+
+    /**
+     * Process events relationship.
+     *
+     * @return \ProcessMaker\Models\ProcessEvents
+     */
+    public function events()
+    {
+        $query = $this->newQuery();
+        $query->where('uuid', $this->uuid);
+        return new ProcessEvents($query, $this);
     }
 }

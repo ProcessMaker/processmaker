@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Models\ProcessRequest as Instance;
 use ProcessMaker\Models\ProcessRequestToken as Token;
 use ProcessMaker\Models\ProcessTaskAssignment;
+use ProcessMaker\Nayra\Bpmn\Collection;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\GatewayInterface;
@@ -137,15 +138,61 @@ class TokenRepository implements TokenRepositoryInterface
 
     public function persistCatchEventTokenArrives(CatchEventInterface $intermediateCatchEvent, TokenInterface $token)
     {
-        
+        $token->uuid_text = $token->getId();
+        $token->status = $token->getStatus();
+        $token->element_uuid = $intermediateCatchEvent->getId();
+        $token->element_type = 'event';
+        $token->element_name = $intermediateCatchEvent->getName();
+        $token->process_uuid = $token->getInstance()->process->uuid;
+        $token->process_request_uuid = $token->getInstance()->uuid;
+        $token->user_uuid = null;
+        $token->due_at = null;
+        $token->initiated_at = null;
+        $token->riskchanges_at = null;
+        $token->saveOrFail();
+        $this->instanceRepository->persistInstanceUpdated($token->getInstance());
     }
 
     public function persistCatchEventTokenConsumed(CatchEventInterface $intermediateCatchEvent, TokenInterface $token)
     {
-        
+        $token->uuid_text = $token->getId();
+        $token->status = 'CLOSED';
+        $token->element_uuid = $intermediateCatchEvent->getId();
+        $token->process_request_uuid = $token->getInstance()->uuid;
+        $token->completed_at = Carbon::now();
+        $token->save();
+        $this->instanceRepository->persistInstanceUpdated($token->getInstance());
     }
 
-    public function persistCatchEventTokenPassed(CatchEventInterface $intermediateCatchEvent, TokenInterface $token)
+    public function persistCatchEventMessageArrives(CatchEventInterface $intermediateCatchEvent, TokenInterface $token)
+    {
+        $token->uuid_text = $token->getId();
+        $token->status = $token->getStatus();
+        $token->element_uuid = $intermediateCatchEvent->getId();
+        $token->element_type = 'event';
+        $token->element_name = $intermediateCatchEvent->getName();
+        $token->process_uuid = $token->getInstance()->process->uuid;
+        $token->process_request_uuid = $token->getInstance()->uuid;
+        $token->user_uuid = null;
+        $token->due_at = null;
+        $token->initiated_at = null;
+        $token->riskchanges_at = null;
+        $token->saveOrFail();
+        $this->instanceRepository->persistInstanceUpdated($token->getInstance());
+    }
+
+    public function persistCatchEventMessageConsumed(CatchEventInterface $intermediateCatchEvent, TokenInterface $token)
+    {
+        $token->uuid_text = $token->getId();
+        $token->status = 'CLOSED';
+        $token->element_uuid = $intermediateCatchEvent->getId();
+        $token->process_request_uuid = $token->getInstance()->uuid;
+        $token->completed_at = Carbon::now();
+        $token->save();
+        $this->instanceRepository->persistInstanceUpdated($token->getInstance());
+    }
+
+    public function persistCatchEventTokenPassed(CatchEventInterface $intermediateCatchEvent, $consumedTokens)
     {
         
     }
