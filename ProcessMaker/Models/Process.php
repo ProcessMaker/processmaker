@@ -8,6 +8,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use Spatie\BinaryUuid\HasBinaryUuid;
+use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
 /**
@@ -27,7 +28,7 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  * @property \Carbon\Carbon $created_at
  *
  */
-class Process extends Model
+class Process extends Model implements HasMedia
 {
 
     use HasBinaryUuid;
