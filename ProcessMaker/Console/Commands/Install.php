@@ -121,11 +121,6 @@ class Install extends Command
         config(['database.default' => 'install']);
         \DB::reconnect();
 
-        // Install migrations
-        $this->call('migrate:fresh', ['--seed' => true]);
-
-        $this->call('passport:install', ['--force' => true]);
-
         // Now generate the .env file
         $contents = '';
         // Build out the file contents for our .env file
@@ -134,6 +129,12 @@ class Install extends Command
         }
         // Now store it
         Storage::disk('install')->put('.env', $contents);
+        
+        // Install migrations
+        // NOTE: can not use call() here because binary-uuid service is not available
+        $dir = realpath(dirname(__FILE__) . '/../../../');
+        system("php {$dir}/artisan migrate:fresh --seed --force");
+        $this->call('passport:install', ['--force' => true]);
 
         $this->info(__("ProcessMaker installation is complete. Please visit the url in your browser to continue."));
         return true;
