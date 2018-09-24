@@ -3,6 +3,11 @@
 // Routes related to Authentication (password reset, etc)
 Auth::routes();
 Route::namespace('Admin')->prefix('admin')->group(function(){
+  Route::resource('about', 'AboutController');
+  Route::resource('groups', 'GroupController');
+  Route::resource('preferences', 'PreferenceController');
+  Route::resource('profile', 'ProfileController');
+  Route::resource('queueMonitors', 'QueueMonitorController');
   Route::resource('users', 'UsersController');
 });
 // Add our broadcasting routes
