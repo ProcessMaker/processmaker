@@ -8,10 +8,10 @@
       <yaoqiang:pageFormat height="841.8897637795276" imageableHeight="831.8897637795276" imageableWidth="588.1102362204724" imageableX="5.0" imageableY="5.0" orientation="0" width="598.1102362204724"/>
       <yaoqiang:page background="#FFFFFF" horizontalCount="1" verticalCount="1"/>
     </extensionElements>
-    <participant id="_2" name="Vendedor" processRef="PROCESS_2">
+    <participant id="_2" name="Seller" processRef="PROCESS_2">
       <participantMultiplicity maximum="1" minimum="0"/>
     </participant>
-    <participant id="_3" name="Comprador" processRef="PROCESS_1">
+    <participant id="_3" name="Buyer" processRef="PROCESS_1">
       <participantMultiplicity maximum="1" minimum="0"/>
     </participant>
     <messageFlow id="_16" sourceRef="_7" targetRef="_9">
@@ -26,7 +26,7 @@
     </messageFlow>
   </collaboration>
   <process id="PROCESS_1" isClosed="false" isExecutable="true" processType="None">
-    <userTask completionQuantity="1" id="_5" implementation="##unspecified" isForCompensation="false" name="Ordenar" startQuantity="1">
+    <userTask completionQuantity="1" id="_5" implementation="##unspecified" isForCompensation="false" name="Order" startQuantity="1">
       <incoming>_6</incoming>
       <outgoing>_8</outgoing>
     </userTask>
@@ -53,7 +53,7 @@
       <incoming>_26</incoming>
       <inputSet/>
     </endEvent>
-    <userTask completionQuantity="1" id="_24" implementation="##unspecified" isForCompensation="false" name="Terminar" startQuantity="1">
+    <userTask completionQuantity="1" id="_24" implementation="##unspecified" isForCompensation="false" name="Finish" startQuantity="1">
       <incoming>_25</incoming>
       <outgoing>_26</outgoing>
     </userTask>
@@ -66,7 +66,7 @@
       <outputSet/>
       <messageEventDefinition id="_9_ED_1" messageRef="MSG_1"/>
     </startEvent>
-    <userTask completionQuantity="1" id="_10" implementation="##unspecified" isForCompensation="false" name="Servir" startQuantity="1">
+    <userTask completionQuantity="1" id="_10" implementation="##unspecified" isForCompensation="false" name="Process Order" startQuantity="1">
       <incoming>_11</incoming>
       <outgoing>_18</outgoing>
     </userTask>
@@ -84,7 +84,7 @@
       <inputSet/>
     </endEvent>
   </process>
-  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-COLLABORATION_1" name="Untitled Diagram" resolution="96.0">
+  <bpmndi:BPMNDiagram id="Yaoqiang_Diagram-COLLABORATION_1" name="Collaboration Diagram" resolution="96.0">
     <bpmndi:BPMNPlane bpmnElement="COLLABORATION_1">
       <bpmndi:BPMNShape bpmnElement="_2" id="Yaoqiang-_2" isExpanded="true" isHorizontal="true">
         <dc:Bounds height="200.0" width="585.0" x="50.0" y="50.0"/>

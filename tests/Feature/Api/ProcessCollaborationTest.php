@@ -106,15 +106,17 @@ class ProcessCollaborationTest extends TestCase
         $response = $this->json('GET', $route);
         $tasks = $response->json('data');
         //Complete the task
-        $route = route('tasks.update', [$tasks[2]['uuid'], 'status' => 'COMPLETED']);
+        $index = $this->findTaskByName($tasks, 'Process Order');
+        $route = route('tasks.update', [$tasks[$index]['uuid'], 'status' => 'COMPLETED']);
         $response = $this->json('PUT', $route, $data);
         $task = $response->json();
         //Get the list of tasks
         $route = route('tasks.index');
         $response = $this->json('GET', $route);
         $tasks = $response->json('data');
-        //Complete the task
-        $route = route('tasks.update', [$tasks[4]['uuid'], 'status' => 'COMPLETED']);
+        //Complete the Final task
+        $index = $this->findTaskByName($tasks, 'Finish');
+        $route = route('tasks.update', [$tasks[$index]['uuid'], 'status' => 'COMPLETED']);
         $response = $this->json('PUT', $route, $data);
         $task = $response->json();
         //Get the list of tasks
@@ -126,5 +128,23 @@ class ProcessCollaborationTest extends TestCase
         $this->assertEquals('CLOSED', $tasks[2]['status']);
         $this->assertEquals('CLOSED', $tasks[3]['status']);
         $this->assertEquals('CLOSED', $tasks[4]['status']);
+    }
+
+    /**
+     * Get the index of a task by name.
+     *
+     * @param array $tasks
+     * @param string $name
+     *
+     * @return integer
+     */
+    private function findTaskByName(array $tasks, $name)
+    {
+        foreach($tasks as $index => $task) {
+            if ($task['element_name']===$name) {
+                break;
+            }
+        }
+        return $index;
     }
 }
