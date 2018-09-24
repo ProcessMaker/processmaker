@@ -72,15 +72,6 @@ $this->middleware(['auth'])->group(function () {
     // To execute actions after a request/task has been processed
     $this->get('/requests/{instance}/submitted', 'Request\RequestsController@requestSubmitted');
 
-    $this->get('/admin', function () {
-        return view('admin', ['title' => 'Dashboard']);
-    })->name('admin');
-
-    $this->get('/admin/profile', function () {
-        return view('profile', ['title' => 'Dashboard']);
-    })->name('profile');
-
-    $this->get('/admin/preferences', 'Management\PreferencesController@index')->name('preferences');
     $this->get('/', 'HomeController@index')->name('home');
     $this->get('/manage/environment-variables', 'Management\EnvironmentVariablesController@index')->name('management-environment-variables');
     $this->get('/manage/users', 'Management\UsersController@index')->name('management-users-index');
@@ -91,9 +82,5 @@ $this->middleware(['auth'])->group(function () {
     $this->get('/designer/{process?}', 'Designer\ProcessController@show')->name('designer-edit-process');
     $this->get('/designer/{process}/form/{form}', 'Designer\FormController@show')->name('designer-edit-form');
     $this->get('/processes/{process}/script/{script}', 'Designer\ScriptController@show')->name('designer-edit-script');
-
-    $this->get('admin/users','Admin\UserController@index')->name('admin.users');
-    $this->get('admin/users/{id}','Admin\UserController@edit')->name('admin.user.edit');
-
 
 });
