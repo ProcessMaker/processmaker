@@ -43,18 +43,6 @@ class FileController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @param Request $request
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-    //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -92,31 +80,6 @@ class FileController extends Controller
                 $file->file_name;
         //$file = Storage::disk('public')->download($file->uuid_text . '/' . $file->file_name);
         return response()->download(($path));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @param Media $file
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Media $file)
-    {
-        //
     }
 
     /**

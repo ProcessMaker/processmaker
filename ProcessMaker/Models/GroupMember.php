@@ -3,12 +3,10 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Spatie\BinaryUuid\HasBinaryUuid;
-
 
 class GroupMember extends Model
 {
-    use HasBinaryUuid;
+    use PMBinaryUuid;
 
     protected $uuids = [
         'group_uuid', 'member_uuid'

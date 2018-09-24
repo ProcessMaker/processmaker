@@ -53,15 +53,19 @@ class GroupMemberController extends Controller
     {
         $request->validate(GroupMember::rules());
 
-        $group = Group::withUuid($request->input('group_uuid'))->first();
+        // $group = Group::withUuid($request->input('group_uuid'))->first();
+        $group = Group::find($request->input('group_uuid'));
         $member = $request->input('member_type')::withUuid(
             $request->input('member_uuid')
         )->first();
-
         $group_member = new GroupMember();
         $group_member->group()->associate($group);
         $group_member->member()->associate($member);
-        $group_member->saveOrFail();
+        try {
+            $group_member->saveOrFail();
+        } catch (Illuminate\Database\QueryException $e) {
+            die("HEREEEEEEEEEEEEEEEEe");
+        }
 
         return response(new GroupMemberResource($group_member), 201);
     }

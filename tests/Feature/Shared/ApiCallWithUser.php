@@ -26,11 +26,11 @@ trait ApiCallWithUser
         parent::tearDown();
         if ($this->hasFailed() && isset($this->_debug_response)) {
             $json = $this->_debug_response->json();
-            // unset($json['trace']);
-            //
-            // echo "\nResponse Debug Information:\n";
-            // var_dump($json);
-            // echo "\n";
+            $json['trace'] = array_slice($json['trace'], 0, 8);
+            
+            echo "\nResponse Debug Information:\n";
+            var_dump($json);
+            echo "\n";
         }
     }
 
