@@ -8,7 +8,7 @@ Route::namespace('Admin')->prefix('admin')->group(function(){
   Route::resource('preferences', 'PreferenceController');
   Route::resource('profile', 'ProfileController');
   Route::resource('queueMonitors', 'QueueMonitorController');
-  Route::resource('users', 'UsersController');
+  Route::resource('users', 'UserController');
 });
 // Add our broadcasting routes
 Broadcast::routes();
