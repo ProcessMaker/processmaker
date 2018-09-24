@@ -83,19 +83,6 @@ class FileController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @param Media $file
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Media $file)
-    {
-        //
-    }
-
-    /**
      * Remove the specified resource from storage.
      *
      * @param Media $file
