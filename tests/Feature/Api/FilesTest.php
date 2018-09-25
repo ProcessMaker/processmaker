@@ -137,6 +137,16 @@ class FilesTest extends TestCase
       // We create a model (in this case a user) to whom the file will be associated
       $model = factory(User::class)->create();
 
+      // Verify that if no model data is sent an error is returned
+      $response = $this->actingAs($this->user, 'api')
+          ->json('POST', self::API_TEST_URL, $data);
+      $response->assertStatus(404);
+
+      // Verify that if no model data is sent an error is returned
+      $response = $this->actingAs($this->user, 'api')
+          ->json('POST', self::API_TEST_URL . '?model=user&model_uuid=NonExistentUuid', $data);
+      $response->assertStatus(404);
+
       $response = $this->actingAs($this->user, 'api')
           ->json('POST', self::API_TEST_URL . '?model=user&model_uuid=' . $model->uuid_text, $data);
 

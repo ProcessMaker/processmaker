@@ -50,12 +50,18 @@ class FileController extends Controller
     public function store(Request $request)
     {
         // We get the model instance with the data that the user sent
-        $modelType = 'ProcessMaker\\Models\\' . ucwords($request->query('model', null));
-        $modelId = HasBinaryUuid::encodeUuid($request->query('model_uuid', null));
-        $model = $modelType::find($modelId);
+        $modelClass = 'ProcessMaker\\Models\\' . ucwords($request->query('model', null));
+        $modelId = $request->query('model_uuid', null);
 
-        // If we can't find the model we can't associate it, so we throw an error
-        if ($modelType === null || $modelId === null || $model === null) {
+        // If no model info was sent in the request
+        if ($modelClass === null || $modelId === null || !class_exists($modelClass)) {
+            throw new NotFoundHttpException();
+        }
+
+        $model = $modelClass::find(HasBinaryUuid::encodeUuid($modelId));
+
+        // If we can't find the model's instance
+        if ($model === null) {
             throw new NotFoundHttpException();
         }
 
