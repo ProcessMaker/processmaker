@@ -1,36 +1,40 @@
 <?php
 namespace Tests\Feature;
 
-use Route;
 use Tests\TestCase;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use ProcessMaker\Model\User;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use ProcessMaker\Models\User;
+use Tests\Feature\Shared\ApiCallWithUser;
 
 class ProfileTest extends TestCase
 {
 
-  /**
-   *  Init data user and process
-   */
-  protected function setUp()
-  {
-      parent::setUp();
-      $user = factory(User::class)->create();
-      Auth::login($user);
-  }
+    use ApiCallWithUser;
+      /**
+     * Create initial user
+     */
+    protected function setUp()
+    {
+        parent::setUp();
+        $this->user = factory(User::class)->create();
+    }
 
-  public function testProfile()
-  {
-    Auth::login(User::first());
+    /**
+     * Test to make sure the controller and route work with the view
+     *
+     * @return void
+     */
+    public function testShowRoute()
+    {
+      $user_uuid = factory(User::class)->create()->uuid_text;
+      // get the URL
+      $response = $this->apiCall('GET', '/profile');
+      // check the correct view is called
+      // $response->assertViewIs('admin.profile.index');
 
-    $response = $this->get('/admin/profile');
+      $response->assertStatus(200);
 
-    $response->assertStatus(200);
-
-  }
+    }
 
 }
