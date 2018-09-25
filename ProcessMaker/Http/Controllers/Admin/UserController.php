@@ -22,4 +22,9 @@ class UserController extends Controller
   {
     return view('admin.users.edit',compact($user));
   }
+
+  public function create()
+  {
+    return view('admin.users.create');
+  }
 }
