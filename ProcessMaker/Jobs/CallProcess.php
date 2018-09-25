@@ -1,11 +1,8 @@
 <?php
 namespace ProcessMaker\Jobs;
 
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Log;
 use ProcessMaker\Model\Process as Definitions;
 use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
-use Throwable;
 
 class CallProcess extends BpmnAction
 {
@@ -24,33 +21,6 @@ class CallProcess extends BpmnAction
         $this->definitionsId = $definitions->id;
         $this->processId = $process->getId();
         $this->data = $data;
-    }
-
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
-    public function handle()
-    {
-        try {
-            //Load the process definition
-            $definitions = Definitions::find($this->definitionsId);
-            $workflow = $definitions->getDefinitions();
-
-            //Get the reference to the object
-            $process = $workflow->getProcess($this->processId);
-
-            //Do the action
-            $response = App::call([$this, 'action'], compact('workflow', 'process'));
-
-            //Run engine to the next state
-            $workflow->getEngine()->runToNextState();
-            
-            return $response;
-        } catch (Throwable $t) {
-            Log::error($t->getMessage());
-        }
     }
 
     /**

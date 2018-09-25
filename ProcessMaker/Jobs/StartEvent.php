@@ -1,20 +1,16 @@
 <?php
 namespace ProcessMaker\Jobs;
 
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\Process as Definitions;
-use ProcessMaker\Nayra\Contracts\Bpmn\EventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
-use Throwable;
 
 class StartEvent extends BpmnAction
 {
 
     public $definitionsId;
     public $processId;
-    public $eventId;
+    public $elementId;
     public $data;
 
     /**
@@ -26,50 +22,24 @@ class StartEvent extends BpmnAction
     {
         $this->definitionsId = $definitions->uuid_text;
         $this->processId = $event->getOwnerProcess()->getId();
-        $this->eventId = $event->getId();
+        $this->elementId = $event->getId();
         $this->data = $data;
     }
 
     /**
-     * Execute the job.
+     * Start a $process from start event $element.
      *
-     * @return void
+     * @return \ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface
      */
-    public function handle()
-    {
-        //Load the process definition
-        $definitions = Definitions::withUuid($this->definitionsId)->first();
-        $workflow = $definitions->getDefinitions();
-
-        //Get the reference to the process
-        $process = $workflow->getProcess($this->processId);
-
-        //Get the reference to the event
-        $event = $workflow->getEvent($this->eventId);
-
-        //Do the action
-        $response = App::call([$this, 'action'], compact('workflow', 'process', 'event'));
-
-        //Run engine to the next state
-        $workflow->getEngine()->runToNextState();
-
-        return $response;
-    }
-
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
-    public function action(ProcessInterface $process, EventInterface $event)
+    public function action(ProcessInterface $process, StartEventInterface $element)
     {
         //Create a new data store
         $dataStorage = $process->getRepository()->createDataStore();
         $dataStorage->setData($this->data);
         $instance = $process->getEngine()->createExecutionInstance($process, $dataStorage);
-        $event->start();
+        $element->start();
         
-        //Sending message
+        //Return the instance created
         return $instance;
     }
 }
