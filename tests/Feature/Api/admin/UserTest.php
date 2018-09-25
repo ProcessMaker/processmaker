@@ -32,8 +32,8 @@ class UserTest extends TestCase
       // get the URL
       $response = $this->actingAs($this->user)->get('/admin/users');
       // check the correct view is called
-      // dd($response);
-      // $response->assertViewHas('admin.users.index');
+      // dd($this->user);
+      // $response->assertViewIs('admin.users.index');
 
       $response->assertStatus(200);
 
@@ -51,7 +51,7 @@ class UserTest extends TestCase
       // get the URL
       $response = $this->actingAs($this->user)->get('/admin/users/'.$user_uuid);
       // check the correct view is called
-      // $response->assertViewHas('admin.users.edit');
+      $response->assertViewIs('admin.users.edit');
 
       $response->assertStatus(200);
 
