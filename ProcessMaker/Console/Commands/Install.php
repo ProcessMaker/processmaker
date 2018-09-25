@@ -142,8 +142,9 @@ class Install extends Command
         $this->call('migrate:fresh', [
             '--seed' => true,
         ]);
-        // We don't run passport:install because we already seed the personal token in our oauth seeder
-        $this->call('passport:keys', [
+
+        // Generate passport secure keys and personal token oauth client
+        $this->call('passport:install', [
             '--force' => true
         ]);
 
