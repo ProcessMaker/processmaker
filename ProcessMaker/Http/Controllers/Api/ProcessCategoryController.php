@@ -60,9 +60,9 @@ class ProcessCategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate(ProcessCategory::rules());
         $category = new ProcessCategory();
         $category->fill($request->json()->all());
+        $this->validateModel($category, ProcessCategory::rules($category));
         $category->saveOrFail();
         return new Resource($category);
     }
