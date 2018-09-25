@@ -9,14 +9,14 @@ use ProcessMaker\Models\Media;
 use ProcessMaker\Models\User;
 use Spatie\BinaryUuid\HasBinaryUuid;
 use Tests\TestCase;
-use Tests\Feature\Shared\ApiCallWithUser;
+use Tests\Feature\Shared\RequestHelper;
 use Illuminate\Support\Facades\Hash;
 
 class FilesTest extends TestCase
 {
 
   use DatabaseTransactions;
-  use ApiCallWithUser;
+  use RequestHelper;
 
   const API_TEST_URL = '/api/1.0/files';
   const DEFAULT_PASS = 'password';

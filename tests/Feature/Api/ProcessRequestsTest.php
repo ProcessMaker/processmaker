@@ -9,7 +9,7 @@ use ProcessMaker\Http\Controllers\Api\ResourceRequestsTrait;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\User;
-use Tests\Feature\Shared\ApiCallWithUser;
+use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
 /**
@@ -21,7 +21,7 @@ class ProcessRequestsTest extends TestCase
 {
 
     use DatabaseTransactions;
-    use ApiCallWithUser;
+    use RequestHelper;
     use ResourceRequestsTrait;
     use WithFaker;
 
