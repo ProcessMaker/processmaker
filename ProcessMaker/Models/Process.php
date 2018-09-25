@@ -2,6 +2,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
@@ -152,14 +153,12 @@ class Process extends Model implements HasMedia
      */
     public static function getProcessTemplatesPath()
     {
-        return database_path('processes/templates');
+        return Storage::disk('process_templates')->path('');
     }
 
     public static function getProcessTemplate($name)
     {
-        $path = self::getProcessTemplatesPath() . '/' . $name;
-        //return Storage::disk('local')->get($path);
-        return file_get_contents($path);
+        return Storage::disk('process_templates')->get($name);
     }
 
     /**

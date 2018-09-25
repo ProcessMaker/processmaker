@@ -5,7 +5,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\User;
 
-trait ApiCallWithUser
+trait RequestHelper
 {
     protected $user;
     private $_debug_response;

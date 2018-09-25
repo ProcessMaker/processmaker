@@ -7,14 +7,14 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
 use Tests\TestCase;
-use Tests\Feature\Shared\ApiCallWithUser;
+use Tests\Feature\Shared\RequestHelper;
 use Illuminate\Support\Facades\Hash;
 
 class GroupsTest extends TestCase
 {
 
   use DatabaseTransactions;
-  use ApiCallWithUser;
+  use RequestHelper;
 
   const API_TEST_URL = '/api/1.0/groups';
   const DEFAULT_PASS = 'password';

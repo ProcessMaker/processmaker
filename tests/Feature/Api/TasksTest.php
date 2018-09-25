@@ -200,7 +200,7 @@ class TasksTest extends TestCase
         $route = route($this->resource . '.show', [$token->uuid_text, 'include' => 'user,definition']);
         $response = $this->json('GET', $route);
         //Check the status
-        $response->assertStatus(200);
+        $this->assertStatus(200, $response);
         //Check the structure
         $response->assertJsonStructure($this->structure);
         $response->assertJsonStructure(['user'=>['uuid', 'email'],'definition'=>[]]);

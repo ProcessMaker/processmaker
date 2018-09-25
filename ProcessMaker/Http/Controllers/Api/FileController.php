@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Storage;
 use Laravel\Horizon\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Models\Media;
-use ProcessMaker\Models\User;
 use Spatie\BinaryUuid\HasBinaryUuid;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -51,18 +50,29 @@ class FileController extends Controller
     public function store(Request $request)
     {
         // We get the model instance with the data that the user sent
-        $modelType = 'ProcessMaker\\Models\\' . ucwords($request->query('model', null));
-        $modelId = HasBinaryUuid::encodeUuid($request->query('model_uuid', null));
-        $model = $modelType::find($modelId);
+        $modelClass = 'ProcessMaker\\Models\\' . ucwords($request->query('model', null));
+        $modelId = $request->query('model_uuid', null);
 
-        // If we can't find the model we can't associate it, so we throw an error
-        if ($modelType === null || $modelId === null || $model === null) {
+        // If no model info was sent in the request
+        if ($modelClass === null || $modelId === null || !class_exists($modelClass)) {
             throw new NotFoundHttpException();
         }
 
-        $model->addMediaFromRequest('file')->toMediaCollection('local');
+        $model = $modelClass::find(HasBinaryUuid::encodeUuid($modelId));
 
-        return response([], 201);
+        // If we can't find the model's instance
+        if ($model === null) {
+            throw new NotFoundHttpException();
+        }
+
+        $addedMedia = $model->addMediaFromRequest('file')->toMediaCollection('local');
+
+        return response([
+            'uuid' => $addedMedia->uuid_text,
+            'model_id' => $addedMedia->model_id_text,
+            'file_name' => $addedMedia->file_name,
+            'mime_type' => $addedMedia->mime_type
+        ], 200);
     }
 
     /**
@@ -80,6 +90,34 @@ class FileController extends Controller
                 $file->file_name;
         //$file = Storage::disk('public')->download($file->uuid_text . '/' . $file->file_name);
         return response()->download(($path));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param Media $file
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, Media $file)
+    {
+        $newFile = $request->file('file');
+        $newMedia = new \ProcessMaker\Media();
+        $newMedia->updateFile($newFile, $file);
+        return response([], 201);
     }
 
     /**
