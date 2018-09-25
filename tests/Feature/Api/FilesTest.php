@@ -2,13 +2,12 @@
 
 namespace Tests\Feature\Api;
 
-use Faker\Factory as Faker;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use ProcessMaker\Models\Media;
 use ProcessMaker\Models\User;
+use Spatie\BinaryUuid\HasBinaryUuid;
 use Tests\TestCase;
 use Tests\Feature\Shared\ApiCallWithUser;
 use Illuminate\Support\Facades\Hash;
@@ -124,7 +123,7 @@ class FilesTest extends TestCase
     /**
      * Upload a file and associate it to a model
      */
-    public function testCreateFile()
+  public function testCreateFile()
   {
       // We create a fake file to upload
       Storage::fake('public');
@@ -142,13 +141,52 @@ class FilesTest extends TestCase
           ->json('POST', self::API_TEST_URL . '?model=user&model_uuid=' . $model->uuid_text, $data);
 
       // Validate the header status code
+      $response->assertStatus(200);
+
+      // Validate that a file was created in the media directory
+      $mediaObj = json_decode($response->getContent());
+      Storage::disk('public')->assertExists($mediaObj->uuid . '/test.txt');
+  }
+
+    /**
+     * Update a media with a new file
+     */
+    public function testUpdateFile()
+  {
+      // We create a fake file to upload
+      Storage::fake('public');
+      $fileUploadInsert = UploadedFile::fake()->create('insertedFile.txt', 1);
+      $fileUploadUpdate= UploadedFile::fake()->create('updatedFile.txt', 2);
+
+      // We create a model (in this case a user) to whom the file will be associated
+      $model = factory(User::class)->create();
+      $addedMedia = $model->addMedia($fileUploadInsert)->toMediaCollection('local');
+
+      // In the data array add the file to update
+      $data = [
+          'file' => $fileUploadUpdate
+      ];
+
+      $response = $this->actingAs($this->user, 'api')
+          ->json('PUT', self::API_TEST_URL . '/' . $addedMedia->uuid_text, $data);
+
+      // Validate the header status code
       $response->assertStatus(201);
+
+      // Validate that the file was updated in the directory of the inserted media
+      Storage::disk('public')->assertExists($addedMedia->uuid_text . '/updatedFile.txt');
+
+      // Validate that the media table has been updated
+      $modelId = HasBinaryUuid::encodeUuid($addedMedia->uuid_text);
+      $updatedMediaModel = Media::find($modelId);
+      $this->assertEquals('updatedFile.txt', $updatedMediaModel->file_name);
+      $this->assertEquals('updatedFile', $updatedMediaModel->name);
   }
 
     /**
      * Remove a file and its model associations
      */
-    public function testDestroyFile()
+  public function testDestroyFile()
   {
       // We create a fake file to upload
       Storage::fake('public');

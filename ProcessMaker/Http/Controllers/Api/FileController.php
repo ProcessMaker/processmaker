@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Storage;
 use Laravel\Horizon\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Models\Media;
-use ProcessMaker\Models\User;
 use Spatie\BinaryUuid\HasBinaryUuid;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -72,9 +71,14 @@ class FileController extends Controller
             throw new NotFoundHttpException();
         }
 
-        $model->addMediaFromRequest('file')->toMediaCollection('local');
+        $addedMedia = $model->addMediaFromRequest('file')->toMediaCollection('local');
 
-        return response([], 201);
+        return response([
+            'uuid' => $addedMedia->uuid_text,
+            'model_id' => $addedMedia->model_id_text,
+            'file_name' => $addedMedia->file_name,
+            'mime_type' => $addedMedia->mime_type
+        ], 200);
     }
 
     /**
@@ -116,7 +120,10 @@ class FileController extends Controller
      */
     public function update(Request $request, Media $file)
     {
-        //
+        $newFile = $request->file('file');
+        $newMedia = new \ProcessMaker\Media();
+        $newMedia->updateFile($newFile, $file);
+        return response([], 201);
     }
 
     /**
