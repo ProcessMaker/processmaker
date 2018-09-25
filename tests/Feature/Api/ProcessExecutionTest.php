@@ -56,11 +56,10 @@ class ProcessExecutionTest extends TestCase
     /**
      * Create a single task process assigned to $this->user
      */
-    private function createTestProcess()
+    private function createTestProcess(array $data = [])
     {
-        $process = factory(Process::class)->create([
-            'bpmn' => Process::getProcessTemplate('SingleTask.bpmn')
-        ]);
+        $data['bpmn'] = Process::getProcessTemplate('SingleTask.bpmn');
+        $process = factory(Process::class)->create($data);
         //Assign the task to $this->user
         $taskUuid = 'UserTaskUID';
         factory(ProcessTaskAssignment::class)->create([
@@ -107,10 +106,10 @@ class ProcessExecutionTest extends TestCase
      */
     public function testGetListOfStartEvents()
     {
-        $route = route('processes.show', [$this->process->uuid_text, 'include'=>'events']);
+        $route = route('processes.show', [$this->process->uuid_text, 'include' => 'events']);
         $response = $this->json('GET', $route);
         //Check the inclusion of events
-        $response->assertJsonStructure(['events'=>[['id','name']]]);
+        $response->assertJsonStructure(['events' => [['id', 'name']]]);
     }
 
     /**
@@ -193,5 +192,73 @@ class ProcessExecutionTest extends TestCase
         $route = route('tasks.update', [$tasks[0]['uuid'], 'status' => '*invalid*']);
         $response = $this->json('PUT', $route, $data);
         $response->assertStatus(422);
+    }
+
+    /**
+     * Get the list of processes to start with categories and start events.
+     */
+    public function testGetListProcessesToStart()
+    {
+        //Create two additional processes
+        $this->createTestProcess();
+        $uncProcess = $this->createTestProcess(['process_category_uuid' => null]);
+        //Get the start event id
+        $uncProcessEvents = $uncProcess->events;
+        //Get the list of processes (with and without category) and its start events
+        $route = route('processes.index', ['include' => 'events,category', 'order_by' => 'name']);
+        $response = $this->json('GET', $route);
+        //Check the inclusion of events
+        $response->assertJsonStructure(['data' => ['*' => ['events' => [['id', 'name']], 'category']]]);
+        $data = $response->json('data');
+        $list = ['Uncategorized' => []];
+        foreach ($data as $process) {
+            $categoryName = $process['category'] ? $process['category']['name'] : 'Uncategorized';
+            $list[$categoryName][] = $process;
+        }
+        $this->assertArraySubset(
+            [
+            'Uncategorized' => [
+                [
+                    'name' => $uncProcess->name,
+                    'events' => [
+                        ['id' => $uncProcessEvents[0]['id']]
+                    ]
+                ]
+            ]
+            ], $list);
+    }
+
+    /**
+     * Test to get the status information of a task
+     */
+    public function testGetTaskStatusPage()
+    {
+        //Start a process request
+        $route = route('process_events.trigger', [$this->process->uuid_text, 'event' => 'StartEventUID']);
+        $data = [];
+        $response = $this->json('POST', $route, $data);
+        //Verify status
+        $response->assertStatus(201);
+        //Verify the structure
+        $response->assertJsonStructure($this->requestStructure);
+        $request = $response->json();
+        //Get the active tasks of the request
+        $route = route('tasks.index');
+        $response = $this->json('GET', $route);
+        $tasks = $response->json('data');
+        //Get the task information
+        $route = route('tasks.show', [$tasks[0]['uuid'], 'include' => 'definition']);
+        $response = $this->json('GET', $route, $data);
+        $response->assertJsonStructure([
+            'uuid',
+            'status',
+            'created_at',
+            'element_uuid',
+            'element_name',
+            'definition' => [
+                'id',
+                'name'
+            ]
+        ]);
     }
 }

@@ -2,12 +2,14 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use Spatie\BinaryUuid\HasBinaryUuid;
+use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
 /**
@@ -27,7 +29,7 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  * @property \Carbon\Carbon $created_at
  *
  */
-class Process extends Model
+class Process extends Model implements HasMedia
 {
 
     use HasBinaryUuid;
@@ -151,14 +153,12 @@ class Process extends Model
      */
     public static function getProcessTemplatesPath()
     {
-        return database_path('processes/templates');
+        return Storage::disk('process_templates')->path('');
     }
 
     public static function getProcessTemplate($name)
     {
-        $path = self::getProcessTemplatesPath() . '/' . $name;
-        //return Storage::disk('local')->get($path);
-        return file_get_contents($path);
+        return Storage::disk('process_templates')->get($name);
     }
 
     /**
@@ -293,5 +293,17 @@ class Process extends Model
             $response[] = $startEvent->getBpmnElementInstance()->getProperties();
         }
         return $response;
+    }
+
+    /**
+     * Process events relationship.
+     *
+     * @return \ProcessMaker\Models\ProcessEvents
+     */
+    public function events()
+    {
+        $query = $this->newQuery();
+        $query->where('uuid', $this->uuid);
+        return new ProcessEvents($query, $this);
     }
 }

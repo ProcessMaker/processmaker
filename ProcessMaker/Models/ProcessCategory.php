@@ -26,21 +26,12 @@ class ProcessCategory extends Model
         'status'
     ];
 
-    public static function rules($existing = null)
+    public static function rules()
     {
         $rules = [
-            'name' => 'required|string|max:100|unique:process_categories,name',
+            'name' => 'required|string|max:100|unique_in_model',
             'status' => 'required|string|in:ACTIVE,INACTIVE'
         ];
-
-        if ($existing) {
-            $rules['name'] = [
-                'required',
-                'string',
-                'max:100',
-                Rule::unique('process_categories')->ignore($existing->uuid, 'uuid')
-            ];
-        }
 
         return $rules;
     }

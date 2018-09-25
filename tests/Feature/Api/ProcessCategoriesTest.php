@@ -55,8 +55,8 @@ class ProcessCategoriesTest extends TestCase
         //validate status create
         $response->assertStatus(201);
         //validate structure
-        //@todo: $response->assertJsonStructure($this->structure);
-        //vValidate the correct information of the sent data
+        $response->assertJsonStructure($this->structure);
+        //Validate the correct information of the sent data
         $this->assertArraySubset($base->toArray(), $response->json());
     }
 
@@ -312,7 +312,7 @@ class ProcessCategoriesTest extends TestCase
         $route = route($this->resource . '.show', [$category->uuid_text]);
         $response = $this->json('GET', $route);
         $response->assertStatus(200);
-        //@todo: $response->assertJsonStructure($this->structure);
+        $response->assertJsonStructure($this->structure);
     }
 
     /*
@@ -330,9 +330,9 @@ class ProcessCategoriesTest extends TestCase
         //validate status
         $response->assertStatus(200);
         //validate structure
-        //@todo: $response->assertJsonStructure($this->structure);
+        $response->assertJsonStructure($this->structure);
         //validate data
-        //@todo: $this->assertArraySubset($fields, $response->json());
+        $this->assertArraySubset($fields, $response->json());
     }
 
     /*
@@ -350,9 +350,9 @@ class ProcessCategoriesTest extends TestCase
         //validate status
         $response->assertStatus(200);
         //validate structure
-        //@todo: $response->assertJsonStructure($this->structure);
+        $response->assertJsonStructure($this->structure);
         //validate data
-        //@todo: $this->assertArraySubset($fields, $response->json());
+        $this->assertArraySubset($fields, $response->json());
     }
 
     /*
@@ -389,13 +389,13 @@ class ProcessCategoriesTest extends TestCase
         ];
         $response = $this->json('PUT', $route, $fields);
         //validate status
-        $response->assertStatus(422);
+        $this->assertStatus(422, $response);
         //validate structure
         $response->assertJsonStructure(['errors' => ['name']]);
     }
 
-    /*
-    + Test validate data valid for status
+    /**
+     * Test validate data valid for status
      */
     public function testValidateStatus()
     {
@@ -436,5 +436,26 @@ class ProcessCategoriesTest extends TestCase
         $response->assertStatus(422);
         $response->assertJsonStructure($this->errorStructure);
         $response->assertJsonStructure(['errors' => ['processes']]);
+    }
+
+    /**
+     * Test validate binary uuid with special characters
+     * " ,
+     */
+    public function testUuidWithSpecialCharacters()
+    {
+        $item = factory(ProcessCategory::class)->create([
+            'uuid' => ProcessCategory::encodeUuid('2c3b2876-c035-11e8-9d22-88e9fe4ddbf3')
+        ]);
+
+        $route = route($this->resource . '.update', [$item->uuid_text]);
+        $fields = [
+            'status' => 'ACTIVE',
+        ];
+        $response = $this->json('PUT', $route, $fields);
+        //validate status
+        $this->assertStatus(200, $response);
+        //validate update
+        $response->assertJsonFragment(['status' => 'ACTIVE']);
     }
 }

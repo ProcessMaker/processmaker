@@ -1,20 +1,39 @@
 <?php
-
 namespace ProcessMaker\Jobs;
 
-use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use ProcessMaker\Models\Process as Definitions;
+use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
+use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 
-class CompleteActivity extends TokenAction implements ShouldQueue
+class CompleteActivity extends BpmnAction implements ShouldQueue
 {
+
+    public $definitionsId;
+    public $instanceId;
+    public $tokenId;
+    public $data;
+
+    /**
+     * Create a new job instance.
+     *
+     * @return void
+     */
+    public function __construct(Definitions $definitions, ExecutionInstanceInterface $instance, TokenInterface $token, array $data)
+    {
+        $this->definitionsId = $definitions->uuid_text;
+        $this->instanceId = $instance->uuid_text;
+        $this->tokenId = $token->uuid_text;
+        $this->data = $data;
+    }
 
     /**
      * Execute the job.
      *
      * @return void
      */
-    public function action(TokenInterface $token, ActivityInterface $activity, array $data)
+    public function action(TokenInterface $token, ActivityInterface $element, array $data)
     {
         $dataStore = $token->getInstance()->getDataStore();
         //@todo requires a class to manage the data access and control the updates
@@ -22,6 +41,6 @@ class CompleteActivity extends TokenAction implements ShouldQueue
             $dataStore->putData($key, $value);
         }
 
-        $activity->complete($token);
+        $element->complete($token);
     }
 }

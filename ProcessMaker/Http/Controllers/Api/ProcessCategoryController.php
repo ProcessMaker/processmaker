@@ -33,6 +33,8 @@ class ProcessCategoryController extends Controller
             $request->input('order_by', 'name'),
             $request->input('order_direction', 'asc')
         );
+        $include = $this->getRequestInclude($request);
+        $query->with($include);
         $response = $query->paginate($request->input('per_page', 10));
         return new ApiCollection($response);
     }
@@ -58,9 +60,9 @@ class ProcessCategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate(ProcessCategory::rules());
         $category = new ProcessCategory();
         $category->fill($request->json()->all());
+        $this->validateModel($category, ProcessCategory::rules($category));
         $category->saveOrFail();
         return new Resource($category);
     }
