@@ -30,6 +30,11 @@ class Script extends Model
         'updated_at',
     ];
 
+    private static $scriptFormats = [
+        'application/x-php' => 'php',
+        'application/x-lua' => 'lua',
+    ];
+
     /**
      * Validation rules
      *
@@ -41,7 +46,7 @@ class Script extends Model
     {
         $rules = [
             'title' => 'required|unique:scripts,title',
-            'language' => 'required|in:PHP,LUA'
+            'language' => 'required|in:php,lua'
         ];
         if ($existing) {
             // ignore the unique rule for this id
@@ -61,25 +66,25 @@ class Script extends Model
         $code = $this->code;
         $language = $this->language;
         // Create the temporary files to feed into our docker container
-        $datafname = tempnam("/home/vagrant", "data.json");
+        $datafname = tempnam(config('app.bpm_scripts_home'), "data.json");
         chmod($datafname, 0660);
         $tempData = fopen($datafname, 'w');
         fwrite($tempData, json_encode($data));
 
         fclose($tempData);
-        $configfname = tempnam("/home/vagrant", "config.json");
+        $configfname = tempnam(config('app.bpm_scripts_home'), "config.json");
         chmod($configfname, 0660);
 
         $tempData = fopen($configfname, 'w');
         fwrite($tempData, json_encode($config));
         fclose($tempData);
-        $scriptfname = tempnam("/home/vagrant", "script");
+        $scriptfname = tempnam(config('app.bpm_scripts_home'), "script");
         chmod($scriptfname, 0660);
 
         $tempData = fopen($scriptfname, 'w');
         fwrite($tempData, $code);
         fclose($tempData);
-        $outputfname = tempnam("/home/vagrant", "output.json");
+        $outputfname = tempnam(config('app.bpm_scripts_home'), "output.json");
         chmod($outputfname, 0660);
 
         $variablesParameter = [];
@@ -98,10 +103,10 @@ class Script extends Model
         // So we have the files, let's execute the docker container
         switch ($language) {
             case 'php':
-                $cmd = "/usr/bin/docker run " . $variablesParameter . " -v " . $datafname . ":/opt/executor/data.json -v " . $configfname . ":/opt/executor/config.json -v " . $scriptfname . ":/opt/executor/script.php -v " . $outputfname . ":/opt/executor/output.json processmaker/executor:php php /opt/executor/bootstrap.php 2>&1";
+                $cmd = config('app.bpm_scripts_docker') . " run " . $variablesParameter . " -v " . $datafname . ":/opt/executor/data.json -v " . $configfname . ":/opt/executor/config.json -v " . $scriptfname . ":/opt/executor/script.php -v " . $outputfname . ":/opt/executor/output.json processmaker/executor:php php /opt/executor/bootstrap.php 2>&1";
                 break;
             case 'lua':
-                $cmd = "/usr/bin/docker run " . $variablesParameter . " -v " . $datafname . ":/opt/executor/data.json -v " . $configfname . ":/opt/executor/config.json -v " . $scriptfname . ":/opt/executor/script.lua -v " . $outputfname . ":/opt/executor/output.json processmaker/executor:lua lua5.3 /opt/executor/bootstrap.lua 2>&1";
+                $cmd = config('app.bpm_scripts_docker') . " run " . $variablesParameter . " -v " . $datafname . ":/opt/executor/data.json -v " . $configfname . ":/opt/executor/config.json -v " . $scriptfname . ":/opt/executor/script.lua -v " . $outputfname . ":/opt/executor/output.json processmaker/executor:lua lua5.3 /opt/executor/bootstrap.lua 2>&1";
                 break;
         }
 
@@ -127,5 +132,17 @@ class Script extends Model
                 'output' => $output
             ];
         }
+    }
+
+    /**
+     * Get the language from a script format string.
+     *
+     * @param string $format
+     *
+     * @return string
+     */
+    public static function scriptFormat2Language($format)
+    {
+        return static::$scriptFormats[$format];
     }
 }

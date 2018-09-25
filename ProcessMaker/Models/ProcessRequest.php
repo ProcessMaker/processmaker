@@ -78,6 +78,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
     protected $casts = [
         'completed_at' => 'datetime',
         'initiated_at' => 'datetime',
+        'data' => 'array'
     ];
 
     /**
@@ -120,15 +121,6 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
         }
 
         return $rules;
-    }
-
-    /**
-     * Returns the unserialized data model for this application
-     * @return mixed
-     */
-    public function getDataAsObject()
-    {
-        return json_decode($this->data);
     }
 
     /**

@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use Spatie\BinaryUuid\HasBinaryUuid;
@@ -156,6 +157,13 @@ class Process extends Model implements HasMedia
         return Storage::disk('process_templates')->path('');
     }
 
+    /**
+     * Get a process template by name.
+     *
+     * @param string $name
+     *
+     * @return string
+     */
     public static function getProcessTemplate($name)
     {
         return Storage::disk('process_templates')->get($name);
@@ -190,7 +198,8 @@ class Process extends Model implements HasMedia
      */
     public function getNextUser(ActivityInterface $activity)
     {
-        $assignmentType = $activity->getProperty('assignment_type', 'cyclical');
+        $default = $activity instanceof ScriptTaskInterface ? 'script' : 'cyclical';
+        $assignmentType = $activity->getProperty('assignment_type', $default);
         switch ($assignmentType) {
             case 'cyclical':
                 $user = $this->getNextUserCyclicalAssignment($activity->getId());
@@ -199,6 +208,7 @@ class Process extends Model implements HasMedia
             case 'self_service':
                 $user = null;
                 break;
+            case 'script':
             default:
                 $user = null;
         }

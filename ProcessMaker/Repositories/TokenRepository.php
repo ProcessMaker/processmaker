@@ -2,14 +2,13 @@
 namespace ProcessMaker\Repositories;
 
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Models\ProcessRequest as Instance;
 use ProcessMaker\Models\ProcessRequestToken as Token;
-use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Nayra\Bpmn\Collection;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\GatewayInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ThrowEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Repositories\TokenRepositoryInterface;
@@ -66,7 +65,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->uuid_text = $token->getId();
         $token->status = $token->getStatus();
         $token->element_uuid = $activity->getId();
-        $token->element_type = 'task';
+        $token->element_type = $activity instanceof ScriptTaskInterface ? 'scriptTask' : 'task';
         $token->element_name = $activity->getName();
         $token->process_uuid = $token->getInstance()->process->uuid;
         $token->process_request_uuid = $token->getInstance()->uuid;
@@ -192,7 +191,7 @@ class TokenRepository implements TokenRepositoryInterface
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
     }
 
-    public function persistCatchEventTokenPassed(CatchEventInterface $intermediateCatchEvent, $consumedTokens)
+    public function persistCatchEventTokenPassed(CatchEventInterface $intermediateCatchEvent, Collection $consumedTokens)
     {
         
     }
