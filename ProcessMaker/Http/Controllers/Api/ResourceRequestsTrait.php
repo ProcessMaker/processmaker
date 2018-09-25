@@ -106,6 +106,18 @@ trait ResourceRequestsTrait
                 return $value instanceof Collection ? $value->count() === 0 : empty($value);
             }
         );
+        /**
+         * Validate if the model field is unique.
+         */
+        $validator->addExtension(
+            'unique_in_model',
+            function($attribute, $value) use ($model) {
+                $modelClass = get_class($model);
+                $idColumn = $model->getKeyName();
+                return $modelClass::where($idColumn,'!=', $model->uuid)
+                    ->where($attribute, $value)->count()===0;
+            }
+        );
 
         if ($validator->fails()) {
             throw new ValidationException($validator);
