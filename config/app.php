@@ -82,7 +82,7 @@ return [
         ProcessMaker\Providers\RouteServiceProvider::class,
         ProcessMaker\Providers\BroadcastServiceProvider::class,
         ProcessMaker\Providers\WorkflowServiceProvider::class,
-
+        Laravel\Passport\PassportServiceProvider::class,
 
     ],
 
