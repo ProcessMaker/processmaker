@@ -82,7 +82,7 @@ return [
         ProcessMaker\Providers\RouteServiceProvider::class,
         ProcessMaker\Providers\BroadcastServiceProvider::class,
         ProcessMaker\Providers\WorkflowServiceProvider::class,
-
+        Laravel\Passport\PassportServiceProvider::class,
 
     ],
 
@@ -113,7 +113,7 @@ return [
         'Redirect' => Illuminate\Support\Facades\Redirect::class,
         'Redis' => Illuminate\Support\Facades\Redis::class,
         'Request' => Illuminate\Support\Facades\Request::class,
-        'Response' => Illuminate\Support\Facades\Response::class, // here
+        'Response' => Illuminate\Support\Facades\Response::class,
         'Route' => Illuminate\Support\Facades\Route::class,
         'Schema' => Illuminate\Support\Facades\Schema::class,
         'Session' => Illuminate\Support\Facades\Session::class,
@@ -127,7 +127,6 @@ return [
          */
         'WorkspaceManager' => ProcessMaker\Facades\WorkspaceManager::class,
         'SkinManager' => ProcessMaker\Facades\SkinManager::class,
-        // 'Response'  => ProcessMaker\Facades\Response::class,
 
         /**
          * Other Facades

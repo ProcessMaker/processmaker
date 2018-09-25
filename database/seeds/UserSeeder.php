@@ -27,7 +27,7 @@ class UserSeeder extends Seeder
             'lastname' => 'admin',
             'timezone' => 'UTC',
             'status' => 'ACTIVE'
-        ]);
+        ])->uuid;
 
         factory(GroupMember::class)->create([
           'member_uuid' => $user_uuid,

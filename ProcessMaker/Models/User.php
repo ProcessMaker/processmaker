@@ -14,7 +14,7 @@ class User extends Authenticatable implements HasMedia
 {
     use HasApiTokens;
     use Notifiable;
-    use PMBinaryUuid;
+    use HasBinaryUuid;
     use HasMediaTrait;
 
     public $incrementing = false;
@@ -101,4 +101,8 @@ class User extends Authenticatable implements HasMedia
         return $this->morphMany(GroupMember::class, 'member', null, 'member_uuid');
     }
 
+    public function getAvatar()
+    {
+        return '';
+    }
 }

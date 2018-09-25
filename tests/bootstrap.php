@@ -84,6 +84,3 @@ if (env('RUN_MSSQL_TESTS')) {
 if (env('POPULATE_DATABASE')) {
     Artisan::call('migrate:fresh', []);
 }
-
-//Create the oauth keys if they do not exists
-Artisan::call('passport:install');
