@@ -44,7 +44,7 @@ class UserTest extends TestCase
      *
      * @return void
      */
-    public function testCreateAndEdit()
+    public function testEditRoute()
     {
 
       $user_uuid = factory(User::class)->create()->uuid_text;
@@ -56,4 +56,22 @@ class UserTest extends TestCase
       $response->assertViewIs('admin.users.edit');
 
     }
+
+    /**
+     * Test to make sure the controller and route work wiht the view
+     *
+     * @return void
+     */
+    public function testCreateRoute()
+    {
+
+      // get the URL
+      $response = $this->apiCall('GET', '/admin/users/create');
+
+      $response->assertStatus(200);
+      // check the correct view is called
+      $response->assertViewIs('admin.users.create');
+
+    }
+    
 }
