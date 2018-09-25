@@ -101,4 +101,8 @@ class User extends Authenticatable implements HasMedia
         return $this->morphMany(GroupMember::class, 'member', null, 'member_uuid');
     }
 
+    public function getAvatar()
+    {
+        return '';
+    }
 }
