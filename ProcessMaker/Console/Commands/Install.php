@@ -133,7 +133,9 @@ class Install extends Command
         // Install migrations
         // NOTE: can not use call() here because binary-uuid service is not available
         $dir = realpath(dirname(__FILE__) . '/../../../');
-        system("php {$dir}/artisan migrate:fresh --seed --force");
+        $this->call('migrate:fresh', [
+            '--seed' => true,
+        ]);
         $this->call('passport:install', ['--force' => true]);
 
         $this->info(__("ProcessMaker installation is complete. Please visit the url in your browser to continue."));

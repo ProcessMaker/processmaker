@@ -96,13 +96,6 @@ class User extends Authenticatable implements HasMedia
         ]);
     }
 
-    // TODO: We need to hook up the avatar media file to this
-
-    public function getAvatar()
-    {
-      return true;
-    }
-
     public function memberships()
     {
         return $this->morphMany(GroupMember::class, 'member', null, 'member_uuid');
