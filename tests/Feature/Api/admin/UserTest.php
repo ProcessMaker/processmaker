@@ -6,11 +6,12 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use ProcessMaker\Models\User;
+use Tests\Feature\Shared\ApiCallWithUser;
 
 class UserTest extends TestCase
 {
+  use ApiCallWithUser;
 
-  public $user;
 
   /**
    * Create initial user
@@ -30,10 +31,9 @@ class UserTest extends TestCase
     {
 
       // get the URL
-      $response = $this->actingAs($this->user)->get('/admin/users');
+      $response = $this->apiCall('GET', '/admin/users');
       // check the correct view is called
-      // dd($this->user);
-      // $response->assertViewIs('admin.users.index');
+      $response->assertViewIs('admin.users.index');
 
       $response->assertStatus(200);
 
@@ -44,16 +44,16 @@ class UserTest extends TestCase
      *
      * @return void
      */
-    public function testEditRoute()
+    public function testCreateAndEdit()
     {
 
       $user_uuid = factory(User::class)->create()->uuid_text;
       // get the URL
-      $response = $this->actingAs($this->user)->get('/admin/users/'.$user_uuid);
-      // check the correct view is called
-      $response->assertViewIs('admin.users.edit');
+      $response = $this->apiCall('GET', '/admin/users/'.$user_uuid . '/edit');
 
       $response->assertStatus(200);
+      // check the correct view is called
+      $response->assertViewIs('admin.users.edit');
 
     }
 }
