@@ -23,7 +23,7 @@ class GroupController extends Controller
    *
    * @return \Illuminate\View\View|\Illuminate\Contracts\View
    */
-   public function show(Group $group)
+   public function edit(Group $group)
    {
      return view('admin.groups.edit',compact($group));
    }
