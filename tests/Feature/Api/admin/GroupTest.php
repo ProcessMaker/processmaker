@@ -7,11 +7,11 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
-use Tests\Feature\Shared\ApiCallWithUser;
+use Tests\Feature\Shared\RequestHelper;
 
 class GroupTest extends TestCase
 {
-    use ApiCallWithUser;
+    use RequestHelper;
       /**
      * Create initial user
      */
