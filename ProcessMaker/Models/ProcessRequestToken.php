@@ -87,21 +87,6 @@ class ProcessRequestToken extends Model implements TokenInterface
     }
 
     /**
-     * Validation rules.
-     *
-     * @return array
-     */
-    public static function rules()
-    {
-        return [
-            'element_uuid' => 'required',
-            'element_type' => 'required',
-            'status' => 'required|in:ACTIVE,FAILING,COMPLETED,CLOSED,EVENT_CATCH',
-            'process_request_uuid' => 'required|exists:process_requests,uuid',
-        ];
-    }
-
-    /**
      * Get the process to which this version points to.
      *
      */

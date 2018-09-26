@@ -5,6 +5,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest as Instance;
+use ProcessMaker\Nayra\Contracts\Bpmn\ParticipantInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Contracts\Repositories\ExecutionInstanceRepositoryInterface;
 use ProcessMaker\Nayra\Contracts\Repositories\StorageInterface;
@@ -50,7 +51,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $callableId = $instance->callable_uuid;
         $process = $storage->getProcess($callableId);
         $dataStore = $storage->getFactory()->createDataStore();
-        $dataStore->setData(json_decode($instance->data, true));
+        $dataStore->setData($instance->data);
         $instance->setProcess($process);
         $instance->setDataStore($dataStore);
         $process->getTransitions($storage->getFactory());
@@ -104,7 +105,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $instance->name = $definition->name;
         $instance->status = 'DRAFT';
         $instance->initiated_at = Carbon::now();
-        $instance->data = json_encode($data);
+        $instance->data = $data;
         $instance->saveOrFail();
     }
 
@@ -121,7 +122,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $data = $instance->getDataStore()->getData();
         //Save instance
         $instance->status = 'ACTIVE';
-        $instance->data = json_encode($data);
+        $instance->data = $data;
         $instance->saveOrFail();
     }
 
@@ -139,7 +140,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         //Save instance
         $instance->status = 'COMPLETED';
         $instance->completed_at = Carbon::now();
-        $instance->data = json_encode($data);
+        $instance->data = $data;
         $instance->saveOrFail();
     }
 
@@ -151,7 +152,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
      * @param ExecutionInstanceInterface $source Source instance
      * @param ParticipantInterface $sourceParticipant
      */
-    public function persistInstanceCollaboration(ExecutionInstanceInterface $instance, $participant, ExecutionInstanceInterface $source, $sourceParticipant)
+    public function persistInstanceCollaboration(ExecutionInstanceInterface $instance, ParticipantInterface $participant, ExecutionInstanceInterface $source, ParticipantInterface $sourceParticipant)
     {
         if ($source->process_collaboration_uuid === null) {
             $collaboration = new ProcessCollaboration();
