@@ -121,7 +121,7 @@ class GenerateMenus
         Menu::make('sidebar_designer', function ($menu) {});
 
         Menu::make('dropdown_nav', function ($menu) {
-        //   $task_items = [
+          $task_items = [
         //   [
         //     'label' =>__('Profile'),
         //     'header' => false,
@@ -130,31 +130,31 @@ class GenerateMenus
         //     'img' => '',
         //     'id' => 'dropdownItem'
         //   ],
-        //   [
-        //     'label' => __('Help'),
-        //     'header' => false,
-        //     'route' => 'home',
-        //     'icon' => 'fa-info',
-        //     'img' => '',
-        //     'id' => 'dropdownItem'
-        //   ],
-        //   [
-        //     'label' => __('Log Out'),
-        //     'header' => false,
-        //     'route' => 'logout',
-        //     'icon' => 'fa-sign-out-alt',
-        //     'img' => '',
-        //     'id' => 'dropdownItem'
-        //   ],
-        // // ];
-        //     $tasks = $menu;
-        //     foreach ($task_items as $item) {
-        //         if ($item['header'] === false) {
-        //             $tasks->add($item['label'], ['route'  => $item['route'], 'id' => $item['id'], 'icon' => $item['icon']]);
-        //         } else {
-        //             $tasks->add($item['label'], ['class' => 'dropdown-item drop-header']);
-        //         }
-        //     }
+          [
+            'label' => __('Help'),
+            'header' => false,
+            'route' => 'home',
+            'icon' => 'fa-info',
+            'img' => '',
+            'id' => 'dropdownItem'
+          ],
+          [
+            'label' => __('Log Out'),
+            'header' => false,
+            'route' => 'logout',
+            'icon' => 'fa-sign-out-alt',
+            'img' => '',
+            'id' => 'dropdownItem'
+          ],
+        ];
+            $tasks = $menu;
+            foreach ($task_items as $item) {
+                if ($item['header'] === false) {
+                    $tasks->add($item['label'], ['route'  => $item['route'], 'id' => $item['id'], 'icon' => $item['icon']]);
+                } else {
+                    $tasks->add($item['label'], ['class' => 'dropdown-item drop-header']);
+                }
+            }
         });
         return $next($request);
     }
