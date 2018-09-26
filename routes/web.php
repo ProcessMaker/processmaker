@@ -72,9 +72,7 @@ $this->middleware(['auth'])->group(function () {
     $this->get('/requests/{instance}/submitted', 'Request\RequestsController@requestSubmitted');
 
     $this->get('/', 'HomeController@index')->name('home');
-    $this->get('/manage/environment-variables', 'Management\EnvironmentVariablesController@index')->name('management-environment-variables');
-    $this->get('/manage/users', 'Management\UsersController@index')->name('management-users-index');
-    $this->get('/manage/groups', 'Management\GroupsController@index')->name('management-groups-index');
+
     $this->get('/process/{process}/tasks', 'Designer\TaskController@index')->name('processes-task-index');
     $this->get('/processes', 'Designer\ProcessController@index')->name('processes');
     $this->get('/processes/categories', 'Designer\ProcessCategoryController@index')->name('process-categories-index');
