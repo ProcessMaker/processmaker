@@ -78,30 +78,16 @@ class FileController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param Request $request
+     * @param Media $file
      * @return \Illuminate\Http\Response
      *
-     * @internal param int $id
      */
-    public function show(Request $request, Media $file)
+    public function show(Media $file)
     {
         $path = Storage::disk('public')->getAdapter()->getPathPrefix() .
                 $file->uuid_text . '/' .
                 $file->file_name;
-        //$file = Storage::disk('public')->download($file->uuid_text . '/' . $file->file_name);
-        return response()->download(($path));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        return response()->download($path);
     }
 
     /**
