@@ -7,12 +7,12 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
-use Tests\Feature\Shared\ApiCallWithUser;
+use Tests\Feature\Shared\RequestHelper;
 
 class ScriptsTest extends TestCase
 {
     use DatabaseTransactions;
-    use ApiCallWithUser;
+    use RequestHelper;
 
     const API_TEST_SCRIPT = '/api/1.0/scripts';
     const DEFAULT_PASS = 'password';
@@ -32,7 +32,7 @@ class ScriptsTest extends TestCase
     {
         //Post should have the parameter required
         $url = self::API_TEST_SCRIPT;
-        $response = $this->apiCall('POST', $url, []);
+        $response = $this->apiCall('POST', $url);
         //validating the answer is an error
         $response->assertStatus(422);
         $this->assertArrayHasKey('message', $response->json());

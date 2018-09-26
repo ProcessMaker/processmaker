@@ -8,12 +8,12 @@ use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\Form;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
-use Tests\Feature\Shared\ApiCallWithUser;
+use Tests\Feature\Shared\RequestHelper;
 
 class FormManagerTest extends TestCase
 {
     use DatabaseTransactions;
-    use ApiCallWithUser;
+    use RequestHelper;
 
     const API_TEST_FORM = '/api/1.0/forms';
     const DEFAULT_PASS = 'password';
