@@ -20,11 +20,11 @@ class GenerateMenus
         app()->setLocale('en');
 
         Menu::make('topnav', function ($menu) {
-            $menu->group(['prefix' => 'admin'], function($admin_items) {
-                $admin_items->add(__('Admin'), ['route' => 'users.index']);
-            });
             $menu->group(['prefix' => 'requests'], function($request_items) {
                 $request_items->add(__('Request'), ['route' => 'requests.index']);
+            });
+            $menu->group(['prefix' => 'admin'], function($admin_items) {
+                $admin_items->add(__('Admin'), ['route' => 'users.index']);
             });
         });
 
