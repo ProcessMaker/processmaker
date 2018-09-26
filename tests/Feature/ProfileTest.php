@@ -5,12 +5,12 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use ProcessMaker\Models\User;
-use Tests\Feature\Shared\ApiCallWithUser;
+use Tests\Feature\Shared\RequestHelper;
 
 class ProfileTest extends TestCase
 {
 
-    use ApiCallWithUser;
+    use RequestHelper;
       /**
      * Create initial user
      */
