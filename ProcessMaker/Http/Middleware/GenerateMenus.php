@@ -29,7 +29,7 @@ class GenerateMenus
             });
             //@TODO change the index to the correct blade
             $menu->group(['prefix' => 'processes'], function($request_items) {
-                $request_items->add(__('Processes'), ['route' => 'requests.index']);
+                $request_items->add(__('Processes'), ['route' => 'processes.index']);
             });
             $menu->group(['prefix' => 'admin'], function($admin_items) {
                 $admin_items->add(__('Admin'), ['route' => 'users.index']);
