@@ -9,6 +9,7 @@ Route::namespace('Admin')->prefix('admin')->group(function(){
   Route::resource('queueMonitors', 'QueueMonitorController');
   Route::resource('users', 'UserController');
 });
+Route::resource('tasks', 'TaskController');
 // Add our broadcasting routes
 Broadcast::routes();
 
@@ -45,9 +46,9 @@ $this->middleware(['auth'])->group(function () {
 
     // All the routes in this group and below are for testing purposes only
 
-    $this->get('/tasks', function () {
-        return view('tasks', ['title' => 'Dashboard']);
-    })->name('tasks');
+    // $this->get('/tasks', function () {
+    //     return view('tasks', ['title' => 'Dashboard']);
+    // })->name('tasks');
 
     $this->get('/requests', function () {
         return view('requests.index', ['title' => __('In Progress'), 'status' => '2']);

@@ -41,4 +41,12 @@ trait RequestHelper
         $this->_debug_response = $response;
         return $response;
     }
+
+    protected function webGet($url, $params = [])
+    {
+        $response = $this->actingAs($this->user, 'api')
+                         ->get($url, $params);
+        $this->_debug_response = $response;
+        return $response;
+    }
 }
