@@ -5,6 +5,7 @@ namespace ProcessMaker\Models;
 use Illuminate\Database\Eloquent\Model;
 use ProcessMaker\Models\EnvironmentVariable;
 use Spatie\BinaryUuid\HasBinaryUuid;
+use ProcessMaker\Exception\ScriptLanguageNotSupported;
 
 /**
  * Represents an Eloquent model of a Script
@@ -101,18 +102,20 @@ class Script extends Model
         }
 
         // So we have the files, let's execute the docker container
-        switch ($language) {
+        switch (strtolower($language)) {
             case 'php':
                 $cmd = config('app.bpm_scripts_docker') . " run " . $variablesParameter . " -v " . $datafname . ":/opt/executor/data.json -v " . $configfname . ":/opt/executor/config.json -v " . $scriptfname . ":/opt/executor/script.php -v " . $outputfname . ":/opt/executor/output.json processmaker/executor:php php /opt/executor/bootstrap.php 2>&1";
                 break;
             case 'lua':
                 $cmd = config('app.bpm_scripts_docker') . " run " . $variablesParameter . " -v " . $datafname . ":/opt/executor/data.json -v " . $configfname . ":/opt/executor/config.json -v " . $scriptfname . ":/opt/executor/script.lua -v " . $outputfname . ":/opt/executor/output.json processmaker/executor:lua lua5.3 /opt/executor/bootstrap.lua 2>&1";
                 break;
+            default:
+                throw new ScriptLanguageNotSupported($language);
         }
 
         $response = exec($cmd, $output, $returnCode);
         if ($returnCode) {
-            // Non-zero, there is an error!
+            // Has an error code
             unlink($datafname);
             unlink($configfname);
             unlink($scriptfname);
@@ -121,8 +124,7 @@ class Script extends Model
                 'output' => implode($output, "\n")
             ];
         } else {
-            // Success, let's format and output
-            // Grab output
+            // Success
             $output = json_decode(file_get_contents($outputfname), true);
             unlink($datafname);
             unlink($configfname);

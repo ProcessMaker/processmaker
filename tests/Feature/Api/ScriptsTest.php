@@ -49,7 +49,7 @@ class ScriptsTest extends TestCase
         $response = $this->apiCall('POST', $url, [
             'title' => 'Script Title',
             'description' => $faker->sentence(6),
-            'language' => 'PHP',
+            'language' => 'php',
             'code' => '123',
         ]);
         //validating the answer is correct.
@@ -195,7 +195,7 @@ class ScriptsTest extends TestCase
         $response = $this->apiCall('PUT', $url, [
             'title' => $script->title,
             'description' => $faker->sentence(6),
-            'language' => 'LUA',
+            'language' => 'lua',
             'code' => $faker->sentence(3),
         ]);
         //Validate the answer is correct
@@ -227,15 +227,15 @@ class ScriptsTest extends TestCase
     */
     public function testPreviewScript()
     {
-        $url = self::API_TEST_SCRIPT.'/preview/?data=adkasdlasj&config=&code=adkasdlasj&language=LUA';
+        $url = route('script.preview', ['data'=>'{}','code'=>'return {response=1}', 'language'=>'lua']);
         $response = $this->apiCall('GET', $url, []);
         $response->assertStatus(200);
 
-        $url = self::API_TEST_SCRIPT.'/preview/?data=adkasdlasj&config=&code=adkasdlasj&language=PHP';
+        $url = route('script.preview', ['data'=>'{}','code'=>'<?php return ["response"=>1];', 'language'=>'php']);
         $response = $this->apiCall('GET', $url, []);
         $response->assertStatus(200);
 
-        $response->assertJsonStructure(['output']);
+        $response->assertJsonStructure(['output'=>['response']]);
 
     }
 
