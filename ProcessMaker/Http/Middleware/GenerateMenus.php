@@ -23,6 +23,9 @@ class GenerateMenus
             $menu->group(['prefix' => 'admin'], function($admin_items) {
                 $admin_items->add(__('Admin'), ['route' => 'users.index']);
             });
+            $menu->group(['prefix' => 'requests'], function($request_items) {
+                $request_items->add(__('Request'), ['route' => 'requests.index']);
+            });
         });
 
         // Build the menus
@@ -81,27 +84,27 @@ class GenerateMenus
         //     ]);
         });
         Menu::make('sidebar_request', function ($menu) {
-        //   $submenu = $menu->add(__('menus.sidebar_request.request'));
-        //   $submenu->add(__('menus.sidebar_request.in_progress'), [
-        //         'route' => 'requests',
-        //         'icon' => 'icon-assigned',
-        //         'id' => 'homeid'
-        //   ]);
-        //   $submenu->add(__('menus.sidebar_request.draft'), [
-        //       'route' => 'requests.drafts',
-        //       'icon' => 'icon-draft',
-        //       'id' => 'homeid'
-        //   ]);
-        //   $submenu->add(__('menus.sidebar_request.completed'), [
-        //       'route' => 'requests.completed',
-        //       'icon' => 'icon-completed-1',
-        //       'id' => 'homeid'
-        //   ]);
-        //   $submenu->add(__('menus.sidebar_request.paused'), [
-        //       'route' => 'requests.paused',
-        //       'icon' => 'icon-paused-2',
-        //       'id' => 'homeid'
-        //   ]);
+          $submenu = $menu->add(__('menus.sidebar_request.request'));
+          $submenu->add(__('menus.sidebar_request.in_progress'), [
+                'route' => 'requests',
+                'icon' => 'icon-assigned',
+                'id' => 'homeid'
+          ]);
+          $submenu->add(__('menus.sidebar_request.draft'), [
+              'route' => 'requests.drafts',
+              'icon' => 'icon-draft',
+              'id' => 'homeid'
+          ]);
+          $submenu->add(__('menus.sidebar_request.completed'), [
+              'route' => 'requests.completed',
+              'icon' => 'icon-completed-1',
+              'id' => 'homeid'
+          ]);
+          $submenu->add(__('menus.sidebar_request.paused'), [
+              'route' => 'requests.paused',
+              'icon' => 'icon-paused-2',
+              'id' => 'homeid'
+          ]);
        });
 
         Menu::make('sidebar_processes', function ($menu) {
