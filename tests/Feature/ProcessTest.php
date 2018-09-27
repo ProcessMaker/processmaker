@@ -18,11 +18,13 @@ class ProcessTest extends TestCase
     // }
 
     public function testIndex() {  
-        factory(Process::class)->create(['name'=>'TestProcess']);
+        factory(Process::class)->create(['name'=>'Test Process']);
+        factory(Process::class)->create(['name'=>'Another Process']);
         $response = $this->webGet('/processes');
         $response->assertStatus(200);
         $response->assertViewIs('processes.index');
-        $response->assertSee('TestProcess');
+        $response->assertSee('Test Process');
+        $response->assertSee('Another Process');
     }
 
     // public function testEdit()
