@@ -18,7 +18,6 @@ class ProfileTest extends TestCase
      */
     public function testIndexRoute()
     {
-
       // get the URL
       $response = $this->apiCall('GET', '/profile');
       // check the correct view is called
@@ -38,27 +37,27 @@ class ProfileTest extends TestCase
 
       $user_uuid = factory(User::class)->create()->uuid_text;
       // get the URL
-      $response = $this->apiCall('GET', '/profile/edit');
+      $response = $this->apiCall('GET', '/profile/'. $user_uuid . '/edit');
 
       $response->assertStatus(200);
       // check the correct view is called
       $response->assertViewIs('profile.edit');
-
     }
-     /**
+      /**
      * Test to make sure the controller and route work with the view
      *
      * @return void
      */
     public function testShowRoute()
     {
+
       $user_uuid = factory(User::class)->create()->uuid_text;
       // get the URL
-      $response = $this->apiCall('GET', '/profile'. $user_uuid);
+      $response = $this->apiCall('GET', '/profile/'. $user_uuid);
 
       $response->assertStatus(200);
       // check the correct view is called
       $response->assertViewIs('profile.show');
-
     }
+
 }
