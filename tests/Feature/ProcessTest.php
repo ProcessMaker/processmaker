@@ -20,6 +20,6 @@ class TasksTest extends TestCase
     ];
 
     public function testIndex() {
-       
+        $response = $this->webGet(self::PROCESS_URL, []);
     }
 }

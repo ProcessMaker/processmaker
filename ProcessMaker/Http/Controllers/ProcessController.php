@@ -8,6 +8,6 @@ class ProcessController extends Controller
 {
     public function index()
     {
-        return view('process.index');
+        return view('processes.index');
     }
 }
