@@ -10,6 +10,10 @@ Route::namespace('Admin')->prefix('admin')->group(function(){
   Route::resource('users', 'UserController');
 });
 Route::resource('tasks', 'TaskController');
+
+Route::prefix('profile')->group(function () {
+    Route::resource('profile', 'ProfileController');
+});
 // Add our broadcasting routes
 Broadcast::routes();
 
