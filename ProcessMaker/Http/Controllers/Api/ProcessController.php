@@ -17,9 +17,29 @@ class ProcessController extends Controller
     use ResourceRequestsTrait;
 
     /**
-     * Display a listing of the resource.
-     *
-     * @return Response
+     * @OA\Get(
+     *     path="/processes",
+     *     summary="Returns all processes that the user has access to",
+     *     operationId="getProcesses",
+     *     tags={"Process"},
+     *     @OA\Parameter(
+     *         name="filter",
+     *         in="query",
+     *         description="Filter results with a string. Searches Name, Description, and Status",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="list of processes",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(ref="#/components/schemas/Process")
+     *         ),
+     *     ),
+     * )
      */
     public function index(Request $request)
     {
@@ -40,6 +60,27 @@ class ProcessController extends Controller
      * @param $process
      *
      * @return Response
+     * 
+     * @OA\Get(
+     *     path="/process/{processUuid}",
+     *     summary="Get single process by ID",
+     *     operationId="getProcessByUuid",
+     *     tags={"Process"},
+     *     @OA\Parameter(
+     *         description="ID of pet to return",
+     *         in="path",
+     *         name="processUuid",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successfully found the process",
+     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *     ),
+     * )
      */
     public function show(Request $request, Process $process)
     {

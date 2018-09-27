@@ -1,0 +1,130 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "ProcessMaker API",
+        "description": "",
+        "contact": {
+            "email": "info@processmaker.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost/api/1.0"
+        }
+    ],
+    "paths": {
+        "/processes": {
+            "get": {
+                "tags": [
+                    "Process"
+                ],
+                "summary": "Returns all processes that the user has access to",
+                "operationId": "getProcesses",
+                "parameters": [
+                    {
+                        "name": "filter",
+                        "in": "query",
+                        "description": "Filter results with a string. Searches Name, Description, and Status",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of processes",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Process"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/process/{processUuid}": {
+            "get": {
+                "tags": [
+                    "Process"
+                ],
+                "summary": "Get single process by ID",
+                "operationId": "getProcessByUuid",
+                "parameters": [
+                    {
+                        "name": "processUuid",
+                        "in": "path",
+                        "description": "ID of pet to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the process",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Process"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Process": {
+                "properties": {
+                    "uuid": {
+                        "description": "Represents a business process definition.",
+                        "type": "string"
+                    },
+                    "process_category_uuid": {
+                        "description": "Represents a business process definition.",
+                        "type": "string"
+                    },
+                    "user_uuid": {
+                        "description": "Represents a business process definition.",
+                        "type": "string"
+                    },
+                    "bpmn": {
+                        "description": "Represents a business process definition.",
+                        "type": "string"
+                    },
+                    "name": {
+                        "description": "Represents a business process definition.",
+                        "type": "string"
+                    },
+                    "description": {
+                        "description": "Represents a business process definition.",
+                        "type": "string"
+                    },
+                    "status": {
+                        "description": "Represents a business process definition.",
+                        "type": "string",
+                        "enum": [
+                            "ACTIVE",
+                            "INACTIVE"
+                        ]
+                    }
+                },
+                "type": "object"
+            }
+        }
+    }
+}

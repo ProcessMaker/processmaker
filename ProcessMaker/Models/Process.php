@@ -29,6 +29,16 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
  *
+ * @OA\Schema(
+ *   schema="Process",
+ *   @OA\Property(property="uuid", type="string"),
+ *   @OA\Property(property="process_category_uuid", type="string"),
+ *   @OA\Property(property="user_uuid", type="string"),
+ *   @OA\Property(property="bpmn", type="string"),
+ *   @OA\Property(property="name", type="string"),
+ *   @OA\Property(property="description", type="string"),
+ *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"})
+ * )
  */
 class Process extends Model implements HasMedia
 {
