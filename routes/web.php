@@ -11,7 +11,9 @@ Route::namespace('Admin')->prefix('admin')->group(function(){
 });
 Route::resource('tasks', 'TaskController');
 
-Route::resource('profile', 'ProfileController');
+Route::resource('profile', 'ProfileController')->only([
+    'index', 'edit', 'show'
+]);
 
 // Add our broadcasting routes
 Broadcast::routes();
