@@ -11,11 +11,11 @@ class ProcessTest extends TestCase
     use DatabaseTransactions;
     use RequestHelper;
 
-    // protected function setUp()
-    // {
-    //     parent::setUp();
-    //     $this->user = factory(User::class)->create();
-    // }
+    protected function setUp()
+    {
+        parent::setUp();
+        $this->user = factory(User::class)->create();
+    }
 
     protected $structure = [
         'uuid',
