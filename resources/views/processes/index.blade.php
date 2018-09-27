@@ -8,7 +8,7 @@
 <div class="container mt-4" id="processIndex">
     <div class="row mt-5">
         <div class="col-2">
-            <h3>{{__('Processes')}}</h3>
+            <h3>{{__('Processes')}}</h3>  
         </div>
         <div class="col-4" style="margin-left: -67px; margin-right: 21px;">
             <input type="text" class="form-control" placeholder="&#xf0e0; Search">
@@ -31,8 +31,9 @@
             </tr>
         </thead>
         <tbody>
+        @foreach ($processes as $process)
             <tr @mouseover="showButtons" @mouseout="seen=false">
-                <td scope="row">This is a thing</td>
+                <td scope="row">{{$process->name}}</td>
                 <td>HR</td>
                 <td class="text-uppercase"><i class="fas fa-circle text-success small"></i> active</td>
                 <td><img src="../avatar-placeholder.gif" style="height: 20px; border-radius: 50%;" /> Name Name</td>
@@ -47,24 +48,7 @@
                     </div>
                 </td>
             </tr>
-            <tr>
-                <td scope="row">This is another thing description</td>
-                <td>Sales</td>
-                <td class="text-uppercase"><i class="fas fa-circle text-success small"></i> active</td>
-                <td><img src="../avatar-placeholder.gif" style="height: 20px; border-radius: 50%;" /> Name Name</td>
-                <td>01/01/1111 11:11</td>
-                <td>02/02/2222 22:22</td>
-                <td class="actions popout vuetable-slot"></td>
-            </tr>
-            <tr>
-                <td scope="row">This is another thing description</td>
-                <td>Finances</td>
-                <td class="text-uppercase"><i class="fas fa-circle text-success small"></i> active</td>
-                <td><img src="../avatar-placeholder.gif" style="height: 20px; border-radius: 50%;" /> Name Name</td>
-                <td>01/01/1111 11:11</td>
-                <td>02/02/2222 22:22</td>
-                <td class="actions popout vuetable-slot"></td>
-            </tr>
+        @endforeach  
         </tbody>
     </table>
     <div class="text-secondary">1 - 4 of 4 Processes</div>

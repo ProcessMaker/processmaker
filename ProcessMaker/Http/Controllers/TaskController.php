@@ -11,12 +11,12 @@ class TaskController extends Controller
   {
       return view('tasks.index');
   }
-    public function edit(Tasks $tasks) /*<-----*/ //
-  {
-    return view('tasks.edit',compact($tasks));  //is the edit page added to routes?
-  }
-  public function create()
-  {
-    return view('tasks.create');
-  }
+//     public function edit(Tasks $tasks) /*<-----*/ // 
+//   {
+//     return view('tasks.edit',compact($tasks));  //is the edit page added to routes?
+//   }
+//   public function create()
+//   {
+//     return view('tasks.create');
+//   }
 }

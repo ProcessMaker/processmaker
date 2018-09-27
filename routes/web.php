@@ -9,8 +9,11 @@ Route::namespace('Admin')->prefix('admin')->group(function(){
   Route::resource('queueMonitors', 'QueueMonitorController');
   Route::resource('users', 'UserController');
 });
-Route::resource('tasks', 'TaskController');
+Route::resource('tasks', 'TaskController')->only([
+    'index'
+]);
 Route::resource('processes', 'ProcessController');
+
 // Add our broadcasting routes
 Broadcast::routes();
 
