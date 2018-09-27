@@ -8,7 +8,7 @@
 <div class="container mt-4" id="processIndex">
     <div class="row mt-5">
         <div class="col-2">
-            <h3>Processes</h3>
+            <h3>{{__('Processes')}}</h3>
         </div>
         <div class="col-4" style="margin-left: -67px; margin-right: 21px;">
             <input type="text" class="form-control" placeholder="&#xf0e0; Search">

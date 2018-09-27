@@ -10,9 +10,6 @@ class TasksTest extends TestCase
     use DatabaseTransactions;
     use RequestHelper;
 
-    const PROCESS_URL = '/processes';
-    const DEFAULT_PASS = 'password';
-
     protected $structure = [
         'uuid',
         'updated_at',
@@ -20,7 +17,7 @@ class TasksTest extends TestCase
     ];
 
     public function testIndex() {
-        $response = $this->webGet(self::PROCESS_URL, []);
+        $response = $this->webGet('/processes');
         $response->assertViewIs('processes.index');
         $response->assertSee('id="processIndex"');
     }
