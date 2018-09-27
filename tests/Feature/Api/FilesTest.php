@@ -19,7 +19,6 @@ class FilesTest extends TestCase
   use RequestHelper;
 
   const API_TEST_URL = '/api/1.0/files';
-  const DEFAULT_PASS = 'password';
 
   const STRUCTURE = [
       'uuid',

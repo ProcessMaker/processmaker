@@ -14,7 +14,7 @@ trait RequestHelper
     {
         parent::setUp();
         $this->user = factory(User::class)->create([
-            'password' => Hash::make(self::DEFAULT_PASS)
+            'password' => 'password'
         ]);
     }
 
