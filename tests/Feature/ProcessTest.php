@@ -21,5 +21,7 @@ class TasksTest extends TestCase
 
     public function testIndex() {
         $response = $this->webGet(self::PROCESS_URL, []);
+        $response->assertViewIs('processes.index');
+        $response->assertSee('id="processIndex"');
     }
 }

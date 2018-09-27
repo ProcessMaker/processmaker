@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-<div class="container mt-4">
+<div class="container mt-4" id="processIndex">
     <div class="row mt-5">
         <div class="col-2">
             <h3>Processes</h3>
