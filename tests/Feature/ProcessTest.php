@@ -5,6 +5,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCategory;
 
 class ProcessTest extends TestCase
 {
@@ -20,6 +21,7 @@ class ProcessTest extends TestCase
     public function testIndex() {  
         factory(Process::class)->create(['name'=>'Test Process']);
         factory(Process::class)->create(['name'=>'Another Process']);
+        // factory(ProcessCategory::class)->create(['name'=>'Test Category']);
         $response = $this->webGet('/processes');
         $response->assertStatus(200);
         $response->assertViewIs('processes.index');
@@ -27,13 +29,14 @@ class ProcessTest extends TestCase
         $response->assertSee('Another Process');
     }
 
-    // public function testEdit()
-    // {
-    //   $process_uuid = factory(User::class)->create()->uuid_text;
-    //   $response = $this->webGet('processes/'.$process_uuid . '/edit');
-    // //   $response->assertStatus(200);
-    //   $response->assertViewIs('processes.edit');
-    // }
+    public function testEdit()
+    {
+      $process = factory(Process::class)->create(['name'=>'Test Edit']);
+      $response = $this->webGet('processes/'.$process->uuid_text . '/edit');
+      $response->assertStatus(200);
+      $response->assertViewIs('processes.edit');
+      $response->assertSee('Test Edit');
+    }
 
     // public function testCreateRoute()
     // {

@@ -11,8 +11,8 @@ class ProcessController extends Controller
         $processes = Process::all();  //what will be in the database = Model
         return view('processes.index', ["processes"=>$processes]);
     }
-    public function edit()
+    public function edit(Process $process)
     {
-        return view('processes.edit');
+        return view('processes.edit', ["process"=>$process]);
     }
 }
