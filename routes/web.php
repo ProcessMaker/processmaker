@@ -14,6 +14,9 @@ Route::resource('tasks', 'TaskController');
 Route::resource('profile', 'ProfileController')->only([
     'index', 'edit', 'show'
 ]);
+Route::resource('request', 'RequestController')->only([
+    'index', 'edit', 'show'
+]);
 
 // Add our broadcasting routes
 Broadcast::routes();
@@ -55,27 +58,27 @@ $this->middleware(['auth'])->group(function () {
     //     return view('tasks', ['title' => 'Dashboard']);
     // })->name('tasks');
 
-    $this->get('/requests', function () {
-        return view('requests.index', ['title' => __('In Progress'), 'status' => '2']);
-    })->name('requests');
+    // $this->get('/requests', function () {
+    //     return view('requests.index', ['title' => __('In Progress'), 'status' => '2']);
+    // })->name('requests');
 
-    $this->get('/requests/drafts', function () {
-        return view('requests.index', ['title' => __('Drafts'), 'status' => '1']);
-    })->name('requests.drafts');
+    // $this->get('/requests/drafts', function () {
+    //     return view('requests.index', ['title' => __('Drafts'), 'status' => '1']);
+    // })->name('requests.drafts');
 
-    $this->get('/requests/completed', function () {
-        return view('requests.index', ['title' => __('Completed'), 'status' => '3']);
-    })->name('requests.completed');
+    // $this->get('/requests/completed', function () {
+    //     return view('requests.index', ['title' => __('Completed'), 'status' => '3']);
+    // })->name('requests.completed');
 
-    $this->get('/requests/paused', function () {
-        return view('requests.index', ['title' => __('Paused'), 'status' => '0']);
-    })->name('requests.paused');
+    // $this->get('/requests/paused', function () {
+    //     return view('requests.index', ['title' => __('Paused'), 'status' => '0']);
+    // })->name('requests.paused');
 
-    // For fetching the status of an open request
-    $this->get('/requests/{instance}/status', ['uses' => 'Request\StatusController@status'])->name('request-status');
+    // // For fetching the status of an open request
+    // $this->get('/requests/{instance}/status', ['uses' => 'Request\StatusController@status'])->name('request-status');
 
-    // To execute actions after a request/task has been processed
-    $this->get('/requests/{instance}/submitted', 'Request\RequestsController@requestSubmitted');
+    // // To execute actions after a request/task has been processed
+    // $this->get('/requests/{instance}/submitted', 'Request\RequestsController@requestSubmitted');
 
     $this->get('/', 'HomeController@index')->name('home');
 
