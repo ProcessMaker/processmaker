@@ -24,7 +24,6 @@ class TasksTest extends TestCase
     use RequestHelper;
 
     const TASKS_URL = '/tasks';
-    const DEFAULT_PASS = 'password';
 
     protected $structure = [
         'uuid',

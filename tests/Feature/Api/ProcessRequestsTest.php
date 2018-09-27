@@ -26,7 +26,6 @@ class ProcessRequestsTest extends TestCase
     use WithFaker;
 
     const API_TEST_URL = '/api/1.0/requests';
-    const DEFAULT_PASS = 'password';
 
     const STRUCTURE = [
         'uuid',

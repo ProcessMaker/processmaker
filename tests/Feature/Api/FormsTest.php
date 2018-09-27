@@ -16,7 +16,6 @@ class FormManagerTest extends TestCase
     use RequestHelper;
 
     const API_TEST_FORM = '/api/1.0/forms';
-    const DEFAULT_PASS = 'password';
 
     const STRUCTURE = [
         'title',

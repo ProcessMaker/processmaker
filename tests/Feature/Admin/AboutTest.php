@@ -11,14 +11,7 @@ use Tests\Feature\Shared\RequestHelper;
 class AboutTest extends TestCase
 {
     use RequestHelper;
-      /**
-     * Create initial user
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-        $this->user = factory(User::class)->create();
-    }
+    
     /**
      * Test to make sure the controller and route work with the view
      *
