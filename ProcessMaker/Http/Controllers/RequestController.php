@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Controllers;
 
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Models\ProcessRequest;
 
 class RequestController extends Controller
 {
@@ -17,4 +18,14 @@ class RequestController extends Controller
       
       return view('requests.index');
   }
+
+    /**
+   * Edit a request
+   *
+   * @return \Illuminate\View\View|\Illuminate\Contracts\View
+   */
+   public function edit(Request $request)
+   {
+     return view('requests.edit',compact($request));
+   }
 }
