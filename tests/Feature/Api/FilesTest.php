@@ -38,17 +38,6 @@ class FilesTest extends TestCase
       'updated_at',
   ];
 
-  /**
-   * Create user
-   */
-  protected function setUp()
-  {
-      parent::setUp();
-      $this->user = factory(User::class)->create([
-          'password' => Hash::make(self::DEFAULT_PASS),
-      ]);
-  }
-
     /**
      * Get a list of Files
      *
@@ -65,7 +54,7 @@ class FilesTest extends TestCase
 
 
       // Basic listing assertions
-      $response = $this->actingAs($this->user, 'api')->json('GET', self::API_TEST_URL);
+      $response = $this->apiCall('GET', self::API_TEST_URL);
 
       // Validate the header status code
       $response->assertStatus(200);
@@ -77,8 +66,7 @@ class FilesTest extends TestCase
       ]);
 
       // Filtered listing assertions
-      $response = $this->actingAs($this->user, 'api')
-                        ->json('GET', self::API_TEST_URL . '?filter=123');
+      $response = $this->apiCall('GET', self::API_TEST_URL . '?filter=123');
       $response->assertStatus(200);
       $response->assertJsonStructure([
           'data' => ['*' => self::STRUCTURE],
@@ -86,8 +74,7 @@ class FilesTest extends TestCase
       ]);
 
       // Filtered listing assertions when filter string is not found
-      $response = $this->actingAs($this->user, 'api')
-          ->json('GET', self::API_TEST_URL . '?filter=xyz9393');
+      $response = $this->apiCall('GET', self::API_TEST_URL . '?filter=xyz9393');
       $response->assertStatus(200);
       $response->assertJsonStructure([
           'data' => [],
@@ -109,8 +96,7 @@ class FilesTest extends TestCase
       $model = factory(User::class)->create();
       $addedMedia = $model->addMedia($fileUpload)->toMediaCollection('local');
 
-      $response = $this->actingAs($this->user, 'api')
-          ->json('GET', self::API_TEST_URL . '/' . $addedMedia->uuid_text);
+      $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $addedMedia->uuid_text);
 
       // Validate the header status code
       $response->assertStatus(200);
@@ -137,17 +123,14 @@ class FilesTest extends TestCase
       $model = factory(User::class)->create();
 
       // Verify that if no model data is sent an error is returned
-      $response = $this->actingAs($this->user, 'api')
-          ->json('POST', self::API_TEST_URL, $data);
+      $response = $this->apiCall('POST', self::API_TEST_URL, $data);
       $response->assertStatus(404);
 
       // Verify that if no model data is sent an error is returned
-      $response = $this->actingAs($this->user, 'api')
-          ->json('POST', self::API_TEST_URL . '?model=user&model_uuid=NonExistentUuid', $data);
+      $response = $this->apiCall('POST', self::API_TEST_URL . '?model=user&model_uuid=NonExistentUuid', $data);
       $response->assertStatus(404);
 
-      $response = $this->actingAs($this->user, 'api')
-          ->json('POST', self::API_TEST_URL . '?model=user&model_uuid=' . $model->uuid_text, $data);
+      $response = $this->apiCall('POST', self::API_TEST_URL . '?model=user&model_uuid=' . $model->uuid_text, $data);
 
       // Validate the header status code
       $response->assertStatus(200);
@@ -176,8 +159,7 @@ class FilesTest extends TestCase
           'file' => $fileUploadUpdate
       ];
 
-      $response = $this->actingAs($this->user, 'api')
-          ->json('PUT', self::API_TEST_URL . '/' . $addedMedia->uuid_text, $data);
+      $response = $this->apiCall('PUT', self::API_TEST_URL . '/' . $addedMedia->uuid_text, $data);
 
       // Validate the header status code
       $response->assertStatus(201);
@@ -205,8 +187,7 @@ class FilesTest extends TestCase
       $model = factory(User::class)->create();
       $addedMedia = $model->addMedia($fileUpload)->toMediaCollection('local');
 
-      $response = $this->actingAs($this->user, 'api')
-          ->json('DELETE', self::API_TEST_URL . '/' . $addedMedia->uuid_text);
+      $response = $this->apiCall('DELETE', self::API_TEST_URL . '/' . $addedMedia->uuid_text);
 
       // Validate the header status code
       $response->assertStatus(204);
