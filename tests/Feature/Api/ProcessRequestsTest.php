@@ -42,24 +42,12 @@ class ProcessRequestsTest extends TestCase
     ];
 
     /**
-     * Initialize the controller tests
-     *
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-        $this->user = factory(User::class)->create([
-            'password' => Hash::make(self::DEFAULT_PASS),
-        ]);
-    }
-
-    /**
      * Test verify the parameter required for create form
      */
     public function testNotCreatedForParameterRequired()
     {
         //Post should have the parameter required
-        $response = $this->actingAs($this->user, 'api')->json('POST', self::API_TEST_URL, []);
+        $response = $this->apiCall('POST', self::API_TEST_URL, []);
 
         //Validate the header status code
         $response->assertStatus(422);
@@ -73,7 +61,7 @@ class ProcessRequestsTest extends TestCase
     {
         $process = factory(Process::class)->create();
 
-        $response = $this->actingAs($this->user, 'api')->json('POST', self::API_TEST_URL, [
+        $response = $this->apiCall('POST', self::API_TEST_URL, [
             'process_uuid' => $process->uuid_text,
             'process_collaboration_uuid' => null,
             'callable_uuid' => $this->faker->uuid,
@@ -98,7 +86,7 @@ class ProcessRequestsTest extends TestCase
         $process = factory(Process::class)->create();
 
         //Post request name duplicated
-        $response = $this->actingAs($this->user, 'api')->json('POST', self::API_TEST_URL, [
+        $response = $this->apiCall('POST', self::API_TEST_URL, [
             'process_uuid' => $process->uuid_text,
             'process_collaboration_uuid' => null,
             'status' => 'ACTIVE',
@@ -120,7 +108,7 @@ class ProcessRequestsTest extends TestCase
 
         factory(ProcessRequest::class, 10)->create();
 
-        $response = $this->actingAs($this->user, 'api')->json('GET', self::API_TEST_URL);
+        $response = $this->apiCall('GET', self::API_TEST_URL);
 
         //Validate the header status code
         $response->assertStatus(200);
@@ -149,7 +137,7 @@ class ProcessRequestsTest extends TestCase
         //List Request with filter option
         $perPage = Faker::create()->randomDigitNotNull;
         $query = '?page=1&per_page=' . $perPage . '&order_by=name&order_direction=DESC&filter=' . $requestname;
-        $response = $this->actingAs($this->user, 'api')->json('GET', self::API_TEST_URL . $query);
+        $response = $this->apiCall('GET', self::API_TEST_URL . $query);
 
         //Validate the header status code
         $response->assertStatus(200);
@@ -215,7 +203,7 @@ class ProcessRequestsTest extends TestCase
         $verify = $this->apiCall('GET', $url);
 
         //Post saved success
-        $response = $this->actingAs($this->user, 'api')->json('PUT', $url, [
+        $response = $this->apiCall('PUT', $url, [
             'name' => $faker->unique()->name,
             'data' => '{"test":1}'
         ]);
