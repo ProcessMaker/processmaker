@@ -29,28 +29,17 @@ class GroupMembersTest extends TestCase
   ];
 
   /**
-   * Create group
-   */
-  protected function setUp()
-  {
-      parent::setUp();
-      $this->user = factory(User::class)->create([
-          'password' => Hash::make(self::DEFAULT_PASS),
-      ]);
-  }
-
-  /**
    * List group memberships
    */
 
    public function testGetGroupMemberList()
    {
-     $response = $this->actingAs($this->user, 'api')->json('GET', self::API_TEST_URL);
+     $response = $this->apiCall('GET', self::API_TEST_URL);
      $response->assertStatus(200);
 
      $groupmembership = factory(GroupMember::class)->create();
 
-     $response = $this->actingAs($this->user, 'api')->json('GET', self::API_TEST_URL.'/?filter='.$groupmembership->member_uuid_text);
+     $response = $this->apiCall('GET', self::API_TEST_URL.'/?filter='.$groupmembership->member_uuid_text);
      $response->assertStatus(200);
 
    }
@@ -61,7 +50,7 @@ class GroupMembersTest extends TestCase
   public function testNotCreatedForParameterRequired()
   {
       //Post should have the parameter required
-      $response = $this->actingAs($this->user, 'api')->json('POST', self::API_TEST_URL, []);
+      $response = $this->apiCall('POST', self::API_TEST_URL, []);
 
       //Validate the header status code
       $response->assertStatus(422);
@@ -77,7 +66,7 @@ class GroupMembersTest extends TestCase
       $user = factory(User::class)->create();
       $group = factory(Group::class)->create();
 
-      $response = $this->actingAs($this->user, 'api')->json('POST', self::API_TEST_URL, [
+      $response = $this->apiCall('POST', self::API_TEST_URL, [
           'group_uuid' => $group->uuid_text,
           'member_uuid' => $user->uuid_text,
           'member_type' => User::class,
@@ -100,7 +89,7 @@ class GroupMembersTest extends TestCase
       $group1 = factory(Group::class)->create();
       $group2 = factory(Group::class)->create();
 
-      $response = $this->actingAs($this->user, 'api')->json('POST', self::API_TEST_URL, [
+      $response = $this->apiCall('POST', self::API_TEST_URL, [
           'group_uuid' => $group1->uuid_text,
           'member_uuid' => $group2->uuid_text,
           'member_type' => Group::class,
