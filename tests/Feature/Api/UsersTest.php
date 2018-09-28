@@ -43,23 +43,12 @@ class UsersTest extends TestCase
   ];
 
   /**
-   * Create user
-   */
-  protected function setUp()
-  {
-      parent::setUp();
-      $this->user = factory(User::class)->create([
-          'password' => Hash::make(self::DEFAULT_PASS),
-      ]);
-  }
-
-  /**
    * Test verify the parameter required for create form
    */
   public function testNotCreatedForParameterRequired()
   {
       //Post should have the parameter required
-      $response = $this->actingAs($this->user, 'api')->json('POST', self::API_TEST_URL, []);
+      $response = $this->apiCall('POST', self::API_TEST_URL, []);
 
       //Validate the header status code
       $response->assertStatus(422);
@@ -74,7 +63,7 @@ class UsersTest extends TestCase
       //Post title duplicated
       $faker = Faker::create();
       $url = self::API_TEST_URL;
-      $response = $this->actingAs($this->user, 'api')->json('POST', $url, [
+      $response = $this->apiCall('POST', $url, [
           'username' => 'newuser',
           'email' => $faker->email,
           'password' => $faker->sentence(10)
@@ -95,7 +84,7 @@ class UsersTest extends TestCase
 
       //Post username duplicated
       $faker = Faker::create();
-      $response = $this->actingAs($this->user, 'api')->json('POST', self::API_TEST_URL, [
+      $response = $this->apiCall('POST', self::API_TEST_URL, [
           'username' => 'mytestusername',
           'email' => $faker->email,
           'deuserion' => $faker->sentence(10)
@@ -118,7 +107,7 @@ class UsersTest extends TestCase
 
       factory(User::class, 10)->create();
 
-      $response = $this->actingAs($this->user, 'api')->json('GET', self::API_TEST_URL);
+      $response = $this->apiCall('GET', self::API_TEST_URL);
 
       //Validate the header status code
       $response->assertStatus(200);
@@ -148,7 +137,7 @@ class UsersTest extends TestCase
       //List User with filter option
       $perPage = Faker::create()->randomDigitNotNull;
       $query = '?page=1&per_page=' . $perPage . '&order_by=firstname&order_direction=DESC&filter=' . $username;
-      $response = $this->actingAs($this->user, 'api')->json('GET', self::API_TEST_URL . $query);
+      $response = $this->apiCall('GET', self::API_TEST_URL . $query);
 
       //Validate the header status code
       $response->assertStatus(200);
@@ -234,7 +223,7 @@ class UsersTest extends TestCase
       $verify = $this->apiCall('GET', $url);
 
       //Post saved success
-      $response = $this->actingAs($this->user, 'api')->json('PUT', $url, [
+      $response = $this->apiCall('PUT', $url, [
         'username' => 'updatemytestusername',
         'email' => $faker->email,
         'firstname' => $faker->firstName,
