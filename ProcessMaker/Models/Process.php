@@ -37,7 +37,9 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  *   @OA\Property(property="bpmn", type="string"),
  *   @OA\Property(property="name", type="string"),
  *   @OA\Property(property="description", type="string"),
- *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"})
+ *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
+ *   @OA\Property(property="created_at", type="string", format="date-time"),
+ *   @OA\Property(property="updated_at", type="string", format="date-time"),
  * )
  */
 class Process extends Model implements HasMedia

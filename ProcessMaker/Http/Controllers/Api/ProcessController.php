@@ -48,11 +48,7 @@ class ProcessController extends Controller
      *             ),
      *         ),
      *     ),
-     *     security={
-     *         {
-     *             "pm-api": {},
-     *         },
-     *     },
+     *     security={{"pm-api": {}}},
      * )
      * TODO: Fix meta property above, its an object, not an array of objects.
      */
@@ -77,12 +73,12 @@ class ProcessController extends Controller
      * @return Response
      * 
      * @OA\Get(
-     *     path="/process/{processUuid}",
+     *     path="/processes/{processUuid}",
      *     summary="Get single process by ID",
      *     operationId="getProcessByUuid",
      *     tags={"Process"},
      *     @OA\Parameter(
-     *         description="ID of pet to return",
+     *         description="ID of process to return",
      *         in="path",
      *         name="processUuid",
      *         required=true,
@@ -95,6 +91,7 @@ class ProcessController extends Controller
      *         description="Successfully found the process",
      *         @OA\JsonContent(ref="#/components/schemas/Process")
      *     ),
+     *     security={{"pm-api": {}}},
      * )
      */
     public function show(Request $request, Process $process)

@@ -69,7 +69,7 @@
                 ]
             }
         },
-        "/process/{processUuid}": {
+        "/processes/{processUuid}": {
             "get": {
                 "tags": [
                     "Process"
@@ -80,7 +80,7 @@
                     {
                         "name": "processUuid",
                         "in": "path",
-                        "description": "ID of pet to return",
+                        "description": "ID of process to return",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -98,7 +98,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "pm-api": []
+                    }
+                ]
             }
         }
     },
@@ -145,6 +150,16 @@
                             "ACTIVE",
                             "INACTIVE"
                         ]
+                    },
+                    "created_at": {
+                        "description": "Represents a business process definition.",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "description": "Represents a business process definition.",
+                        "type": "string",
+                        "format": "date-time"
                     }
                 },
                 "type": "object"

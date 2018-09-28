@@ -121,7 +121,7 @@ And for a show method
     ...
 ```
 
-### Testing with Swagger UI
+#### Testing with Swagger UI
 
 Reload the swagger UI at `api/documentation` page in your browser to see the results and 
 debug any errors with the annotations.
@@ -136,7 +136,7 @@ $ php artisan tinker
 Copy the resulting token. Then in the swagger UI click on Authorize and paste the token.
 Authorize and close. You should now be able to use the "Try it out" functionality.
 
-### More Info
+#### More Info
 
 Detailed examples can be found at https://github.com/zircote/swagger-php/tree/master/Examples/petstore.swagger.io
 
