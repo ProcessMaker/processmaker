@@ -42,4 +42,21 @@ class RequestTest extends TestCase
       // check the correct view is called
       $response->assertViewIs('requests.edit');
     }
+
+     /**
+     * Test to make sure the controller and route work with the view
+     *
+     * @return void
+     */
+    public function testShowRoute()
+    {
+
+      $Request_uuid = factory(ProcessRequest::class)->create()->uuid_text;
+      // get the URL
+      $response = $this->apiCall('GET', '/requests/'. $Request_uuid);
+
+      $response->assertStatus(200);
+      // check the correct view is called
+      $response->assertViewIs('requests.show');
+    }
 }
