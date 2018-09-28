@@ -11,6 +11,7 @@ Route::namespace('Admin')->prefix('admin')->group(function(){
 });
 Route::namespace('Process')->prefix('processes')->group(function(){
   Route::resource('environment-variables', 'EnvironmentVariablesController');
+  Route::resource('documents', 'DocumentController');
 });
 Route::resource('tasks', 'TaskController');
 
