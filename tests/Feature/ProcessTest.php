@@ -65,13 +65,14 @@ class ProcessTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Test show');
     }
-    // public function testUdate()
+    // public function testUpdate()
     // {
     //     $response = $this->apiCall('POST' ,'/processes'.$process->uuid_text.'/edit', ['name' => 'Stored new user']);
     // }
-    // public function testDestroy()
-    // {
-    //     $process = factory(Process::class)->create(['name'=>'Test delete']);
-    //     $response->assertRedirect('processes.index')
-    // }
+    public function testDestroy()
+    {
+        $process = factory(Process::class)->create();
+        $response = $this->apiCall('DELETE', 'processes/'.$process->uuid_text.'');
+        $response->assertRedirect('/processes');
+    }
 }

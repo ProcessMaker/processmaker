@@ -44,13 +44,12 @@ class ProcessController extends Controller
         $request->validate(Process::rules($script));
         $process->fill($request->input());
         $process->saveOrFail();
-        return response([], 204);
+        return redirect('/processes');
     }
-    // public function destroy() // destory existing process to DB / UI
-    // {
-    //     $process = Process::find($process->id);
-    //     $process->delete();
-    //     //return modal
-    // }
+    public function destroy(Process $process) // destory existing process to DB / UI
+    {
+        $process->delete();
+        return redirect('/processes');
+    }
 
 }
