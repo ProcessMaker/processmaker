@@ -13,8 +13,6 @@ Route::resource('tasks', 'TaskController')->only([
     'index'
 ]);
 Route::resource('processes', 'ProcessController');
-Route::get('processes/{id}/edit', 'ProcessController@edit');
-// $this::get('processes/{id}', 'ProcessController@show');
 
 // Add our broadcasting routes
 Broadcast::routes();

@@ -44,14 +44,20 @@ class ProcessTest extends TestCase
         $response = $this->webGet('/processes/create');
         $response->assertViewIs('processes.create');
         $response->assertStatus(200);  
-
     }
-    // public function testStore()
-    // {
-    //     $response = $this->apiCall('POST' ,'/processes', ['name' => 'Stored new user']);  // is the uuid required?
-    //     $this->seeInDatabase('process', ['name' => 'Stored new user']);  // how do I verify DB table name?
-    //     $response->assertStatus(200);
-    // }
+    public function testStore()
+    {
+        $response = $this->apiCall('POST' ,'/processes', [
+            'name' => 'Stored new user',
+            'description' => 'descript',
+            'status' => 'ACTIVE',
+            'bpmn' => 'freilaghrjnes'
+            ]);
+        
+        $response->assertStatus(302);
+        $this->assertDatabaseHas('processes', ['name' => 'Stored new user']);  // how do I verify DB table name?
+        
+    }
     public function testShow() 
     {
         $process = factory(Process::class)->create(['name'=>'Test show']); 
@@ -62,10 +68,11 @@ class ProcessTest extends TestCase
     }
     // public function testUdate()
     // {
-    //     //POST
+    //     $response = $this->apiCall('POST' ,'/processes'.$process->uuid_text.'/edit', ['name' => 'Stored new user']);
     // }
     // public function testDestroy()
     // {
-    //     $response->assertStatus(200);
+    //     $process = factory(Process::class)->create(['name'=>'Test delete']);
+    //     $response->assertRedirect('processes.index')
     // }
 }
