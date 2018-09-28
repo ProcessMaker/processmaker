@@ -8,7 +8,7 @@
     <div class="container" id="requests-listing">
     <div class="row">
           <div class="col-3">
-                      <h1>{{__($title)}}</h1>
+                      {{-- <h1>{{__($title)}}</h1>
                       </div>
                           <div class="col-5" style="margin-top:20px">
                             <a href="#" class="btn btn-danger" @click="loadRequestsOverdue"> OVERDUE </a>
@@ -24,7 +24,7 @@
             <div style="margin-top:-20px;">
             <requests-listing :filter="filter" status="{{ $status }}"></requests-listing>
           </div>
-        </div>
+        </div> --}}
 @endsection
 
 @section('js')
