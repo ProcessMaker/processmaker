@@ -15,4 +15,27 @@ class ProcessController extends Controller
     {
         return view('processes.edit', ["process"=>$process]);
     }
+    // show, create, 
+    public function create() // create new process
+    {
+
+    }
+
+    public function store() // store new process to DB
+    {
+
+    }
+    public function show() // show new process to UI
+    {
+
+    }
+    public function update() // update existing process to DB
+    {
+
+    }
+    public function destroy() // destory existing process to DB / UI
+    {
+
+    }
+
 }

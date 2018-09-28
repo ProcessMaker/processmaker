@@ -38,15 +38,24 @@ class ProcessTest extends TestCase
       $response->assertSee('Test Edit');
     }
 
-    // public function testCreateRoute()
-    // {
-
-    //   // get the URL
-    //   $response = $this->apiCall('GET', '/admin/users/create');
-
-    //   $response->assertStatus(200);
-    //   // check the correct view is called
-    //   $response->assertViewIs('admin.users.create');
-
-    // }
+    public function testCreate()
+    {
+        $response->assertViewIs('processes.create');
+    }
+    public function testStore()
+    {
+        
+    }
+    public function testShow()
+    {
+        $response->assertViewIs('processes.show');
+    }
+    public function testUdate()
+    {
+        
+    }
+    public function testDestroy()
+    {
+        
+    }
 }
