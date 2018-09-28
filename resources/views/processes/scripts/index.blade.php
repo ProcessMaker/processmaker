@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 @section('content')
     <div id="script-container">
-        <script-editor :process="{{$process}}" :script="{{$script}}"></script-editor>
+        {{-- <script-editor :process="{{$process}}" :script="{{$script}}"></script-editor> --}}
     </div>
 @endsection
 
