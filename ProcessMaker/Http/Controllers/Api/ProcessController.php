@@ -35,11 +35,26 @@ class ProcessController extends Controller
      *         response=200,
      *         description="list of processes",
      *         @OA\JsonContent(
-     *             type="array",
-     *             @OA\Items(ref="#/components/schemas/Process")
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/Process"),
+     *             ),
+     *             @OA\Property(
+     *                 property="meta",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/metadata"),
+     *             ),
      *         ),
      *     ),
+     *     security={
+     *         {
+     *             "pm-api": {},
+     *         },
+     *     },
      * )
+     * TODO: Fix meta property above, its an object, not an array of objects.
      */
     public function index(Request $request)
     {

@@ -14,7 +14,7 @@ ProcessMaker is an open source, workflow management software suite, which includ
 
 ## Contributing
 
-When developing, make sure to turn on debuggin in your `.env` so you can see the
+When developing, make sure to turn on debugging in your `.env` so you can see the
 actual error instead of the Whoops page.
 ```
 APP_DEBUG=TRUE
@@ -37,7 +37,7 @@ reload the `/api/documentation` page:
 L5_SWAGGER_GENERATE_ALWAYS=TRUE
 ```
 
-At the comment block at the top of the model, add an OA annotation to describe
+At the comment block at the top of the model, add an @OA annotation to describe
 the schema. See `ProcessMaker/Models/Process.php` for an example
 ```php
 /**
@@ -58,7 +58,7 @@ class Process extends Model implements HasMedia
 {
 ...
 ```
-Now you can use the reference to the schema in when annotating the controllers. See
+Now you can use the reference to the schema when annotating the controllers. See
 `ProcessMaker/Http/Controllers/Api/ProcessController.php` for an example.
 ```php
     /**
@@ -121,12 +121,12 @@ And for a show method
     ...
 ```
 
+Reload the `api/documentation` page in your browser to see the results and 
+debug any errors with the annotations.
+
 Detailed examples can be found at https://github.com/zircote/swagger-php/tree/master/Examples/petstore.swagger.io
 
 Full OpenAPI 3.0 specification at https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md
-
-Reload the `api/documentation` page in your browser to see the results and 
-debug any errors with the annotations.
 
 
 ### License

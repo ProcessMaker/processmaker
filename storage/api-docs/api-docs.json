@@ -14,7 +14,7 @@
     },
     "servers": [
         {
-            "url": "http://localhost/api/1.0"
+            "url": "https://bpm4.processmaker.local/api/1.0"
         }
     ],
     "paths": {
@@ -42,15 +42,31 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/Process"
-                                    }
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Process"
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/metadata"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "pm-api": []
+                    }
+                ]
             }
         },
         "/process/{processUuid}": {
@@ -88,6 +104,14 @@
     },
     "components": {
         "schemas": {
+            "metadata": {
+                "properties": {
+                    "per_page": {
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
             "Process": {
                 "properties": {
                     "uuid": {
@@ -124,6 +148,12 @@
                     }
                 },
                 "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "pm-api": {
+                "type": "http",
+                "scheme": "bearer"
             }
         }
     }
