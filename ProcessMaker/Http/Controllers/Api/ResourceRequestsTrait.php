@@ -28,7 +28,14 @@ trait ResourceRequestsTrait
         $filter = $request->input('filter');
         if ($filter) {
             foreach ($searchableColumns as $column) {
-                $where[] = [$column, 'like', '%' . $filter . '%', 'or'];
+                if ($column == 'status') {
+                    // filtering by status must match the entire string
+                    $sub_search = '';
+                } else {
+                    // for other columns, it can match a substring
+                    $sub_search = '%';
+                }
+                $where[] = [$column, 'like', $sub_search . $filter . $sub_search, 'or'];
             }
         }
         return $where;
