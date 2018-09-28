@@ -1,7 +1,7 @@
 <?php
 
 // Routes related to Authentication (password reset, etc)
-Auth::routes();
+// Auth::routes();
 Route::namespace('Admin')->prefix('admin')->group(function(){
   Route::resource('about', 'AboutController');
   Route::resource('groups', 'GroupController');
@@ -14,7 +14,7 @@ Route::resource('tasks', 'TaskController');
 Route::resource('profile', 'ProfileController')->only([
     'index', 'edit', 'show'
 ]);
-Route::resource('request', 'RequestController')->only([
+Route::resource('requests', 'RequestController')->only([
     'index', 'edit', 'show'
 ]);
 
@@ -38,19 +38,19 @@ $this->get('password/success', function () {
 
 $this->middleware(['auth'])->group(function () {
     // Test Process Routes for Nayra
-    $this->get('/requests/{process}/new', function (ProcessMaker\Model\Process $process) {
-        //Find the process
-        $processes = $process->getDefinitions()->getElementsByTagName('process');
-        if ($processes->item(0)) {
-            $processDefinition = $processes->item(0)->getBpmnElementInstance();
-            $processId = $processDefinition->getId();
-            return view('nayra.process', compact('process', 'processId'));
-        }
-    });
-    $this->get('/nayra/request/{process}/{event}', function (ProcessMaker\Model\Process $process, $event) {
-        return view('nayra.start', compact('process', 'event'));
-    });
-    $this->get('/tasks/{view}/{process}/{instance}/{token}', 'Request\TokenController@openTask');
+    // $this->get('/requests/{process}/new', function (ProcessMaker\Model\Process $process) {
+    //     //Find the process
+    //     $processes = $process->getDefinitions()->getElementsByTagName('process');
+    //     if ($processes->item(0)) {
+    //         $processDefinition = $processes->item(0)->getBpmnElementInstance();
+    //         $processId = $processDefinition->getId();
+    //         return view('nayra.process', compact('process', 'processId'));
+    //     }
+    // });
+    // $this->get('/nayra/request/{process}/{event}', function (ProcessMaker\Model\Process $process, $event) {
+    //     return view('nayra.start', compact('process', 'event'));
+    // });
+    // $this->get('/tasks/{view}/{process}/{instance}/{token}', 'Request\TokenController@openTask');
 
     // All the routes in this group and below are for testing purposes only
 
