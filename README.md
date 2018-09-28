@@ -121,8 +121,22 @@ And for a show method
     ...
 ```
 
-Reload the `api/documentation` page in your browser to see the results and 
+### Testing with Swagger UI
+
+Reload the swagger UI at `api/documentation` page in your browser to see the results and 
 debug any errors with the annotations.
+
+All api requests are authenticated with a personal access token. You can
+generate one with php artisan tinker like so:
+
+```
+$ php artisan tinker
+>>> User::first()->createToken('api')->accessToken
+```
+Copy the resulting token. Then in the swagger UI click on Authorize and paste the token.
+Authorize and close. You should now be able to use the "Try it out" functionality.
+
+### More Info
 
 Detailed examples can be found at https://github.com/zircote/swagger-php/tree/master/Examples/petstore.swagger.io
 

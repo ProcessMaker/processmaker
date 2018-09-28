@@ -28,7 +28,7 @@ trait ResourceRequestsTrait
         $filter = $request->input('filter');
         if ($filter) {
             foreach ($searchableColumns as $column) {
-                $where[] = [$column, 'like', $filter, 'or'];
+                $where[] = [$column, 'like', '%' . $filter . '%', 'or'];
             }
         }
         return $where;
