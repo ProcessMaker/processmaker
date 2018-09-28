@@ -25,5 +25,6 @@
  *           @OA\Property(property="per_page", type="integer"),
  *         )
  *     ),
+ *     security={{"pm-api": {}}},
  * )
  */

@@ -61,12 +61,36 @@
                             }
                         }
                     }
-                },
-                "security": [
-                    {
-                        "pm-api": []
+                }
+            },
+            "post": {
+                "tags": [
+                    "Process"
+                ],
+                "summary": "Save a new process",
+                "operationId": "createProcess",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ProcessEditable"
+                            }
+                        }
                     }
-                ]
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Process"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/processes/{processUuid}": {
@@ -98,12 +122,77 @@
                             }
                         }
                     }
-                },
-                "security": [
+                }
+            },
+            "put": {
+                "tags": [
+                    "Process"
+                ],
+                "summary": "Update a process",
+                "operationId": "updateProcess",
+                "parameters": [
                     {
-                        "pm-api": []
+                        "name": "processUuid",
+                        "in": "path",
+                        "description": "ID of process to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
                     }
-                ]
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ProcessEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Process"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Process"
+                ],
+                "summary": "Delete a process",
+                "operationId": "deleteProcess",
+                "parameters": [
+                    {
+                        "name": "processUuid",
+                        "in": "path",
+                        "description": "ID of process to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Process"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     },
@@ -117,23 +206,12 @@
                 },
                 "type": "object"
             },
-            "Process": {
+            "ProcessEditable": {
                 "properties": {
-                    "uuid": {
-                        "description": "Represents a business process definition.",
-                        "type": "string"
-                    },
                     "process_category_uuid": {
                         "description": "Represents a business process definition.",
-                        "type": "string"
-                    },
-                    "user_uuid": {
-                        "description": "Represents a business process definition.",
-                        "type": "string"
-                    },
-                    "bpmn": {
-                        "description": "Represents a business process definition.",
-                        "type": "string"
+                        "type": "string",
+                        "format": "uuid"
                     },
                     "name": {
                         "description": "Represents a business process definition.",
@@ -150,6 +228,25 @@
                             "ACTIVE",
                             "INACTIVE"
                         ]
+                    }
+                },
+                "type": "object"
+            },
+            "Process": {
+                "properties": {
+                    "user_uuid": {
+                        "description": "Represents a business process definition.",
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "uuid": {
+                        "description": "Represents a business process definition.",
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "bpmn": {
+                        "description": "Represents a business process definition.",
+                        "type": "string"
                     },
                     "created_at": {
                         "description": "Represents a business process definition.",
@@ -162,7 +259,12 @@
                         "format": "date-time"
                     }
                 },
-                "type": "object"
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/ProcessEditable"
+                    }
+                ]
             }
         },
         "securitySchemes": {
@@ -171,5 +273,10 @@
                 "scheme": "bearer"
             }
         }
-    }
+    },
+    "security": [
+        {
+            "pm-api": []
+        }
+    ]
 }

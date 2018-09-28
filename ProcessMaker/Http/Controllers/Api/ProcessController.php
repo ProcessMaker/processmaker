@@ -48,7 +48,6 @@ class ProcessController extends Controller
      *             ),
      *         ),
      *     ),
-     *     security={{"pm-api": {}}},
      * )
      * TODO: Fix meta property above, its an object, not an array of objects.
      */
@@ -91,7 +90,6 @@ class ProcessController extends Controller
      *         description="Successfully found the process",
      *         @OA\JsonContent(ref="#/components/schemas/Process")
      *     ),
-     *     security={{"pm-api": {}}},
      * )
      */
     public function show(Request $request, Process $process)
@@ -106,6 +104,22 @@ class ProcessController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Validation\ValidationException
+     * 
+     * @OA\Post(
+     *     path="/processes",
+     *     summary="Save a new process",
+     *     operationId="createProcess",
+     *     tags={"Process"},
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(ref="#/components/schemas/ProcessEditable")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *     ),
+     * )
      */
     public function store(Request $request)
     {
@@ -138,6 +152,31 @@ class ProcessController extends Controller
      * @param Process $process
      * @return ResponseFactory|Response
      * @throws \Throwable
+     * 
+     * @OA\Put(
+     *     path="/processes/{processUuid}",
+     *     summary="Update a process",
+     *     operationId="updateProcess",
+     *     tags={"Process"},
+     *     @OA\Parameter(
+     *         description="ID of process to return",
+     *         in="path",
+     *         name="processUuid",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(ref="#/components/schemas/ProcessEditable")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *     ),
+     * )
      */
     public function update(Request $request, Process $process)
     {
@@ -157,6 +196,27 @@ class ProcessController extends Controller
      *
      * @return ResponseFactory|Response
      * @throws \Illuminate\Validation\ValidationException
+     * 
+     * @OA\Delete(
+     *     path="/processes/{processUuid}",
+     *     summary="Delete a process",
+     *     operationId="deleteProcess",
+     *     tags={"Process"},
+     *     @OA\Parameter(
+     *         description="ID of process to return",
+     *         in="path",
+     *         name="processUuid",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *     ),
+     * )
      */
     public function destroy(Process $process)
     {
