@@ -26,16 +26,6 @@ class GroupsTest extends TestCase
       'created_at'
   ];
 
-  /**
-   * Create group
-   */
-  protected function setUp()
-  {
-      parent::setUp();
-      $this->user = factory(User::class)->create([
-          'password' => Hash::make(self::DEFAULT_PASS),
-      ]);
-  }
 
   /**
    * Test verify the parameter required for create form
@@ -43,7 +33,7 @@ class GroupsTest extends TestCase
   public function testNotCreatedForParameterRequired()
   {
       //Post should have the parameter required
-      $response = $this->actingAs($this->user, 'api')->json('POST', self::API_TEST_URL, []);
+      $response = $this->apiCall('POST', self::API_TEST_URL, []);
 
       //Validate the header status code
       $response->assertStatus(422);
@@ -58,7 +48,7 @@ class GroupsTest extends TestCase
       //Post title duplicated
       $faker = Faker::create();
       $url = self::API_TEST_URL;
-      $response = $this->actingAs($this->user, 'api')->json('POST', $url, [
+      $response = $this->apiCall('POST', $url, [
           'name' => 'newgroup',
           'status' => 'ACTIVE'
       ]);
@@ -78,7 +68,7 @@ class GroupsTest extends TestCase
 
       //Post name duplicated
       $faker = Faker::create();
-      $response = $this->actingAs($this->user, 'api')->json('POST', self::API_TEST_URL, [
+      $response = $this->apiCall('POST', self::API_TEST_URL, [
           'name' => 'mytestname'
       ]);
 
@@ -99,7 +89,7 @@ class GroupsTest extends TestCase
 
       factory(Group::class, 10)->create();
 
-      $response = $this->actingAs($this->user, 'api')->json('GET', self::API_TEST_URL);
+      $response = $this->apiCall('GET', self::API_TEST_URL);
 
       //Validate the header status code
       $response->assertStatus(200);
@@ -129,7 +119,7 @@ class GroupsTest extends TestCase
       //List Group with filter option
       $perPage = Faker::create()->randomDigitNotNull;
       $query = '?page=1&per_page=' . $perPage . '&order_by=name&order_direction=DESC&filter=' . $name;
-      $response = $this->actingAs($this->user, 'api')->json('GET', self::API_TEST_URL . $query);
+      $response = $this->apiCall('GET', self::API_TEST_URL . $query);
 
       //Validate the header status code
       $response->assertStatus(200);
@@ -215,7 +205,7 @@ class GroupsTest extends TestCase
       $verify = $this->apiCall('GET', $url);
 
       //Post saved success
-      $response = $this->actingAs($this->user, 'api')->json('PUT', $url, [
+      $response = $this->apiCall('PUT', $url, [
         'name' => 'updatemytestname',
       ]);
 
