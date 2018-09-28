@@ -40,22 +40,31 @@ class ProcessTest extends TestCase
 
     public function testCreate()
     {
+        $process_uuid = factory(Process::class)->create(['name'=>'Test Create'])->uuid_text; // Why process_uuid vs process ?
         $response->assertViewIs('processes.create');
+        $response = $this->webGet('/processes/create');
+        $response->assertStatus(200);   // 201 because it's created?
+
     }
-    public function testStore()
-    {
-        
-    }
-    public function testShow()
-    {
-        $response->assertViewIs('processes.show');
-    }
-    public function testUdate()
-    {
-        
-    }
-    public function testDestroy()
-    {
-        
-    }
+    // public function testStore()
+    // {
+    //     $process = factory(Process::class)->create(['name'=>'Test Store']);
+    //     $response = $this->apiCall('POST' ,'/processes', ['name' => 'Stored new user']);  // is the uuid required?
+    //     $this->seeInDatabase('process', ['name' => 'Stored new user']);  // how do I verify DB table name?
+    //     $response->assertStatus(200);
+    // }
+    // public function testShow() 
+    // {
+    //     $response->assertViewIs('processes.show');
+    //     $response = $this->webGet('processes/'.$process->uuid_text.'' );
+    //     $response->assertStatus(200);
+    // }
+    // public function testUdate()
+    // {
+    //     //POST
+    // }
+    // public function testDestroy()
+    // {
+    //     $response->assertStatus(200);
+    // }
 }

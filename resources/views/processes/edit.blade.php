@@ -12,9 +12,11 @@
     <div class="row">
         <div class="col-8">
             <div class="card card-body">
+                
                 <div class="form-group">
                     <label for="processTitle">Title</label>
                     <input type="text" class="form-control" id="processTitle" value="{{$process->name}}">
+                    
                 </div>
                 <div class="form-group">
                     <label for="processTitle">Description</label>
@@ -41,6 +43,7 @@
                     <button type="button" class="btn btn-success ml-2">Save</button>
                 </div>
             </div>
+
         </div>
         <div class="col-4">
             <div class="card card-body">

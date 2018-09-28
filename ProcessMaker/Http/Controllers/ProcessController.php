@@ -13,29 +13,30 @@ class ProcessController extends Controller
     }
     public function edit(Process $process)
     {
+        
         return view('processes.edit', ["process"=>$process]);
     }
-    // show, create, 
+
     public function create() // create new process
     {
-
+        return view('processes.create');
     }
 
-    public function store() // store new process to DB
-    {
+    // public function store(Process $process) // store new process to DB
+    // {
+    //     $name = $process->name;
+    // }
+    // public function show(Process $process) // show new process to UI
+    // {
+    //     return view('processes.show', ["process"=>$process]);  // from data item in index, once clicked, this page will show with ability to edit and destroy
+    // }
+    // public function update(Process $process) // update existing process to DB
+    // {
+        
+    // }
+    // public function destroy() // destory existing process to DB / UI
+    // {
 
-    }
-    public function show() // show new process to UI
-    {
-
-    }
-    public function update() // update existing process to DB
-    {
-
-    }
-    public function destroy() // destory existing process to DB / UI
-    {
-
-    }
+    // }
 
 }
