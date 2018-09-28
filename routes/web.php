@@ -9,6 +9,9 @@ Route::namespace('Admin')->prefix('admin')->group(function(){
   Route::resource('queueMonitors', 'QueueMonitorController');
   Route::resource('users', 'UserController');
 });
+Route::namespace('Process')->prefix('processes')->group(function(){
+  Route::resource('environment-variables', 'EnvironmentVariablesController');
+});
 Route::resource('tasks', 'TaskController');
 
 Route::resource('profile', 'ProfileController')->only([
