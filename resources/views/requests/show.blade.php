@@ -2,7 +2,7 @@
 
 @section('content')
 <div id="status">
-  <request-status process-uid="{{$instance->process->uid}}" instance-uid="{{$instance->uid}}"></request-status>
+  {{-- <request-status process-uid="{{$instance->process->uid}}" instance-uid="{{$instance->uid}}"></request-status> --}}
 </div>
 @endsection
 
