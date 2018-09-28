@@ -50,8 +50,7 @@ class ProcessTest extends TestCase
         $response = $this->apiCall('POST' ,'/processes', [
             'name' => 'Stored new user',
             'description' => 'descript',
-            'status' => 'ACTIVE',
-            'bpmn' => 'freilaghrjnes'
+            'status' => 'ACTIVE'
             ]);
         
         $response->assertStatus(302);

@@ -46,6 +46,7 @@ class Process extends Model implements HasMedia
     protected $guarded = [
         'uuid',
         'user_uuid',
+        'bpmn',
         'created_at',
         'updated_at',
     ];

@@ -31,6 +31,7 @@ class ProcessController extends Controller
         $process = new Process();
         $process->fill($request->input());
         $process->user_uuid = \Auth::user()->uuid;
+        $process->bpmn = '';
         $process->saveOrFail();
         return redirect('/processes');
     }
