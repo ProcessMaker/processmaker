@@ -22,7 +22,7 @@ class EnvironmentVariablesTest extends TestCase
       // get the URL
       $response = $this->apiCall('GET', '/processes/environment-variables');
       // check the correct view is called
-    //   $response->assertViewIs('processes.environment-variables.index');
+      $response->assertViewIs('processes.environment-variables.index');
 
       $response->assertStatus(200);
 
