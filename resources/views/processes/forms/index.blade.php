@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 @section('content')
     <div id="form-container">
-        <form-builder :process="{{$process}}" :form="{{$form}}"></form-builder>
+        {{-- <form-builder :process="{{$process}}" :form="{{$form}}"></form-builder> --}}
     </div>
 @endsection
 
