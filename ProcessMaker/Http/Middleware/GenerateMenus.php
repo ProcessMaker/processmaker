@@ -94,22 +94,22 @@ class GenerateMenus
         Menu::make('sidebar_request', function ($menu) {
           $submenu = $menu->add(__('menus.sidebar_request.request'));
           $submenu->add(__('menus.sidebar_request.in_progress'), [
-                'route' => 'requests',
+                'route' => 'requests.index',
                 'icon' => 'icon-assigned',
                 'id' => 'homeid'
           ]);
           $submenu->add(__('menus.sidebar_request.draft'), [
-              'route' => 'requests.drafts',
+              'route' => 'requests.index',
               'icon' => 'icon-draft',
               'id' => 'homeid'
           ]);
           $submenu->add(__('menus.sidebar_request.completed'), [
-              'route' => 'requests.completed',
+              'route' => 'requests.index',
               'icon' => 'icon-completed-1',
               'id' => 'homeid'
           ]);
           $submenu->add(__('menus.sidebar_request.paused'), [
-              'route' => 'requests.paused',
+              'route' => 'requests.index',
               'icon' => 'icon-paused-2',
               'id' => 'homeid'
           ]);
