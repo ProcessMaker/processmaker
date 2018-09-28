@@ -13,7 +13,6 @@ class ProcessController extends Controller
     }
     public function edit(Process $process)
     {
-        
         return view('processes.edit', ["process"=>$process]);
     }
 
@@ -26,10 +25,10 @@ class ProcessController extends Controller
     // {
     //     $name = $process->name;
     // }
-    // public function show(Process $process) // show new process to UI
-    // {
-    //     return view('processes.show', ["process"=>$process]);  // from data item in index, once clicked, this page will show with ability to edit and destroy
-    // }
+    public function show(Process $process) // show new process to UI
+    {
+        return view('processes.show', ["process"=>$process]);  // from data item in index, once clicked, this page will show with ability to edit and destroy
+    }
     // public function update(Process $process) // update existing process to DB
     // {
         
