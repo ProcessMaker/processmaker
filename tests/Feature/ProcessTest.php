@@ -40,10 +40,10 @@ class ProcessTest extends TestCase
 
     public function testCreate()
     {
-        $process_uuid = factory(Process::class)->create(['name'=>'Test Create'])->uuid_text; // Why process_uuid vs process ?
-        $response->assertViewIs('processes.create');
+        $process = factory(Process::class)->create(['name'=>'Test Create']); 
         $response = $this->webGet('/processes/create');
-        $response->assertStatus(200);   // 201 because it's created?
+        $response->assertViewIs('processes.create');
+        $response->assertStatus(200);  
 
     }
     // public function testStore()
