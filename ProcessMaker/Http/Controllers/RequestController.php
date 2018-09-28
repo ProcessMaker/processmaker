@@ -28,4 +28,14 @@ class RequestController extends Controller
    {
      return view('requests.edit',compact($request));
    }
+
+    /**
+   * request show 
+   *
+   * @return \Illuminate\View\View|\Illuminate\Contracts\View
+   */
+   public function show(Request $request)
+   {
+     return view('requests.show',compact($request));
+   }
 }
