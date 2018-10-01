@@ -26,7 +26,7 @@ class GroupController extends Controller
    */
    public function edit(Group $group)
    {
-     return view('admin.groups.edit',compact($group));
+     return view('admin.groups.edit', ["group"=>$group]);
    }
 
 }

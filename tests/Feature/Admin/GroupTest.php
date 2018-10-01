@@ -36,11 +36,10 @@ class GroupTest extends TestCase
      */
     public function testEditRoute()
     {
-
-      $group_uuid = factory(Group::class)->create()->uuid_text;
-      $response = $this->apiCall('GET', '/admin/groups/'.$group_uuid . '/edit');
+      $group = factory(Group::class)->create(['name'=>"Test Edit"]);
+      $response = $this->webCall('GET', '/admin/groups/'.$group->uuid_text . '/edit');
       $response->assertStatus(200);
       $response->assertViewIs('admin.groups.edit');
-
+      $response->assertSee('Test Edit');
     }
 }
