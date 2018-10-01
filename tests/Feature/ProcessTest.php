@@ -12,12 +12,6 @@ class ProcessTest extends TestCase
     use DatabaseTransactions;
     use RequestHelper;
 
-    // protected function setUp()
-    // {
-    //     parent::setUp();
-    //     $this->user = factory(User::class)->create();
-    // }
-
     public function testIndex() {  
         factory(Process::class)->create(['name'=>'Test Process']);
         factory(Process::class)->create(['name'=>'Another Process']);

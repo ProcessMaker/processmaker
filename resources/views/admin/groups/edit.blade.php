@@ -5,6 +5,9 @@
 @endsection
 
 @Section('content')
+<div>
+    EDIT
+</div>
 @endsection
 
 @Section('js')
