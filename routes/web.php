@@ -24,9 +24,7 @@ Route::resource('profile', 'ProfileController')->only([
 Route::resource('requests', 'RequestController')->only([
     'index', 'edit', 'show'
 ]);
-Route::resource('tasks', 'TaskController')->only([
-    'index'
-]);
+Route::resource('tasks', 'TaskController');
 
 // Add our broadcasting routes
 Broadcast::routes();
