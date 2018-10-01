@@ -22,9 +22,10 @@ class Environmental_variablesTest extends TestCase
       // get the URL
       $response = $this->webCall('GET', '/processes/environmental_variables');
       // check the correct view is called
-      // $response->assertViewIs('processes.environmentVariables.index');
+      $response->assertViewIs('processes.environmental_variables.index');
 
       $response->assertStatus(200);
 
+      $response->assertSee('Environmental Variables');
     }
 }
