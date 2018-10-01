@@ -25,6 +25,7 @@ class PreferencesTest extends TestCase
       $response->assertViewIs('admin.preferences.index');
 
       $response->assertStatus(200);
+      $response->assertSee('Preferences');
 
     }
 }
