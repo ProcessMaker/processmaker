@@ -71,7 +71,7 @@ class ProcessScriptsTest extends TestCase
     public function testExecuteAProcess()
     {
         //Start a process request
-        $route = route('process_events.trigger', [$this->process->uuid_text, 'event' => '_2']);
+        $route = route('api.process_events.trigger', [$this->process->uuid_text, 'event' => '_2']);
         $data = [];
         $response = $this->json('POST', $route, $data);
         //Verify status
@@ -80,7 +80,7 @@ class ProcessScriptsTest extends TestCase
         $response->assertJsonStructure($this->requestStructure);
         $request = $response->json();
         //Get the active tasks of the request
-        $route = route('tasks.index');
+        $route = route('api.tasks.index');
         $response = $this->json('GET', $route);
         $tasks = $response->json('data');
         //Check that two script tasks were completed.

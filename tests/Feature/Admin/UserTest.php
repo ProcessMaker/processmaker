@@ -64,10 +64,9 @@ class UserTest extends TestCase
      */
     public function testCreateRoute()
     {
-
       // get the URL
-      $response = $this->apiCall('GET', '/admin/users/create');
-
+      $response = $this->webCall('GET', '/admin/users/create');
+      
       $response->assertStatus(200);
       // check the correct view is called
       $response->assertViewIs('admin.users.create');

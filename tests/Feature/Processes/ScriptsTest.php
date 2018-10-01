@@ -20,11 +20,8 @@ class ScriptsTest extends TestCase
     {
 
       // get the URL
-      $response = $this->apiCall('GET', '/processes/scripts');
-      // check the correct view is called
-      $response->assertViewIs('processes.scripts.index');
-
+      $response = $this->webCall('GET', '/processes/scripts');
       $response->assertStatus(200);
-
+      $response->assertViewIs('processes.scripts.index');
     }
 }
