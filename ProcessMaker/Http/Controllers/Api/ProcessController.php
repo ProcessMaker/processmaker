@@ -17,9 +17,39 @@ class ProcessController extends Controller
     use ResourceRequestsTrait;
 
     /**
-     * Display a listing of the resource.
-     *
-     * @return Response
+     * @OA\Get(
+     *     path="/processes",
+     *     summary="Returns all processes that the user has access to",
+     *     operationId="getProcesses",
+     *     tags={"Process"},
+     *     @OA\Parameter(
+     *         name="filter",
+     *         in="query",
+     *         description="Filter results with a string. Searches Name, Description, and Status",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="list of processes",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/Process"),
+     *             ),
+     *             @OA\Property(
+     *                 property="meta",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/metadata"),
+     *             ),
+     *         ),
+     *     ),
+     * )
+     * TODO: Fix meta property above, its an object, not an array of objects.
      */
     public function index(Request $request)
     {
@@ -40,6 +70,27 @@ class ProcessController extends Controller
      * @param $process
      *
      * @return Response
+     * 
+     * @OA\Get(
+     *     path="/processes/{processUuid}",
+     *     summary="Get single process by ID",
+     *     operationId="getProcessByUuid",
+     *     tags={"Process"},
+     *     @OA\Parameter(
+     *         description="ID of process to return",
+     *         in="path",
+     *         name="processUuid",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successfully found the process",
+     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *     ),
+     * )
      */
     public function show(Request $request, Process $process)
     {
@@ -53,6 +104,22 @@ class ProcessController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Validation\ValidationException
+     * 
+     * @OA\Post(
+     *     path="/processes",
+     *     summary="Save a new process",
+     *     operationId="createProcess",
+     *     tags={"Process"},
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(ref="#/components/schemas/ProcessEditable")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *     ),
+     * )
      */
     public function store(Request $request)
     {
@@ -85,6 +152,31 @@ class ProcessController extends Controller
      * @param Process $process
      * @return ResponseFactory|Response
      * @throws \Throwable
+     * 
+     * @OA\Put(
+     *     path="/processes/{processUuid}",
+     *     summary="Update a process",
+     *     operationId="updateProcess",
+     *     tags={"Process"},
+     *     @OA\Parameter(
+     *         description="ID of process to return",
+     *         in="path",
+     *         name="processUuid",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(ref="#/components/schemas/ProcessEditable")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *     ),
+     * )
      */
     public function update(Request $request, Process $process)
     {
@@ -104,6 +196,27 @@ class ProcessController extends Controller
      *
      * @return ResponseFactory|Response
      * @throws \Illuminate\Validation\ValidationException
+     * 
+     * @OA\Delete(
+     *     path="/processes/{processUuid}",
+     *     summary="Delete a process",
+     *     operationId="deleteProcess",
+     *     tags={"Process"},
+     *     @OA\Parameter(
+     *         description="ID of process to return",
+     *         in="path",
+     *         name="processUuid",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *     ),
+     * )
      */
     public function destroy(Process $process)
     {

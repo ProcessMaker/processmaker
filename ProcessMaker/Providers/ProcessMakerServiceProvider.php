@@ -16,6 +16,7 @@ use ProcessMaker\Managers\TaskManager;
 use ProcessMaker\Managers\TasksDelegationManager;
 use ProcessMaker\Managers\UserManager;
 use Laravel\Horizon\Horizon;
+use Laravel\Passport\Passport;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Resources\Json\Resource;
 
@@ -97,5 +98,8 @@ class ProcessMakerServiceProvider extends ServiceProvider
         Horizon::auth(function ($request) {
             return !empty(Auth::user());
         });
+
+        // we are using custom passport migrations
+        Passport::ignoreMigrations();
     }
 }

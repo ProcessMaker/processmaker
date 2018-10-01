@@ -5,7 +5,9 @@
 @endsection
 
 @section('content')
+
     <div class="container" id="requests-listing">
+
     <div class="row">
           <div class="col-3">
                       {{-- <h1>{{__($title)}}</h1>
