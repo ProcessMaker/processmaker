@@ -23,5 +23,7 @@ class ScriptsTest extends TestCase
       $response = $this->webCall('GET', '/processes/scripts');
       $response->assertStatus(200);
       $response->assertViewIs('processes.scripts.index');
+      $response->assertSee('Scripts');
+
     }
 }
