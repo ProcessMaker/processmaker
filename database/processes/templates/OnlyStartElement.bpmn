@@ -5,9 +5,15 @@
         xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
         xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
         xmlns:di="http://www.omg.org/spec/BPMN/20100524/DI"
-        xmlns:pm="https://bpm4.processmaker.local/definitions/ProcessMaker.xsd"
-        id="DefinitionsId"
-        targetNamespace="http://bpmn.io/schema/bpmn">
+        xmlns:pm="http://127.0.0.1/ProcessMaker.xsd"        
+        targetNamespace="http://bpmn.io/schema/bpmn"
+        xmlns:tns="http://sourceforge.net/bpmn/definitions/_1530553328908" 
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+        xmlns:yaoqiang="http://bpmn.sourceforge.net"        
+        expressionLanguage="http://www.w3.org/1999/XPath"
+        typeLanguage="http://www.w3.org/2001/XMLSchema" 
+        xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">    
+    
     <bpmn:process id="ProcessId" isExecutable="true" name="ProcessName">
         <bpmn:startEvent id="StartEventId"/>
     </bpmn:process>
