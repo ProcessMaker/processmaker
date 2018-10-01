@@ -42,11 +42,15 @@ trait RequestHelper
         return $response;
     }
 
-    protected function webGet($url, $params = [])
+    protected function webCall($method, $url, $params = [])
     {
         $response = $this->actingAs($this->user, 'api')
-                         ->get($url, $params);
+                         ->call($method, $url, $params);
         $this->_debug_response = $response;
         return $response;
+    }
+    protected function webGet($url, $params = [])
+    {
+        return $this->webCall('GET', $url, $params);
     }
 }

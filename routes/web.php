@@ -9,19 +9,23 @@ Route::namespace('Admin')->prefix('admin')->group(function(){
   Route::resource('queueMonitors', 'QueueMonitorController');
   Route::resource('users', 'UserController');
 });
+
+Route::resource('processes', 'ProcessController');
 Route::namespace('Process')->prefix('processes')->group(function(){
   Route::resource('environment-variables', 'EnvironmentVariablesController');
   Route::resource('documents', 'DocumentController');
   Route::resource('forms', 'FormController');
   Route::resource('scripts', 'ScriptController');
 });
-Route::resource('tasks', 'TaskController');
 
 Route::resource('profile', 'ProfileController')->only([
     'index', 'edit', 'show'
 ]);
 Route::resource('requests', 'RequestController')->only([
     'index', 'edit', 'show'
+]);
+Route::resource('tasks', 'TaskController')->only([
+    'index'
 ]);
 
 // Add our broadcasting routes
@@ -88,11 +92,11 @@ $this->middleware(['auth'])->group(function () {
 
     $this->get('/', 'HomeController@index')->name('home');
 
-    $this->get('/process/{process}/tasks', 'Designer\TaskController@index')->name('processes-task-index');
-    $this->get('/processes', 'Designer\ProcessController@index')->name('processes');
-    $this->get('/processes/categories', 'Designer\ProcessCategoryController@index')->name('process-categories-index');
-    $this->get('/designer/{process?}', 'Designer\ProcessController@show')->name('designer-edit-process');
-    $this->get('/designer/{process}/form/{form}', 'Designer\FormController@show')->name('designer-edit-form');
-    $this->get('/processes/{process}/script/{script}', 'Designer\ScriptController@show')->name('designer-edit-script');
+    // $this->get('/process/{process}/tasks', 'Designer\TaskController@index')->name('processes-task-index');
+    // $this->get('/processes', 'Designer\ProcessController@index')->name('processes');
+    // $this->get('/processes/categories', 'Designer\ProcessCategoryController@index')->name('process-categories-index');
+    // $this->get('/designer/{process?}', 'Designer\ProcessController@show')->name('designer-edit-process');
+    // $this->get('/designer/{process}/form/{form}', 'Designer\FormController@show')->name('designer-edit-form');
+    // $this->get('/processes/{process}/script/{script}', 'Designer\ScriptController@show')->name('designer-edit-script');
 
 });
