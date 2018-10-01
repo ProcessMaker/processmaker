@@ -42,4 +42,13 @@ class GroupTest extends TestCase
       $response->assertViewIs('admin.groups.edit');
       $response->assertSee('Test Edit');
     }
+
+    public function testShowRoute() 
+    {
+        $group = factory(Group::class)->create(['name'=>'Test show']);
+        $response = $this->webGet('/admin/groups/'. $group->uuid_text );
+        $response->assertViewIs('admin.groups.show');
+        $response->assertStatus(200);
+        $response->assertSee('Test show');
+    }
 }

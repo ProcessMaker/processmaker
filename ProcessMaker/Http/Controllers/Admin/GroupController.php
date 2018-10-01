@@ -29,4 +29,8 @@ class GroupController extends Controller
      return view('admin.groups.edit', ["group"=>$group]);
    }
 
+   public function show(Group $group) // show new process to UI
+   {
+       return view('admin.groups.show', ["group"=>$group]);  // from data item in index, once clicked, this page will show with ability to edit and destroy
+   }
 }
