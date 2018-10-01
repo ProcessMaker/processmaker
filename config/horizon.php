@@ -92,5 +92,15 @@ return [
                 'tries' => 3,
             ],
         ],
+        
+        'staging' => [
+            'supervisor-1' => [
+                'connection' => 'redis',
+                'queue' => ['default'],
+                'balance' => 'simple',
+                'processes' => 3,
+                'tries' => 3,
+            ],
+        ],
     ],
 ];
