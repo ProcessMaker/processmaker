@@ -4,7 +4,7 @@ namespace Tests\Feature\Api;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
 
-class ProcessTest extends TestCase
+class DocumentationTest extends TestCase
 {
     public function testGenerateSwaggerDocument()
     {
