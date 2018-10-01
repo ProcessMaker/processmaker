@@ -7,7 +7,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Feature\Shared\RequestHelper;
 
-class EnvironmentVariablesTest extends TestCase
+class Environmental_variablesTest extends TestCase
 {
     use RequestHelper;
     

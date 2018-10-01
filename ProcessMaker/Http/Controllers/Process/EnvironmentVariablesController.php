@@ -14,7 +14,7 @@ class EnvironmentVariablesController extends Controller
      */
     public function index()
     {
-        return view('processes.environment-variables.index');
+        return view('processes.environmental_variables.index');
     }
 
 }
