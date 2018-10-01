@@ -41,7 +41,7 @@ class ProcessController extends Controller
     }
     public function update(Process $process, Request $request) // update existing process to DB
     {
-        $request->validate(Process::rules($script));
+        $request->validate(Process::rules($request));
         $process->fill($request->input());
         $process->saveOrFail();
         return redirect('/processes');
