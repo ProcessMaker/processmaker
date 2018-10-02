@@ -10,8 +10,8 @@
                         <b-btn variant="action" @click="onAction('edit-item', props.rowData, props.rowIndex)"
                                v-b-tooltip.hover title="Edit"><i class="fas fa-edit"></i></b-btn>
                         <b-btn variant="action" @click="onAction('toggle-status', props.rowData, props.rowIndex)"
-                               v-b-tooltip.hover :title='activateBtnTitle(props.rowData)'><i class="fas"
-                                                                                             v-bind:class='activateBtnCssClass(props.rowData)'></i>
+                               v-b-tooltip.hover :title='activateBtnTitle(props.rowData)'>
+                            <i class="fas" v-bind:class='activateBtnCssClass(props.rowData)'></i>
                         </b-btn>
                         <b-btn variant="action" @click="onAction('remove-item', props.rowData, props.rowIndex)"
                                v-b-tooltip.hover title="Remove"><i class="fas fa-trash-alt"></i></b-btn>
@@ -19,7 +19,7 @@
                 </div>
             </template>
         </vuetable>
-        <pagination single="Process" plural="Processs" :perPageSelectEnabled="true" @changePerPage="changePerPage"
+        <pagination single="Process" plural="Processes" :perPageSelectEnabled="true" @changePerPage="changePerPage"
                     @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
     </div>
 </template>
@@ -41,8 +41,8 @@
                         direction: "asc"
                     }
                 ],
-                fields: [
 
+                fields: [
                     {
                         title: "Process",
                         name: "name",
@@ -50,8 +50,8 @@
                     },
                     {
                         title: "Category",
-                        name: "category",
-                        sortField: "category"
+                        name: "category.name",
+                        sortField: "category.name"
                     },
                     {
                         title: "Status",
@@ -62,7 +62,8 @@
                     {
                         title: "Modified By",
                         name: "user",
-                        sortField: "user",
+                        sortField: "user.firstname",
+                        callback: this.formatUserName
                     },
                     {
                         title: "Modified",
@@ -85,26 +86,26 @@
         },
 
         methods: {
-            activateBtnCssClass (data) {
-                var showPowerOn = (data.status === 'INACTIVE') ? true : false;
-                var showPowerOff = (data.status === 'ACTIVE') ? true : false;
+            activateBtnCssClass(data) {
+                let showPowerOn = (data.status === 'INACTIVE');
+                let showPowerOff = (data.status === 'ACTIVE');
                 return {
                     'fa-toggle-off': showPowerOff,
                     'fa-toggle-on': showPowerOn
                 };
             },
-            activateBtnTitle (data) {
+            activateBtnTitle(data) {
                 return (data.status === 'ACTIVE') ? 'Deactivate' : 'Activate'
             },
-            onAction (actionType, data, index) {
+            onAction(actionType, data, index) {
                 if (actionType === 'edit-item') {
-                    window.open('/designer/' + data.uid,'_self');
+                    window.open('/designer/' + data.uuid, '_self');
                 }
 
                 if (actionType === 'toggle-status') {
                     this.loading = true;
                     ProcessMaker.apiClient
-                        .put('/processes/' + data.uid, {
+                        .put('/processes/' + data.uuid, {
                             status: (data.status === 'ACTIVE') ? 'INACTIVE' : 'ACTIVE'
                         })
                         .then(response => {
@@ -117,7 +118,7 @@
                     let that = this;
                     ProcessMaker.confirmModal('Caution!', '<b>Are you sure to delete the category </b>' + data.name + '?', '', function () {
                         ProcessMaker.apiClient
-                            .delete('processes/' + data.uid)
+                            .delete('processes/' + data.uuid)
                             .then(response => {
                                 ProcessMaker.alert('Process successfully eliminated', 'success');
                                 that.fetch();
@@ -132,36 +133,38 @@
                 status = status.charAt(0).toUpperCase() + status.slice(1);
                 return response + status;
             },
+            formatUserName(user) {
+                return (user.avatar
+                    ? this.createImg({'src': user.avatar, 'class': 'rounded-user'})
+                    : '<i class="fa fa-user rounded-user"></i>')
+                    + '<span>' + user.fullname + '</span>';
+            },
+            createImg(properties) {
+                let container = document.createElement('div');
+                let node = document.createElement('img');
+                for (let property in properties) {
+                    node.setAttribute(property, properties[property]);
+                }
+                container.appendChild(node);
+                return container.innerHTML;
+            },
             fetch() {
                 this.loading = true;
-                if (this.cancelToken) {
-                    this.cancelToken();
-                    this.cancelToken = null;
-                }
-                const CancelToken = ProcessMaker.apiClient.CancelToken;
-
-                //@todo change the method to obtain ID of the process.
-                var path = location.pathname.split('/');
-
                 // Load from our api client
                 ProcessMaker.apiClient
                     .get(
-                        "processes/" +
-                        "?page=" +
+                        'processes' +
+                        '?page=' +
                         this.page +
-                        "&per_page=" +
+                        '&per_page=' +
                         this.perPage +
-                        "&filter=" +
+                        '&filter=' +
                         this.filter +
-                        "&order_by=" +
+                        '&order_by=' +
                         this.orderBy +
-                        "&order_direction=" +
-                        this.orderDirection,
-                        {
-                            cancelToken: new CancelToken(c => {
-                                this.cancelToken = c;
-                            })
-                        }
+                        '&order_direction=' +
+                        this.orderDirection +
+                        '&include=category,user'
                     )
                     .then(response => {
                         this.data = this.transform(response.data);
@@ -179,7 +182,14 @@
         width: 150px;
         text-align: center;
     }
+
     /deep/ th#_description {
         width: 250px;
+    }
+
+    /deep/ .rounded-user {
+        border-radius: 50% !important;
+        height: 1.5em;
+        margin-right: 0.5em;
     }
 </style>

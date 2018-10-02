@@ -70,7 +70,7 @@ class ProcessController extends Controller
      * @param $process
      *
      * @return Response
-     * 
+     *
      * @OA\Get(
      *     path="/processes/{processUuid}",
      *     summary="Get single process by ID",
@@ -104,7 +104,7 @@ class ProcessController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Validation\ValidationException
-     * 
+     *
      * @OA\Post(
      *     path="/processes",
      *     summary="Save a new process",
@@ -152,7 +152,7 @@ class ProcessController extends Controller
      * @param Process $process
      * @return ResponseFactory|Response
      * @throws \Throwable
-     * 
+     *
      * @OA\Put(
      *     path="/processes/{processUuid}",
      *     summary="Update a process",
@@ -196,7 +196,7 @@ class ProcessController extends Controller
      *
      * @return ResponseFactory|Response
      * @throws \Illuminate\Validation\ValidationException
-     * 
+     *
      * @OA\Delete(
      *     path="/processes/{processUuid}",
      *     summary="Delete a process",
@@ -253,6 +253,6 @@ class ProcessController extends Controller
         $processRequest = WorkflowManager::triggerStartEvent($process, $event, $data);
         return new ProcessRequests($processRequest);
     }
-    
-    
+
+
 }

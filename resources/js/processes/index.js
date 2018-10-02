@@ -3,7 +3,7 @@ import ProcessesListing from './components/ProcessesListing'
 import ModalCreateProcess from "./components/modal/modal-process-add.vue";
 
 new Vue({
-    el: '#processes-listing',
+    el: '#processIndex',
     data: {
         filter: '',
         processModal: false
