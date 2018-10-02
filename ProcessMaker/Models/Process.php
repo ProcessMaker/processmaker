@@ -41,7 +41,6 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  *   allOf={@OA\Schema(ref="#/components/schemas/ProcessEditable")},
  *   @OA\Property(property="user_uuid", type="string", format="uuid"),
  *   @OA\Property(property="uuid", type="string", format="uuid"),
- *   @OA\Property(property="bpmn", type="string"),
  *   @OA\Property(property="created_at", type="string", format="date-time"),
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
  * )

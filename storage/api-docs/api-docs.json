@@ -27,13 +27,19 @@
                 "operationId": "getProcesses",
                 "parameters": [
                     {
-                        "name": "filter",
-                        "in": "query",
-                        "description": "Filter results with a string. Searches Name, Description, and Status",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    },
+                    {
+                        "$ref": "#/components/parameters/include"
                     }
                 ],
                 "responses": {
@@ -50,10 +56,12 @@
                                             }
                                         },
                                         "meta": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/metadata"
-                                            }
+                                            "type": "object",
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/metadata"
+                                                }
+                                            ]
                                         }
                                     },
                                     "type": "object"
@@ -198,14 +206,6 @@
     },
     "components": {
         "schemas": {
-            "metadata": {
-                "properties": {
-                    "per_page": {
-                        "type": "integer"
-                    }
-                },
-                "type": "object"
-            },
             "ProcessEditable": {
                 "properties": {
                     "process_category_uuid": {
@@ -244,10 +244,6 @@
                         "type": "string",
                         "format": "uuid"
                     },
-                    "bpmn": {
-                        "description": "Represents a business process definition.",
-                        "type": "string"
-                    },
                     "created_at": {
                         "description": "Represents a business process definition.",
                         "type": "string",
@@ -265,6 +261,99 @@
                         "$ref": "#/components/schemas/ProcessEditable"
                     }
                 ]
+            },
+            "metadata": {
+                "properties": {
+                    "filter": {
+                        "type": "string"
+                    },
+                    "sort_by": {
+                        "type": "string"
+                    },
+                    "sort_order": {
+                        "type": "string",
+                        "enum": [
+                            "ASC",
+                            "DESC"
+                        ]
+                    },
+                    "count": {
+                        "type": "integer"
+                    },
+                    "total_pages": {
+                        "type": "integer"
+                    },
+                    "current_page": {
+                        "type": "integer"
+                    },
+                    "form": {
+                        "type": "integer"
+                    },
+                    "last_page": {
+                        "type": "integer"
+                    },
+                    "path": {
+                        "type": "string"
+                    },
+                    "per_page": {
+                        "type": "integer"
+                    },
+                    "to": {
+                        "type": "integer"
+                    },
+                    "total": {
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "parameters": {
+            "filter": {
+                "name": "filter",
+                "in": "query",
+                "description": "Filter results by string. Searches Name, Description, and Status. Status must match exactly. Others can be a substring.",
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "order_by": {
+                "name": "order_by",
+                "in": "query",
+                "description": "Field to order results by",
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "order_direction": {
+                "name": "order_direction",
+                "in": "query",
+                "schema": {
+                    "type": "string",
+                    "default": "asc",
+                    "enum": [
+                        "asc",
+                        "desc"
+                    ]
+                }
+            },
+            "per_page": {
+                "name": "per_page",
+                "in": "query",
+                "schema": {
+                    "type": "integer",
+                    "default": "10"
+                }
+            },
+            "include": {
+                "name": "include",
+                "in": "query",
+                "description": "Include data from related models in payload. Comma seperated list.",
+                "schema": {
+                    "type": "string",
+                    "default": ""
+                },
+                "example": "category,user"
             }
         },
         "securitySchemes": {
