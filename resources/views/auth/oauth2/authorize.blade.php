@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Style sheets -->
-    <link rel="stylesheet" type="text/css" href="/assets/css/pure-min.css">
-    <link rel="stylesheet" href="/assets/css/base-min.css">
-    <link rel="stylesheet" type="text/css" href="/assets/css/grids-responsive-min.css">
-    <link rel="stylesheet" type="text/css" href="/assets/css/oauth2.css">
+    <link rel="stylesheet" type="text/css" href="/css/pure-min.css">
+    <link rel="stylesheet" href="/css/base-min.css">
+    <link rel="stylesheet" type="text/css" href="/css/grids-responsive-min.css">
+    <link rel="stylesheet" type="text/css" href="/css/oauth2.css">
 </head>
 <body>
 

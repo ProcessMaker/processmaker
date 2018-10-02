@@ -1,5 +1,5 @@
 import {mount, shallow} from '@vue/test-utils'
-import actions from '../../../../resources/assets/js/designer/actions'
+import actions from '../../../../resources/js/designer/actions'
 
 describe('designer.vue', () => {
     beforeEach(() => {

@@ -85,7 +85,7 @@
 </script>
 
 <style lang="scss" scoped>
- @import 'resources/assets/sass/_variables.scss';
+ @import 'resources/sass/_variables.scss';
 
   .meta {
     font-size: 12px;
