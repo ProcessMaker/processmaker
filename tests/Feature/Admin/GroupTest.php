@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
 use Tests\Feature\Shared\RequestHelper;
@@ -12,15 +13,7 @@ use Tests\Feature\Shared\RequestHelper;
 class GroupTest extends TestCase
 {
     use RequestHelper;
-      /**
-     * Create initial user
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-        $this->user = factory(User::class)->create();
-    }
-
+    use DatabaseTransactions;
      /**
      * Test to make sure the controller and route work with the view
      *
@@ -28,14 +21,13 @@ class GroupTest extends TestCase
      */
     public function testIndexRoute()
     {
-
-      // get the URL
-      $response = $this->apiCall('GET', '/admin/groups');
-      // check the correct view is called
+      factory(Group::class)->create(['name'=>'Test Group']);
+      factory(Group::class)->create(['name'=>'Another group']);
+      $response = $this->webCall('GET', '/admin/groups');
       $response->assertViewIs('admin.groups.index');
-
+      $response->assertSee('Test Group');
+      $response->assertSee('Another group');
       $response->assertStatus(200);
-
     }
      /**
      * Test to make sure the controller and route work with the view
@@ -44,14 +36,10 @@ class GroupTest extends TestCase
      */
     public function testEditRoute()
     {
-
-      $group_uuid = factory(Group::class)->create()->uuid_text;
-      // get the URL
-      $response = $this->apiCall('GET', '/admin/groups/'.$group_uuid . '/edit');
-
+      $group = factory(Group::class)->create(['name'=>"Test Edit"]);
+      $response = $this->webCall('GET', '/admin/groups/'.$group->uuid_text . '/edit');
       $response->assertStatus(200);
-      // check the correct view is called
       $response->assertViewIs('admin.groups.edit');
-
+      $response->assertSee('Test Edit');
     }
 }

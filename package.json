@@ -95,13 +95,13 @@
       ".*\\.(vue)$": "<rootDir>/node_modules/vue-jest"
     },
     "moduleNameMapper": {
-      "@pmjs(.*)$": "<rootDir>/resources/assets/js/$1"
+      "@pmjs(.*)$": "<rootDir>/resources/js/$1"
     },
     "transformIgnorePatterns": [
       "node_modules/(?!(vuetable-2)/)"
     ],
     "roots": [
-      "<rootDir>/resources/assets/js/",
+      "<rootDir>/resources/js/",
       "<rootDir>/tests/js/"
     ],
     "collectCoverage": true,
