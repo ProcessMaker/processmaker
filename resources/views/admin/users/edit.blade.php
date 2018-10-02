@@ -11,35 +11,42 @@
         <div class="col-8">
           <div class="card card-body">
             <div class="form-group">
-              <label for="exampleInputEmail1">Username</label>
+              <!-- <label for="exampleInputEmail1">Username</label> -->
+              {!! Form::label('Username', 'Username') !!}
               <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
               <small id="emailHelp" class="form-text text-muted">Username must be distinct</small>
             </div>
             <div class="form-group">
-              <label for="exampleInputEmail1">First Name</label>
+              <!-- <label for="exampleInputEmail1">First Name</label> -->
+              {!! Form::label('F_Name', 'First Name') !!}
               <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
             </div>
             <div class="form-group">
-              <label for="exampleInputEmail1">Last Name</label>
+              <!-- <label for="exampleInputEmail1">Last Name</label> -->
+              {!! Form::label('L_Name', 'Last Name') !!}
               <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
             </div>
             <div class="form-group">
-              <label for="exampleInputEmail1">Email</label>
+              <!-- <label for="exampleInputEmail1">Email</label> -->
+              {!! Form::label('email', 'Email') !!}
               <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
             </div>
             <div class="form-group">
-              <label for="exampleFormControlSelect1">Status</label>
+              <!-- <label for="exampleFormControlSelect1">Status</label> -->
+              {!! Form::label('Status', 'Status') !!}
               <select class="form-control" id="exampleFormControlSelect1">
                 <option>ACTIVE</option>
                 <option>INACTIVE</option>
               </select>
             </div>
             <div class="form-group">
-              <label for="exampleInputEmail1">Password</label>
+              <!-- <label for="exampleInputEmail1">Password</label> -->
+              {!! Form::label('password', 'Password') !!}
               <input type="password" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
             </div>
             <div class="form-group">
-              <label for="exampleInputEmail1">Confirm Password</label>
+              <!-- <label for="exampleInputEmail1">Confirm Password</label> -->
+              {!! Form::label('password_confirm', 'Confirm Password') !!}
               <input type="password" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
             </div>
             <div class="d-flex justify-content-end mt-2">
