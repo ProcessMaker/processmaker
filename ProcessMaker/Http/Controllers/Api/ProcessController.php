@@ -22,15 +22,12 @@ class ProcessController extends Controller
      *     summary="Returns all processes that the user has access to",
      *     operationId="getProcesses",
      *     tags={"Process"},
-     *     @OA\Parameter(
-     *         name="filter",
-     *         in="query",
-     *         description="Filter results with a string. Searches Name, Description, and Status",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
+     *     @OA\Parameter(ref="#/components/parameters/filter"),
+     *     @OA\Parameter(ref="#/components/parameters/order_by"),
+     *     @OA\Parameter(ref="#/components/parameters/order_direction"),
+     *     @OA\Parameter(ref="#/components/parameters/per_page"),
+     *     @OA\Parameter(ref="#/components/parameters/include"),
+     * 
      *     @OA\Response(
      *         response=200,
      *         description="list of processes",
@@ -43,13 +40,12 @@ class ProcessController extends Controller
      *             ),
      *             @OA\Property(
      *                 property="meta",
-     *                 type="array",
-     *                 @OA\Items(ref="#/components/schemas/metadata"),
+     *                 type="object",
+     *                 allOf={@OA\Schema(ref="#/components/schemas/metadata")},
      *             ),
      *         ),
      *     ),
      * )
-     * TODO: Fix meta property above, its an object, not an array of objects.
      */
     public function index(Request $request)
     {
