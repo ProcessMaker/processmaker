@@ -84,7 +84,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/ProcessCategory"
+                                "$ref": "#/components/schemas/ProcessCategoryEditable"
                             }
                         }
                     }
@@ -389,6 +389,193 @@
                     }
                 }
             }
+        },
+        "/requests": {
+            "get": {
+                "tags": [
+                    "ProcessRequests"
+                ],
+                "summary": "Returns all process Requests that the user has access to",
+                "operationId": "getProcessesRequests",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    },
+                    {
+                        "$ref": "#/components/parameters/include"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of processes",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "description": "Display a listing of the resource.",
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/requests"
+                                            }
+                                        },
+                                        "meta": {
+                                            "description": "Display a listing of the resource.",
+                                            "type": "object",
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/metadata"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "ProcessRequests"
+                ],
+                "summary": "Save a new process request",
+                "operationId": "createProcessRequest",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/requestsEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/requests"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/requests/{process_request_uuid}": {
+            "get": {
+                "tags": [
+                    "ProcessRequests"
+                ],
+                "summary": "Get single process request by ID",
+                "operationId": "getProcessRequestByUuid",
+                "parameters": [
+                    {
+                        "name": "process_request_uuid",
+                        "in": "path",
+                        "description": "ID of process request to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the process",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/requests"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "ProcessRequests"
+                ],
+                "summary": "Update a process request",
+                "operationId": "updateProcessRequest",
+                "parameters": [
+                    {
+                        "name": "process_request_uuid",
+                        "in": "path",
+                        "description": "ID of process request to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/requestsEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/requests"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "ProcessRequests"
+                ],
+                "summary": "Delete a process request",
+                "operationId": "deleteProcessRequest",
+                "parameters": [
+                    {
+                        "name": "process_request_uuid",
+                        "in": "path",
+                        "description": "ID of process request to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/requests"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -488,6 +675,83 @@
                 "allOf": [
                     {
                         "$ref": "#/components/schemas/ProcessCategoryEditable"
+                    }
+                ]
+            },
+            "requestsEditable": {
+                "properties": {
+                    "name": {
+                        "description": "Represents an Eloquent model of a Request which is an instance of a Process.",
+                        "type": "string"
+                    },
+                    "process_uuid": {
+                        "description": "Represents an Eloquent model of a Request which is an instance of a Process.",
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "callable_uuid": {
+                        "description": "Represents an Eloquent model of a Request which is an instance of a Process.",
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "data": {
+                        "description": "Represents an Eloquent model of a Request which is an instance of a Process.",
+                        "type": "string",
+                        "format": "json"
+                    },
+                    "status": {
+                        "description": "Represents an Eloquent model of a Request which is an instance of a Process.",
+                        "type": "string",
+                        "enum": [
+                            "ACTIVE",
+                            "INACTIVE"
+                        ]
+                    }
+                },
+                "type": "object"
+            },
+            "requests": {
+                "properties": {
+                    "uuid": {
+                        "description": "Represents an Eloquent model of a Request which is an instance of a Process.",
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "process_collaboration_uuid": {
+                        "description": "Represents an Eloquent model of a Request which is an instance of a Process.",
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "user_uuid": {
+                        "description": "Represents an Eloquent model of a Request which is an instance of a Process.",
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "participant_uuid": {
+                        "description": "Represents an Eloquent model of a Request which is an instance of a Process.",
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "process_category_uuid": {
+                        "description": "Represents an Eloquent model of a Request which is an instance of a Process.",
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "created_at": {
+                        "description": "Represents an Eloquent model of a Request which is an instance of a Process.",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "description": "Represents an Eloquent model of a Request which is an instance of a Process.",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/requestsEditable"
                     }
                 ]
             },
