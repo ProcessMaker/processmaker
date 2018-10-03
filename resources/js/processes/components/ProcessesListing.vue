@@ -150,6 +150,8 @@
             },
             fetch() {
                 this.loading = true;
+                //change method sort by user
+                this.orderBy = this.orderBy === 'user' ? 'user.firstname' : this.orderBy;
                 // Load from our api client
                 ProcessMaker.apiClient
                     .get(
