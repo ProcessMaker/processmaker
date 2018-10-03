@@ -24,7 +24,7 @@
       <meta name="alertMessage" content="{{$message}}">
     @endif
 
-    <title>{{ $title or __('Welcome') }} - {{__('ProcessMaker')}}</title>
+    <title>@yield('title',__('Welcome')) - {{__('ProcessMaker')}}</title>
     <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico" />
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     <link href="{{ mix('css/sidebar.css') }}" rel="stylesheet">

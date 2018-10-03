@@ -1,6 +1,6 @@
 import {mount, shallow, shallowMount} from "@vue/test-utils"
-import {Elements} from "../../../../../resources/assets/js/designer/diagram/elements"
-import {JointElements} from "../../../../../resources/assets/js/designer/diagram/jointElements"
+import {Elements} from "../../../../../resources/js/designer/diagram/elements"
+import {JointElements} from "../../../../../resources/js/designer/diagram/jointElements"
 import joint from "jointjs"
 
 document.body.innerHTML =

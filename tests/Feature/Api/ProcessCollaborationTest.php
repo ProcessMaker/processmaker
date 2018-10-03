@@ -85,7 +85,7 @@ class ProcessCollaborationTest extends TestCase
     {
         $process = $this->createTestCollaborationProcess();
         //Start a process request
-        $route = route('process_events.trigger', [$process->uuid_text, 'event' => '_4']);
+        $route = route('api.process_events.trigger', [$process->uuid_text, 'event' => '_4']);
         $data = [];
         $response = $this->json('POST', $route, $data);
         //Verify status
@@ -94,33 +94,33 @@ class ProcessCollaborationTest extends TestCase
         $response->assertJsonStructure($this->requestStructure);
         $request = $response->json();
         //Get the active tasks of the request
-        $route = route('tasks.index');
+        $route = route('api.tasks.index');
         $response = $this->json('GET', $route);
         $tasks = $response->json('data');
         //Complete the task
-        $route = route('tasks.update', [$tasks[0]['uuid'], 'status' => 'COMPLETED']);
+        $route = route('api.tasks.update', [$tasks[0]['uuid'], 'status' => 'COMPLETED']);
         $response = $this->json('PUT', $route, $data);
         $task = $response->json();
         //Get the list of tasks
-        $route = route('tasks.index');
+        $route = route('api.tasks.index');
         $response = $this->json('GET', $route);
         $tasks = $response->json('data');
         //Complete the task
         $index = $this->findTaskByName($tasks, 'Process Order');
-        $route = route('tasks.update', [$tasks[$index]['uuid'], 'status' => 'COMPLETED']);
+        $route = route('api.tasks.update', [$tasks[$index]['uuid'], 'status' => 'COMPLETED']);
         $response = $this->json('PUT', $route, $data);
         $task = $response->json();
         //Get the list of tasks
-        $route = route('tasks.index');
+        $route = route('api.tasks.index');
         $response = $this->json('GET', $route);
         $tasks = $response->json('data');
         //Complete the Final task
         $index = $this->findTaskByName($tasks, 'Finish');
-        $route = route('tasks.update', [$tasks[$index]['uuid'], 'status' => 'COMPLETED']);
+        $route = route('api.tasks.update', [$tasks[$index]['uuid'], 'status' => 'COMPLETED']);
         $response = $this->json('PUT', $route, $data);
         $task = $response->json();
         //Get the list of tasks
-        $route = route('tasks.index');
+        $route = route('api.tasks.index');
         $response = $this->json('GET', $route);
         $tasks = $response->json('data');
         $this->assertEquals('CLOSED', $tasks[0]['status']);
