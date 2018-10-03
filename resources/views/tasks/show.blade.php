@@ -21,7 +21,6 @@
             <div class="container p-5">
                 <h3>Request</h3>
                 <div id="request">
-
                 </div>
             </div>
             <br>
@@ -36,7 +35,7 @@
                         <br>
                         <div class="row">
                             <div class="col-1 align-items-center">
-                                <img class="mr-2" src="{{ asset('img/avatar-placeholder.gif') }}"/>
+                                <img class="comment-avatar" src="{{ asset('img/avatar-placeholder.gif') }}"/>
                             </div>
                             <div class="form-group col">
                                 <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
@@ -98,11 +97,6 @@
 
 @section('css')
 <style lang="scss" scoped>
-
-img {
-  height: 45px; 
-  border-radius: 50%;
-}
 
 .taskNav {
     height:40px; 
