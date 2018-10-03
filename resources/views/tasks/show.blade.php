@@ -22,32 +22,9 @@
             <br>
             <div class="container p-5">
                 <h3>Request</h3>
-                <form>
-                    <div class="form-group">
-                        <label for="groupNameStart">Start Date</label>
-                        <!-- {!! Form::label('email', 'Start Date') !!} -->
-                        <input type="text" class="form-control" id="groupNameStart">
-                    </div>
-                    <div class="form-group">
-                        <label for="groupNameEnd">End Date</label>
-                        <!-- {!! Form::label('email', 'End Date') !!} -->
-                        <input type="text" class="form-control" id="groupNameEnd">
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="taskDetailDescription">Reason</label>
-                        <!-- {!! Form::label('email', 'Reason') !!} -->
-                        <textarea class="form-control" id="taskDetailDescription" rows="3"></textarea>
-                    </div>
-                    <h3 class="mb-3">Approve?</h3>
-                    <div class="mb-2">
-                        <input type="checkbox" aria-label="Checkbox for following text input">
-                        <!-- {!! Form::checkbox('name', 'value') !!} -->
-                        <span class="text-secondary"> Yes</span>
-                    </div>
-                    <div class="form-group">
-                        <button class="btn btn-primary" type="submit">Continue</button>
-                    </div>
-                </form>
+                <div id="request">
+
+                </div>
             </div>
             <br>
             <br>
