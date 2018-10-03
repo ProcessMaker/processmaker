@@ -10,49 +10,41 @@
       <div class="row">
         <div class="col-8">
           <div class="card card-body">
+            {!! Form::model($user , ['route' => ['users.update', $user->uuid_text ]]) !!}
             <div class="form-group">
-              <!-- <label for="exampleInputEmail1">Username</label> -->
-              {!! Form::label('Username', 'Username') !!}
-              <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+              {!! Form::label('username', 'Username') !!}
+              {!! Form::text('username', null, ['class'=> 'form-control']) !!}
               <small id="emailHelp" class="form-text text-muted">Username must be distinct</small>
             </div>
             <div class="form-group">
-              <!-- <label for="exampleInputEmail1">First Name</label> -->
-              {!! Form::label('F_Name', 'First Name') !!}
-              <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+              {!! Form::label('firstname', 'First Name') !!}
+              {!! Form::text('firstname', null, ['class'=> 'form-control']) !!}
             </div>
             <div class="form-group">
-              <!-- <label for="exampleInputEmail1">Last Name</label> -->
-              {!! Form::label('L_Name', 'Last Name') !!}
-              <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+              {!! Form::label('lastname', 'Last Name') !!}
+              {!! Form::text('lastname', null, ['class'=> 'form-control']) !!}
             </div>
             <div class="form-group">
-              <!-- <label for="exampleInputEmail1">Email</label> -->
               {!! Form::label('email', 'Email') !!}
-              <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+              {!! Form::text('email', null, ['class'=> 'form-control']) !!}
             </div>
             <div class="form-group">
-              <!-- <label for="exampleFormControlSelect1">Status</label> -->
-              {!! Form::label('Status', 'Status') !!}
-              <select class="form-control" id="exampleFormControlSelect1">
-                <option>ACTIVE</option>
-                <option>INACTIVE</option>
-              </select>
+              {!! Form::label('status', 'Status') !!}
+              {!! Form::select('status', ['Active', 'Inactive'], null, ['class' => 'form-control']) !!}
             </div>
             <div class="form-group">
-              <!-- <label for="exampleInputEmail1">Password</label> -->
               {!! Form::label('password', 'Password') !!}
-              <input type="password" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+              {!! Form::password('password', ['class' => 'form-control']) !!}
             </div>
             <div class="form-group">
-              <!-- <label for="exampleInputEmail1">Confirm Password</label> -->
               {!! Form::label('password_confirm', 'Confirm Password') !!}
-              <input type="password" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+              {!! Form::password('password', ['class' => 'form-control']) !!}
             </div>
             <div class="d-flex justify-content-end mt-2">
-              <button type="button" class="btn btn-outline-success" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-success ml-2">Save</button>
+              {!! Form::button('Cancel', ['class'=>'btn btn-outline-success']) !!}
+              {!! Form::submit('Save', ['class'=>'btn btn-success ml-2']) !!}
             </div>
+            {!! Form::close() !!}
           </div>
         </div>
         <div class="col-4">
