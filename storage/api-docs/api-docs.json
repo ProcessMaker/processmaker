@@ -14,7 +14,7 @@
     },
     "servers": [
         {
-            "url": "https://bpm4.processmaker.local/api/1.0"
+            "url": "http://bpm4.processmaker.local/api/1.0"
         }
     ],
     "paths": {
@@ -53,7 +53,7 @@
                                             "description": "Display a listing of the Process Categories.",
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/components/schemas/Process"
+                                                "$ref": "#/components/schemas/ProcessCategory"
                                             }
                                         },
                                         "meta": {
@@ -84,7 +84,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/ProcessCategoryEditable"
+                                "$ref": "#/components/schemas/ProcessCategory"
                             }
                         }
                     }
@@ -95,7 +95,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/Process"
+                                    "$ref": "#/components/schemas/ProcessCategory"
                                 }
                             }
                         }
@@ -103,7 +103,7 @@
                 }
             }
         },
-        "/process_categories/{processCategoryUuid}": {
+        "/process_categories/{process_category_uuid}": {
             "get": {
                 "tags": [
                     "ProcessCategories"
@@ -112,7 +112,7 @@
                 "operationId": "getProcessCategoryByUuid",
                 "parameters": [
                     {
-                        "name": "processCategoryUuid",
+                        "name": "process_category_uuid",
                         "in": "path",
                         "description": "ID of process category to return",
                         "required": true,
@@ -127,7 +127,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/Process"
+                                    "$ref": "#/components/schemas/ProcessCategory"
                                 }
                             }
                         }
@@ -142,7 +142,7 @@
                 "operationId": "updateProcessCategory",
                 "parameters": [
                     {
-                        "name": "processCategoryUuid",
+                        "name": "process_category_uuid",
                         "in": "path",
                         "description": "ID of process category to return",
                         "required": true,
@@ -167,7 +167,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/Process"
+                                    "$ref": "#/components/schemas/ProcessCategory"
                                 }
                             }
                         }
@@ -182,7 +182,7 @@
                 "operationId": "deleteProcessCategory",
                 "parameters": [
                     {
-                        "name": "processCategoryUuid",
+                        "name": "process_category_uuid",
                         "in": "path",
                         "description": "ID of process category to return",
                         "required": true,
@@ -451,16 +451,7 @@
             },
             "ProcessCategoryEditable": {
                 "properties": {
-                    "process_category_uuid": {
-                        "description": "Represents a business process category definition.",
-                        "type": "string",
-                        "format": "uuid"
-                    },
                     "name": {
-                        "description": "Represents a business process category definition.",
-                        "type": "string"
-                    },
-                    "description": {
                         "description": "Represents a business process category definition.",
                         "type": "string"
                     },
@@ -477,11 +468,6 @@
             },
             "ProcessCategory": {
                 "properties": {
-                    "user_uuid": {
-                        "description": "Represents a business process category definition.",
-                        "type": "string",
-                        "format": "uuid"
-                    },
                     "uuid": {
                         "description": "Represents a business process category definition.",
                         "type": "string",
@@ -501,7 +487,7 @@
                 "type": "object",
                 "allOf": [
                     {
-                        "$ref": "#/components/schemas/ProcessEditable"
+                        "$ref": "#/components/schemas/ProcessCategoryEditable"
                     }
                 ]
             },
@@ -595,8 +581,7 @@
                 "schema": {
                     "type": "string",
                     "default": ""
-                },
-                "example": "category,user"
+                }
             }
         },
         "securitySchemes": {

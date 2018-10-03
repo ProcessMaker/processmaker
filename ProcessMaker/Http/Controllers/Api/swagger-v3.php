@@ -52,7 +52,6 @@
  *             name="include",
  *             in="query",
  *             description="Include data from related models in payload. Comma seperated list.",
- *             example="category,user",
  *             @OA\Schema(type="string", default=""),
  *         ),
  *     ),

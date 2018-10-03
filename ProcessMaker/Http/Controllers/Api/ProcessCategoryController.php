@@ -35,7 +35,7 @@ class ProcessCategoryController extends Controller
      *             @OA\Property(
      *                 property="data",
      *                 type="array",
-     *                 @OA\Items(ref="#/components/schemas/Process"),
+     *                 @OA\Items(ref="#/components/schemas/ProcessCategory"),
      *             ),
      *             @OA\Property(
      *                 property="meta",
@@ -76,14 +76,14 @@ class ProcessCategoryController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      *     * @OA\Get(
-     *     path="/process_categories/{processCategoryUuid}",
+     *     path="/process_categories/{process_category_uuid}",
      *     summary="Get single process category by ID",
      *     operationId="getProcessCategoryByUuid",
      *     tags={"ProcessCategories"},
      *     @OA\Parameter(
      *         description="ID of process category to return",
      *         in="path",
-     *         name="processCategoryUuid",
+     *         name="process_category_uuid",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -92,7 +92,7 @@ class ProcessCategoryController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="Successfully found the process",
-     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *         @OA\JsonContent(ref="#/components/schemas/ProcessCategory")
      *     ),
      * )
      */
@@ -120,7 +120,7 @@ class ProcessCategoryController extends Controller
      *     @OA\Response(
      *         response=201,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *         @OA\JsonContent(ref="#/components/schemas/ProcessCategory")
      *     ),
      * )
      */
@@ -141,14 +141,14 @@ class ProcessCategoryController extends Controller
      *
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      *      * @OA\Put(
-     *     path="/process_categories/{processCategoryUuid}",
+     *     path="/process_categories/{process_category_uuid}",
      *     summary="Update a process Category",
      *     operationId="updateProcessCategory",
      *     tags={"ProcessCategories"},
      *     @OA\Parameter(
      *         description="ID of process category to return",
      *         in="path",
-     *         name="processCategoryUuid",
+     *         name="process_category_uuid",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -161,7 +161,7 @@ class ProcessCategoryController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *         @OA\JsonContent(ref="#/components/schemas/ProcessCategory")
      *     ),
      * )
      */
@@ -182,14 +182,14 @@ class ProcessCategoryController extends Controller
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      * 
      *      * @OA\Delete(
-     *     path="/process_categories/{processCategoryUuid}",
+     *     path="/process_categories/{process_category_uuid}",
      *     summary="Delete a process category",
      *     operationId="deleteProcessCategory",
      *     tags={"ProcessCategories"},
      *     @OA\Parameter(
      *         description="ID of process category to return",
      *         in="path",
-     *         name="processCategoryUuid",
+     *         name="process_category_uuid",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
