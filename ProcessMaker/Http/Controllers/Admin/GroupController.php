@@ -16,7 +16,7 @@ class GroupController extends Controller
   public function index()
   {
     $groups = Group::all();
-    return view('admin.groups.index', ["groups"=>$groups]);
+    return view('admin.groups.index', compact('groups'));
   }
 
   /**
@@ -26,11 +26,11 @@ class GroupController extends Controller
    */
    public function edit(Group $group)
    {
-     return view('admin.groups.edit', ["group"=>$group]);
+     return view('admin.groups.edit', compact('group'));
    }
 
    public function show(Group $group) // show new process to UI
    {
-       return view('admin.groups.show', ["group"=>$group]);  // from data item in index, once clicked, this page will show with ability to edit and destroy
+       return view('admin.groups.show', compact('group'));  // from data item in index, once clicked, this page will show with ability to edit and destroy
    }
 }
