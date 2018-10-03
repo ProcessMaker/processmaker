@@ -64,7 +64,6 @@ class UserTest extends TestCase
      */
     public function testCreateRoute()
     {
-
       // get the URL
       $response = $this->webCall('GET', '/admin/users/create');
 

@@ -1,5 +1,5 @@
 import {mount} from '@vue/test-utils'
-import ConfirmModal from '../../../resources/assets/js/components/Confirm';
+import ConfirmModal from '../../../resources/js/components/Confirm';
 
 let wrapper = null;
 
