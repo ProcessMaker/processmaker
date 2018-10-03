@@ -11,10 +11,6 @@ class TaskController extends Controller
   {
       return view('tasks.index');
   }
-  public function create()
-  {
-    return view('tasks.create');
-  }
   public function show()
   {
     return view('tasks.show');
