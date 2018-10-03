@@ -16,29 +16,30 @@
           <div class="mt-4">Created:<span class="font-weight-bold"> 01/01/0101 01:00 </span></div>
           <div class="mt-2 mb-4">Updated: <span class="font-weight-bold"> 02/01/0101 02:00 </span></div>
         </div>
-        <div class="form-group mr-3">
-          <button class="btn btn-outline-secondary"> <i class="fas fa-lock"></i> permissions</button>
-          <button class="btn btn-secondary"> <i class="fas fa-edit"></i> edit</button>
-          <button class="btn btn-secondary"> <i class="fas fa-copy"></i> copy</button>
-          <button class="btn btn-secondary"> <i class="fas fa-trash-alt"></i> delete</button>
+        <div class="col text-right">
+            <button class="btn btn-outline-secondary"> <i class="fas fa-lock"></i> permissions</button>
+            <button class="btn btn-secondary"> <i class="fas fa-edit"></i> edit</button>
+            <button class="btn btn-secondary"> <i class="fas fa-copy"></i> copy</button>
+            <button class="btn btn-secondary"> <i class="fas fa-trash-alt"></i> delete</button>
         </div>
       </div>
-        <div class="row mt-5">
-          <div class="col">
-            <h3>Members</h3>
-          </div>
-          <div class="col-3">
-            <input type="text" class="form-control" placeholder="&#xf0e0; Search">
-          </div>
-            <button type="submit" class="btn btn-secondary mr-3"> <i class="fas fa-plus"></i> User</button>
+      <br>
+      <div class="row">
+        <div class="col">
+          <h3>Members</h3>
         </div>
+        <div class="col-3">
+          <input type="text" class="form-control" placeholder="&#xf0e0; Search">
+        </div>
+        <button type="submit" class="btn btn-secondary mr-3"> <i class="fas fa-plus"></i> User</button>
+      </div>
         <table class="table table-hover mt-4 vuetable">
         <thead>
           <tr>
-            <th scope="col">Full Name<i class="sort-icon fas fa-sort ml-2"></i></th>
-            <th scope="col">Email<i class="sort-icon fas fa-sort ml-2"></i></th>
-            <th scope="col">Status<i class="sort-icon fas fa-sort ml-2"></i></th>
-            <th scope="col" class="pr-5"></th>
+            <th>Full Name<i class="sort-icon fas fa-sort ml-2"></i></th>
+            <th>Email<i class="sort-icon fas fa-sort ml-2"></i></th>
+            <th>Status<i class="sort-icon fas fa-sort ml-2"></i></th>
+            <th class="pr-5"></th>
           </tr>
         </thead>
         <tbody>
