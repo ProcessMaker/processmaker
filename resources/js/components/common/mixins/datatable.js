@@ -94,8 +94,6 @@ export default {
             css: {
                 tableClass: "table table-hover",
                 loadingClass: "loading",
-                ascendingIcon: "blue chevron up icon",
-                descendingIcon: "blue chevron down icon",
                 detailRowClass: "vuetable-detail-row",
                 handleIcon: "grey sidebar icon",
                 sortableIcon: "fas fa-sort",
