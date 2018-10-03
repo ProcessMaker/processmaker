@@ -15,6 +15,36 @@ class ProcessCategoryController extends Controller
      * Display a listing of the Process Categories.
      *
      * @return \Illuminate\Http\JsonResponse
+     * 
+     * @OA\Get(
+     *     path="/process_categories",
+     *     summary="Returns all processes categories that the user has access to",
+     *     operationId="getProcessCategories",
+     *     tags={"ProcessCategories"},
+     *     @OA\Parameter(ref="#/components/parameters/filter"),
+     *     @OA\Parameter(ref="#/components/parameters/order_by"),
+     *     @OA\Parameter(ref="#/components/parameters/order_direction"),
+     *     @OA\Parameter(ref="#/components/parameters/per_page"),
+     *     @OA\Parameter(ref="#/components/parameters/include"),
+     * 
+     *     @OA\Response(
+     *         response=200,
+     *         description="list of processes categories",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/Process"),
+     *             ),
+     *             @OA\Property(
+     *                 property="meta",
+     *                 type="object",
+     *                 allOf={@OA\Schema(ref="#/components/schemas/metadata")},
+     *             ),
+     *         ),
+     *     ),
+     * )
      */
     public function index(Request $request)
     {
@@ -45,6 +75,26 @@ class ProcessCategoryController extends Controller
      * @param ProcessCategory $processCategory
      *
      * @return \Illuminate\Http\JsonResponse
+     *     * @OA\Get(
+     *     path="/process_categories/{processCategoryUuid}",
+     *     summary="Get single process category by ID",
+     *     operationId="getProcessCategoryByUuid",
+     *     tags={"ProcessCategories"},
+     *     @OA\Parameter(
+     *         description="ID of process category to return",
+     *         in="path",
+     *         name="processCategoryUuid",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successfully found the process",
+     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *     ),
+     * )
      */
     public function show(ProcessCategory $processCategory)
     {
@@ -57,6 +107,22 @@ class ProcessCategoryController extends Controller
      * @param Request $request
      *
      * @return \Illuminate\Http\JsonResponse
+     * 
+     *     * @OA\Post(
+     *     path="/process_categories",
+     *     summary="Save a new process Category",
+     *     operationId="createProcessCategory",
+     *     tags={"ProcessCategories"},
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(ref="#/components/schemas/ProcessCategoryEditable")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *     ),
+     * )
      */
     public function store(Request $request)
     {
@@ -74,6 +140,30 @@ class ProcessCategoryController extends Controller
      * @param ProcessCategory $processCategory
      *
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     *      * @OA\Put(
+     *     path="/process_categories/{processCategoryUuid}",
+     *     summary="Update a process Category",
+     *     operationId="updateProcessCategory",
+     *     tags={"ProcessCategories"},
+     *     @OA\Parameter(
+     *         description="ID of process category to return",
+     *         in="path",
+     *         name="processCategoryUuid",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(ref="#/components/schemas/ProcessCategoryEditable")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *     ),
+     * )
      */
     public function update(Request $request, ProcessCategory $processCategory)
     {
@@ -90,6 +180,27 @@ class ProcessCategoryController extends Controller
      * @param ProcessCategory $processCategory
      *
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     * 
+     *      * @OA\Delete(
+     *     path="/process_categories/{processCategoryUuid}",
+     *     summary="Delete a process category",
+     *     operationId="deleteProcessCategory",
+     *     tags={"ProcessCategories"},
+     *     @OA\Parameter(
+     *         description="ID of process category to return",
+     *         in="path",
+     *         name="processCategoryUuid",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *     ),
+     * )
      */
     public function destroy(ProcessCategory $processCategory)
     {

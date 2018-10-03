@@ -18,6 +18,193 @@
         }
     ],
     "paths": {
+        "/process_categories": {
+            "get": {
+                "tags": [
+                    "ProcessCategories"
+                ],
+                "summary": "Returns all processes categories that the user has access to",
+                "operationId": "getProcessCategories",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    },
+                    {
+                        "$ref": "#/components/parameters/include"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of processes categories",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "description": "Display a listing of the Process Categories.",
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Process"
+                                            }
+                                        },
+                                        "meta": {
+                                            "description": "Display a listing of the Process Categories.",
+                                            "type": "object",
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/metadata"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "ProcessCategories"
+                ],
+                "summary": "Save a new process Category",
+                "operationId": "createProcessCategory",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ProcessCategoryEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Process"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/process_categories/{processCategoryUuid}": {
+            "get": {
+                "tags": [
+                    "ProcessCategories"
+                ],
+                "summary": "Get single process category by ID",
+                "operationId": "getProcessCategoryByUuid",
+                "parameters": [
+                    {
+                        "name": "processCategoryUuid",
+                        "in": "path",
+                        "description": "ID of process category to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the process",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Process"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "ProcessCategories"
+                ],
+                "summary": "Update a process Category",
+                "operationId": "updateProcessCategory",
+                "parameters": [
+                    {
+                        "name": "processCategoryUuid",
+                        "in": "path",
+                        "description": "ID of process category to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ProcessCategoryEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Process"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "ProcessCategories"
+                ],
+                "summary": "Delete a process category",
+                "operationId": "deleteProcessCategory",
+                "parameters": [
+                    {
+                        "name": "processCategoryUuid",
+                        "in": "path",
+                        "description": "ID of process category to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Process"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/processes": {
             "get": {
                 "tags": [
@@ -251,6 +438,62 @@
                     },
                     "updated_at": {
                         "description": "Represents a business process definition.",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/ProcessEditable"
+                    }
+                ]
+            },
+            "ProcessCategoryEditable": {
+                "properties": {
+                    "process_category_uuid": {
+                        "description": "Represents a business process category definition.",
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "name": {
+                        "description": "Represents a business process category definition.",
+                        "type": "string"
+                    },
+                    "description": {
+                        "description": "Represents a business process category definition.",
+                        "type": "string"
+                    },
+                    "status": {
+                        "description": "Represents a business process category definition.",
+                        "type": "string",
+                        "enum": [
+                            "ACTIVE",
+                            "INACTIVE"
+                        ]
+                    }
+                },
+                "type": "object"
+            },
+            "ProcessCategory": {
+                "properties": {
+                    "user_uuid": {
+                        "description": "Represents a business process category definition.",
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "uuid": {
+                        "description": "Represents a business process category definition.",
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "created_at": {
+                        "description": "Represents a business process category definition.",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "description": "Represents a business process category definition.",
                         "type": "string",
                         "format": "date-time"
                     }

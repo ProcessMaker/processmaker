@@ -16,6 +16,21 @@ use Spatie\BinaryUuid\HasBinaryUuid;
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
  *
+ *  * @OA\Schema(
+ *   schema="ProcessCategoryEditable",
+ *   @OA\Property(property="process_category_uuid", type="string", format="uuid"),
+ *   @OA\Property(property="name", type="string"),
+ *   @OA\Property(property="description", type="string"),
+ *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
+ * ),
+ * @OA\Schema(
+ *   schema="ProcessCategory",
+ *   allOf={@OA\Schema(ref="#/components/schemas/ProcessEditable")},
+ *   @OA\Property(property="user_uuid", type="string", format="uuid"),
+ *   @OA\Property(property="uuid", type="string", format="uuid"),
+ *   @OA\Property(property="created_at", type="string", format="date-time"),
+ *   @OA\Property(property="updated_at", type="string", format="date-time"),
+ * )
  */
 class ProcessCategory extends Model
 {
