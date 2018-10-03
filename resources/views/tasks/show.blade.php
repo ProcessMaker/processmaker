@@ -23,33 +23,7 @@
                 <div id="request">
                 </div>
             </div>
-            <br>
-            <br>
-            <br>
-            <div class="row">
-                <div class="col">
-                    <div class="card card-body border-0">
-                        <div align="center" class="text-muted">
-                        You have not posted any comments yet.
-                        </div>
-                        <br>
-                        <div class="row">
-                            <div class="col-1 align-items-center">
-                                <img class="comment-avatar" src="{{ asset('img/avatar-placeholder.gif') }}"/>
-                            </div>
-                            <div class="form-group col">
-                                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-10"></div>
-                            <div class="form-group col text-right">
-                            <button class="btn btn-success">comment</button>
-                        </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
         </div> 
         
         <div class="col-3">
