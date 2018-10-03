@@ -11,10 +11,6 @@ class TaskController extends Controller
   {
       return view('tasks.index');
   }
-    public function edit($id) 
-  {
-    return view('tasks.edit', []);  //is the edit page added to routes?
-  }
   public function create()
   {
     return view('tasks.create');
