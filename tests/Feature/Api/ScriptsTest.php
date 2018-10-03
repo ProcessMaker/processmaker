@@ -226,11 +226,11 @@ class ScriptsTest extends TestCase
     */
     public function testPreviewScript()
     {
-        $url = route('script.preview', ['data'=>'{}','code'=>'return {response=1}', 'language'=>'lua']);
+        $url = route('api.script.preview', ['data'=>'{}','code'=>'return {response=1}', 'language'=>'lua']);
         $response = $this->apiCall('GET', $url, []);
         $response->assertStatus(200);
 
-        $url = route('script.preview', ['data'=>'{}','code'=>'<?php return ["response"=>1];', 'language'=>'php']);
+        $url = route('api.script.preview', ['data'=>'{}','code'=>'<?php return ["response"=>1];', 'language'=>'php']);
         $response = $this->apiCall('GET', $url, []);
         $response->assertStatus(200);
 

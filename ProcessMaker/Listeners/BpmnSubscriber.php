@@ -30,7 +30,7 @@ class BpmnSubscriber
     public function ActivityActivated(ActivityActivatedEvent $event)
     {
         $token = $event->token;
-        Log::info('Nofity activity activated: ' . json_encode($token->getProperties()));
+        // Log::info('Nofity activity activated: ' . json_encode($token->getProperties()));
 
         //Send the notification to the assigned user
         $user = $event->token->user;
@@ -52,7 +52,7 @@ class BpmnSubscriber
         $notification = new ProcessCompletedNotification($event->instance);
         $user->notify($notification);
 
-        Log::info('ProcessCompleted: ' . json_encode($event->instance->getProperties()));
+        // Log::info('ProcessCompleted: ' . json_encode($event->instance->getProperties()));
     }
 
     /**
@@ -62,7 +62,7 @@ class BpmnSubscriber
      */
     public function onProcessCreated(ProcessInstanceCreatedEvent $event)
     {
-        Log::info('ProcessCreated: ' . json_encode($event->instance->getProperties()));
+        // Log::info('ProcessCreated: ' . json_encode($event->instance->getProperties()));
     }
 
     /**
@@ -72,7 +72,7 @@ class BpmnSubscriber
      */
     public function onActivityActivated(ActivityActivatedEvent $event)
     {
-        Log::info('ActivityActivated: ' . json_encode($event->token->getProperties()));
+        // Log::info('ActivityActivated: ' . json_encode($event->token->getProperties()));
         $this->ActivityActivated($event);
     }
 
@@ -83,7 +83,7 @@ class BpmnSubscriber
      */
     public function onActivityCompleted(ActivityCompletedEvent $event)
     {
-        Log::info('ActivityCompleted: ' . json_encode($event->token->getProperties()));
+        // Log::info('ActivityCompleted: ' . json_encode($event->token->getProperties()));
     }
 
     /**
@@ -93,7 +93,7 @@ class BpmnSubscriber
      */
     public function onActivityClosed(ActivityClosedEvent $event)
     {
-        Log::info('ActivityClosed: ' . json_encode($event->token->getProperties()));
+        // Log::info('ActivityClosed: ' . json_encode($event->token->getProperties()));
     }
 
     /**
@@ -103,7 +103,7 @@ class BpmnSubscriber
      */
     public function onScriptTaskActivated(ScriptTaskInterface $scriptTask, TokenInterface $token)
     {
-        Log::info('ScriptTaskActivated: ' . $scriptTask->getId());
+        // Log::info('ScriptTaskActivated: ' . $scriptTask->getId());
         WorkflowManager::runScripTask($scriptTask, $token);
     }
 

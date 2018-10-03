@@ -3,7 +3,8 @@ Route::group(
     [
     'middleware' => ['auth:api', 'bindings'],
     'prefix' => 'api/1.0',
-    'namespace' => 'ProcessMaker\Http\Controllers\Api'
+    'namespace' => 'ProcessMaker\Http\Controllers\Api',
+    'as' => 'api.',
     ], function() {
 
     Route::apiResource('users', 'UserController');
