@@ -20,7 +20,7 @@ mix.webpackConfig({
         ],
         resolve: {
             alias: {
-                Horizon: path.resolve(__dirname, 'vendor/laravel/horizon/resources/js/')
+                Horizon: path.resolve(__dirname, 'vendor/laravel/horizon/resources/assets/js/')
             }
         }
     }).js('resources/js/app-layout.js', 'public/js')
