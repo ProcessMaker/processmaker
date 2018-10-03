@@ -22,7 +22,7 @@ class ProcessCategoriesTest extends TestCase
     use ResourceAssertionsTrait;
 
     protected $user;
-    protected $resource = 'process_categories';
+    protected $resource = 'api.process_categories';
     protected $structure = [
         'uuid',
         'name',

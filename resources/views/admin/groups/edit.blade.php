@@ -5,7 +5,6 @@
 @endsection
 
 @Section('content')
-
 <div class="container">
       <h1 style="margin:15px">Edit Group</h1>
       <div class="row">
@@ -14,7 +13,7 @@
             <form>
               <div class="form-group">
                 <label for="groupName">Group Name</label>
-                <input type="text" class="form-control" id="groupName">
+                <input type="text" class="form-control" id="groupName" value="{{$group->name}}">
               </div>
               <div class="form-group">
                 <label for="description">Description</label>
@@ -33,16 +32,15 @@
               <button type="button" class="btn btn-outline-success" data-dismiss="modal">Cancel</button>
               <button type="submit" class="btn btn-success ml-2">Save</button>
             </div>
+          </div>
         </div>
-      </div>
         <div class="col-4">
           <div class="card card-body">
           Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
         </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 @endsection
 
 @Section('js')

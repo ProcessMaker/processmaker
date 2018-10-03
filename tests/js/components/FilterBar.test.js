@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 
-import FilterBar from '../../../resources/assets/js/components/FilterBar'
+import FilterBar from '../../../resources/js/components/FilterBar'
 
 
 let wrapper = null;

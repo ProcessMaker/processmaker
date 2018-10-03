@@ -77,7 +77,7 @@ class ProcessExecutionTest extends TestCase
     public function testExecuteAProcess()
     {
         //Start a process request
-        $route = route('process_events.trigger', [$this->process->uuid_text, 'event' => 'StartEventUID']);
+        $route = route('api.process_events.trigger', [$this->process->uuid_text, 'event' => 'StartEventUID']);
         $data = [];
         $response = $this->json('POST', $route, $data);
         //Verify status
@@ -86,11 +86,11 @@ class ProcessExecutionTest extends TestCase
         $response->assertJsonStructure($this->requestStructure);
         $request = $response->json();
         //Get the active tasks of the request
-        $route = route('tasks.index');
+        $route = route('api.tasks.index');
         $response = $this->json('GET', $route);
         $tasks = $response->json('data');
         //Complete the task
-        $route = route('tasks.update', [$tasks[0]['uuid'], 'status' => 'COMPLETED']);
+        $route = route('api.tasks.update', [$tasks[0]['uuid'], 'status' => 'COMPLETED']);
         $response = $this->json('PUT', $route, $data);
         $task = $response->json();
         //Check the task is closed
@@ -106,7 +106,7 @@ class ProcessExecutionTest extends TestCase
      */
     public function testGetListOfStartEvents()
     {
-        $route = route('processes.show', [$this->process->uuid_text, 'include' => 'events']);
+        $route = route('api.processes.show', [$this->process->uuid_text, 'include' => 'events']);
         $response = $this->json('GET', $route);
         //Check the inclusion of events
         $response->assertJsonStructure(['events' => [['id', 'name']]]);
@@ -117,7 +117,7 @@ class ProcessExecutionTest extends TestCase
      */
     public function testStartProcessEmptyEventId()
     {
-        $route = route('process_events.trigger', [$this->process->uuid_text]);
+        $route = route('api.process_events.trigger', [$this->process->uuid_text]);
         $data = [];
         $response = $this->json('POST', $route, $data);
         $response->assertStatus(404);
@@ -128,7 +128,7 @@ class ProcessExecutionTest extends TestCase
      */
     public function testStartProcessWithNonExistingEventId()
     {
-        $route = route('process_events.trigger', [$this->process->uuid_text, 'event' => 'non-existent']);
+        $route = route('api.process_events.trigger', [$this->process->uuid_text, 'event' => 'non-existent']);
         $data = [];
         $response = $this->json('POST', $route, $data);
         $response->assertStatus(404);
@@ -140,7 +140,7 @@ class ProcessExecutionTest extends TestCase
     public function testCloseAClosedTask()
     {
         //Start a process request
-        $route = route('process_events.trigger', [$this->process->uuid_text, 'event' => 'StartEventUID']);
+        $route = route('api.process_events.trigger', [$this->process->uuid_text, 'event' => 'StartEventUID']);
         $data = [];
         $response = $this->json('POST', $route, $data);
         //Verify status
@@ -149,18 +149,18 @@ class ProcessExecutionTest extends TestCase
         $response->assertJsonStructure($this->requestStructure);
         $request = $response->json();
         //Get the active tasks of the request
-        $route = route('tasks.index');
+        $route = route('api.tasks.index');
         $response = $this->json('GET', $route);
         $tasks = $response->json('data');
         //Complete the task
-        $route = route('tasks.update', [$tasks[0]['uuid'], 'status' => 'COMPLETED']);
+        $route = route('api.tasks.update', [$tasks[0]['uuid'], 'status' => 'COMPLETED']);
         $response = $this->json('PUT', $route, $data);
         $task = $response->json();
         //Check the task is closed
         $this->assertEquals('CLOSED', $task['status']);
         $this->assertNotNull($task['completed_at']);
         //Try to complete the task again
-        $route = route('tasks.update', [$tasks[0]['uuid'], 'status' => 'COMPLETED']);
+        $route = route('api.tasks.update', [$tasks[0]['uuid'], 'status' => 'COMPLETED']);
         $response = $this->json('PUT', $route, $data);
         $task = $response->json();
         $response->assertStatus(422);
@@ -172,7 +172,7 @@ class ProcessExecutionTest extends TestCase
     public function testUpdateTaskInvalidStatus()
     {
         //Start a process request
-        $route = route('process_events.trigger', [$this->process->uuid_text, 'event' => 'StartEventUID']);
+        $route = route('api.process_events.trigger', [$this->process->uuid_text, 'event' => 'StartEventUID']);
         $data = [];
         $response = $this->json('POST', $route, $data);
         //Verify status
@@ -181,15 +181,15 @@ class ProcessExecutionTest extends TestCase
         $response->assertJsonStructure($this->requestStructure);
         $request = $response->json();
         //Get the active tasks of the request
-        $route = route('tasks.index');
+        $route = route('api.tasks.index');
         $response = $this->json('GET', $route);
         $tasks = $response->json('data');
         //Update to a FAILING status
-        $route = route('tasks.update', [$tasks[0]['uuid'], 'status' => 'FAILING']);
+        $route = route('api.tasks.update', [$tasks[0]['uuid'], 'status' => 'FAILING']);
         $response = $this->json('PUT', $route, $data);
         $response->assertStatus(422);
         //Update to a *invalid* status
-        $route = route('tasks.update', [$tasks[0]['uuid'], 'status' => '*invalid*']);
+        $route = route('api.tasks.update', [$tasks[0]['uuid'], 'status' => '*invalid*']);
         $response = $this->json('PUT', $route, $data);
         $response->assertStatus(422);
     }
@@ -205,7 +205,7 @@ class ProcessExecutionTest extends TestCase
         //Get the start event id
         $uncProcessEvents = $uncProcess->events;
         //Get the list of processes (with and without category) and its start events
-        $route = route('processes.index', ['include' => 'events,category', 'order_by' => 'name']);
+        $route = route('api.processes.index', ['include' => 'events,category', 'order_by' => 'name']);
         $response = $this->json('GET', $route);
         //Check the inclusion of events
         $response->assertJsonStructure(['data' => ['*' => ['events' => [['id', 'name']], 'category']]]);
@@ -234,7 +234,7 @@ class ProcessExecutionTest extends TestCase
     public function testGetTaskStatusPage()
     {
         //Start a process request
-        $route = route('process_events.trigger', [$this->process->uuid_text, 'event' => 'StartEventUID']);
+        $route = route('api.process_events.trigger', [$this->process->uuid_text, 'event' => 'StartEventUID']);
         $data = [];
         $response = $this->json('POST', $route, $data);
         //Verify status
@@ -243,11 +243,11 @@ class ProcessExecutionTest extends TestCase
         $response->assertJsonStructure($this->requestStructure);
         $request = $response->json();
         //Get the active tasks of the request
-        $route = route('tasks.index');
+        $route = route('api.tasks.index');
         $response = $this->json('GET', $route);
         $tasks = $response->json('data');
         //Get the task information
-        $route = route('tasks.show', [$tasks[0]['uuid'], 'include' => 'definition']);
+        $route = route('api.tasks.show', [$tasks[0]['uuid'], 'include' => 'definition']);
         $response = $this->json('GET', $route, $data);
         $response->assertJsonStructure([
             'uuid',
