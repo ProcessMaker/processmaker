@@ -25,6 +25,6 @@ class TasksTest extends TestCase
         $response = $this->webGet('tasks/id123');
         $response->assertStatus(200);
         $response->assertViewIs('tasks.show');
-        $response->assertSee('Approve?');
+        $response->assertSee('id="request"');
     }
 }
