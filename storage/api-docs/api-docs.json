@@ -237,12 +237,14 @@
                                 "schema": {
                                     "properties": {
                                         "data": {
+                                            "description": "Get list Process",
                                             "type": "array",
                                             "items": {
                                                 "$ref": "#/components/schemas/Process"
                                             }
                                         },
                                         "meta": {
+                                            "description": "Get list Process",
                                             "type": "object",
                                             "allOf": [
                                                 {
@@ -816,6 +818,193 @@
                     }
                 }
             }
+        },
+        "/users": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Returns all users",
+                "operationId": "getUsers",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    },
+                    {
+                        "$ref": "#/components/parameters/include"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of users",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "description": "Display a listing of the resource.",
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/users"
+                                            }
+                                        },
+                                        "meta": {
+                                            "description": "Display a listing of the resource.",
+                                            "type": "object",
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/metadata"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Save a new users",
+                "operationId": "createUser",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/usersEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/users"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{userUuid}": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get single user by ID",
+                "operationId": "getUsersByUuid",
+                "parameters": [
+                    {
+                        "name": "userUuid",
+                        "in": "path",
+                        "description": "ID of user to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the process",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/users"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Update a user",
+                "operationId": "updateUsers",
+                "parameters": [
+                    {
+                        "name": "userUuid",
+                        "in": "path",
+                        "description": "ID of user to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/usersEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/users"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Delete a user",
+                "operationId": "deleteUser",
+                "parameters": [
+                    {
+                        "name": "userUuid",
+                        "in": "path",
+                        "description": "ID of user to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/users"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -1038,6 +1227,113 @@
                 "allOf": [
                     {
                         "$ref": "#/components/schemas/scriptsEditable"
+                    }
+                ]
+            },
+            "usersEditable": {
+                "properties": {
+                    "email": {
+                        "description": "The attributes that are mass assignable.",
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "password": {
+                        "description": "The attributes that are mass assignable.",
+                        "type": "string"
+                    },
+                    "firstname": {
+                        "description": "The attributes that are mass assignable.",
+                        "type": "string"
+                    },
+                    "lastname": {
+                        "description": "The attributes that are mass assignable.",
+                        "type": "string"
+                    },
+                    "username": {
+                        "description": "The attributes that are mass assignable.",
+                        "type": "string"
+                    },
+                    "address": {
+                        "description": "The attributes that are mass assignable.",
+                        "type": "string"
+                    },
+                    "city": {
+                        "description": "The attributes that are mass assignable.",
+                        "type": "string"
+                    },
+                    "state": {
+                        "description": "The attributes that are mass assignable.",
+                        "type": "string"
+                    },
+                    "postal": {
+                        "description": "The attributes that are mass assignable.",
+                        "type": "string"
+                    },
+                    "country": {
+                        "description": "The attributes that are mass assignable.",
+                        "type": "string"
+                    },
+                    "phone": {
+                        "description": "The attributes that are mass assignable.",
+                        "type": "string"
+                    },
+                    "fax": {
+                        "description": "The attributes that are mass assignable.",
+                        "type": "string"
+                    },
+                    "cell": {
+                        "description": "The attributes that are mass assignable.",
+                        "type": "string"
+                    },
+                    "title": {
+                        "description": "The attributes that are mass assignable.",
+                        "type": "string"
+                    },
+                    "timezone": {
+                        "description": "The attributes that are mass assignable.",
+                        "type": "string"
+                    },
+                    "language": {
+                        "description": "The attributes that are mass assignable.",
+                        "type": "string"
+                    },
+                    "loggedin_at": {
+                        "description": "The attributes that are mass assignable.",
+                        "type": "string"
+                    },
+                    "status": {
+                        "description": "The attributes that are mass assignable.",
+                        "type": "string",
+                        "enum": [
+                            "ACTIVE",
+                            "INACTIVE"
+                        ]
+                    }
+                },
+                "type": "object"
+            },
+            "users": {
+                "properties": {
+                    "uuid": {
+                        "description": "The attributes that are mass assignable.",
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "created_at": {
+                        "description": "The attributes that are mass assignable.",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "description": "The attributes that are mass assignable.",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/usersEditable"
                     }
                 ]
             },
