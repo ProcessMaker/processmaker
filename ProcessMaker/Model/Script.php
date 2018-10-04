@@ -67,7 +67,7 @@ class Script extends Model
     ];
 
     protected $validationMessages = [
-        'title.unique' => 'A Input Document with the same name already exists in this process.',
+        'title.unique' => 'A script with the same name already exists in this process.',
         'process_id.exists' => 'Process not found.'
     ];
 

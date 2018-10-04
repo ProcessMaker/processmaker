@@ -100,6 +100,30 @@ class ScriptManagerTest extends TestCase
     }
 
     /**
+     * Can not update a script title with an existing title
+     */
+    public function testNotUpdateScriptWithTitleExists()
+    {
+        $scriptOne = factory(Script::class)->create([
+            'title' => 'Script Title One',
+            'process_id' => $this->process->id
+        ]);
+        $scriptTwo = factory(Script::class)->create([
+            'title' => 'Script Title Two',
+            'process_id' => $this->process->id
+        ]);
+
+        //Post title duplicated
+        $faker = Faker::create();
+        $url = self::API_TEST_SCRIPT . $this->process->uid . '/script/' . $scriptTwo->uid;
+        $response = $this->actingAs($this->user, 'api')->json('PUT', $url, [
+            'title' => 'Script Title One',
+        ]);
+        $response->assertStatus(422);
+        $this->assertArrayHasKey('message', $response->json());
+    }
+
+    /**
      * Get a list of scripts in a project.
      */
     public function testListScripts()
