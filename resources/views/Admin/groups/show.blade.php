@@ -11,11 +11,18 @@
     <div class="container">
       <div class="row">
         <div class="col">
-          <div class="d-flex"><h3>{{$group->name}}</h3><i class="fas fa-circle text-success mt-2 ml-1 small"></i></div>
+          <div class="d-flex">
+            <h3>{{$group->name}}</h3>
+            @if ($group->status == 'ACTIVE')
+              <i class="fas fa-circle text-success mt-2 ml-1 small"></i>
+            @elseif ($group->status == 'INACTIVE')
+              <i class="fas fa-circle text-danger mt-2 ml-1 small"></i>
+            @endif
+          </div>
           <h5>Group of users with a full set of permissions</h5>
           <br>
-          <div>Created:<span class="font-weight-bold"> {{$group->created_at}}</span></div>
-          <div class="mt-2">Updated: <span class="font-weight-bold"> {{$group->updated_at}} </span></div>
+          <div>Created:<span class="font-weight-bold"> {{$group->created_at->format('d/m/Y h:m')}}</span></div>
+          <div class="mt-2">Updated: <span class="font-weight-bold"> {{$group->updated_at->format('d/m/Y h:m')}} </span></div>
           <br>
         </div>
         <div class="col text-right">
@@ -51,7 +58,11 @@
               <tr>
                 <td scope="row"><img src="{{ asset('img/avatar_placeholder_small.png') }}"/> {{$user->getFullName()}} </td>
                 <td>{{$user->email}}</td>
-                <td><i class="fas fa-circle text-success small"></i> Active</td>
+                @if ($group->status == 'ACTIVE')
+                  <td><i class="fas fa-circle text-success small"></i> Active</td>
+                @elseif ($group->status == 'INACTIVE')
+                  <td><i class="fas fa-circle text-danger small"></i> Inactive</td>
+                @endif
                 <td class="actions popout vuetable-slot"><i class="fas fa-trash-alt"></i></td>
               </tr>
             @else
@@ -59,7 +70,11 @@
               <tr>
                 <td scope="row">{{$group->name}}</td>
                 <td></td>
-                <td><i class="fas fa-circle text-success small"></i> Active</td>
+                @if ($group->status == 'ACTIVE')
+                  <td><i class="fas fa-circle text-success small"></i> Active</td>
+                @elseif ($group->status == 'INACTIVE')
+                  <td><i class="fas fa-circle text-danger small"></i> Inactive</td>
+                @endif
                 <td class="actions popout vuetable-slot"><i class="fas fa-trash-alt"></i></td>
               </tr>
             @endif
