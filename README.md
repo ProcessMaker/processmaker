@@ -1,12 +1,8 @@
-# README
-
 ![ProcessMaker](http://www.processmaker.com/themes/processmaker/images/logo.jpg)
 
 [![CircleCI](https://circleci.com/gh/ProcessMaker/bpm/tree/develop.svg?style=svg&circle-token=bc15deff649712440252088a12ec20b4b7c96826)](https://circleci.com/gh/ProcessMaker/bpm/tree/develop)
 
-## README
-
-### ProcessMaker v4.0
+# ProcessMaker 4.1 Community Edition Documentation
 
 ### Overview
 
