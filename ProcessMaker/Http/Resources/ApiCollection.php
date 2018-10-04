@@ -5,6 +5,24 @@ namespace ProcessMaker\Http\Resources;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Pagination\AbstractPaginator;
 
+/**
+ *  @OA\Schema(
+ *    schema="metadata",
+ *    @OA\Property(property="filter", type="string"),
+ *    @OA\Property(property="sort_by", type="string"),
+ *    @OA\Property(property="sort_order", type="string", enum={"ASC", "DESC"}),
+ *    @OA\Property(property="count", type="integer"),
+ *    @OA\Property(property="total_pages", type="integer"),
+ *    
+ *    @OA\Property(property="current_page", type="integer"),
+ *    @OA\Property(property="form", type="integer"),
+ *    @OA\Property(property="last_page", type="integer"),
+ *    @OA\Property(property="path", type="string"),
+ *    @OA\Property(property="per_page", type="integer"),
+ *    @OA\Property(property="to", type="integer"),
+ *    @OA\Property(property="total", type="integer"),
+ *  )
+ */
 class ApiCollection extends ResourceCollection
 {
     /**

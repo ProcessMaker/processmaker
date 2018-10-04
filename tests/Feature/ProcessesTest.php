@@ -7,26 +7,16 @@ use Tests\Feature\Shared\RequestHelper;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 
-class ProcessTest extends TestCase
+class ProcessesTest extends TestCase
 {
     use DatabaseTransactions;
     use RequestHelper;
 
-    // protected function setUp()
-    // {
-    //     parent::setUp();
-    //     $this->user = factory(User::class)->create();
-    // }
-
-    public function testIndex() {  
-        factory(Process::class)->create(['name'=>'Test Process']);
-        factory(Process::class)->create(['name'=>'Another Process']);
-        // factory(ProcessCategory::class)->create(['name'=>'Test Category']);
+    public function testIndex() {
         $response = $this->webGet('/processes');
         $response->assertStatus(200);
         $response->assertViewIs('processes.index');
-        $response->assertSee('Test Process');
-        $response->assertSee('Another Process');
+        $response->assertSee('Processes');
     }
 
     public function testEdit()
@@ -40,10 +30,10 @@ class ProcessTest extends TestCase
 
     public function testCreate()
     {
-        $process = factory(Process::class)->create(['name'=>'Test Create']); 
+        $process = factory(Process::class)->create(['name'=>'Test Create']);
         $response = $this->webGet('/processes/create');
         $response->assertViewIs('processes.create');
-        $response->assertStatus(200);  
+        $response->assertStatus(200);
     }
     public function testStore()
     {
@@ -52,14 +42,14 @@ class ProcessTest extends TestCase
             'description' => 'descript',
             'status' => 'ACTIVE'
             ]);
-        
+
         $response->assertStatus(302);
         $this->assertDatabaseHas('processes', ['name' => 'Stored new user']);  // how do I verify DB table name?
-        
+
     }
-    public function testShow() 
+    public function testShow()
     {
-        $process = factory(Process::class)->create(['name'=>'Test show']); 
+        $process = factory(Process::class)->create(['name'=>'Test show']);
         $response = $this->webGet('processes/'.$process->uuid_text.'' );
         $response->assertViewIs('processes.show');
         $response->assertStatus(200);
@@ -72,7 +62,7 @@ class ProcessTest extends TestCase
             'name' => 'Update Name',
             'description' => 'Descriptionnnnn'
             ]);
-        $this->assertDatabaseHas('processes', ['name' => 'Update Name']);  
+        $this->assertDatabaseHas('processes', ['name' => 'Update Name']);
         $response->assertRedirect('/processes');
     }
     public function testDestroy()

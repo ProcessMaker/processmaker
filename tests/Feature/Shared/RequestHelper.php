@@ -8,6 +8,7 @@ use ProcessMaker\Models\User;
 trait RequestHelper
 {
     protected $user;
+    protected $debug = true;
     private $_debug_response;
 
     protected function setUp()
@@ -16,22 +17,6 @@ trait RequestHelper
         $this->user = factory(User::class)->create([
             'password' => 'password'
         ]);
-    }
-
-    /**
-     * Display debugging information from the response if the test failed
-     */
-    public function tearDown()
-    {
-        parent::tearDown();
-        if ($this->hasFailed() && isset($this->_debug_response)) {
-            $json = $this->_debug_response->json();
-            // unset($json['trace']);
-            //
-            // echo "\nResponse Debug Information:\n";
-            // var_dump($json);
-            // echo "\n";
-        }
     }
 
     protected function apiCall($method, $url, $params = [])
@@ -52,5 +37,19 @@ trait RequestHelper
     protected function webGet($url, $params = [])
     {
         return $this->webCall('GET', $url, $params);
+    }
+
+    public function tearDown()
+    {
+        parent::tearDown();
+        if (!$this->debug) { return; }
+
+        if ($this->hasFailed() && isset($this->_debug_response)) {
+            $json = $this->_debug_response->json();
+            unset($json['trace']);
+            echo "\nResponse Debug Information:\n";
+            var_dump($json);
+            echo "\n";
+        }
     }
 }

@@ -117,5 +117,5 @@
 @endsection
 
 @section('js')
-  {{-- <script src="{{mix('js/management/preferences/index.js')}}"></script> --}}
+  <script src="{{mix('js/admin/preferences/index.js')}}"></script>
 @endsection

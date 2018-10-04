@@ -26,9 +26,9 @@ Menu::get('sidebar_admin')])
 @endsection
  
 @section('js')
-<script src="{{ mix('js/management/queues/index.js') }}"></script>
+<script src="{{ mix('js/admin/queues/index.js') }}"></script>
 @endsection
  
 @section('css')
-<link rel="stylesheet" type="text/css" href="{{ mix('css/management/queues.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ mix('css/admin/queues.css') }}">
 @endsection

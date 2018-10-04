@@ -6,17 +6,16 @@ Route::namespace('Admin')->prefix('admin')->group(function(){
   Route::resource('about', 'AboutController');
   Route::resource('groups', 'GroupController');
   Route::resource('preferences', 'PreferenceController');
-  Route::resource('queueMonitors', 'QueueMonitorController');
   Route::resource('users', 'UserController');
 });
 
-Route::resource('processes', 'ProcessController');
 Route::namespace('Process')->prefix('processes')->group(function(){
   Route::resource('environment-variables', 'EnvironmentVariablesController');
   Route::resource('documents', 'DocumentController');
   Route::resource('forms', 'FormController');
   Route::resource('scripts', 'ScriptController');
 });
+Route::resource('processes', 'ProcessController');
 
 Route::resource('profile', 'ProfileController')->only([
     'index', 'edit', 'show'
