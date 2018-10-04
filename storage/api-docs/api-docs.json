@@ -576,6 +576,246 @@
                     }
                 }
             }
+        },
+        "/scripts": {
+            "get": {
+                "tags": [
+                    "Scripts"
+                ],
+                "summary": "Returns all scripts that the user has access to",
+                "operationId": "getScripts",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    },
+                    {
+                        "$ref": "#/components/parameters/include"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of scripts",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "description": "Get a list of scripts in a process.",
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/scripts"
+                                            }
+                                        },
+                                        "meta": {
+                                            "description": "Get a list of scripts in a process.",
+                                            "type": "object",
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/metadata"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Scripts"
+                ],
+                "summary": "Save a new script",
+                "operationId": "createScript",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/scriptsEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/scripts"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/scripts/preview": {
+            "get": {
+                "tags": [
+                    "Scripts"
+                ],
+                "summary": "Returns all scripts that the user has access to",
+                "operationId": "getScriptsPreview",
+                "parameters": [
+                    {
+                        "parameter": "data",
+                        "name": "data",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "parameter": "config",
+                        "name": "config",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "parameter": "code",
+                        "name": "code",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "parameter": "language",
+                        "name": "language",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "output of scripts",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/scripts/{scriptsUuid}": {
+            "get": {
+                "tags": [
+                    "Scripts"
+                ],
+                "summary": "Get single script by ID",
+                "operationId": "getScriptsByUuid",
+                "parameters": [
+                    {
+                        "name": "scriptsUuid",
+                        "in": "path",
+                        "description": "ID of script to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the script",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/scripts"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Scripts"
+                ],
+                "summary": "Update a script",
+                "operationId": "updateScript",
+                "parameters": [
+                    {
+                        "name": "ScriptsUuid",
+                        "in": "path",
+                        "description": "ID of script to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/scriptsEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/scripts"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Scripts"
+                ],
+                "summary": "Delete a script",
+                "operationId": "deleteScript",
+                "parameters": [
+                    {
+                        "name": "scriptsUuid",
+                        "in": "path",
+                        "description": "ID of script to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/scripts"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -752,6 +992,52 @@
                 "allOf": [
                     {
                         "$ref": "#/components/schemas/requestsEditable"
+                    }
+                ]
+            },
+            "scriptsEditable": {
+                "properties": {
+                    "uuid": {
+                        "description": "Represents an Eloquent model of a Script",
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "title": {
+                        "description": "Represents an Eloquent model of a Script",
+                        "type": "string"
+                    },
+                    "description": {
+                        "description": "Represents an Eloquent model of a Script",
+                        "type": "string"
+                    },
+                    "language": {
+                        "description": "Represents an Eloquent model of a Script",
+                        "type": "string"
+                    },
+                    "code": {
+                        "description": "Represents an Eloquent model of a Script",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "scripts": {
+                "properties": {
+                    "created_at": {
+                        "description": "Represents an Eloquent model of a Script",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "description": "Represents an Eloquent model of a Script",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/scriptsEditable"
                     }
                 ]
             },
