@@ -17,6 +17,11 @@ class User extends Authenticatable implements HasMedia
     use HasBinaryUuid;
     use HasMediaTrait;
 
+    //Disk
+    public const DISK_PROFILE = 'profile';
+    //collection media library
+    public const COLLECTION_PROFILE = 'profile';
+
     public $incrementing = false;
 
     /**
@@ -53,6 +58,11 @@ class User extends Authenticatable implements HasMedia
         'updated_at',
     ];
 
+    protected $appends = [
+        'fullname',
+        'avatar',
+    ];
+
     /**
      * Validation rules
      *
@@ -79,7 +89,7 @@ class User extends Authenticatable implements HasMedia
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password',
     ];
 
     /**
@@ -101,8 +111,36 @@ class User extends Authenticatable implements HasMedia
         return $this->morphMany(GroupMember::class, 'member', null, 'member_uuid');
     }
 
+    /**
+     * Get the full name as an attribute.
+     *
+     * @return string
+     */
+    public function getFullnameAttribute() {
+        return $this->getFullName();
+    }
+
+    /**
+     * Get the avatar URL
+     *
+     * @return string
+     */
+    public function getAvatarAttribute() {
+        return $this->getAvatar();
+    }
+
+    /**
+     * Get url Avatar
+     *
+     * @return string
+     */
     public function getAvatar()
     {
-        return '';
+        $mediaFile = $this->getMedia(self::COLLECTION_PROFILE);
+        $url = '';
+        foreach ($mediaFile as $media) {
+            $url = $media->getFullUrl();
+        }
+        return $url;
     }
 }

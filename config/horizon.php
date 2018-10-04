@@ -2,7 +2,7 @@
 
 return [
 
-    'uri' => 'manage/queues',
+    'uri' => 'admin/queues',
 
     /*
     |--------------------------------------------------------------------------
@@ -84,6 +84,16 @@ return [
         ],
 
         'local' => [
+            'supervisor-1' => [
+                'connection' => 'redis',
+                'queue' => ['default'],
+                'balance' => 'simple',
+                'processes' => 3,
+                'tries' => 3,
+            ],
+        ],
+        
+        'staging' => [
             'supervisor-1' => [
                 'connection' => 'redis',
                 'queue' => ['default'],

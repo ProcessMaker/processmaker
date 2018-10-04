@@ -38,20 +38,27 @@ L5_SWAGGER_GENERATE_ALWAYS=TRUE
 ```
 
 At the comment block at the top of the model, add an @OA annotation to describe
-the schema. See `ProcessMaker/Models/Process.php` for an example
+the schema. See `ProcessMaker/Models/Process.php` for an example.
+
+To keep things dry, you can define 2 schemas. One that inherits the other.
 ```php
 /**
  * ...existing comments above...
  * 
  * @OA\Schema(
- *   schema="Process",
- *   @OA\Property(property="uuid", type="string"),
- *   @OA\Property(property="process_category_uuid", type="string"),
- *   @OA\Property(property="user_uuid", type="string"),
- *   @OA\Property(property="bpmn", type="string"),
+ *   schema="ProcessEditable",
+ *   @OA\Property(property="process_category_uuid", type="string", format="uuid"),
  *   @OA\Property(property="name", type="string"),
  *   @OA\Property(property="description", type="string"),
- *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"})
+ *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
+ * ),
+ * @OA\Schema(
+ *   schema="Process",
+ *   allOf={@OA\Schema(ref="#/components/schemas/ProcessEditable")},
+ *   @OA\Property(property="user_uuid", type="string", format="uuid"),
+ *   @OA\Property(property="uuid", type="string", format="uuid"),
+ *   @OA\Property(property="created_at", type="string", format="date-time"),
+ *   @OA\Property(property="updated_at", type="string", format="date-time"),
  * )
  */
 class Process extends Model implements HasMedia
@@ -67,21 +74,27 @@ Now you can use the reference to the schema when annotating the controllers. See
      *     summary="Returns all processes that the user has access to",
      *     operationId="getProcesses",
      *     tags={"Process"},
-     *     @OA\Parameter(
-     *         name="filter",
-     *         in="query",
-     *         description="Filter results with a string. Searches Name, Description, and Status",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
+     *     @OA\Parameter(ref="#/components/parameters/filter"),
+     *     @OA\Parameter(ref="#/components/parameters/order_by"),
+     *     @OA\Parameter(ref="#/components/parameters/order_direction"),
+     *     @OA\Parameter(ref="#/components/parameters/per_page"),
+     *     @OA\Parameter(ref="#/components/parameters/"),
+     * 
      *     @OA\Response(
      *         response=200,
      *         description="list of processes",
      *         @OA\JsonContent(
-     *             type="array",
-     *             @OA\Items(ref="#/components/schemas/Process")
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/Process"),
+     *             ),
+     *             @OA\Property(
+     *                 property="meta",
+     *                 type="object",
+     *                 allOf={@OA\Schema(ref="#/components/schemas/metadata")},
+     *             ),
      *         ),
      *     ),
      * )
@@ -96,12 +109,12 @@ And for a show method
 ```php
     /**
      * @OA\Get(
-     *     path="/process/{processUuid}",
+     *     path="/processes/{processUuid}",
      *     summary="Get single process by ID",
      *     operationId="getProcessByUuid",
      *     tags={"Process"},
      *     @OA\Parameter(
-     *         description="ID of pet to return",
+     *         description="ID of process to return",
      *         in="path",
      *         name="processUuid",
      *         required=true,
@@ -114,7 +127,6 @@ And for a show method
      *         description="Successfully found the process",
      *         @OA\JsonContent(ref="#/components/schemas/Process")
      *     ),
-     * )
      */
     public function show(Request $request, Process $process)
     {
@@ -133,6 +145,13 @@ generate one with php artisan tinker like so:
 $ php artisan tinker
 >>> User::first()->createToken('api')->accessToken
 ```
+If you get a error like `Trying to get property 'client' of non-object` then the client
+probably needs to be created, so run this artisan command first, then do the tinker command above:
+```
+php artisan passport:client --personal
+```
+
+
 Copy the resulting token. Then in the swagger UI click on Authorize and paste the token.
 Authorize and close. You should now be able to use the "Try it out" functionality.
 

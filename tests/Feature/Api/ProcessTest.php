@@ -165,11 +165,11 @@ class ProcessTest extends TestCase
         factory(Process::class, $rowsToAdd)->create();
 
         // The first page should have 5 items;
-        $response = $this->json('GET', route('processes.index', ['per_page' => 5, 'page' => 1]));
+        $response = $this->json('GET', route('api.processes.index', ['per_page' => 5, 'page' => 1]));
         $response->assertJsonCount(5, 'data');
 
         // The second page should have the modulus of 2+$initialRows
-        $response = $this->json('GET', route('processes.index', ['per_page' => 5, 'page' => 2]));
+        $response = $this->json('GET', route('api.processes.index', ['per_page' => 5, 'page' => 2]));
         $response->assertJsonCount((2 + $initialRows) % 5, 'data');
     }
 
@@ -210,7 +210,7 @@ class ProcessTest extends TestCase
      */
     public function testCreateProcessWithBPMN()
     {
-        $route = route($this->resource . '.store');
+        $route = route('api.' . $this->resource . '.store');
         $base = factory(Process::class)->make([
                 'user_uuid' => static::$DO_NOT_SEND,
                 'process_category_uuid' => static::$DO_NOT_SEND,

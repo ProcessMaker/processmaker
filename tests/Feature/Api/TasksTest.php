@@ -66,7 +66,7 @@ class TasksTest extends TestCase
             'process_request_uuid' => $request->uuid
         ]);
         //Get a page of tokens
-        $route = route($this->resource . '.index', ['per_page' => 10, 'page' => 2]);
+        $route = route('api.' . $this->resource . '.index', ['per_page' => 10, 'page' => 2]);
         $response = $this->json('GET', $route);
         //Verify the status
         $response->assertStatus(200);
@@ -91,7 +91,7 @@ class TasksTest extends TestCase
         ]);
 
         //Get active tokens
-        $route = route($this->resource . '.index', ['per_page' => 10, 'filter' => 'ACTIVE']);
+        $route = route('api.' . $this->resource . '.index', ['per_page' => 10, 'filter' => 'ACTIVE']);
         $response = $this->json('GET', $route);
         //Verify the status
         $response->assertStatus(200);
@@ -116,7 +116,7 @@ class TasksTest extends TestCase
         ]);
 
         //List sorted by completed_at returns as first row {"completed_at": null}
-        $route = route($this->resource . '.index', ['order_by' => 'completed_at', 'order_direction' => 'asc']);
+        $route = route('api.' . $this->resource . '.index', ['order_by' => 'completed_at', 'order_direction' => 'asc']);
         $response = $this->json('GET', $route);
         //Verify the status
         $response->assertStatus(200);
@@ -148,7 +148,7 @@ class TasksTest extends TestCase
         // Get the second page, should have 5 items
         $perPage = 5;
         $page = 2;
-        $response = $this->json('GET', route($this->resource . '.index', ['per_page' => $perPage, 'page' => $page]));
+        $response = $this->json('GET', route('api.' . $this->resource . '.index', ['per_page' => $perPage, 'page' => $page]));
         $response->assertJsonCount($perPage, 'data');
         // Verify the meta information
         $this->assertArraySubset(
@@ -176,7 +176,7 @@ class TasksTest extends TestCase
         ]);
 
         //Test that is correctly displayed
-        $route = route($this->resource . '.show', [$token->uuid_text]);
+        $route = route('api.' . $this->resource . '.show', [$token->uuid_text]);
         $response = $this->json('GET', $route);
         //Check the status
         $response->assertStatus(200);
@@ -197,7 +197,7 @@ class TasksTest extends TestCase
         ]);
 
         //Test that is correctly displayed
-        $route = route($this->resource . '.show', [$token->uuid_text, 'include' => 'user,definition']);
+        $route = route('api.' . $this->resource . '.show', [$token->uuid_text, 'include' => 'user,definition']);
         $response = $this->json('GET', $route);
         //Check the status
         $this->assertStatus(200, $response);
