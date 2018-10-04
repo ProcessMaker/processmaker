@@ -205,6 +205,193 @@
                 }
             }
         },
+        "/forms": {
+            "get": {
+                "tags": [
+                    "Forms"
+                ],
+                "summary": "Returns all forms that the user has access to",
+                "operationId": "getForms",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    },
+                    {
+                        "$ref": "#/components/parameters/include"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of forms",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "description": "Get a list of Forms.",
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/forms"
+                                            }
+                                        },
+                                        "meta": {
+                                            "description": "Get a list of Forms.",
+                                            "type": "object",
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/metadata"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Forms"
+                ],
+                "summary": "Save a new forms",
+                "operationId": "createForms",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/formsEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/forms"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/forms/{formsUuid}": {
+            "get": {
+                "tags": [
+                    "Forms"
+                ],
+                "summary": "Get single forms by ID",
+                "operationId": "getFormsByUuid",
+                "parameters": [
+                    {
+                        "name": "formsUuid",
+                        "in": "path",
+                        "description": "ID of forms to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the forms",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/forms"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Forms"
+                ],
+                "summary": "Update a form",
+                "operationId": "updateForm",
+                "parameters": [
+                    {
+                        "name": "formsUuid",
+                        "in": "path",
+                        "description": "ID of form to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/formsEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/forms"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Forms"
+                ],
+                "summary": "Delete a form",
+                "operationId": "deleteForm",
+                "parameters": [
+                    {
+                        "name": "formsUuid",
+                        "in": "path",
+                        "description": "ID of form to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/forms"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/process_categories": {
             "get": {
                 "tags": [
@@ -1225,6 +1412,56 @@
                 "allOf": [
                     {
                         "$ref": "#/components/schemas/environment_variablesEditable"
+                    }
+                ]
+            },
+            "formsEditable": {
+                "properties": {
+                    "uuid": {
+                        "description": "Class Form",
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "name": {
+                        "description": "Class Form",
+                        "type": "string"
+                    },
+                    "title": {
+                        "description": "Class Form",
+                        "type": "string"
+                    },
+                    "type": {
+                        "description": "Class Form",
+                        "type": "string"
+                    },
+                    "description": {
+                        "description": "Class Form",
+                        "type": "string"
+                    },
+                    "config": {
+                        "description": "Class Form",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "forms": {
+                "properties": {
+                    "created_at": {
+                        "description": "Class Form",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "description": "Class Form",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/formsEditable"
                     }
                 ]
             },
