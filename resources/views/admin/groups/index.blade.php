@@ -43,5 +43,5 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/management/groups/index.js')}}"></script>
+    <script src="{{mix('js/admin/groups/index.js')}}"></script>
 @endsection
