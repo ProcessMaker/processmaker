@@ -18,6 +18,193 @@
         }
     ],
     "paths": {
+        "/environment_variables": {
+            "get": {
+                "tags": [
+                    "Environmental Variables"
+                ],
+                "summary": "Returns all environmentalVariables that the user has access to",
+                "operationId": "getEnvironmentalVariables",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    },
+                    {
+                        "$ref": "#/components/parameters/include"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of environmentalVariables",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "description": "Fetch a collection of variables based on paged request and filter if provided",
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/environment_variables"
+                                            }
+                                        },
+                                        "meta": {
+                                            "description": "Fetch a collection of variables based on paged request and filter if provided",
+                                            "type": "object",
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/metadata"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Environmental Variables"
+                ],
+                "summary": "Save a new environment_variables",
+                "operationId": "createEnvironment_variables",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/environment_variablesEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/environment_variables"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/environment_variables/{environment_variablesUuid}": {
+            "get": {
+                "tags": [
+                    "Environmental Variables"
+                ],
+                "summary": "Get single environment_variables by ID",
+                "operationId": "getEnvironment_variablesByUuid",
+                "parameters": [
+                    {
+                        "name": "environment_variablesUuid",
+                        "in": "path",
+                        "description": "ID of environment_variables to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the process",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/environment_variables"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Environmental Variables"
+                ],
+                "summary": "Update a environment_variables",
+                "operationId": "updateEnvironment_variables",
+                "parameters": [
+                    {
+                        "name": "environment_variablesUuid",
+                        "in": "path",
+                        "description": "ID of environment_variables to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/environment_variablesEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/environment_variables"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Environmental Variables"
+                ],
+                "summary": "Delete a environment_variables",
+                "operationId": "deleteEnvironment_variables",
+                "parameters": [
+                    {
+                        "name": "environment_variablesUuid",
+                        "in": "path",
+                        "description": "ID of environment_variables to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/environment_variables"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/process_categories": {
             "get": {
                 "tags": [
@@ -1009,6 +1196,38 @@
     },
     "components": {
         "schemas": {
+            "environment_variablesEditable": {
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "value": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "environment_variables": {
+                "properties": {
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/environment_variablesEditable"
+                    }
+                ]
+            },
             "ProcessEditable": {
                 "properties": {
                     "process_category_uuid": {
