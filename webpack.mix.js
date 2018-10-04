@@ -20,19 +20,18 @@ mix.webpackConfig({
         ],
         resolve: {
             alias: {
-                Horizon: path.resolve(__dirname, 'vendor/laravel/horizon/resources/js/')
+                Horizon: path.resolve(__dirname, 'vendor/laravel/horizon/resources/assets/js/')
             }
         }
     }).js('resources/js/app-layout.js', 'public/js')
     .js('resources/js/designer/main.js', 'public/js/designer')
-    .js('resources/js/management/users/index.js', 'public/js/management/users')
-    .js('resources/js/management/environment-variables/index.js', 'public/js/management/environment-variables')
-    .js('resources/js/management/profile/index.js', 'public/js/management/profile')
-    .js('resources/js/management/roles/index.js', 'public/js/management/roles')
-    .js('resources/js/management/groups/index.js', 'public/js/management/groups')
-    .js('resources/js/management/queues/index.js', 'public/js/management/queues')
+    .js('resources/js/admin/users/index.js', 'public/js/admin/users')
+    .js('resources/js/admin/environment-variables/index.js', 'public/js/admin/environment-variables')
+    .js('resources/js/admin/profile/index.js', 'public/js/admin/profile')
+    .js('resources/js/admin/groups/index.js', 'public/js/admin/groups')
+    .js('resources/js/admin/queues/index.js', 'public/js/admin/queues')
 
-    .js('resources/js/management/preferences/index.js', 'public/js/management/preferences')
+    .js('resources/js/admin/preferences/index.js', 'public/js/admin/preferences')
     .js('resources/js/processes/tasks/index.js', 'public/js/processes/tasks')
     .js('resources/js/processes/index.js', 'public/js/processes')
     .js('resources/js/processes/categories/index.js', 'public/js/processes/categories')
@@ -45,7 +44,6 @@ mix.webpackConfig({
     .js('resources/js/tasks/show.js', 'public/js/tasks/show.js')
     .js('resources/js/designer/formBuilder/main.js', 'public/js/formBuilder')
     .js('resources/js/designer/ScriptEditor/main.js', 'public/js/designer/ScriptEditor')
-    .js('resources/js/admin/users/index.js', 'public/js/admin/users')
 
 
 
@@ -58,7 +56,7 @@ mix.webpackConfig({
     .copy('resources/img/*', 'public/img')
     .sass('resources/sass/sidebar/sidebar.scss', 'public/css')
     .sass('resources/sass/app.scss', 'public/css')
-    .sass('resources/sass/management/queues.scss', 'public/css/management')
+    .sass('resources/sass/admin/queues.scss', 'public/css/admin')
     .copy('resources/js/designer/skins', 'public/js/designer/skins')
     .copy('resources/js/designer/plugins', 'public/js/designer/plugins')
     .copy('node_modules/snapsvg/dist/snap.svg.js', 'public/js')

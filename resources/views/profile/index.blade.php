@@ -11,5 +11,5 @@
 @endsection
 
 @section('js')
-  <script src="{{mix('js/management/profile/index.js')}}"></script>
+  <script src="{{mix('js/admin/profile/index.js')}}"></script>
 @endsection
