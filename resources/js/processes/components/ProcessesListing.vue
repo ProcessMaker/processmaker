@@ -109,6 +109,10 @@
                     window.open('/designer/' + data.uuid, '_self');
                 }
 
+                if (actionType === 'edit-item') {
+                    this.$emit('edit', data.uuid);
+                }
+
                 if (actionType === 'toggle-status') {
                     this.loading = true;
                     ProcessMaker.apiClient
@@ -117,7 +121,7 @@
                         })
                         .then(response => {
                             this.loading = false;
-                            document.location.reload();
+                            this.$emit('reload');
                         });
                 }
 
@@ -135,7 +139,12 @@
             },
             formatStatus(status) {
                 status = status.toLowerCase();
-                let bubbleColor = {'active': 'text-success', 'inactive': 'text-danger', 'draft': 'text-warning', 'archived': 'text-info'};
+                let bubbleColor = {
+                    'active': 'text-success',
+                    'inactive': 'text-danger',
+                    'draft': 'text-warning',
+                    'archived': 'text-info'
+                };
                 let response = '<i class="fas fa-circle ' + bubbleColor[status] + ' small"></i> ';
                 status = status.charAt(0).toUpperCase() + status.slice(1);
                 return response + status;

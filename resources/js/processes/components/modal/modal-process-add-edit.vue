@@ -1,13 +1,19 @@
 <template>
     <b-modal v-model="opened" size="md" centered @hidden="onClose" @show="onReset" @close="onClose"
-             title="Create New Process" v-cloak>
-        <form-input :error="errors.name" v-model="name" label="Title" helper="Process Name must be distinct"
-                    required="required"></form-input>
+             :title="labels.title" v-cloak>
+        <form-input :error="errors.name" v-model="name" :label="labels.name" :helper="labels.helper"
+                    required="required">
+        </form-input>
         <form-text-area :error="errors.description" :rows="3" v-model="description"
-                        label="Description"></form-text-area>
-        <form-select :error="errors.status" label="Status" v-model="status" :options="statusOptions"></form-select>
-        <form-select :error="errors.process_category_id" label="Category" name="category" v-model="categorySelect"
-                     :options="categorySelectOptions"></form-select>
+                        :label="labels.description">
+        </form-text-area>
+        <form-select :error="errors.status" :label="labels.status" v-model="status"
+                     :options="statusOptions">
+        </form-select>
+        <form-select :error="errors.process_category_uuid" :label="labels.category" name="category"
+                     v-model="categorySelect"
+                     :options="categorySelectOptions">
+        </form-select>
 
         <div slot="modal-footer">
             <b-button @click="onClose" class="btn btn-outline-success btn-sm text-uppercase">
@@ -28,7 +34,7 @@
 
     export default {
         components: {FormInput, FormSelect, FormTextArea},
-        props: ['show'],
+        props: ['show', 'processUuid'],
         data() {
             return {
                 'name': '',
@@ -46,6 +52,14 @@
                     {value: 'ACTIVE', content: 'Active'},
                     {value: 'INACTIVE', content: 'Inactive'}
                 ],
+                'labels': {
+                    'title': 'Create New Process',
+                    'name': 'Title',
+                    'description': 'Description',
+                    'status': 'Status',
+                    'category': 'Category',
+                    'helper': 'Process Name must be distinct'
+                },
                 'opened': this.show
             }
         },
@@ -71,6 +85,11 @@
                 this.errors.status = null;
                 this.errors.process_category_id = null;
                 this.loadCategories();
+                this.labels.title = 'Create New Process';
+                if (this.processUuid) {
+                    this.labels.title = 'Update Process';
+                    this.fetch();
+                }
             },
             loadCategories() {
                 window.ProcessMaker.apiClient.get('process_categories?per_page=1000&status=ACTIVE')
@@ -89,23 +108,41 @@
                         this.categorySelectOptions = options;
                     })
             },
-            onSave() {
-                ProcessMaker.apiClient
-                    .post(
-                        'processes',
-                        {
-                            name: this.name,
-                            description: this.description,
-                            status: this.status,
-                            process_category_uuid: this.categorySelect
-                        }
-                    )
+            fetch() {
+                ProcessMaker.apiClient.get("processes/" + this.processUuid)
                     .then(response => {
-                        ProcessMaker.alert('New Process Successfully Created', 'success');
+                        this.name = response.data.name;
+                        this.description = response.data.description;
+                        this.categorySelect = response.data.process_category_uuid;
+                        this.status = response.data.status;
+                    })
+            },
+            request() {
+                return this.processUuid ? ProcessMaker.apiClient.put : ProcessMaker.apiClient.post;
+            },
+            savePath() {
+                return this.processUuid ? 'processes/' + this.processUuid : 'processes';
+            },
+            onSave() {
+                this.request()(
+                    this.savePath(), {
+                        uuid: this.processUuid,
+                        name: this.name,
+                        description: this.description,
+                        status: this.status,
+                        process_category_uuid: this.categorySelect
+                    }
+                ).then(response => {
                         this.onClose();
-                        if (response.data && response.data.uuid) {
-                            //Change way to open the designer
-                            window.location.href = '/designer/' + response.data.uuid;
+                        if (this.processUuid) {
+                            ProcessMaker.alert('Update Process Successfully', 'success');
+                            this.$emit('reload');
+                        } else {
+                            ProcessMaker.alert('New Process Successfully Created', 'success');
+                            if (response.data && response.data.uuid) {
+                                //Change way to open the designer
+                                window.location.href = '/designer/' + response.data.uuid;
+                            }
                         }
                     })
                     .catch(error => {
