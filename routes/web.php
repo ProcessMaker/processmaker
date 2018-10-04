@@ -6,7 +6,6 @@ Route::namespace('Admin')->prefix('admin')->group(function(){
   Route::resource('about', 'AboutController');
   Route::resource('groups', 'GroupController');
   Route::resource('preferences', 'PreferenceController');
-//   Route::resource('queueMonitors', 'QueueMonitorController');
   Route::resource('users', 'UserController');
 });
 
