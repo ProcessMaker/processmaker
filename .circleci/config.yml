@@ -118,6 +118,7 @@ jobs:
             MSSQL_DATABASE: "test"
             MSSQL_USERNAME: "sa"
             MSSQL_PASSWORD: "P4ssW0rd1!"
+            BPM_SCRIPTS_HOME: "/tmp"
       - run:
           name: "Jest"
           command: "npm run test"
@@ -176,6 +177,8 @@ jobs:
             # Run php artisan migrate:fresh --seed to have a clean installed database in RDS
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "php ~/builds/$BUILD_NAME/artisan migrate:fresh --seed --force"
             echo "Deployed to https://${BUILD_NAME}.bpm4.qa.processmaker.net/"
+            # Run containerDeploy.sh script to spin up Redis docker container, laravel-echo-server, and horizon
+            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "sudo /bin/bash /root/cloudops/containerDeploy.sh $BUILD_NAME"
 
       #- run:
       #    name: "SauceLabs Browser Tests: Chrome"

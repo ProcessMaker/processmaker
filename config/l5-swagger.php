@@ -80,7 +80,11 @@ return [
         |--------------------------------------------------------------------------
         */
 
-        'annotations' => [base_path('ProcessMaker/Models'), base_path('ProcessMaker/Http/Controllers/Api')],
+        'annotations' => [
+            base_path('ProcessMaker/Models'),
+            base_path('ProcessMaker/Http/Controllers/Api'),
+            base_path('ProcessMaker/Http/Resources'),
+        ],
 
         /*
         |--------------------------------------------------------------------------
