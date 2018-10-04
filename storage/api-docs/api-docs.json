@@ -14,7 +14,7 @@
     },
     "servers": [
         {
-            "url": "http://bpm4.processmaker.local/api/1.0"
+            "url": "/api/1.0"
         }
     ],
     "paths": {
