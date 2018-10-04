@@ -579,6 +579,153 @@
                 }
             }
         },
+        "/group_members": {
+            "get": {
+                "tags": [
+                    "Group members"
+                ],
+                "summary": "Returns all group_members that the user has access to",
+                "operationId": "getGroup_members",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    },
+                    {
+                        "$ref": "#/components/parameters/include"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of group_members",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "description": "Display a listing of the resource.",
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/group_members"
+                                            }
+                                        },
+                                        "meta": {
+                                            "description": "Display a listing of the resource.",
+                                            "type": "object",
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/metadata"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Group members"
+                ],
+                "summary": "Save a new group_members",
+                "operationId": "createGroup_members",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/group_membersEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/group_members"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/group_members/{group_memberUuid}": {
+            "get": {
+                "tags": [
+                    "Group members"
+                ],
+                "summary": "Get single group_member by ID",
+                "operationId": "getGroup_memberByUuid",
+                "parameters": [
+                    {
+                        "name": "group_memberUuid",
+                        "in": "path",
+                        "description": "ID of group_members to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the group_members",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/group_members"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Group members"
+                ],
+                "summary": "Delete a group_members",
+                "operationId": "deleteGroup_members",
+                "parameters": [
+                    {
+                        "name": "group_memberUuid",
+                        "in": "path",
+                        "description": "ID of group_members to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/group_members"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/process_categories": {
             "get": {
                 "tags": [
@@ -1691,6 +1838,54 @@
                 "allOf": [
                     {
                         "$ref": "#/components/schemas/groupsEditable"
+                    }
+                ]
+            },
+            "group_membersEditable": {
+                "properties": {
+                    "uuid": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "group_uuid": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "member_uuid": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "member_type": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "ACTIVE",
+                            "INACTIVE"
+                        ]
+                    }
+                },
+                "type": "object"
+            },
+            "group_members": {
+                "properties": {
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/group_membersEditable"
                     }
                 ]
             },
