@@ -32,7 +32,7 @@
 
       <!-- Caching config -->
       <env name="CACHE_DRIVER" value="array" />
-
+      <env name="QUEUE_DRIVER" value="sync" />
 
       <!-- Workflow Database -->
       <env name="DB_ADAPTER" value="mysql" />

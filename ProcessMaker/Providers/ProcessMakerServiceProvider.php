@@ -2,11 +2,8 @@
 
 namespace ProcessMaker\Providers;
 
-use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use ProcessMaker\Config\Repository;
 use ProcessMaker\Managers\DatabaseManager;
-use ProcessMaker\Managers\FormsManager;
 use ProcessMaker\Managers\InputDocumentManager;
 use ProcessMaker\Managers\OutputDocumentManager;
 use ProcessMaker\Managers\ProcessCategoryManager;
@@ -17,12 +14,11 @@ use ProcessMaker\Managers\SchemaManager;
 use ProcessMaker\Managers\TaskAssigneeManager;
 use ProcessMaker\Managers\TaskManager;
 use ProcessMaker\Managers\TasksDelegationManager;
-use ProcessMaker\Managers\ScriptManager;
 use ProcessMaker\Managers\UserManager;
-use ProcessMaker\Model\Group;
-use ProcessMaker\Model\User;
 use Laravel\Horizon\Horizon;
+use Laravel\Passport\Passport;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Resources\Json\Resource;
 
 /**
  * Provide our ProcessMaker specific services
@@ -46,11 +42,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $old  = $this->app['config'];
-        $new = new Repository($old->all());
-        $this->app->instance('config', $new);
-
-
         // Dusk, if env is appropriate
         if(!$this->app->environment('production')) {
             $this->app->register(\Laravel\Dusk\DuskServiceProvider::class);
@@ -83,19 +74,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
             return new ReportTableManager();
         });
 
-        $this->app->singleton('form.manager', function ($app) {
-            return new FormsManager();
-        });
-
-        /**
-         * Mapping
-         *
-         */
-        Relation::morphMap([
-            User::TYPE => User::class,
-            Group::TYPE => Group::class,
-        ]);
-
         $this->app->singleton('task.manager', function ($app) {
             return new TaskManager();
         });
@@ -107,10 +85,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->app->singleton('input_document.manager', function ($app) {
             return new InputDocumentManager();
         });
-        
-        $this->app->singleton('script.manager', function ($app) {
-            return new ScriptManager();
-        });
 
         $this->app->singleton('output_document.manager', function ($app) {
             return new OutputDocumentManager();
@@ -120,9 +94,12 @@ class ProcessMakerServiceProvider extends ServiceProvider
             return new TasksDelegationManager();
         });
 
-        //Enable 
+        //Enable
         Horizon::auth(function ($request) {
             return !empty(Auth::user());
         });
+
+        // we are using custom passport migrations
+        Passport::ignoreMigrations();
     }
 }

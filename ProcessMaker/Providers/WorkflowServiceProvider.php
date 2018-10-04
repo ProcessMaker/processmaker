@@ -52,11 +52,13 @@ class WorkflowServiceProvider extends ServiceProvider
             $bpmnRepository = new BpmnDocument();
             $bpmnRepository->setEngine($engine);
             $bpmnRepository->setFactory($repository);
+            $mapping = $bpmnRepository->getBpmnElementsMapping();
             $engine->setStorage($bpmnRepository);
             $engine->setProcess($params['process']);
 
             //Initialize custom properties for ProcessMaker
             $bpmnRepository->setBpmnElementMapping(self::PROCESS_MAKER_NS, '', []);
+            $bpmnRepository->setBpmnElementMapping(BpmnDocument::BPMN_MODEL, 'userTask', $mapping[BpmnDocument::BPMN_MODEL]['task']);
 
             return $bpmnRepository;
         });
