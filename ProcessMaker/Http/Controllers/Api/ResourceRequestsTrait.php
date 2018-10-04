@@ -28,7 +28,7 @@ trait ResourceRequestsTrait
         $filter = $request->input('filter');
         if ($filter) {
             foreach ($searchableColumns as $column) {
-                if ($column == 'status') {
+                if (substr($column, -6) == 'status') {
                     // filtering by status must match the entire string
                     $sub_search = '';
                 } else {
