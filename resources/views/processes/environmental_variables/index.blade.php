@@ -27,5 +27,5 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/admin/environment-variables/index.js')}}"></script>
+    <script src="{{mix('js/processes/environment-variables/index.js')}}"></script>
 @endsection
