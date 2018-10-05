@@ -31,11 +31,12 @@ class UserTest extends TestCase
     {
 
       // get the URL
-      $response = $this->apiCall('GET', '/admin/users');
+      $response = $this->webCall('GET', '/admin/users');
       // check the correct view is called
       $response->assertViewIs('admin.users.index');
 
       $response->assertStatus(200);
+      $response->assertSee('Users');
 
     }
 
@@ -49,12 +50,12 @@ class UserTest extends TestCase
 
       $user_uuid = factory(User::class)->create()->uuid_text;
       // get the URL
-      $response = $this->apiCall('GET', '/admin/users/'.$user_uuid . '/edit');
+      $response = $this->webCall('GET', '/admin/users/'.$user_uuid . '/edit');
 
       $response->assertStatus(200);
       // check the correct view is called
       $response->assertViewIs('admin.users.edit');
-
+      $response->assertSee('Edit User');
     }
 
     /**
@@ -66,7 +67,7 @@ class UserTest extends TestCase
     {
       // get the URL
       $response = $this->webCall('GET', '/admin/users/create');
-      
+
       $response->assertStatus(200);
       // check the correct view is called
       $response->assertViewIs('admin.users.create');
@@ -81,7 +82,7 @@ class UserTest extends TestCase
     {
       $user_uuid = factory(User::class)->create()->uuid_text;
       // get the URL
-      $response = $this->apiCall('GET', '/admin/users/'. $user_uuid);
+      $response = $this->webCall('GET', '/admin/users/'. $user_uuid);
 
       $response->assertStatus(200);
       // check the correct view is called
