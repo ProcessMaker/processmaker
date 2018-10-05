@@ -3,7 +3,6 @@
 @section('content')
 <div class="container ml-2">
   <h1>Admin</h1>
-
 </div>
 @endsection
 

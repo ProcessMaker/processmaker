@@ -68,6 +68,11 @@ $this->middleware(['auth'])->group(function() {
       return view('admin',['title' => 'Dashboard']);
     })->name('admin');
 
+    $this->get('/admin/customize', 'Management\PreferencesController@show')->name('management-themes-index');
+
+    $this->get('/', function() {
+        return view('home', ['title' => 'Dashboard']);
+    })->name('dash');
     $this->get('/admin/profile', function(){
       return view('profile',['title' => 'Dashboard']);
     })->name('profile');

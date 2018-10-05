@@ -16,4 +16,8 @@ class PreferencesController extends Controller
     {
         return view('preferences');
     }
+    public function show()
+    {
+        return view('management.themes.index');
+    }
 }

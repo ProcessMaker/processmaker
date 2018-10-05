@@ -30,8 +30,8 @@ mix.webpackConfig({
     .js('resources/assets/js/management/profile/index.js', 'public/js/management/profile')
     .js('resources/assets/js/management/roles/index.js', 'public/js/management/roles')
     .js('resources/assets/js/management/groups/index.js', 'public/js/management/groups')
+    .js('resources/assets/js/management/themes/index.js', 'public/js/management/themes')
     .js('resources/assets/js/management/queues/index.js', 'public/js/management/queues')
-
     .js('resources/assets/js/management/preferences/index.js', 'public/js/management/preferences')
     .js('resources/assets/js/processes/tasks/index.js', 'public/js/processes/tasks')
     .js('resources/assets/js/processes/index.js', 'public/js/processes')
