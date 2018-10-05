@@ -10,7 +10,7 @@
         <div class="container">
           <div class="row">
             <div class="col-1">
-              <img class="avatar" src="./avatar-placeholder.png" />
+              <img class="avatar-small" src="{{ asset('img/avatar_placeholder_small.png') }}" />
             </div>
             <div class="col-6">
               <div class="d-flex"><h3>Name Name</h3><i class="fas fa-circle text-success mt-2 ml-1" style="fontsize: 10px !important;"></i></div>
