@@ -116,17 +116,32 @@ class GenerateMenus
        });
 
         Menu::make('sidebar_processes', function ($menu) {
-        //   $submenu = $menu->add(__('menus.sidebar_processes.processes'));
-        //   $submenu->add(__('menus.sidebar_processes.processes'), [
-        //       'route' => 'processes',
-        //       'icon' => 'fa-play-circle',
-        //       'id' => 'processes'
-        //   ]);
-        //   $submenu->add(__('menus.sidebar_processes.categories'), [
-        //       'route' => 'process-categories-index',
-        //       'icon' => 'fa-list',
-        //       'id' => 'process-categories'
-        //   ]);
+          $submenu = $menu->add(__('menus.sidebar_processes.processes'));
+          $submenu->add(__('menus.sidebar_processes.processes'), [
+              'route' => 'processes.index',
+              'icon' => 'fa-play-circle',
+              'id' => 'processes'
+          ]);
+          $submenu->add(__('menus.sidebar_processes.categories'), [
+            //   'route' => 'processes.categories.index',
+              'icon' => 'fa-sitemap',
+              'id' => 'process-categories'
+          ]);
+          $submenu->add(__('menus.sidebar_processes.scripts'), [
+            //   'route' => 'processes.categories.index',
+              'icon' => 'fa-code',
+              'id' => 'process-categories'
+          ]);
+          $submenu->add(__('menus.sidebar_processes.forms'), [
+            //   'route' => 'processes.categories.index',
+              'icon' => 'fa-file-alt',
+              'id' => 'process-categories'
+          ]);
+          $submenu->add(__('menus.sidebar_processes.environmentalVariables'), [
+            //   'route' => 'processes.categories.index',
+              'icon' => 'fa-cogs',
+              'id' => 'process-categories'
+          ]);
         });
 
         Menu::make('sidebar_designer', function ($menu) {});
