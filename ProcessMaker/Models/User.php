@@ -110,6 +110,12 @@ class User extends Authenticatable implements HasMedia
         ]);
     }
 
+    public function members()
+    {
+        // return $this->hasMany(GroupMember::class);
+        return GroupMember::where(['member_type' => self::class, 'member_uuid' => $this->uuid])->get();
+    }
+
     public function memberships()
     {
         return $this->morphMany(GroupMember::class, 'member', null, 'member_uuid');

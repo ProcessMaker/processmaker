@@ -63,13 +63,13 @@
             </tr>
           </thead>
           <tbody>
-
+            @foreach ($user->members() as $group_member)
             <tr>
-              <td>Title</td>
+              <td>{{$group_member->group->name}}</td>
               <td>This is a group description</td>
               <td><i class="fas fa-trash-alt text-secondary"></i></td>
             </tr>
-
+            @endforeach
           </tbody>
         </table>
         <div class="text-secondary">1 - 4 of 4 Groups</div>
