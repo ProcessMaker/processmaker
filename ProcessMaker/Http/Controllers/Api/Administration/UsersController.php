@@ -85,13 +85,41 @@ class UsersController extends Controller
      */
     public function update(User $user, Request $request)
     {
-        $request->validate(User::rules($user));
-        $user->username = $request->username;
-        $user->firstname = $request->firstname;
-        $user->lastname = $request->lastname;
-        $user->status = $request->status;
-        if($request->password != ""){
-            $user->password = Hash::make($request->password);
+        $expected = $user->fillable;
+
+        $insert = [];
+
+        $rules = $user->rules();
+
+        foreach($expected as $expect){
+            if(!$request->has($expect)){
+                unset($rules[$expect]);
+                unset($expected[$expect]);
+            } else {
+                $insert[$expect] = $request->$expect;
+            }
+        }
+
+        unset($insert['uid']);
+
+        if($request->username === $user->username){
+            unset($rules['username']);
+            unset($insert['username']);
+        }
+
+        if($request->has('password') && strlen($request->password) > 0){
+
+            $insert['password'] = Hash::make($request->password);
+
+        } else {
+            unset($rules['password']);
+            unset($insert['password']);
+        }
+
+        $request->validate($rules);
+
+        foreach($insert as $key => $data){
+            $user->$key = $data;
         }
 
         $user->save();

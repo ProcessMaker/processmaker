@@ -1,0 +1,425 @@
+[{
+    "content": "Dateline Standard Time",
+    "value": "DST"
+  },
+  {
+    "content": "UTC-11",
+    "value": "U"
+  },
+  {
+    "content": "Hawaiian Standard Time",
+    "value": "HST"
+  },
+  {
+    "content": "Alaskan Standard Time",
+    "value": "AKDT"
+  },
+  {
+    "content": "Pacific Standard Time (Mexico)",
+    "value": "PDT"
+  },
+  {
+    "content": "Pacific Daylight Time",
+    "value": "PDT"
+  },
+  {
+    "content": "Pacific Standard Time",
+    "value": "PST"
+  },
+  {
+    "content": "US Mountain Standard Time",
+    "value": "UMST"
+  },
+  {
+    "content": "Mountain Standard Time (Mexico)",
+    "value": "MDT"
+  },
+  {
+    "content": "Mountain Standard Time",
+    "value": "MDT"
+  },
+  {
+    "content": "Central America Standard Time",
+    "value": "CAST"
+  },
+  {
+    "content": "Central Standard Time",
+    "value": "CDT"
+  },
+  {
+    "content": "Central Standard Time (Mexico)",
+    "value": "CDT"
+  },
+  {
+    "content": "Canada Central Standard Time",
+    "value": "CCST"
+  },
+  {
+    "content": "SA Pacific Standard Time",
+    "value": "SPST"
+  },
+  {
+    "content": "Eastern Standard Time",
+    "value": "EDT"
+  },
+  {
+    "content": "US Eastern Standard Time",
+    "value": "UEDT"
+  },
+  {
+    "content": "Venezuela Standard Time",
+    "value": "VST"
+  },
+  {
+    "content": "Paraguay Standard Time",
+    "value": "PYT"
+  },
+  {
+    "content": "Atlantic Standard Time",
+    "value": "ADT"
+  },
+  {
+    "content": "Central Brazilian Standard Time",
+    "value": "CBST"
+  },
+  {
+    "content": "SA Western Standard Time",
+    "value": "SWST"
+  },
+  {
+    "content": "Pacific SA Standard Time",
+    "value": "PSST"
+  },
+  {
+    "content": "Newfoundland Standard Time",
+    "value": "NDT"
+  },
+  {
+    "content": "E. South America Standard Time",
+    "value": "ESAST"
+  },
+  {
+    "content": "Argentina Standard Time",
+    "value": "AST"
+  },
+  {
+    "content": "SA Eastern Standard Time",
+    "value": "SEST"
+  },
+  {
+    "content": "Greenland Standard Time",
+    "value": "GDT"
+  },
+  {
+    "content": "Montevideo Standard Time",
+    "value": "MST"
+  },
+  {
+    "content": "Bahia Standard Time",
+    "value": "BST"
+  },
+  {
+    "content": "UTC-02",
+    "value": "U"
+  },
+  {
+    "content": "Mid-Atlantic Standard Time",
+    "value": "MDT"
+  },
+  {
+    "content": "Azores Standard Time",
+    "value": "ADT"
+  },
+  {
+    "content": "Cape Verde Standard Time",
+    "value": "CVST"
+  },
+  {
+    "content": "Morocco Standard Time",
+    "value": "MDT"
+  },
+  {
+    "content": "UTC",
+    "value": "UTC"
+  },
+  {
+    "content": "Greenwich Mean Time",
+    "value": "GMT"
+  },
+  {
+    "content": "British Summer Time",
+    "value": "BST"
+  },
+  {
+    "content": "GMT Standard Time",
+    "value": "GDT"
+  },
+  {
+    "content": "Greenwich Standard Time",
+    "value": "GST"
+  },
+  {
+    "content": "W. Europe Standard Time",
+    "value": "WEDT"
+  },
+  {
+    "content": "Central Europe Standard Time",
+    "value": "CEDT"
+  },
+  {
+    "content": "Romance Standard Time",
+    "value": "RDT"
+  },
+  {
+    "content": "Central European Standard Time",
+    "value": "CEDT"
+  },
+  {
+    "content": "W. Central Africa Standard Time",
+    "value": "WCAST"
+  },
+  {
+    "content": "Namibia Standard Time",
+    "value": "NST"
+  },
+  {
+    "content": "GTB Standard Time",
+    "value": "GDT"
+  },
+  {
+    "content": "Middle East Standard Time",
+    "value": "MEDT"
+  },
+  {
+    "content": "Egypt Standard Time",
+    "value": "EST"
+  },
+  {
+    "content": "Syria Standard Time",
+    "value": "SDT"
+  },
+  {
+    "content": "E. Europe Standard Time",
+    "value": "EEDT"
+  },
+  {
+    "content": "South Africa Standard Time",
+    "value": "SAST"
+  },
+  {
+    "content": "FLE Standard Time",
+    "value": "FDT"
+  },
+  {
+    "content": "Turkey Standard Time",
+    "value": "TDT"
+  },
+  {
+    "content": "Israel Standard Time",
+    "value": "JDT"
+  },
+  {
+    "content": "Libya Standard Time",
+    "value": "LST"
+  },
+  {
+    "content": "Jordan Standard Time",
+    "value": "JST"
+  },
+  {
+    "content": "Arabic Standard Time",
+    "value": "AST"
+  },
+  {
+    "content": "Kaliningrad Standard Time",
+    "value": "KST"
+  },
+  {
+    "content": "Arab Standard Time",
+    "value": "AST"
+  },
+  {
+    "content": "E. Africa Standard Time",
+    "value": "EAST"
+  },
+  {
+    "content": "Moscow Standard Time",
+    "value": "MSK"
+  },
+  {
+    "content": "Samara Time",
+    "value": "SAMT"
+  },
+  {
+    "content": "Iran Standard Time",
+    "value": "IDT"
+  },
+  {
+    "content": "Arabian Standard Time",
+    "value": "AST"
+  },
+  {
+    "content": "Azerbaijan Standard Time",
+    "value": "ADT"
+  },
+  {
+    "content": "Mauritius Standard Time",
+    "value": "MST"
+  },
+  {
+    "content": "Georgian Standard Time",
+    "value": "GST"
+  },
+  {
+    "content": "Caucasus Standard Time",
+    "value": "CST"
+  },
+  {
+    "content": "Afghanistan Standard Time",
+    "value": "AST"
+  },
+  {
+    "content": "West Asia Standard Time",
+    "value": "WAST"
+  },
+  {
+    "content": "Yekaterinburg Time",
+    "value": "YEKT"
+  },
+  {
+    "content": "Pakistan Standard Time",
+    "value": "PKT"
+  },
+  {
+    "content": "India Standard Time",
+    "value": "IST"
+  },
+  {
+    "content": "Sri Lanka Standard Time",
+    "value": "SLST"
+  },
+  {
+    "content": "Nepal Standard Time",
+    "value": "NST"
+  },
+  {
+    "content": "Central Asia Standard Time",
+    "value": "CAST"
+  },
+  {
+    "content": "Bangladesh Standard Time",
+    "value": "BST"
+  },
+  {
+    "content": "Myanmar Standard Time",
+    "value": "MST"
+  },
+  {
+    "content": "SE Asia Standard Time",
+    "value": "SAST"
+  },
+  {
+    "content": "N. Central Asia Standard Time",
+    "value": "NCAST"
+  },
+  {
+    "content": "China Standard Time",
+    "value": "CST"
+  },
+  {
+    "content": "North Asia Standard Time",
+    "value": "NAST"
+  },
+  {
+    "content": "Singapore Standard Time",
+    "value": "MPST"
+  },
+  {
+    "content": "W. Australia Standard Time",
+    "value": "WAST"
+  },
+  {
+    "content": "Taipei Standard Time",
+    "value": "TST"
+  },
+  {
+    "content": "Ulaanbaatar Standard Time",
+    "value": "UST"
+  },
+  {
+    "content": "North Asia East Standard Time",
+    "value": "NAEST"
+  },
+  {
+    "content": "Japan Standard Time",
+    "value": "JST"
+  },
+  {
+    "content": "Korea Standard Time",
+    "value": "KST"
+  },
+  {
+    "content": "Cen. Australia Standard Time",
+    "value": "CAST"
+  },
+  {
+    "content": "AUS Central Standard Time",
+    "value": "ACST"
+  },
+  {
+    "content": "E. Australia Standard Time",
+    "value": "EAST"
+  },
+  {
+    "content": "AUS Eastern Standard Time",
+    "value": "AEST"
+  },
+  {
+    "content": "West Pacific Standard Time",
+    "value": "WPST"
+  },
+  {
+    "content": "Tasmania Standard Time",
+    "value": "TST"
+  },
+  {
+    "content": "Yakutsk Standard Time",
+    "value": "YST"
+  },
+  {
+    "content": "Central Pacific Standard Time",
+    "value": "CPST"
+  },
+  {
+    "content": "Vladivostok Standard Time",
+    "value": "VST"
+  },
+  {
+    "content": "New Zealand Standard Time",
+    "value": "NZST"
+  },
+  {
+    "content": "UTC+12",
+    "value": "U"
+  },
+  {
+    "content": "Fiji Standard Time",
+    "value": "FST"
+  },
+  {
+    "content": "Magadan Standard Time",
+    "value": "MST"
+  },
+  {
+    "content": "Kamchatka Standard Time",
+    "value": "KDT"
+  },
+  {
+    "content": "Tonga Standard Time",
+    "value": "TST"
+  },
+  {
+    "content": "Samoa Standard Time",
+    "value": "SST"
+  }
+]
