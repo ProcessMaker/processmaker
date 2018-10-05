@@ -10,20 +10,27 @@
         <div class="container">
           <div class="row">
             <div class="col-1">
-              <img class="avatar-small" src="{{ asset('img/avatar_placeholder_small.png') }}" />
+              <img class="avatar-small" src="{{ $user->avatar }}" />
             </div>
             <div class="col-6">
-              <div class="d-flex"><h3>Name Name</h3><i class="fas fa-circle text-success mt-2 ml-1" style="fontsize: 10px !important;"></i></div>
-              <h4>Username</h4>
-              <h5>Email@email.com</h5>
-              <div class="mt-4">1234 Street</div>
-              <div>City, Town 12345</div>
-              <div>Country</div>
-              <div class="mt-4">Default Time Zone : <span class="font-weight-bold"> City/State/Country </span></div>
-              <div>Language: <span class="font-weight-bold"> Language </span></div>
-              <div class="mt-4">Created: <span class="font-weight-bold"> 01/01/0101 01:00 </span></div>
-              <div>Updated: <span class="font-weight-bold"> 02/01/0101 02:00 </span></div>
-              <div class="mb-4">Last Login: <span class="font-weight-bold"> Right Meow </span></div>
+              <div class="d-flex">
+                <h3>{{$user->getFullName()}}</h3>
+                @if ($user->status == "ACTIVE")
+                <i class="fas fa-circle text-success mt-2 ml-1" style="fontsize: 10px !important;"></i>
+                @elseif ($user->status == "INACTIVE")
+                <i class="fas fa-circle text-danger mt-2 ml-1" style="fontsize: 10px !important;"></i>
+                @endif
+              </div>
+              <h4>{{$user->username}}</h4>
+              <h5>{{$user->email}}</h5>
+              <div class="mt-4">{{$user->address}}</div>
+              <div>{{$user->city}}, {{$user->state}}</div>
+              <div>{{$user->country}}</div>
+              <div class="mt-4">Default Time Zone : <span class="font-weight-bold"> {{$user->city}}, {{$user->state}} {{$user->country}} </span></div>
+              <div>Language: <span class="font-weight-bold"> {{$user->language}} </span></div>
+              <div class="mt-4">Created: <span class="font-weight-bold"> {{$user->created_at->format( 'd/m/Y h:m')}} </span></div>
+              <div>Updated: <span class="font-weight-bold"> {{$user->updated_at->format( 'd/m/Y h:m' )}} </span></div>
+              <div class="mb-4">Last Login: <span class="font-weight-bold"> {{$user->loggedin_at}} </span></div>
             </div>
             <div class="col" style="margin-left: 86px;">
               <button class="btn btn-outline-secondary"> <i class="fas fa-lock"></i> permissions</button>
