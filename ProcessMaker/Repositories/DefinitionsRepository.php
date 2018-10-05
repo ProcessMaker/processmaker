@@ -1,14 +1,13 @@
 <?php
 namespace ProcessMaker\Repositories;
 
-use ProcessMaker\Model\Application as Instance;
-use ProcessMaker\Model\FormalExpression;
-use ProcessMaker\Nayra\Contracts\Repositories\StorageInterface;
+use ProcessMaker\Models\FormalExpression;
 use ProcessMaker\Nayra\Contracts\RepositoryInterface;
 use ProcessMaker\Nayra\RepositoryTrait;
 use ProcessMaker\Repositories\ExecutionInstanceRepository;
 use ProcessMaker\Repositories\TokenRepository;
-use ProcessMaker\Model\DataStore;
+use ProcessMaker\Models\DataStore;
+use ProcessMaker\Repositories\Collaboration;
 
 /**
  * Definitions Repository

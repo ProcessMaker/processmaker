@@ -3,7 +3,7 @@
 namespace ProcessMaker\Transformers;
 
 use League\Fractal\TransformerAbstract;
-use ProcessMaker\Model\User;
+use ProcessMaker\Models\User;
 
 class UserTransformer extends TransformerAbstract
 {

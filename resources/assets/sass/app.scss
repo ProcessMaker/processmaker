@@ -8,11 +8,28 @@
 @import '~@fortawesome/fontawesome-free-webfonts/scss/fa-regular';
 @import '~@fortawesome/fontawesome-free-webfonts/scss/fa-solid';
 @import '~@fortawesome/fontawesome-free-webfonts/scss/fontawesome';
+@import '~vue-multiselect/dist/vue-multiselect.min';
 @font-face{
   font-family: 'Open Sans';
 	src: url('/fonts/OpenSans.ttf')
 	     format('truetype');
 }
+
+.multiselect__tag-icon:focus, .multiselect__tag-icon:hover {
+  background: #788793 !important;
+}
+
+.multiselect__tags {
+  min-height: 35px;
+  padding: 7px 40px 0 7px;
+}
+.multiselect__select {
+  height: 35px;
+}
+.multiselect, .multiselect__input, .multiselect__single {
+  font-size: 14px;
+}
+
 body,
 html {
   width: 100%;

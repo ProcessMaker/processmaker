@@ -1,19 +1,34 @@
 <?xml version="1.0"?>
-<xsd:schema version="1.0"
-            xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+<xsd:schema version="1.0" id="ProcessMaker"
+            targetNamespace="http://processmaker.com/Schema.xsd"
+            elementFormDefault="qualified"            
+            xmlns="http://processmaker.com/Schema.xsd"
+            xmlns:mstns="http://processmaker.com/Schema.xsd"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            elementFormDefault="qualified" attributeFormDefault="unqualified"
-            targetNamespace="http://www.omg.org/spec/BPMN/20100524/MODEL">
-    <xsd:complexType name="tTask">
+            xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL">
+       
+    <xsd:import namespace="http://www.omg.org/spec/BPMN/20100524/MODEL" schemaLocation="Semantic.xsd" />    
+
+    <xsd:complexType name="tPmUserTask">
         <xsd:complexContent>
-            <xsd:extension base="tTask">
+            <xsd:extension base="bpmn:tUserTask">
                 <xsd:attribute name="formRef" type="xsd:string" default=""/>
-                <xsd:attribute name="scriptRef" type="xsd:string" default=""/>
                 <xsd:attribute name="type" type="xsd:string" default=""/>
                 <xsd:attribute name="dueDate" type="xsd:date" default=""/>
                 <xsd:attribute name="notifyAfterRouting" type="xsd:boolean" default="false"/>
                 <xsd:attribute name="notifyToRequestCreator" type="xsd:boolean" default="false"/>
+                <xsd:attribute name="assignType" type="xsd:boolean" default="false"/>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
+    
+    <xsd:complexType name="tPmScriptTask">
+        <xsd:complexContent>
+            <xsd:extension base="bpmn:tScriptTask">
+                <xsd:attribute name="scriptRef" type="xsd:string" default=""/>
+                <xsd:attribute name="scriptConfiguration" type="xsd:string" default=""/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>    
+ 
 </xsd:schema>

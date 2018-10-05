@@ -1,36 +1,63 @@
 <?php
+
 namespace Tests\Feature;
 
-use Route;
 use Tests\TestCase;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use ProcessMaker\Model\User;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use ProcessMaker\Models\User;
+use Tests\Feature\Shared\RequestHelper;
 
 class ProfileTest extends TestCase
 {
+    use RequestHelper;
+    /**
+     * Test to make sure the controller and route work with the view
+     *
+     * @return void
+     */
+    public function testIndexRoute()
+    {
+      // get the URL
+      $response = $this->apiCall('GET', '/profile');
+      // check the correct view is called
+      $response->assertViewIs('profile.index');
 
-  /**
-   *  Init data user and process
-   */
-  protected function setUp()
-  {
-      parent::setUp();
-      $user = factory(User::class)->create();
-      Auth::login($user);
-  }
+      $response->assertStatus(200);
 
-  public function testProfile()
-  {
-    Auth::login(User::first());
+    }
 
-    $response = $this->get('/admin/profile');
+      /**
+     * Test to make sure the controller and route work with the view
+     *
+     * @return void
+     */
+    public function testEditRoute()
+    {
 
-    $response->assertStatus(200);
+      $user_uuid = factory(User::class)->create()->uuid_text;
+      // get the URL
+      $response = $this->apiCall('GET', '/profile/'. $user_uuid . '/edit');
 
-  }
+      $response->assertStatus(200);
+      // check the correct view is called
+      $response->assertViewIs('profile.edit');
+    }
+      /**
+     * Test to make sure the controller and route work with the view
+     *
+     * @return void
+     */
+    public function testShowRoute()
+    {
+
+      $user_uuid = factory(User::class)->create()->uuid_text;
+      // get the URL
+      $response = $this->apiCall('GET', '/profile/'. $user_uuid);
+
+      $response->assertStatus(200);
+      // check the correct view is called
+      $response->assertViewIs('profile.show');
+    }
 
 }
