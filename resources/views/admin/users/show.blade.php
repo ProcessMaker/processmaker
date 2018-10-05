@@ -42,18 +42,19 @@
               <button class="btn btn-secondary"> <i class="fas fa-trash-alt"></i> delete</button>
             </div>
           </div>
-          <div class="row mt-5">
-            <br>
-            <br>
-             <div class="col">
-               <h3>Groups</h3>
+          <br>
+          <br>
+          <div class="row">
+             <div class="col align-self-center">
+               <h3 class="m-0">Groups</h3>
              </div>
              <div class="col form-inline justify-content-end">
                <input type="text" class="form-control w-75" placeholder="&#xf0e0; Search">
                <button type="submit" class="btn btn-secondary ml-2"> <i class="fas fa-plus"></i> Group</button>
              </div>
            </div>
-          <table class="table mt-4">
+           <br>
+          <table class="table">
           <thead>
             <tr>
               <th scope="col" class="text-uppercase">Name</th>
