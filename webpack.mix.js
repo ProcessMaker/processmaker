@@ -35,7 +35,9 @@ mix.webpackConfig({
     .js('resources/js/processes/tasks/index.js', 'public/js/processes/tasks')
     .js('resources/js/processes/index.js', 'public/js/processes')
     .js('resources/js/processes/categories/index.js', 'public/js/processes/categories')
+    .js('resources/js/processes/scripts/index.js', 'public/js/processes/scripts')
     .js('resources/js/requests/index.js', 'public/js/requests')
+
 
     .js('resources/js/nayra/start.js', 'public/js/nayra')
 
