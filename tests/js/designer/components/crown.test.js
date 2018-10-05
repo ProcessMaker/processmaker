@@ -1,6 +1,6 @@
 import {mount, shallow, shallowMount} from "@vue/test-utils"
-import crown from "../../../../resources/assets/js/designer/components/crown.vue"
-import EventBus from "../../../../resources/assets/js/designer/lib/event-bus"
+import crown from "../../../../resources/js/designer/components/crown.vue"
+import EventBus from "../../../../resources/js/designer/lib/event-bus"
 
 document.body.innerHTML =
     '<div id ="svgCanvas">' +

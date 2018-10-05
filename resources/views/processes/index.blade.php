@@ -1,12 +1,11 @@
-@extends('layouts.layout', ['title' => __('Processes Management')])
+@extends('layouts.layout', ['title' => __('Processes Management xxx')])
 
 @section('sidebar')
     @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_processes')])
 @endsection
 
 @section('content')
-    <div class="container page-content" id="processes-listing">
-        <!-- Task Add Dialog -->
+    <div class="container page-content" id="processIndex">
         <div class="row">
             <div class="col-sm-12">
                 <div class="row">
@@ -16,11 +15,15 @@
                                placeholder="{{__('Search')}}...">
                     </div>
                     <div class="col-md-4 d-flex justify-content-end align-items-center col-sm-12 actions">
-                        <a href="#"  @click="processModal=true" class="btn btn-action"><i class="fas fa-plus"></i> {{__('Process')}}</a>
+                        <a href="#" @click="show" class="btn btn-action">
+                            <i class="fas fa-plus"></i> {{__('Process')}}
+                        </a>
                     </div>
                 </div>
-                <modal-create-process :show="processModal" @close="processModal=false"></modal-create-process>
-                <processes-listing :filter="filter"></processes-listing>
+                <modal-create-process :show="processModal" @close="processModal=false" :process-uuid="processUuid"
+                                      v-on:reload="reload"></modal-create-process>
+                <processes-listing ref="processListing" :filter="filter" v-on:edit="edit"
+                                   v-on:reload="reload"></processes-listing>
             </div>
         </div>
     </div>

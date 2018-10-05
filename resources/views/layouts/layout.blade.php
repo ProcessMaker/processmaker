@@ -7,8 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @if(Auth::user())
-    <meta name="user-uid" content="{{ Auth::user()->uid }}">
-    <meta name="user-id" content="{{ Auth::user()->id }}">
+    <meta name="user-uuid" content="{{ Auth::user()->uuid_text }}">
     @endif
     @if(config('broadcasting.broadcaster') == 'socket.io')
     <meta name="broadcaster" content="{{config('broadcasting.broadcaster')}}">
@@ -25,7 +24,7 @@
       <meta name="alertMessage" content="{{$message}}">
     @endif
 
-    <title>{{ $title or __('Welcome') }} - {{__('ProcessMaker')}}</title>
+    <title>@yield('title',__('Welcome')) - {{__('ProcessMaker')}}</title>
     <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico" />
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     <link href="{{ mix('css/sidebar.css') }}" rel="stylesheet">
@@ -33,7 +32,7 @@
     <script type="text/javascript">
     window.Processmaker = {
       csrfToken: "{{csrf_token()}}",
-      userId: "{{\Auth::user()->uid}}",
+      userId: "{{\Auth::user()->uuid_text}}",
       broadcasting: {
         broadcaster: "{{config('broadcasting.broadcaster')}}",
         host: "{{config('broadcasting.host')}}",

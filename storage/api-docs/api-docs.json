@@ -1,0 +1,371 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "ProcessMaker API",
+        "description": "",
+        "contact": {
+            "email": "info@processmaker.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "https://bpm4.processmaker.local/api/1.0"
+        }
+    ],
+    "paths": {
+        "/processes": {
+            "get": {
+                "tags": [
+                    "Process"
+                ],
+                "summary": "Returns all processes that the user has access to",
+                "operationId": "getProcesses",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    },
+                    {
+                        "$ref": "#/components/parameters/include"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of processes",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Process"
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/metadata"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Process"
+                ],
+                "summary": "Save a new process",
+                "operationId": "createProcess",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ProcessEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Process"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/processes/{processUuid}": {
+            "get": {
+                "tags": [
+                    "Process"
+                ],
+                "summary": "Get single process by ID",
+                "operationId": "getProcessByUuid",
+                "parameters": [
+                    {
+                        "name": "processUuid",
+                        "in": "path",
+                        "description": "ID of process to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the process",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Process"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Process"
+                ],
+                "summary": "Update a process",
+                "operationId": "updateProcess",
+                "parameters": [
+                    {
+                        "name": "processUuid",
+                        "in": "path",
+                        "description": "ID of process to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ProcessEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Process"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Process"
+                ],
+                "summary": "Delete a process",
+                "operationId": "deleteProcess",
+                "parameters": [
+                    {
+                        "name": "processUuid",
+                        "in": "path",
+                        "description": "ID of process to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Process"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "ProcessEditable": {
+                "properties": {
+                    "process_category_uuid": {
+                        "description": "Represents a business process definition.",
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "name": {
+                        "description": "Represents a business process definition.",
+                        "type": "string"
+                    },
+                    "description": {
+                        "description": "Represents a business process definition.",
+                        "type": "string"
+                    },
+                    "status": {
+                        "description": "Represents a business process definition.",
+                        "type": "string",
+                        "enum": [
+                            "ACTIVE",
+                            "INACTIVE"
+                        ]
+                    }
+                },
+                "type": "object"
+            },
+            "Process": {
+                "properties": {
+                    "user_uuid": {
+                        "description": "Represents a business process definition.",
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "uuid": {
+                        "description": "Represents a business process definition.",
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "created_at": {
+                        "description": "Represents a business process definition.",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "description": "Represents a business process definition.",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/ProcessEditable"
+                    }
+                ]
+            },
+            "metadata": {
+                "properties": {
+                    "filter": {
+                        "type": "string"
+                    },
+                    "sort_by": {
+                        "type": "string"
+                    },
+                    "sort_order": {
+                        "type": "string",
+                        "enum": [
+                            "ASC",
+                            "DESC"
+                        ]
+                    },
+                    "count": {
+                        "type": "integer"
+                    },
+                    "total_pages": {
+                        "type": "integer"
+                    },
+                    "current_page": {
+                        "type": "integer"
+                    },
+                    "form": {
+                        "type": "integer"
+                    },
+                    "last_page": {
+                        "type": "integer"
+                    },
+                    "path": {
+                        "type": "string"
+                    },
+                    "per_page": {
+                        "type": "integer"
+                    },
+                    "to": {
+                        "type": "integer"
+                    },
+                    "total": {
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "parameters": {
+            "filter": {
+                "name": "filter",
+                "in": "query",
+                "description": "Filter results by string. Searches Name, Description, and Status. Status must match exactly. Others can be a substring.",
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "order_by": {
+                "name": "order_by",
+                "in": "query",
+                "description": "Field to order results by",
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "order_direction": {
+                "name": "order_direction",
+                "in": "query",
+                "schema": {
+                    "type": "string",
+                    "default": "asc",
+                    "enum": [
+                        "asc",
+                        "desc"
+                    ]
+                }
+            },
+            "per_page": {
+                "name": "per_page",
+                "in": "query",
+                "schema": {
+                    "type": "integer",
+                    "default": "10"
+                }
+            },
+            "include": {
+                "name": "include",
+                "in": "query",
+                "description": "Include data from related models in payload. Comma seperated list.",
+                "schema": {
+                    "type": "string",
+                    "default": ""
+                },
+                "example": "category,user"
+            }
+        },
+        "securitySchemes": {
+            "pm-api": {
+                "type": "http",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "security": [
+        {
+            "pm-api": []
+        }
+    ]
+}

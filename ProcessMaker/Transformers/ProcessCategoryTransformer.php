@@ -3,7 +3,7 @@
 namespace ProcessMaker\Transformers;
 
 use League\Fractal\TransformerAbstract;
-use ProcessMaker\Model\ProcessCategory;
+use ProcessMaker\Models\ProcessCategory;
 
 class ProcessCategoryTransformer extends TransformerAbstract
 {

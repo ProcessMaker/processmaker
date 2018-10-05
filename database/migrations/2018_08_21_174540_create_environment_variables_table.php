@@ -14,8 +14,8 @@ class CreateEnvironmentVariablesTable extends Migration
     public function up()
     {
         Schema::create('environment_variables', function (Blueprint $table) {
-            $table->increments('id');
-            $table->uuid('uid')->unique();
+            $table->uuid('uuid');
+            $table->primary('uuid');
             $table->string('name');
             $table->text('description');
             $table->text('value');

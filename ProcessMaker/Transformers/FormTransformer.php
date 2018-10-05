@@ -1,7 +1,7 @@
 <?php
 namespace ProcessMaker\Transformers;
 use League\Fractal\TransformerAbstract;
-use ProcessMaker\Model\Form;
+use ProcessMaker\Models\Form;
 /**
  * Form transformer, used to prepare the JSON response returned in the
  * designer's endpoints.
@@ -20,7 +20,6 @@ class FormTransformer extends TransformerAbstract
     public function transform(Form $item)
     {
         $data = $item->toArray();
-        unset($data['id'], $data['process_id'], $data['created_at'], $data['updated_at']);
         return $data;
     }
 }

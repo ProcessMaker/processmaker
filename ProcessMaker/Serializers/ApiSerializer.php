@@ -50,7 +50,7 @@ class ApiSerializer extends SerializerAbstract
      */
     public function null()
     {
-        return [];
+        return null;
     }
 
     /**

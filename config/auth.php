@@ -56,8 +56,8 @@ return [
     */
     'providers' => [
         'users' => [
-            'driver' => 'eloquent',
-            'model' => ProcessMaker\Model\User::class
+            'driver' => 'eloquent_with_binary_uuid',
+            'model' => ProcessMaker\Models\User::class
         ]
     ],
     /*

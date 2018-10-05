@@ -6,7 +6,7 @@ use ProcessMaker\Nayra\Contracts\Engine\EngineInterface;
 use ProcessMaker\Nayra\Contracts\EventBusInterface;
 use ProcessMaker\Nayra\Contracts\RepositoryInterface;
 use ProcessMaker\Nayra\Engine\EngineTrait;
-use ProcessMaker\Model\Process;
+use ProcessMaker\Models\Process;
 /**
  * Test implementation for EngineInterface.
  *
