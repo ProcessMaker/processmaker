@@ -64,7 +64,7 @@ class GenerateMenus
 
           $submenu = $menu->add(__('menus.sidebar_admin.system_information'));
           $submenu->add(__('menus.sidebar_admin.app_version_details'), [
-                'route' => 'home',
+                'route' => 'about',
                 'icon' => 'fa-desktop',
                 'id' => 'homeid'
           ]);
