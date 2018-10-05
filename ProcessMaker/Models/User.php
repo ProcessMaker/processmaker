@@ -63,6 +63,10 @@ class User extends Authenticatable implements HasMedia
         'avatar',
     ];
 
+    protected $dates = [
+        'loggedin_at'
+    ];
+
     /**
      * Validation rules
      *

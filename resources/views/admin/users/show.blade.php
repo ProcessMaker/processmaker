@@ -30,7 +30,7 @@
               <div>Language: <span class="font-weight-bold"> {{$user->language}} </span></div>
               <div class="mt-4">Created: <span class="font-weight-bold"> {{$user->created_at->format( 'd/m/Y h:m')}} </span></div>
               <div>Updated: <span class="font-weight-bold"> {{$user->updated_at->format( 'd/m/Y h:m' )}} </span></div>
-              <div class="mb-4">Last Login: <span class="font-weight-bold"> {{$user->loggedin_at}} </span></div>
+              <div class="mb-4">Last Login: <span class="font-weight-bold"> {{$user->loggedin_at->format('d/m/Y')}} </span></div>
             </div>
             <div class="col" style="margin-left: 86px;">
               <button class="btn btn-outline-secondary"> <i class="fas fa-lock"></i> permissions</button>
@@ -39,13 +39,15 @@
             </div>
           </div>
           <div class="row mt-5">
+            <br>
+            <br>
              <div class="col">
                <h3>Groups</h3>
              </div>
-             <div class="col-3">
+             <div class="col search-bar">
                <input type="text" class="form-control" placeholder="&#xf0e0; Search">
+               <button type="submit" class="btn btn-secondary ml-2"> <i class="fas fa-plus"></i> Group</button>
              </div>
-               <button type="submit" class="btn btn-secondary mr-3"> <i class="fas fa-plus"></i> Group</button>
            </div>
           <table class="table mt-4">
           <thead>
@@ -56,21 +58,13 @@
             </tr>
           </thead>
           <tbody>
+
             <tr>
               <td>Title</td>
               <td>This is a group description</td>
               <td><i class="fas fa-trash-alt text-secondary"></i></td>
             </tr>
-            <tr>
-              <td>Title</td>
-              <td>This is a group description</td>
-              <td><i class="fas fa-trash-alt text-secondary"></i></td>
-            </tr>
-            <tr>
-              <td>Title</td>
-              <td>This is a group description</td>
-              <td><i class="fas fa-trash-alt text-secondary"></i></td>
-            </tr>
+
           </tbody>
         </table>
         <div class="text-secondary">1 - 4 of 4 Groups</div>
