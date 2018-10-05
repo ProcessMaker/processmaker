@@ -17,20 +17,23 @@ class ProcessController extends Controller
     use ResourceRequestsTrait;
 
     /**
-     * @OA\Get(
+     * Get list Process
+     *
+     * @param Request $request
+     *
+     * @return ApiCollection
+     *
+     * * @OA\Get(
      *     path="/processes",
      *     summary="Returns all processes that the user has access to",
      *     operationId="getProcesses",
      *     tags={"Process"},
-     *     @OA\Parameter(
-     *         name="filter",
-     *         in="query",
-     *         description="Filter results with a string. Searches Name, Description, and Status",
-     *         required=false,
-     *         @OA\Schema(
-     *             type="string",
-     *         )
-     *     ),
+     *     @OA\Parameter(ref="#/components/parameters/filter"),
+     *     @OA\Parameter(ref="#/components/parameters/order_by"),
+     *     @OA\Parameter(ref="#/components/parameters/order_direction"),
+     *     @OA\Parameter(ref="#/components/parameters/per_page"),
+     *     @OA\Parameter(ref="#/components/parameters/include"),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="list of processes",
@@ -43,22 +46,24 @@ class ProcessController extends Controller
      *             ),
      *             @OA\Property(
      *                 property="meta",
-     *                 type="array",
-     *                 @OA\Items(ref="#/components/schemas/metadata"),
+     *                 type="object",
+     *                 allOf={@OA\Schema(ref="#/components/schemas/metadata")},
      *             ),
      *         ),
      *     ),
      * )
-     * TODO: Fix meta property above, its an object, not an array of objects.
      */
     public function index(Request $request)
     {
-        $where = $this->getRequestFilterBy($request, ['name', 'description','status']);
+        $where = $this->getRequestFilterBy($request, ['processes.name', 'processes.description','processes.status', 'category.name', 'user.firstname', 'user.lastname']);
         $orderBy = $this->getRequestSortBy($request, 'name');
         $perPage = $this->getPerPage($request);
         $include = $this->getRequestInclude($request);
         $processes = Process::with($include)
+            ->select('processes.*')
             ->where($where)
+            ->leftJoin('process_categories as category', 'processes.process_category_uuid', '=', 'category.uuid')
+            ->leftJoin('users as user', 'processes.user_uuid', '=', 'user.uuid')
             ->orderBy(...$orderBy)
             ->paginate($perPage);
         return new ApiCollection($processes);
@@ -70,7 +75,7 @@ class ProcessController extends Controller
      * @param $process
      *
      * @return Response
-     * 
+     *
      * @OA\Get(
      *     path="/processes/{processUuid}",
      *     summary="Get single process by ID",
@@ -104,7 +109,7 @@ class ProcessController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Validation\ValidationException
-     * 
+     *
      * @OA\Post(
      *     path="/processes",
      *     summary="Save a new process",
@@ -152,7 +157,7 @@ class ProcessController extends Controller
      * @param Process $process
      * @return ResponseFactory|Response
      * @throws \Throwable
-     * 
+     *
      * @OA\Put(
      *     path="/processes/{processUuid}",
      *     summary="Update a process",
@@ -196,7 +201,7 @@ class ProcessController extends Controller
      *
      * @return ResponseFactory|Response
      * @throws \Illuminate\Validation\ValidationException
-     * 
+     *
      * @OA\Delete(
      *     path="/processes/{processUuid}",
      *     summary="Delete a process",
@@ -253,6 +258,6 @@ class ProcessController extends Controller
         $processRequest = WorkflowManager::triggerStartEvent($process, $event, $data);
         return new ProcessRequests($processRequest);
     }
-    
-    
+
+
 }

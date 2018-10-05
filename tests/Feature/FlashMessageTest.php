@@ -5,7 +5,7 @@ use Route;
 use Tests\TestCase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use ProcessMaker\Model\User;
+use ProcessMaker\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
