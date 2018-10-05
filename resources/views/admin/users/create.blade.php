@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-  {{__('Add a Users')}}
+  {{__('Add a User')}}
 @endsection
 
 @section('content')
