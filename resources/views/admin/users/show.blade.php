@@ -14,11 +14,11 @@
             </div>
             <div class="col-6">
               <div class="d-flex">
-                <h3>{{$user->getFullName()}}</h3>
+                <h3>{{$user->getFullName()}} </h3>
                 @if ($user->status == "ACTIVE")
-                <i class="fas fa-circle text-success mt-2 ml-1" style="fontsize: 10px !important;"></i>
+                <i class="fas fa-circle text-success fa-sm mb-2 ml-1 align-self-center"></i>
                 @elseif ($user->status == "INACTIVE")
-                <i class="fas fa-circle text-danger mt-2 ml-1" style="fontsize: 10px !important;"></i>
+                <i class="fas fa-circle text-danger fa-sm mb-2 ml-1 align-self-center"></i>
                 @endif
               </div>
               <h4>{{$user->username}}</h4>
@@ -36,7 +36,7 @@
               <div>Last Login: <span class="font-weight-bold"> {{$user->loggedin_at->format('d/m/Y h:m')}} </span></div>
               <br>
             </div>
-            <div class="col" style="margin-left: 86px;">
+            <div class="col" align="right">
               <button class="btn btn-outline-secondary"> <i class="fas fa-lock"></i> permissions</button>
               <button class="btn btn-secondary"> <i class="fas fa-edit"></i> edit</button>
               <button class="btn btn-secondary"> <i class="fas fa-trash-alt"></i> delete</button>
