@@ -106,6 +106,11 @@ jobs:
           name: "Front-End Asset Build"
           command: "npm run dev"
 
+      #
+      - run:
+          name: "Media Storage Link"
+          command: "php artisan storage:link"
+
       # run tests!
       - run:
           name: "PHPUnit"
@@ -176,6 +181,9 @@ jobs:
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "mysql -h ${QA_RDS_HOST} -u ${QA_RDS_USERNAME} -p${QA_RDS_PASSWORD} -e \"CREATE DATABASE IF NOT EXISTS ${QA_DB_NAME}\""
             # Run php artisan migrate:fresh --seed to have a clean installed database in RDS
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "php ~/builds/$BUILD_NAME/artisan migrate:fresh --seed --force"
+            # Setup Media Link
+            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "rm -Rf ~/builds/$BUILD_NAME/public/storage"
+            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "php ~/builds/$BUILD_NAME/artisan storage:link"
             echo "Deployed to https://${BUILD_NAME}.bpm4.qa.processmaker.net/"
             # Run containerDeploy.sh script to spin up Redis docker container, laravel-echo-server, and horizon
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "sudo /bin/bash /root/cloudops/containerDeploy.sh $BUILD_NAME"

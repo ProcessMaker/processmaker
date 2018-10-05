@@ -17,7 +17,7 @@ trait ResourceRequestsTrait
     /**
      * Get the where array to filter the resources.
      *
-     * @param \ProcessMaker\Http\Controllers\Api\Request $request
+     * @param Request $request
      * @param array $searchableColumns
      *
      * @return array
@@ -28,12 +28,11 @@ trait ResourceRequestsTrait
         $filter = $request->input('filter');
         if ($filter) {
             foreach ($searchableColumns as $column) {
-                if ($column == 'status') {
+                // for other columns, it can match a substring
+                $sub_search = '%';
+                if (array_search('status', explode('.', $column), true) !== false ) {
                     // filtering by status must match the entire string
                     $sub_search = '';
-                } else {
-                    // for other columns, it can match a substring
-                    $sub_search = '%';
                 }
                 $where[] = [$column, 'like', $sub_search . $filter . $sub_search, 'or'];
             }
@@ -95,7 +94,7 @@ trait ResourceRequestsTrait
     {
         return $request->input('per_page', 10);
     }
-    
+
     protected function validateModel($model, $rules=[], $messages=[], $customAttributes=[])
     {
         $data = [];
