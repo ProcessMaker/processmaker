@@ -23,14 +23,18 @@
               </div>
               <h4>{{$user->username}}</h4>
               <h5>{{$user->email}}</h5>
-              <div class="mt-4">{{$user->address}}</div>
+              <br>
+              <div>{{$user->address}}</div>
               <div>{{$user->city}}, {{$user->state}}</div>
               <div>{{$user->country}}</div>
-              <div class="mt-4">Default Time Zone : <span class="font-weight-bold"> {{$user->city}}, {{$user->state}} {{$user->country}} </span></div>
+              <br>
+              <div>Default Time Zone : <span class="font-weight-bold"> {{$user->city}}, {{$user->state}} {{$user->country}} </span></div>
               <div>Language: <span class="font-weight-bold"> {{$user->language}} </span></div>
-              <div class="mt-4">Created: <span class="font-weight-bold"> {{$user->created_at->format( 'd/m/Y h:m')}} </span></div>
+              <br>
+              <div>Created: <span class="font-weight-bold"> {{$user->created_at->format( 'd/m/Y h:m')}} </span></div>
               <div>Updated: <span class="font-weight-bold"> {{$user->updated_at->format( 'd/m/Y h:m' )}} </span></div>
-              <div class="mb-4">Last Login: <span class="font-weight-bold"> {{$user->loggedin_at->format('d/m/Y')}} </span></div>
+              <div>Last Login: <span class="font-weight-bold"> {{$user->loggedin_at->format('d/m/Y h:m')}} </span></div>
+              <br>
             </div>
             <div class="col" style="margin-left: 86px;">
               <button class="btn btn-outline-secondary"> <i class="fas fa-lock"></i> permissions</button>
@@ -44,8 +48,8 @@
              <div class="col">
                <h3>Groups</h3>
              </div>
-             <div class="col search-bar">
-               <input type="text" class="form-control" placeholder="&#xf0e0; Search">
+             <div class="col form-inline justify-content-end">
+               <input type="text" class="form-control w-75" placeholder="&#xf0e0; Search">
                <button type="submit" class="btn btn-secondary ml-2"> <i class="fas fa-plus"></i> Group</button>
              </div>
            </div>
