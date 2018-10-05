@@ -7,10 +7,10 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Feature\Shared\RequestHelper;
 
-class Environmental_variablesTest extends TestCase
+class EnvironmentVariablesTest extends TestCase
 {
     use RequestHelper;
-    
+
     /**
      * Test to make sure the controller and route work with the view
      *
@@ -20,12 +20,12 @@ class Environmental_variablesTest extends TestCase
     {
 
       // get the URL
-      $response = $this->webCall('GET', '/processes/environmental_variables');
+      $response = $this->webCall('GET', '/processes/environment_variables');
       // check the correct view is called
-      $response->assertViewIs('processes.environmental_variables.index');
+      $response->assertViewIs('processes.environment_variables.index');
 
       $response->assertStatus(200);
 
-      $response->assertSee('Environmental Variables');
+      $response->assertSee('Environment Variables');
     }
 }
