@@ -66,7 +66,7 @@
             @foreach ($user->members() as $group_member)
             <tr>
               <td>{{$group_member->group->name}}</td>
-              <td>This is a group description</td>
+              <td>{{$group_member->group->status}}</td>
               <td><i class="fas fa-trash-alt text-secondary"></i></td>
             </tr>
             @endforeach
