@@ -58,8 +58,13 @@
              <div class="col align-self-center">
                <h3 class="m-0">Groups</h3>
              </div>
-             <div class="col form-inline justify-content-end">
-               <input type="text" class="form-control w-75" placeholder="&#xf0e0; Search">
+             <div class="col form-inline input-group justify-content-end">
+                <!-- <div class="input-group"> -->
+                  <div class="input-group-prepend">
+                    <span class="input-group-text" id="prepend-search"><i class="fa fa-search" aria-hidden="true"></i></span>
+                  </div>
+                  <input type="text" class="form-control w-50 border-left-0" placeholder="Search">
+                <!-- </div> -->
                <button type="submit" class="btn btn-secondary ml-2"> <i class="fas fa-plus"></i> Group</button>
              </div>
            </div>
