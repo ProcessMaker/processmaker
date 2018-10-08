@@ -30,6 +30,7 @@ $factory->define(User::class, function (Faker $faker) {
         'birthdate' => $faker->dateTimeThisCentury->format('Y-m-d'),
         'timezone' => $faker->timezone,
         'language' => 'us_en',
+        'loggedin_at' => $faker->dateTimeThisCentury->format('Y-m-d'),
 
     ];
 });
