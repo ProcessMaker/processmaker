@@ -11,13 +11,7 @@
         <div class="row">
           <div class="form-group col">
             <label for="exampleFormControlSelect1">Time Zone</label>
-            <select class="form-control" id="exampleFormControlSelect1">
-              <option>1</option>
-              <option>2</option>
-              <option>3</option>
-              <option>4</option>
-              <option>5</option>
-            </select>
+            {!!Form::select('timezone', $timezones, null, ['class'=> 'form-control']);!!}
             <small id="emailHelp" class="form-text text-muted">Default Time Zone</small>
           </div>
           <div class="form-group col">
