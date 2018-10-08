@@ -33,7 +33,7 @@
               <br>
               <div>Created: <span class="font-weight-bold"> {{$user->created_at->format( 'd/m/Y h:m')}} </span></div>
               <div>Updated: <span class="font-weight-bold"> {{$user->updated_at->format( 'd/m/Y h:m' )}} </span></div>
-              <div>Last Login: <span class="font-weight-bold"> {{$user->loggedin_at->format('d/m/Y h:m')}} </span></div>
+              <div>Last Login: <span class="font-weight-bold"> {{$user->loggedin_at}} </span></div>
               <br>
             </div>
             <div class="col" align="right">

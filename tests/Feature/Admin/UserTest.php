@@ -83,7 +83,6 @@ class UserTest extends TestCase
       $user_uuid = factory(User::class)->create()->uuid_text;
       // get the URL
       $response = $this->webCall('GET', '/admin/users/'. $user_uuid);
-
       $response->assertStatus(200);
       // check the correct view is called
       $response->assertViewIs('admin.users.show');
