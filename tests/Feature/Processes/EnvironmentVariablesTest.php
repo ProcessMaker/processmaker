@@ -10,7 +10,7 @@ use Tests\Feature\Shared\RequestHelper;
 class EnvironmentVariablesTest extends TestCase
 {
     use RequestHelper;
-    
+
     /**
      * Test to make sure the controller and route work with the view
      *
@@ -20,11 +20,12 @@ class EnvironmentVariablesTest extends TestCase
     {
 
       // get the URL
-      $response = $this->apiCall('GET', '/processes/environment-variables');
+      $response = $this->webCall('GET', '/processes/environment_variables');
       // check the correct view is called
-      $response->assertViewIs('processes.environment-variables.index');
+      $response->assertViewIs('processes.environment_variables.index');
 
       $response->assertStatus(200);
 
+      $response->assertSee('Environment Variables');
     }
 }

@@ -3,6 +3,12 @@
         <vuetable :dataManager="dataManager" :sortOrder="sortOrder" :css="css" :api-mode="false"
                   @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data"
                   pagination-path="meta">
+            <template slot="name" slot-scope="props">
+                <b-link @click="onAction('edit-designer', props.rowData, props.rowIndex)">
+                    {{props.rowData.name}}
+                </b-link>
+            </template>
+
             <template slot="actions" slot-scope="props">
                 <div class="actions">
                     <i class="fas fa-ellipsis-h"></i>
@@ -44,8 +50,9 @@
 
                 fields: [
                     {
-                        title: "Process",
-                        name: "name",
+                        title: 'Process',
+                        name: "__slot:name",
+                        field: "name",
                         sortField: "name"
                     },
                     {
@@ -98,8 +105,12 @@
                 return (data.status === 'ACTIVE') ? 'Deactivate' : 'Activate'
             },
             onAction(actionType, data, index) {
-                if (actionType === 'edit-item') {
+                if (actionType === 'edit-designer') {
                     window.open('/designer/' + data.uuid, '_self');
+                }
+
+                if (actionType === 'edit-item') {
+                    this.$emit('edit', data.uuid);
                 }
 
                 if (actionType === 'toggle-status') {
@@ -110,7 +121,7 @@
                         })
                         .then(response => {
                             this.loading = false;
-                            document.location.reload();
+                            this.$emit('reload');
                         });
                 }
 
@@ -128,7 +139,12 @@
             },
             formatStatus(status) {
                 status = status.toLowerCase();
-                let bubbleColor = {'active': 'text-success', 'inactive': 'text-danger', 'draft': 'text-warning', 'archived': 'text-info'};
+                let bubbleColor = {
+                    'active': 'text-success',
+                    'inactive': 'text-danger',
+                    'draft': 'text-warning',
+                    'archived': 'text-info'
+                };
                 let response = '<i class="fas fa-circle ' + bubbleColor[status] + ' small"></i> ';
                 status = status.charAt(0).toUpperCase() + status.slice(1);
                 return response + status;
@@ -152,6 +168,8 @@
                 this.loading = true;
                 //change method sort by user
                 this.orderBy = this.orderBy === 'user' ? 'user.firstname' : this.orderBy;
+                //change method sort by slot name
+                this.orderBy = this.orderBy === '__slot:name' ? 'name' : this.orderBy;
                 // Load from our api client
                 ProcessMaker.apiClient
                     .get(
