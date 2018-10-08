@@ -10,15 +10,13 @@
         <div class="container">
           <div class="row">
             <div class="col-1 text-center">
+              @if ($user->getAvatar() != '' )
+              <img class="avatar-lg-circle" src="{{ $user->getAvatar() }}" />
+              @else
               <div class="avatar-lg-circle bg-warning">
-                @if ($user->getAvatarAttribute() == true)
-                <img class="avatar" id="user-avatar" src="{{ $user->getAvatarAttribute() }}" />
-                @else
-                <span class="avatar-lg-initials">{{ $user->firstname[0] }}{{ $user->lastname[0] }}</span>
-                @endif
+              <span class="avatar-lg-initials">{{ $user->firstname[0] }}{{ $user->lastname[0] }}</span>
               </div>
-              
-              
+              @endif
             </div>
             <div class="col-6">
               <div class="d-flex">
@@ -62,7 +60,7 @@
              </div>
              <div class="col form-inline justify-content-end">
                <input type="text" class="form-control w-75" placeholder="&#xf0e0; Search">
-               <button type="submit" class="btn btn-secondary ml-2"> <i class="fas fa-plus"></i> User</button>
+               <button type="submit" class="btn btn-secondary ml-2"> <i class="fas fa-plus"></i> Group</button>
              </div>
            </div>
            <br>
