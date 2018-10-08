@@ -64,7 +64,7 @@ class User extends Authenticatable implements HasMedia
     ];
 
     protected $dates = [
-        'loggedin_at'
+        'loggedin_at',
     ];
 
     /**

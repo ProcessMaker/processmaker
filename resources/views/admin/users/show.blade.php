@@ -9,8 +9,16 @@
       <div class="card card-body">
         <div class="container">
           <div class="row">
-            <div class="col-1">
-              <img class="avatar-small" src="{{ $user->avatar }}" />
+            <div class="col-1 text-center">
+              <div class="avatar-lg-circle bg-warning">
+                @if ($user->getAvatarAttribute() == true)
+                <img class="avatar" id="user-avatar" src="{{ $user->getAvatarAttribute() }}" />
+                @else
+                <span class="avatar-lg-initials">{{ $user->firstname[0] }}{{ $user->lastname[0] }}</span>
+                @endif
+              </div>
+              
+              
             </div>
             <div class="col-6">
               <div class="d-flex">
@@ -25,15 +33,19 @@
               <h5>{{$user->email}}</h5>
               <br>
               <div>{{$user->address}}</div>
-              <div>{{$user->city}}, {{$user->state}}</div>
+              <div>{{$user->city}}, {{$user->state}} {{$user->postal}}</div>
               <div>{{$user->country}}</div>
               <br>
-              <div>Default Time Zone : <span class="font-weight-bold"> {{$user->city}}, {{$user->state}} {{$user->country}} </span></div>
+              <div>Default Time Zone : <span class="font-weight-bold"> {{$user->timezone}} </span></div>
+              @if ($user->language == "us_en")
+              <div>Language: <span class="font-weight-bold"> English </span></div>
+              @else
               <div>Language: <span class="font-weight-bold"> {{$user->language}} </span></div>
+              @endif
               <br>
               <div>Created: <span class="font-weight-bold"> {{$user->created_at->format( 'd/m/Y h:m')}} </span></div>
               <div>Updated: <span class="font-weight-bold"> {{$user->updated_at->format( 'd/m/Y h:m' )}} </span></div>
-              <div>Last Login: <span class="font-weight-bold"> {{$user->loggedin_at}} </span></div>
+              <div>Last Login: <span class="font-weight-bold"> {{$user->loggedin_at->format('d/m/Y h:m')}} </span></div>
               <br>
             </div>
             <div class="col" align="right">

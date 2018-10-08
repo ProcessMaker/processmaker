@@ -74,6 +74,42 @@ html {
   margin: 0px 8px 3px -10px;
 }
 
+.avatar {
+  width: 64px;
+  height: 64px;
+  padding: 10px;
+  border-radius: 50%;
+}
+
+.avatar-lg-circle {
+  width: 64px;
+  height: 64px;
+  text-align: center;
+  border-radius: 50%;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: auto
+}
+
+.avatar-lg-initials {
+  position: relative;
+  font-size: 30px;
+  color: #fff;
+  text-transform: uppercase;
+  line-height: 2;
+}
+
+.avatar-lg-image {
+  width: 64px;
+  height: 64px;
+  margin-left: -16px;
+  margin-top: -7px;
+}
+
 //topnav
 .navbar {
   height: 60px;
