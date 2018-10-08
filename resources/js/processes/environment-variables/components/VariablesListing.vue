@@ -15,11 +15,10 @@
                 </div>
             </template>
         </vuetable>
-        <pagination single="User" plural="Users" :perPageSelectEnabled="true" @changePerPage="changePerPage"
+        <pagination single="Variable" plural="Variables" :perPageSelectEnabled="true" @changePerPage="changePerPage"
                     @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
     </div>
 </template>
-
 
 <script>
     import datatableMixin from "../../../components/common/mixins/datatable";
@@ -29,43 +28,25 @@
         props: ["filter"],
         data() {
             return {
-                orderBy: "username",
-                // Our listing of users
+                orderBy: "name",
+                // Our listing of variables
                 sortOrder: [
                     {
-                        field: "username",
-                        sortField: "username",
+                        field: "name",
+                        sortField: "name",
                         direction: "asc"
                     }
                 ],
                 fields: [
                     {
-                        title: "Username",
-                        name: "username",
-                        sortField: "username"
+                        title: "Name",
+                        name: "name",
+                        sortField: "name"
                     },
                     {
-                        title: "Full Name",
-                        name: "fullname",
-                        sortField: "fullname"
-                    },
-                    {
-                        title: "Status",
-                        name: "status",
-                        sortField: "status",
-                        callback: this.formatStatus
-                    },
-                    {
-                        title: "Login",
-                        name: "loggedin_at",
-                        sortField: "loggedin_at",
-                        callback: this.formatDate
-                    },
-                    {
-                        title: "Expires On",
-                        name: "expires_at",
-                        sortField: "expires_at",
-                        callback: this.formatDate
+                        title: "Description",
+                        name: "description",
+                        sortField: "description"
                     },
                     {
                         title: "Created At",
@@ -87,43 +68,28 @@
             };
         },
         methods: {
-            formatStatus(status) {
-                status = status.toLowerCase();
-                let bubbleColor = {
-                    active: "text-success",
-                    inactive: "text-danger",
-                    draft: "text-warning",
-                    archived: "text-info"
-                };
-                return '<i class="fas fa-circle ' + bubbleColor[status] + ' small"></i> ' +
-                    status.charAt(0).toUpperCase() + status.slice(1);
-            },
             onAction(action, data, index) {
                 switch (action) {
-                    case "edit-item":
-                        //@todo implement
+                    case 'edit-item':
                         break;
                     case 'remove-item':
-                        //@todo implement
                         break;
                 }
             },
             fetch() {
                 this.loading = true;
-                //change method sort by user
-                this.orderBy = this.orderBy === 'fullname' ? 'firstname' : this.orderBy;
                 // Load from our api client
                 ProcessMaker.apiClient
                     .get(
-                        "users?page=" +
+                        'environment_variables?page=' +
                         this.page +
-                        "&per_page=" +
+                        '&per_page=' +
                         this.perPage +
-                        "&filter=" +
+                        '&filter=' +
                         this.filter +
-                        "&order_by=" +
+                        '&order_by=' +
                         this.orderBy +
-                        "&order_direction=" +
+                        '&order_direction=' +
                         this.orderDirection
                     )
                     .then(response => {

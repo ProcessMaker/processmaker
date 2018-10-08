@@ -36,6 +36,7 @@ class UserTest extends TestCase
       $response->assertViewIs('admin.users.index');
 
       $response->assertStatus(200);
+      $response->assertSee('Users');
 
     }
 
@@ -54,7 +55,7 @@ class UserTest extends TestCase
       $response->assertStatus(200);
       // check the correct view is called
       $response->assertViewIs('admin.users.edit');
-
+      $response->assertSee('Edit User');
     }
 
     /**
