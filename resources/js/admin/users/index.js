@@ -1,12 +1,17 @@
 import Vue from 'vue';
+import UsersListing from './components/UsersListing';
 import CreateUser from './components/CreateUser';
-import Multiselect from 'vue-multiselect'
+import Multiselect from 'vue-multiselect';
 
-Vue.component('multiselect', Multiselect)
+Vue.component('multiselect', Multiselect);
 
 new Vue({
-    el: '#createUser',
+    el: '#users-listing',
+    data: {
+        filter: '',
+    },
     components: {
+        UsersListing,
         CreateUser,
         Multiselect
     }
