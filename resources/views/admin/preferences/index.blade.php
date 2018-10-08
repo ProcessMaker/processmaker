@@ -10,43 +10,24 @@
         </div>
         <div class="row">
           <div class="form-group col">
-            <label for="exampleFormControlSelect1">Time Zone</label>
+            {!!Form::label('timeZone', 'Time Zone');!!}
             {!!Form::select('timezone', $timezones, null, ['class'=> 'form-control']);!!}
-            <small id="emailHelp" class="form-text text-muted">Default Time Zone</small>
           </div>
           <div class="form-group col">
-            <label for="exampleFormControlSelect1">Full Name Format</label>
-            <select class="form-control" id="exampleFormControlSelect1">
-              <option>1</option>
-              <option>2</option>
-              <option>3</option>
-              <option>4</option>
-              <option>5</option>
-            </select>
+            {!!Form::label('fullName', 'Full Name Format');!!}
+            {!!Form::select('size', ['firstName' => 'First Name', 'lastName' => 'Last Name'], null, ['class'=> 'form-control']);!!}
             <small id="emailHelp" class="form-text text-muted">Format to display user's full name across all applications</small>
           </div>
         </div>
         <div class="row">
           <div class="form-group col">
-            <label for="exampleFormControlSelect1">Global Date Format</label>
-            <select class="form-control" id="exampleFormControlSelect1">
-              <option>1</option>
-              <option>2</option>
-              <option>3</option>
-              <option>4</option>
-              <option>5</option>
-            </select>
+            {!!Form::label('dateFormat', 'Global Date Format');!!}
+            {!!Form::select('size', ['YY-DD-MM' => 'YY-DD-MM', 'MM-DD-YY' => 'MM-DD-YY', 'MM-DD-YYYY'=> 'MM-DD-YYYY', 'YYYY-DD-MM'=> 'YYYY-DD-MM'],null, ['class'=> 'form-control']);!!}
             <small id="emailHelp" class="form-text text-muted">Default Date Format. Dates across all applications will be displayed using this format</small>
           </div>
           <div class="form-group col">
-            <label for="exampleFormControlSelect1">Default Language</label>
-            <select class="form-control" id="exampleFormControlSelect1">
-              <option>1</option>
-              <option>2</option>
-              <option>3</option>
-              <option>4</option>
-              <option>5</option>
-            </select>
+            {!!Form::label('defaultLang', 'Default Language');!!}
+            {!!Form::select('size', ['english' => 'English'], null, ['class'=> 'form-control']);!!}
             <small id="emailHelp" class="form-text text-muted">Default Language to be used across all applications</small>
           </div>
         </div>
@@ -56,43 +37,37 @@
         </div>
         <div class="row">
           <div class="form-group col">
-            <label for="exampleInputEmail1">Host Name</label>
-            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+            {!!Form::label('hostName', 'Host Name');!!}
+            {!!Form::text('hostName', null, ['class'=> 'form-control', 'placeholder'=> 'Host Name']);!!}
             <small id="emailHelp" class="form-text text-muted">Address to the SMTP server used for email notifications</small>
           </div>
           <div class="form-group col">
-            <label for="exampleInputEmail1">Username</label>
-            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+            {!!Form::label('userName', 'Username');!!}
+            {!!Form::text('userName', null, ['class'=> 'form-control', 'placeholder'=> 'Email Username']);!!}
             <small id="emailHelp" class="form-text text-muted">Enter the account to be authenticated against the SMTP server</small>
           </div>
         </div>
         <div class="row">
           <div class="form-group col">
-            <label for="exampleInputEmail1">Server Port</label>
-            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+            {!!Form::label('serverPort', 'Server Port');!!}
+            {!!Form::text('serverPort', null, ['class'=> 'form-control', 'placeholder'=> 'Server Port']);!!}
             <small id="emailHelp" class="form-text text-muted">SMTP service port. Default port 25 will be used if you leave blank</small>
           </div>
           <div class="form-group col">
-            <label for="exampleInputEmail1">Password</label>
-            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+            {!!Form::label('password', 'Password');!!}
+            {!!Form::password('password', ['class' => 'form-control', 'placeholder'=> 'Password']);!!}
             <small id="emailHelp" class="form-text text-muted">Password used to authenticate the user</small>
           </div>
         </div>
         <div class="row">
           <div class="form-group form-check col">
-            <input type="checkbox" class="form-check-input ml-0" id="exampleCheck1">
-            <label class="form-check-label ml-3" for="exampleCheck1">SSL/TLS</label>
+            {!!Form::checkbox('sslTls', 'SSL/TLS');!!}
+            {!!Form::label('sslTls', 'SSL/TLS');!!}
             <small id="emailHelp" class="form-text text-muted">Enable if SSL/TLS is required by this server</small>
           </div>
           <div class="form-group col">
-            <label for="exampleFormControlSelect1">Authentication Method</label>
-            <select class="form-control" id="exampleFormControlSelect1">
-              <option>1</option>
-              <option>2</option>
-              <option>3</option>
-              <option>4</option>
-              <option>5</option>
-            </select>
+            {!!Form::label('authMethod', 'Authentication Method');!!}
+            {!!Form::select('size', ['SSL' => 'SSL', 'GSSAPI' => 'GSSAPI', 'NTLM'=> 'NTLM', 'MD5'=> 'MD5', 'password'=> 'password'],null, ['class'=> 'form-control']);!!}
             <small id="emailHelp" class="form-text text-muted">Authentication protocol user to login to the SMTP server</small>
           </div>
         </div>
