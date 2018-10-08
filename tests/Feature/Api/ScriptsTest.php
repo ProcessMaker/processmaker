@@ -226,6 +226,9 @@ class ScriptsTest extends TestCase
     */
     public function testPreviewScript()
     {
+      $this->markTestSkipped(
+              'This preview method needs to be refactored to a more testable state.'
+            );
         $url = route('api.script.preview', ['data'=>'{}','code'=>'return {response=1}', 'language'=>'lua']);
         $response = $this->apiCall('GET', $url, []);
         $response->assertStatus(200);

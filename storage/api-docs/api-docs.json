@@ -14,7 +14,7 @@
     },
     "servers": [
         {
-            "url": "/api/1.0"
+            "url": "http://localhost/api/1.0"
         }
     ],
     "paths": {
