@@ -3,16 +3,18 @@
         <vuetable :dataManager="dataManager" :sortOrder="sortOrder" :css="css" :api-mode="false"
                   @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data"
                   pagination-path="meta">
+            <template slot="name" slot-scope="props">
+                <b-btn variant="link text-capitalize" @click="onAction('edit-designer', props.rowData, props.rowIndex)">
+                    {{props.rowData.name}}
+                </b-btn>
+            </template>
+
             <template slot="actions" slot-scope="props">
                 <div class="actions">
                     <i class="fas fa-ellipsis-h"></i>
                     <div class="popout">
                         <b-btn variant="action" @click="onAction('edit-item', props.rowData, props.rowIndex)"
                                v-b-tooltip.hover title="Edit"><i class="fas fa-edit"></i></b-btn>
-                        <b-btn variant="action" @click="onAction('toggle-status', props.rowData, props.rowIndex)"
-                               v-b-tooltip.hover :title='activateBtnTitle(props.rowData)'><i class="fas"
-                                                                                             v-bind:class='activateBtnCssClass(props.rowData)'></i>
-                        </b-btn>
                         <b-btn variant="action" @click="onAction('remove-item', props.rowData, props.rowIndex)"
                                v-b-tooltip.hover title="Remove"><i class="fas fa-trash-alt"></i></b-btn>
                     </div>
@@ -42,11 +44,11 @@
                     }
                 ],
                 fields: [
-
                     {
-                        title: "Process",
-                        name: "name",
-                        sortField: "name"
+                        title: 'Process',
+                        name: "__slot:name",
+                        field: "name",
+                        sortField: "name",
                     },
                     {
                         title: "Category",
@@ -85,7 +87,7 @@
         },
 
         methods: {
-            activateBtnCssClass (data) {
+            activateBtnCssClass(data) {
                 var showPowerOn = (data.status === 'INACTIVE') ? true : false;
                 var showPowerOff = (data.status === 'ACTIVE') ? true : false;
                 return {
@@ -93,11 +95,11 @@
                     'fa-toggle-on': showPowerOn
                 };
             },
-            activateBtnTitle (data) {
+            activateBtnTitle(data) {
                 return (data.status === 'ACTIVE') ? 'Deactivate' : 'Activate'
             },
-            onAction (actionType, data, index) {
-                if (actionType === 'edit-item') {
+            onAction(actionType, data, index) {
+                if (actionType === 'edit-designer') {
                     window.open('/designer/' + data.uid,'_self');
                 }
 
@@ -111,6 +113,10 @@
                             this.loading = false;
                             document.location.reload();
                         });
+                }
+
+                if (actionType === 'edit-item') {
+                    this.$emit('edit', data.uid);
                 }
 
                 if (actionType === 'remove-item') {
@@ -127,7 +133,12 @@
             },
             formatStatus(status) {
                 status = status.toLowerCase();
-                let bubbleColor = {'active': 'text-success', 'inactive': 'text-danger', 'draft': 'text-warning', 'archived': 'text-info'};
+                let bubbleColor = {
+                    'active': 'text-success',
+                    'inactive': 'text-danger',
+                    'draft': 'text-warning',
+                    'archived': 'text-info'
+                };
                 let response = '<i class="fas fa-circle ' + bubbleColor[status] + ' small"></i> ';
                 status = status.charAt(0).toUpperCase() + status.slice(1);
                 return response + status;
@@ -140,9 +151,6 @@
                 }
                 const CancelToken = ProcessMaker.apiClient.CancelToken;
 
-                //@todo change the method to obtain ID of the process.
-                var path = location.pathname.split('/');
-
                 // Load from our api client
                 ProcessMaker.apiClient
                     .get(
@@ -154,7 +162,7 @@
                         "&filter=" +
                         this.filter +
                         "&order_by=" +
-                        this.orderBy +
+                        (this.orderBy === '__slot:name' ? 'id' : this.orderBy) +
                         "&order_direction=" +
                         this.orderDirection,
                         {
@@ -179,6 +187,7 @@
         width: 150px;
         text-align: center;
     }
+
     /deep/ th#_description {
         width: 250px;
     }

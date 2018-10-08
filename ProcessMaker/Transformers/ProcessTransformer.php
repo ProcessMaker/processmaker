@@ -28,6 +28,7 @@ class ProcessTransformer extends TransformerAbstract
         // But we need to grab the category and insert it in there if it's defined
         if($data['process_category_id']) {
             // Category is set, let's include the category
+            $data['category_uid'] = $data['category']['uid'];
             $data['category'] = $data['category']['name'];
         }
 

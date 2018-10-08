@@ -97,7 +97,7 @@ class ProcessesController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->json()->all();
+        $data = $this->verifyCategory($request->json()->all());
         $response = ProcessManager::store($data);
         return response($this->format($response), 201);
     }
@@ -112,8 +112,9 @@ class ProcessesController extends Controller
      */
     public function update(Request $request, Process $process)
     {
-        $data = $request->json()->all();
-        $response = ProcessManager::update($process, $data);
+        $data = $this->verifyCategory($request->json()->all());
+
+        ProcessManager::update($process, $data);
         return response('', 204);
     }
 
@@ -145,20 +146,34 @@ class ProcessesController extends Controller
     }
 
     /**
+     * Load information category if exists field category_uid
+     *
+     * @param $data
+     * @return array
+     */
+    private function verifyCategory($data)
+    {
+        if (array_key_exists('category_uid', $data)) {
+            $data['process_category_id'] = null;
+            $category = ProcessCategory::where('uid', $data['category_uid'])->first();
+            if (!empty($category)) {
+                $data['process_category_id'] = $category->id;
+            }
+        }
+        return $data;
+    }
+
+    /**
      * Create Process with diagram bpmn by default
      *
      * @param Request $request
      *
      * @return ResponseFactory|Response
+     * @throws \Exception}
      */
     public function createProcessTemplate(Request $request)
     {
-        $data = $request->json()->all();
-        $category = ProcessCategory::where('uid', $data['category_uid'])->first();
-
-        if (!empty($category)) {
-            $data['process_category_id'] = $category->id;
-        }
+        $data = $this->verifyCategory($request->json()->all());
 
         $data['user_id'] = Auth::id();
         //Load process by default with template bpmn only start element

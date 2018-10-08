@@ -16,11 +16,15 @@
                                placeholder="{{__('Search')}}...">
                     </div>
                     <div class="col-md-4 d-flex justify-content-end align-items-center col-sm-12 actions">
-                        <a href="#"  @click="processModal=true" class="btn btn-action"><i class="fas fa-plus"></i> {{__('Process')}}</a>
+                        <a href="#" @click="showModal" class="btn btn-action">
+                            <i class="fas fa-plus"></i> {{__('Process')}}
+                        </a>
                     </div>
                 </div>
-                <modal-create-process :show="processModal" @close="processModal=false"></modal-create-process>
-                <processes-listing :filter="filter"></processes-listing>
+                <modal-create-process :show="processModal" @close="processModal=false" :labels="labels"
+                                      :process-uid="processUid" v-on:reload="reload">
+                </modal-create-process>
+                <processes-listing ref="processListing" :filter="filter" v-on:edit="edit"></processes-listing>
             </div>
         </div>
     </div>

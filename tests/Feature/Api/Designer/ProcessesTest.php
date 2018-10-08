@@ -120,6 +120,63 @@ class ProcessesTest extends TestCase
     }
 
     /**
+     * Update process
+     */
+    public function testUpdateProcess()
+    {
+        $user = $this->authenticateAsAdmin();
+        $faker = Faker::create();
+
+        $process = factory(Process::class)->create();
+
+        $url = self::API_TEST_PROCESS . '/' . $process->uid;
+        $title = $faker->sentence(3);
+        $description =  $faker->sentence(3);
+        $category = factory(ProcessCategory::class)->create();
+        $response = $this->actingAs($user, 'api')->json('PUT', $url, [
+            'name' => $title,
+            'description' => $description,
+            'category_uid' => $category->uid->toString()
+
+        ]);
+        //validating the answer is correct.
+        $response->assertStatus(204);
+
+        $data = Process::where('uid', $process->uid)->first();
+        $this->assertEquals($title, $data->name);
+        $this->assertEquals($description, $data->description);
+        $this->assertEquals($category->id, $data->process_category_id);
+    }
+
+    /**
+     * Update process with category null
+     */
+    public function testUpdateProcessWithCategoryNull()
+    {
+        $user = $this->authenticateAsAdmin();
+        $faker = Faker::create();
+
+        $process = factory(Process::class)->create();
+
+        $url = self::API_TEST_PROCESS . '/' . $process->uid;
+        $title = $faker->sentence(3);
+        $description =  $faker->sentence(3);
+        $response = $this->actingAs($user, 'api')->json('PUT', $url, [
+            'name' => $title,
+            'description' => $description,
+            'category_uid' => null
+
+        ]);
+        //validating the answer is correct.
+        $response->assertStatus(204);
+
+        $data = Process::where('uid', $process->uid)->first();
+        $this->assertEquals($title, $data->name);
+        $this->assertEquals($description, $data->description);
+        $this->assertEquals(null, $data->process_category_id);
+    }
+
+    /**
      * Test to verify our processes listing api endpoint works without any filters
      */
     public function testProcessesListing(): void
