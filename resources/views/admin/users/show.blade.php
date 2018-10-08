@@ -50,7 +50,7 @@
              </div>
              <div class="col form-inline justify-content-end">
                <input type="text" class="form-control w-75" placeholder="&#xf0e0; Search">
-               <button type="submit" class="btn btn-secondary ml-2"> <i class="fas fa-plus"></i> Group</button>
+               <button type="submit" class="btn btn-secondary ml-2"> <i class="fas fa-plus"></i> User</button>
              </div>
            </div>
            <br>
