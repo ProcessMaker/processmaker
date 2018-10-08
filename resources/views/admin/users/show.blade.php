@@ -41,10 +41,10 @@
               <div>Language: <span class="font-weight-bold"> {{$user->language}} </span></div>
               @endif
               <br>
-              <div>Created: <span class="font-weight-bold"> {{$user->created_at->format( 'm/d/Y h:m')}} </span></div>
-              <div>Updated: <span class="font-weight-bold"> {{$user->updated_at->format( 'm/d/Y h:m' )}} </span></div>
+              <div>Created: <span class="font-weight-bold"> {{$user->created_at->format( 'm/j/Y g:i A')}} </span></div>
+              <div>Updated: <span class="font-weight-bold"> {{$user->updated_at->format( 'm/j/Y g:i A' )}} </span></div>
               @if ($user->loggedin_at != null)
-              <div>Last Login: <span class="font-weight-bold"> {{$user->loggedin_at->format('m/d/Y h:m')}} </span></div>
+              <div>Last Login: <span class="font-weight-bold"> {{$user->loggedin_at->format('m/d/Y g:i A')}} </span></div>
               @else
               
               @endif
