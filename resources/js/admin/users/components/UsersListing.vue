@@ -101,10 +101,21 @@
             onAction(action, data, index) {
                 switch (action) {
                     case "edit-item":
-                        //@todo implement
+                        window.location.href = '/admin/users/' + data.uuid + '/edit';
                         break;
                     case 'remove-item':
-                        //@todo implement
+                        ProcessMaker.confirmModal(
+                            'Caution!',
+                            '<b>Are you sure to inactive the user </b>' + data.fullname + '?', '', () => {
+                                ProcessMaker.apiClient.put('users/' + data.uuid, {
+                                    status: 'INACTIVE'
+                                })
+                                    .then(response => {
+                                        ProcessMaker.alert('User Successfully inactive', 'success');
+                                        this.reload();
+                                    })
+                            }
+                        );
                         break;
                 }
             },

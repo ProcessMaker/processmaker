@@ -74,7 +74,7 @@ class User extends Authenticatable implements HasMedia
     {
         $rules = [
             'username' => 'required|unique:users,username',
-            'email' => 'required|email',
+            'email' => 'required|email|unique:users,email',
         ];
         if ($existing) {
             // ignore the unique rule for this id
