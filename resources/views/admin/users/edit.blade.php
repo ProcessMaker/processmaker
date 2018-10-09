@@ -5,12 +5,13 @@
 @endsection
 
 @Section('content')
-<div class="container">
+<div class="container" id="users-edit">
   <h1>Edit User</h1>
   <div class="row">
     <div class="col-8">
       <div class="card card-body">
-        {!! Form::model($user , ['route' => ['users.update', $user->uuid_text ]]) !!}
+        <form-user></form-user>
+        {{--{!! Form::model($user , ['route' => ['users.update', $user->uuid_text ]]) !!}
         <div class="form-group">
           {!! Form::label('username', 'Username') !!}
           {!! Form::text('username', null, ['class'=> 'form-control']) !!}
@@ -44,7 +45,7 @@
           {!! Form::button('Cancel', ['class'=>'btn btn-outline-success']) !!}
           {!! Form::submit('Save', ['class'=>'btn btn-success ml-2']) !!}
         </div>
-        {!! Form::close() !!}
+        {!! Form::close() !!}--}}
       </div>
     </div>
     <div class="col-4">
@@ -57,4 +58,5 @@
 @endsection
 
 @Section('js')
+    <script src="{{mix('js/admin/users/edit.js')}}"></script>
 @endsection
