@@ -109,7 +109,6 @@ export default {
     onAction(action, data, index) {
       switch (action) {
         case "edit-item":
-          console.log("main", data);
           this.goToEdit(data.uuid);
           break;
         case "remove-item":
