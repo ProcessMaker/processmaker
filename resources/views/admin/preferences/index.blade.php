@@ -1,5 +1,9 @@
 @extends('layouts.layout')
 
+@section('title')
+  {{__('Preferences')}}
+@endsection
+
 @section('content')
     <div class="container mt-4">
       <h3>Preferences</h3>
