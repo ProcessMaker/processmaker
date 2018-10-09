@@ -1,0 +1,75 @@
+{
+  "data": [{
+    "value": "DST",
+    "content": "Dateline Standard Time"
+  }, {
+    "value": "U",
+    "content": "UTC-11"
+  }, {
+    "value": "HST",
+    "content": "Hawaiian Standard Time"
+  }, {
+    "value": "AKDT",
+    "content": "Alaskan Standard Time"
+  }, {
+    "value": "PDT",
+    "content": "Pacific Daylight Time"
+  }, {
+    "value": "MDT",
+    "content": "Mountain Standard Time (Mexico)"
+  }, {
+    "value": "CDT",
+    "content": "Central Standard Time"
+  }, {
+    "value": "EDT",
+    "content": "Eastern Standard Time"
+  }, {
+    "value": "ADT",
+    "content": "Atlantic Standard Time"
+  }, {
+    "value": "MDT",
+    "content": "Mid-Atlantic Standard Time"
+  }, {
+    "value": "ADT",
+    "content": "Azores Standard Time"
+  }, {
+    "value": "MDT",
+    "content": "Morocco Standard Time"
+  }, {
+    "value": "WEDT",
+    "content": "W. Europe Standard Time"
+  }, {
+    "value": "GDT",
+    "content": "GTB Standard Time"
+  }, {
+    "value": "SAMT",
+    "content": "Samara Time"
+  }, {
+    "value": "ADT",
+    "content": "Azerbaijan Standard Time"
+  }, {
+    "value": "CAST",
+    "content": "Central Asia Standard Time"
+  }, {
+    "value": "SAST",
+    "content": "SE Asia Standard Time"
+  }, {
+    "value": "CST",
+    "content": "China Standard Time"
+  }, {
+    "value": "NAEST",
+    "content": "North Asia East Standard Time"
+  }, {
+    "value": "EAST",
+    "content": "E. Australia Standard Time"
+  }, {
+    "value": "CPST",
+    "content": "Central Pacific Standard Time"
+  }, {
+    "value": "NZST",
+    "content": "New Zealand Standard Time"
+  }, {
+    "value": "KDT",
+    "content": "Kamchatka Standard Time"
+  }]
+}

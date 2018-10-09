@@ -12,7 +12,7 @@ Route::group(
     Route::apiResource('group_members', 'GroupMemberController')->only(['index', 'show', 'destroy', 'store']);
     Route::apiResource('environment_variables', 'EnvironmentVariablesController');
     Route::apiResource('forms', 'FormController');
-    Route::get('scripts/preview', 'ScriptController@preview')->name('script.preview'); ;
+    Route::get('scripts/preview', 'ScriptController@preview')->name('script.preview');
     Route::apiResource('scripts', 'ScriptController');
     Route::apiresource('processes', 'ProcessController')->middleware('authorize');;
     Route::apiResource('process_categories', 'ProcessCategoryController');

@@ -29,6 +29,35 @@ class User extends Authenticatable implements HasMedia
      * The attributes that are mass assignable.
      *
      * @var array
+     * 
+     *   @OA\Schema(
+     *   schema="usersEditable",
+     *   @OA\Property(property="email", type="string", format="email"),
+     *   @OA\Property(property="password", type="string"),
+     *   @OA\Property(property="firstname", type="string"),
+     *   @OA\Property(property="lastname", type="string"),
+     *   @OA\Property(property="username", type="string"),
+     *   @OA\Property(property="address", type="string"),
+     *   @OA\Property(property="city", type="string"),
+     *   @OA\Property(property="state", type="string"),
+     *   @OA\Property(property="postal", type="string"),
+     *   @OA\Property(property="country", type="string"),
+     *   @OA\Property(property="phone", type="string"),
+     *   @OA\Property(property="fax", type="string"),
+     *   @OA\Property(property="cell", type="string"),
+     *   @OA\Property(property="title", type="string"),
+     *   @OA\Property(property="timezone", type="string"),
+     *   @OA\Property(property="language", type="string"),
+     *   @OA\Property(property="loggedin_at", type="string"),
+     *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
+     * ),
+     * @OA\Schema(
+     *   schema="users",
+     *   allOf={@OA\Schema(ref="#/components/schemas/usersEditable")},
+     *   @OA\Property(property="uuid", type="string", format="uuid"),
+     *   @OA\Property(property="created_at", type="string", format="date-time"),
+     *   @OA\Property(property="updated_at", type="string", format="date-time"),
+     * )
      */
     protected $fillable = [
         'username',
@@ -62,6 +91,10 @@ class User extends Authenticatable implements HasMedia
     protected $appends = [
         'fullname',
         'avatar',
+    ];
+
+    protected $dates = [
+        'loggedin_at',
     ];
 
     /**

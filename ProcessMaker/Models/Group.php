@@ -13,6 +13,19 @@ use Spatie\BinaryUuid\HasBinaryUuid;
  * @property string $name
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
+ * 
+ *   @OA\Schema(
+ *   schema="groupsEditable",
+ *   @OA\Property(property="uuid", type="string", format="uuid"),
+ *   @OA\Property(property="name", type="string"),
+ *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
+ * ),
+ * @OA\Schema(
+ *   schema="groups",
+ *   allOf={@OA\Schema(ref="#/components/schemas/groupsEditable")},
+ *   @OA\Property(property="created_at", type="string", format="date-time"),
+ *   @OA\Property(property="updated_at", type="string", format="date-time"),
+ * )
  *
  */
 class Group extends Model
