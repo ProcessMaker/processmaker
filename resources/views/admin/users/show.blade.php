@@ -11,11 +11,11 @@
           <div class="row">
             <div class="col-1 text-center">
               @if ($user->getAvatar() != '' )
-              <img class="avatar-lg-circle" src="{{ $user->getAvatar() }}" />
+                <img class="avatar-lg-circle" src="{{ $user->getAvatar() }}" />
               @else
-              <div class="avatar-lg-circle bg-warning">
-              <span class="avatar-lg-initials">{{ $user->firstname[0] }}{{ $user->lastname[0] }}</span>
-              </div>
+                <div class="avatar-lg-circle bg-warning">
+                <span class="avatar-lg-initials">{{ $user->firstname[0] }}{{ $user->lastname[0] }}</span>
+                </div>
               @endif
             </div>
             <div class="col-6">
@@ -27,23 +27,28 @@
                 <i class="fas fa-circle text-danger fa-sm mb-2 ml-1 align-self-center"></i>
                 @endif
               </div>
-              <h4>{{$user->username}}</h4>
-              <h5>{{$user->email}}</h5>
+              <div class="font-weight-bold mb-0">{{$user->username}}</div>
+              <div >{{$user->email}}</div>
               <br>
               <div>{{$user->address}}</div>
               <div>{{$user->city}}, {{$user->state}} {{$user->postal}}</div>
               <div>{{$user->country}}</div>
+              <div>{{$user->phone}}</div>
               <br>
-              <div>Default Time Zone : <span class="font-weight-bold"> {{$user->timezone}} </span></div>
+              <div>Default Time Zone: <span class="font-weight-bold"> {{$user->timezone}} </span></div>
               @if ($user->language == "us_en")
               <div>Language: <span class="font-weight-bold"> English </span></div>
               @else
               <div>Language: <span class="font-weight-bold"> {{$user->language}} </span></div>
               @endif
               <br>
-              <div>Created: <span class="font-weight-bold"> {{$user->created_at->format( 'd/m/Y h:m')}} </span></div>
-              <div>Updated: <span class="font-weight-bold"> {{$user->updated_at->format( 'd/m/Y h:m' )}} </span></div>
-              <div>Last Login: <span class="font-weight-bold"> {{$user->loggedin_at->format('d/m/Y h:m')}} </span></div>
+              <div>Created: <span class="font-weight-bold"> {{$user->created_at->format( 'm/j/Y g:i A')}} </span></div>
+              <div>Updated: <span class="font-weight-bold"> {{$user->updated_at->format( 'm/j/Y g:i A' )}} </span></div>
+              @if ($user->loggedin_at != null)
+              <div>Last Login: <span class="font-weight-bold"> {{$user->loggedin_at->format('m/j/Y g:i A')}} </span></div>
+              @else
+              
+              @endif
               <br>
             </div>
             <div class="col" align="right">
@@ -66,30 +71,37 @@
               <button type="submit" class="btn btn-secondary ml-2"> <i class="fas fa-plus"></i> Group</button>
             </div>
            </div>
-           <br>
-          <table class="table">
+          <table class="table vuetable">
           <thead>
             <tr>
-              <th scope="col" class="text-uppercase">Name</th>
+              <th scope="col" class="text-uppercase">Full Name</th>
               <th scope="col" class="text-uppercase">Description</th>
               <th scope="col"></th>
             </tr>
           </thead>
           <tbody>
-            @foreach ($user->members() as $group_member)
+            @forelse ($user->members() as $group_member)
             <tr>
               <td>{{$group_member->group->name}}</td>
               <td>{{$group_member->group->status}}</td>
-              <td><i class="fas fa-trash-alt text-secondary"></i></td>
+              <td class="text-right"><i class="fas fa-trash-alt text-secondary"></i></td>
             </tr>
-            @endforeach
+            @empty
+            <tr>
+              <td colspan="3">User is not a member of any groups</td>
+            </tr>
+            
+            @endforelse
           </tbody>
         </table>
-        <div class="text-secondary">1 - 4 of 4 Groups</div>
         </div>
       </div>
     </div>
 @endsection
 
 @Section('js')
+@endsection
+
+@Section('css')
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet">
 @endsection
