@@ -3,7 +3,7 @@
         <div class="my-3">
             <b-btn id="avatarMenu" :disabled="popoverShow" class="avatar-circle btn-warning">
                 <template v-if="sourceImage">
-                    <img class="avatar-image" :src="user.avatar">
+                    <img class="avatar-image avatar-circle" :src="user.avatar">
                 </template>
                 <template v-else>
                     <span class="avatar-initials"> {{ initials }} </span>
