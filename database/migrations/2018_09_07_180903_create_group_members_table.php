@@ -18,7 +18,7 @@ class CreateGroupMembersTable extends Migration
             $table->primary('uuid');
             $table->uuid('group_uuid');
             $table->uuid('member_uuid');
-            $table->string('member_type');
+            $table->string('member_type'); // user or group
             $table->timestamps();
 
             $table->index('group_uuid');

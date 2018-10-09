@@ -15,7 +15,7 @@ Route::namespace('Process')->prefix('processes')->group(function(){
   Route::resource('forms', 'FormController');
   Route::resource('scripts', 'ScriptController');
 });
-Route::resource('processes', 'ProcessController');
+Route::resource('processes', 'ProcessController')->middleware('authorize');;
 
 Route::resource('profile', 'ProfileController')->only([
     'index', 'edit', 'show'

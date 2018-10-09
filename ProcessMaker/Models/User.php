@@ -106,9 +106,14 @@ class User extends Authenticatable implements HasMedia
         ]);
     }
 
-    public function memberships()
+    public function groupMembers()
     {
         return $this->morphMany(GroupMember::class, 'member', null, 'member_uuid');
+    }
+
+    public function permissionAssignments()
+    {
+        return $this->morphMany(PermissionAssignment::class, 'assignable', null, 'assignable_uuid');
     }
 
     /**
@@ -142,5 +147,26 @@ class User extends Authenticatable implements HasMedia
             $url = $media->getFullUrl();
         }
         return $url;
+    }
+
+    public function hasPermission($permissionString)
+    {
+        // TODO: cache
+        $permissions = [];
+        foreach ($this->groupMembers as $gm) {
+            $group = $gm->group;
+            $permissions =
+                array_merge($permissions, $group->permissions());
+        }
+        foreach ($this->permissionAssignments as $pa) {
+            $permissions[] = $pa->permission;
+        }
+        
+        $permissionStrings = array_map(
+            function($p) { return $p->guard_name; },
+            $permissions
+        );
+        eval(\Psy\sh());
+        return in_array($permissionString, $permissionStrings);
     }
 }

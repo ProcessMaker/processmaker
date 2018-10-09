@@ -40,13 +40,27 @@ class Group extends Model
         return $rules;
     }
 
-    public function members()
+    public function permissionAssignments()
     {
-        return $this->hasMany(GroupMember::class);
+        return $this->morphMany(PermissionAssignment::class, 'assignable', null, 'assignable_uuid');
     }
-    
-    public function memberships()
+
+    public function groupMembers()
     {
         return $this->morphMany(GroupMember::class, 'member', null, 'member_uuid');
+    }
+
+    public function permissions()
+    {
+        $permissions = [];
+        foreach ($this->groupMembers as $gm) {
+            $group = $gm->group;
+            $permissions =
+                array_merge($permissions, $group->permissions());
+        }
+        foreach ($this->permissionAssignments as $pa) {
+            $permissions[] = $pa->permission;
+        }
+        return $permissions;
     }
 }
