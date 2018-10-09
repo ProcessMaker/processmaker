@@ -21,8 +21,8 @@
           </div>
           <h5>Group of users with a full set of permissions</h5>
           <br>
-          <div>Created:<span class="font-weight-bold"> {{$group->created_at->format('d/m/Y h:m')}}</span></div>
-          <div class="mt-2">Updated: <span class="font-weight-bold"> {{$group->updated_at->format('d/m/Y h:m')}} </span></div>
+          <div>Created:<span class="font-weight-bold"> {{$group->created_at->format('m/j/Y g:i A')}}</span></div>
+          <div class="mt-2">Updated: <span class="font-weight-bold"> {{$group->updated_at->format('m/j/Y g:i A')}} </span></div>
           <br>
         </div>
         <div class="col text-right">
@@ -34,20 +34,22 @@
       </div>
       <br>
       <div class="row">
-        <div class="col">
+        <div class="col align-self-center">
           <h3>Members</h3>
         </div>
-        <div class="col search-bar">
-          <input type="text" class="form-control w-75" placeholder="&#xf0e0; Search">
-          <button type="submit" class="btn btn-secondary ml-2"><i class="fas fa-plus"></i> User</button>
-        </div>
+        <div class="col form-inline input-group justify-content-end">	
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="prepend-search"><i class="fa fa-search"></i></span>
+          </div>
+          <input type="text" class="form-control h-100 w-50 border-left-0" placeholder="Search">
+          <button type="submit" class="btn btn-secondary ml-2"> <i class="fas fa-plus"></i> User</button>
       </div>
         <table class="table table-hover vuetable">
         <thead>
           <tr>
-            <th>Full Name<i class="sort-icon fas fa-sort ml-2"></i></th>
-            <th>Email<i class="sort-icon fas fa-sort ml-2"></i></th>
-            <th>Status<i class="sort-icon fas fa-sort ml-2"></i></th>
+            <th scope="col">Full Name<i class="sort-icon fas fa-sort ml-2"></i></th>
+            <th scope="col">Email<i class="sort-icon fas fa-sort ml-2"></i></th>
+            <th scope="col">Status<i class="sort-icon fas fa-sort ml-2"></i></th>
             <th class="pr-5"></th>
           </tr>
         </thead>

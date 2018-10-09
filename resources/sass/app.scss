@@ -15,10 +15,10 @@
 	     format('truetype');
 }
 
-.search-bar {
-  @extend form-inline;
-  @extend justify-content-end;
-}
+// .search-bar {
+//   @extend form-inline;
+//   @extend justify-content-end;
+// }
 
 .multiselect__tag-icon:focus, .multiselect__tag-icon:hover {
   background: #788793 !important;
@@ -71,6 +71,15 @@ html {
 
 .container h1 {
   margin: 15px 5px
+}
+
+#prepend-search {
+  background-color: white;
+  border-right: 0px;
+  padding-right: 0px;
+  padding-left: 10px;
+  border-color: #b6bfc6;
+  color: #b6bfc6;
 }
 
 //topnav
