@@ -22,117 +22,126 @@
 
 
 <script>
-    import datatableMixin from "../../../components/common/mixins/datatable";
+import datatableMixin from "../../../components/common/mixins/datatable";
 
-    export default {
-        mixins: [datatableMixin],
-        props: ["filter"],
-        data() {
-            return {
-                orderBy: "username",
-                // Our listing of users
-                sortOrder: [
-                    {
-                        field: "username",
-                        sortField: "username",
-                        direction: "asc"
-                    }
-                ],
-                fields: [
-                    {
-                        title: "Username",
-                        name: "username",
-                        sortField: "username"
-                    },
-                    {
-                        title: "Full Name",
-                        name: "fullname",
-                        sortField: "fullname"
-                    },
-                    {
-                        title: "Status",
-                        name: "status",
-                        sortField: "status",
-                        callback: this.formatStatus
-                    },
-                    {
-                        title: "Login",
-                        name: "loggedin_at",
-                        sortField: "loggedin_at",
-                        callback: this.formatDate
-                    },
-                    {
-                        title: "Expires On",
-                        name: "expires_at",
-                        sortField: "expires_at",
-                        callback: this.formatDate
-                    },
-                    {
-                        title: "Created At",
-                        name: "created_at",
-                        sortField: "created_at",
-                        callback: this.formatDate
-                    },
-                    {
-                        title: "Updated At",
-                        name: "updated_at",
-                        sortField: "updated_at",
-                        callback: this.formatDate
-                    },
-                    {
-                        name: "__slot:actions",
-                        title: ""
-                    }
-                ]
-            };
-        },
-        methods: {
-            formatStatus(status) {
-                status = status.toLowerCase();
-                let bubbleColor = {
-                    active: "text-success",
-                    inactive: "text-danger",
-                    draft: "text-warning",
-                    archived: "text-info"
-                };
-                return '<i class="fas fa-circle ' + bubbleColor[status] + ' small"></i> ' +
-                    status.charAt(0).toUpperCase() + status.slice(1);
-            },
-            onAction(action, data, index) {
-                switch (action) {
-                    case "edit-item":
-                        //@todo implement
-                        break;
-                    case 'remove-item':
-                        //@todo implement
-                        break;
-                }
-            },
-            fetch() {
-                this.loading = true;
-                //change method sort by user
-                this.orderBy = this.orderBy === 'fullname' ? 'firstname' : this.orderBy;
-                // Load from our api client
-                ProcessMaker.apiClient
-                    .get(
-                        "users?page=" +
-                        this.page +
-                        "&per_page=" +
-                        this.perPage +
-                        "&filter=" +
-                        this.filter +
-                        "&order_by=" +
-                        this.orderBy +
-                        "&order_direction=" +
-                        this.orderDirection
-                    )
-                    .then(response => {
-                        this.data = this.transform(response.data);
-                        this.loading = false;
-                    });
-            }
+export default {
+  mixins: [datatableMixin],
+  props: ["filter"],
+  data() {
+    return {
+      orderBy: "username",
+      // Our listing of users
+      sortOrder: [
+        {
+          field: "username",
+          sortField: "username",
+          direction: "asc"
         }
+      ],
+      fields: [
+        {
+          title: "Username",
+          name: "username",
+          sortField: "username"
+        },
+        {
+          title: "Full Name",
+          name: "fullname",
+          sortField: "fullname"
+        },
+        {
+          title: "Status",
+          name: "status",
+          sortField: "status",
+          callback: this.formatStatus
+        },
+        {
+          title: "Login",
+          name: "loggedin_at",
+          sortField: "loggedin_at",
+          callback: this.formatDate
+        },
+        {
+          title: "Expires On",
+          name: "expires_at",
+          sortField: "expires_at",
+          callback: this.formatDate
+        },
+        {
+          title: "Created At",
+          name: "created_at",
+          sortField: "created_at",
+          callback: this.formatDate
+        },
+        {
+          title: "Updated At",
+          name: "updated_at",
+          sortField: "updated_at",
+          callback: this.formatDate
+        },
+        {
+          name: "__slot:actions",
+          title: ""
+        }
+      ]
     };
+  },
+  methods: {
+    formatStatus(status) {
+      status = status.toLowerCase();
+      let bubbleColor = {
+        active: "text-success",
+        inactive: "text-danger",
+        draft: "text-warning",
+        archived: "text-info"
+      };
+      return (
+        '<i class="fas fa-circle ' +
+        bubbleColor[status] +
+        ' small"></i> ' +
+        status.charAt(0).toUpperCase() +
+        status.slice(1)
+      );
+    },
+    goToEdit(data) {
+      window.location = "/admin/users/" + data + "/edit";
+    },
+    onAction(action, data, index) {
+      switch (action) {
+        case "edit-item":
+          console.log("main", data);
+          this.goToEdit(data.uuid);
+          break;
+        case "remove-item":
+          //@todo implement
+          break;
+      }
+    },
+    fetch() {
+      this.loading = true;
+      //change method sort by user
+      this.orderBy = this.orderBy === "fullname" ? "firstname" : this.orderBy;
+      // Load from our api client
+      ProcessMaker.apiClient
+        .get(
+          "users?page=" +
+            this.page +
+            "&per_page=" +
+            this.perPage +
+            "&filter=" +
+            this.filter +
+            "&order_by=" +
+            this.orderBy +
+            "&order_direction=" +
+            this.orderDirection
+        )
+        .then(response => {
+          this.data = this.transform(response.data);
+          this.loading = false;
+        });
+    }
+  }
+};
 </script>
 
 <style lang="scss" scoped>
