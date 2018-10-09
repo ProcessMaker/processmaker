@@ -1,5 +1,9 @@
 @extends('layouts.layout')
 
+@section('title')
+  {{__('Preferences')}}
+@endsection
+
 @section('content')
   <div id="preferences">
     <preferences></preferences>
