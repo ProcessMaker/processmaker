@@ -16,4 +16,14 @@ class ScriptController extends Controller
     {
         return view('processes.scripts.index');
     }
+
+    /**
+   * Edit a specific script
+   *
+   * @return \Illuminate\View\View|\Illuminate\Contracts\View
+   */
+   public function edit()
+   {
+     return view('processes.scripts.edit');
+   }
 }
