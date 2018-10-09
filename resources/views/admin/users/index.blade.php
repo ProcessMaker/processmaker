@@ -18,7 +18,28 @@
                 <input v-model="filter" class="form-control col-sm-3" placeholder="{{__('Search')}}...">
                 </div>
                 <div class="col-md-4 d-flex justify-content-end align-items-center col-sm-12 actions">
-                    <a href="#" class="btn btn-action"><i class="fas fa-plus"></i> {{__('User')}}</a>
+                    <button type="button" href="#" class="btn btn-action" data-toggle="modal" data-target="#create-user-modal"><i class="fas fa-plus"></i> {{__('User')}}</button>
+
+                    <div class="modal fade" id="create-user-modal" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalCenterTitle">Modal title</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                ...
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary">Save changes</button>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
             <users-listing ref="listing" :filter="filter"></users-listing>
