@@ -22,7 +22,7 @@
           <h5>Group of users with a full set of permissions</h5>
           <br>
           <div>Created:<span class="font-weight-bold"> {{$group->created_at->format('m/j/Y g:i A')}}</span></div>
-          <div class="mt-2">Updated: <span class="font-weight-bold"> {{$group->updated_at->format('m/j/Y g:i A')}} </span></div>
+          <div>Updated: <span class="font-weight-bold"> {{$group->updated_at->format('m/j/Y g:i A')}} </span></div>
           <br>
         </div>
         <div class="col text-right">
@@ -51,7 +51,7 @@
           <th scope="col">Full Name<i class="sort-icon fas fa-sort ml-2"></i></th>
           <th scope="col">Email<i class="sort-icon fas fa-sort ml-2"></i></th>
           <th scope="col">Status<i class="sort-icon fas fa-sort ml-2"></i></th>
-          <th class="pr-5"></th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
