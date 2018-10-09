@@ -8,6 +8,9 @@
                     required="required"></form-input>
         <form-input :error="errors.email" type="email" v-model="formData.email" :label="labels.email"
                     required="required"></form-input>
+        <form-select v-if="isEditing()" :error="errors.status" :label="labels.status" v-model="formData.status"
+                     :options="statusOptions">
+        </form-select>
         <form-input :error="errors.password" type="password" v-model="formData.password"
                     :label="labels.password" required="required"></form-input>
         <form-input :error="passwordMismatch" type="password" v-model="confirmation"
@@ -18,14 +21,16 @@
 
 <script>
     import FormInput from "@processmaker/vue-form-elements/src/components/FormInput";
+    import FormSelect from "@processmaker/vue-form-elements/src/components/FormSelect";
 
     const emptyUser = {
         uuid: null,
-        username:'',
+        username: '',
         firstname: '',
         lastname: '',
         email: '',
-        password: ''
+        password: '',
+        status: 'ACTIVE'
     };
 
     const emptyErrors = {
@@ -33,20 +38,26 @@
         firstname: null,
         lastname: null,
         email: null,
-        password: null
+        password: null,
+        status: null
     };
 
     export default {
-        components: {FormInput},
+        components: {FormSelect, FormInput},
         props: ['inputData'],
         data() {
             return {
                 'confirmation': '',
+                'statusOptions': [
+                    {value: 'ACTIVE', content: 'Active'},
+                    {value: 'INACTIVE', content: 'Inactive'}
+                ],
                 'labels': {
                     'username': 'Username',
                     'firstname': 'First Name',
                     'lastname': 'Last Name',
                     'email': 'Email Address',
+                    'status': 'Status',
                     'password': 'Password',
                     'confirm': 'Confirm Password',
                     'helper': 'User Name must be distinct'
@@ -58,13 +69,12 @@
         watch: {
             inputData(user) {
                 this.reset();
-                this.formData = Object.assign({}, user);
+                this.fillData(user);
             }
         },
         computed: {
             passwordMismatch() {
                 if (this.formData.password !== this.confirmation) {
-                    console.log('Confirmation password must match');
                     return 'Confirmation password must match'
                 } else {
                     return null
@@ -72,22 +82,13 @@
             },
         },
         mounted() {
-            if (this.inputData && this.inputData.uuid) {
-                let that = this;
-                console.log(that.inputData);
-                $.each(that.formData, function(value) {
-                    if (that.inputData.hasOwnProperty(value)) {
-                        that.formData[value] = that.inputData[value];
-                    }
-                });
-                console.log(that.formData)
-            }
+            this.fillData(this.inputData)
         },
         methods: {
             reset() {
                 this.formData = Object.assign({}, {
                     uuid: null,
-                    username:'',
+                    username: '',
                     firstname: '',
                     lastname: '',
                     email: '',
@@ -101,24 +102,36 @@
                     password: null
                 });
             },
+            isEditing() {
+                return !!this.formData.uuid
+            },
+            fillData(data) {
+                if (data && data.uuid) {
+                    let that = this;
+                    $.each(that.formData, function (value) {
+                        if (that.inputData.hasOwnProperty(value)) {
+                            that.formData[value] = data[value];
+                        }
+                    });
+                }
+            },
             request() {
-                return this.formData.uuid ? ProcessMaker.apiClient.put : ProcessMaker.apiClient.post;
+                return this.isEditing() ? ProcessMaker.apiClient.put : ProcessMaker.apiClient.post;
             },
             savePath() {
-                return this.formData.uuid ? 'users/' + this.formData.uuid : 'users';
+                return this.isEditing() ? 'users/' + this.formData.uuid : 'users';
             },
             onClose() {
                 this.$emit('close');
             },
             onSave() {
-                if (this.formData.password.trim() !== '' || this.confirmation.trim() !== '') {
+                this.errors = Object.assign({}, emptyErrors);
+                if (this.formData.password && (this.formData.password.trim() !== '' || this.confirmation.trim() !== '')) {
                     if (this.formData.password.trim() === '') {
-                        console.log('Field required');
                         this.errors.password = "Field required";
                         return
                     }
                     if (this.passwordMismatch) {
-                        console.log('You must correct the data before continuing');
                         this.errors.password = "You must correct the data before continuing";
                         return
                     }
@@ -130,7 +143,7 @@
                 this.request()(
                     this.savePath(), this.formData
                 ).then(response => {
-                    if (this.formData.uuid) {
+                    if (this.isEditing()) {
                         this.$emit('update');
                     } else {
                         this.$emit('save');
