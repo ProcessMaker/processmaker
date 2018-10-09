@@ -1,5 +1,9 @@
 @extends('layouts.layout')
 
+@section('title')
+  {{__('Task')}}
+@endsection
+
 @section('content')
 <div class="container" id="task">
     <task-view

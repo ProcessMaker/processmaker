@@ -1,4 +1,7 @@
-@extends('layouts.layout', ['title' => __('Script Management')])
+@extends('layouts.layout')
+@section('title')
+  {{__('Scripts')}}
+@endsection  
 
 @section('sidebar')
   @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_processes')])

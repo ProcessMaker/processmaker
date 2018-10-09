@@ -1,4 +1,9 @@
 @extends('layouts.layout')
+
+@section('title')
+  {{__('Forms')}}
+@endsection
+
 @section('content')
     <div id="form-container">
         {{-- <form-builder :process="{{$process}}" :form="{{$form}}"></form-builder> --}}
