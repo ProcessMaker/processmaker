@@ -7,6 +7,8 @@
                 <div class="actions">
                     <i class="fas fa-ellipsis-h"></i>
                     <div class="popout">
+                        <b-btn variant="action" @click="onAction('edit', props.rowData, props.rowIndex)"
+                               v-b-tooltip.hover title=""><i class="fas fa-edit"></i></b-btn>
                         <b-btn variant="action" @click="onAction('pause', props.rowData, props.rowIndex)"
                                v-b-tooltip.hover title=""><i class="fas fa-pause"></i></b-btn>
                         <b-btn variant="action" @click="onAction('undo', props.rowData, props.rowIndex)"
@@ -29,40 +31,39 @@
         props: ["filter"],
         data() {
             return {
-                orderBy: "task_due_date",
+                orderBy: "due_at",
 
                 sortOrder: [
                     {
-                        field: "task_due_date",
-                        sortField: "task_due_date",
+                        field: "due_at",
+                        sortField: "due_at",
                         direction: "asc"
                     }
                 ],
                 fields: [
                     {
                         title: "TITLE",
-                        name: "",
-                        callback: this.formatTitle
+                        name: "element_name"
                     },
                     {
                         title: "PROCESS",
-                        name: "application.process.name"
+                        name: "process.name",
                     },
                     {
                         title: "ASSIGNED TO",
-                        name: "",
-                        callback: this.formatUserName
+                        name: "user",
+                        callback: this.formatName
                     },
                     {
                         title: "CREATED BY",
-                        name: "",
-                        callback: this.formatCreatorName
+                        name: "process_request.user",
+                        callback: this.formatName
                     },
                     {
                         title: "DUE",
-                        name: "task_due_date",
-                        sortField: "task_due_date",
-                        callback: this.formatDue
+                        name: "due_at",
+                        callback: this.formatDate,
+                        sortField: "due_at",
                     },
                     {
                         name: "__slot:actions",
@@ -79,35 +80,18 @@
             }
         },
         methods: {
-            formatCreatorName(token) {
-                return (token.application.creator.avatar
-                    ? this.createImg({'src': token.application.creator.avatar, 'class': 'rounded-user'})
-                    : '<i class="fa fa-user rounded-user"></i>')
-                  + '<span>' + token.application.creator.fullname + '</span>';
+            onAction(action, rowData, index) {
+                let link = '/tasks/' + rowData.uuid + '/edit';
+                window.location = link;
             },
-            formatUserName(token) {
-                return (token.application.creator.avatar
-                    ? this.createImg({'src': token.user.avatar, 'class': 'rounded-user'})
-                    : '<i class="fa fa-user rounded-user"></i>')
-                  + '<span>' + token.user.fullname + '</span>';
-            },
-            formatTitle(token) {
-                let link = '/tasks/'
-                        + token.definition.id + '/'
-                        + token.application.process.uid + '/'
-                        + token.application.uid + '/'
-                        + token.uid;
-                return this.createLink({'href': link}, token.definition.name);
-            },
-            createLink(properties, name) {
-                let container = document.createElement('div');
-                let link = document.createElement('a');
-                for (let property in properties) {
-                    link.setAttribute(property, properties[property]);
+            formatName(user) {
+                if (user === 'undefined' || user === null) {
+                    return '';
                 }
-                link.innerText = name;
-                container.appendChild(link);
-                return container.innerHTML;
+                return (user.avatar
+                    ? this.createImg({'src': user.avatar, 'class': 'rounded-user'})
+                    : '<i class="fa fa-user rounded-user"></i>')
+                  + '<span>' + user.firstname + ' ' + user.lastname + '</span>';
             },
             createImg(properties, name) {
                 let container = document.createElement('div');
@@ -118,7 +102,7 @@
                 container.appendChild(node);
                 return container.innerHTML;
             },
-            formatDue(value) {
+            formatDate(value) {
                 let duedate = moment(value);
                 let now = moment();
                 let diff = duedate.diff(now, 'hours');
@@ -142,7 +126,7 @@
                     .get(
                         "tasks?page=" +
                         this.page +
-                        "&include=application.creator" +
+                        "&include=process,user,processRequest,processRequest.user" +
                         "&status=ACTIVE" +
                         "&per_page=" +
                         this.perPage +
