@@ -15,6 +15,32 @@
                     :label="labels.password" required="required"></form-input>
         <form-input :error="passwordMismatch" type="password" v-model="confirmation"
                     :label="labels.confirm" required="required"></form-input>
+
+        <div id="app" class="form-group">
+            <label>{{labels.groups}}</label>
+            <multiselect v-model="value" :options="dataGroups" :multiple="true" track-by="name" :custom-label="customLabel"
+                    label="name">
+
+                <template slot="tag" slot-scope="props">
+                      <span class="multiselect__tag  d-flex align-items-center" style="width:max-content;">
+                            <img class="option__image mr-1" :src="props.option.img" alt="Check it">
+                            <span class="option__desc mr-1">{{ props.option.name }}
+                              <span class="option__title">{{ props.option.desc }}</span>
+                            </span>
+                        <i aria-hidden="true" tabindex="1" @click="props.remove(props.option)"
+                           class="multiselect__tag-icon"></i>
+                      </span>
+                </template>
+
+                <template slot="option" slot-scope="props">
+                    <div class="option__desc d-flex align-items-center">
+                        <img class="option__image mr-1" :src="props.option.img" alt="options">
+                        <span class="option__title mr-1">{{ props.option.name }}</span>
+                        <span class="option__small">{{ props.option.desc }}</span>
+                    </div>
+                </template>
+            </multiselect>
+        </div>
     </div>
 
 </template>
@@ -22,6 +48,7 @@
 <script>
     import FormInput from "@processmaker/vue-form-elements/src/components/FormInput";
     import FormSelect from "@processmaker/vue-form-elements/src/components/FormSelect";
+    import Multiselect from "vue-multiselect/src/Multiselect";
 
     const emptyUser = {
         uuid: null,
@@ -30,7 +57,7 @@
         lastname: '',
         email: '',
         password: '',
-        status: 'ACTIVE'
+        status: 'ACTIVE',
     };
 
     const emptyErrors = {
@@ -43,8 +70,8 @@
     };
 
     export default {
-        components: {FormSelect, FormInput},
-        props: ['inputData'],
+        components: {Multiselect, FormSelect, FormInput},
+        props: ['inputData', 'inputDataGroups'],
         data() {
             return {
                 'confirmation': '',
@@ -60,8 +87,15 @@
                     'status': 'Status',
                     'password': 'Password',
                     'confirm': 'Confirm Password',
+                    'groups': 'Groups',
                     'helper': 'User Name must be distinct'
                 },
+                'value' : '',
+                'dataGroups': [
+                    /*{name: 'People'},
+                    {name: 'Humans', desc: 'HR', img: '/img/avatar-placeholder.gif'},
+                    {name: 'Workers', desc: 'HR', img: '/img/avatar-placeholder.gif'}*/
+                ],
                 'formData': emptyUser,
                 'errors': emptyErrors
             }
@@ -82,9 +116,13 @@
             },
         },
         mounted() {
-            this.fillData(this.inputData)
+            this.fillData(this.inputData);
+            this.fillDataGroups(this.inputDataGroups);
         },
         methods: {
+            customLabel(option) {
+                return ` ${option.img} ${option.name} ${option.desc}`
+            },
             reset() {
                 this.formData = Object.assign({}, {
                     uuid: null,
@@ -92,7 +130,9 @@
                     firstname: '',
                     lastname: '',
                     email: '',
-                    password: ''
+                    password: '',
+                    memberships: ''
+
                 });
                 this.errors = Object.assign({}, {
                     username: null,
@@ -115,6 +155,26 @@
                     });
                 }
             },
+            fillDataGroups(data) {
+                let that = this;
+                that.dataGroups = [];
+                let values = [];
+                $.each(data, function (key, value) {
+                    let option = value;
+                    option.img = '/img/avatar-placeholder.gif';
+                    option.desc = ' ';
+                    that.dataGroups.push(option);
+                    //fill groups selected
+                    if (that.inputData.hasOwnProperty('memberships') && that.inputData.memberships) {
+                        $.each(that.inputData.memberships, function (keyMember, dataMember) {
+                            if (dataMember.group_uuid === option.uuid) {
+                                values.push(option);
+                            }
+                        });
+                    }
+                });
+                that.value = values;
+            },
             request() {
                 return this.isEditing() ? ProcessMaker.apiClient.put : ProcessMaker.apiClient.post;
             },
@@ -123,6 +183,50 @@
             },
             onClose() {
                 this.$emit('close');
+            },
+            saveGroups(uuid, update) {
+
+                let that = this;
+                //delete members
+                if (update && that.inputData.hasOwnProperty('memberships') && that.inputData.memberships) {
+                    $.each(that.inputData.memberships, function (keyMember, dataMember) {
+                        let deleteMember = true;
+                        $.each(that.value, function (key, group) {
+                            if (dataMember.group_uuid === group.uuid) {
+                                deleteMember = false;
+                                return false;
+                            }
+                        });
+                        if(deleteMember) {
+                            ProcessMaker.apiClient
+                                .delete('group_members/'+ dataMember.uuid);2
+                        }
+                    });
+                }
+                $.each(that.value, function (key, group) {
+                    let save = true;
+                    if (that.inputData.hasOwnProperty('memberships') && that.inputData.memberships) {
+                        $.each(that.inputData.memberships, function (keyMember, dataMember) {
+                            if (dataMember.group_uuid === group.uuid) {
+                                save = false;
+                                return false;
+                            }
+                        });
+                    }
+                    if (save) {
+                        ProcessMaker.apiClient
+                            .post('group_members', {
+                                    'group_uuid': group.uuid,
+                                    'member_type': 'ProcessMaker\\Models\\User',
+                                    'member_uuid': uuid
+                                }
+                            )
+                            .then(response => {
+                                //save group member
+                            });
+                    }
+                });
+
             },
             onSave() {
                 this.errors = Object.assign({}, emptyErrors);
@@ -144,8 +248,10 @@
                     this.savePath(), this.formData
                 ).then(response => {
                     if (this.isEditing()) {
+                        this.saveGroups(this.formData.uuid);
                         this.$emit('update');
                     } else {
+                        this.saveGroups(response.data.uuid);
                         this.$emit('save');
                     }
                 })
@@ -175,5 +281,45 @@
 
     .input-and-select {
         width: 212px;
+    }
+
+    .multiselect__element span img {
+        border-radius: 50%;
+        height: 20px;
+    }
+
+    .multiselect__tags-wrap {
+        display: flex !important;
+    }
+
+    .multiselect__tags-wrap img {
+        height: 15px;
+        border-radius: 50%;
+    }
+
+    .multiselect__tag-icon:after {
+        color: white !important;
+    }
+
+    .multiselect__option--highlight {
+        background: #00bf9c !important;
+    }
+
+    .multiselect__option--selected.multiselect__option--highlight {
+        background: #00bf9c !important;
+    }
+
+    .multiselect__tags {
+        border: 1px solid #b6bfc6 !important;
+        border-radius: 0.125em !important;
+        height: calc(1.875rem + 2px) !important;
+    }
+
+    .multiselect__tag {
+        background: #788793 !important;
+    }
+
+    .multiselect__tag-icon:after {
+        color: white !important;
     }
 </style>

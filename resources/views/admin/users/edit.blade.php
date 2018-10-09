@@ -14,7 +14,7 @@
         <div class="row">
             <div class="col-8">
                 <div class="card card-body">
-                    <form-edit-user ref="formEditUser" :input-data="{{$user}}" v-on:update="afterUpdate"></form-edit-user>
+                    <form-edit-user ref="formEditUser" :input-data="{{$user}}" :input-data-groups="{{$groups}}" v-on:update="afterUpdate"></form-edit-user>
                     <footer class="modal-footer">
                         <div>
                             <b-button @click="onClose" class="btn btn-outline-success btn-sm text-uppercase">
