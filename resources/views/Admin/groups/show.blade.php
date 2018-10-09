@@ -45,6 +45,7 @@
           <button type="submit" class="btn btn-secondary ml-2"> <i class="fas fa-plus"></i> User</button>
         </div>
       </div>
+      @if ($group->members->count() > 0)
       <table class="table table-hover vuetable">
       <thead>
         <tr>
@@ -84,7 +85,11 @@
         @endforeach
       </tbody>
     </table>
-    <div class="text-secondary">1 - 4 of 4 Members</div>
+    @else
+    <br>
+    <div class="card card-body text-center">No members in this group</div>
+    @endif
+  
   </div>
 </div>
 
