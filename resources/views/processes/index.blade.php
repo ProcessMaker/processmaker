@@ -1,4 +1,8 @@
-@extends('layouts.layout', ['title' => __('Processes Management xxx')])
+@extends('layouts.layout')
+
+@section('title')
+  {{__('Processes')}}
+@endsection
 
 @section('sidebar')
     @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_processes')])

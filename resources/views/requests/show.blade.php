@@ -1,4 +1,8 @@
-@extends('layouts.layout',['title'=>'Task Detail'])
+@extends('layouts.layout')
+
+@section('title')
+  {{__('Task Detail')}}
+@endsection
 
 @section('content')
 <div id="status">

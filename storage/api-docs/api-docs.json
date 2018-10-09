@@ -14,7 +14,7 @@
     },
     "servers": [
         {
-            "url": "https://bpm4.processmaker.local/api/1.0"
+            "url": "http://localhost/api/1.0"
         }
     ],
     "paths": {
@@ -50,12 +50,14 @@
                                 "schema": {
                                     "properties": {
                                         "data": {
+                                            "description": "Get list Process",
                                             "type": "array",
                                             "items": {
                                                 "$ref": "#/components/schemas/Process"
                                             }
                                         },
                                         "meta": {
+                                            "description": "Get list Process",
                                             "type": "object",
                                             "allOf": [
                                                 {
