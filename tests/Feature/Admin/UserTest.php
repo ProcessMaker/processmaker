@@ -80,13 +80,13 @@ class UserTest extends TestCase
      */
     public function testShowRoute()
     {
-      $user_uuid = factory(User::class)->create()->uuid_text;
+      $user = factory(User::class)->create();
       // get the URL
-      $response = $this->webCall('GET', '/admin/users/'. $user_uuid);
+      $response = $this->webCall('GET', '/admin/users/'. $user->uuid_text);
       $response->assertStatus(200);
       // check the correct view is called
       $response->assertViewIs('admin.users.show');
-      $response->assertSee('Groups');
+      $response->assertSee($user->firstname);
 
     }
     

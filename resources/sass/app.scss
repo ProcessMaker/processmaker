@@ -82,8 +82,8 @@ html {
 }
 
 .avatar-lg-circle {
-  width: 64px;
-  height: 64px;
+  width: 129px;
+  height: 129px;
   text-align: center;
   border-radius: 50%;
   -webkit-border-radius: 50%;
@@ -106,10 +106,10 @@ html {
 
 .avatar-lg-initials {
   position: relative;
-  font-size: 30px;
+  font-size: 40px;
   color: #fff;
   text-transform: uppercase;
-  line-height: 2;
+  line-height: 3;
 }
 
 .avatar-lg-image {
@@ -145,12 +145,6 @@ html {
     &:hover {
       background-color: #e9edf1;
     }
-  }
-
-  .avatar-small {
-    width: 46px;
-    height: 46px;
-    margin: 0px 8px 3px -10px;
   }
 
   .avatar {

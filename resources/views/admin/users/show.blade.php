@@ -4,16 +4,16 @@
   {{__('User Profile')}}
 @endsection
 
-@Section('sidebar')
+@section('sidebar')
 @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
 @endsection
 
-@Section('content')
+@section('content')
     <div class="container mt-4">
       <div class="card card-body">
         <div class="container">
           <div class="row">
-            <div class="col-1 text-center">
+            <div class="col-2 text-center">
               @if ($user->getAvatar() != '' )
                 <img class="avatar-lg-circle" src="{{ $user->getAvatar() }}" />
               @else
@@ -22,7 +22,7 @@
                 </div>
               @endif
             </div>
-            <div class="col-6">
+            <div class="col-5">
               <div class="d-flex">
                 <h3>{{$user->getFullName()}} </h3>
                 @if ($user->status == "ACTIVE")
@@ -75,37 +75,33 @@
               <button type="submit" class="btn btn-secondary ml-2"> <i class="fas fa-plus"></i> Group</button>
             </div>
            </div>
-          <table class="table vuetable">
-          <thead>
-            <tr>
-              <th scope="col" class="text-uppercase">Full Name</th>
-              <th scope="col" class="text-uppercase">Description</th>
-              <th scope="col"></th>
-            </tr>
-          </thead>
-          <tbody>
-            @forelse ($user->members() as $group_member)
-            <tr>
-              <td>{{$group_member->group->name}}</td>
-              <td>{{$group_member->group->status}}</td>
-              <td class="text-right"><i class="fas fa-trash-alt text-secondary"></i></td>
-            </tr>
-            @empty
-            <tr>
-              <td colspan="3">User is not a member of any groups</td>
-            </tr>
-            
-            @endforelse
-          </tbody>
-        </table>
+          @if ($user->members()->count() > 0)
+            <table class="table table-hover vuetable">
+              <thead>
+                <tr>
+                  <th scope="col" class="text-uppercase">Full Name</th>
+                  <th scope="col" class="text-uppercase">Description</th>
+                  <th scope="col"></th>
+                </tr>
+              </thead>
+              <tbody>
+                @foreach ($user->members() as $group_member)
+                <tr>
+                  <td>{{$group_member->group->name}}</td>
+                  <td>{{$group_member->group->status}}</td>
+                  <td class="text-right"><i class="fas fa-trash-alt text-secondary"></i></td>
+                </tr>
+                @endforeach
+              </tbody>
+            </table>
+          @else
+            <br>
+            <div class="card card-body text-center font-weight-bold">User is not a member of any groups</div>
+          @endif
         </div>
       </div>
     </div>
 @endsection
 
-@Section('js')
-@endsection
-
-@Section('css')
-<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet">
+@section('js')
 @endsection
