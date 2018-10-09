@@ -28,6 +28,28 @@ use Spatie\BinaryUuid\HasBinaryUuid;
  * @property \Carbon\Carbon $created_at
  * @property Process $process
  *
+ *  * @OA\Schema(
+ *   schema="requestsEditable",
+ *   @OA\Property(property="name", type="string"),
+ *   @OA\Property(property="process_uuid", type="string", format="uuid"),
+ * @OA\Property(property="callable_uuid", type="string", format="uuid"),
+ *   @OA\Property(property="data", type="string", format="json"),
+ *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
+ * ),
+ * @OA\Schema(
+ *   schema="requests",
+ *   allOf={@OA\Schema(ref="#/components/schemas/requestsEditable")},
+ *   @OA\Property(property="uuid", type="string", format="uuid"),
+ *   
+ *   @OA\Property(property="process_collaboration_uuid", type="string", format="uuid"),
+ *   @OA\Property(property="user_uuid", type="string", format="uuid"),
+ *   @OA\Property(property="participant_uuid", type="string", format="uuid"),
+ *   
+ *  
+ *   @OA\Property(property="process_category_uuid", type="string", format="uuid"),
+ *   @OA\Property(property="created_at", type="string", format="date-time"),
+ *   @OA\Property(property="updated_at", type="string", format="date-time"),
+ * )
  */
 class ProcessRequest extends Model implements ExecutionInstanceInterface
 {
