@@ -1,4 +1,8 @@
-@extends('layouts.layout', ['title' => 'Requests'])
+@extends('layouts.layout')
+
+@section('title')
+  {{__('Requests')}}
+@endsection
 
 @section('sidebar')
     @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_request')])

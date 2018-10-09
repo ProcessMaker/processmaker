@@ -1,5 +1,9 @@
 @extends('layouts.layout')
 
+@section('title')
+  {{__('Task')}}
+@endsection
+
 @section('content')
 <div class="nav row taskNav">
     <div class="col-3 align-self-center">
