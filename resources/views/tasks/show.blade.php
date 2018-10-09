@@ -36,16 +36,15 @@
                 <i class="fas fa-caret-square-up text-secondary col"></i>
             </div>
             <div class="text-secondary">Assigned to:</div>
-            <div class="">Name Name</div>
-            <span class="text-secondary mt-2">Assigned:</span>
-            <div class="mt-1">01/01/1001 11:11</div>
-
+            <p>Name Name</p>
+            <span class="text-secondary">Assigned:</span>
+            <p>01/01/1001 11:11</p>
             <div class="text-secondary mt-5">Date Created:</div>
-            <div class="mt-1">3 days ago</div>
-            <div class="text-secondary mt-2">Due Date:</div>
-            <div class="mt-1">10 mins ago</div>
-            <div class="text-secondary mt-2">Last Modified:</div>
-            <div class="mt-1 mb-4">24hrs</div>
+            <p>3 days ago</p>
+            <div class="text-secondary ">Due Date:</div>
+            <p>10 mins ago</dipv>
+            <div class="text-secondary">Last Modified:</div>
+            <p class="mb-4">24hrs</p>
         </div>
         <br>
         <div class="card card-body border-0">
@@ -53,13 +52,12 @@
                 <h4 class="text-primary col-9">Request Details</h4>
                 <i class="fas fa-caret-square-up text-secondary col"></i>
             </div>
-            <div class="text-secondary">Process:</div><div class="mt-1">Name Name</div>
-            <div class="text-secondary mt-2">Created by:</div><div class="mt-1">01/01/1001 11:11</div>
-            <br>
-            <div class="text-secondary ">Date Created:</div><div class="mt-1">3 days ago</div>
-            <div class="text-secondary mt-2">Created:</div><div class="mt-1">10 mins ago</div>
-            <div class="text-secondary mt-2">Last Modified:</div><div class="mt-1">24hrs</div>
-            <div class="text-secondary mt-2">Duration:</div><div class="mt-1 mb-4">24hrs</div>
+            <div class="text-secondary">Process:</div><p>Name Name</p>
+            <div class="text-secondary">Created by:</div><p>01/01/1001 11:11</p>
+            <div class="text-secondary ">Date Created:</div><p>3 days ago</p>
+            <div class="text-secondary">Created:</div><p>10 mins ago</p>
+            <div class="text-secondary">Last Modified:</div><p>24hrs</p>
+            <div class="text-secondary">Duration:</div><p class="mb-4">24hrs</p>
         </div>
     </div>
 </div>
