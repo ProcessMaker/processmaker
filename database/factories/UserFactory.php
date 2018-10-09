@@ -27,9 +27,10 @@ $factory->define(User::class, function (Faker $faker) {
         'cell' => $faker->phoneNumber,
 
         'title' => $faker->jobTitle,
-        'birthdate' => $faker->dateTimeThisCentury->format('Y-m-d'),
+        'birthdate' => $faker->dateTimeThisCentury,
         'timezone' => $faker->timezone,
         'language' => 'us_en',
+        'loggedin_at' => $faker->dateTimeThisCentury,
 
     ];
 });
