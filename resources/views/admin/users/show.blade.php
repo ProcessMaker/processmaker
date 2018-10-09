@@ -71,7 +71,6 @@
               <button type="submit" class="btn btn-secondary ml-2"> <i class="fas fa-plus"></i> Group</button>
             </div>
            </div>
-           <br>
           <table class="table vuetable">
           <thead>
             <tr>
