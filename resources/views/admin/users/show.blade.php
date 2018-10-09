@@ -81,13 +81,18 @@
             </tr>
           </thead>
           <tbody>
-            @foreach ($user->members() as $group_member)
+            @forelse ($user->members() as $group_member)
             <tr>
               <td>{{$group_member->group->name}}</td>
               <td>{{$group_member->group->status}}</td>
               <td class="text-right"><i class="fas fa-trash-alt text-secondary"></i></td>
             </tr>
-            @endforeach
+            @empty
+            <tr>
+              <td colspan="3">User is not a member of any groups</td>
+            </tr>
+            
+            @endforelse
           </tbody>
         </table>
         </div>

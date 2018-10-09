@@ -1,7 +1,7 @@
 <template>
     <div id="userMenu">
         <div class="my-3">
-            <b-btn id="avatarMenu" :disabled="popoverShow" class="avatar-circle btn-warning">
+            <b-btn id="avatarMenu" :disabled="popoverShow" class="avatar-circle">
                 <template v-if="sourceImage">
                     <img class="avatar-image avatar-circle" :src="user.avatar">
                 </template>
