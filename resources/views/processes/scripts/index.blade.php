@@ -18,16 +18,14 @@
                    placeholder="{{__('Search')}}...">
           </div>
           <div class="col-md-4 d-flex justify-content-end align-items-center col-sm-12 actions">
-            <a href="#" class="btn btn-action">
-              <i class="fas fa-plus"></i> {{__('Script')}}
-            </a>
+            <button type="button" class="btn btn-action text-light" data-toggle="modal" data-target="#addScript"><i class="fas fa-plus"></i> {{__('Script')}}</button>
           </div>
         </div>
         <script-listing :filter="filter"></script-listing>
       </div>
     </div>
   </div>
-  <div class="modal" tabindex="-1" role="dialog">
+  <div class="modal" tabindex="-1" role="dialog" id="addScript">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
