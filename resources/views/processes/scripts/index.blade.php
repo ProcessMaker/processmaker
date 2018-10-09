@@ -1,4 +1,9 @@
 @extends('layouts.layout')
+
+@section('title')
+  {{__('Scripts')}}
+@endsection
+
 @section('content')
     <div class="container mt-4">
         <div class="row mt-5">
