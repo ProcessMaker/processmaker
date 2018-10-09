@@ -20,17 +20,18 @@ class UserSeeder extends Seeder
             'status' => 'ACTIVE'
         ])->uuid;
         //Create admin user
-        $user_uuid = factory(User::class)->create([
+        $user = factory(User::class)->create([
             'username' => 'admin',
             'password' => Hash::make('admin'),
             'firstname' => 'admin',
             'lastname' => 'admin',
             'timezone' => 'UTC',
-            'status' => 'ACTIVE'
-        ])->uuid;
+            'status' => 'ACTIVE',
+        ]);
+        $user->copyMedia(base_path().'/resources/img/avatar-placeholder.gif')->toMediaCollection(User::COLLECTION_PROFILE);
 
         factory(GroupMember::class)->create([
-          'member_uuid' => $user_uuid,
+          'member_uuid' => $user->uuid,
           'member_type' => User::class,
           'group_uuid' => $group_uuid,
         ]);

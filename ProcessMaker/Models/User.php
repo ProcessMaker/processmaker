@@ -92,6 +92,10 @@ class User extends Authenticatable implements HasMedia
         'avatar',
     ];
 
+    protected $dates = [
+        'loggedin_at',
+    ];
+
     /**
      * Validation rules
      *
@@ -133,6 +137,12 @@ class User extends Authenticatable implements HasMedia
             $this->firstname,
             $this->lastname
         ]);
+    }
+
+    public function members()
+    {
+        // return $this->hasMany(GroupMember::class);
+        return GroupMember::where(['member_type' => self::class, 'member_uuid' => $this->uuid])->get();
     }
 
     public function memberships()

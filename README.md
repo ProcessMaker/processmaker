@@ -8,6 +8,7 @@
 
 ProcessMaker is an open source, workflow management software suite, which includes tools to automate your workflow, design forms, create documents, assign roles and users, create routing rules, and map an individual process quickly and easily. It's relatively lightweight and doesn't require any kind of installation on the client computer. This file describes the requirements and installation steps for the server.
 
+<<<<<<< .merge_file_d6S4MT
 ## Contributing
 
 When developing, make sure to turn on debugging in your `.env` so you can see the
@@ -164,6 +165,10 @@ Full OpenAPI 3.0 specification at https://github.com/OAI/OpenAPI-Specification/b
 
 ### License
 
+=======
+### License
+
+>>>>>>> .merge_file_fUWOc1
 ProcessMaker - Automate your Workflow Copyright \(C\) 2002 - 2018 ProcessMaker Inc.
 
 For further information visit: [http://www.processmaker.com/](http://www.processmaker.com/)

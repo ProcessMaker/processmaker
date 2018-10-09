@@ -187,7 +187,9 @@ jobs:
             echo "Deployed to https://${BUILD_NAME}.bpm4.qa.processmaker.net/"
             # Run containerDeploy.sh script to spin up Redis docker container, laravel-echo-server, and horizon
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "sudo /bin/bash /root/cloudops/containerDeploy.sh $BUILD_NAME"
-
+            # Generate Passport Keys
+            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "cd ~/builds/$BUILD_NAME && php artisan passport:keys"
+            
       #- run:
       #    name: "SauceLabs Browser Tests: Chrome"
       #    command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"cd ~/builds/$BUILD_NAME && php artisan dusk\""

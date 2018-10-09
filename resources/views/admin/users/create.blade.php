@@ -1,5 +1,9 @@
 @extends('layouts.layout')
 
+@section('title')
+  {{__('Add a User')}}
+@endsection
+
 @section('content')
 <div class="container" id="createUser">
 <create-user></create-user>
