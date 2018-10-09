@@ -1,4 +1,9 @@
 @extends('layouts.layout')
+
+@section('title')
+  {{__('Designer')}}
+@endsection
+
 @section('content')
     <div id="designer-container">
       <designer process-uid="{{$process->uid}}" process-title="{{ $title }}"></designer>
