@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Validation\Rule;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -78,7 +79,16 @@ class User extends Authenticatable implements HasMedia
         ];
         if ($existing) {
             // ignore the unique rule for this id
-            $rules['username'] .= ',' . $existing->uuid . ',uuid';
+            $rules['username'] = [
+                'required',
+                Rule::unique('users')->ignore($existing->uuid, 'uuid')
+            ];
+
+            $rules['email'] = [
+                'required',
+                'email',
+                Rule::unique('users')->ignore($existing->uuid, 'uuid')
+            ];
         }
         return $rules;
     }

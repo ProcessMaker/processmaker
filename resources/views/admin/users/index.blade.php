@@ -19,7 +19,7 @@
             </div>
             <modal-create-user :show="userModal" @close="userModal=false" :user-uuid="userUuid"
                                   v-on:reload="reload"></modal-create-user>
-            <users-listing ref="listing" :filter="filter"></users-listing>
+            <users-listing ref="listing" :filter="filter" v-on:reload="reload"></users-listing>
         </div>
     </div>
 </div>

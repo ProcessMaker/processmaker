@@ -1,7 +1,7 @@
 <template>
     <b-modal v-model="opened" size="md" centered @hidden="onClose" @close="onClose"
              title="Create New User" v-cloak>
-        <form-users ref="formUser" :input-data="data" :errors="errors" v-on:save="afterSave"></form-users>
+        <form-users ref="formUser" :input-data="data" v-on:save="afterSave"></form-users>
         <div slot="modal-footer">
             <b-button @click="onClose" class="btn btn-outline-success btn-sm text-uppercase">
                 CANCEL
@@ -18,7 +18,7 @@
 
     export default {
         components: {FormUsers},
-        props: ['show', 'data', 'errors'],
+        props: ['show', 'data'],
         data() {
             return {
                 'opened': this.show

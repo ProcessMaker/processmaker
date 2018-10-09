@@ -1,28 +1,22 @@
 import Vue from 'vue';
-import formUser from './components/fields-users';
+import formEditUser from './components/fields-users';
 
 new Vue({
     el: '#users-edit',
-    data: {
-        filter: '',
-        userUuid: null,
-        userModal: false
-    },
+    data: {},
     components: {
-        formUser,
+        formEditUser,
     },
     methods: {
-        show() {
-            this.userUuid = null;
-            this.userModal = true;
+        onClose() {
+            window.location.href = '/admin/users';
         },
-        reload() {
-            this.$refs.listing.dataManager([
-                {
-                    field: 'updated_at',
-                    direction: 'desc'
-                }
-            ]);
+        onSave() {
+            this.$refs.formEditUser.onSave();
+        },
+        afterUpdate() {
+            ProcessMaker.alert('Update User Successfully', 'success');
+            this.onClose();
         }
     }
 });

@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import UsersListing from './components/UsersListing';
-import ModalCreateUser from "./components/modal-user-add-edit.vue";
+import ModalCreateUser from "./components/modal-user-add.vue";
 
 new Vue({
     el: '#users-listing',

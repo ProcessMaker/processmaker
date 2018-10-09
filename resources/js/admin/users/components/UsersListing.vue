@@ -112,7 +112,7 @@
                                 })
                                     .then(response => {
                                         ProcessMaker.alert('User Successfully inactive', 'success');
-                                        this.reload();
+                                        this.$emit('reload');
                                     })
                             }
                         );

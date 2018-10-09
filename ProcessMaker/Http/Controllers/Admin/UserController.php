@@ -2,7 +2,8 @@
 
 namespace ProcessMaker\Http\Controllers\Admin;
 
-use Illuminate\Http\Request;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\View\View;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\User;
 
@@ -11,13 +12,18 @@ class UserController extends Controller
   /**
    * Get the list of users.
    *
-   * @return \Illuminate\View\View|\Illuminate\Contracts\View
+   * @return Factory|View
    */
   public function index()
   {
       return view('admin.users.index');
   }
 
+    /**
+     * @param User $user
+     *
+     * @return Factory|View
+     */
   public function edit(User $user)
   {
     return view('admin.users.edit',compact('user'));

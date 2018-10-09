@@ -71,6 +71,18 @@
                 }
             },
         },
+        mounted() {
+            if (this.inputData && this.inputData.uuid) {
+                let that = this;
+                console.log(that.inputData);
+                $.each(that.formData, function(value) {
+                    if (that.inputData.hasOwnProperty(value)) {
+                        that.formData[value] = that.inputData[value];
+                    }
+                });
+                console.log(that.formData)
+            }
+        },
         methods: {
             reset() {
                 this.formData = Object.assign({}, {
