@@ -87,22 +87,6 @@ export default {
           //@todo implement
           break;
       }
-      //   if (actionType === "remove-item") {
-      //     let that = this;
-      //     ProcessMaker.confirmModal(
-      //       "Caution!",
-      //       "<b>Are you sure to delete the category </b>" + data.title + "?",
-      //       "",
-      //       function() {
-      //         ProcessMaker.apiClient
-      //           .delete("scripts/" + data.uuid)
-      //           .then(response => {
-      //             ProcessMaker.alert("Script successfully eliminated", "success");
-      //             that.fetch();
-      //           });
-      //       }
-      //     );
-      //   }
     },
     formatLanguage(language) {
       return language.toUpperCase();
