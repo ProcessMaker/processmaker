@@ -1,5 +1,9 @@
 @extends('layouts.layout')
 
+@section('title')
+  {{__('Profile')}}
+@endsection
+
 @section('content')
 <div id="profile">
   <profile></profile>

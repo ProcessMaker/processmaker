@@ -1,5 +1,9 @@
 @extends('layouts.layout')
 
+@section('title')
+  {{__('Tasks')}}
+@endsection
+
 @section('content')
 <div class="container" id="tasks">
     <div class="row">

@@ -1,4 +1,8 @@
-@extends('layouts.layout', ['title' => __('Tasks Management')])
+@extends('layouts.layout')
+
+@section('title')
+  {{__('Edit Task')}}
+@endsection
 
 @section('sidebar')
     @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
