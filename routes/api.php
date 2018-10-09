@@ -14,7 +14,7 @@ Route::group(
     Route::apiResource('forms', 'FormController');
     Route::get('scripts/preview', 'ScriptController@preview')->name('script.preview'); ;
     Route::apiResource('scripts', 'ScriptController');
-    Route::apiResource('processes', 'ProcessController');
+    Route::apiresource('processes', 'ProcessController')->middleware('authorize');;
     Route::apiResource('process_categories', 'ProcessCategoryController');
     Route::apiResource('tasks', 'TaskController')->only(['index', 'show', 'update']);
     Route::apiResource('requests', 'ProcessRequestController');

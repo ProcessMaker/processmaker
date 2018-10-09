@@ -76,10 +76,10 @@ class GroupMembersTest extends TestCase
       $response->assertStatus(201);
 
       // make sure it saved the relationship
-      $related_group = $user->memberships()->first()->group;
+      $related_group = $user->groupMembersFromMemberable()->first()->group;
       $this->assertTrue($related_group->is($group));
 
-      $member_user = $group->members()->first()->member;
+      $member_user = $group->groupMembers()->first()->member;
       $this->assertTrue($member_user->is($user));
   }
 
@@ -99,10 +99,10 @@ class GroupMembersTest extends TestCase
       $response->assertStatus(201);
 
       // make sure it saved the relationship
-      $related_group = $group1->members()->first()->member;
+      $related_group = $group1->groupMembers()->first()->member;
       $this->assertTrue($related_group->is($group2));
 
-      $member_group = $group2->memberships()->first()->group;
+      $member_group = $group2->groupMembersFromMemberable()->first()->group;
       $this->assertTrue($member_group->is($group1));
   }
 

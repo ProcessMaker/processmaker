@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\BinaryUuid\HasBinaryUuid;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use Illuminate\Support\Facades\Cache;
 
 class User extends Authenticatable implements HasMedia
 {
@@ -90,6 +91,8 @@ class User extends Authenticatable implements HasMedia
      */
     protected $hidden = [
         'password',
+        'groupMembersFromMemberable',
+        'permissionAssignments',
     ];
 
     /**
@@ -106,7 +109,7 @@ class User extends Authenticatable implements HasMedia
         ]);
     }
 
-    public function groupMembers()
+    public function groupMembersFromMemberable()
     {
         return $this->morphMany(GroupMember::class, 'member', null, 'member_uuid');
     }
@@ -149,11 +152,10 @@ class User extends Authenticatable implements HasMedia
         return $url;
     }
 
-    public function hasPermission($permissionString)
+    public function loadPermissions()
     {
-        // TODO: cache
         $permissions = [];
-        foreach ($this->groupMembers as $gm) {
+        foreach ($this->groupMembersFromMemberable as $gm) {
             $group = $gm->group;
             $permissions =
                 array_merge($permissions, $group->permissions());
@@ -161,12 +163,29 @@ class User extends Authenticatable implements HasMedia
         foreach ($this->permissionAssignments as $pa) {
             $permissions[] = $pa->permission;
         }
-        
         $permissionStrings = array_map(
             function($p) { return $p->guard_name; },
             $permissions
         );
-        eval(\Psy\sh());
+        return $permissionStrings;
+    }
+
+    private function permissionsCacheName()
+    {
+        return 'user_permissions_' . $this->uuid_text;
+    }
+
+    public function clearPermissionCache()
+    {
+        Cache::forget($this->permissionsCacheName());
+    }
+
+    public function hasPermission($permissionString)
+    {
+        $permissionStrings =
+            Cache::rememberForever($this->permissionsCacheName(), function() {
+                return $this->loadPermissions();
+            });
         return in_array($permissionString, $permissionStrings);
     }
 }

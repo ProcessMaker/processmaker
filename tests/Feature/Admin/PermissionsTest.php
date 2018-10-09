@@ -11,7 +11,7 @@ use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\PermissionAssignment;
 use Tests\Feature\Shared\RequestHelper;
 
-class GroupTest extends TestCase
+class PermissionsTest extends TestCase
 {
     use DatabaseTransactions;
     use RequestHelper;
@@ -29,11 +29,8 @@ class GroupTest extends TestCase
         $update_process_perm = factory(Permission::class)->create([
             'guard_name' => 'processes.update',
         ]);
-        $delete_process_perm = factory(Permission::class)->create([
-            'guard_name' => 'processes.delete',
-        ]);
 
-        $admin_group =
+        $admin_group = $this->admin_group =
             factory(Group::class)->create(['name' => 'Admin']);
         $super_admin_group =
             factory(Group::class)->create(['name' => 'Super Admin']);
@@ -67,15 +64,38 @@ class GroupTest extends TestCase
             'assignable_uuid' => $this->user->uuid,
             'permission_uuid' => $show_process_perm->uuid,
         ]);
-    }
-
-    public function testPermissions()
-    {
-        $this->buildPermissions();
-        $process = factory(\ProcessMaker\Models\Process::class)->create([
+        
+        $this->process = factory(\ProcessMaker\Models\Process::class)->create([
             'name' => 'foo',
         ]);
-        $response = $this->webGet('/processes');
+    }
+
+    public function testApiPermissions()
+    {
+        $this->buildPermissions();
+        $response = $this->apiCall('GET', '/processes');
         $response->assertStatus(200);
+        
+        $response = $this->apiCall('GET', '/processes/' . $this->process->uuid_text);
+        $response->assertStatus(200);
+        
+        $response = $this->apiCall('DELETE', '/processes/' . $this->process->uuid_text);
+        $response->assertStatus(403);
+        $response->assertSee('Not authorized');
+
+        $delete_process_perm = factory(Permission::class)->create([
+            'guard_name' => 'processes.destroy',
+        ]);
+        
+        factory(PermissionAssignment::class)->create([
+            'assignable_type' => Group::class,
+            'assignable_uuid' => $this->admin_group->uuid,
+            'permission_uuid' => $delete_process_perm->uuid,
+        ]);
+        $this->user->clearPermissionCache();
+        $this->user->refresh();
+
+        $response = $this->apiCall('DELETE', '/processes/' . $this->process->uuid_text);
+        $response->assertStatus(302);
     }
 }

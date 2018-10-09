@@ -14,10 +14,22 @@ class Authorize
         $permission = $request->route()->action['as'];
         if ($request->user()->hasPermission($permission)) {
             return $next($request);
-        } elseif ($permission == 'processes.index'){ // && $request->user()->hasPermission('processes.show')) {
+        } elseif ($this->allowIndexForShow($permission, $request)) {
             return $next($request);
         } else {
             throw new AuthorizationException("Not authorized: " . $permission);
         }
+    }
+
+    /**
+     * If the user has show permission, assume they
+     * have index/list permission as well.
+     */
+    private function allowIndexForShow($permission, $request)
+    {
+        if(preg_match('/^(.*)\.index$/', $permission, $match)) {
+            return $request->user()->hasPermission($match[1] . '.show');
+        }
+        return false;
     }
 }
