@@ -69,8 +69,8 @@
         //@TODO replace with code
         code: "123"
       })
-          .then(function() {
-            console.log(response)
+      .then(response => {
+            ProcessMaker.alert('Script successfully added', 'success');
         });
       }
     }
