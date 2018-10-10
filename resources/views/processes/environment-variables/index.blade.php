@@ -1,4 +1,8 @@
-@extends('layouts.layout', ['title' => __('Environment Variables')])
+@extends('layouts.layout')
+
+@section('title')
+  {{__('Environment Variables')}}
+@endsection
 
 @section('sidebar')
   @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
@@ -39,5 +43,5 @@
 @endsection
 
 @section('js')
-<script src="{{mix('js/management/environment-variables/index.js')}}"></script>
+<script src="{{mix('js/admin/environment-variables/index.js')}}"></script>
 @endsection

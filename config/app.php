@@ -87,6 +87,7 @@ return [
         ProcessMaker\Providers\BroadcastServiceProvider::class,
         ProcessMaker\Providers\WorkflowServiceProvider::class,
         Laravel\Passport\PassportServiceProvider::class,
+        Collective\Html\HtmlServiceProvider::class,
 
     ],
 

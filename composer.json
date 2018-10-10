@@ -12,6 +12,7 @@
   "require": {
     "php": ">=7.2.0",
     "TYPO3/class-alias-loader": "^1.0",
+    "darkaonline/l5-swagger": "5.7.*",
     "doctrine/dbal": "^2.5",
     "fideloper/proxy": "^4.0",
     "igaster/laravel-theme": "2.0.*",

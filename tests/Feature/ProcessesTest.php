@@ -13,14 +13,10 @@ class ProcessesTest extends TestCase
     use RequestHelper;
 
     public function testIndex() {
-        factory(Process::class)->create(['name'=>'Test Process']);
-        factory(Process::class)->create(['name'=>'Another Process']);
-        // factory(ProcessCategory::class)->create(['name'=>'Test Category']);
         $response = $this->webGet('/processes');
         $response->assertStatus(200);
         $response->assertViewIs('processes.index');
-        $response->assertSee('Test Process');
-        $response->assertSee('Another Process');
+        $response->assertSee('Processes');
     }
 
     public function testEdit()

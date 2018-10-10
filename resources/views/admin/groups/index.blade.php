@@ -1,4 +1,8 @@
-@extends('layouts.layout', ['title' => 'Group Management'])
+@extends('layouts.layout')
+
+@section('title')
+  {{__('Edit Groups')}}
+@endsection
 
 @section('sidebar')
     @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
@@ -43,5 +47,5 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/management/groups/index.js')}}"></script>
+    <script src="{{mix('js/admin/groups/index.js')}}"></script>
 @endsection
