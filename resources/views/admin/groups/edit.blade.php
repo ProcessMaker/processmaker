@@ -1,4 +1,8 @@
-@extends('layouts.layout', ['title' => 'Edit Groups'])
+@extends('layouts.layout')
+
+@section('title')
+  {{__('Edit Groups')}}
+@endsection
 
 @Section('sidebar')
 @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])

@@ -1,4 +1,8 @@
-@extends('layouts.layout', ['title' => 'Form Editor'])
+@extends('layouts.layout')
+
+@section('title')
+  {{__('Form Editor')}}
+@endsection
 
 @Section('sidebar')
 @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])

@@ -1,5 +1,9 @@
 @extends('layouts.layout')
 
+@section('title')
+  {{__('Edit Profile')}}
+@endsection
+
 @section('content')
 
 <h4>User Profile</h4>

@@ -1,4 +1,8 @@
-@extends('layouts.layout', ['title' => __('Environment Variables')])
+@extends('layouts.layout')
+
+@section('title')
+  {{__('Environment Variables')}}
+@endsection
 
 @section('sidebar')
   @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
