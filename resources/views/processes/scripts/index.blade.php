@@ -42,7 +42,7 @@
         </div>
         <div class="form-group">
           {!!Form::label('language', 'Language');!!}
-          {!!Form::text('language', null, ['class'=> 'form-control', 'v-model'=> 'language'])!!}
+          {!!Form::select('language', ['php' => 'PHP', 'lua' => 'Lua'], null, ['class'=> 'form-control', 'v-model'=> 'language']);!!}
         <div class="text-danger" v-if="addError.language">@{{addError.language[0]}}</div>
         </div>
       </div>
