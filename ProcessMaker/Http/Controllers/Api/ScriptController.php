@@ -232,7 +232,7 @@ class ScriptController extends Controller
         $script->fill($request->input());
         $script->saveOrFail();
 
-        return response([], 204);
+        return response($request, 204);
     }
 
     /**
