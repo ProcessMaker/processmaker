@@ -9,7 +9,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\BinaryUuid\HasBinaryUuid;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
-use Illuminate\Support\Facades\Cache;
+use ProcessMaker\Traits\HasAuthorization;
 
 class User extends Authenticatable implements HasMedia
 {
@@ -17,6 +17,7 @@ class User extends Authenticatable implements HasMedia
     use Notifiable;
     use HasBinaryUuid;
     use HasMediaTrait;
+    use HasAuthorization;
 
     //Disk
     public const DISK_PROFILE = 'profile';
@@ -185,40 +186,4 @@ class User extends Authenticatable implements HasMedia
         return $url;
     }
 
-    public function loadPermissions()
-    {
-        $permissions = [];
-        foreach ($this->groupMembersFromMemberable as $gm) {
-            $group = $gm->group;
-            $permissions =
-                array_merge($permissions, $group->permissions());
-        }
-        foreach ($this->permissionAssignments as $pa) {
-            $permissions[] = $pa->permission;
-        }
-        $permissionStrings = array_map(
-            function($p) { return $p->guard_name; },
-            $permissions
-        );
-        return $permissionStrings;
-    }
-
-    private function permissionsCacheName()
-    {
-        return 'user_permissions_' . $this->uuid_text;
-    }
-
-    public function clearPermissionCache()
-    {
-        Cache::forget($this->permissionsCacheName());
-    }
-
-    public function hasPermission($permissionString)
-    {
-        $permissionStrings =
-            Cache::rememberForever($this->permissionsCacheName(), function() {
-                return $this->loadPermissions();
-            });
-        return in_array($permissionString, $permissionStrings);
-    }
 }

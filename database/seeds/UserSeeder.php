@@ -4,6 +4,8 @@ use Illuminate\Database\Seeder;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
+use ProcessMaker\Models\Permission;
+use ProcessMaker\Models\PermissionAssignment;
 
 class UserSeeder extends Seeder
 {
@@ -19,6 +21,7 @@ class UserSeeder extends Seeder
             'name' => 'Users',
             'status' => 'ACTIVE'
         ])->uuid;
+
         //Create admin user
         $user = factory(User::class)->create([
             'username' => 'admin',
@@ -35,6 +38,16 @@ class UserSeeder extends Seeder
           'member_type' => User::class,
           'group_uuid' => $group_uuid,
         ]);
-
+    
+        foreach(['create', 'show', 'edit', 'destroy'] as $action) {
+            $permission = factory(Permission::class)->create([
+                'guard_name' => 'api.processes.' . $action,
+            ]);
+            factory(PermissionAssignment::class)->create([
+                'assignable_type' => User::class,
+                'assignable_uuid' => $user->uuid,
+                'permission_uuid' => $permission->uuid,
+            ]);
+        }
     }
 }

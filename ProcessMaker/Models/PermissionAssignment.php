@@ -8,6 +8,11 @@ use Spatie\BinaryUuid\HasBinaryUuid;
 class PermissionAssignment extends Model
 {
     use HasBinaryUuid;
+    protected $fillable = [
+        'permission_uuid',
+        'assignable_uuid',
+        'assignable_type',
+    ];
     
     protected $uuids = [
         'assignable_uuid', 'permission_uuid'

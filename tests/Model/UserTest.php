@@ -58,11 +58,7 @@ class UserTest extends TestCase
             'assignable_uuid' => $nl_group->uuid,
         ]);
         
-        factory(PermissionAssignment::class)->create([
-            'permission_uuid' => $dn_permission->uuid,
-            'assignable_type' => User::class,
-            'assignable_uuid' => $mom_user->uuid,
-        ]);
+        $mom_user->giveDirectPermission('disarm.nukes');
 
         $this->assertTrue($president_user->hasPermission('launch.nukes'));
         $this->assertTrue($president_user->hasPermission('disarm.nukes'));

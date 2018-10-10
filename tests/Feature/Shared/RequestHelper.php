@@ -4,6 +4,7 @@ namespace Tests\Feature\Shared;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\User;
+use ProcessMaker\Models\Permission;
 
 trait RequestHelper
 {
@@ -14,9 +15,24 @@ trait RequestHelper
     protected function setUp()
     {
         parent::setUp();
+
+        $permissions = ['api.processes.show', 'api.processes.destroy', 'api.processes.store', 'api.processes.update'];
+        $this->createPermissions($permissions);
         $this->user = factory(User::class)->create([
             'password' => 'password'
         ]);
+        $this->user->giveDirectPermission($permissions);
+    }
+
+    private function createPermissions($permissions)
+    {
+        foreach ($permissions as $permission) {
+            Permission::create([
+                'name' => $permission,
+                'guard_name' => $permission,
+                'description' => $permission,
+            ]);
+        }
     }
 
     protected function apiCall($method, $url, $params = [])
