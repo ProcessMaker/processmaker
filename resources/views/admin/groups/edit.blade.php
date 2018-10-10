@@ -1,10 +1,10 @@
 @extends('layouts.layout', ['title' => 'Edit Groups'])
 
-@Section('sidebar')
+@section('sidebar')
 @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
 @endsection
 
-@Section('content')
+@section('content')
 
 <div class="container">
   <h1 style="margin:15px">Edit Group</h1>
@@ -40,5 +40,5 @@
 </div>
 @endsection
 
-@Section('js')
+@section('js')
 @endsection
