@@ -31,44 +31,7 @@
                                 </div>
                                 
                                 <div class="modal-body">
-                                    <div class="">
-                                        <div class="form-group">
-                                            <label for="exampleInputEmail1">Username</label>
-                                            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-                                            <small id="emailHelp" class="form-text text-muted">Username must be distinct</small>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="exampleInputEmail1">First Name</label>
-                                            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="exampleInputEmail1">Last Name</label>
-                                            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="exampleInputEmail1">Email Address</label>
-                                            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="exampleInputEmail1">Password</label>
-                                            <input type="password" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="exampleInputEmail1">Confirm Password</label>
-                                            <input type="password" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-                                        </div>
-                                        <div id="app" class="form-group">
-                                            <label>Groups</label>
-                                            <multiselect
-                                            v-model="value"
-                                            :options="options"
-                                            :multiple="true"
-                                            track-by="title"
-                                            :custom-label="customLabel"
-                                            >
-                                            </multiselect>
-                                        </div>
-                                    </div>
+                                @include('admin.users.form')
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-outline-success" data-dismiss="modal">Close</button>
