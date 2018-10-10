@@ -38,10 +38,12 @@
         <div class="form-group">
           {!!Form::label('title', 'Title');!!}
           {!!Form::text('title', null, ['class'=> 'form-control', 'v-model'=> 'title'])!!}
+          <div class="invalid-feedback" v-if="addError">Example invalid feedback text</div>
         </div>
         <div class="form-group">
           {!!Form::label('language', 'Language');!!}
           {!!Form::text('language', null, ['class'=> 'form-control', 'v-model'=> 'language'])!!}
+          <div class="invalid-feedback" v-if="addError">Example invalid feedback text</div>
         </div>
       </div>
       <div class="modal-footer">
@@ -59,19 +61,27 @@
     el: '#addScript',
     data: {
       title: '',
-      language: ''
+      language: '',
+      addError: false
     },
     methods: {
-    onSubmit(){
-      ProcessMaker.apiClient.post("/scripts", {
-        title: this.title,
-        language: this.language,
-        //@TODO replace with code
-        code: "123"
-      })
-      .then(response => {
-            ProcessMaker.alert('Script successfully added', 'success');
-        });
+      onSubmit() {
+        ProcessMaker.apiClient.post("/scripts", {
+          title: this.title,
+          language: this.language,
+          //@TODO replace with code
+          code: "123"
+        })
+        .then(response => {
+          ProcessMaker.alert('Script successfully added', 'success')
+          window.location = "/processes/scripts/" + response.data.uuid
+        })
+        .catch(error => {
+          if (error.response.status === 422) {
+            console.log("ERROR",error)
+            this.addError = true
+          }
+        })
       }
     }
   })
