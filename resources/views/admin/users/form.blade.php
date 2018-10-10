@@ -6,7 +6,7 @@
         $route = ['users.store'];
     }
 @endphp
-{!! Form::model($user , ['route' => $route]) !!}
+{!! Form::model($user , ['route' => $route, 'id' => 'userForm']) !!}
     <div class="form-group">
         {!! Form::label('username', 'Username') !!}
         {!! Form::text('username', null, ['class'=> 'form-control']) !!}
