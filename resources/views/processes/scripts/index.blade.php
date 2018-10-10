@@ -36,17 +36,17 @@
       </div>
       <div class="modal-body">
         <div class="form-group">
-          {!!Form::label('Title', 'Title');!!}
-          {!!Form::text('Title', null, ['class'=> 'form-control'])!!}
+          {!!Form::label('title', 'Title');!!}
+          {!!Form::text('title', null, ['class'=> 'form-control', 'v-model'=> 'title'])!!}
         </div>
         <div class="form-group">
-          {!!Form::label('Language', 'Language');!!}
-          {!!Form::text('Language', null, ['class'=> 'form-control'])!!}
+          {!!Form::label('language', 'Language');!!}
+          {!!Form::text('language', null, ['class'=> 'form-control', 'v-model'=> 'language'])!!}
         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-secondary">Save</button>
+        <button type="button" class="btn btn-secondary" @click="onSubmit">Save</button>
       </div>
     </div>
   </div>
@@ -54,5 +54,29 @@
 @endsection
 
 @section('js')
+<script>
+  new Vue({
+    el: '#addScript',
+    data: {
+      title: '',
+      language: ''
+    },
+    methods: {
+    onSubmit(){
+      ProcessMaker.apiClient.post("/scripts", {
+        title: this.title,
+        language: this.language,
+        //@TODO replace with code
+        code: "123"
+      })
+          .then(function() {
+            console.log(response)
+        });
+      }
+    }
+  })
+
+        
+</script>
   <script src="{{mix('js/processes/scripts/index.js')}}"></script>
 @endsection
