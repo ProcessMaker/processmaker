@@ -1,7 +1,6 @@
 <?php
 namespace Tests\Feature\Api;
 
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
@@ -20,7 +19,6 @@ use Tests\Feature\Shared\RequestHelper;
 class ProcessTest extends TestCase
 {
 
-    use DatabaseTransactions;
     use WithFaker;
     use RequestHelper;
     use ResourceAssertionsTrait;

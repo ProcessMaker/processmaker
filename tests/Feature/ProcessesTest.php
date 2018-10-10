@@ -1,7 +1,6 @@
 <?php
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
 use ProcessMaker\Models\Process;
@@ -9,7 +8,6 @@ use ProcessMaker\Models\ProcessCategory;
 
 class ProcessesTest extends TestCase
 {
-    use DatabaseTransactions;
     use RequestHelper;
 
     public function testIndex() {
