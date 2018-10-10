@@ -1,6 +1,5 @@
 <?php
 namespace Tests\Feature;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 // use Illuminate\Foundation\Testing\WithFaker;
 // use ProcessMaker\Models\ProcessRequest;
@@ -12,7 +11,6 @@ use Tests\Feature\Shared\RequestHelper;
 
 class TasksTest extends TestCase
 {
-    use DatabaseTransactions;
     use RequestHelper;
 
     const TASKS_URL = '/tasks';
