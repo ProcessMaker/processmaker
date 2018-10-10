@@ -38,17 +38,17 @@
         <div class="form-group">
           {!!Form::label('title', 'Title');!!}
           {!!Form::text('title', null, ['class'=> 'form-control', 'v-model'=> 'title'])!!}
-          <div class="invalid-feedback" v-if="addError">Example invalid feedback text</div>
+          <div class="text-danger" v-if="addError.title">@{{addError.title[0]}}</div>
         </div>
         <div class="form-group">
           {!!Form::label('language', 'Language');!!}
           {!!Form::text('language', null, ['class'=> 'form-control', 'v-model'=> 'language'])!!}
-          <div class="invalid-feedback" v-if="addError">Example invalid feedback text</div>
+        <div class="text-danger" v-if="addError.language">@{{addError.language[0]}}</div>
         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-secondary" @click="onSubmit">Save</button>
+        <button type="button" class="btn btn-secondary" id="disabledForNow" @click="onSubmit" :disabled="submitted">Save</button>
       </div>
     </div>
   </div>
@@ -62,14 +62,16 @@
     data: {
       title: '',
       language: '',
-      addError: false
+      addError: {},
+      submitted: false
     },
     methods: {
       onSubmit() {
+        this.submitted = true;
         ProcessMaker.apiClient.post("/scripts", {
           title: this.title,
           language: this.language,
-          //@TODO replace with code
+          //@TODO replace with dynamic code
           code: "123"
         })
         .then(response => {
@@ -78,15 +80,12 @@
         })
         .catch(error => {
           if (error.response.status === 422) {
-            console.log("ERROR",error)
-            this.addError = true
+            this.addError = error.response.data.errors
           }
         })
       }
     }
-  })
-
-        
+  })       
 </script>
-  <script src="{{mix('js/processes/scripts/index.js')}}"></script>
+<script src="{{mix('js/processes/scripts/index.js')}}"></script>
 @endsection
