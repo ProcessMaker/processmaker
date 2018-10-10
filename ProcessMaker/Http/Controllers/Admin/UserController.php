@@ -17,6 +17,13 @@ class UserController extends Controller
   {
     $user = new User;
     return view('admin.users.index', compact('user'));
+    
+  }
+
+  public function store(Request $request)
+  {
+    $user = User::create($request->all());
+    return redirect()->route('admin.users', [$user]);
   }
 
   public function edit(User $user)

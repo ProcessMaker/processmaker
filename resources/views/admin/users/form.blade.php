@@ -1,4 +1,12 @@
-{!! Form::model($user , ['route' => ['users.update', $user->uuid_text ]]) !!}
+
+@php 
+    if ($user->exists){
+        $route = ['users.update', $user->uuid_text ];
+    } else {
+        $route = ['users.store'];
+    }
+@endphp
+{!! Form::model($user , ['route' => $route]) !!}
     <div class="form-group">
         {!! Form::label('username', 'Username') !!}
         {!! Form::text('username', null, ['class'=> 'form-control']) !!}
