@@ -23,7 +23,7 @@ class UserController extends Controller
   public function store(Request $request)
   {
     $user = User::create($request->all());
-    return redirect()->route('admin.users', [$user]);
+    return redirect('admin/users/'.$user->uuid_text);
   }
 
   public function edit(User $user)

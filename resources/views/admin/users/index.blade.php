@@ -35,7 +35,7 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-outline-success" data-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-success ml-2">Save</button>
+                                    <button type="button" onclick="$('#userForm').submit()" class="btn btn-success ml-2">Save</button>
                                 </div>
                             </div>
                         </div>
