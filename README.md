@@ -1,17 +1,14 @@
-# README
-
 ![ProcessMaker](http://www.processmaker.com/themes/processmaker/images/logo.jpg)
 
 [![CircleCI](https://circleci.com/gh/ProcessMaker/bpm/tree/develop.svg?style=svg&circle-token=bc15deff649712440252088a12ec20b4b7c96826)](https://circleci.com/gh/ProcessMaker/bpm/tree/develop)
 
-## README
-
-### ProcessMaker v4.0
+# ProcessMaker 4.1 Community Edition Documentation
 
 ### Overview
 
 ProcessMaker is an open source, workflow management software suite, which includes tools to automate your workflow, design forms, create documents, assign roles and users, create routing rules, and map an individual process quickly and easily. It's relatively lightweight and doesn't require any kind of installation on the client computer. This file describes the requirements and installation steps for the server.
 
+<<<<<<< .merge_file_d6S4MT
 ## Contributing
 
 When developing, make sure to turn on debugging in your `.env` so you can see the
@@ -133,6 +130,10 @@ And for a show method
     ...
 ```
 
+#### Notes
+`operationId` will be the method name of the generated code. It can be anything
+camel cased but should be named some intuitive.
+
 #### Testing with Swagger UI
 
 Reload the swagger UI at `api/documentation` page in your browser to see the results and 
@@ -159,11 +160,15 @@ Authorize and close. You should now be able to use the "Try it out" functionalit
 
 Detailed examples can be found at https://github.com/zircote/swagger-php/tree/master/Examples/petstore.swagger.io
 
-Full OpenAPI 3.0 specification at https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md
+Full OpenAPI 3.0 specification at https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.1.md
 
 
 ### License
 
+=======
+### License
+
+>>>>>>> .merge_file_fUWOc1
 ProcessMaker - Automate your Workflow Copyright \(C\) 2002 - 2018 ProcessMaker Inc.
 
 For further information visit: [http://www.processmaker.com/](http://www.processmaker.com/)
