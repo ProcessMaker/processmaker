@@ -83,6 +83,9 @@
             this.addError = error.response.data.errors
           }
         })
+        .finally(()=> {
+          this.submitted = false
+        })
       }
     }
   })       
