@@ -11,14 +11,12 @@
                 </div>
           </span>
             <p>We've made it easy for you to make the following requests</p>
-
-
-
-
             <div v-if="Object.keys(processes).length && !loading" class="process-list">
-                <div class="category" v-for="(processList, index) in processes" :key="index">
+                <div class="category" v-for="(category, index) in processes">
                     <h3 class="name">{{index}}</h3>
-                    <process-card v-for="(process,index) in processList" :filter="filter" :key="index" :process="process"></process-card>
+                    <process-card v-for="(process,index) in category" :filter="filter" :key="index"
+                                  :process="process">
+                    </process-card>
                 </div>
             </div>
             <div class="no-requests" v-if="!Object.keys(processes).length && !loading">
@@ -70,7 +68,7 @@ export default {
       // Maximum number of requests returned is 200 but should be enough
       // @todo Determine if we need to paginate or lazy scroll if someone has more than 200 requests
       window.ProcessMaker.apiClient
-        .get("user/processes?filter=" + this.filter)
+        .get("processes?include=events,category")
         .then(response => {
           let data = response.data;
           // Empty processes
@@ -90,7 +88,7 @@ export default {
       // We need to pull out the category name, and if it's available in our processes, append it there
       // if not, create the category in our processes array and then append it
       for (let process of data) {
-        let category = process.category ? process.category : "Uncategorized";
+        let category = process.category ? process.category.name : "Uncategorized";
         // Now determine if we have it defined in our processes list
         if (typeof this.processes[category] == "undefined") {
           // Create it
