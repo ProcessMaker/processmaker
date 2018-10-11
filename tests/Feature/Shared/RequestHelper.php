@@ -10,20 +10,30 @@ trait RequestHelper
     protected $user;
     protected $debug = true;
     private $_debug_response;
+    protected $permissions = [
+        'api.processes.show',
+        'api.processes.store',
+        'api.processes.update',
+        'api.processes.create',
+        'api.processes.destroy',
+    ];
 
     protected function setUp()
     {
         parent::setUp();
 
-        $permissions = ['api.processes.show', 'api.processes.destroy', 'api.processes.store', 'api.processes.update'];
-        $this->createPermissions($permissions);
+        $this->createPermissions($this->permissions);
         $this->user = factory(User::class)->create([
             'password' => 'password'
         ]);
-        $this->user->giveDirectPermission($permissions);
+        $this->user->giveDirectPermission($this->permissions);
+
+        if (method_exists($this, 'withUserSetUp')) {
+            $this->withUserSetup();
+        }
     }
 
-    private function createPermissions($permissions)
+    protected function createPermissions($permissions)
     {
         foreach ($permissions as $permission) {
             Permission::create([
@@ -36,15 +46,19 @@ trait RequestHelper
 
     protected function apiCall($method, $url, $params = [])
     {
+        // If the url was generated using the route() helper,
+        // strip out the http://.../api/1.0 part of it;
+        $url = preg_replace('/^.*\/api\/1\.0/i', '', $url);
+
         $response = $this->actingAs($this->user, 'api')
-                         ->json($method, $url, $params);
+                         ->json($method, '/api/1.0' . $url, $params);
         $this->_debug_response = $response;
         return $response;
     }
 
     protected function webCall($method, $url, $params = [])
     {
-        $response = $this->actingAs($this->user, 'api')
+        $response = $this->actingAs($this->user, 'web')
                          ->call($method, $url, $params);
         $this->_debug_response = $response;
         return $response;
@@ -61,10 +75,10 @@ trait RequestHelper
 
         if ($this->hasFailed() && isset($this->_debug_response)) {
             $json = $this->_debug_response->json();
-            // unset($json['trace']);
-            // echo "\nResponse Debug Information:\n";
-            // var_dump($json);
-            // echo "\n";
+            $json['trace'] = array_slice($json['trace'], 0, 5);
+            echo "\nResponse Debug Information:\n";
+            var_dump($json);
+            echo "\n";
         }
     }
 }

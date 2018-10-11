@@ -30,7 +30,8 @@ class GroupController extends Controller
    }
 
    public function show(Group $group) // show new process to UI
-   {
-       return view('admin.groups.show', compact('group'));  // from data item in index, once clicked, this page will show with ability to edit and destroy
+   { 
+      // from data item in index, once clicked, this page will show with ability to edit and destroy
+      return view('admin.groups.show', compact('group'));
    }
 }

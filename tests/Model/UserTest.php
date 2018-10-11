@@ -1,7 +1,6 @@
 <?php
 namespace Tests\Model;
 
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
@@ -11,7 +10,6 @@ use ProcessMaker\Models\PermissionAssignment;
 
 class UserTest extends TestCase
 {
-    use DatabaseTransactions;
 
     public function testPermissions() {
         $president_user = factory(User::class)->create(['password' => 'password']);

@@ -15,7 +15,7 @@ class GroupMembersTest extends TestCase
 
   use RequestHelper;
 
-  const API_TEST_URL = '/api/1.0/group_members';
+  const API_TEST_URL = '/group_members';
 
   const STRUCTURE = [
       'uuid',

@@ -4,6 +4,7 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Spatie\BinaryUuid\HasBinaryUuid;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class Permission extends Model
 {
@@ -17,6 +18,10 @@ class Permission extends Model
 
     static public function byGuardName($name)
     {
-        return self::where('guard_name', $name)->firstOrFail();
+        try {
+            return self::where('guard_name', $name)->firstOrFail();
+        } catch(ModelNotFoundException $e) {
+            throw new ModelNotFoundException($name . " permission does not exist");
+        }
     }
 }

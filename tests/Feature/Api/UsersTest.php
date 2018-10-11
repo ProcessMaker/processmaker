@@ -13,7 +13,7 @@ class UsersTest extends TestCase
 
   use RequestHelper;
 
-  const API_TEST_URL = '/api/1.0/users';
+  const API_TEST_URL = '/users';
 
   const STRUCTURE = [
       'uuid',

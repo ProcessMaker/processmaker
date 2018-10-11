@@ -14,11 +14,11 @@ Route::group(
     Route::apiResource('forms', 'FormController');
     Route::get('scripts/preview', 'ScriptController@preview')->name('script.preview');
     Route::apiResource('scripts', 'ScriptController');
-    Route::apiresource('processes', 'ProcessController')->middleware('authorize');;
+    Route::apiresource('processes', 'ProcessController')->middleware('authorize');
     Route::apiResource('process_categories', 'ProcessCategoryController');
     Route::apiResource('tasks', 'TaskController')->only(['index', 'show', 'update']);
     Route::apiResource('requests', 'ProcessRequestController');
     Route::post('process_events/{process}', 'ProcessController@triggerStartEvent')->name('process_events.trigger');
     Route::apiResource('files', 'FileController');
-}
+    }
 );

@@ -1,9 +1,8 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
@@ -13,22 +12,13 @@ use Tests\Feature\Shared\RequestHelper;
 
 class PermissionsTest extends TestCase
 {
-    use DatabaseTransactions;
     use RequestHelper;
-
-    protected function buildPermissions()
+    
+    protected function withUserSetup()
     {
-        $this->user = factory(User::class)->create(['password' => 'password']);
-
-        $create_process_perm = factory(Permission::class)->create([
-            'guard_name' => 'processes.create',
-        ]);
-        $show_process_perm = factory(Permission::class)->create([
-            'guard_name' => 'processes.show',
-        ]);
-        $update_process_perm = factory(Permission::class)->create([
-            'guard_name' => 'processes.update',
-        ]);
+        $create_process_perm = Permission::byGuardName('api.processes.create');
+        $show_process_perm   = Permission::byGuardName('api.processes.show');
+        $update_process_perm = Permission::byGuardName('api.processes.update');
 
         $admin_group = $this->admin_group =
             factory(Group::class)->create(['name' => 'Admin']);
@@ -64,6 +54,7 @@ class PermissionsTest extends TestCase
             'assignable_uuid' => $this->user->uuid,
             'permission_uuid' => $show_process_perm->uuid,
         ]);
+        $this->user->giveDirectPermission($show_process_perm->guard_name);
         
         $this->process = factory(\ProcessMaker\Models\Process::class)->create([
             'name' => 'foo',
@@ -72,30 +63,29 @@ class PermissionsTest extends TestCase
 
     public function testApiPermissions()
     {
-        $this->buildPermissions();
         $response = $this->apiCall('GET', '/processes');
         $response->assertStatus(200);
         
         $response = $this->apiCall('GET', '/processes/' . $this->process->uuid_text);
         $response->assertStatus(200);
         
+        $this->user->permissionAssignments()->where('permission_uuid', Permission::byGuardName('api.processes.destroy')->uuid)->delete();
+        $this->user->clearPermissionCache();
+        $this->user->refresh();
+
         $response = $this->apiCall('DELETE', '/processes/' . $this->process->uuid_text);
         $response->assertStatus(403);
         $response->assertSee('Not authorized');
 
-        $delete_process_perm = factory(Permission::class)->create([
-            'guard_name' => 'processes.destroy',
-        ]);
-        
         factory(PermissionAssignment::class)->create([
             'assignable_type' => Group::class,
             'assignable_uuid' => $this->admin_group->uuid,
-            'permission_uuid' => $delete_process_perm->uuid,
+            'permission_uuid' => Permission::byGuardName('api.processes.destroy')->uuid,
         ]);
         $this->user->clearPermissionCache();
         $this->user->refresh();
 
         $response = $this->apiCall('DELETE', '/processes/' . $this->process->uuid_text);
-        $response->assertStatus(302);
+        $response->assertStatus(204);
     }
 }
