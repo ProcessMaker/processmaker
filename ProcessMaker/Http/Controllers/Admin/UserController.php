@@ -38,9 +38,9 @@ class UserController extends Controller
         return view('admin.users.create');
     }
 
-    public function show()
+    public function show(User $user)
     {
-        return view('admin.users.show');
+        return view('admin.users.show', compact('user'));
     }
 
     /**
@@ -52,4 +52,5 @@ class UserController extends Controller
     {
         return Group::where('status', 'ACTIVE')->get();
     }
+
 }

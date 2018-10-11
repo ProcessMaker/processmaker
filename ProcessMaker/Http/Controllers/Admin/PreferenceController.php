@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Models\JsonData;
 
 class PreferenceController extends Controller
 {
@@ -14,6 +15,7 @@ class PreferenceController extends Controller
    */
   public function index()
   {
-      return view('admin.preferences.index');
+      $timezones = JsonData::timezones();
+      return view('admin.preferences.index', compact('timezones'));
   }
 }

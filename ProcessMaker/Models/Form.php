@@ -18,6 +18,22 @@ use Spatie\BinaryUuid\HasBinaryUuid;
  * @property array content
  * @property string label
  * @property Carbon type
+ * 
+ *   @OA\Schema(
+ *   schema="formsEditable",
+ *   @OA\Property(property="uuid", type="string", format="uuid"),
+ *   @OA\Property(property="name", type="string"),
+ *   @OA\Property(property="title", type="string"),
+ *   @OA\Property(property="type", type="string"),
+ *   @OA\Property(property="description", type="string"),
+ *   @OA\Property(property="config", type="string"),
+ * ),
+ * @OA\Schema(
+ *   schema="forms",
+ *   allOf={@OA\Schema(ref="#/components/schemas/formsEditable")},
+ *   @OA\Property(property="created_at", type="string", format="date-time"),
+ *   @OA\Property(property="updated_at", type="string", format="date-time"),
+ * )
  *
  */
 class Form extends Model
