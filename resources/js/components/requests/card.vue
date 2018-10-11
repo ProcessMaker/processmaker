@@ -1,10 +1,10 @@
 <template>
     <div class="processes">
-        <div v-for="definition in process.definitions" @click="go(definition)" class="process-card">
+        <div @click="newRequestLink(process)" class="process-card">
             <div class="inner">
                 <div>
                     <span class="name" v-html="transformedName"></span>
-                    <i v-show="spin===definition.id" class="fa fa-spinner fa-spin fa-fw"></i>
+                    <i v-show="spin===process.uuid" class="fa fa-spinner fa-spin fa-fw"></i>
                 </div>
                 <div ref="description" class="description" v-html="truncatedDescription"></div>
             </div>
@@ -21,14 +21,15 @@ export default {
       }
   },
   methods: {
-    go(definition) {
+    newRequestLink(process) {
       //Start a process
-      this.spin = definition.id;
-      window.ProcessMaker.apiClient.post('processes/'+this.process.uid+'/' + definition.id + '/call')
+      this.spin = process.id;
+      let startEventId = process.events[0].id;
+      window.ProcessMaker.apiClient.post('/process_events/'+this.process.uuid + '?event=' + startEventId)
         .then((response) => {
             this.spin = 0;
             var instance = response.data;
-            window.location = '/requests/' + instance.uid + '/status';
+            window.location = '/requests';
         })
     }
   },
