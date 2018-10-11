@@ -112,7 +112,16 @@
                         this.goToEdit(data.uuid);
                         break;
                     case "remove-item":
-                        //@todo implement
+                        ProcessMaker.confirmModal(
+                            'Caution!',
+                            '<b>Are you sure to inactive the user </b>' + data.fullname + '?', '', () => {
+                                ProcessMaker.apiClient.delete('users/' + data.uuid)
+                                    .then(response => {
+                                        ProcessMaker.alert('User Successfully delete', 'success');
+                                        this.$emit('reload');
+                                    })
+                            }
+                        );
                         break;
                 }
             },
