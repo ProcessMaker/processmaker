@@ -16,7 +16,7 @@
         <form-input :error="passwordMismatch" type="password" v-model="confirmation"
                     :label="labels.confirm" required="required"></form-input>
 
-        <div id="app" class="form-group">
+        <div class="form-group">
             <label>{{labels.groups}}</label>
             <multiselect v-model="value" :options="dataGroups" :multiple="true" track-by="name" :custom-label="customLabel"
                     label="name">
@@ -91,11 +91,7 @@
                     'helper': 'User Name must be distinct'
                 },
                 'value' : '',
-                'dataGroups': [
-                    /*{name: 'People'},
-                    {name: 'Humans', desc: 'HR', img: '/img/avatar-placeholder.gif'},
-                    {name: 'Workers', desc: 'HR', img: '/img/avatar-placeholder.gif'}*/
-                ],
+                'dataGroups': [],
                 'formData': emptyUser,
                 'errors': emptyErrors
             }
@@ -165,7 +161,7 @@
                     option.desc = ' ';
                     that.dataGroups.push(option);
                     //fill groups selected
-                    if (that.inputData.hasOwnProperty('memberships') && that.inputData.memberships) {
+                    if (that.inputData && that.inputData.hasOwnProperty('memberships')) {
                         $.each(that.inputData.memberships, function (keyMember, dataMember) {
                             if (dataMember.group_uuid === option.uuid) {
                                 values.push(option);
@@ -187,8 +183,8 @@
             saveGroups(uuid, update) {
 
                 let that = this;
-                //delete members
-                if (update && that.inputData.hasOwnProperty('memberships') && that.inputData.memberships) {
+                //Remove member that has previously registered and is not in the post data.
+                if (update && that.inputData && that.inputData.hasOwnProperty('memberships') && that.inputData.memberships) {
                     $.each(that.inputData.memberships, function (keyMember, dataMember) {
                         let deleteMember = true;
                         $.each(that.value, function (key, group) {
@@ -199,13 +195,14 @@
                         });
                         if(deleteMember) {
                             ProcessMaker.apiClient
-                                .delete('group_members/'+ dataMember.uuid);2
+                                .delete('group_members/'+ dataMember.uuid);
                         }
                     });
                 }
+                //Add member who were not previously registered.
                 $.each(that.value, function (key, group) {
                     let save = true;
-                    if (that.inputData.hasOwnProperty('memberships') && that.inputData.memberships) {
+                    if (that.inputData && that.inputData.hasOwnProperty('memberships') && that.inputData.memberships) {
                         $.each(that.inputData.memberships, function (keyMember, dataMember) {
                             if (dataMember.group_uuid === group.uuid) {
                                 save = false;
@@ -220,10 +217,7 @@
                                     'member_type': 'ProcessMaker\\Models\\User',
                                     'member_uuid': uuid
                                 }
-                            )
-                            .then(response => {
-                                //save group member
-                            });
+                            );
                     }
                 });
 
@@ -248,10 +242,10 @@
                     this.savePath(), this.formData
                 ).then(response => {
                     if (this.isEditing()) {
-                        this.saveGroups(this.formData.uuid);
+                        this.saveGroups(this.formData.uuid, true);
                         this.$emit('update');
                     } else {
-                        this.saveGroups(response.data.uuid);
+                        this.saveGroups(response.data.uuid, false);
                         this.$emit('save');
                     }
                 })

@@ -21,7 +21,7 @@
                     <a href="#" @click="show" class="btn btn-action"><i class="fas fa-plus"></i> {{__('User')}}</a>
                 </div>
             </div>
-            <modal-create-user :show="userModal" :input-data-groups="{{$groups}}" @close="userModal=false" :user-uuid="userUuid"
+            <modal-create-user :show="userModal" :groups="{{$groups}}" @close="userModal=false" :user-uuid="userUuid"
                                   v-on:reload="reload"></modal-create-user>
             <users-listing ref="listing" :filter="filter" v-on:reload="reload"></users-listing>
         </div>
