@@ -42,7 +42,8 @@ class GroupTest extends TestCase
     public function testShowRoute()
     {
         $group_uuid = factory(Group::class)->create(['name'=>'Test show'])->uuid_text;
-        $response = $this->webGet('/admin/groups/'. $group_uuid);
+        // $response = $this->webGet('/admin/groups/'. $group_uuid);
+        $response = $this->actingAs($this->user)->get('/admin/groups/'. $group_uuid);
         $response->assertStatus(200);
         $response->assertSee('Test show');
     }
