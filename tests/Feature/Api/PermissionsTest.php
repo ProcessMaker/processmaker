@@ -16,9 +16,9 @@ class PermissionsTest extends TestCase
     
     protected function withUserSetup()
     {
-        $create_process_perm = Permission::byGuardName('api.processes.create');
-        $show_process_perm   = Permission::byGuardName('api.processes.show');
-        $update_process_perm = Permission::byGuardName('api.processes.update');
+        $create_process_perm = Permission::byGuardName('processes.create');
+        $show_process_perm   = Permission::byGuardName('processes.show');
+        $update_process_perm = Permission::byGuardName('processes.update');
 
         $admin_group = $this->admin_group =
             factory(Group::class)->create(['name' => 'Admin']);
@@ -69,7 +69,13 @@ class PermissionsTest extends TestCase
         $response = $this->apiCall('GET', '/processes/' . $this->process->uuid_text);
         $response->assertStatus(200);
         
-        $this->user->permissionAssignments()->where('permission_uuid', Permission::byGuardName('api.processes.destroy')->uuid)->delete();
+        $destroy_process_perm = Permission::byGuardName('processes.destroy');
+        Group::where('name', 'All Permissions')
+            ->firstOrFail()
+            ->permissionAssignments()
+            ->where('permission_uuid', $destroy_process_perm->uuid)
+            ->delete();
+
         $this->user->clearPermissionCache();
         $this->user->refresh();
 
@@ -80,7 +86,7 @@ class PermissionsTest extends TestCase
         factory(PermissionAssignment::class)->create([
             'assignable_type' => Group::class,
             'assignable_uuid' => $this->admin_group->uuid,
-            'permission_uuid' => Permission::byGuardName('api.processes.destroy')->uuid,
+            'permission_uuid' => Permission::byGuardName('processes.destroy')->uuid,
         ]);
         $this->user->clearPermissionCache();
         $this->user->refresh();

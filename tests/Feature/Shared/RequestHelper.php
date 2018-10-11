@@ -4,29 +4,22 @@ namespace Tests\Feature\Shared;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Permission;
+use \PermissionSeeder;
 
 trait RequestHelper
 {
     protected $user;
     protected $debug = true;
     private $_debug_response;
-    protected $permissions = [
-        'api.processes.show',
-        'api.processes.store',
-        'api.processes.update',
-        'api.processes.create',
-        'api.processes.destroy',
-    ];
 
     protected function setUp()
     {
         parent::setUp();
 
-        $this->createPermissions($this->permissions);
         $this->user = factory(User::class)->create([
             'password' => 'password'
         ]);
-        $this->user->giveDirectPermission($this->permissions);
+        (new PermissionSeeder)->run($this->user);
 
         if (method_exists($this, 'withUserSetUp')) {
             $this->withUserSetup();

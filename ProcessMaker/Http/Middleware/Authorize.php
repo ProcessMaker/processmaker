@@ -12,6 +12,11 @@ class Authorize
         // At this point we should have already checked if the
         // user is logged in so we can assume $request->user()
         $permission = $request->route()->action['as'];
+
+        // Remove the api route prefix since they will have the
+        // same permissions as the web routes.
+        $permission = preg_replace('/^api\./', '', $permission);
+
         if ($request->user()->hasPermission($permission)) {
             return $next($request);
         } elseif ($this->allowIndexForShow($permission, $request)) {

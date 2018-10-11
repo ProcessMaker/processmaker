@@ -38,16 +38,5 @@ class UserSeeder extends Seeder
           'member_type' => User::class,
           'group_uuid' => $group_uuid,
         ]);
-    
-        foreach(['create', 'show', 'edit', 'destroy'] as $action) {
-            $permission = factory(Permission::class)->create([
-                'guard_name' => 'api.processes.' . $action,
-            ]);
-            factory(PermissionAssignment::class)->create([
-                'assignable_type' => User::class,
-                'assignable_uuid' => $user->uuid,
-                'permission_uuid' => $permission->uuid,
-            ]);
-        }
     }
 }
