@@ -85,7 +85,7 @@
             onAction(actionType, data, index) {
                 switch (actionType) {
                     case 'edit-form':
-                        window.location.href = '/processes/forms/' + data.uuid + '/edit';
+                        window.location.href = '/processes/form-builder/' + data.uuid + '/edit';
                         break;
                     case 'edit-item':
                         window.location.href = '/processes/forms/' + data.uuid + '/edit';

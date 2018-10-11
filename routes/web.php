@@ -13,6 +13,9 @@ Route::namespace('Process')->prefix('processes')->group(function(){
   Route::resource('environment_variables', 'EnvironmentVariablesController');
   Route::resource('documents', 'DocumentController');
   Route::resource('forms', 'FormController');
+  Route::resource('form-builder', 'FormBuilderController')->parameters([
+      'form-builder' => 'form'
+  ])->only(['edit']);
   Route::resource('scripts', 'ScriptController');
 });
 Route::resource('processes', 'ProcessController');

@@ -10,7 +10,7 @@ use ProcessMaker\Models\Form;
 class FormController extends Controller
 {
     /**
-     * Get the list of environment variables
+     * Get the list of forms
      *
      * @return Factory|View
      */
