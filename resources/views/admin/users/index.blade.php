@@ -18,10 +18,12 @@
                 <input v-model="filter" class="form-control col-sm-3" placeholder="{{__('Search')}}...">
                 </div>
                 <div class="col-md-4 d-flex justify-content-end align-items-center col-sm-12 actions">
-                    <a href="#" class="btn btn-action"><i class="fas fa-plus"></i> {{__('User')}}</a>
+                    <a href="#" @click="show" class="btn btn-action"><i class="fas fa-plus"></i> {{__('User')}}</a>
                 </div>
             </div>
-            <users-listing ref="listing" :filter="filter"></users-listing>
+            <modal-create-user :show="userModal" :groups="{{$groups}}" @close="userModal=false" :user-uuid="userUuid"
+                                  v-on:reload="reload"></modal-create-user>
+            <users-listing ref="listing" :filter="filter" v-on:reload="reload"></users-listing>
         </div>
     </div>
 </div>
