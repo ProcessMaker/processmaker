@@ -117,7 +117,7 @@
                             '<b>Are you sure to inactive the user </b>' + data.fullname + '?', '', () => {
                                 ProcessMaker.apiClient.delete('users/' + data.uuid)
                                     .then(response => {
-                                        ProcessMaker.alert('User Successfully delete', 'success');
+                                        ProcessMaker.alert('User Marked As Deleted', 'warning');
                                         this.$emit('reload');
                                     })
                             }
