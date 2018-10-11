@@ -16,6 +16,37 @@ class ScriptController extends Controller
      * @param Process $process
      *
      * @return ResponseFactory|Response
+     * 
+     *     
+     *     @OA\Get(
+     *     path="/scripts",
+     *     summary="Returns all scripts that the user has access to",
+     *     operationId="getScripts",
+     *     tags={"Scripts"},
+     *     @OA\Parameter(ref="#/components/parameters/filter"),
+     *     @OA\Parameter(ref="#/components/parameters/order_by"),
+     *     @OA\Parameter(ref="#/components/parameters/order_direction"),
+     *     @OA\Parameter(ref="#/components/parameters/per_page"),
+     *     @OA\Parameter(ref="#/components/parameters/include"),
+     * 
+     *     @OA\Response(
+     *         response=200,
+     *         description="list of scripts",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/scripts"),
+     *             ),
+     *             @OA\Property(
+     *                 property="meta",
+     *                 type="object",
+     *                 allOf={@OA\Schema(ref="#/components/schemas/metadata")},
+     *             ),
+     *         ),
+     *     ),
+     * )
      */
     public function index(Request $request)
     {
@@ -43,6 +74,44 @@ class ScriptController extends Controller
 
     /**
      * Previews executing a script, with sample data/config data
+     * 
+     *     @OA\Get(
+     *     path="/scripts/preview",
+     *     summary="Returns all scripts that the user has access to",
+     *     operationId="getScriptsPreview",
+     *     tags={"Scripts"},
+ *         @OA\Parameter(
+ *             parameter="data",
+ *             name="data",
+ *             in="query",
+ *             @OA\Schema(type="string"),
+ *         ),
+ *         @OA\Parameter(
+ *             parameter="config",
+ *             name="config",
+ *             in="query",
+ *             @OA\Schema(type="string"),
+ *         ),
+ *         @OA\Parameter(
+ *             parameter="code",
+ *             name="code",
+ *             in="query",
+ *             @OA\Schema(type="string"),
+ *         ),
+ *         @OA\Parameter(
+ *             parameter="language",
+ *             name="language",
+ *             in="query",
+ *             @OA\Schema(type="string"),
+ *         ),
+     * 
+     *     @OA\Response(
+     *         response=200,
+     *         description="output of scripts",
+     *         @OA\JsonContent()
+     *         ),
+     *     ),
+     * )
      */
     public function preview(Request $request)
     {
@@ -63,6 +132,27 @@ class ScriptController extends Controller
      * @param Script $script
      *
      * @return ResponseFactory|Response
+     * 
+     *     @OA\Get(
+     *     path="/scripts/{scriptsUuid}",
+     *     summary="Get single script by ID",
+     *     operationId="getScriptsByUuid",
+     *     tags={"Scripts"},
+     *     @OA\Parameter(
+     *         description="ID of script to return",
+     *         in="path",
+     *         name="scriptsUuid",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successfully found the script",
+     *         @OA\JsonContent(ref="#/components/schemas/scripts")
+     *     ),
+     * )
      */
     public function show(Script $script)
     {
@@ -75,6 +165,22 @@ class ScriptController extends Controller
      * @param Request $request
      *
      * @return ResponseFactory|Response
+     * 
+     *     @OA\Post(
+     *     path="/scripts",
+     *     summary="Save a new script",
+     *     operationId="createScript",
+     *     tags={"Scripts"},
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(ref="#/components/schemas/scriptsEditable")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/scripts")
+     *     ),
+     * )
      */
     public function store(Request $request)
     {
@@ -93,6 +199,31 @@ class ScriptController extends Controller
      * @param Request $request
      *
      * @return ResponseFactory|Response
+     * 
+     *     @OA\Put(
+     *     path="/scripts/{scriptsUuid}",
+     *     summary="Update a script",
+     *     operationId="updateScript",
+     *     tags={"Scripts"},
+     *     @OA\Parameter(
+     *         description="ID of script to return",
+     *         in="path",
+     *         name="ScriptsUuid",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(ref="#/components/schemas/scriptsEditable")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/scripts")
+     *     ),
+     * )
      */
     public function update(Script $script, Request $request)
     {
@@ -110,6 +241,27 @@ class ScriptController extends Controller
      * @param Script $script
      *
      * @return ResponseFactory|Response
+     * 
+     *     @OA\Delete(
+     *     path="/scripts/{scriptsUuid}",
+     *     summary="Delete a script",
+     *     operationId="deleteScript",
+     *     tags={"Scripts"},
+     *     @OA\Parameter(
+     *         description="ID of script to return",
+     *         in="path",
+     *         name="scriptsUuid",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/scripts")
+     *     ),
+     * )
      */
     public function destroy(Script $script)
     {

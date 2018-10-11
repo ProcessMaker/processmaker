@@ -226,7 +226,8 @@ return [
     |--------------------------------------------------------------------------
      */
     'constants' => [
-        'API_HOST' => getenv('API_HOST') ?: 'http://localhost/api/1.0',
+        // We're assuming base path is the same as the swagger UI
+        // 'APP_URL' => getenv('APP_URL') ?: 'http://localhost',
     ],
 ];
 

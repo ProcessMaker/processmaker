@@ -6,7 +6,21 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use Spatie\BinaryUuid\HasBinaryUuid;
 
-
+/**
+ * @OA\Schema(
+ *   schema="environment_variablesEditable",
+ *   @OA\Property(property="name", type="string"),
+ *   @OA\Property(property="description", type="string"),
+ *   @OA\Property(property="value", type="string"),
+ * ),
+ * @OA\Schema(
+ *   schema="environment_variables",
+ *   allOf={@OA\Schema(ref="#/components/schemas/environment_variablesEditable")},
+ *   @OA\Property(property="created_at", type="string", format="date-time"),
+ *   @OA\Property(property="updated_at", type="string", format="date-time"),
+ * )
+ * 
+ */
 class EnvironmentVariable extends Model
 {
     use HasBinaryUuid;

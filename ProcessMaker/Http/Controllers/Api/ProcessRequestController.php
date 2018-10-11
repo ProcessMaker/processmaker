@@ -20,6 +20,37 @@ class ProcessRequestController extends Controller
      * @param Request $httpRequest
      *
      * @return Response
+     * 
+     *     /**
+     * @OA\Get(
+     *     path="/requests",
+     *     summary="Returns all process Requests that the user has access to",
+     *     operationId="getProcessesRequests",
+     *     tags={"ProcessRequests"},
+     *     @OA\Parameter(ref="#/components/parameters/filter"),
+     *     @OA\Parameter(ref="#/components/parameters/order_by"),
+     *     @OA\Parameter(ref="#/components/parameters/order_direction"),
+     *     @OA\Parameter(ref="#/components/parameters/per_page"),
+     *     @OA\Parameter(ref="#/components/parameters/include"),
+     * 
+     *     @OA\Response(
+     *         response=200,
+     *         description="list of processes",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/requests"),
+     *             ),
+     *             @OA\Property(
+     *                 property="meta",
+     *                 type="object",
+     *                 allOf={@OA\Schema(ref="#/components/schemas/metadata")},
+     *             ),
+     *         ),
+     *     ),
+     * )
      */
     public function index(Request $httpRequest)
     {
@@ -50,6 +81,26 @@ class ProcessRequestController extends Controller
      *
      * @return Response
      *
+     *      * @OA\Get(
+     *     path="/requests/{process_request_uuid}",
+     *     summary="Get single process request by ID",
+     *     operationId="getProcessRequestByUuid",
+     *     tags={"ProcessRequests"},
+     *     @OA\Parameter(
+     *         description="ID of process request to return",
+     *         in="path",
+     *         name="process_request_uuid",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successfully found the process",
+     *         @OA\JsonContent(ref="#/components/schemas/requests")
+     *     ),
+     * )
      */
     public function show(ProcessRequest $request)
     {
@@ -63,6 +114,22 @@ class ProcessRequestController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Validation\ValidationException
+     * 
+     * @OA\Post(
+     *     path="/requests",
+     *     summary="Save a new process request",
+     *     operationId="createProcessRequest",
+     *     tags={"ProcessRequests"},
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(ref="#/components/schemas/requestsEditable")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/requests")
+     *     ),
+     * )
      */
     public function store(Request $httpRequest)
     {
@@ -81,6 +148,31 @@ class ProcessRequestController extends Controller
      * @param Request|ProcessRequest $httpRequest
      *
      * @return ResponseFactory|Response
+     * 
+     *     @OA\Put(
+     *     path="/requests/{process_request_uuid}",
+     *     summary="Update a process request",
+     *     operationId="updateProcessRequest",
+     *     tags={"ProcessRequests"},
+     *     @OA\Parameter(
+     *         description="ID of process request to return",
+     *         in="path",
+     *         name="process_request_uuid",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(ref="#/components/schemas/requestsEditable")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/requests")
+     *     ),
+     * )
      */
     public function update(ProcessRequest $request, Request $httpRequest)
     {
@@ -97,6 +189,27 @@ class ProcessRequestController extends Controller
      * @param ProcessRequest $request
      *
      * @return ResponseFactory|Response
+     * 
+     *     @OA\Delete(
+     *     path="/requests/{process_request_uuid}",
+     *     summary="Delete a process request",
+     *     operationId="deleteProcessRequest",
+     *     tags={"ProcessRequests"},
+     *     @OA\Parameter(
+     *         description="ID of process request to return",
+     *         in="path",
+     *         name="process_request_uuid",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/requests")
+     *     ),
+     * )
      */
     public function destroy(ProcessRequest $request)
     {
