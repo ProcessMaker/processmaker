@@ -87,7 +87,7 @@
             onAction(actionType, rowData, index) {
 
                 if (actionType === 'edit') {
-                    let link = '/scripts/' + rowData.uuid + '/edit';
+                    let link = '/processes/scripts/' + rowData.uuid + '/edit';
                     window.location = link;
                 }
 
