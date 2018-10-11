@@ -22,6 +22,8 @@ class TaskController extends Controller
     public function index(Request $request)
     {
         $query = ProcessRequestToken::query();
+        $include  = $request->input('include') ? explode(',',$request->input('include')) : [];
+        $query->with($include);
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
             $filter = '%' . $filter . '%';
