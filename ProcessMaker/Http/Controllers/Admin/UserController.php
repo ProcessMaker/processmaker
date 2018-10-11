@@ -17,6 +17,7 @@ class UserController extends Controller
      */
     public function index()
     {
+        //load groups
         $groups = $this->getAllGroups();
         return view('admin.users.index', compact(['groups']));
     }
@@ -28,6 +29,7 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
+        //include memberships
         $user->memberships;
         $groups = $this->getAllGroups();
         return view('admin.users.edit', compact(['user', 'groups']));
