@@ -3,6 +3,13 @@
         <vuetable :dataManager="dataManager" :sortOrder="sortOrder" :css="css" :api-mode="false"
                   @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data"
                   pagination-path="meta">
+
+            <template slot="name" slot-scope="props">
+                <b-link @click="onAction('edit', props.rowData, props.rowIndex)">
+                    {{props.rowData.element_name}}
+                </b-link>
+            </template>
+
             <template slot="actions" slot-scope="props">
                 <div class="actions">
                     <i class="fas fa-ellipsis-h"></i>
@@ -16,6 +23,7 @@
                     </div>
                 </div>
             </template>
+
         </vuetable>
         <pagination single="Task" plural="Tasks" :perPageSelectEnabled="true" @changePerPage="changePerPage"
                     @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
@@ -43,7 +51,9 @@
                 fields: [
                     {
                         title: "TITLE",
-                        name: "element_name"
+                        name: "__slot:name",
+                        field: "element_name",
+                        sortField: "element_name"
                     },
                     {
                         title: "PROCESS",
@@ -81,8 +91,10 @@
         },
         methods: {
             onAction(action, rowData, index) {
-                let link = '/tasks/' + rowData.uuid + '/edit';
-                window.location = link;
+                if (action === 'edit') {
+                    let link = '/tasks/' + rowData.uuid + '/edit';
+                    window.location = link;
+                }
             },
             formatName(user) {
                 if (user === 'undefined' || user === null) {
