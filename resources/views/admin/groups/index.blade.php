@@ -20,8 +20,9 @@
         <div class="col"></div>
         <button type="submit" class="btn btn-secondary mr-3"> <i class="fas fa-plus"></i> Group</button>
     </div>
-    <div id="groups-listing"></div>
-    <div class="text-secondary">1 - 4 of 4 Groups</div>
+    <div id="groups-listing">
+        <groups-listing></groups-listing>
+    </div>
 </div>
 @endsection
 

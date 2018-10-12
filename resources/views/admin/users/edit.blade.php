@@ -4,11 +4,11 @@
   {{__('Edit Users')}}
 @endsection
 
-@Section('sidebar')
+@section('sidebar')
 @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
 @endsection
 
-@Section('content')
+@section('content')
 <div class="container">
   <h1>Edit User</h1>
   <div class="row">
@@ -60,5 +60,5 @@
 </div>
 @endsection
 
-@Section('js')
+@section('js')
 @endsection

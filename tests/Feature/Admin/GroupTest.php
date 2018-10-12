@@ -36,7 +36,7 @@ class GroupTest extends TestCase
       $response = $this->webCall('GET', '/admin/groups/'.$group->uuid_text . '/edit');
       $response->assertStatus(200);
       $response->assertViewIs('admin.groups.edit');
-      $response->assertSee('Test Edit');
+      $response->assertSee('Edit Group');
     }
 
     public function testShowRoute()
