@@ -2,7 +2,7 @@
     <div id="editor-container">
         <div class="toolbar">
             <nav class="navbar navbar-expand-md override">
-                <span>{{process.name}} - {{script.title}} ({{script.language}})</span>
+                <span> {{script.title}} ({{script.language}})</span>
                 <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
                     <ul class="navbar-nav">
                         <li class="nav-item ">
@@ -49,7 +49,7 @@ import MonacoEditor from "vue-monaco";
 import _ from "lodash";
 
 export default {
-  props: [, "process", "script"],
+  props: ["process", "script"],
   data() {
     return {
         resizing: false,
@@ -102,11 +102,11 @@ export default {
         });
     },
     onClose() {
-      window.location.href = "/designer/" + this.process.uid;
+      window.location.href = '/processes/scripts';
     },
     save() {
       ProcessMaker.apiClient
-        .put("process/" + this.process.uid + "/script/" + this.script.uid, {
+        .put("scripts/" + this.script.uuid, {
           code: this.code
         })
         .then(response => {

@@ -19,13 +19,11 @@ class ScriptController extends Controller
 
     public function show()
     {
-        \Illuminate\Support\Facades\Log::error('3333333');
         return view('processes.scripts.edit');
     }
 
-    public function edit()
+    public function edit(Script $script)
     {
-        \Illuminate\Support\Facades\Log::error('22222');
-        return view('processes.scripts.edit');
+        return view('processes.scripts.edit', ['script' => $script]);
     }
 }

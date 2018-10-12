@@ -67,6 +67,7 @@ class Script extends Model
         if ($existing) {
             // ignore the unique rule for this id
             $rules['title'] .= ',' . $existing->uuid . ',uuid';
+            $rules['language'] .= ',' . $existing->uuid . ',uuid';
         }
         return $rules;
     }
