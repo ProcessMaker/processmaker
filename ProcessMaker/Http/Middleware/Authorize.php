@@ -9,14 +9,15 @@ class Authorize
 {
     public function handle(Request $request, Closure $next)
     {
-        // At this point we should have already checked if the
-        // user is logged in so we can assume $request->user()
+        // Get the action that the user is requesting
         $permission = $request->route()->action['as'];
 
         // Remove the api route prefix since they will have the
         // same permissions as the web routes.
         $permission = preg_replace('/^api\./', '', $permission);
 
+        // At this point we should have already checked if the
+        // user is logged in so we can assume $request->user()
         if ($request->user()->hasPermission($permission)) {
             return $next($request);
         } elseif ($this->allowIndexForShow($permission, $request)) {
