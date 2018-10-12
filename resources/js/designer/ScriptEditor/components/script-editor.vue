@@ -107,7 +107,9 @@ export default {
     save() {
       ProcessMaker.apiClient
         .put("scripts/" + this.script.uuid, {
-          code: this.code
+          code: this.code,
+          title: this.script.title,
+          language: this.script.language
         })
         .then(response => {
           ProcessMaker.alert(" Successfully saved", "success");
