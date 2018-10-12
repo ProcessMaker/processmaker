@@ -2,13 +2,13 @@
 namespace Tests\Feature\Api;
 
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
+use Tests\Feature\Shared\RequestHelper;
 
 /**
  * Tests routes related to tokens list and show
@@ -20,11 +20,10 @@ use Tests\TestCase;
 class TasksTest extends TestCase
 {
 
-    use DatabaseTransactions;
     use WithFaker;
     use ResourceAssertionsTrait;
+    use RequestHelper;
 
-    protected $user;
     protected $resource = 'tasks';
     protected $structure = [
         'uuid',
@@ -43,19 +42,6 @@ class TasksTest extends TestCase
     ];
 
     /**
-     * Initialize the controller tests
-     *
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-        //Login as an valid user
-        $this->user = factory(User::class)->create();
-        $this->actingAs($this->user, 'api');
-        $this->request = factory(ProcessRequest::class)->create();
-    }
-
-    /**
      * Test to get the list of tokens
      */
     public function testGetListOfTasks()
@@ -67,7 +53,7 @@ class TasksTest extends TestCase
         ]);
         //Get a page of tokens
         $route = route('api.' . $this->resource . '.index', ['per_page' => 10, 'page' => 2]);
-        $response = $this->json('GET', $route);
+        $response = $this->apiCall('GET', $route);
         //Verify the status
         $response->assertStatus(200);
         //Verify the structure
@@ -92,7 +78,7 @@ class TasksTest extends TestCase
 
         //Get active tokens
         $route = route('api.' . $this->resource . '.index', ['per_page' => 10, 'filter' => 'ACTIVE']);
-        $response = $this->json('GET', $route);
+        $response = $this->apiCall('GET', $route);
         //Verify the status
         $response->assertStatus(200);
         //Verify the structure
@@ -117,7 +103,7 @@ class TasksTest extends TestCase
 
         //List sorted by completed_at returns as first row {"completed_at": null}
         $route = route('api.' . $this->resource . '.index', ['order_by' => 'completed_at', 'order_direction' => 'asc']);
-        $response = $this->json('GET', $route);
+        $response = $this->apiCall('GET', $route);
         //Verify the status
         $response->assertStatus(200);
         //Verify the structure
@@ -148,7 +134,7 @@ class TasksTest extends TestCase
         // Get the second page, should have 5 items
         $perPage = 5;
         $page = 2;
-        $response = $this->json('GET', route('api.' . $this->resource . '.index', ['per_page' => $perPage, 'page' => $page]));
+        $response = $this->apiCall('GET', route('api.' . $this->resource . '.index', ['per_page' => $perPage, 'page' => $page]));
         $response->assertJsonCount($perPage, 'data');
         // Verify the meta information
         $this->assertArraySubset(
@@ -177,7 +163,7 @@ class TasksTest extends TestCase
 
         //Test that is correctly displayed
         $route = route('api.' . $this->resource . '.show', [$token->uuid_text]);
-        $response = $this->json('GET', $route);
+        $response = $this->apiCall('GET', $route);
         //Check the status
         $response->assertStatus(200);
         //Check the structure
@@ -198,7 +184,7 @@ class TasksTest extends TestCase
 
         //Test that is correctly displayed
         $route = route('api.' . $this->resource . '.show', [$token->uuid_text, 'include' => 'user,definition']);
-        $response = $this->json('GET', $route);
+        $response = $this->apiCall('GET', $route);
         //Check the status
         $this->assertStatus(200, $response);
         //Check the structure

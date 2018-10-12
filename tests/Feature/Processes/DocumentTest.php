@@ -4,7 +4,6 @@ namespace Tests\Feature\Processes;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Feature\Shared\RequestHelper;
 
 class DocumentTest extends TestCase
@@ -18,9 +17,8 @@ class DocumentTest extends TestCase
      */
     public function testIndexRoute()
     {
-
       // get the URL
-      $response = $this->apiCall('GET', '/processes/documents');
+      $response = $this->webCall('GET', '/processes/documents');
       // check the correct view is called
       $response->assertViewIs('processes.documents.index');
 

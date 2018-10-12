@@ -3,7 +3,6 @@
 namespace Tests\Feature\Api;
 
 use Faker\Factory as Faker;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
@@ -11,10 +10,9 @@ use Tests\Feature\Shared\RequestHelper;
 
 class ScriptsTest extends TestCase
 {
-    use DatabaseTransactions;
     use RequestHelper;
 
-    const API_TEST_SCRIPT = '/api/1.0/scripts';
+    const API_TEST_SCRIPT = '/scripts';
 
     const STRUCTURE = [
         'uuid',

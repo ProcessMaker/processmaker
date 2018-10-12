@@ -2,28 +2,30 @@
 
 // Routes related to Authentication (password reset, etc)
 // Auth::routes();
-Route::namespace('Admin')->prefix('admin')->group(function(){
-  Route::resource('about', 'AboutController');
-  Route::resource('groups', 'GroupController')->only(['index', 'edit', 'show']);
-  Route::resource('preferences', 'PreferenceController');
-  Route::resource('users', 'UserController');
-});
 
-Route::namespace('Process')->prefix('processes')->group(function(){
-  Route::resource('environment_variables', 'EnvironmentVariablesController');
-  Route::resource('documents', 'DocumentController');
-  Route::resource('forms', 'FormController');
-  Route::resource('scripts', 'ScriptController');
-});
-Route::resource('processes', 'ProcessController');
-Route::resource('profile', 'ProfileController')->only([
-    'index', 'edit', 'show'
-]);
-Route::resource('requests', 'RequestController')->only([
-    'index', 'edit', 'show'
-]);
-Route::resource('tasks', 'TaskController');
+Route::group(['middleware' => ['authorize']], function() {
+    Route::namespace('Admin')->prefix('admin')->group(function(){
+    Route::resource('about', 'AboutController');
+    Route::resource('groups', 'GroupController')->only(['index', 'edit', 'show']);
+    Route::resource('preferences', 'PreferenceController');
+    Route::resource('users', 'UserController');
+    });
 
+    Route::namespace('Process')->prefix('processes')->group(function(){
+    Route::resource('environment_variables', 'EnvironmentVariablesController');
+    Route::resource('documents', 'DocumentController');
+    Route::resource('forms', 'FormController');
+    Route::resource('scripts', 'ScriptController');
+    });
+    Route::resource('processes', 'ProcessController');
+    Route::resource('profile', 'ProfileController')->only([
+        'index', 'edit', 'show'
+    ]);
+    Route::resource('requests', 'RequestController')->only([
+        'index', 'edit', 'show'
+    ]);
+    Route::resource('tasks', 'TaskController');
+});
 // Add our broadcasting routes
 Broadcast::routes();
 

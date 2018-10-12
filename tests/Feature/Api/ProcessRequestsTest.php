@@ -2,7 +2,6 @@
 namespace Tests\Feature\Api;
 
 use Faker\Factory as Faker;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Http\Controllers\Api\ResourceRequestsTrait;
@@ -20,12 +19,11 @@ use Tests\TestCase;
 class ProcessRequestsTest extends TestCase
 {
 
-    use DatabaseTransactions;
     use RequestHelper;
     use ResourceRequestsTrait;
     use WithFaker;
 
-    const API_TEST_URL = '/api/1.0/requests';
+    const API_TEST_URL = '/requests';
 
     const STRUCTURE = [
         'uuid',

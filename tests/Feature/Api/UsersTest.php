@@ -3,7 +3,6 @@
 namespace Tests\Feature\Api;
 
 use Faker\Factory as Faker;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
@@ -12,10 +11,9 @@ use Illuminate\Support\Facades\Hash;
 class UsersTest extends TestCase
 {
 
-  use DatabaseTransactions;
   use RequestHelper;
 
-  const API_TEST_URL = '/api/1.0/users';
+  const API_TEST_URL = '/users';
 
   const STRUCTURE = [
       'uuid',

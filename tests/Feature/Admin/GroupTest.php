@@ -4,8 +4,6 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
 use Tests\Feature\Shared\RequestHelper;
@@ -13,7 +11,6 @@ use Tests\Feature\Shared\RequestHelper;
 class GroupTest extends TestCase
 {
     use RequestHelper;
-    use DatabaseTransactions;
      /**
      * Test to make sure the controller and route work with the view
      *
@@ -41,14 +38,13 @@ class GroupTest extends TestCase
 
     public function testShowRoute()
     {
-
       $this->markTestSkipped(
               'This test fails for no reason.'
             );
-        $group_uuid = factory(Group::class)->create(['name'=>'Test show'])->uuid_text;
-        // $response = $this->webGet('/admin/groups/'. $group_uuid);
-        $response = $this->actingAs($this->user)->get('/admin/groups/'. $group_uuid);
+        $group = factory(Group::class)->create(['name'=>'Test show']);
+        $response = $this->webGet('/admin/groups/'. $group->uuid_text );
         $response->assertStatus(200);
+        $response->assertViewIs('admin.groups.show');
         $response->assertSee('Test show');
     }
 }

@@ -1,7 +1,6 @@
 <?php
 namespace Tests\Feature\Api;
 
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
@@ -10,6 +9,7 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
+use Tests\Feature\Shared\RequestHelper;
 
 /**
  * Tests routes related to processes / CRUD related methods
@@ -19,11 +19,10 @@ use Tests\TestCase;
 class ProcessTest extends TestCase
 {
 
-    use DatabaseTransactions;
     use WithFaker;
+    use RequestHelper;
     use ResourceAssertionsTrait;
 
-    protected $user;
     protected $resource = 'processes';
     protected $structure = [
         'uuid',
@@ -36,17 +35,6 @@ class ProcessTest extends TestCase
         'updated_at'
     ];
 
-    /**
-     * Initialize the controller tests
-     *
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-        //Login as an valid user
-        $this->user = factory(User::class)->create();
-        $this->actingAs($this->user, 'api');
-    }
 
     /**
      * Test to verify our processes listing api endpoint works without any filters
@@ -165,11 +153,11 @@ class ProcessTest extends TestCase
         factory(Process::class, $rowsToAdd)->create();
 
         // The first page should have 5 items;
-        $response = $this->json('GET', route('api.processes.index', ['per_page' => 5, 'page' => 1]));
+        $response = $this->apiCall('GET', route('api.processes.index', ['per_page' => 5, 'page' => 1]));
         $response->assertJsonCount(5, 'data');
 
         // The second page should have the modulus of 2+$initialRows
-        $response = $this->json('GET', route('api.processes.index', ['per_page' => 5, 'page' => 2]));
+        $response = $this->apiCall('GET', route('api.processes.index', ['per_page' => 5, 'page' => 2]));
         $response->assertJsonCount((2 + $initialRows) % 5, 'data');
     }
 
@@ -218,7 +206,7 @@ class ProcessTest extends TestCase
         $array = array_diff($base->toArray(), [static::$DO_NOT_SEND]);
         //Add a bpmn content
         $array['bpmn'] = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><bpmn:definitions></bpmn:definitions>';
-        $response = $this->json('POST', $route, $array);
+        $response = $this->apiCall('POST', $route, $array);
         $response->assertStatus(201);
         $response->assertJsonStructure($this->structure);
         $data = $response->json();

@@ -1,13 +1,13 @@
 <?php
 namespace Tests\Feature\Api;
 
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
+use Tests\Feature\Shared\RequestHelper;
 
 /**
  * Test the process execution with requests
@@ -17,15 +17,9 @@ use Tests\TestCase;
 class ProcessScriptsTest extends TestCase
 {
 
-    use DatabaseTransactions;
     use ResourceAssertionsTrait;
     use WithFaker;
-
-    /**
-     *
-     * @var User $user
-     */
-    protected $user;
+    use RequestHelper;
 
     /**
      * @var Process $process
@@ -46,12 +40,8 @@ class ProcessScriptsTest extends TestCase
      * Initialize the controller tests
      *
      */
-    protected function setUp()
+    protected function withUserSetup()
     {
-        parent::setUp();
-        //Login as an valid user
-        $this->user = factory(User::class)->create();
-        $this->actingAs($this->user, 'api');
         $this->process = $this->createTestProcess();
     }
 
@@ -77,7 +67,7 @@ class ProcessScriptsTest extends TestCase
         //Start a process request
         $route = route('api.process_events.trigger', [$this->process->uuid_text, 'event' => '_2']);
         $data = [];
-        $response = $this->json('POST', $route, $data);
+        $response = $this->apiCall('POST', $route, $data);
         //Verify status
         $this->assertStatus(201, $response);
         //Verify the structure
@@ -85,7 +75,7 @@ class ProcessScriptsTest extends TestCase
         $request = $response->json();
         //Get the active tasks of the request
         $route = route('api.tasks.index');
-        $response = $this->json('GET', $route);
+        $response = $this->apiCall('GET', $route);
         $tasks = $response->json('data');
         //Check that two script tasks were completed.
         $this->assertArraySubset([
