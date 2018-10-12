@@ -98,7 +98,7 @@
             },
             onDelete(data, index) {
                 let that = this;
-                ProcessMaker.confirmModal('Caution!', '<b>Are you sure to delete the group </b>' + data.title + '?', '', function () {
+                ProcessMaker.confirmModal('Caution!', '<b>Are you sure to delete the group </b>' + data.name + '?', '', function () {
                     ProcessMaker.apiClient
                         .delete('groups/' + data.uuid)
                         .then(response => {

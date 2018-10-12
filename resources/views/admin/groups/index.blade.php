@@ -21,8 +21,8 @@
                         <a href="#" @click="show" class="btn btn-action"><i class="fas fa-plus"></i> {{__('Group')}}</a>
                     </div>
                 </div>
-                {{--<modal-create-group :show="groupModal" @close="groupModal=false"
-                                    v-on:reload="reload"></modal-create-group>--}}
+                <modal-create-group :show="groupModal" @close="groupModal=false" v-on:reload="reload">
+                </modal-create-group>
                 <groups-listing ref="groupList" :filter="filter" v-on:reload="reload"></groups-listing>
             </div>
         </div>

@@ -13,7 +13,7 @@ use Spatie\BinaryUuid\HasBinaryUuid;
  * @property string $name
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
- * 
+ *
  *   @OA\Schema(
  *   schema="groupsEditable",
  *   @OA\Property(property="uuid", type="string", format="uuid"),
@@ -39,14 +39,14 @@ class Group extends Model
     public static function rules($existing = null)
     {
         $rules = [
-            'name' => 'required|string|unique:groups,name'
+            'name' => 'required|string|min:3|unique:groups,name'
         ];
 
         if ($existing) {
             $rules['name'] = [
                 'required',
                 'string',
-                Rule::unique('groups')->ignore($existing->uuid)
+                Rule::unique('groups')->ignore($existing->uuid, 'uuid')
             ];
         }
 
@@ -57,7 +57,7 @@ class Group extends Model
     {
         return $this->hasMany(GroupMember::class);
     }
-    
+
     public function memberships()
     {
         return $this->morphMany(GroupMember::class, 'member', null, 'member_uuid');

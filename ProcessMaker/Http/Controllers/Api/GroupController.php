@@ -116,11 +116,12 @@ class GroupController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate(Group::rules());
         $group = new Group();
-        $group->fill($request->input());
+        $group->fill($request->json()->all());
+        //validate model
+        $this->validateModel($group, Group::rules());
         $group->saveOrFail();
-        return new GroupResource($group);
+        return new GroupResource($group->refresh());
     }
 
     /**
