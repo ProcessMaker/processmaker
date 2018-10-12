@@ -15,6 +15,7 @@
   <div class="row">
     <div class="col-8">
       <div class="card card-body">
+      {!! Form::model($group) !!}
         <div class="form-group">
           {!! Form::label('name', 'Group Name')!!}
           {!! Form::text('name', null, ['class'=> 'form-control']) !!}
