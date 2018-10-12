@@ -7,11 +7,11 @@
                 <div class="actions">
                     <div class="popout">
                         <b-btn variant="action" @click="onAction('edit-item', props.rowData, props.rowIndex)"
-                               title="Edit"><i class="fas fa-edit"></i></b-btn>
+                               v-b-tooltip.hover title="Edit"><i class="fas fa-edit"></i></b-btn>
                         <b-btn variant="action" @click="onAction('group-item', props.rowData, props.rowIndex)"
-                               title="Remove"><i class="fas fa-users"></i></b-btn>
+                               v-b-tooltip.hover title="Groups"><i class="fas fa-users"></i></b-btn>
                         <b-btn variant="action" @click="onAction('remove-item', props.rowData, props.rowIndex)"
-                               title="Remove"><i class="fas fa-trash-alt"></i></b-btn>
+                               v-b-tooltip.hover title="Remove"><i class="fas fa-trash-alt"></i></b-btn>
                     </div>
                 </div>
             </template>
