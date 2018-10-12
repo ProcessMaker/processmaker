@@ -4,7 +4,7 @@ import ModalGroup from './components/modal-group'
 
 // Bootstrap our Designer application
 new Vue({
-    el: '#groups-listing',
+    el: '#groupIndex',
     data: {
         filter: '',
         groupUid: null,
@@ -17,7 +17,7 @@ new Vue({
     },
     components: {GroupsListing, ModalGroup},
     methods: {
-        showModal() {
+        show() {
             this.labels.panel = 'Create New Group';
             this.groupUid = null;
             this.groupModal = true;
