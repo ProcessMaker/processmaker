@@ -1810,6 +1810,10 @@
                         "description": "Represents a group definition.",
                         "type": "string"
                     },
+                    "description": {
+                        "description": "Represents a group definition.",
+                        "type": "string"
+                    },
                     "status": {
                         "description": "Represents a group definition.",
                         "type": "string",

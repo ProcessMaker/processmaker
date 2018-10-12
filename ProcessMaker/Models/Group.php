@@ -34,12 +34,15 @@ class Group extends Model
 
     protected $fillable = [
         'name',
+        'description',
+        'status',
     ];
 
     public static function rules($existing = null)
     {
         $rules = [
-            'name' => 'required|string|min:3|unique:groups,name'
+            'name' => 'required|string|unique:groups,name',
+            'status' => 'in:ACTIVE,INACTIVE'
         ];
 
         if ($existing) {
