@@ -25,7 +25,7 @@ class GenerateMenus
             });
             //@TODO change the index to the correct blade
             $menu->group(['prefix' => 'tasks'], function($request_items) {
-                $request_items->add(__('Tasks'), ['route' => 'requests.index']);
+                $request_items->add(__('Tasks'), ['route' => 'tasks.index']);
             });
             //@TODO change the index to the correct blade
             $menu->group(['prefix' => 'processes'], function($request_items) {

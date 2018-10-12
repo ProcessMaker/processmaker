@@ -15,8 +15,7 @@ class GroupController extends Controller
    */
   public function index()
   {
-    $groups = Group::all();
-    return view('admin.groups.index', compact('groups'));
+    return view('admin.groups.index');
   }
 
   /**
@@ -29,9 +28,8 @@ class GroupController extends Controller
      return view('admin.groups.edit', compact('group'));
    }
 
-   public function show(Group $group) // show new process to UI
-   { 
-      // from data item in index, once clicked, this page will show with ability to edit and destroy
-      return view('admin.groups.show', compact('group'));
+   public function show(Group $group)
+   {
+       return view('admin.groups.show', compact('group'));
    }
 }

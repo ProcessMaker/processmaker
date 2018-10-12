@@ -194,14 +194,11 @@ class UsersTest extends TestCase
    */
   public function testUpdateUserParametersRequired()
   {
-      $faker = Faker::create();
-
-      $uuid = factory(User::class)->create(['username' => 'mytestusername'])->uuid_text;
       //The post must have the required parameters
-      $url = self::API_TEST_URL . '/' .$uuid;
+      $url = self::API_TEST_URL . '/' . factory(User::class)->create()->uuid_text;
 
       $response = $this->apiCall('PUT', $url, [
-          'username' => 'updatemytestusername'
+          'username' => ''
       ]);
 
       //Validate the header status code
