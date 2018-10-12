@@ -35,7 +35,7 @@ class TasksTest extends TestCase
         $response = $this->webGet('tasks/' . $uuid . '/edit');
         $response->assertStatus(200);
         $response->assertViewIs('tasks.edit');
-        $response->assertSee('Task Details');
+        $response->assertSee('BACK TO TASK LIST');
     }
 
 }
