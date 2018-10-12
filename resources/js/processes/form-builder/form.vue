@@ -22,8 +22,8 @@
             </nav>
         </div>
 
-        <vue-form-builder @change="updateConfig" ref="formbuilder" v-show="mode == 'editor'" config="config"/>
-        <div id="preview" v-if="mode == 'preview'">
+        <vue-form-builder @change="updateConfig" ref="formbuilder" v-show="mode === 'editor'" config="config"/>
+        <div id="preview" v-if="mode === 'preview'">
             <div id="data-input">
                 <div class="card-header">
                     Data Input
@@ -40,7 +40,7 @@
                 <div class="container">
                     <div class="row">
                         <div class="col-sm">
-                            <vue-form-renderer @submit="previewSubmit" v-model="previewData" v-if="mode == 'preview'"
+                            <vue-form-renderer @submit="previewSubmit" v-model="previewData" v-if="mode === 'preview'"
                                                :config="config"/>
                         </div>
                     </div>
@@ -73,7 +73,7 @@
                     items: []
                 }],
                 previewData: null,
-                previewInput: null
+                previewInput: {}
             };
         },
         components: {
@@ -95,7 +95,7 @@
         computed: {
             previewInputValid() {
                 try {
-                    JSON.parse(this.previewInput)
+                    JSON.parse(this.previewInput);
                     return true
                 } catch (err) {
                     return false
@@ -111,6 +111,10 @@
                 name: "Default",
                 items: []
             }];
+            if (this.form.title) {
+                this.$refs.formbuilder.config[0].name = this.form.title;
+            }
+            this.updatePreview({});
         },
         methods: {
             updateConfig(newConfig) {
@@ -128,6 +132,7 @@
             saveForm() {
                 ProcessMaker.apiClient
                     .put('forms/' + this.form.uuid , {
+                        title: this.config[0].name,
                         config: this.config
                     })
                     .then(response => {
