@@ -191,11 +191,10 @@ class GroupController extends Controller
      */
     public function update(Group $group, Request $request)
     {
-        $request->validate(Group::rules());
-
         $group->fill($request->input());
+        //validate model
+        $this->validateModel($group, Group::rules($group));
         $group->saveOrFail();
-
         return response([], 204);
     }
 

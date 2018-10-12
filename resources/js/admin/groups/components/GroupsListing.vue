@@ -94,7 +94,7 @@
                 return '<i class="fas fa-circle ' + bubbleColor[status] + ' small"></i> ' + status.charAt(0).toUpperCase() + status.slice(1);
             },
             onEdit(data, index) {
-                this.$emit('edit', data.uuid);
+                window.location = "/admin/groups/" + data.uuid + "/edit";
             },
             onDelete(data, index) {
                 let that = this;
@@ -106,6 +106,16 @@
                             that.fetch();
                         });
                 });
+            },
+            onAction(action, data, index) {
+                switch (action) {
+                    case "users-item":
+                        //todo
+                        break;
+                    case "permissions-item":
+                       //todo
+                        break;
+                }
             },
             fetch() {
                 this.loading = true;
