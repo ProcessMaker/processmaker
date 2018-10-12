@@ -1,16 +1,17 @@
 <?php
+
 Route::group(['middleware' => 'auth'], function () {
 
 // Routes related to Authentication (password reset, etc)
 // Auth::routes();
-    Route::namespace('Admin')->prefix('admin')->group(function(){
+    Route::namespace('Admin')->prefix('admin')->group(function () {
         Route::resource('about', 'AboutController');
-        Route::resource('groups', 'GroupController');
+        Route::resource('groups', 'GroupController')->only(['index', 'edit', 'show']);
         Route::resource('preferences', 'PreferenceController');
         Route::resource('users', 'UserController');
     });
 
-    Route::namespace('Process')->prefix('processes')->group(function(){
+    Route::namespace('Process')->prefix('processes')->group(function () {
         Route::resource('environment_variables', 'EnvironmentVariablesController');
         Route::resource('documents', 'DocumentController');
         Route::resource('forms', 'FormController');
@@ -23,12 +24,13 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('requests', 'RequestController')->only([
         'index', 'edit', 'show'
     ]);
-    Route::resource('tasks', 'TaskController')->only([
-        'index'
-    ]);
+    Route::resource('tasks', 'TaskController');
 
     $this->get('/', 'HomeController@index')->name('home');
 });
+
+// Add our broadcasting routes
+Broadcast::routes();
 
 // Authentication Routes...
 $this->get('login', 'Auth\LoginController@showLoginForm')->name('login');
@@ -44,7 +46,4 @@ $this->post('password/reset', 'Auth\ResetPasswordController@reset');
 $this->get('password/success', function () {
     return view('auth.passwords.success', ['title' => __('Password Reset')]);
 })->name('password-success');
-// Add our broadcasting routes
-Broadcast::routes();
-
 
