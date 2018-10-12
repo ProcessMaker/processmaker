@@ -15,12 +15,6 @@
  *     ),
  *     @OA\Server(url="/api/1.0"),
  *     @OA\Components(
- *         @OA\SecurityScheme(
- *             securityScheme="pm-api",
- *             type="http",
- *             scheme="bearer",
- *         ),
- * 
  *         @OA\Parameter(
  *             parameter="filter",
  *             name="filter",
