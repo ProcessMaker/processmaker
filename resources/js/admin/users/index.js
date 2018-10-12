@@ -19,12 +19,10 @@ new Vue({
             this.userModal = true;
         },
         reload() {
-            this.$refs.listing.dataManager([
-                {
-                    field: 'updated_at',
-                    direction: 'desc'
-                }
-            ]);
+            this.$refs.listing.dataManager([{
+                field: 'updated_at',
+                direction: 'desc'
+            }]);
         }
     }
 });
