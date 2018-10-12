@@ -80,9 +80,7 @@ class GroupsTest extends TestCase
    */
   public function testListGroup()
   {
-
-      Group::query()->delete();
-
+      $existing = Group::count();
       $faker = Faker::create();
 
       factory(Group::class, 10)->create();
@@ -99,7 +97,7 @@ class GroupsTest extends TestCase
       ]);
 
       // Verify count
-      $this->assertEquals(10, $response->json()['meta']['total']);
+      $this->assertEquals(10 + $existing, $response->json()['meta']['total']);
 
   }
 

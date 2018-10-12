@@ -60,7 +60,6 @@ class GroupMembersTest extends TestCase
    */
   public function testCreateGroupMembershipForUser()
   {
-      GroupMember::query()->delete();
       $user = factory(User::class)->create();
       $group = factory(Group::class)->create();
 
@@ -83,7 +82,6 @@ class GroupMembersTest extends TestCase
 
   public function testCreateGroupMembershipForGroup()
   {
-      GroupMember::query()->delete();
       $group1 = factory(Group::class)->create();
       $group2 = factory(Group::class)->create();
 

@@ -24,7 +24,7 @@ class CreateGroupMembersTable extends Migration
             $table->index('group_uuid');
             $table->index(['member_uuid','member_type']);
 
-            $table->foreign('group_uuid')->references('uuid')->on('groups')->onDelete('cascade');;
+            $table->foreign('group_uuid')->references('uuid')->on('groups');
         });
     }
 
