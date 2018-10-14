@@ -14,15 +14,17 @@
   <h1 style="margin:15px">Edit Group</h1>
   <div class="row">
     <div class="col-8">
-      <div class="card card-body">
+      <div class="card card-body" >
       {!! Form::model($group) !!}
         <div class="form-group">
           {!! Form::label('name', 'Group Name')!!}
           {!! Form::text('name', null, ['class'=> 'form-control']) !!}
+          <div class="text-danger" v-if="addError.title">@{{addError.title[0]}}</div>
         </div>
         <div class="form-group">
           {!! Form::label('description', 'Description') !!}
           {!! Form::textarea('description', null, ['class'=> 'form-control', 'rows' => 3]) !!}
+          <div class="text-danger" v-if="addError.description">@{{addError.title[0]}}</div>
         </div>
         <div class="form-group p-0">
           {!! Form::label('status', 'Status'); !!}
@@ -31,7 +33,7 @@
         
         <div class="card-body text-right pr-0">
           {!! Form::button('Cancel', ['class'=>'btn btn-outline-success']) !!}
-          {!! Form::submit('Save', ['class'=>'btn btn-success ml-2']) !!}
+          {!! Form::button('Save', ['class'=>'btn btn-success ml-2', 'type' => 'submit', '@click' => 'onSubmit']) !!}
         </div>
         {!! Form::close() !!}
       </div>
@@ -45,4 +47,40 @@
 @endsection
 
 @section('js')
+<script>
+  console.log(data);
+  new Vue ({
+    el: '#groupEdit',
+    data: {
+      name: '',
+      description: '',
+      status: '',
+      addError: {},
+      submitted: false
+    },
+    methods: {
+      onSubmit() {
+        console.log(data);
+        this.submitted = true;
+        ProcessMaker.apiClient.patch("/groups/" + group.uuid, {
+          name: this.name,
+          description: this.description
+        })
+        .then(response => {
+          console.log(response);
+          ProcessMaker.alert('Group successfully updated', 'success')
+          window.location = "/admin/groups/" + group.uuid
+        })
+        .catch(error => {
+          if (error.response.status === 422) {
+            this.addError = error.response.data.errors
+          }
+        })
+        .finally(()=> {
+          this.submitted = false
+        })
+      }
+    }
+  })       
+</script>
 @endsection

@@ -25,9 +25,17 @@ class GroupController extends Controller
    */
    public function edit(Group $group)
    {
+     $group = Group::find($group);
      return view('admin.groups.edit', compact('group'));
    }
+   public function update(Group $group)
+   {
+     
+   }
+   public function store(Group $group)
+   {
 
+   }
    public function show(Group $group)
    {
        return view('admin.groups.show', compact('group'));
