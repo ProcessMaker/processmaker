@@ -13,9 +13,11 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::namespace('Process')->prefix('processes')->group(function () {
         Route::resource('environment_variables', 'EnvironmentVariablesController');
+        Route::resource('environment-variables', 'EnvironmentVariablesController');
         Route::resource('documents', 'DocumentController');
         Route::resource('forms', 'FormController');
         Route::resource('scripts', 'ScriptController');
+        Route::resource('categories', 'ProcessCategoryController');
     });
     Route::resource('processes', 'ProcessController');
     Route::resource('profile', 'ProfileController')->only([
