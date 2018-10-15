@@ -2,7 +2,6 @@
 namespace Tests\Feature\Api;
 
 use Faker\Factory as Faker;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Http\Controllers\Api\ResourceRequestsTrait;
@@ -20,7 +19,6 @@ use Tests\TestCase;
 class ProcessRequestsTest extends TestCase
 {
 
-    use DatabaseTransactions;
     use RequestHelper;
     use ResourceRequestsTrait;
     use WithFaker;
