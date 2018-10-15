@@ -10,8 +10,6 @@ use ProcessMaker\Http\Resources\ApiCollection;
 
 class FormController extends Controller
 {
-    use ResourceRequestsTrait;
-
     /**
      * Get a list of Forms.
      *
@@ -130,12 +128,11 @@ class FormController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate(Form::rules());
         $form = new Form();
-        $form->fill($request->json()->all());
-        //validate model
-        $this->validateModel($form, Form::rules($form));
+        $form->fill($request->input());
         $form->saveOrFail();
-        return new ApiResource($form->refresh());
+        return new ApiResource($form);
     }
 
     /**
@@ -173,10 +170,10 @@ class FormController extends Controller
      */
     public function update(Form $form, Request $request)
     {
-        $form->fill($request->json()->all());
-        //validate model
-        $this->validateModel($form, Form::rules($form));
+        $request->validate(Form::rules($form));
+        $form->fill($request->input());
         $form->saveOrFail();
+
         return response([], 204);
     }
 
