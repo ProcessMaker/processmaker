@@ -50,6 +50,11 @@
 
   new Vue ({
     el: '#groupEdit',
+    data(){
+      return {
+        existing: @json($group)
+      }
+    },
     // data: {
     //   name: {!! "'".$group->name."'," !!}
     //   description: '',
