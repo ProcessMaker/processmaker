@@ -1,21 +1,21 @@
 <?php
 
+Route::group(['middleware' => ['auth', 'authorize']], function () {
+
 // Routes related to Authentication (password reset, etc)
 // Auth::routes();
-
-Route::group(['middleware' => ['authorize']], function() {
-    Route::namespace('Admin')->prefix('admin')->group(function(){
-    Route::resource('about', 'AboutController');
-    Route::resource('groups', 'GroupController')->only(['index', 'edit', 'show']);
-    Route::resource('preferences', 'PreferenceController');
-    Route::resource('users', 'UserController');
+    Route::namespace('Admin')->prefix('admin')->group(function () {
+        Route::resource('about', 'AboutController');
+        Route::resource('groups', 'GroupController')->only(['index', 'edit', 'show']);
+        Route::resource('preferences', 'PreferenceController');
+        Route::resource('users', 'UserController');
     });
 
-    Route::namespace('Process')->prefix('processes')->group(function(){
-    Route::resource('environment_variables', 'EnvironmentVariablesController');
-    Route::resource('documents', 'DocumentController');
-    Route::resource('forms', 'FormController');
-    Route::resource('scripts', 'ScriptController');
+    Route::namespace('Process')->prefix('processes')->group(function () {
+        Route::resource('environment_variables', 'EnvironmentVariablesController');
+        Route::resource('documents', 'DocumentController');
+        Route::resource('forms', 'FormController');
+        Route::resource('scripts', 'ScriptController');
     });
     Route::resource('processes', 'ProcessController');
     Route::resource('profile', 'ProfileController')->only([
@@ -25,7 +25,10 @@ Route::group(['middleware' => ['authorize']], function() {
         'index', 'edit', 'show'
     ]);
     Route::resource('tasks', 'TaskController');
+
+    $this->get('/', 'HomeController@index')->name('home');
 });
+
 // Add our broadcasting routes
 Broadcast::routes();
 
@@ -44,8 +47,3 @@ $this->get('password/success', function () {
     return view('auth.passwords.success', ['title' => __('Password Reset')]);
 })->name('password-success');
 
-$this->middleware(['auth'])->group(function () {
-
-    $this->get('/', 'HomeController@index')->name('home');
-
-});
