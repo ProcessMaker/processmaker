@@ -21,20 +21,16 @@ class GroupController extends Controller
   /**
    * Get a specific group
    *
-   * @return \Illuminate\View\View|\Illuminate\Contracts\View
+   
    */
    public function edit(Group $group)
    {
-     $group = Group::find($group);
+     $group = Group::find($group->uuid_text);
      return view('admin.groups.edit', compact('group'));
    }
    public function update(Group $group)
    {
      
-   }
-   public function store(Group $group)
-   {
-
    }
    public function show(Group $group)
    {
