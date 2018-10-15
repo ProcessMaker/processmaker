@@ -217,7 +217,7 @@ class ProcessTest extends TestCase
             ]);
         $array = array_diff($base->toArray(), [static::$DO_NOT_SEND]);
         //Add a bpmn content
-        $array['bpmn'] = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><bpmn:definitions></bpmn:definitions>';
+        $array['bpmn'] = trim(Process::getProcessTemplate('OnlyStartElement.bpmn'));
         $response = $this->json('POST', $route, $array);
         $response->assertStatus(201);
         $response->assertJsonStructure($this->structure);
@@ -433,5 +433,44 @@ class ProcessTest extends TestCase
                 'name'
             ]
         );
+    }
+
+    /**
+     * Test Update BPMN endpoint.
+     */
+    public function testUpdateBPMN()
+    {
+        $process = factory(Process::class)->create([
+            'bpmn' => Process::getProcessTemplate('OnlyStartElement.bpmn')
+        ]);
+        $uuid = $process->uuid_text;
+        $newBpmn = trim(Process::getProcessTemplate('SingleTask.bpmn'));
+        $route = route('api.' . $this->resource . '.update', [$uuid]);
+        $response = $this->json('PUT', $route, [
+            'bpmn' => $newBpmn
+        ]);
+        //validate status
+        $this->assertStatus(200, $response);
+        $response->assertJsonStructure($this->structure);
+        $updatedProcess = Process::withUuid($uuid)->first();
+        $this->assertEquals($newBpmn, $updatedProcess->bpmn);
+    }
+
+    /**
+     * Test Update BPMN endpoint with and invalid BPMN content.
+     */
+    public function testUpdateInvalidBPMN()
+    {
+        $process = factory(Process::class)->create();
+        $uuid = $process->uuid_text;
+        $newBpmn = 'Invalid BPMN content';
+        $route = route('api.' . $this->resource . '.update', [$uuid]);
+        $response = $this->json('PUT', $route, [
+            'bpmn' => $newBpmn
+        ]);
+        //validate status
+        $this->assertStatus(422, $response);
+        $response->assertJsonStructure($this->errorStructure);
+        $response->assertJsonStructure(['errors' => ['bpmn']]);
     }
 }

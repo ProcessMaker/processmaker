@@ -61,7 +61,6 @@ class Process extends Model implements HasMedia
     protected $guarded = [
         'uuid',
         'user_uuid',
-        'bpmn',
         'created_at',
         'updated_at',
     ];
@@ -118,7 +117,7 @@ class Process extends Model implements HasMedia
             'description' => 'required',
             'status' => 'in:ACTIVE,INACTIVE',
             'process_category_uuid' => 'nullable|exists:process_categories,uuid',
-            //'user_uuid' => 'exists:users,uuid',
+            'bpmn' => 'nullable|bpmn_schema',
         ];
 
         if ($existing) {
