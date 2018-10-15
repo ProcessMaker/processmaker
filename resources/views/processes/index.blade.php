@@ -39,17 +39,17 @@
       <div class="modal-body">
         <div class="form-group">
           {!!Form::label('title', 'Title');!!}
-          {!!Form::text('title', null, ['class'=> 'form-control'])!!}
+          {!!Form::text('title', null, ['class'=> 'form-control', 'v-model'=> 'title'])!!}
           <div class="invalid-feedback"></div>
         </div>
         <div class="form-group">
           {!!Form::label('description', 'Description');!!}
-          {!!Form::textarea('description', null, ['class'=> 'form-control', 'rows' => '3'])!!}
+          {!!Form::textarea('description', null, ['class'=> 'form-control', 'rows' => '3', 'v-model'=> 'description'])!!}
           <div class="invalid-feedback"></div>
         </div>
         <div class="form-group">
           {!!Form::label('category', 'Category');!!}
-          {!!Form::select('category', [], null, ['class'=> 'form-control'])!!}
+          {!!Form::select('category', [], null, ['class'=> 'form-control', 'v-model'=> 'category'])!!}
           <div class="invalid-feedback"></div>
         </div>
       </div>
@@ -63,5 +63,22 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/processes/index.js')}}"></script>
+<script>
+  new Vue({
+    el: '#addProcess',
+    data: {
+      title: '',
+      category: '',
+      description: '',
+      addError: {},
+      submitted: false,
+    },
+    methods: {
+      onSubmit() {
+          console.log('HAY');
+        }
+      }
+  })       
+</script>
+<script src="{{mix('js/processes/index.js')}}"></script>
 @endsection
