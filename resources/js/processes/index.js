@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import ProcessesListing from './components/ProcessesListing'
-import ModalCreateProcess from "./components/modal/modal-process-add-edit.vue";
 
 new Vue({
     el: '#processIndex',
@@ -23,12 +22,10 @@ new Vue({
             this.processModal = true;
         },
         reload() {
-            this.$refs.processListing.dataManager([
-                {
-                    field: 'updated_at',
-                    direction: 'desc'
-                }
-            ]);
+            this.$refs.processListing.dataManager([{
+                field: 'updated_at',
+                direction: 'desc'
+            }]);
         }
     }
 });
