@@ -18,16 +18,16 @@
       {!! Form::open() !!}
         <div class="form-group">
           {!! Form::label('name', 'Group Name')!!}
-          {!! Form::text('name', $group->name, ['class' => 'form-control', 'v-model' => 'name']) !!}
+          {!! Form::text('name', $group->name, ['class' => 'form-control']) !!}
         </div>
         <div class="form-group">
           {!! Form::label('description', 'Description') !!}
-          {!! Form::textarea('description', null, ['class'=> 'form-control', 'rows' => 3, 'v-model' => 'description']) !!}
+          {!! Form::textarea('description', null, ['class'=> 'form-control', 'rows' => 3]) !!}
           
         </div>
         <div class="form-group p-0">
           {!! Form::label('status', 'Status'); !!}
-          {!! Form::select('status', ['Active', 'Inactive', 'Draft'], null, ['class' => 'form-control', 'v-model' => 'status']) !!}
+          {!! Form::select('status', ['Active', 'Inactive', 'Draft'], null, ['class' => 'form-control']) !!}
         </div>
         
         <div class="card-body text-right pr-0">
@@ -50,37 +50,37 @@
 
   new Vue ({
     el: '#groupEdit',
-    data: {
-      name: {!! "'".$group->name."'," !!}
-      description: '',
-      status: '',
-      // addError: {},
-      // submitted: false
-    },
-    methods: {
-      onEdit() {
-        console.log(this.name);
-        console.log(this.description);
-        // this.submitted = true;
-        // ProcessMaker.apiClient.put("/groups/" + group.uuid, {
-        //   name: this.name,
-        //   description: this.description
-        // })
-        // .then(response => {
-        //   console.log(response);
-        //   // ProcessMaker.alert('Group successfully updated', 'success')
-        //   // window.location = "/admin/groups/" + group.uuid
-        // })
-        // .catch(error => {
-        //   if (error.response.status === 422) {
-        //     this.addError = error.response.data.errors
-        //   }
-        // })
-        // .finally(()=> {
-        //   this.submitted = false
-        // })
-      }
-    }
+    // data: {
+    //   name: {!! "'".$group->name."'," !!}
+    //   description: '',
+    //   status: '',
+    //   // addError: {},
+    //   // submitted: false
+    // },
+    // methods: {
+    //   onEdit() {
+    //     console.log(this.name);
+    //     console.log(this.description);
+    //     this.submitted = true;
+    //     ProcessMaker.apiClient.put("/groups/" + group.uuid, {
+    //       name: this.name,
+    //       description: this.description
+    //     })
+    //     .then(response => {
+    //       console.log(response);
+    //       // ProcessMaker.alert('Group successfully updated', 'success')
+    //       // window.location = "/admin/groups/" + group.uuid
+    //     })
+    //     .catch(error => {
+    //       if (error.response.status === 422) {
+    //         this.addError = error.response.data.errors
+    //       }
+    //     })
+    //     .finally(()=> {
+    //       this.submitted = false
+    //     })
+    //   }
+    // }
   })       
 </script>
 @endsection
