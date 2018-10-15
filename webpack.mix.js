@@ -26,6 +26,7 @@ mix.webpackConfig({
     }).js('resources/js/app-layout.js', 'public/js')
     .js('resources/js/designer/main.js', 'public/js/designer')
     .js('resources/js/admin/users/index.js', 'public/js/admin/users')
+    .js('resources/js/admin/users/edit.js', 'public/js/admin/users')
     .js('resources/js/admin/profile/index.js', 'public/js/admin/profile')
     .js('resources/js/admin/groups/index.js', 'public/js/admin/groups')
     .js('resources/js/admin/queues/index.js', 'public/js/admin/queues')

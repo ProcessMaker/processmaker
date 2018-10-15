@@ -154,6 +154,11 @@ jobs:
             echo "SAUCELABS_BROWSER_TESTING=true" >> .env
             echo "SAUCELABS_USERNAME=${SAUCELABS_USERNAME}" >> .env
             echo "SAUCELABS_ACCESS_KEY=${SAUCELABS_ACCESS_KEY}" >> .env
+            # Put in configuration file for Braoodcaster
+            echo "BROADCAST_DRIVER=redis" >> .env
+            echo "BROADCASTER_HOST=https://" >> .env
+            echo "BROADCASTER_KEY=21a795019957dde6bcd96142e05d4b10" >> .env
+
             # Generate unique app key
             php artisan key:generate --force
             # Copy over our test oauth keys. Regular install will create new ones
