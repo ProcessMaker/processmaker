@@ -37,13 +37,13 @@
       <div class="modal-body">
         <div class="form-group">
           {!!Form::label('title', 'Title');!!}
-          {!!Form::text('title', null, ['class'=> 'form-control', 'v-model'=> 'title'])!!}
-          <div class="text-danger" v-if="addError.title">@{{addError.title[0]}}</div>
+          {!!Form::text('title', null, ['class'=> 'form-control', 'v-model'=> 'title', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.title}'])!!}
+          <div class="invalid-feedback" v-if="addError.language">@{{addError.title[0]}}</div>
         </div>
         <div class="form-group">
           {!!Form::label('language', 'Language');!!}
-          {!!Form::select('language', ['php' => 'PHP', 'lua' => 'Lua'], null, ['class'=> 'form-control', 'v-model'=> 'language']);!!}
-        <div class="text-danger" v-if="addError.language">@{{addError.language[0]}}</div>
+          {!!Form::select('language', ['php' => 'PHP', 'lua' => 'Lua'], null, ['class'=> 'form-control', 'v-model'=> 'language', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.title}']);!!}
+        <div class="invalid-feedback" v-if="addError.language">@{{addError.language[0]}}</div>
         </div>
       </div>
       <div class="modal-footer">
@@ -63,7 +63,7 @@
       title: '',
       language: '',
       addError: {},
-      submitted: false
+      submitted: false,
     },
     methods: {
       onSubmit() {
