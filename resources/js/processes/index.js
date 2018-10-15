@@ -10,7 +10,6 @@ new Vue({
     },
     components: {
         ProcessesListing,
-        ModalCreateProcess
     },
     methods: {
         show() {
