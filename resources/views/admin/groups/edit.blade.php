@@ -27,7 +27,7 @@
         </div>
         <div class="form-group p-0">
           {!! Form::label('status', 'Status'); !!}
-          {!! Form::select('status', ['Active', 'Inactive', 'Draft'], null, ['class' => 'form-control', 'v-model' => 'status']) !!}
+          {!! Form::select('status', ['ACTIVE' => 'Active', 'INACTIVE' => 'Inactive', 'DRAFT' => 'Draft'], null, ['class' => 'form-control', 'v-model' => 'status']) !!}
         </div>
         
         <div class="card-body text-right pr-0">
