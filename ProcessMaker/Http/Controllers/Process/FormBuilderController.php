@@ -7,20 +7,10 @@ use Illuminate\View\View;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Form;
 
-class FormController extends Controller
+class FormBuilderController extends Controller
 {
     /**
-     * Get the list of forms
-     *
-     * @return Factory|View
-     */
-    public function index()
-    {
-        return view('processes.forms.index');
-    }
-
-    /**
-     * Get page edit
+     * Get the form in the constructor to edit it.
      *
      * @param Form $form
      *
@@ -28,6 +18,7 @@ class FormController extends Controller
      */
     public function edit(Form $form)
     {
-        return view('processes.forms.edit',compact('form'));
+        return view('processes.form-builder.form', compact('form'));
     }
+
 }
