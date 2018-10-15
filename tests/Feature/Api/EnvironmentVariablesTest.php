@@ -4,15 +4,12 @@ namespace Tests\Feature\Api\Administration;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\EnvironmentVariable;
 
 class EnvironmentVariablesTest extends TestCase
 {
-    use DatabaseTransactions;
-
     const API_TEST_VARIABLES = '/api/1.0/environment_variables';
 
     /**
