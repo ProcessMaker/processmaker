@@ -15,27 +15,26 @@
   <div class="row">
     <div class="col-8">
       <div class="card card-body" id="groupEdit">
-      {!! Form::model($group) !!}
+      {!! Form::open() !!}
         <div class="form-group">
           {!! Form::label('name', 'Group Name')!!}
-          {!! Form::text('name', $group->name, ['class'=> 'form-control', 'v-bind' => 'name']) !!}
-          
+          {!! Form::text('name', $group->name, ['class' => 'form-control', 'v-model' => 'name']) !!}
         </div>
         <div class="form-group">
           {!! Form::label('description', 'Description') !!}
-          {!! Form::textarea('description', null, ['class'=> 'form-control', 'rows' => 3, 'v-bind' => 'description']) !!}
+          {!! Form::textarea('description', null, ['class'=> 'form-control', 'rows' => 3, 'v-model' => 'description']) !!}
           
         </div>
         <div class="form-group p-0">
           {!! Form::label('status', 'Status'); !!}
-          {!! Form::select('status', ['Active', 'Inactive', 'Draft'], null, ['class' => 'form-control', 'v-bind' => 'status']) !!}
+          {!! Form::select('status', ['Active', 'Inactive', 'Draft'], null, ['class' => 'form-control', 'v-model' => 'status']) !!}
         </div>
         
         <div class="card-body text-right pr-0">
           {!! Form::button('Cancel', ['class'=>'btn btn-outline-success']) !!}
           {!! Form::button('Save', ['class'=>'btn btn-success ml-2', '@click' => 'onEdit']) !!}
         </div>
-        
+        {!! Form::close() !!}
       </div>
     </div>
     <div class="col-4">
@@ -48,12 +47,11 @@
 
 @section('js')
 <script>
-  console.log(this.name.value);
-  console.log(this.status.value);
+
   new Vue ({
     el: '#groupEdit',
     data: {
-      name: '',
+      name: {!! "'".$group->name."'," !!}
       description: '',
       status: '',
       // addError: {},

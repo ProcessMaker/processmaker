@@ -25,7 +25,6 @@ class GroupController extends Controller
    */
    public function edit(Group $group)
    {
-     $group = Group::find($group->uuid_text);
      return view('admin.groups.edit', compact('group'));
    }
    public function update(Group $group)
