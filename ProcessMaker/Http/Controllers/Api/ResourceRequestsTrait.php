@@ -124,6 +124,25 @@ trait ResourceRequestsTrait
                     ->where($attribute, $value)->count()===0;
             }
         );
+        /**
+         * Validate BPMN schema.
+         */
+        $schemaErrors = [];
+        $validator->addExtension(
+            'bpmn_schema',
+            function() use ($model, &$schemaErrors) {
+                libxml_use_internal_errors(true);
+                $definitions = $model->getDefinitions();
+                $res= $definitions->validateBPMNSchema(public_path('definitions/ProcessMaker.xsd'));
+                if (!$res) {
+                    $schemaErrors = $definitions->getValidationErrors();
+                }
+                return $res;
+            }
+        );
+        $validator->addReplacer('bpmn_schema', function() use(&$schemaErrors) {
+            return $schemaErrors;
+        });
 
         if ($validator->fails()) {
             throw new ValidationException($validator);
