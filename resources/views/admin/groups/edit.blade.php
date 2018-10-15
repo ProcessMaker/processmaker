@@ -27,7 +27,7 @@
         </div>
         <div class="form-group p-0">
           {!! Form::label('status', 'Status'); !!}
-          {!! Form::select('status', ['0' => 'Active', '1' => 'Inactive', 'Draft'], null, ['class' => 'form-control', 'v-model' => 'status']) !!}
+          {!! Form::select('status', ['Active', 'Inactive', 'Draft'], null, ['class' => 'form-control', 'v-model' => 'status']) !!}
         </div>
         
         <div class="card-body text-right pr-0">
@@ -55,7 +55,7 @@
         name: @json($group->name),
         description: @json($group->description),
         status: @json($group->status),
-        // existing: @json($group)
+        existing: @json($group)
       }
     },
     // data: {
