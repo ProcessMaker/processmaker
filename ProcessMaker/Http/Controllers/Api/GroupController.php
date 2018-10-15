@@ -90,12 +90,13 @@ class GroupController extends Controller
         return new ApiCollection($response);
     }
 
-
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     *
+     * @return GroupResource
+     * @throws \Throwable
      *
      * @OA\Post(
      *     path="/groups",
@@ -112,16 +113,14 @@ class GroupController extends Controller
      *         @OA\JsonContent(ref="#/components/schemas/groups")
      *     ),
      * )
-     *
      */
     public function store(Request $request)
     {
+        $request->validate(Group::rules());
         $group = new Group();
         $group->fill($request->input());
-        //validate model
-        $this->validateModel($group, Group::rules());
         $group->saveOrFail();
-        return new GroupResource($group->refresh());
+        return new GroupResource($group);
     }
 
     /**
@@ -159,10 +158,11 @@ class GroupController extends Controller
     /**
      * Update a user
      *
-     * @param Group $user
+     * @param Group $group
      * @param Request $request
      *
-     * @return ResponseFactory|Response
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     * @throws \Throwable
      *
      * @OA\Put(
      *     path="/groups/{groupUuid}",
@@ -191,10 +191,11 @@ class GroupController extends Controller
      */
     public function update(Group $group, Request $request)
     {
+        $request->validate(Group::rules($group));
+
         $group->fill($request->input());
-        //validate model
-        $this->validateModel($group, Group::rules($group));
         $group->saveOrFail();
+
         return response([], 204);
     }
 

@@ -24,29 +24,35 @@ class GroupTest extends TestCase
       $response->assertViewIs('admin.groups.index');
     }
      /**
-     * Test to make sure the controller and route work with the view
+     * Test to make sure the controller and route work with the view EDIT
      *
      * @return void
      */
     public function testEditRoute()
     {
-      $group = factory(Group::class)->create(['name'=>"Test Edit"]);
-      $response = $this->webCall('GET', '/admin/groups/'.$group->uuid_text . '/edit');
-      $response->assertStatus(200);
-      $response->assertViewIs('admin.groups.edit');
-      $response->assertSee('Test Edit');
+        $groupUuid = factory(Group::class)->create()->uuid_text;
+        // get the URL
+        $response = $this->webCall('GET', '/admin/groups/'.$groupUuid . '/edit');
+
+        $response->assertStatus(200);
+        // check the correct view is called
+        $response->assertViewIs('admin.groups.edit');
+        $response->assertSee('Edit Group');
     }
 
+    /**
+     * Test to make sure the controller and route work with the view SHOW
+     *
+     * @return void
+     */
     public function testShowRoute()
     {
-
-      $this->markTestSkipped(
-              'This test fails for no reason.'
-            );
-        $group_uuid = factory(Group::class)->create(['name'=>'Test show'])->uuid_text;
-        // $response = $this->webGet('/admin/groups/'. $group_uuid);
-        $response = $this->actingAs($this->user)->get('/admin/groups/'. $group_uuid);
+        $group = factory(Group::class)->create();
+        // get the URL
+        $response = $this->webCall('GET', '/admin/groups/'. $group->uuid_text);
         $response->assertStatus(200);
-        $response->assertSee('Test show');
+        // check the correct view is called
+        $response->assertViewIs('admin.groups.show');
+        $response->assertSee($group->name);
     }
 }
