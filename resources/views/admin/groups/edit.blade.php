@@ -54,30 +54,22 @@
       return {
         name: @json($group->name),
         description: @json($group->description),
-        status: @json($group->status),
-        existing: @json($group)
+        status: @json($group->status)
       }
     },
-    // data: {
-    //   name: {!! "'".$group->name."'," !!}
-    //   description: '',
-    //   status: '',
-    //   // addError: {},
-    //   // submitted: false
-    // },
     methods: {
       onEdit() {
         console.log(this.name);
-        console.log(this.description);
-        this.submitted = true;
+        console.log(this.status);
+        // this.submitted = true;
         ProcessMaker.apiClient.put("/groups/{{$group->uuid_text}}", {
-          name: this.name,
-          description: this.description
+          'name': this.name,
+          'status': this.status
         })
         .then(response => {
-          console.log(response);
-          // ProcessMaker.alert('Group successfully updated', 'success')
-          // window.location = "/admin/groups/" + group.uuid
+          console.log(this.status);
+          ProcessMaker.alert('Group successfully updated', 'success')
+          window.location = "/admin/groups/" + group.uuid
         })
         .catch(error => {
           if (error.response.status === 422) {
