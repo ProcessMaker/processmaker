@@ -1,4 +1,4 @@
-@extends('layouts.layout', ['title' => 'Group Management'])
+@extends('layouts.layout')
 
 @section('sidebar')
     @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
@@ -37,7 +37,7 @@
         <div class="col align-self-center">
           <h3 class="m-0">Members</h3>
         </div>
-        <div class="col form-inline input-group justify-content-end">	
+        <div class="col form-inline input-group justify-content-end">
           <div class="input-group-prepend">
             <span class="input-group-text" id="prepend-search"><i class="fa fa-search"></i></span>
           </div>
@@ -89,7 +89,7 @@
     <br>
     <div class="card card-body text-center">No members in this group</div>
     @endif
-  
+
   </div>
 </div>
 
@@ -107,7 +107,7 @@
 }
 
 tbody tr td img {
-  height: 20px; 
+  height: 20px;
   border-radius: 50%;
 }
 
