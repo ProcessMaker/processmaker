@@ -2774,14 +2774,11 @@
         {
             "name": "processmaker/nayra",
             "version": "dev-master",
-<<<<<<< HEAD
-=======
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/nayra.git",
                 "reference": "d4d0eaecc648bcd244ad4daa14f82b498bd6dd8d"
             },
->>>>>>> feature/650
             "dist": {
                 "type": "zip",
                 "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/d4d0eaecc648bcd244ad4daa14f82b498bd6dd8d",
