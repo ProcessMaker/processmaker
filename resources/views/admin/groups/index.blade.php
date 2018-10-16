@@ -29,7 +29,7 @@
     </div>
 
     <div class="modal fade" id="createGroup" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1>{{__('Create New Group')}}</h1>
@@ -50,5 +50,63 @@
 @endsection
 
 @section('js')
+    <script>
+        new Vue({
+            el: '#createGroup',
+            data() {
+                return {
+                    formData:{},
+                    errors: {
+                        'name': null,
+                        'description': null,
+                        'status': null
+                    }
+                }
+            },
+            mounted () {
+                this.resetFormData();
+                this.resetErrors();
+            },
+            methods: {
+                resetFormData() {
+                    this.formData = Object.assign({}, {
+                        name: null,
+                        description: null,
+                        status: 'ACTIVE'
+                    });
+                },
+                resetErrors() {
+                    this.errors = Object.assign({}, {
+                        name: null,
+                        description: null,
+                        status: null
+                    });
+                },
+                onClose() {
+                    $('#createGroup').modal('hide');
+                },
+                onSubmit() {
+                    this.resetErrors();
+                    ProcessMaker.apiClient.post('groups', this.formData)
+                        .then(response => {
+                            ProcessMaker.alert('Create Group Successfully', 'success');
+                            this.onClose();
+                            //redirect show group
+                            window.location = "/admin/groups/" + response.data.uuid
+                        })
+                        .catch(error => {
+                            //define how display errors
+                            if (error.response.status === 422) {
+                                // Validation error
+                                let fields = Object.keys(error.response.data.errors);
+                                for (let field of fields) {
+                                    this.errors[field] = error.response.data.errors[field][0];
+                                }
+                            }
+                        });
+                }
+            }
+        });
+    </script>
     <script src="{{mix('js/admin/groups/index.js')}}"></script>
 @endsection

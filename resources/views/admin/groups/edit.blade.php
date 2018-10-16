@@ -51,12 +51,6 @@
                     }
                 }
             },
-            mounted () {
-                // Do something useful with the data in the template
-                console.log("mounted");
-                console.log(this.formData);
-
-            },
             methods: {
                 resetErrors() {
                     this.errors = Object.assign({}, {
