@@ -66,14 +66,12 @@
           status: this.status,
         })
         .then(response => {
-          console.log(this.response);
           ProcessMaker.alert('Group successfully updated', 'success');
           window.location = "/admin/groups/{{$group->uuid_text}}"
         })
         .catch(error => {
           if (error.response.status === 422) {
             this.addError = error.response.data.errors;
-            console.log(error.response.data.errors);
           }
         })
       }
