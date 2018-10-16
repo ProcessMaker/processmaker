@@ -25,130 +25,139 @@
 </template>
 
 <script>
-    import Vuetable from "vuetable-2/src/components/Vuetable";
-    import Pagination from "../../../components/common/Pagination";
-    import datatableMixin from "../../../components/common/mixins/datatable";
+import Vuetable from "vuetable-2/src/components/Vuetable";
+import Pagination from "../../../components/common/Pagination";
+import datatableMixin from "../../../components/common/mixins/datatable";
 
-    export default {
-        mixins: [datatableMixin],
-        props: ["filter"],
-        data() {
-            return {
-                orderBy: "title",
+export default {
+  mixins: [datatableMixin],
+  props: ["filter"],
+  data() {
+    return {
+      orderBy: "name",
 
-                sortOrder: [
-                    {
-                        field: "title",
-                        sortField: "title",
-                        direction: "asc"
-                    }
-                ],
-                fields: [
-                    {
-                        name: "__checkbox"
-                    },
-                    {
-                        title: "Title",
-                        name: "title",
-                        sortField: "title"
-                    },
-                    {
-                        title: "Status",
-                        name: "status",
-                        sortField: "status",
-                        callback: this.formatStatus
-                    },
-                    {
-                        title: "Active Users",
-                        name: "total_users",
-                        sortField: "total_users",
-                        callback: this.formatActiveUsers
-                    },
-                    {
-                        title: "Created At",
-                        name: "created_at",
-                        sortField: "created_at",
-                        callback: this.formatDate
-                    },
-                    {
-                        title: "Updated At",
-                        name: "updated_at",
-                        sortField: "updated_at",
-                        callback: this.formatDate
-                    },
-                    {
-                        name: "__slot:actions",
-                        title: ""
-                    }
-                ]
-            };
-        },
-        methods: {
-            formatActiveUsers(value) {
-                return '<div class="text-center">' + value + "</div>";
-            },
-            formatStatus(status) {
-                status = status.toLowerCase();
-                let bubbleColor = {'active': 'text-success', 'inactive': 'text-danger', 'draft': 'text-warning', 'archived': 'text-info'};
-                let response = '<i class="fas fa-circle ' + bubbleColor[status] + ' small"></i> ';
-                status = status.charAt(0).toUpperCase() + status.slice(1);
-                return response + status;
-            },
-            onEdit(data, index) {
-                this.$emit('edit', data.uid);
-            },
-            onDelete(data, index) {
-                let that = this;
-                ProcessMaker.confirmModal('Caution!', '<b>Are you sure to delete the group </b>' + data.title + '?', '', function () {
-                    ProcessMaker.apiClient
-                        .delete('groups/' + data.uid)
-                        .then(response => {
-                            ProcessMaker.alert('Group successfully eliminated', 'success');
-                            that.fetch();
-                        });
-                });
-            },
-            fetch() {
-                this.loading = true;
-                if (this.cancelToken) {
-                    this.cancelToken();
-                    this.cancelToken = null;
-                }
-                const CancelToken = ProcessMaker.apiClient.CancelToken;
-                // Load from our api client
-                ProcessMaker.apiClient
-                    .get(
-                        "groups?page=" +
-                        this.page +
-                        "&per_page=" +
-                        this.perPage +
-                        "&filter=" +
-                        this.filter +
-                        "&order_by=" +
-                        this.orderBy +
-                        "&order_direction=" +
-                        this.orderDirection,
-                        {
-                            cancelToken: new CancelToken(c => {
-                                this.cancelToken = c;
-                            })
-                        }
-                    )
-                    .then(response => {
-                        this.data = this.transform(response.data);
-                        this.loading = false;
-                    })
-                    .catch(error => {
-                        // Undefined behavior currently, show modal?
-                    });
-            }
+      sortOrder: [
+        {
+          field: "title",
+          sortField: "title",
+          direction: "asc"
         }
+      ],
+      fields: [
+        {
+          name: "__checkbox"
+        },
+        {
+          title: "Name",
+          name: "name",
+          sortField: "name"
+        },
+        {
+          title: "Status",
+          name: "status",
+          sortField: "status",
+          callback: this.formatStatus
+        },
+        {
+          title: "Active Users",
+          name: "total_users",
+          sortField: "total_users",
+          callback: this.formatActiveUsers
+        },
+        {
+          title: "Created At",
+          name: "created_at",
+          sortField: "created_at",
+          callback: this.formatDate
+        },
+        {
+          title: "Updated At",
+          name: "updated_at",
+          sortField: "updated_at",
+          callback: this.formatDate
+        },
+        {
+          name: "__slot:actions",
+          title: ""
+        }
+      ]
     };
+  },
+  methods: {
+    formatActiveUsers(value) {
+      return '<div class="text-center">' + value + "</div>";
+    },
+    formatStatus(status) {
+      status = status.toLowerCase();
+      let bubbleColor = {
+        active: "text-success",
+        inactive: "text-danger",
+        draft: "text-warning",
+        archived: "text-info"
+      };
+      let response =
+        '<i class="fas fa-circle ' + bubbleColor[status] + ' small"></i> ';
+      status = status.charAt(0).toUpperCase() + status.slice(1);
+      return response + status;
+    },
+    onEdit(data, index) {
+      this.$emit("edit", data.uid);
+    },
+    onDelete(data, index) {
+      let that = this;
+      ProcessMaker.confirmModal(
+        "Caution!",
+        "<b>Are you sure to delete the group </b>" + data.title + "?",
+        "",
+        function() {
+          ProcessMaker.apiClient.delete("groups/" + data.uid).then(response => {
+            ProcessMaker.alert("Group successfully eliminated", "success");
+            that.fetch();
+          });
+        }
+      );
+    },
+    fetch() {
+      this.loading = true;
+      if (this.cancelToken) {
+        this.cancelToken();
+        this.cancelToken = null;
+      }
+      const CancelToken = ProcessMaker.apiClient.CancelToken;
+      // Load from our api client
+      ProcessMaker.apiClient
+        .get(
+          "groups?page=" +
+            this.page +
+            "&per_page=" +
+            this.perPage +
+            "&filter=" +
+            this.filter +
+            "&order_by=" +
+            this.orderBy +
+            "&order_direction=" +
+            this.orderDirection,
+          {
+            cancelToken: new CancelToken(c => {
+              this.cancelToken = c;
+            })
+          }
+        )
+        .then(response => {
+          this.data = this.transform(response.data);
+          this.loading = false;
+        })
+        .catch(error => {
+          // Undefined behavior currently, show modal?
+        });
+    }
+  }
+};
 </script>
 
 <style lang="scss" scoped>
-    /deep/ th#_total_users {
-        width: 150px;
-        text-align: center;
-    }
+/deep/ th#_total_users {
+  width: 150px;
+  text-align: center;
+}
 </style>
