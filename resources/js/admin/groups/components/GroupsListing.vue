@@ -34,12 +34,12 @@
         props: ["filter"],
         data() {
             return {
-                orderBy: "name",
+                orderBy: "title",
 
                 sortOrder: [
                     {
-                        field: "name",
-                        sortField: "name",
+                        field: "title",
+                        sortField: "title",
                         direction: "asc"
                     }
                 ],
@@ -48,9 +48,9 @@
                         name: "__checkbox"
                     },
                     {
-                        title: "Name",
-                        name: "name",
-                        sortField: "name"
+                        title: "Title",
+                        name: "title",
+                        sortField: "title"
                     },
                     {
                         title: "Status",

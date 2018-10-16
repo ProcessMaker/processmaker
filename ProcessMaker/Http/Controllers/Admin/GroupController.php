@@ -18,6 +18,11 @@ class GroupController extends Controller
     return view('admin.groups.index');
   }
 
+  /**
+   * Get a specific group
+   *
+   
+   */
    public function edit(Group $group)
    {
      return view('admin.groups.edit', compact('group'));
