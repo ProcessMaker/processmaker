@@ -2774,10 +2774,18 @@
         {
             "name": "processmaker/nayra",
             "version": "dev-master",
+<<<<<<< HEAD
+=======
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/nayra.git",
+                "reference": "d4d0eaecc648bcd244ad4daa14f82b498bd6dd8d"
+            },
+>>>>>>> feature/650
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/9befc04b51245b670be2e2d6cb50fb5249b75616",
-                "reference": "9befc04b51245b670be2e2d6cb50fb5249b75616",
+                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/d4d0eaecc648bcd244ad4daa14f82b498bd6dd8d",
+                "reference": "d4d0eaecc648bcd244ad4daa14f82b498bd6dd8d",
                 "shasum": ""
             },
             "require-dev": {
@@ -2790,8 +2798,11 @@
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
             "description": "BPMN compliant engine",
-            "time": "2018-09-21T18:01:20+00:00"
+            "time": "2018-10-10T20:50:34+00:00"
         },
         {
             "name": "psr/container",
