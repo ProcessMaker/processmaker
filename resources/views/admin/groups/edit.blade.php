@@ -57,13 +57,12 @@
         description: @json($group->description),
         status: @json($group->status),
         addError: [],
+        submitted: false
       }
     },
     methods: {
       onEdit() {
-        console.log(this.name);
-        console.log(this.status);
-        // this.submitted = true;
+        this.submitted = true;
         ProcessMaker.apiClient.put("/groups/{{$group->uuid_text}}", {
           name: this.name,
           status: this.status,
@@ -79,9 +78,9 @@
             console.log(error.response.data.errors);
           }
         })
-        // .finally(()=> {
-        //   this.submitted = false
-        // })
+        .finally(()=> {
+          this.submitted = false
+        })
       }
     }
   })       
