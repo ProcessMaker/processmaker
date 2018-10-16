@@ -71,12 +71,9 @@
                         })
                         .catch(error => {
                             //define how display errors
-                            if (error.response.status === 422) {
+                            if (error.response.status && error.response.status === 422) {
                                 // Validation error
-                                let fields = Object.keys(error.response.data.errors);
-                                for (let field of fields) {
-                                    this.errors[field] = error.response.data.errors[field][0];
-                                }
+                                this.errors = error.response.data.errors;
                             }
                         });
                 }
