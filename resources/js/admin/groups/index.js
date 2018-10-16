@@ -11,11 +11,14 @@ new Vue({
         groupModal: false,
         labels: {
             panel: 'Create New Group',
-            title: 'Title',
+            name: 'Name',
             status: 'Status'
         }
     },
-    components: {GroupsListing, ModalGroup},
+    components: {
+        GroupsListing,
+        ModalGroup
+    },
     methods: {
         showModal() {
             this.labels.panel = 'Create New Group';
@@ -29,14 +32,10 @@ new Vue({
         },
         reload() {
             // Status is 200, so let's just change our sort and sort direction and then fetch
-            this.$refs.groupsListing.dataManager([
-                {
-                    field: 'created_at',
-                    direction: 'desc'
-                }
-            ]);
+            this.$refs.groupsListing.dataManager([{
+                field: 'created_at',
+                direction: 'desc'
+            }]);
         }
     }
 });
-
-
