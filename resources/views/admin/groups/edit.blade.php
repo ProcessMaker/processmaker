@@ -18,12 +18,13 @@
       {!! Form::open() !!}
         <div class="form-group">
           {!! Form::label('name', 'Group Name')!!}
-          {!! Form::text('name', $group->name, ['class' => 'form-control', 'v-model' => 'name']) !!}
+          {!! Form::text('name', $group->name, ['class' => 'form-control', 'v-model' => 'name', 'v-bind:class' => '{\'is-invalid\':addError.name}']) !!}
+          <div class="invalid-feedback" v-if="addError.name">@{{addError.name[0]}}</div>
         </div>
         <div class="form-group">
           {!! Form::label('description', 'Description') !!}
           {!! Form::textarea('description', null, ['class'=> 'form-control', 'rows' => 3, 'v-model' => 'description']) !!}
-          
+          <div class="invalid-feedback" v-if="addError.name">@{{addError.name[0]}}</div>
         </div>
         <div class="form-group p-0">
           {!! Form::label('status', 'Status'); !!}
@@ -54,7 +55,8 @@
       return {
         name: @json($group->name),
         description: @json($group->description),
-        status: @json($group->status)
+        status: @json($group->status),
+        addError: [],
       }
     },
     methods: {
@@ -63,19 +65,20 @@
         console.log(this.status);
         // this.submitted = true;
         ProcessMaker.apiClient.put("/groups/{{$group->uuid_text}}", {
-          'name': this.name,
-          'status': this.status
+          name: this.name,
+          status: this.status,
         })
         .then(response => {
           console.log(this.status);
           ProcessMaker.alert('Group successfully updated', 'success');
           window.location = "/admin/groups/{{$group->uuid_text}}"
         })
-        // .catch(error => {
-        //   if (error.response.status === 422) {
-        //     this.addError = error.response.data.errors
-        //   }
-        // })
+        .catch(error => {
+          if (error.response.status === 422) {
+            this.addError = error.response.data.errors;
+            console.log(error.response.data.errors);
+          }
+        })
         // .finally(()=> {
         //   this.submitted = false
         // })
