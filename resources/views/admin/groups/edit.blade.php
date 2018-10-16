@@ -68,14 +68,14 @@
         })
         .then(response => {
           console.log(this.status);
-          ProcessMaker.alert('Group successfully updated', 'success')
-          window.location = "/admin/groups/" + group.uuid
+          ProcessMaker.alert('Group successfully updated', 'success');
+          window.location = "/admin/groups/{{$group->uuid_text}}"
         })
-        .catch(error => {
-          if (error.response.status === 422) {
-            this.addError = error.response.data.errors
-          }
-        })
+        // .catch(error => {
+        //   if (error.response.status === 422) {
+        //     this.addError = error.response.data.errors
+        //   }
+        // })
         // .finally(()=> {
         //   this.submitted = false
         // })
