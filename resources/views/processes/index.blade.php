@@ -49,7 +49,7 @@
         </div>
         <div class="form-group">
           {!!Form::label('category', 'Category');!!}
-          {!!Form::select('category', [], null, ['class'=> 'form-control', 'v-model'=> 'category'])!!}
+          {!!Form::select('category', $processCategories, null, ['class'=> 'form-control', 'v-model'=> 'categoryOptions'])!!}
           <div class="invalid-feedback"></div>
         </div>
       </div>
@@ -68,7 +68,7 @@
     el: '#addProcess',
     data: {
       title: '',
-      category: '',
+      categoryOptions: '',
       description: '',
       addError: {},
       submitted: false,
