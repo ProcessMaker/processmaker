@@ -4,7 +4,7 @@ description: Select Requests that you'd like to monitor.
 
 # Watch a Request
 
-The **Watching** tab in the **Requests** page displays all Requests that you have selected to monitor. Watched Requests can be those in which you did not start or participate. Request information display in tabular format.
+The **Watching** tab in the **Requests** page displays all Requests that you have selected to monitor. Watched Requests can be those in which you did not start or participate. Request information display in tabular format. ~~Louis note: Megan told me on October 16, 2018, that watched Requests is only an Enterprise feature. So, this page must be copied to the Enterprise document after it has been created.~~
 
 ## Watch a Request
 
