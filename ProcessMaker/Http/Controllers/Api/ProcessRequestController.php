@@ -17,11 +17,11 @@ class ProcessRequestController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param Request $httpRequest
+     * @param Request $request
      *
-     * @return Response
-     * 
-     *     /**
+     * @return ApiCollection
+     *
+     * /**
      * @OA\Get(
      *     path="/requests",
      *     summary="Returns all process Requests that the user has access to",
@@ -32,7 +32,7 @@ class ProcessRequestController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
      *     @OA\Parameter(ref="#/components/parameters/include"),
-     * 
+     *
      *     @OA\Response(
      *         response=200,
      *         description="list of processes",
@@ -52,26 +52,19 @@ class ProcessRequestController extends Controller
      *     ),
      * )
      */
-    public function index(Request $httpRequest)
+    public function index(Request $request)
     {
-        $query = ProcessRequest::query();
-
-        $filter = $httpRequest->input('filter', '');
-        if (!empty($filter)) {
-            $filter = '%' . $filter . '%';
-            $query->where(function ($query) use ($filter) {
-                $query->Where('name', 'like', $filter);
-            });
-        }
-
-        $response =
-            $query->orderBy(
-                $httpRequest->input('order_by', 'name'),
-                $httpRequest->input('order_direction', 'ASC')
-            )
-                ->paginate($httpRequest->input('per_page', 10));
-
-        return new ApiCollection($response);
+        $where = $this->getRequestFilterBy($request, ['process_requests.name', 'user.firstname', 'user.lastname']);
+        $orderBy = $this->getRequestSortBy($request, 'name');
+        $perPage = $this->getPerPage($request);
+        $include = $this->getRequestInclude($request);
+        $processRequest = ProcessRequest::with($include)
+            ->select('process_requests.*')
+            ->where($where)
+            ->leftJoin('users as user', 'process_requests.user_uuid', '=', 'user.uuid')
+            ->orderBy(...$orderBy)
+            ->paginate($perPage);
+        return new ApiCollection($processRequest);
     }
 
     /**
@@ -114,7 +107,7 @@ class ProcessRequestController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Validation\ValidationException
-     * 
+     *
      * @OA\Post(
      *     path="/requests",
      *     summary="Save a new process request",
@@ -148,7 +141,7 @@ class ProcessRequestController extends Controller
      * @param Request|ProcessRequest $httpRequest
      *
      * @return ResponseFactory|Response
-     * 
+     *
      *     @OA\Put(
      *     path="/requests/{process_request_uuid}",
      *     summary="Update a process request",
@@ -189,7 +182,7 @@ class ProcessRequestController extends Controller
      * @param ProcessRequest $request
      *
      * @return ResponseFactory|Response
-     * 
+     *
      *     @OA\Delete(
      *     path="/requests/{process_request_uuid}",
      *     summary="Delete a process request",

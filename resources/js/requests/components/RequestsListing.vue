@@ -3,11 +3,9 @@
         <vuetable :dataManager="dataManager" :sortOrder="sortOrder" :css="css" :api-mode="false"
                   @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data"
                   pagination-path="meta">
-            <template slot="ids" slot-scope="props">
-                <div class="actions">
-                    <b-btn variant="link" @click="openRequest(props.rowData, props.rowIndex)">{{props.rowData.id}}
-                    </b-btn>
-                </div>
+            <template slot="uuids" slot-scope="props">
+                <b-btn variant="link" size="sm" @click="openRequest(props.rowData, props.rowIndex)">{{props.rowData.uuid}}
+                </b-btn>
             </template>
 
             <template slot="actions" slot-scope="props">
@@ -28,8 +26,6 @@
 </template>
 
 <script>
-    import Vuetable from "vuetable-2/src/components/Vuetable";
-    import Pagination from "../../components/common/Pagination";
     import datatableMixin from "../../components/common/mixins/datatable";
     import moment from "moment"
 
@@ -38,30 +34,30 @@
         props: ["filter"],
         data() {
             return {
-                orderBy: "id",
+                orderBy: "uuid",
                 sortOrder: [
                     {
-                        field: "id",
-                        sortField: "id",
+                        field: "uuid",
+                        sortField: "uuid",
                         direction: "asc"
                     }
                 ],
                 fields: [
                     {
-                        name: "__slot:ids",
-                        title: "id",
-                        field: 'id',
-                        sortField: "id",
+                        name: "__slot:uuids",
+                        title: "uuid",
+                        field: 'uuid',
+                        sortField: "uuid",
                         width: '50px'
                     },
                     {
                         title: "Process",
-                        name: "process.name",
-                        sortField: "process.name"
+                        name: "name",
+                        sortField: "name"
                     },
                     {
                         title: "Assigned to",
-                        name: "delegations",
+                        name: "user",
                         callback: this.assignedTo
                     },
                     {
@@ -71,8 +67,8 @@
                     },
                     {
                         title: "Created on",
-                        name: "APP_CREATE_DATE",
-                        sortField: "APP_CREATE_DATE",
+                        name: "created_at",
+                        sortField: "created_at",
                         callback: this.formatDate
                     },
                     {
@@ -84,7 +80,7 @@
         },
         methods: {
             openRequest(data, index) {
-                window.open('/requests/' + data.uid + '/status','_self');
+                window.open('/requests/' + data.uuid + '/status','_self');
             },
             formatUid(id) {
                 return id;
@@ -183,6 +179,8 @@
                     additionalParams += "&status=" + this.status;
                 }
 
+                additionalParams+= '&include=user';
+
                 // Load from our api client
                 ProcessMaker.apiClient
                     .get(
@@ -194,7 +192,7 @@
                         "&filter=" +
                         this.filter +
                         "&order_by=" +
-                        (this.orderBy === '__slot:ids' ? 'id' : this.orderBy) +
+                        (this.orderBy === '__slot:uuids' ? 'uuid' : this.orderBy) +
                         "&order_direction=" +
                         this.orderDirection +
                         additionalParams

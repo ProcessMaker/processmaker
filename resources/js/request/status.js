@@ -6,4 +6,4 @@ new Vue({
     components: {
         RequestStatus
     }
-})
+});
