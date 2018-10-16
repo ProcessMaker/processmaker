@@ -57,18 +57,16 @@
         description: @json($group->description),
         status: @json($group->status),
         addError: [],
-        submitted: false
       }
     },
     methods: {
       onEdit() {
-        this.submitted = true;
         ProcessMaker.apiClient.put("/groups/{{$group->uuid_text}}", {
           name: this.name,
           status: this.status,
         })
         .then(response => {
-          console.log(this.status);
+          console.log(this.response);
           ProcessMaker.alert('Group successfully updated', 'success');
           window.location = "/admin/groups/{{$group->uuid_text}}"
         })
@@ -77,9 +75,6 @@
             this.addError = error.response.data.errors;
             console.log(error.response.data.errors);
           }
-        })
-        .finally(()=> {
-          this.submitted = false
         })
       }
     }
