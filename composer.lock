@@ -2773,7 +2773,7 @@
         },
         {
             "name": "processmaker/nayra",
-            "version": "dev-master"
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/nayra.git",
