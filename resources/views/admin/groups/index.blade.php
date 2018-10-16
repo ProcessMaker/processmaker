@@ -21,7 +21,7 @@
         <button type="submit" class="btn btn-secondary mr-3"> <i class="fas fa-plus"></i> Group</button>
     </div>
     <div id="groups-listing">
-        <groups-listing></groups-listing>
+        <groups-listing ref="listing" :filter="filter" v-on:reload="reload"></groups-listing>
     </div>
 </div>
 @endsection
