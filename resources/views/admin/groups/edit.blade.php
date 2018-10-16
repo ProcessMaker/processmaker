@@ -9,22 +9,19 @@
 @endsection
 
 @Section('content')
-    <div class="container" id="group-edit">
+    <div class="container" id="editGroup">
         <h1>{{__('Edit Group')}}</h1>
         <div class="row">
             <div class="col-8">
                 <div class="card card-body">
-                    <group-edit ref="groupEdit" :input-data="{{$group}}" v-on:update="afterUpdate"></group-edit>
-                    <footer class="modal-footer">
-                        <div>
-                            <b-button @click="onClose" class="btn btn-outline-success btn-sm text-uppercase">
-                                CANCEL
-                            </b-button>
-                            <b-button @click="onSave" class="btn btn-success btn-sm text-uppercase">
-                                SAVE
-                            </b-button>
-                        </div>
-                    </footer>
+                    {!! Form::open() !!}
+                    @include('admin.groups.fields')
+                    <br>
+                    <div class="text-right">
+                        {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose']) !!}
+                        {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'onUpdate']) !!}
+                    </div>
+                    {!! Form::close() !!}
                 </div>
             </div>
             <div class="col-4">
@@ -41,5 +38,55 @@
 @endsection
 
 @Section('js')
-    <script src="{{mix('js/admin/groups/edit.js')}}"></script>
+    <script>
+        new Vue({
+            el: '#editGroup',
+            data() {
+                return {
+                    formData: @json($group),
+                    errors: {
+                        'name': null,
+                        'description': null,
+                        'status': null
+                    }
+                }
+            },
+            mounted () {
+                // Do something useful with the data in the template
+                console.log("mounted");
+                console.log(this.formData);
+
+            },
+            methods: {
+                resetErrors() {
+                    this.errors = Object.assign({}, {
+                        name: null,
+                        description: null,
+                        status: null
+                    });
+                },
+                onClose() {
+                    window.location.href = '/admin/groups';
+                },
+                onUpdate() {
+                    this.resetErrors();
+                    ProcessMaker.apiClient.put('groups/' + this.formData.uuid, this.formData)
+                        .then(response => {
+                            ProcessMaker.alert('Update Group Successfully', 'success');
+                            this.onClose();
+                        })
+                        .catch(error => {
+                            //define how display errors
+                            if (error.response.status === 422) {
+                                // Validation error
+                                let fields = Object.keys(error.response.data.errors);
+                                for (let field of fields) {
+                                    this.errors[field] = error.response.data.errors[field][0];
+                                }
+                            }
+                        });
+                }
+            }
+        });
+    </script>
 @endsection

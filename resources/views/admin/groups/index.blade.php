@@ -9,7 +9,7 @@
 @endsection
 
 @section('content')
-    <div class="container page-content" id="groupIndex" v-cloak>
+    <div class="container page-content" id="listGroups" v-cloak>
         <div class="row">
             <div class="col-sm-12">
                 <div class="row">
@@ -18,13 +18,32 @@
                         <input v-model="filter" class="form-control col-sm-3" placeholder="{{__('Search')}}...">
                     </div>
                     <div class="col-md-4 d-flex justify-content-end align-items-center col-sm-12 actions">
-                        <a href="#" @click="show" class="btn btn-action"><i class="fas fa-plus"></i> {{__('Group')}}</a>
+                        <button type="button" href="#" class="btn btn-action text-white" data-toggle="modal" data-target="#createGroup">
+                            <i class="fas fa-plus"></i> {{__('Group')}}
+                        </button>
                     </div>
                 </div>
-                {{--create group modal
-                <modal-create-group :show="groupModal" @close="groupModal=false" v-on:reload="reload">
-                </modal-create-group>--}}
                 <groups-listing ref="groupList" :filter="filter" v-on:reload="reload"></groups-listing>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="createGroup" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1>{{__('Create New Group')}}</h1>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @include('admin.groups.fields')
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-success" data-dismiss="modal">{{__('Close')}}</button>
+                    <button type="button" @click="onSubmit" class="btn btn-success ml-2">{{__('Save')}}</button>
+                </div>
             </div>
         </div>
     </div>

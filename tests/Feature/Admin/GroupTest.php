@@ -12,18 +12,20 @@ use Tests\Feature\Shared\RequestHelper;
 class GroupTest extends TestCase
 {
     use RequestHelper;
-     /**
+
+    /**
      * Test to make sure the controller and route work with the view
      *
      * @return void
      */
     public function testIndexRoute()
     {
-      $response = $this->webCall('GET', '/admin/groups');
-      $response->assertStatus(200);
-      $response->assertViewIs('admin.groups.index');
+        $response = $this->webCall('GET', '/admin/groups');
+        $response->assertStatus(200);
+        $response->assertViewIs('admin.groups.index');
     }
-     /**
+
+    /**
      * Test to make sure the controller and route work with the view EDIT
      *
      * @return void
@@ -32,7 +34,7 @@ class GroupTest extends TestCase
     {
         $groupUuid = factory(Group::class)->create()->uuid_text;
         // get the URL
-        $response = $this->webCall('GET', '/admin/groups/'.$groupUuid . '/edit');
+        $response = $this->webCall('GET', '/admin/groups/' . $groupUuid . '/edit');
 
         $response->assertStatus(200);
         // check the correct view is called
@@ -49,7 +51,7 @@ class GroupTest extends TestCase
     {
         $group = factory(Group::class)->create();
         // get the URL
-        $response = $this->webCall('GET', '/admin/groups/'. $group->uuid_text);
+        $response = $this->webCall('GET', '/admin/groups/' . $group->uuid_text);
         $response->assertStatus(200);
         // check the correct view is called
         $response->assertViewIs('admin.groups.show');

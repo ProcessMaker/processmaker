@@ -1,21 +1,13 @@
 import Vue from 'vue';
 import GroupsListing from './components/GroupsListing';
-import ModalCreateGroup from "./components/modal-group-add";
 
 new Vue({
-    el: '#groupIndex',
+    el: '#listGroups',
     data: {
-        filter: '',
-        groupModal: false
+        filter: ''
     },
-    components: {
-        GroupsListing,
-        ModalCreateGroup,
-    },
+    components: {GroupsListing},
     methods: {
-        show() {
-            this.groupModal = true;
-        },
         reload() {
             this.$refs.groupList.dataManager([
                 {
