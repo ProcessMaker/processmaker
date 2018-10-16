@@ -46,7 +46,6 @@
         props: ['info', 'url', 'items'],
         watch: {
             info(val) {
-                console.log(val);
                 this.user = val;
             },
         },

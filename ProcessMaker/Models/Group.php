@@ -46,7 +46,7 @@ class Group extends Model
             $rules['name'] = [
                 'required',
                 'string',
-                Rule::unique('groups')->ignore($existing->uuid)
+                Rule::unique('groups')->ignore($existing->uuid,'uuid')
             ];
         }
 
