@@ -38,8 +38,8 @@
       </div>
       <div class="modal-body">
         <div class="form-group">
-          {!!Form::label('title', 'Title');!!}
-          {!!Form::text('title', null, ['class'=> 'form-control', 'v-model'=> 'title'])!!}
+          {!!Form::label('name', 'Name');!!}
+          {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'name'])!!}
           <div class="invalid-feedback"></div>
         </div>
         <div class="form-group">
@@ -50,6 +50,11 @@
         <div class="form-group">
           {!!Form::label('category', 'Category');!!}
           {!!Form::select('category', $processCategories, null, ['class'=> 'form-control', 'v-model'=> 'categoryOptions'])!!}
+          <div class="invalid-feedback"></div>
+        </div>
+        <div class="form-group">
+          {!!Form::label('status', 'Status');!!}
+          {!!Form::select('status', ['ACTIVE'=> 'Active', 'INACTIVE'=> 'Inactive'], null, ['class'=> 'form-control', 'v-model'=> 'status'])!!}
           <div class="invalid-feedback"></div>
         </div>
       </div>
@@ -67,15 +72,27 @@
   new Vue({
     el: '#addProcess',
     data: {
-      title: '',
+      name: '',
       categoryOptions: '',
       description: '',
       addError: {},
       submitted: false,
+      status: ''
     },
     methods: {
       onSubmit() {
-          console.log('HAY');
+            ProcessMaker.apiClient.post("/processes", {
+                name: this.name,
+                description: this. description,
+                process_category_uuid: this.categoryOptions,
+                status: this.status
+            })
+            .then(response => {
+            ProcessMaker.alert('Process successfully added', 'success')
+            window.location = "/processes/" + response.data.uuid
+            console.log(response)
+            })
+
         }
       }
   })       
