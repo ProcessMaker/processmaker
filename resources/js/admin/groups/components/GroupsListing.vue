@@ -7,9 +7,9 @@
                 <div class="actions">
                     <i class="fas fa-ellipsis-h"></i>
                     <div class="popout">
-                        <b-btn variant="action" @click="onEdit(props.rowData, props.rowIndex)"
+                        <b-btn variant="action" @click="onAction('edit-item', props.rowData, props.rowIndex)"
                                v-b-tooltip.hover title="Edit"><i class="fas fa-edit"></i></b-btn>
-                        <b-btn variant="action" @click="onDelete( props.rowData, props.rowIndex)" v-b-tooltip.hover
+                        <b-btn variant="action" @click="onAction('delete-item', props.rowData, props.rowIndex)" v-b-tooltip.hover
                                title="Remove"><i class="fas fa-trash-alt"></i></b-btn>
                         <b-btn variant="action" @click="onAction('users-item', props.rowData, props.rowIndex)"
                                v-b-tooltip.hover title="Users"><i class="fas fa-users"></i></b-btn>
@@ -84,6 +84,19 @@ export default {
     };
   },
   methods: {
+    goToEdit(data) {
+      window.location = "/admin/groups/" + data + "/edit";
+    },
+    onAction(action, data, index) {
+      switch (action) {
+        case "edit-item":
+          this.goToEdit(data.uuid);
+          break;
+        case "remove-item":
+          //@todo implement
+          break;
+      }
+    },
     formatActiveUsers(value) {
       return '<div class="text-center">' + value + "</div>";
     },
@@ -100,30 +113,7 @@ export default {
       status = status.charAt(0).toUpperCase() + status.slice(1);
       return response + status;
     },
-    onEdit(data, index) {
-      this.$emit("edit", data.uid);
-    },
-    onDelete(data, index) {
-      let that = this;
-      ProcessMaker.confirmModal(
-        "Caution!",
-        "<b>Are you sure to delete the group </b>" + data.title + "?",
-        "",
-        function() {
-          ProcessMaker.apiClient.delete("groups/" + data.uid).then(response => {
-            ProcessMaker.alert("Group successfully eliminated", "success");
-            that.fetch();
-          });
-        }
-      );
-    },
     fetch() {
-      this.loading = true;
-      if (this.cancelToken) {
-        this.cancelToken();
-        this.cancelToken = null;
-      }
-      const CancelToken = ProcessMaker.apiClient.CancelToken;
       // Load from our api client
       ProcessMaker.apiClient
         .get(
@@ -136,12 +126,7 @@ export default {
             "&order_by=" +
             this.orderBy +
             "&order_direction=" +
-            this.orderDirection,
-          {
-            cancelToken: new CancelToken(c => {
-              this.cancelToken = c;
-            })
-          }
+            this.orderDirection
         )
         .then(response => {
           this.data = this.transform(response.data);
