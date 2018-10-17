@@ -3,6 +3,13 @@
         <vuetable :dataManager="dataManager" :sortOrder="sortOrder" :css="css" :api-mode="false"
                   @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data"
                   pagination-path="meta">
+
+            <template slot="title" slot-scope="props">
+                <b-link @click="onAction('edit', props.rowData, props.rowIndex)">
+                    {{props.rowData.title}}
+                </b-link>
+            </template>
+
             <template slot="actions" slot-scope="props">
                 <div class="actions">
                     <i class="fas fa-ellipsis-h"></i>
@@ -18,6 +25,7 @@
                     </div>
                 </div>
             </template>
+
         </vuetable>
         <pagination single="Script" plural="Scripts" :perPageSelectEnabled="true" @changePerPage="changePerPage"
                     @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
