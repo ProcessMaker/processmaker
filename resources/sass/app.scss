@@ -8,9 +8,8 @@
 @import '~@fortawesome/fontawesome-free-webfonts/scss/fa-regular';
 @import '~@fortawesome/fontawesome-free-webfonts/scss/fa-solid';
 @import '~@fortawesome/fontawesome-free-webfonts/scss/fontawesome';
-@import '~vue-multiselect/dist/vue-multiselect.min';
-
-@font-face {
+@import '~vue-multiselect/dist/vue-multiselect.min.css';
+@font-face{
   font-family: 'Open Sans';
   src: url('/fonts/OpenSans.ttf') format('truetype');
 }

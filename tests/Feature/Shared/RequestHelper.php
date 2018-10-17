@@ -1,7 +1,6 @@
 <?php
 namespace Tests\Feature\Shared;
 
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\User;
 
