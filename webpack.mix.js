@@ -26,6 +26,7 @@ mix.webpackConfig({
     }).js('resources/js/app-layout.js', 'public/js')
     .js('resources/js/designer/main.js', 'public/js/designer')
     .js('resources/js/admin/users/index.js', 'public/js/admin/users')
+    .js('resources/js/admin/users/edit.js', 'public/js/admin/users')
     .js('resources/js/admin/profile/index.js', 'public/js/admin/profile')
     .js('resources/js/admin/groups/index.js', 'public/js/admin/groups')
     .js('resources/js/admin/queues/index.js', 'public/js/admin/queues')
@@ -36,6 +37,9 @@ mix.webpackConfig({
     .js('resources/js/processes/categories/index.js', 'public/js/processes/categories')
     .js('resources/js/processes/scripts/index.js', 'public/js/processes/scripts')
     .js('resources/js/processes/environment-variables/index.js', 'public/js/processes/environment-variables')
+    .js('resources/js/processes/forms/index.js', 'public/js/processes/forms')
+    .js('resources/js/processes/forms/edit.js', 'public/js/processes/forms')
+    .js('resources/js/processes/form-builder/main.js', 'public/js/processes/form-builder')
     .js('resources/js/requests/index.js', 'public/js/requests')
 
 

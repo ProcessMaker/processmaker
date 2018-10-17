@@ -3,16 +3,14 @@
 namespace Tests\Feature\Api\Designer;
 
 use Faker\Factory as Faker;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\Form;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
 
-class FormManagerTest extends TestCase
+class FormsTest extends TestCase
 {
-    use DatabaseTransactions;
     use RequestHelper;
 
     const API_TEST_FORM = '/api/1.0/forms';
@@ -133,7 +131,7 @@ class FormManagerTest extends TestCase
         $this->assertEquals(1, $json['meta']['total']);
         $this->assertEquals($perPage, $json['meta']['per_page']);
         $this->assertEquals(1, $json['meta']['current_page']);
-        
+
         $this->assertEquals($title, $json['meta']['filter']);
         $this->assertEquals('description', $json['meta']['sort_by']);
         $this->assertEquals('DESC', $json['meta']['sort_order']);
@@ -189,12 +187,12 @@ class FormManagerTest extends TestCase
         $faker = Faker::create();
         $url = self::API_TEST_FORM . '/' . factory(Form::class)->create()->uuid_text;
         $response = $this->apiCall('PUT', $url, [
-            'title' => $faker->sentence(2),
+            'title' => 'FormTitleTest',
             'description' => $faker->sentence(5),
             'config' => '',
         ]);
         //Validate the answer is correct
-        $response->assertStatus(200);
+        $response->assertStatus(204);
     }
 
     /**
@@ -214,7 +212,7 @@ class FormManagerTest extends TestCase
             'config' => '',
         ]);
         //Validate the answer is correct
-        $response->assertStatus(200);
+        $response->assertStatus(204);
     }
 
     /**

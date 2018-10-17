@@ -3,7 +3,6 @@
 namespace Tests\Feature\Api;
 
 use Faker\Factory as Faker;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
@@ -14,7 +13,6 @@ use Illuminate\Support\Facades\Hash;
 class GroupMembersTest extends TestCase
 {
 
-  use DatabaseTransactions;
   use RequestHelper;
 
   const API_TEST_URL = '/api/1.0/group_members';
