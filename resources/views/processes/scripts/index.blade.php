@@ -29,7 +29,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Add A Script</h5>
+        <h5 class="modal-title">{{__('Add A Script')}}</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -41,14 +41,19 @@
           <div class="invalid-feedback" v-if="addError.language">@{{addError.title[0]}}</div>
         </div>
         <div class="form-group">
+          {!!Form::label('description', 'Description');!!}
+          {!!Form::text('description', null, ['class'=> 'form-control', 'v-model'=> 'description', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.title}'])!!}
+          <div class="invalid-feedback" v-if="addError.description">@{{addError.title[0]}}</div>
+        </div>
+        <div class="form-group">
           {!!Form::label('language', 'Language');!!}
           {!!Form::select('language', ['php' => 'PHP', 'lua' => 'Lua'], null, ['class'=> 'form-control', 'v-model'=> 'language', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.title}']);!!}
         <div class="invalid-feedback" v-if="addError.language">@{{addError.language[0]}}</div>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-secondary" id="disabledForNow" @click="onSubmit" :disabled="submitted">Save</button>
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">{{__('Close')}}</button>
+        <button type="button" class="btn btn-secondary" id="disabledForNow" @click="onSubmit" :disabled="submitted">{{__('Save')}}</button>
       </div>
     </div>
   </div>
@@ -62,6 +67,7 @@
     data: {
       title: '',
       language: '',
+      description: '',
       addError: {},
       submitted: false,
     },
@@ -71,11 +77,11 @@
         ProcessMaker.apiClient.post("/scripts", {
           title: this.title,
           language: this.language,
-          //@TODO replace with dynamic code
+          description: this.description,
           code: "123"
         })
         .then(response => {
-          ProcessMaker.alert('Script successfully added', 'success')
+          ProcessMaker.alert(__('Script successfully added'), 'success')
           window.location = "/processes/scripts/" + response.data.uuid
         })
         .catch(error => {
