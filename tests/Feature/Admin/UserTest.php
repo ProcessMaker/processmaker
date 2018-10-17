@@ -32,8 +32,8 @@ class UserTest extends TestCase
       // get the URL
       $response = $this->webCall('GET', '/admin/users');
       // check the correct view is called
-      $response->assertViewIs('admin.users.index');
       $response->assertStatus(200);
+      $response->assertViewIs('admin.users.index');
       $response->assertSee('Users');
     }
 
