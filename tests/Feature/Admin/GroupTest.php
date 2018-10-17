@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
 use Tests\Feature\Shared\RequestHelper;
@@ -13,42 +12,49 @@ use Tests\Feature\Shared\RequestHelper;
 class GroupTest extends TestCase
 {
     use RequestHelper;
-    use DatabaseTransactions;
-     /**
+
+    /**
      * Test to make sure the controller and route work with the view
      *
      * @return void
      */
     public function testIndexRoute()
     {
-      factory(Group::class)->create(['name'=>'Test Group']);
-      factory(Group::class)->create(['name'=>'Another group']);
-      $response = $this->webCall('GET', '/admin/groups');
-      $response->assertStatus(200);
-      $response->assertViewIs('admin.groups.index');
-      $response->assertSee('Test Group');
-      $response->assertSee('Another group');
+        $response = $this->webCall('GET', '/admin/groups');
+        $response->assertStatus(200);
+        $response->assertViewIs('admin.groups.index');
     }
-     /**
-     * Test to make sure the controller and route work with the view
+
+    /**
+     * Test to make sure the controller and route work with the view EDIT
      *
      * @return void
      */
     public function testEditRoute()
     {
-      $group = factory(Group::class)->create(['name'=>"Test Edit"]);
-      $response = $this->webCall('GET', '/admin/groups/'.$group->uuid_text . '/edit');
-      $response->assertStatus(200);
-      $response->assertViewIs('admin.groups.edit');
-      $response->assertSee('Test Edit');
+        $groupUuid = factory(Group::class)->create()->uuid_text;
+        // get the URL
+        $response = $this->webCall('GET', '/admin/groups/' . $groupUuid . '/edit');
+
+        $response->assertStatus(200);
+        // check the correct view is called
+        $response->assertViewIs('admin.groups.edit');
+        $response->assertSee('Edit Group');
     }
 
-    public function testShowRoute() 
+    /**
+     * Test to make sure the controller and route work with the view SHOW
+     *
+     * @return void
+     */
+    public function testShowRoute()
     {
-        $group = factory(Group::class)->create(['name'=>'Test show']);
-        $response = $this->webGet('/admin/groups/'. $group->uuid_text );
-        $response->assertViewIs('admin.groups.show');
+        $group = factory(Group::class)->create();
+        // get the URL
+        $response = $this->webCall('GET', '/admin/groups/' . $group->uuid_text);
         $response->assertStatus(200);
-        $response->assertSee('Test show');
+        // check the correct view is called
+        $response->assertViewIs('admin.groups.show');
+        $response->assertSee($group->name);
     }
 }

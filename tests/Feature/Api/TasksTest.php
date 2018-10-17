@@ -2,7 +2,6 @@
 namespace Tests\Feature\Api;
 
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -20,7 +19,6 @@ use Tests\TestCase;
 class TasksTest extends TestCase
 {
 
-    use DatabaseTransactions;
     use WithFaker;
     use ResourceAssertionsTrait;
 
