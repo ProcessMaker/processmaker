@@ -120,6 +120,12 @@ export default {
 </script>
 
 <style lang="scss">
+
+.container {
+    max-width: 100%;
+    padding: 0 0 0 0;
+}
+
 #editor-container {
   height: calc(100vh - 60px);
   display: flex;
@@ -132,7 +138,6 @@ export default {
         display: none;
     }
   }
-
   .preview {
     height: 200px;
     display: flex;
