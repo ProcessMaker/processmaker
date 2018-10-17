@@ -56,6 +56,7 @@
             data() {
                 return {
                     formData:{},
+                    edit: false,
                     errors: {
                         'name': null,
                         'description': null,

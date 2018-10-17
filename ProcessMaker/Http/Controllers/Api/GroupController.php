@@ -7,6 +7,7 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Http\Resources\Groups as GroupResource;
+use Spatie\BinaryUuid\HasBinaryUuid;
 
 class GroupController extends Controller
 {
@@ -51,32 +52,29 @@ class GroupController extends Controller
      */
     public function index(Request $request)
     {
-        $where = $this->getRequestFilterBy($request, ['name', 'description', 'status']);
-        $orderBy = $this->getRequestSortBy($request, 'name');
-        $perPage = $this->getPerPage($request);
-        $include = $this->getRequestInclude($request);
-
-        $count = array_search('membersCount', $include);
-
-        $query = Group::with($include);
-        if ($count !== false) {
-            unset($include[$count]);
-            $query = Group::with($include)
-                ->withCount('members');
-        }
-
-        $group = $query->where($where)
-            ->orderBy(...$orderBy)
-            ->paginate($perPage);
-        return new ApiCollection($group);
-
+        $include = $request->input('include', '');
         $query = Group::query();
+        if ($include) {
+            $include = explode(',', $include);
+            $count = array_search('membersCount', $include);
+
+            //$query = Group::with($include);
+            if ($count !== false) {
+                unset($include[$count]);
+                $query->withCount('members');
+            }
+            if ($include) {
+                $query->with($include);
+            }
+        }
 
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
             $filter = '%' . $filter . '%';
             $query->where(function ($query) use ($filter) {
-                $query->Where('name', 'like', $filter);
+                $query->Where('name', 'like', $filter)
+                    ->orWhere('description', 'like', $filter)
+                    ->orWhere('status', 'like', $filter);
             });
         }
 

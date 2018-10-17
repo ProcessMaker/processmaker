@@ -44,6 +44,7 @@
             data() {
                 return {
                     formData: @json($group),
+                    edit: true,
                     errors: {
                         'name': null,
                         'description': null,

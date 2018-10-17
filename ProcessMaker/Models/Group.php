@@ -46,11 +46,7 @@ class Group extends Model
         ];
 
         if ($existing) {
-            $rules['name'] = [
-                'required',
-                'string',
-                Rule::unique('groups')->ignore($existing->uuid, 'uuid')
-            ];
+            $rules['name'] .= ',' . $existing->uuid . ',uuid';
         }
 
         return $rules;

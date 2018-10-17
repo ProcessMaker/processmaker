@@ -68,10 +68,7 @@ class Form extends Model
         ];
         if ($existing) {
             // ignore the unique rule for this id
-            $rules['title'] = [
-                'required',
-                Rule::unique('forms')->ignore($existing->uuid, 'uuid')
-            ];
+            $rules['title'] .= ',' . $existing->uuid . ',uuid';
         }
         return $rules;
     }
