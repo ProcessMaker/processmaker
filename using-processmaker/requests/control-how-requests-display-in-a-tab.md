@@ -24,5 +24,3 @@ Use these tips to control how Request information displays in any **Request** pa
 
 {% page-ref page="view-completed-requests.md" %}
 
-{% page-ref page="view-watched-requests.md" %}
-

@@ -18,7 +18,6 @@
   * [View Requests You Started](using-processmaker/requests/view-started-requests.md)
   * [View Requests That Are In Progress](using-processmaker/requests/view-in-progress-requests.md)
   * [View Completed Requests](using-processmaker/requests/view-completed-requests.md)
-  * [Watch a Request](using-processmaker/requests/view-watched-requests.md)
   * [Control How Requests Display in a Tab](using-processmaker/requests/control-how-requests-display-in-a-tab.md)
   * [Search for a Request](using-processmaker/requests/search-for-a-request.md)
   * [Request Details](using-processmaker/requests/request-details.md)
