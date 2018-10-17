@@ -1,10 +1,8 @@
-import Vue from 'vue'
-import GroupsListing from './components/GroupsListing'
-import ModalGroup from './components/modal-group'
+import Vue from 'vue';
+import GroupsListing from './components/GroupsListing';
 
-// Bootstrap our Designer application
 new Vue({
-    el: '#groups-listing',
+    el: '#listGroups',
     data: {
         filter: '',
         groupUid: null,
@@ -20,16 +18,6 @@ new Vue({
         ModalGroup
     },
     methods: {
-        showModal() {
-            this.labels.panel = 'Create New Group';
-            this.groupUid = null;
-            this.groupModal = true;
-        },
-        edit(uid) {
-            this.labels.panel = 'Edit Group';
-            this.groupUid = uid;
-            this.groupModal = true;
-        },
         reload() {
             // Status is 200, so let's just change our sort and sort direction and then fetch
             this.$refs.groupsListing.dataManager([{

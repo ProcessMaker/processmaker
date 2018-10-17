@@ -10,17 +10,17 @@ use Tests\Feature\Shared\RequestHelper;
 
 class UserTest extends TestCase
 {
-  use RequestHelper;
+    use RequestHelper;
 
 
-  /**
-   * Create initial user
-   */
-  protected function setUp()
-  {
-      parent::setUp();
-      $this->user = factory(User::class)->create();
-  }
+    /**
+     * Create initial user
+     */
+    protected function setUp()
+    {
+        parent::setUp();
+        $this->user = factory(User::class)->create();
+    }
 
     /**
      * Test to make sure the controller and route work wiht the view
@@ -44,28 +44,33 @@ class UserTest extends TestCase
      */
     public function testEditRoute()
     {
-      $user_uuid = factory(User::class)->create()->uuid_text;
-      $response = $this->webCall('GET', '/admin/users/'.$user_uuid . '/edit');
-      $response->assertStatus(200);
-      $response->assertViewIs('admin.users.edit');
-      $response->assertSee('Edit User');
+
+        $user_uuid = factory(User::class)->create()->uuid_text;
+        // get the URL
+        $response = $this->webCall('GET', '/admin/users/' . $user_uuid . '/edit');
+
+        $response->assertStatus(200);
+        // check the correct view is called
+        $response->assertViewIs('admin.users.edit');
+        $response->assertSee('Edit User');
     }
 
-    // /**
-    //  * Test to make sure the controller and route work wiht the view
-    //  *
-    //  * @return void
-    //  */
-    // public function testCreateRoute()
-    // {
-    //   // get the URL
-    //   $response = $this->webCall('GET', '/admin/users/create');
+    /**
+     * Test to make sure the controller and route work with the view
+     *
+     * @return void
+     */
+    public function testCreateRoute()
+    {
+        // get the URL
+        $response = $this->webCall('GET', '/admin/users/create');
 
-    //   $response->assertStatus(200);
-    //   // check the correct view is called
-    //   $response->assertViewIs('admin.users.create');
+        $response->assertStatus(200);
+        // check the correct view is called
+        $response->assertViewIs('admin.users.create');
 
-    // }
+    }
+
     /**
      * Test to make sure the controller and route work with the view
      *
@@ -73,12 +78,14 @@ class UserTest extends TestCase
      */
     public function testShowRoute()
     {
-      $user = factory(User::class)->create();
-      // get the URL
-      $response = $this->webCall('GET', '/admin/users/'. $user->uuid_text);
-      $response->assertStatus(200);
-      // check the correct view is called
-      $response->assertViewIs('admin.users.show');
-      $response->assertSee($user->firstname);
+        $user = factory(User::class)->create();
+        // get the URL
+        $response = $this->webCall('GET', '/admin/users/' . $user->uuid_text);
+        $response->assertStatus(200);
+        // check the correct view is called
+        $response->assertViewIs('admin.users.show');
+        $response->assertSee($user->firstname);
+
     }
+
 }

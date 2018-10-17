@@ -5,7 +5,6 @@
                   pagination-path="meta">
             <template slot="actions" slot-scope="props">
                 <div class="actions">
-                    <i class="fas fa-ellipsis-h"></i>
                     <div class="popout">
                         <b-btn variant="action" @click="onAction('edit-item', props.rowData, props.rowIndex)"
                                v-b-tooltip.hover title="Edit"><i class="fas fa-edit"></i></b-btn>

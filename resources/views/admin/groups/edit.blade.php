@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-  {{__('Edit Groups')}}
+    {{__('Edit Groups')}}
 @endsection
 
 @section('sidebar')
@@ -46,6 +46,7 @@
 </div>
 @endsection
 
+
 @section('js')
 <script>
 
@@ -78,4 +79,5 @@
     }
   })       
 </script>
+
 @endsection
