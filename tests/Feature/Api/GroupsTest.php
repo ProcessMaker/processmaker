@@ -19,6 +19,7 @@ class GroupsTest extends TestCase
   const STRUCTURE = [
       'uuid',
       'name',
+      'description',
       'status',
       'updated_at',
       'created_at'
@@ -44,7 +45,6 @@ class GroupsTest extends TestCase
   public function testCreateGroup()
   {
       //Post title duplicated
-      $faker = Faker::create();
       $url = self::API_TEST_URL;
       $response = $this->apiCall('POST', $url, [
           'name' => 'newgroup',
@@ -176,14 +176,12 @@ class GroupsTest extends TestCase
    */
   public function testUpdateGroupParametersRequired()
   {
-      $faker = Faker::create();
-
       $uuid = factory(Group::class)->create(['name' => 'mytestname'])->uuid_text;
       //The post must have the required parameters
       $url = self::API_TEST_URL . '/' .$uuid;
 
       $response = $this->apiCall('PUT', $url, [
-          'status' => 'updatemytestname'
+          'name' => ''
       ]);
 
       //Validate the header status code
@@ -195,8 +193,6 @@ class GroupsTest extends TestCase
    */
   public function testUpdateGroup()
   {
-      $faker = Faker::create();
-
       $url = self::API_TEST_URL . '/' . factory(Group::class)->create()->uuid_text;
 
       //Load the starting group data

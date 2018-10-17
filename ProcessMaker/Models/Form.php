@@ -18,7 +18,7 @@ use Spatie\BinaryUuid\HasBinaryUuid;
  * @property array content
  * @property string label
  * @property Carbon type
- * 
+ *
  *   @OA\Schema(
  *   schema="formsEditable",
  *   @OA\Property(property="uuid", type="string", format="uuid"),
@@ -68,7 +68,10 @@ class Form extends Model
         ];
         if ($existing) {
             // ignore the unique rule for this id
-            $rules['title'] .= ',' . $existing->uuid . ',uuid';
+            $rules['title'] = [
+                'required',
+                Rule::unique('forms')->ignore($existing->uuid, 'uuid')
+            ];
         }
         return $rules;
     }
