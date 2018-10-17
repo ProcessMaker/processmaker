@@ -109,14 +109,14 @@
                     user.lastname +
                     '</span>';
 
-                let initials = '<span class="avatar-initials">' +
+                let initials = '<span class="avatar-initials-list">' +
                     user.firstname.charAt(0).toUpperCase() +
                     user.lastname.charAt(0).toUpperCase() +
                     '</span>'
 
                 return user.avatar
-                    ? '<img class="avatar-image avatar-circle" src="' + user.avatar + '"> ' + name
-                    : '<button type="button" class="avatar-circle">'+
+                    ? '<img class="avatar-image-list avatar-circle-list" src="' + user.avatar + '"> ' + name
+                    : '<button type="button" class="avatar-circle-list">'+
                             initials +
                       '</button> ' + name;
             },
@@ -189,67 +189,8 @@
             color: red;
         }
     }
-    .rounded-user {
-        border-radius: 50%!important;
-        height: 1.5em;
-        margin-right: 0.5em;
-    }
 
 
-    /deep/ .popover-header {
-        background-color: #fff;
-        font-size: 16px;
-        font-weight: 600;
-        color: #333333;
-    }
-
-    .avatar-circle {
-        width: 40px;
-        height: 40px;
-        background-color: rgb(251, 181, 4);
-        text-align: center;
-        border-radius: 50%;
-        -webkit-border-radius: 50%;
-        -moz-border-radius: 50%;
-        margin-left: 10px;
-        border: none;
-    }
-
-    .avatar-initials {
-        position: relative;
-        font-size: 20px;
-        line-height: 18px;
-        color: #fff;
-        margin: -12px;
-    }
-
-    .wrap-name {
-        font-size: 16px;
-        font-weight: 600;
-        width: 140px;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
-    }
-
-    .wrap-name:hover {
-        white-space: initial;
-        overflow: visible;
-        cursor: pointer;
-    }
-
-    .item {
-        font-size: 12px;
-        padding: 5px;
-        width: 160px;
-    }
-
-    .avatar-image {
-        width: 40px;
-        height: 40px;
-        margin-left: -16px;
-        margin-top: -7px;
-    }
 
 
 </style>

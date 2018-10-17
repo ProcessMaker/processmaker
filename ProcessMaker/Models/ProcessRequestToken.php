@@ -122,7 +122,9 @@ class ProcessRequestToken extends Model implements TokenInterface
     {
         $query = ProcessRequestToken::query();
         $query->where('process_request_uuid', $this->process_request_uuid)
-                ->where('uuid', '!=', $this->uuid);
+                ->where('uuid', '!=', $this->uuid)
+                ->where('status', 'ACTIVE')
+                ->orderByDesc('completed_at');
         $last = $query->get()->last();
         if (empty($last)) {
             return ProcessRequest::find($this->process_request_uuid)
