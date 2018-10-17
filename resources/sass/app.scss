@@ -8,12 +8,17 @@
 @import '~@fortawesome/fontawesome-free-webfonts/scss/fa-regular';
 @import '~@fortawesome/fontawesome-free-webfonts/scss/fa-solid';
 @import '~@fortawesome/fontawesome-free-webfonts/scss/fontawesome';
-@import '~vue-multiselect/dist/vue-multiselect.min';
+@import '~vue-multiselect/dist/vue-multiselect.min.css';
 @font-face{
   font-family: 'Open Sans';
 	src: url('/fonts/OpenSans.ttf')
 	     format('truetype');
 }
+
+// .search-bar {
+//   @extend form-inline;
+//   @extend justify-content-end;
+// }
 
 .multiselect__tag-icon:focus, .multiselect__tag-icon:hover {
   background: #788793 !important;
@@ -68,6 +73,15 @@ html {
   margin: 15px 5px
 }
 
+#prepend-search {
+  background-color: white;
+  border-right: 0px;
+  padding-right: 0px;
+  padding-left: 10px;
+  border-color: #b6bfc6;
+  color: #b6bfc6;
+}
+
 //topnav
 .navbar {
   height: 60px;
@@ -94,12 +108,6 @@ html {
     &:hover {
       background-color: #e9edf1;
     }
-  }
-
-  .avatar-small {
-    width: 46px;
-    height: 46px;
-    margin: 0px 8px 3px -10px;
   }
 
   .avatar {

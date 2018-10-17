@@ -95,23 +95,40 @@
                     draft: "text-warning",
                     archived: "text-info"
                 };
-                return '<i class="fas fa-circle ' + bubbleColor[status] + ' small"></i> ' +
-                    status.charAt(0).toUpperCase() + status.slice(1);
+                return (
+                    '<i class="fas fa-circle ' +
+                    bubbleColor[status] +
+                    ' small"></i> ' +
+                    status.charAt(0).toUpperCase() +
+                    status.slice(1)
+                );
+            },
+            goToEdit(data) {
+                window.location = "/admin/users/" + data + "/edit";
             },
             onAction(action, data, index) {
                 switch (action) {
                     case "edit-item":
-                        //@todo implement
+                        this.goToEdit(data.uuid);
                         break;
-                    case 'remove-item':
-                        //@todo implement
+                    case "remove-item":
+                        ProcessMaker.confirmModal(
+                            'Caution!',
+                            '<b>Are you sure to inactive the user </b>' + data.fullname + '?', '', () => {
+                                ProcessMaker.apiClient.delete('users/' + data.uuid)
+                                    .then(response => {
+                                        ProcessMaker.alert('User Marked As Deleted', 'warning');
+                                        this.$emit('reload');
+                                    })
+                            }
+                        );
                         break;
                 }
             },
             fetch() {
                 this.loading = true;
                 //change method sort by user
-                this.orderBy = this.orderBy === 'fullname' ? 'firstname' : this.orderBy;
+                this.orderBy = this.orderBy === "fullname" ? "firstname" : this.orderBy;
                 // Load from our api client
                 ProcessMaker.apiClient
                     .get(

@@ -101,6 +101,17 @@ jobs:
       # Enable xdebug to support code coverage
       - run: sudo docker-php-ext-enable xdebug
 
+      - setup_remote_docker
+
+      - run:
+          name: Configure scripts executor
+          command: |
+            docker pull processmaker/executor:php
+            docker pull processmaker/executor:lua
+            sudo mkdir -m777 /opt/executor
+
+      - run: sudo docker-php-ext-enable xdebug
+
       # Build frontend assets for production
       - run:
           name: "Front-End Asset Build"
@@ -123,7 +134,6 @@ jobs:
             MSSQL_DATABASE: "test"
             MSSQL_USERNAME: "sa"
             MSSQL_PASSWORD: "P4ssW0rd1!"
-            BPM_SCRIPTS_HOME: "/tmp"
       - run:
           name: "Jest"
           command: "npm run test"
@@ -154,6 +164,11 @@ jobs:
             echo "SAUCELABS_BROWSER_TESTING=true" >> .env
             echo "SAUCELABS_USERNAME=${SAUCELABS_USERNAME}" >> .env
             echo "SAUCELABS_ACCESS_KEY=${SAUCELABS_ACCESS_KEY}" >> .env
+            # Put in configuration file for Braoodcaster
+            echo "BROADCAST_DRIVER=redis" >> .env
+            echo "BROADCASTER_HOST=https://" >> .env
+            echo "BROADCASTER_KEY=21a795019957dde6bcd96142e05d4b10" >> .env
+
             # Generate unique app key
             php artisan key:generate --force
             # Copy over our test oauth keys. Regular install will create new ones
@@ -187,7 +202,9 @@ jobs:
             echo "Deployed to https://${BUILD_NAME}.bpm4.qa.processmaker.net/"
             # Run containerDeploy.sh script to spin up Redis docker container, laravel-echo-server, and horizon
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "sudo /bin/bash /root/cloudops/containerDeploy.sh $BUILD_NAME"
-
+            # Generate Passport Keys
+            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "cd ~/builds/$BUILD_NAME && php artisan passport:keys"
+            
       #- run:
       #    name: "SauceLabs Browser Tests: Chrome"
       #    command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"cd ~/builds/$BUILD_NAME && php artisan dusk\""

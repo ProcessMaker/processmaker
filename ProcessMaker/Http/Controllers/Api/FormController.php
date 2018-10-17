@@ -16,6 +16,36 @@ class FormController extends Controller
      * @param Request $request
      *
      * @return ResponseFactory|Response
+     *
+     *     @OA\Get(
+     *     path="/forms",
+     *     summary="Returns all forms that the user has access to",
+     *     operationId="getForms",
+     *     tags={"Forms"},
+     *     @OA\Parameter(ref="#/components/parameters/filter"),
+     *     @OA\Parameter(ref="#/components/parameters/order_by"),
+     *     @OA\Parameter(ref="#/components/parameters/order_direction"),
+     *     @OA\Parameter(ref="#/components/parameters/per_page"),
+     *     @OA\Parameter(ref="#/components/parameters/include"),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="list of forms",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/forms"),
+     *             ),
+     *             @OA\Property(
+     *                 property="meta",
+     *                 type="object",
+     *                 allOf={@OA\Schema(ref="#/components/schemas/metadata")},
+     *             ),
+     *         ),
+     *     ),
+     * )
      */
     public function index(Request $request)
     {
@@ -46,6 +76,27 @@ class FormController extends Controller
      * @param Form $form
      *
      * @return ResponseFactory|Response
+     *
+     *     @OA\Get(
+     *     path="/forms/{formsUuid}",
+     *     summary="Get single forms by ID",
+     *     operationId="getFormsByUuid",
+     *     tags={"Forms"},
+     *     @OA\Parameter(
+     *         description="ID of forms to return",
+     *         in="path",
+     *         name="formsUuid",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successfully found the forms",
+     *         @OA\JsonContent(ref="#/components/schemas/forms")
+     *     ),
+     * )
      */
     public function show(Form $form)
     {
@@ -58,6 +109,22 @@ class FormController extends Controller
      * @param Request $request
      *
      * @return ResponseFactory|Response
+     *
+     *     @OA\Post(
+     *     path="/forms",
+     *     summary="Save a new forms",
+     *     operationId="createForms",
+     *     tags={"Forms"},
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(ref="#/components/schemas/formsEditable")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/forms")
+     *     ),
+     * )
      */
     public function store(Request $request)
     {
@@ -75,6 +142,31 @@ class FormController extends Controller
      * @param Request $request
      *
      * @return ResponseFactory|Response
+     *
+     *     @OA\Put(
+     *     path="/forms/{formsUuid}",
+     *     summary="Update a form",
+     *     operationId="updateForm",
+     *     tags={"Forms"},
+     *     @OA\Parameter(
+     *         description="ID of form to return",
+     *         in="path",
+     *         name="formsUuid",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(ref="#/components/schemas/formsEditable")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/forms")
+     *     ),
+     * )
      */
     public function update(Form $form, Request $request)
     {
@@ -82,7 +174,7 @@ class FormController extends Controller
         $form->fill($request->input());
         $form->saveOrFail();
 
-        return response([], 200);
+        return response([], 204);
     }
 
     /**
@@ -91,6 +183,26 @@ class FormController extends Controller
      * @param Form $form
      *
      * @return ResponseFactory|Response
+     *     @OA\Delete(
+     *     path="/forms/{formsUuid}",
+     *     summary="Delete a form",
+     *     operationId="deleteForm",
+     *     tags={"Forms"},
+     *     @OA\Parameter(
+     *         description="ID of form to return",
+     *         in="path",
+     *         name="formsUuid",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/forms")
+     *     ),
+     * )
      */
     public function destroy(Form $form)
     {

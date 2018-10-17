@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Validation\Rule;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -28,6 +29,35 @@ class User extends Authenticatable implements HasMedia
      * The attributes that are mass assignable.
      *
      * @var array
+     * 
+     *   @OA\Schema(
+     *   schema="usersEditable",
+     *   @OA\Property(property="email", type="string", format="email"),
+     *   @OA\Property(property="password", type="string"),
+     *   @OA\Property(property="firstname", type="string"),
+     *   @OA\Property(property="lastname", type="string"),
+     *   @OA\Property(property="username", type="string"),
+     *   @OA\Property(property="address", type="string"),
+     *   @OA\Property(property="city", type="string"),
+     *   @OA\Property(property="state", type="string"),
+     *   @OA\Property(property="postal", type="string"),
+     *   @OA\Property(property="country", type="string"),
+     *   @OA\Property(property="phone", type="string"),
+     *   @OA\Property(property="fax", type="string"),
+     *   @OA\Property(property="cell", type="string"),
+     *   @OA\Property(property="title", type="string"),
+     *   @OA\Property(property="timezone", type="string"),
+     *   @OA\Property(property="language", type="string"),
+     *   @OA\Property(property="loggedin_at", type="string"),
+     *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
+     * ),
+     * @OA\Schema(
+     *   schema="users",
+     *   allOf={@OA\Schema(ref="#/components/schemas/usersEditable")},
+     *   @OA\Property(property="uuid", type="string", format="uuid"),
+     *   @OA\Property(property="created_at", type="string", format="date-time"),
+     *   @OA\Property(property="updated_at", type="string", format="date-time"),
+     * )
      */
     protected $fillable = [
         'username',
@@ -63,6 +93,10 @@ class User extends Authenticatable implements HasMedia
         'avatar',
     ];
 
+    protected $dates = [
+        'loggedin_at',
+    ];
+
     /**
      * Validation rules
      *
@@ -74,11 +108,21 @@ class User extends Authenticatable implements HasMedia
     {
         $rules = [
             'username' => 'required|unique:users,username',
-            'email' => 'required|email',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required',
         ];
         if ($existing) {
             // ignore the unique rule for this id
-            $rules['username'] .= ',' . $existing->uuid . ',uuid';
+            $rules['username'] = [
+                'required',
+                Rule::unique('users')->ignore($existing->uuid, 'uuid')
+            ];
+
+            $rules['email'] = [
+                'required',
+                'email',
+                Rule::unique('users')->ignore($existing->uuid, 'uuid')
+            ];
         }
         return $rules;
     }
@@ -104,6 +148,12 @@ class User extends Authenticatable implements HasMedia
             $this->firstname,
             $this->lastname
         ]);
+    }
+
+    public function members()
+    {
+        // return $this->hasMany(GroupMember::class);
+        return GroupMember::where(['member_type' => self::class, 'member_uuid' => $this->uuid])->get();
     }
 
     public function memberships()

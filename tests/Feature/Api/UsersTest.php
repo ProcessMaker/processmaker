@@ -3,7 +3,6 @@
 namespace Tests\Feature\Api;
 
 use Faker\Factory as Faker;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
@@ -12,7 +11,6 @@ use Illuminate\Support\Facades\Hash;
 class UsersTest extends TestCase
 {
 
-  use DatabaseTransactions;
   use RequestHelper;
 
   const API_TEST_URL = '/api/1.0/users';
@@ -196,14 +194,11 @@ class UsersTest extends TestCase
    */
   public function testUpdateUserParametersRequired()
   {
-      $faker = Faker::create();
-
-      $uuid = factory(User::class)->create(['username' => 'mytestusername'])->uuid_text;
       //The post must have the required parameters
-      $url = self::API_TEST_URL . '/' .$uuid;
+      $url = self::API_TEST_URL . '/' . factory(User::class)->create()->uuid_text;
 
       $response = $this->apiCall('PUT', $url, [
-          'username' => 'updatemytestusername'
+          'username' => ''
       ]);
 
       //Validate the header status code
