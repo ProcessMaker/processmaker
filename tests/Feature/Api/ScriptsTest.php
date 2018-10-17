@@ -18,7 +18,8 @@ class ScriptsTest extends TestCase
         'uuid',
         'title',
         'language',
-        'code'
+        'code',
+        'description'
     ];
 
     /**
@@ -46,6 +47,7 @@ class ScriptsTest extends TestCase
             'title' => 'Script Title',
             'language' => 'php',
             'code' => '123',
+            'description' => 'Description'
         ]);
         //validating the answer is correct.
         //Check structure of response.
