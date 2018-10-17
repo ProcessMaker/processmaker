@@ -51,5 +51,11 @@ return[
   'sidebar_processes' => [
     'processes' => 'Processes',
     'categories' => 'Process Categories',
+  ],
+  'topnav' => [
+    'requests' => 'Requests',
+    'tasks' => 'Tasks',
+    'processes' => 'Processes',
+    'admin' => 'Admin'
   ]
 ];
