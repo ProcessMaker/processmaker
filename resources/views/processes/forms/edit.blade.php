@@ -4,11 +4,11 @@
     {{__('Edit Form')}}
 @endsection
 
-@Section('sidebar')
+@section('sidebar')
     @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_processes')])
 @endsection
 
-@Section('content')
+@section('content')
     <div class="container" id="form-edit">
         <h1>{{__('Edit Form')}}</h1>
         <div class="row">
@@ -31,6 +31,6 @@
     </div>
 @endsection
 
-@Section('js')
+@section('js')
     <script src="{{mix('js/processes/forms/edit.js')}}"></script>
 @endsection
