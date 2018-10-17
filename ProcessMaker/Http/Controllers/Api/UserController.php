@@ -10,6 +10,8 @@ use ProcessMaker\Http\Resources\Users as UserResource;
 
 class UserController extends Controller
 {
+    use ResourceRequestsTrait;
+
     /**
      * Display a listing of the resource.
      *
@@ -109,11 +111,12 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate(User::rules());
         $user = new User();
-        $user->fill($request->input());
+        $user->fill($request->json()->all());
+        //validate model
+        $this->validateModel($user, User::rules($user));
         $user->saveOrFail();
-        return new UserResource($user);
+        return new UserResource($user->refresh());
     }
 
     /**
@@ -178,8 +181,9 @@ class UserController extends Controller
      */
     public function update(User $user, Request $request)
     {
-        $request->validate(User::rules($user));
-        $user->fill($request->input());
+        $user->fill($request->json()->all());
+        //validate model
+        $this->validateModel($user, User::rules($user));
         $user->saveOrFail();
         return response([], 204);
     }
