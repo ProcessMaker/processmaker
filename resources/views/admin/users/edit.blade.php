@@ -14,37 +14,41 @@
   <div class="row">
     <div class="col-8">
       <div class="card card-body">
-        {!! Form::model($user , ['route' => ['users.update', $user->uuid_text ]]) !!}
-        <div class="form-group">
-          {!! Form::label('username', 'Username') !!}
-          {!! Form::text('username', null, ['class'=> 'form-control']) !!}
-          <small id="emailHelp" class="form-text text-muted">Username must be distinct</small>
-        </div>
-        <div class="form-group">
-          {!! Form::label('firstname', 'First Name') !!}
-          {!! Form::text('firstname', null, ['class'=> 'form-control']) !!}
-        </div>
-        <div class="form-group">
-          {!! Form::label('lastname', 'Last Name') !!}
-          {!! Form::text('lastname', null, ['class'=> 'form-control']) !!}
-        </div>
-        <div class="form-group">
-          {!! Form::label('email', 'Email') !!}
-          {!! Form::text('email', null, ['class'=> 'form-control']) !!}
-        </div>
-        <div class="form-group">
-          {!! Form::label('status', 'Status') !!}
-          {!! Form::select('status', ['Active', 'Inactive'], null, ['class' => 'form-control']) !!}
-        </div>
-        <div class="form-group">
-          {!! Form::label('password', 'Password') !!}
-          {!! Form::password('password', ['class' => 'form-control']) !!}
-        </div>
-        <div class="form-group">
-          {!! Form::label('password_confirm', 'Confirm Password') !!}
-          {!! Form::password('password', ['class' => 'form-control']) !!}
-        </div>
-        <div class="d-flex justify-content-end mt-2">
+        <div class="modal-body" id="editUser">
+        {!! Form::open() !!}
+          <div class="form-group">
+            {!! Form::label('username', 'Username') !!}
+            {!! Form::text('username', $user->username, ['class'=> 'form-control', 'v-model' => 'username']) !!}
+            <div class="text-danger" v-if="addError.username">@{{addError.title[0]}}</div>
+            <small id="emailHelp" class="form-text text-muted">Username must be distinct</small>
+          </div>
+          <div class="form-group">
+              {!! Form::label('firstname', 'First Name') !!}
+              {!! Form::text('firstname', $user->firstname, ['class'=> 'form-control', 'v-model' => 'firstname']) !!}
+              <div class="text-danger" v-if="addError.name">@{{addError.title[0]}}</div>
+          </div>
+          <div class="form-group">
+              {!! Form::label('lastname', 'Last Name') !!}
+              {!! Form::text('lastname', $user->lastname, ['class'=> 'form-control', 'v-model' => 'lastname']) !!}
+          </div>
+          <div class="form-group">
+              {!! Form::label('email', 'Email') !!}
+              {!! Form::text('email', $user->email, ['class'=> 'form-control', 'v-model' => 'email']) !!}
+          </div>
+          <div class="form-group">
+              {!! Form::label('status', 'Status') !!}
+              {!! Form::select('status', [ 'ACTIVE' => 'Active', 'INACTIVE' => 'Inactive'], $user->status, ['class' => 'form-control', 'v-model' => 'status']) !!}
+          </div>
+          <div class="form-group">
+              {!! Form::label('password', 'Password') !!}
+              {!! Form::password('password', ['class' => 'form-control']) !!}
+          </div>
+          <div class="form-group">
+              {!! Form::label('password_confirm', 'Confirm Password') !!}
+              {!! Form::password('password_confirm', ['class' => 'form-control']) !!}
+          </div>
+          <br>
+          <div class="text-right">
           {!! Form::button('Cancel', ['class'=>'btn btn-outline-success']) !!}
           {!! Form::submit('Save', ['class'=>'btn btn-success ml-2']) !!}
         </div>
@@ -61,4 +65,46 @@
 @endsection
 
 @section('js')
+<script>
+  new Vue ({
+    el: '#editUser', 
+    data() {
+      return {
+        existing: @json($user),
+        username: @json($user->username),
+        firstname: @json($user->firstname),
+        lastname: @json($user->lastname),
+        email: @json($user->email),
+        status: @json($user->status),
+        uuid: @json($user->uuid_text),
+        existing: @json($user),
+        addError: [],
+      }
+    },
+    methods: {
+      onUpdate(){
+        console.log('update')
+        console.log(this.existing);
+        console.log(this.firstname);
+        ProcessMaker.apiClient.put("/users/{{$user->uuid_text}}" , {
+          firstname: this.firstname,
+          lastname: this.lastname,
+          email: this.email,
+          status: this.status,
+        })
+        .then(response => {
+          console.log(response);
+          console.log('then');
+          ProcessMaker.alert('User successfully updated', 'update');
+          window.location = "/admin/users/" + response.data.uuid
+        })
+        .catch(error => {
+          if (error.response.status === 422) {
+            this.addError = error.response.data.errors
+          }
+        })
+      }
+    } 
+  });
+</script>
 @endsection
