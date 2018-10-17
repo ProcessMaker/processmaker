@@ -5,7 +5,6 @@
                   pagination-path="meta">
             <template slot="actions" slot-scope="props">
                 <div class="actions">
-                    <i class="fas fa-ellipsis-h"></i>
                     <div class="popout">
                         <b-btn variant="action" @click="onEdit(props.rowData, props.rowIndex)"
                                v-b-tooltip.hover title="Edit"><i class="fas fa-edit"></i></b-btn>
@@ -25,8 +24,6 @@
 </template>
 
 <script>
-    import Vuetable from "vuetable-2/src/components/Vuetable";
-    import Pagination from "../../../components/common/Pagination";
     import datatableMixin from "../../../components/common/mixins/datatable";
 
     export default {
@@ -34,23 +31,25 @@
         props: ["filter"],
         data() {
             return {
-                orderBy: "title",
+                orderBy: "name",
 
                 sortOrder: [
                     {
-                        field: "title",
-                        sortField: "title",
+                        field: "name",
+                        sortField: "name",
                         direction: "asc"
                     }
                 ],
                 fields: [
                     {
-                        name: "__checkbox"
+                        title: "Name",
+                        name: "name",
+                        sortField: "Name"
                     },
                     {
-                        title: "Title",
-                        name: "title",
-                        sortField: "title"
+                        title: "Description",
+                        name: "description",
+                        sortField: "description"
                     },
                     {
                         title: "Status",
@@ -59,10 +58,9 @@
                         callback: this.formatStatus
                     },
                     {
-                        title: "Active Users",
-                        name: "total_users",
-                        sortField: "total_users",
-                        callback: this.formatActiveUsers
+                        title: "Members",
+                        name: "members_count",
+                        sortField: "members_count"
                     },
                     {
                         title: "Created At",
@@ -84,37 +82,42 @@
             };
         },
         methods: {
-            formatActiveUsers(value) {
-                return '<div class="text-center">' + value + "</div>";
-            },
             formatStatus(status) {
                 status = status.toLowerCase();
-                let bubbleColor = {'active': 'text-success', 'inactive': 'text-danger', 'draft': 'text-warning', 'archived': 'text-info'};
-                let response = '<i class="fas fa-circle ' + bubbleColor[status] + ' small"></i> ';
-                status = status.charAt(0).toUpperCase() + status.slice(1);
-                return response + status;
+                let bubbleColor = {
+                    'active': 'text-success',
+                    'inactive': 'text-danger',
+                    'draft': 'text-warning',
+                    'archived': 'text-info'
+                };
+                return '<i class="fas fa-circle ' + bubbleColor[status] + ' small"></i> ' + status.charAt(0).toUpperCase() + status.slice(1);
             },
             onEdit(data, index) {
-                this.$emit('edit', data.uid);
+                window.location = "/admin/groups/" + data.uuid + "/edit";
             },
             onDelete(data, index) {
                 let that = this;
-                ProcessMaker.confirmModal('Caution!', '<b>Are you sure to delete the group </b>' + data.title + '?', '', function () {
+                ProcessMaker.confirmModal('Caution!', '<b>Are you sure to delete the group </b>' + data.name + '?', '', function () {
                     ProcessMaker.apiClient
-                        .delete('groups/' + data.uid)
+                        .delete('groups/' + data.uuid)
                         .then(response => {
                             ProcessMaker.alert('Group successfully eliminated', 'success');
                             that.fetch();
                         });
                 });
             },
+            onAction(action, data, index) {
+                switch (action) {
+                    case "users-item":
+                        //todo
+                        break;
+                    case "permissions-item":
+                       //todo
+                        break;
+                }
+            },
             fetch() {
                 this.loading = true;
-                if (this.cancelToken) {
-                    this.cancelToken();
-                    this.cancelToken = null;
-                }
-                const CancelToken = ProcessMaker.apiClient.CancelToken;
                 // Load from our api client
                 ProcessMaker.apiClient
                     .get(
@@ -127,19 +130,12 @@
                         "&order_by=" +
                         this.orderBy +
                         "&order_direction=" +
-                        this.orderDirection,
-                        {
-                            cancelToken: new CancelToken(c => {
-                                this.cancelToken = c;
-                            })
-                        }
+                        this.orderDirection +
+                        "&include=membersCount"
                     )
                     .then(response => {
                         this.data = this.transform(response.data);
                         this.loading = false;
-                    })
-                    .catch(error => {
-                        // Undefined behavior currently, show modal?
                     });
             }
         }

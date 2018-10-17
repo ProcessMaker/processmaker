@@ -15,6 +15,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::resource('environment_variables', 'EnvironmentVariablesController');
         Route::resource('documents', 'DocumentController');
         Route::resource('forms', 'FormController');
+        Route::resource('form-builder', 'FormBuilderController')->parameters([
+            'form-builder' => 'form'
+        ])->only(['edit']);
         Route::resource('scripts', 'ScriptController');
     });
     Route::resource('processes', 'ProcessController');
@@ -46,4 +49,3 @@ $this->post('password/reset', 'Auth\ResetPasswordController@reset');
 $this->get('password/success', function () {
     return view('auth.passwords.success', ['title' => __('Password Reset')]);
 })->name('password-success');
-
