@@ -6,7 +6,6 @@ new Vue({
     data: {
         filter: '',
         groupUid: null,
-        groupModal: false,
         labels: {
             panel: 'Create New Group',
             name: 'Name',
@@ -15,7 +14,6 @@ new Vue({
     },
     components: {
         GroupsListing,
-        ModalGroup
     },
     methods: {
         reload() {
