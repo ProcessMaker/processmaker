@@ -4,7 +4,8 @@
                   @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data"
                   pagination-path="meta">
             <template slot="uuids" slot-scope="props">
-                <b-btn variant="link" size="sm" @click="openRequest(props.rowData, props.rowIndex)">{{props.rowData.uuid}}
+                <b-btn variant="link" size="sm" @click="openRequest(props.rowData, props.rowIndex)">
+                    {{props.rowData.uuid}}
                 </b-btn>
             </template>
 
@@ -56,19 +57,37 @@
                         sortField: "name"
                     },
                     {
-                        title: "Assigned to",
+                        title: "Status",
+                        name: "status",
+                        sortField: "status"
+                    },
+                    {
+                        title: "Stage",
+                        name: "stage",
+                        sortField: "stage"
+                    },
+                    {
+                        title: "Participants",
                         name: "user",
+                        sortField: "user",
                         callback: this.assignedTo
                     },
                     {
-                        title: "Due date",
-                        name: "delegations",
-                        callback: this.formatDueDate
+                        title: "Started",
+                        name: "start_at",
+                        sortField: "start_at",
+                        callback: this.formatDate
                     },
                     {
-                        title: "Created on",
-                        name: "created_at",
-                        sortField: "created_at",
+                        title: "Completed",
+                        name: "start_at",
+                        sortField: "start_at",
+                        callback: this.formatDate
+                    },
+                    {
+                        title: "Duration",
+                        name: "start_at",
+                        sortField: "start_at",
                         callback: this.formatDate
                     },
                     {
@@ -80,7 +99,7 @@
         },
         methods: {
             openRequest(data, index) {
-                window.open('/requests/' + data.uuid + '/status','_self');
+                window.open('/requests/' + data.uuid + '/status', '_self');
             },
             formatUid(id) {
                 return id;
@@ -91,26 +110,26 @@
                 let that = this;
                 let count = 0;
                 let usedAvatar = [];
-                delegations.forEach(function (delegation, key){
+                delegations.forEach(function (delegation, key) {
 
-                  if(usedAvatar.includes(delegation.user.uid) === false) {
+                    if (usedAvatar.includes(delegation.user.uid) === false) {
 
-                    usedAvatar.push(delegation.user.uid);
+                        usedAvatar.push(delegation.user.uid);
 
-                    if (key <= 4) {
-                        let user = delegation.user;
-                        assignedTo += user.avatar ? that.createImg({
-                                'src': user.avatar,
-                                'class': 'rounded-user',
-                                'title': user.fullname
-                            })
-                            : '<div class="circle"><span class="initials" title="' + user.fullname + '">'
-                            + user.firstname[0].toUpperCase() + user.lastname[0].toUpperCase() + '</span></div>';
-                    } else {
-                        count++;
+                        if (key <= 4) {
+                            let user = delegation.user;
+                            assignedTo += user.avatar ? that.createImg({
+                                    'src': user.avatar,
+                                    'class': 'rounded-user',
+                                    'title': user.fullname
+                                })
+                                : '<div class="circle"><span class="initials" title="' + user.fullname + '">'
+                                + user.firstname[0].toUpperCase() + user.lastname[0].toUpperCase() + '</span></div>';
+                        } else {
+                            count++;
+                        }
+
                     }
-
-                  }
 
                 });
                 if (count) {
@@ -179,7 +198,7 @@
                     additionalParams += "&status=" + this.status;
                 }
 
-                additionalParams+= '&include=user';
+                additionalParams += '&include=user';
 
                 // Load from our api client
                 ProcessMaker.apiClient
@@ -207,27 +226,27 @@
 </script>
 <style lang="scss" scoped>
 
-  /deep/ .table td {
-    vertical-align: middle !important;
-    padding: 3px;
-  }
+    /deep/ .table td {
+        vertical-align: middle !important;
+        padding: 3px;
+    }
 
     /deep/ .circle {
-      border-radius: 100%;
-      height: 32px;
-      width: 32px;
-      background-color: #6c757d;
-      display: inline-table;
-      margin-right: 0.5em;
-      text-align: center;
-      vertical-align: middle;
-      margin:0;
+        border-radius: 100%;
+        height: 32px;
+        width: 32px;
+        background-color: #6c757d;
+        display: inline-table;
+        margin-right: 0.5em;
+        text-align: center;
+        vertical-align: middle;
+        margin: 0;
     }
 
     /deep/ .rounded-user {
         border-radius: 50% !important;
         height: 32px;
-        margin:0;
+        margin: 0;
     }
 
     /deep/ .initials {
@@ -242,6 +261,10 @@
         &.inactive {
             color: red;
         }
+    }
+
+    /deep/ .vuetable-th-slot-uuids {
+        min-width: 100px;
     }
 
 </style>

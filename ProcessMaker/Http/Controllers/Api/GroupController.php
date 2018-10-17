@@ -51,7 +51,7 @@ class GroupController extends Controller
      */
     public function index(Request $request)
     {
-        $where = $this->getRequestFilterBy($request, ['name', 'description', 'status']);
+        /*$where = $this->getRequestFilterBy($request, ['name', 'description', 'status']);
         $orderBy = $this->getRequestSortBy($request, 'name');
         $perPage = $this->getPerPage($request);
         $include = $this->getRequestInclude($request);
@@ -68,7 +68,7 @@ class GroupController extends Controller
         $group = $query->where($where)
             ->orderBy(...$orderBy)
             ->paginate($perPage);
-        return new ApiCollection($group);
+        return new ApiCollection($group);*/
 
         $query = Group::query();
 
