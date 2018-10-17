@@ -3,6 +3,13 @@
         <vuetable :dataManager="dataManager" :sortOrder="sortOrder" :css="css" :api-mode="false"
                   @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data"
                   pagination-path="meta">
+
+            <template slot="title" slot-scope="props">
+                <b-link @click="onAction('edit', props.rowData, props.rowIndex)">
+                    {{props.rowData.title}}
+                </b-link>
+            </template>
+
             <template slot="actions" slot-scope="props">
                 <div class="actions">
                     <i class="fas fa-ellipsis-h"></i>
@@ -18,6 +25,7 @@
                     </div>
                 </div>
             </template>
+
         </vuetable>
         <pagination single="Script" plural="Scripts" :perPageSelectEnabled="true" @changePerPage="changePerPage"
                     @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
@@ -45,7 +53,8 @@
                 fields: [
                     {
                         title: "Title",
-                        name: "title",
+                        name: "__slot:title",
+                        field: "title",
                         sortField: "title"
                     },
                     {
@@ -75,13 +84,18 @@
         },
 
         methods: {
-            onAction(actionType, data, index) {
+            onAction(actionType, rowData, index) {
+
+                if (actionType === 'edit') {
+                    let link = '/processes/scripts/' + rowData.uuid + '/edit';
+                    window.location = link;
+                }
 
                 if (actionType === 'remove-item') {
                     let that = this;
-                    ProcessMaker.confirmModal('Caution!', '<b>Are you sure to delete the category </b>' + data.title + '?', '', function () {
+                    ProcessMaker.confirmModal('Caution!', '<b>Are you sure to delete the category </b>' + rowData.title + '?', '', function () {
                         ProcessMaker.apiClient
-                            .delete('scripts/' + data.uuid)
+                            .delete('scripts/' + rowData.uuid)
                             .then(response => {
                                 ProcessMaker.alert('Script successfully eliminated', 'success');
                                 that.fetch();
