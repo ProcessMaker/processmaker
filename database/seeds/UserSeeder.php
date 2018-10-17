@@ -27,6 +27,7 @@ class UserSeeder extends Seeder
             'lastname' => 'admin',
             'timezone' => 'UTC',
             'status' => 'ACTIVE',
+            'is_administrator' => true,
         ]);
         $user->copyMedia(base_path().'/resources/img/avatar-placeholder.gif')->toMediaCollection(User::COLLECTION_PROFILE);
 

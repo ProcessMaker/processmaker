@@ -9,12 +9,8 @@
 @import '~@fortawesome/fontawesome-free-webfonts/scss/fa-solid';
 @import '~@fortawesome/fontawesome-free-webfonts/scss/fontawesome';
 @import '~vue-multiselect/dist/vue-multiselect.min.css';
-<<<<<<< HEAD
 
 @font-face {
-=======
-@font-face{
->>>>>>> 537bd8a51aa0fc253676d699589764b6e097439b
   font-family: 'Open Sans';
   src: url('/fonts/OpenSans.ttf') format('truetype');
 }
@@ -483,4 +479,31 @@ table.vuetable {
   position: fixed;
   left: 30%;
   right: 30%;
+}
+
+.avatar-circle-list {
+  width: 25px;
+  height: 25px;
+  background-color: rgb(251, 181, 4);
+  text-align: center;
+  border-radius: 50%;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  margin-left: 12px;
+  border: none;
+}
+
+.avatar-initials-list {
+  position: relative;
+  font-size: 12px;
+  line-height: 10px;
+  color: #fff;
+  margin: -7px;
+}
+
+.avatar-image-list {
+  width: 25px;
+  height: 25px;
+  margin-left: -10px;
+  margin-top: -4px;
 }
