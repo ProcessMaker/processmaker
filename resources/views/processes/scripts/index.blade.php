@@ -81,7 +81,7 @@
           code: "123"
         })
         .then(response => {
-          ProcessMaker.alert('Script successfully added', 'success')
+          ProcessMaker.alert('{{__('Script successfully added')}}', 'success')
           window.location = "/processes/scripts/" + response.data.uuid
         })
         .catch(error => {
