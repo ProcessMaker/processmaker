@@ -13,7 +13,7 @@
  *             url="http://www.apache.org/licenses/LICENSE-2.0.html"
  *         )
  *     ),
- *     @OA\Server(url=API_HOST),
+ *     @OA\Server(url="/api/1.0"),
  *     @OA\Components(
  *         @OA\SecurityScheme(
  *             securityScheme="pm-api",
@@ -52,7 +52,6 @@
  *             name="include",
  *             in="query",
  *             description="Include data from related models in payload. Comma seperated list.",
- *             example="category,user",
  *             @OA\Schema(type="string", default=""),
  *         ),
  *     ),

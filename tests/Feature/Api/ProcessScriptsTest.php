@@ -1,7 +1,6 @@
 <?php
 namespace Tests\Feature\Api;
 
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
@@ -17,7 +16,6 @@ use Tests\TestCase;
 class ProcessScriptsTest extends TestCase
 {
 
-    use DatabaseTransactions;
     use ResourceAssertionsTrait;
     use WithFaker;
 

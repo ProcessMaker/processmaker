@@ -1,12 +1,8 @@
-# README
-
 ![ProcessMaker](http://www.processmaker.com/themes/processmaker/images/logo.jpg)
 
 [![CircleCI](https://circleci.com/gh/ProcessMaker/bpm/tree/develop.svg?style=svg&circle-token=bc15deff649712440252088a12ec20b4b7c96826)](https://circleci.com/gh/ProcessMaker/bpm/tree/develop)
 
-## README
-
-### ProcessMaker v4.0
+# ProcessMaker 4.1 Community Edition Documentation
 
 ### Overview
 
@@ -134,6 +130,10 @@ And for a show method
     ...
 ```
 
+#### Notes
+`operationId` will be the method name of the generated code. It can be anything
+camel cased but should be named some intuitive.
+
 #### Testing with Swagger UI
 
 Reload the swagger UI at `api/documentation` page in your browser to see the results and 
@@ -160,7 +160,7 @@ Authorize and close. You should now be able to use the "Try it out" functionalit
 
 Detailed examples can be found at https://github.com/zircote/swagger-php/tree/master/Examples/petstore.swagger.io
 
-Full OpenAPI 3.0 specification at https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md
+Full OpenAPI 3.0 specification at https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.1.md
 
 
 ### License
