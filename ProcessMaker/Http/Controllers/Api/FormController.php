@@ -16,7 +16,7 @@ class FormController extends Controller
      * @param Request $request
      *
      * @return ResponseFactory|Response
-     * 
+     *
      *     @OA\Get(
      *     path="/forms",
      *     summary="Returns all forms that the user has access to",
@@ -76,7 +76,7 @@ class FormController extends Controller
      * @param Form $form
      *
      * @return ResponseFactory|Response
-     * 
+     *
      *     @OA\Get(
      *     path="/forms/{formsUuid}",
      *     summary="Get single forms by ID",
@@ -109,7 +109,7 @@ class FormController extends Controller
      * @param Request $request
      *
      * @return ResponseFactory|Response
-     * 
+     *
      *     @OA\Post(
      *     path="/forms",
      *     summary="Save a new forms",
@@ -142,7 +142,7 @@ class FormController extends Controller
      * @param Request $request
      *
      * @return ResponseFactory|Response
-     * 
+     *
      *     @OA\Put(
      *     path="/forms/{formsUuid}",
      *     summary="Update a form",
@@ -174,7 +174,7 @@ class FormController extends Controller
         $form->fill($request->input());
         $form->saveOrFail();
 
-        return response([], 200);
+        return response([], 204);
     }
 
     /**

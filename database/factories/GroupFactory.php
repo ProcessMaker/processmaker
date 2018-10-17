@@ -9,5 +9,7 @@ use ProcessMaker\Models\Group;
 $factory->define(Group::class, function (Faker $faker) {
     return [
         'name' => $faker->sentence(3),
+        'description' => $faker->sentence,
+        'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
     ];
 });
