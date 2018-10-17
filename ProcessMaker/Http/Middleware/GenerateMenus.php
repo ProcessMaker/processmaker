@@ -128,7 +128,7 @@ class GenerateMenus
               'id' => 'process-categories'
           ]);
           $submenu->add(__('menus.sidebar_processes.scripts'), [
-            //   'route' => 'processes.categories.index',
+              'route' => 'scripts.index',
               'icon' => 'fa-code',
               'id' => 'process-categories'
           ]);

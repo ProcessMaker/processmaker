@@ -97,7 +97,11 @@ class User extends Authenticatable implements HasMedia
         'loggedin_at',
     ];
 
-    /**
+    protected $casts = [
+        'is_administrator' => 'bool'
+    ];
+
+/**
      * Validation rules
      *
      * @param $existing
