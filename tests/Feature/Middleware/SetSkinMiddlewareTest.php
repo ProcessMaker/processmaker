@@ -1,7 +1,6 @@
 <?php
 namespace Tests\Feature\Middleware;
 
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use ProcessMaker\Http\Middleware\SetSkin;
 use Tests\TestCase;
 use Route;
@@ -9,7 +8,6 @@ use Igaster\LaravelTheme\Facades\Theme;
 
 class SetSkinMiddlewareTest extends TestCase
 {
-    use DatabaseTransactions;
 
     /**
      * Test to ensure that passing in a skin attribute sets the skin property of the view config
