@@ -1,6 +1,6 @@
 <?php
 
-Route::group(['middleware' => 'auth'], function () {
+Route::group(['middleware' => ['auth', 'authorize']], function () {
 
 // Routes related to Authentication (password reset, etc)
 // Auth::routes();
