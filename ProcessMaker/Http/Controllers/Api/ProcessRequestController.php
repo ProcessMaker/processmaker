@@ -1,4 +1,5 @@
 <?php
+
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Contracts\Routing\ResponseFactory;
@@ -54,17 +55,30 @@ class ProcessRequestController extends Controller
      */
     public function index(Request $request)
     {
-        $where = $this->getRequestFilterBy($request, ['process_requests.name', 'user.firstname', 'user.lastname']);
-        $orderBy = $this->getRequestSortBy($request, 'name');
-        $perPage = $this->getPerPage($request);
-        $include = $this->getRequestInclude($request);
-        $processRequest = ProcessRequest::with($include)
-            ->select('process_requests.*')
-            ->where($where)
-            ->leftJoin('users as user', 'process_requests.user_uuid', '=', 'user.uuid')
-            ->orderBy(...$orderBy)
-            ->paginate($perPage);
-        return new ApiCollection($processRequest);
+        $query = ProcessRequest::query();
+
+        $include = $request->input('include', '');
+        if ($include) {
+            $include = explode(',', $include);
+            $query->with($include);
+        }
+
+        $filter = $request->input('filter', '');
+        if (!empty($filter)) {
+            $filter = '%' . $filter . '%';
+            $query->where(function ($query) use ($filter) {
+                $query->Where('name', 'like', $filter);
+            });
+        }
+
+        $response = $query
+            ->orderBy(
+                $request->input('order_by', 'name'),
+                $request->input('order_direction', 'ASC')
+            )
+            ->paginate($request->input('per_page', 10));
+
+        return new ApiCollection($response);
     }
 
     /**
@@ -142,7 +156,7 @@ class ProcessRequestController extends Controller
      *
      * @return ResponseFactory|Response
      *
-     *     @OA\Put(
+     * @OA\Put(
      *     path="/requests/{process_request_uuid}",
      *     summary="Update a process request",
      *     operationId="updateProcessRequest",
@@ -183,7 +197,7 @@ class ProcessRequestController extends Controller
      *
      * @return ResponseFactory|Response
      *
-     *     @OA\Delete(
+     * @OA\Delete(
      *     path="/requests/{process_request_uuid}",
      *     summary="Delete a process request",
      *     operationId="deleteProcessRequest",

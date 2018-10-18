@@ -4,9 +4,9 @@
                   @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data"
                   pagination-path="meta">
             <template slot="uuids" slot-scope="props">
-                <b-btn variant="link" size="sm" @click="openRequest(props.rowData, props.rowIndex)">
+                <b-link @click="openRequest(props.rowData, props.rowIndex)">
                     {{props.rowData.uuid}}
-                </b-btn>
+                </b-link>
             </template>
 
             <template slot="actions" slot-scope="props">
@@ -68,8 +68,7 @@
                     },
                     {
                         title: "Participants",
-                        name: "user",
-                        sortField: "user",
+                        name: "assigned",
                         callback: this.assignedTo
                     },
                     {
@@ -112,19 +111,34 @@
                 let usedAvatar = [];
                 delegations.forEach(function (delegation, key) {
 
-                    if (usedAvatar.includes(delegation.user.uid) === false) {
+                    if (usedAvatar.includes(delegation.previousUser.uuid) === false) {
 
-                        usedAvatar.push(delegation.user.uid);
+                        usedAvatar.push(delegation.previousUser.uuid);
 
                         if (key <= 4) {
-                            let user = delegation.user;
-                            assignedTo += user.avatar ? that.createImg({
+                            let user = delegation.previousUser;
+                            /*assignedTo += user.avatar ? that.createImg({
                                     'src': user.avatar,
                                     'class': 'rounded-user',
                                     'title': user.fullname
                                 })
                                 : '<div class="circle"><span class="initials" title="' + user.fullname + '">'
                                 + user.firstname[0].toUpperCase() + user.lastname[0].toUpperCase() + '</span></div>';
+
+                            if (user === 'undefined' || user === null) {
+                                return '';
+                            }*/
+
+                            assignedTo += user.avatar
+                                ? '<img class="avatar-image-list avatar-circle-list" src="' + user.avatar + '" title="' + user.fullname + '"> '
+                                : '<button type="button" class="avatar-circle-list">' +
+                                '<span class="avatar-initials-list">' +
+                                user.firstname.charAt(0).toUpperCase() +
+                                user.lastname.charAt(0).toUpperCase() +
+                                '</span>' +
+                                '</button> ' + user.fullname;
+
+
                         } else {
                             count++;
                         }
@@ -189,16 +203,16 @@
                 this.loading = true;
 
                 //get any additional query string parameters
-                let urlParts = window.location.href.split('?');
+/*                let urlParts = window.location.href.split('?');
                 let additionalParams = '';
                 if (urlParts.length === 2) {
                     additionalParams = '&' + urlParts[1];
                 }
                 if (this.status) {
                     additionalParams += "&status=" + this.status;
-                }
+                }*/
 
-                additionalParams += '&include=user';
+                let additionalParams = '&include=assigned';
 
                 // Load from our api client
                 ProcessMaker.apiClient
@@ -225,46 +239,8 @@
     };
 </script>
 <style lang="scss" scoped>
-
-    /deep/ .table td {
-        vertical-align: middle !important;
-        padding: 3px;
-    }
-
-    /deep/ .circle {
-        border-radius: 100%;
-        height: 32px;
-        width: 32px;
-        background-color: #6c757d;
-        display: inline-table;
-        margin-right: 0.5em;
-        text-align: center;
-        vertical-align: middle;
-        margin: 0;
-    }
-
-    /deep/ .rounded-user {
-        border-radius: 50% !important;
-        height: 32px;
-        margin: 0;
-    }
-
-    /deep/ .initials {
-        color: white;
-        line-height: 2.5em;
-    }
-
-    /deep/ i.fa-circle {
-        &.active {
-            color: green;
-        }
-        &.inactive {
-            color: red;
-        }
-    }
-
     /deep/ .vuetable-th-slot-uuids {
-        min-width: 100px;
+        min-width: 260px;
+        white-space: nowrap;
     }
-
 </style>

@@ -13,7 +13,7 @@
         <div class="row">
             <div class="col-sm-12">
                 <b-card-group deck class="mb-3">
-                    <b-card header="<i class='fas fa-clipboard fa-3x'></i>"
+                    <b-card header="<i class='fas fa-clipboard fa-2x'></i>"
                             header-class="d-flex align-items-center justify-content-center card-size-header border-0"
                             text-variant="white" class="bg-warning mb-3 d-flex flex-row  card-border border-0">
                         <a href="#" class="card-link text-light">
