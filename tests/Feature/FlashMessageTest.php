@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class FlashMessageTest extends TestCase
 {

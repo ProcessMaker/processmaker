@@ -1,7 +1,5 @@
 <?php
 namespace Tests\Feature;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use ProcessMaker\Models\ProcessRequestToken;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
 
@@ -9,7 +7,7 @@ class TasksTest extends TestCase
 {
     use RequestHelper;
 
-    const TASKS_URL = '/tasks';    
+    const TASKS_URL = '/tasks';
 
     public function testIndex() {
         $response = $this->webGet(self::TASKS_URL, []); 
@@ -17,7 +15,6 @@ class TasksTest extends TestCase
         $response->assertViewIs('tasks.index'); 
         $response->assertSee('class="container" id="tasks"'); 
     }
-
 
     public function testShow() 
     { 
@@ -35,5 +32,4 @@ class TasksTest extends TestCase
         $response->assertViewIs('tasks.edit');
         $response->assertSee('BACK TO TASK LIST');
     }
-
 }
