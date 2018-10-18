@@ -123,24 +123,24 @@ class GenerateMenus
               'id' => 'processes'
           ]);
           $submenu->add(__('menus.sidebar_processes.categories'), [
-            //   'route' => 'processes.categories.index',
+              'route' => 'categories.index',
               'icon' => 'fa-sitemap',
               'id' => 'process-categories'
           ]);
           $submenu->add(__('menus.sidebar_processes.scripts'), [
               'route' => 'scripts.index',
               'icon' => 'fa-code',
-              'id' => 'process-categories'
+              'id' => 'process-scripts'
           ]);
           $submenu->add(__('menus.sidebar_processes.forms'), [
-            //   'route' => 'processes.categories.index',
+              'route' => 'forms.index',
               'icon' => 'fa-file-alt',
-              'id' => 'process-categories'
+              'id' => 'process-forms'
           ]);
           $submenu->add(__('menus.sidebar_processes.environmentalVariables'), [
-            //   'route' => 'processes.categories.index',
+              'route' => 'environment-variables.index',
               'icon' => 'fa-cogs',
-              'id' => 'process-categories'
+              'id' => 'process-environmental'
           ]);
         });
 

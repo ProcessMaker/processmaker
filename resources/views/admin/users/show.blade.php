@@ -75,7 +75,7 @@
               <button type="submit" class="btn btn-secondary ml-2"> <i class="fas fa-plus"></i> Group</button>
             </div>
            </div>
-          @if ($user->members()->count() > 0)
+          @if ($user->groupMembersFromMemberable()->count() > 0)
             <table class="table table-hover vuetable">
               <thead>
                 <tr>
@@ -85,7 +85,7 @@
                 </tr>
               </thead>
               <tbody>
-                @foreach ($user->members() as $group_member)
+                @foreach ($user->groupMembersFromMemberable() as $group_member)
                 <tr>
                   <td>{{$group_member->group->name}}</td>
                   <td>{{$group_member->group->status}}</td>
