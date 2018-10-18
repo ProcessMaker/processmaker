@@ -19,7 +19,7 @@ class EnvironmentVariablesTest extends TestCase
     {
 
       // get the URL
-      $response = $this->webCall('GET', '/processes/environment_variables');
+      $response = $this->webCall('GET', '/processes/environment-variables');
       // check the correct view is called
       $response->assertViewIs('processes.environment_variables.index');
 
