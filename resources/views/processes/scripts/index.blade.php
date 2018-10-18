@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 @section('title')
   {{__('Scripts')}}
-@endsection  
+@endsection
 
 @section('sidebar')
   @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_processes')])
@@ -42,12 +42,12 @@
         </div>
         <div class="form-group">
           {!!Form::label('description', __('Description'))!!}
-          {!!Form::text('description', null, ['class'=> 'form-control', 'v-model'=> 'description', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.title}'])!!}
-          <div class="invalid-feedback" v-if="addError.description">@{{addError.title[0]}}</div>
+          {!!Form::text('description', null, ['class'=> 'form-control', 'v-model'=> 'description', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.description}'])!!}
+          <div class="invalid-feedback" v-if="addError.description">@{{addError.description[0]}}</div>
         </div>
         <div class="form-group">
           {!!Form::label('language', __('Language'))!!}
-          {!!Form::select('language', ['php' => 'PHP', 'lua' => 'Lua'], null, ['class'=> 'form-control', 'v-model'=> 'language', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.title}']);!!}
+          {!!Form::select('language', ['php' => 'PHP', 'lua' => 'Lua'], null, ['class'=> 'form-control', 'v-model'=> 'language', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.language}']);!!}
         <div class="invalid-feedback" v-if="addError.language">@{{addError.language[0]}}</div>
         </div>
       </div>
@@ -94,7 +94,7 @@
         })
       }
     }
-  })       
+  })
 </script>
 <script src="{{mix('js/processes/scripts/index.js')}}"></script>
 @endsection
