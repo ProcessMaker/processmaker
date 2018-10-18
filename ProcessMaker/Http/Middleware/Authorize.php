@@ -9,6 +9,12 @@ class Authorize
 {
     public function handle(Request $request, Closure $next)
     {
+        $user = $request->user();
+
+        if ($user->is_administrator) {
+            return $next($request);
+        }
+
         // Get the action that the user is requesting
         $permission = $request->route()->action['as'];
 

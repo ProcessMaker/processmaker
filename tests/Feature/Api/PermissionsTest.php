@@ -9,6 +9,7 @@ use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\PermissionAssignment;
 use Tests\Feature\Shared\RequestHelper;
+use \PermissionSeeder;
 
 class PermissionsTest extends TestCase
 {
@@ -16,6 +17,11 @@ class PermissionsTest extends TestCase
     
     protected function withUserSetup()
     {
+        $this->user->is_administrator = false;
+        $this->user->save();
+
+        (new PermissionSeeder)->run($this->user);
+
         $create_process_perm = Permission::byGuardName('processes.create');
         $show_process_perm   = Permission::byGuardName('processes.show');
         $update_process_perm = Permission::byGuardName('processes.update');

@@ -4,7 +4,6 @@ namespace Tests\Feature\Shared;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Permission;
-use \PermissionSeeder;
 
 trait RequestHelper
 {
@@ -17,23 +16,12 @@ trait RequestHelper
         parent::setUp();
 
         $this->user = factory(User::class)->create([
-            'password' => 'password'
+            'password' => 'password',
+            'is_administrator' => true,
         ]);
-        (new PermissionSeeder)->run($this->user);
 
         if (method_exists($this, 'withUserSetUp')) {
             $this->withUserSetup();
-        }
-    }
-
-    protected function createPermissions($permissions)
-    {
-        foreach ($permissions as $permission) {
-            Permission::create([
-                'name' => $permission,
-                'guard_name' => $permission,
-                'description' => $permission,
-            ]);
         }
     }
 
