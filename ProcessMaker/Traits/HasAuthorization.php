@@ -35,6 +35,8 @@ trait HasAuthorization
                 $permissionStrings = $this->loadPermissions();
                 session(['permissions' => $permissionStrings]);
             }
+        } else {
+            $permissionStrings = $this->loadPermissions();
         }
 
         return in_array($permissionString, $permissionStrings);

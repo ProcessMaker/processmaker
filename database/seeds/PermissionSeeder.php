@@ -10,6 +10,7 @@ use ProcessMaker\Models\PermissionAssignment;
 class PermissionSeeder extends Seeder
 {
     private $permissions = [
+        'home',
         'about.index',
         'about.menu',
         'admin.menu',
