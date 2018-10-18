@@ -76,8 +76,8 @@ class PermissionsTest extends TestCase
             ->where('permission_uuid', $destroy_process_perm->uuid)
             ->delete();
 
-        $this->user->clearPermissionCache();
         $this->user->refresh();
+        $this->flushSession();
 
         $response = $this->apiCall('DELETE', '/processes/' . $this->process->uuid_text);
         $response->assertStatus(403);
@@ -88,8 +88,9 @@ class PermissionsTest extends TestCase
             'assignable_uuid' => $this->admin_group->uuid,
             'permission_uuid' => Permission::byGuardName('processes.destroy')->uuid,
         ]);
-        $this->user->clearPermissionCache();
+
         $this->user->refresh();
+        $this->flushSession();
 
         $response = $this->apiCall('DELETE', '/processes/' . $this->process->uuid_text);
         $response->assertStatus(204);

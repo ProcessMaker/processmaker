@@ -26,22 +26,17 @@ trait HasAuthorization
         return $permissionStrings;
     }
 
-    private function permissionsCacheName()
-    {
-        return 'user_permissions_' . $this->uuid_text;
-    }
-
-    public function clearPermissionCache()
-    {
-        Cache::forget($this->permissionsCacheName());
-    }
-
     public function hasPermission($permissionString)
     {
-        $permissionStrings =
-            Cache::rememberForever($this->permissionsCacheName(), function() {
-                return $this->loadPermissions();
-            });
+        if (\Auth::user() == $this) {
+            if (session('permissions')) {
+                $permissionStrings = session('permissions');
+            } else {
+                $permissionStrings = $this->loadPermissions();
+                session(['permissions' => $permissionStrings]);
+            }
+        }
+
         return in_array($permissionString, $permissionStrings);
     }
 
