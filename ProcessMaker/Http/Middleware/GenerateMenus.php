@@ -137,7 +137,7 @@ class GenerateMenus
               'icon' => 'fa-file-alt',
               'id' => 'process-forms'
           ]);
-          $submenu->add(__('menus.sidebar_processes.environmentalVariables'), [
+          $submenu->add(__('menus.sidebar_processes.environment_variables'), [
               'route' => 'environment-variables.index',
               'icon' => 'fa-cogs',
               'id' => 'process-environmental'
