@@ -206,4 +206,36 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
             ->with('user')
             ->whereNotIn('element_type' , ['scriptTask2']);
     }
+
+    /**
+     * Filter process started with user
+     *
+     * @param $query
+     *
+     * @param $uuid User uuid
+     */
+    public function scopeStartedMe($query, $uuid)
+    {
+        $query->where('user_uuid', '=', $uuid);
+    }
+
+    /**
+     * Filter process not completed
+     *
+     * @param $query
+     */
+    public function scopeInProgress($query)
+    {
+        $query->whereNull('completed_at');
+    }
+
+    /**
+     * Filter process completed
+     *
+     * @param $query
+     */
+    public function scopeCompleted($query)
+    {
+        $query->whereNotNull('completed_at');
+    }
 }

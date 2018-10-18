@@ -11,7 +11,6 @@
 
             <template slot="actions" slot-scope="props">
                 <div class="actions">
-                    <i class="fas fa-ellipsis-h"></i>
                     <div class="popout">
                         <b-btn variant="action" @click="openRequest(props.rowData, props.rowIndex)" v-b-tooltip.hover
                                title="Open">
@@ -36,6 +35,7 @@
         data() {
             return {
                 orderBy: "uuid",
+                additionalParams: '',
                 sortOrder: [
                     {
                         field: "uuid",
@@ -64,7 +64,6 @@
                     {
                         title: "Stage",
                         name: "stage",
-                        sortField: "stage"
                     },
                     {
                         title: "Participants",
@@ -73,21 +72,17 @@
                     },
                     {
                         title: "Started",
-                        name: "start_at",
-                        sortField: "start_at",
-                        callback: this.formatDate
+                        name: "created_at",
+                        sortField: "created_at",
                     },
                     {
                         title: "Completed",
-                        name: "start_at",
-                        sortField: "start_at",
-                        callback: this.formatDate
+                        name: "completed_at",
+                        sortField: "completed_at"
                     },
                     {
                         title: "Duration",
-                        name: "start_at",
-                        sortField: "start_at",
-                        callback: this.formatDate
+                        name: "duration_at"
                     },
                     {
                         name: "__slot:actions",
@@ -100,94 +95,43 @@
             openRequest(data, index) {
                 window.open('/requests/' + data.uuid + '/status', '_self');
             },
-            formatUid(id) {
-                return id;
-            },
             assignedTo(delegations) {
                 let assignedTo = '';
                 if (!delegations) return assignedTo;
-                let that = this;
                 let count = 0;
                 let usedAvatar = [];
                 delegations.forEach(function (delegation, key) {
 
-                    if (usedAvatar.includes(delegation.previousUser.uuid) === false) {
+                    if (delegation.user && usedAvatar.includes(delegation.user.uuid) === false) {
 
-                        usedAvatar.push(delegation.previousUser.uuid);
+                        usedAvatar.push(delegation.user.uuid);
 
                         if (key <= 4) {
-                            let user = delegation.previousUser;
-                            /*assignedTo += user.avatar ? that.createImg({
-                                    'src': user.avatar,
-                                    'class': 'rounded-user',
-                                    'title': user.fullname
-                                })
-                                : '<div class="circle"><span class="initials" title="' + user.fullname + '">'
-                                + user.firstname[0].toUpperCase() + user.lastname[0].toUpperCase() + '</span></div>';
-
-                            if (user === 'undefined' || user === null) {
-                                return '';
-                            }*/
-
+                            let user = delegation.user;
                             assignedTo += user.avatar
                                 ? '<img class="avatar-image-list avatar-circle-list" src="' + user.avatar + '" title="' + user.fullname + '"> '
-                                : '<button type="button" class="avatar-circle-list">' +
+                                : '<button type="button" class="avatar-circle-list" title="' + user.fullname + '">' +
                                 '<span class="avatar-initials-list">' +
                                 user.firstname.charAt(0).toUpperCase() +
                                 user.lastname.charAt(0).toUpperCase() +
                                 '</span>' +
-                                '</button> ' + user.fullname;
-
-
+                                '</button> ';
                         } else {
                             count++;
                         }
-
                     }
-
                 });
                 if (count) {
-                    assignedTo += '<div class="circle"><span class="initials">+' + count + '</span></div>';
+                    assignedTo += '<button type="button" class="avatar-circle-list"><span class="avatar-initials-list">+' + count + '</span></button>';
                 }
                 return assignedTo;
             },
-            createImg(properties, name) {
-                let container = document.createElement('div');
-                let node = document.createElement('img');
-                for (let property in properties) {
-                    node.setAttribute(property, properties[property]);
-                }
-                container.appendChild(node);
-                return container.innerHTML;
-            },
-            formatDateWithDot(value) {
-                if (!value) {
-                    return '';
-                }
-                let duedate = moment(value);
-                let now = moment();
-                let diff = duedate.diff(now, 'hours');
-                let color = diff < 0 ? 'text-danger' : (diff <= 48 ? 'text-warning' : 'text-primary');
-                return '<i class="fas fa-circle ' + color + '"></i> ' + duedate.format('YYYY-MM-DD hh:mm');
+            formatStatus(color, status) {
+                return '<i class="fas fa-circle text-' + color + '"></i> <span>' + status + '</span>';
             },
             formatDate(value) {
                 let date = moment(value);
                 return date.format('YYYY-MM-DD hh:mm');
-            },
-            formatDueDate(delegations) {
-                let overdue = false;
-                let risk = false;
-                if (delegations) {
-                    delegations.forEach(function (delegation) {
-                        if (delegation.delay && delegation.delay.toUpperCase() === 'OVERDUE') {
-                            overdue = true;
-                        } else if (delegation.delay && delegation.delay.toUpperCase() === 'AT_RISK') {
-                            risk = true;
-                        }
-                    });
-                }
-                let status = overdue ? 'OVERDUE' : (risk ? 'AT RISK' : 'ON TIME');
-                return ' <span style="text-transform: uppercase; ">' + status + '</span>';
             },
             transform(data) {
                 // Clean up fields for meta pagination so vue table pagination can understand
@@ -195,24 +139,28 @@
                 data.meta.from = (data.meta.current_page - 1) * data.meta.per_page;
                 data.meta.to = data.meta.from + data.meta.count;
                 for (let record of data.data) {
-                    record['full_name'] = [record['firstname'], record['lastname']].join(' ');
+                    //Format dates
+                    record['created_at'] = this.formatDate(record['created_at']);
+                    if (record['completed_at']) {
+                        record['duration_at'] = moment(record['created_at']).from(record['completed_at']);
+                        record['completed_at'] = this.formatDate(record['completed_at']);
+                    } else {
+                        record['completed_at'] = '';
+                        record['duration_at'] = moment(record['created_at']).fromNow();
+                    }
+                    //format Status
+                    record['status'] = this.formatStatus('success', 'In Progress');
+                    if (record['status'] === 'COMPLETED') {
+                        record['status'] = this.formatStatus('primary', 'Complete');
+                    } else if (record['status'] === 'DRAFT') {
+                        record['status'] = this.formatStatus('danger', 'Draft');
+                    }
                 }
                 return data;
             },
             fetch() {
                 this.loading = true;
-
-                //get any additional query string parameters
-/*                let urlParts = window.location.href.split('?');
-                let additionalParams = '';
-                if (urlParts.length === 2) {
-                    additionalParams = '&' + urlParts[1];
-                }
-                if (this.status) {
-                    additionalParams += "&status=" + this.status;
-                }*/
-
-                let additionalParams = '&include=assigned';
+                this.additionalParams = this.additionalParams ? this.additionalParams : '&include=assigned';
 
                 // Load from our api client
                 ProcessMaker.apiClient
@@ -228,7 +176,7 @@
                         (this.orderBy === '__slot:uuids' ? 'uuid' : this.orderBy) +
                         "&order_direction=" +
                         this.orderDirection +
-                        additionalParams
+                        this.additionalParams
                     )
                     .then(response => {
                         this.data = this.transform(response.data);

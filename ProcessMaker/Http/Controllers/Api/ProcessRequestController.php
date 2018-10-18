@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ProcessRequests;
@@ -57,10 +58,31 @@ class ProcessRequestController extends Controller
     {
         $query = ProcessRequest::query();
 
-        $include = $request->input('include', '');
-        if ($include) {
-            $include = explode(',', $include);
-            $query->with($include);
+        $includes = $request->input('include', '');
+        if ($includes) {
+            $includes = explode(',', $includes);
+            $validIncludes = ['assigned'];
+            $valid = [];
+            foreach ($includes as $include) {
+                if (in_array($include, $validIncludes)) {
+                    $valid[] = $include;
+                }
+                //include scopes
+                switch ($include) {
+                    case 'started_me':
+                        $query->startedMe(Auth::user()->uuid);
+                        break;
+                    case 'in_progress':
+                        $query->inProgress();
+                        break;
+                    case 'completed':
+                        $query->completed();
+                        break;
+                }
+            }
+            if ($valid) {
+                $query->with($valid);
+            }
         }
 
         $filter = $request->input('filter', '');

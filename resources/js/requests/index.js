@@ -1,22 +1,22 @@
 import Vue from 'vue'
 import RequestsListing from './components/RequestsListing'
 
-// Bootstrap our Designer application
 new Vue({
-  data: {
-    filter: ''
-  },
-  el: '#requests-listing',
-  components: {RequestsListing},
-  methods: {
-    loadRequestsOverdue() {
-        window.location.href = '/requests?delay=overdue';
+    data: {
+        filter: ''
     },
-      loadRequestsAtRisk() {
-      window.location.href = '/requests?delay=at_risk';
-    },
-      loadRequestsOnTime() {
-      window.location.href = '/requests?delay=on_time';
-    },
-  }
-})
+    el: '#requests-listing',
+    components: {RequestsListing},
+    methods: {
+        reload(value) {
+            console.log(value);
+            this.$refs.requestList.additionalParams = value ? '&include=assigned,' + value : '&include=assigned';
+            this.$refs.requestList.dataManager([
+                {
+                    field: 'updated_at',
+                    direction: 'desc'
+                }
+            ]);
+        }
+    }
+});
