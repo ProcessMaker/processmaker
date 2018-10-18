@@ -36,17 +36,17 @@
       </div>
       <div class="modal-body">
         <div class="form-group">
-          {!!Form::label('title', 'Title');!!}
+          {!!Form::label('title', __('Title'))!!}
           {!!Form::text('title', null, ['class'=> 'form-control', 'v-model'=> 'title', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.title}'])!!}
           <div class="invalid-feedback" v-if="addError.language">@{{addError.title[0]}}</div>
         </div>
         <div class="form-group">
-          {!!Form::label('description', 'Description');!!}
+          {!!Form::label('description', __('Description'))!!}
           {!!Form::text('description', null, ['class'=> 'form-control', 'v-model'=> 'description', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.title}'])!!}
           <div class="invalid-feedback" v-if="addError.description">@{{addError.title[0]}}</div>
         </div>
         <div class="form-group">
-          {!!Form::label('language', 'Language');!!}
+          {!!Form::label('language', __('Language'))!!}
           {!!Form::select('language', ['php' => 'PHP', 'lua' => 'Lua'], null, ['class'=> 'form-control', 'v-model'=> 'language', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.title}']);!!}
         <div class="invalid-feedback" v-if="addError.language">@{{addError.language[0]}}</div>
         </div>
