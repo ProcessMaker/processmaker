@@ -51,6 +51,9 @@ return[
   'sidebar_processes' => [
     'processes' => 'Processes',
     'categories' => 'Process Categories',
+    'scripts' => 'Scripts',
+    'forms' => 'Forms',
+    'environment_variables'=> 'Environment Variables'
   ],
   'topnav' => [
     'requests' => 'Requests',
