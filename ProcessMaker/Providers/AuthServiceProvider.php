@@ -47,20 +47,6 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
-        Application::class => ApplicationPolicy::class,
-        Process::class => ProcessPolicy::class,
-        ProcessCategory::class => ProcessCategoryPolicy::class,
-        PmTable::class => PmTablePolicy::class,
-        ProcessVariable::class => ProcessVariablePolicy::class,
-        ReportTable::class => ReportTablePolicy::class,
-        Form::class => FormPolicy::class,
-        Script::class => ScriptPolicy::class,
-        Script::class => ScriptPolicy::class,
-        TaskUser::class => AssigneeTaskPolicy::class,
-        Delegation::class => AssigneeTaskPolicy::class,
-        InputDocument::class => InputDocumentPolicy::class,
-        OutputDocument::class => OutputDocumentPolicy::class,
-        Task::class => TaskPolicy::class,
     ];
 
     /**
@@ -70,39 +56,8 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-
         $this->registerPolicies();
-
         Passport::routes();
-
-        Gate::define('has-permission', function ($user, $permissions) {
-            // Convert permissions to array and trimmed
-            $permissions = explode(',', $permissions);
-            array_walk($permissions, function (&$val) {
-                $val = trim($val);
-            });
-
-            // First get user's role
-            $role = $user->role;
-
-            // Check for existence of role or if role is inactive
-            if (!$role || $role->status != Role::STATUS_ACTIVE) {
-                return false;
-            }
-
-            // Get all permissions for this role that is requested
-            $validPermissionCount = $role->permissions()
-                ->whereIn('code', $permissions)
-                ->count();
-
-            if ($validPermissionCount != count($permissions)) {
-                // Then the number of permissions for the role that matched do not match the count of permissions
-                // requested
-                return false;
-            }
-
-            return true;
-        });
     }
 
 }
