@@ -105,45 +105,14 @@ export default {
     activateBtnTitle(data) {
       return data.status === "ACTIVE" ? "Deactivate" : "Activate";
     },
-    onAction(actionType, data, index) {
-      if (actionType === "edit-designer") {
-        window.open("/designer/" + data.uuid, "_self");
-      }
-
-      if (actionType === "edit-item") {
-        this.$emit("edit", data.uuid);
-      }
-
-      if (actionType === "toggle-status") {
-        this.loading = true;
-        ProcessMaker.apiClient
-          .put("/processes/" + data.uuid, {
-            status: data.status === "ACTIVE" ? "INACTIVE" : "ACTIVE"
-          })
-          .then(response => {
-            this.loading = false;
-            this.$emit("reload");
-          });
-      }
-
-      if (actionType === "remove-item") {
-        let that = this;
-        ProcessMaker.confirmModal(
-          "Caution!",
-          "<b>Are you sure to delete the category </b>" + data.name + "?",
-          "",
-          function() {
-            ProcessMaker.apiClient
-              .delete("processes/" + data.uuid)
-              .then(response => {
-                ProcessMaker.alert(
-                  "Process successfully eliminated",
-                  "success"
-                );
-                that.fetch();
-              });
-          }
-        );
+    goToEdit(data) {
+      window.location = "/processes/scripts/" + data + "/edit";
+    },
+    onAction(action, data, index) {
+      switch (action) {
+        case "edit-item":
+          this.goToEdit(data.uuid);
+          break;
       }
     },
     formatStatus(status) {

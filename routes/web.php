@@ -1,6 +1,6 @@
 <?php
 
-Route::group(['middleware' => 'auth'], function () {
+Route::group(['middleware' => ['auth', 'authorize']], function () {
 
 // Routes related to Authentication (password reset, etc)
 // Auth::routes();
@@ -12,13 +12,14 @@ Route::group(['middleware' => 'auth'], function () {
     });
 
     Route::namespace('Process')->prefix('processes')->group(function () {
-        Route::resource('environment_variables', 'EnvironmentVariablesController');
+        Route::resource('environment-variables', 'EnvironmentVariablesController');
         Route::resource('documents', 'DocumentController');
         Route::resource('forms', 'FormController');
         Route::resource('form-builder', 'FormBuilderController')->parameters([
             'form-builder' => 'form'
         ])->only(['edit']);
         Route::resource('scripts', 'ScriptController');
+        Route::resource('categories', 'ProcessCategoryController');
     });
     Route::resource('processes', 'ProcessController');
     Route::resource('profile', 'ProfileController')->only([
