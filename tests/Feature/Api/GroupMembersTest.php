@@ -15,7 +15,7 @@ class GroupMembersTest extends TestCase
 
   use RequestHelper;
 
-  const API_TEST_URL = '/api/1.0/group_members';
+  const API_TEST_URL = '/group_members';
 
   const STRUCTURE = [
       'uuid',
@@ -60,7 +60,6 @@ class GroupMembersTest extends TestCase
    */
   public function testCreateGroupMembershipForUser()
   {
-      GroupMember::query()->delete();
       $user = factory(User::class)->create();
       $group = factory(Group::class)->create();
 
@@ -74,16 +73,15 @@ class GroupMembersTest extends TestCase
       $response->assertStatus(201);
 
       // make sure it saved the relationship
-      $related_group = $user->memberships()->first()->group;
+      $related_group = $user->groupMembersFromMemberable()->first()->group;
       $this->assertTrue($related_group->is($group));
 
-      $member_user = $group->members()->first()->member;
+      $member_user = $group->groupMembers()->first()->member;
       $this->assertTrue($member_user->is($user));
   }
 
   public function testCreateGroupMembershipForGroup()
   {
-      GroupMember::query()->delete();
       $group1 = factory(Group::class)->create();
       $group2 = factory(Group::class)->create();
 
@@ -97,10 +95,10 @@ class GroupMembersTest extends TestCase
       $response->assertStatus(201);
 
       // make sure it saved the relationship
-      $related_group = $group1->members()->first()->member;
+      $related_group = $group1->groupMembers()->first()->member;
       $this->assertTrue($related_group->is($group2));
 
-      $member_group = $group2->memberships()->first()->group;
+      $member_group = $group2->groupMembersFromMemberable()->first()->group;
       $this->assertTrue($member_group->is($group1));
   }
 

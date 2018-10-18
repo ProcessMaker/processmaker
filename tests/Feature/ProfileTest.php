@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 
@@ -19,7 +18,7 @@ class ProfileTest extends TestCase
     public function testIndexRoute()
     {
       // get the URL
-      $response = $this->apiCall('GET', '/profile');
+      $response = $this->webCall('GET', '/profile');
       // check the correct view is called
       $response->assertViewIs('profile.index');
 
@@ -37,7 +36,7 @@ class ProfileTest extends TestCase
 
       $user_uuid = factory(User::class)->create()->uuid_text;
       // get the URL
-      $response = $this->apiCall('GET', '/profile/'. $user_uuid . '/edit');
+      $response = $this->webCall('GET', '/profile/'. $user_uuid . '/edit');
 
       $response->assertStatus(200);
       // check the correct view is called
@@ -53,7 +52,7 @@ class ProfileTest extends TestCase
 
       $user_uuid = factory(User::class)->create()->uuid_text;
       // get the URL
-      $response = $this->apiCall('GET', '/profile/'. $user_uuid);
+      $response = $this->webCall('GET', '/profile/'. $user_uuid);
 
       $response->assertStatus(200);
       // check the correct view is called

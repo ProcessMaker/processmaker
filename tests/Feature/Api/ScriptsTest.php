@@ -12,7 +12,7 @@ class ScriptsTest extends TestCase
 {
     use RequestHelper;
 
-    const API_TEST_SCRIPT = '/api/1.0/scripts';
+    const API_TEST_SCRIPT = '/scripts';
 
     const STRUCTURE = [
         'uuid',
