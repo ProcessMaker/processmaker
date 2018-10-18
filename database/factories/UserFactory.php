@@ -32,5 +32,7 @@ $factory->define(User::class, function (Faker $faker) {
         'language' => 'us_en',
         'loggedin_at' => $faker->dateTimeThisCentury,
 
+        'is_administrator' => $faker->boolean(),
+
     ];
 });

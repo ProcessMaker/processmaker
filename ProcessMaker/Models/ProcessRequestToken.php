@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\Nayra\Bpmn\TokenTrait;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use Spatie\BinaryUuid\HasBinaryUuid;
@@ -72,6 +73,7 @@ class ProcessRequestToken extends Model implements TokenInterface
      * @var array
      */
     protected $appends = [
+        'previousUser'
     ];
 
     /**
@@ -111,6 +113,24 @@ class ProcessRequestToken extends Model implements TokenInterface
     public function user()
     {
         return $this->belongsTo(User::class, 'user_uuid');
+    }
+
+    /**
+     * Returns the user that sent the task or
+     */
+    public function getPreviousUserAttribute()
+    {
+        $query = ProcessRequestToken::query();
+        $query->where('process_request_uuid', $this->process_request_uuid)
+                ->where('uuid', '!=', $this->uuid)
+                ->where('status', 'ACTIVE')
+                ->orderByDesc('completed_at');
+        $last = $query->get()->last();
+        if (empty($last)) {
+            return ProcessRequest::find($this->process_request_uuid)
+                    ->user;
+        }
+        return $last->user;
     }
 
     /**

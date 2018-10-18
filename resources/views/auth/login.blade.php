@@ -36,7 +36,7 @@
       {{ __('Remember me') }}</label>
       </div>
       <div class="form-group">
-        <button type="submit" class="btn btn-success btn-block text-uppercase">{{ __('Login') }}</button>
+        <button type="submit" class="btn btn-success btn-block text-uppercase">{{ __('Log In') }}</button>
       </div>
       <div class="form-group">        
           <a href="{{ route('password.request') }}">
