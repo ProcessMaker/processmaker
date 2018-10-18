@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Api\Designer;
+namespace Tests\Feature\Api;
 
 use Faker\Factory as Faker;
 use Illuminate\Support\Facades\Hash;
@@ -13,7 +13,7 @@ class FormsTest extends TestCase
 {
     use RequestHelper;
 
-    const API_TEST_FORM = '/api/1.0/forms';
+    const API_TEST_FORM = '/forms';
 
     const STRUCTURE = [
         'title',

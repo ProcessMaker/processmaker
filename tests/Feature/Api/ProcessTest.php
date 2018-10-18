@@ -9,6 +9,7 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
+use Tests\Feature\Shared\RequestHelper;
 
 /**
  * Tests routes related to processes / CRUD related methods
@@ -19,9 +20,9 @@ class ProcessTest extends TestCase
 {
 
     use WithFaker;
+    use RequestHelper;
     use ResourceAssertionsTrait;
 
-    protected $user;
     protected $resource = 'processes';
     protected $structure = [
         'uuid',
@@ -34,17 +35,6 @@ class ProcessTest extends TestCase
         'updated_at'
     ];
 
-    /**
-     * Initialize the controller tests
-     *
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-        //Login as an valid user
-        $this->user = factory(User::class)->create();
-        $this->actingAs($this->user, 'api');
-    }
 
     /**
      * Test to verify our processes listing api endpoint works without any filters
@@ -163,11 +153,11 @@ class ProcessTest extends TestCase
         factory(Process::class, $rowsToAdd)->create();
 
         // The first page should have 5 items;
-        $response = $this->json('GET', route('api.processes.index', ['per_page' => 5, 'page' => 1]));
+        $response = $this->apiCall('GET', route('api.processes.index', ['per_page' => 5, 'page' => 1]));
         $response->assertJsonCount(5, 'data');
 
         // The second page should have the modulus of 2+$initialRows
-        $response = $this->json('GET', route('api.processes.index', ['per_page' => 5, 'page' => 2]));
+        $response = $this->apiCall('GET', route('api.processes.index', ['per_page' => 5, 'page' => 2]));
         $response->assertJsonCount((2 + $initialRows) % 5, 'data');
     }
 
@@ -216,7 +206,7 @@ class ProcessTest extends TestCase
         $array = array_diff($base->toArray(), [static::$DO_NOT_SEND]);
         //Add a bpmn content
         $array['bpmn'] = trim(Process::getProcessTemplate('OnlyStartElement.bpmn'));
-        $response = $this->json('POST', $route, $array);
+        $response = $this->apiCall('POST', $route, $array);
         $response->assertStatus(201);
         $response->assertJsonStructure($this->structure);
         $data = $response->json();
@@ -444,7 +434,7 @@ class ProcessTest extends TestCase
         $uuid = $process->uuid_text;
         $newBpmn = trim(Process::getProcessTemplate('SingleTask.bpmn'));
         $route = route('api.' . $this->resource . '.update', [$uuid]);
-        $response = $this->json('PUT', $route, [
+        $response = $this->apiCall('PUT', $route, [
             'bpmn' => $newBpmn
         ]);
         //validate status
@@ -463,7 +453,7 @@ class ProcessTest extends TestCase
         $uuid = $process->uuid_text;
         $newBpmn = 'Invalid BPMN content';
         $route = route('api.' . $this->resource . '.update', [$uuid]);
-        $response = $this->json('PUT', $route, [
+        $response = $this->apiCall('PUT', $route, [
             'bpmn' => $newBpmn
         ]);
         //validate status

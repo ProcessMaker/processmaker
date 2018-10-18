@@ -10,6 +10,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\BinaryUuid\HasBinaryUuid;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use ProcessMaker\Traits\HasAuthorization;
 
 class User extends Authenticatable implements HasMedia
 {
@@ -17,6 +18,7 @@ class User extends Authenticatable implements HasMedia
     use Notifiable;
     use HasBinaryUuid;
     use HasMediaTrait;
+    use HasAuthorization;
 
     //Disk
     public const DISK_PROFILE = 'profile';
@@ -97,7 +99,11 @@ class User extends Authenticatable implements HasMedia
         'loggedin_at',
     ];
 
-    /**
+    protected $casts = [
+        'is_administrator' => 'bool'
+    ];
+
+/**
      * Validation rules
      *
      * @param $existing
@@ -134,6 +140,8 @@ class User extends Authenticatable implements HasMedia
      */
     protected $hidden = [
         'password',
+        'groupMembersFromMemberable',
+        'permissionAssignments',
     ];
 
     /**
@@ -150,15 +158,14 @@ class User extends Authenticatable implements HasMedia
         ]);
     }
 
-    public function members()
-    {
-        // return $this->hasMany(GroupMember::class);
-        return GroupMember::where(['member_type' => self::class, 'member_uuid' => $this->uuid])->get();
-    }
-
-    public function memberships()
+    public function groupMembersFromMemberable()
     {
         return $this->morphMany(GroupMember::class, 'member', null, 'member_uuid');
+    }
+
+    public function permissionAssignments()
+    {
+        return $this->morphMany(PermissionAssignment::class, 'assignable', null, 'assignable_uuid');
     }
 
     /**
@@ -193,4 +200,5 @@ class User extends Authenticatable implements HasMedia
         }
         return $url;
     }
+
 }
