@@ -42,12 +42,12 @@
         </div>
         <div class="form-group">
           {!!Form::label('description', __('Description'))!!}
-          {!!Form::text('description', null, ['class'=> 'form-control', 'v-model'=> 'description', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.description}'])!!}
+          {!!Form::textarea('description', null, ['rows'=>'2','class'=> 'form-control', 'v-model'=> 'description', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.description}'])!!}
           <div class="invalid-feedback" v-for="description in addError.description">@{{description}}</div>
         </div>
         <div class="form-group">
           {!!Form::label('language', __('Language'))!!}
-          {!!Form::select('language', ['php' => 'PHP', 'lua' => 'Lua'], null, ['class'=> 'form-control', 'v-model'=> 'language', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.language}']);!!}
+          {!!Form::select('language', [''=>__('Select'),'php' => 'PHP', 'lua' => 'Lua'], null, ['class'=> 'form-control', 'v-model'=> 'language', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.language}']);!!}
         <div class="invalid-feedback" v-for="language in addError.language">@{{language}}</div>
         </div>
       </div>
@@ -68,6 +68,7 @@
       title: '',
       language: '',
       description: '',
+      code: '[]',
       addError: {},
       submitted: false,
     },
@@ -78,7 +79,7 @@
           title: this.title,
           language: this.language,
           description: this.description,
-          code: "123"
+          code: this.code
         })
         .then(response => {
           ProcessMaker.alert('{{__('Script successfully added')}}', 'success')
