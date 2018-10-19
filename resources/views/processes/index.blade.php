@@ -34,76 +34,72 @@
       </div>
       <div class="modal-body">
         <div class="form-group">
-          {!!Form::label('name', 'Name');!!}
-          {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.name}'])!!}
-          <div class="invalid-feedback" v-if="addError.name">
-            <blade {{addError.name[0]}} </div> />
-          </div>
-          <div class="form-group">
-            {!!Form::label('description', 'Description');!!}
-            {!!Form::textarea('description', null, ['class'=> 'form-control', 'rows' => '3', 'v-model'=> 'description', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.description}'])!!}
-            <div class="invalid-feedback" v-if="addError.description">
-              <blade {{addError.description[0]}} </div> />
-            </div>
-            <div class="form-group">
-              {!!Form::label('category', 'Category');!!}
-              {!!Form::select('category', $processCategories, null, ['class'=> 'form-control', 'v-model'=> 'categoryOptions', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.category}'])!!}
-              <div class="invalid-feedback" v-if="addError.category">
-                <blade {{addError.category[0]}} </div> />
-              </div>
-              <div class="form-group">
-                {!!Form::label('status', 'Status');!!}
-                {!!Form::select('status', ['ACTIVE'=> 'Active', 'INACTIVE'=> 'Inactive'], null, ['class'=> 'form-control', 'v-model'=> 'status', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.status}'])!!}
-                <div class="invalid-feedback" v-if="addError.status">
-                  <blade {{addError.status[0]}} </div> />
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-secondary" id="disabledForNow" @click="onSubmit" :disabled="submitted">Save</button>
-              </div>
-            </div>
-          </div>
+			{!!Form::label('name', 'Name');!!}
+			{!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.name}'])!!}
+			<div class="invalid-feedback" v-for="name in addError.name">@{{name}}</div>
         </div>
-        @endsection
+        <div class="form-group">
+			{!!Form::label('description', 'Description');!!}
+			{!!Form::textarea('description', null, ['class'=> 'form-control', 'rows' => '3', 'v-model'=> 'description', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.description}'])!!}
+			<div class="invalid-feedback" v-for="description in addError.description">@{{description}}</div>
+        </div>
+        <div class="form-group">
+			{!!Form::label('category', 'Category');!!}
+			{!!Form::select('category', $processCategories, null, ['class'=> 'form-control', 'v-model'=> 'categoryOptions', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.category}'])!!}
+			<div class="invalid-feedback" v-for="category in addError.category">@{{category}}</div>
+        </div>
+        <div class="form-group">
+			{!!Form::label('status', 'Status');!!}
+			{!!Form::select('status', ['ACTIVE'=> 'Active', 'INACTIVE'=> 'Inactive'], null, ['class'=> 'form-control', 'v-model'=> 'status', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.status}'])!!}
+			<div class="invalid-feedback" v-for="status in addError.status">@{{status}}</div>
+        </div>
+      </div>
+    	<div class="modal-footer">
+			<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+			<button type="button" class="btn btn-secondary" id="disabledForNow" @click="onSubmit" :disabled="submitted">Save</button>
+        </div>
+    </div>
+    </div>
+</div>
+@endsection
 
-        @section('js')
-        <script>
-          new Vue({
-            el: '#addProcess',
-            data: {
-              name: '',
-              categoryOptions: '',
-              description: '',
-              addError: {},
-              submitted: false,
-              status: ''
-            },
-            methods: {
-              onSubmit() {
-                this.submitted = true;
-                ProcessMaker.apiClient.post("/processes", {
-                    name: this.name,
-                    description: this.description,
-                    process_category_uuid: this.categoryOptions,
-                    status: this.status
-                  })
-                  .then(response => {
-                    ProcessMaker.alert('Process successfully added', 'success')
-                    window.location = "/processes/" + response.data.uuid
-                    console.log(response)
-                  })
-                  .catch(error => {
-                    if (error.response.status === 422) {
-                      this.addError = error.response.data.errors
-                    }
-                  })
-                  .finally(() => {
-                    this.submitted = false
-                  })
-              }
-            }
-          })
-        </script>
-        <script src="{{mix('js/processes/index.js')}}"></script>
-        @endsection
+@section('js')
+<script>
+	new Vue({
+	el: '#addProcess',
+	data: {
+		name: '',
+		categoryOptions: '',
+		description: '',
+		addError: {},
+		submitted: false,
+		status: ''
+	},
+	methods: {
+		onSubmit() {
+		this.submitted = true;
+		ProcessMaker.apiClient.post("/processes", {
+			name: this.name,
+			description: this.description,
+			process_category_uuid: this.categoryOptions,
+			status: this.status
+			})
+			.then(response => {
+			ProcessMaker.alert('Process successfully added', 'success')
+			window.location = "/processes/" + response.data.uuid
+			console.log(response)
+			})
+			.catch(error => {
+			if (error.response.status === 422) {
+				this.addError = error.response.data.errors
+			}
+			})
+			.finally(() => {
+			this.submitted = false
+			})
+		}
+	}
+	})
+</script>
+<script src="{{mix('js/processes/index.js')}}"></script>
+@endsection
