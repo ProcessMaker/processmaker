@@ -98,6 +98,24 @@ window.onload = function() {
     layout: "StandaloneLayout"
   })
 
+  ui.initOAuth({
+    @if (getenv('SWAGGER_CLIENT_ID'))
+      clientId: "{{ getenv('SWAGGER_CLIENT_ID') }}",
+    @else
+      clientId: "1",
+    @endif
+
+    @if (getenv('SWAGGER_CLIENT_SECRET'))
+      clientSecret: "{{ getenv('SWAGGER_CLIENT_SECRET') }}",
+    @else
+      clientSecret: "see readme",
+    @endif
+
+    appName: "swagger-ui",
+    scopeSeparator: " ",
+    additionalQueryStringParams: {}
+  })
+
   window.ui = ui
 }
 </script>

@@ -13,7 +13,7 @@ use Spatie\BinaryUuid\HasBinaryUuid;
  * @property string $name
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
- * 
+ *
  *   @OA\Schema(
  *   schema="groupsEditable",
  *   @OA\Property(property="uuid", type="string", format="uuid"),
@@ -34,32 +34,54 @@ class Group extends Model
 
     protected $fillable = [
         'name',
+        'description',
+        'status',
     ];
 
     public static function rules($existing = null)
     {
         $rules = [
-            'name' => 'required|string|unique:groups,name'
+            'name' => 'required|string|unique:groups,name',
+            'status' => 'in:ACTIVE,INACTIVE'
         ];
 
         if ($existing) {
             $rules['name'] = [
                 'required',
                 'string',
-                Rule::unique('groups')->ignore($existing->uuid)
+                Rule::unique('groups')->ignore($existing->uuid, 'uuid')
             ];
         }
 
         return $rules;
     }
 
-    public function members()
+    public function permissionAssignments()
+    {
+        return $this->morphMany(PermissionAssignment::class, 'assignable', null, 'assignable_uuid');
+    }
+
+    public function groupMembersFromMemberable()
+    {
+        return $this->morphMany(GroupMember::class, 'member', null, 'member_uuid');
+    }
+    
+    public function groupMembers()
     {
         return $this->hasMany(GroupMember::class);
     }
-    
-    public function memberships()
+
+    public function permissions()
     {
-        return $this->morphMany(GroupMember::class, 'member', null, 'member_uuid');
+        $permissions = [];
+        foreach ($this->groupMembersFromMemberable as $gm) {
+            $group = $gm->group;
+            $permissions =
+                array_merge($permissions, $group->permissions());
+        }
+        foreach ($this->permissionAssignments as $pa) {
+            $permissions[] = $pa->permission;
+        }
+        return $permissions;
     }
 }

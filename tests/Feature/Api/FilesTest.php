@@ -16,7 +16,7 @@ class FilesTest extends TestCase
 
   use RequestHelper;
 
-  const API_TEST_URL = '/api/1.0/files';
+  const API_TEST_URL = '/files';
 
   const STRUCTURE = [
       'uuid',

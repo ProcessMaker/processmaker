@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Feature\Shared\RequestHelper;
 use ProcessMaker\Models\ProcessRequest;
 
@@ -19,7 +18,7 @@ class RequestTest extends TestCase
     public function testIndexRoute()
     {
       // get the URL
-      $response = $this->apiCall('GET', '/requests');
+      $response = $this->webCall('GET', '/requests');
       $response->assertStatus(200);
       // check the correct view is called
       $response->assertViewIs('requests.index');
@@ -36,7 +35,7 @@ class RequestTest extends TestCase
 
       $Request_uuid = factory(ProcessRequest::class)->create()->uuid_text;
       // get the URL
-      $response = $this->apiCall('GET', '/requests/'. $Request_uuid . '/edit');
+      $response = $this->webCall('GET', '/requests/'. $Request_uuid . '/edit');
 
       $response->assertStatus(200);
       // check the correct view is called
@@ -53,7 +52,7 @@ class RequestTest extends TestCase
 
       $Request_uuid = factory(ProcessRequest::class)->create()->uuid_text;
       // get the URL
-      $response = $this->apiCall('GET', '/requests/'. $Request_uuid);
+      $response = $this->webCall('GET', '/requests/'. $Request_uuid);
 
       $response->assertStatus(200);
       // check the correct view is called

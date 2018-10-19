@@ -1,4 +1,4 @@
-@extends('layouts.layout', ['title' => 'Group Management'])
+@extends('layouts.layout')
 
 @section('sidebar')
     @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
@@ -37,7 +37,7 @@
         <div class="col align-self-center">
           <h3 class="m-0">Members</h3>
         </div>
-        <div class="col form-inline input-group justify-content-end">	
+        <div class="col form-inline input-group justify-content-end">
           <div class="input-group-prepend">
             <span class="input-group-text" id="prepend-search"><i class="fa fa-search"></i></span>
           </div>
@@ -45,7 +45,7 @@
           <button type="submit" class="btn btn-secondary ml-2"> <i class="fas fa-plus"></i> User</button>
         </div>
       </div>
-      @if ($group->members->count() > 0)
+      @if ($group->groupMembers->count() > 0)
       <table class="table table-hover vuetable">
       <thead>
         <tr>
@@ -56,9 +56,9 @@
         </tr>
       </thead>
       <tbody>
-        @foreach ($group->members as $member)
-          @if ($member->member_type == \ProcessMaker\Models\User::class)
-            @php ($user = $member->member)
+        @foreach ($group->groupMembers as $groupMember)
+          @if ($groupMember->member_type == \ProcessMaker\Models\User::class)
+            @php ($user = $groupMember->member)
             <tr>
               <td scope="row"><img src="{{ asset('img/avatar_placeholder_small.png') }}"/> {{$user->getFullName()}} </td>
               <td>{{$user->email}}</td>
@@ -70,7 +70,7 @@
               <td class="actions popout vuetable-slot"><i class="fas fa-trash-alt"></i></td>
             </tr>
           @else
-            @php ($group = $member->member)
+            @php ($group = $groupMember->member)
             <tr>
               <td scope="row">{{$group->name}}</td>
               <td></td>
@@ -89,7 +89,7 @@
     <br>
     <div class="card card-body text-center">No members in this group</div>
     @endif
-  
+
   </div>
 </div>
 
@@ -107,7 +107,7 @@
 }
 
 tbody tr td img {
-  height: 20px; 
+  height: 20px;
   border-radius: 50%;
 }
 

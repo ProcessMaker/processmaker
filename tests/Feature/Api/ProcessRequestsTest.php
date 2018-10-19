@@ -23,7 +23,7 @@ class ProcessRequestsTest extends TestCase
     use ResourceRequestsTrait;
     use WithFaker;
 
-    const API_TEST_URL = '/api/1.0/requests';
+    const API_TEST_URL = '/requests';
 
     const STRUCTURE = [
         'uuid',

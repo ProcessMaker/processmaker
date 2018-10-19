@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 
@@ -21,7 +20,7 @@ class AboutTest extends TestCase
     {
 
       // get the URL
-      $response = $this->apiCall('GET', '/admin/about');
+      $response = $this->webCall('GET', '/admin/about');
       // check the correct view is called
       $response->assertViewIs('admin.about.index');
 
