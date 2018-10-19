@@ -91,8 +91,18 @@
             submitted: false,
         },
         methods: {
+            validatePassword(){
+                if(this.password !== this.confpassword){
+                    this.addError.password = ['Passwords must match']
+                    this.password = ''
+                    this.submitted = false
+                    return false
+                } 
+                return true   
+            },
             onSubmit() {
                 this.submitted = true;
+                if(this.validatePassword()){
                 ProcessMaker.apiClient.post("/users", {
                         username: this.username,
                         firstname: this.firstname,
@@ -112,6 +122,7 @@
                     .finally(() => {
                         this.submitted = false
                     })
+                }
             }
         }
     })
