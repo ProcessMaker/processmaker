@@ -5,7 +5,7 @@
 @endsection
 
 @section('sidebar')
-    @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
+  @include('layouts.sidebar', ['sidebar' => Menu::get('sidebar_task')])
 @endsection
 
 @section('content')
@@ -22,10 +22,6 @@
         <tasks-list :filter="filter"></tasks-list>
     </div>
 </div>
-@endsection
-
-@section('sidebar')
-  @include('layouts.sidebar', ['sidebar' => Menu::get('sidebar_task')])
 @endsection
 
 @section('js')
