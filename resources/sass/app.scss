@@ -9,10 +9,10 @@
 @import '~@fortawesome/fontawesome-free-webfonts/scss/fa-solid';
 @import '~@fortawesome/fontawesome-free-webfonts/scss/fontawesome';
 @import '~vue-multiselect/dist/vue-multiselect.min.css';
-@font-face{
+
+@font-face {
   font-family: 'Open Sans';
-	src: url('/fonts/OpenSans.ttf')
-	     format('truetype');
+  src: url('/fonts/OpenSans.ttf') format('truetype');
 }
 
 // .search-bar {
@@ -20,7 +20,8 @@
 //   @extend justify-content-end;
 // }
 
-.multiselect__tag-icon:focus, .multiselect__tag-icon:hover {
+.multiselect__tag-icon:focus,
+.multiselect__tag-icon:hover {
   background: #788793 !important;
 }
 
@@ -28,10 +29,14 @@
   min-height: 35px;
   padding: 7px 40px 0 7px;
 }
+
 .multiselect__select {
   height: 35px;
 }
-.multiselect, .multiselect__input, .multiselect__single {
+
+.multiselect,
+.multiselect__input,
+.multiselect__single {
   font-size: 14px;
 }
 
@@ -274,53 +279,60 @@ table.vuetable {
   margin-top: 16px;
   font-size: $font-size-base;
 
+  tr {
+    .actions {
+      .popout {
+        display: none;
+      }
+    }
+  }
+
   tr:hover td {
     background-color: $grey-bg;
+
+    .actions {
+      cursor: pointer;
+      text-align: right;
+      color: #788793;
+
+      .popout {
+        // display: none;
+        position: absolute;
+        background-color: $grey-bg;
+        right: 0;
+        top: 0;
+        margin: 3px;
+        font-size: $font-size-large;
+
+        button.btn-action {
+          color: #788793;
+          height: 32px;
+          width: 32px;
+          margin-left: 4px;
+          margin-right: 4px;
+          background-color: $grey-bg;
+          border: 0;
+          text-align: center;
+          padding: 0;
+
+          &:hover {
+            background-color: white;
+            border-radius: 2px;
+          }
+        }
+      }
+
+      .popout {
+        display: flex;
+      }
+    }
   }
 
   .vuetable-slot {
     position: relative;
   }
 
-  .actions {
-    cursor: pointer;
-    text-align: right;
-    color: #788793;
 
-    .popout {
-      display: none;
-      align-items: center;
-      position: absolute;
-      background-color: $grey-bg;
-      right: 0;
-      top: 0;
-      margin: 3px;
-      font-size: $font-size-large;
-
-      button.btn-action {
-        color: #788793;
-        height: 32px;
-        width: 32px;
-        margin-left: 4px;
-        margin-right: 4px;
-        background-color: $grey-bg;
-        border: 0;
-        text-align: center;
-        padding: 0;
-
-        &:hover {
-          background-color: white;
-          border-radius: 2px;
-        }
-      }
-    }
-
-    &:hover {
-      .popout {
-        display: flex;
-      }
-    }
-  }
 
   th {
     background-color: $grey-bg;

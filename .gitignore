@@ -24,3 +24,4 @@ tests/coverage-report/*
 /tests/js/coverage/*
 storage/debugbar
 storage/debugbar/*
+storage/api-docs/api-docs.json
