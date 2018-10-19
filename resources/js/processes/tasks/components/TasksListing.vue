@@ -1,24 +1,18 @@
 <template>
-    <div class="data-table">
-        <vuetable :dataManager="dataManager" :sortOrder="sortOrder" :css="css" :api-mode="false"
-                  @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data"
-                  pagination-path="meta">
-            <template slot="actions" slot-scope="props">
-                <div class="actions">
-                    <div class="popout">
-                        <b-btn variant="action" @click="onAction('edit-item', props.rowData, props.rowIndex)"
-                               v-b-tooltip.hover title="Edit"><i class="fas fa-edit"></i></b-btn>
-                        <b-btn variant="action" @click="onAction('remove-item', props.rowData, props.rowIndex)"
-                               v-b-tooltip.hover title="Remove"><i class="fas fa-trash-alt"></i></b-btn>
-                        <b-btn variant="action" @click="onAction('permissions-item', props.rowData, props.rowIndex)"
-                               v-b-tooltip.hover title="Permissions"><i class="fas fa-user-lock"></i></b-btn>
-                    </div>
-                </div>
-            </template>
-        </vuetable>
-        <pagination single="Task" plural="Tasks" :perPageSelectEnabled="true" @changePerPage="changePerPage"
-                    @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
-    </div>
+<div class="data-table">
+  <vuetable :dataManager="dataManager" :sortOrder="sortOrder" :css="css" :api-mode="false" @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data" pagination-path="meta">
+    <template slot="actions" slot-scope="props">
+      <div class="actions">
+        <div class="popout">
+          <b-btn variant="action" @click="onAction('edit-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="Edit"><i class="fas fa-edit"></i></b-btn>
+          <b-btn variant="action" @click="onAction('remove-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="Remove"><i class="fas fa-trash-alt"></i></b-btn>
+          <b-btn variant="action" @click="onAction('permissions-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="Permissions"><i class="fas fa-user-lock"></i></b-btn>
+        </div>
+      </div>
+    </template>
+  </vuetable>
+  <pagination single="Task" plural="Tasks" :perPageSelectEnabled="true" @changePerPage="changePerPage" @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
+</div>
 </template>
 
 <script>
@@ -31,15 +25,12 @@ export default {
     return {
       orderBy: "code",
 
-      sortOrder: [
-        {
-          field: "title",
-          sortField: "title",
-          direction: "asc"
-        }
-      ],
-      fields: [
-        {
+      sortOrder: [{
+        field: "title",
+        sortField: "title",
+        direction: "asc"
+      }],
+      fields: [{
           name: "__checkbox"
         },
         {
@@ -110,18 +101,17 @@ export default {
       ProcessMaker.apiClient
         .get(
           "process/" +
-            this.uid +
-            "/tasks?page=" +
-            this.page +
-            "&per_page=" +
-            this.perPage +
-            "&filter=" +
-            this.filter +
-            "&order_by=" +
-            this.orderBy +
-            "&order_direction=" +
-            this.orderDirection,
-          {
+          this.uid +
+          "/tasks?page=" +
+          this.page +
+          "&per_page=" +
+          this.perPage +
+          "&filter=" +
+          this.filter +
+          "&order_by=" +
+          this.orderBy +
+          "&order_direction=" +
+          this.orderDirection, {
             cancelToken: new CancelToken(c => {
               this.cancelToken = c;
             })
@@ -138,21 +128,20 @@ export default {
 
 <style lang="scss" scoped>
 /deep/ th#_total_users {
-  width: 150px;
-  text-align: center;
+    width: 150px;
+    text-align: center;
 }
 
 /deep/ th#_description {
-  width: 250px;
+    width: 250px;
 }
 
 /deep/ i.fa-circle {
-  &.active {
-    color: green;
-  }
-  &.inactive {
-    color: red;
-  }
+    &.active {
+        color: green;
+    }
+    &.inactive {
+        color: red;
+    }
 }
 </style>
-
