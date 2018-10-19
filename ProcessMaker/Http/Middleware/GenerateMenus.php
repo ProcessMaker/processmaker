@@ -119,7 +119,7 @@ class GenerateMenus
           $submenu->add(__('menus.sidebar_processes.environment_variables'), [
               'route' => 'environment-variables.index',
               'icon' => 'fa-cogs',
-              'id' => 'process-environmental'
+              'id' => 'process-environment'
           ]);
         });
 
