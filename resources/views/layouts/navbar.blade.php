@@ -26,7 +26,7 @@
                 </notifications>
             </li>
             <li class="seperator"></li>
-            <li>
+            <li class="nav-item align-self-center">
                 @php
                     $items = [];
                     foreach ($dropdown_nav->items as $item ) {

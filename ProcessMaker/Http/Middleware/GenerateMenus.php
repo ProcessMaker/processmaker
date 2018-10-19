@@ -21,7 +21,7 @@ class GenerateMenus
 
         Menu::make('topnav', function ($menu) {
             $menu->group(['prefix' => 'requests'], function($request_items) {
-                $request_items->add(__('Request'), ['route' => 'requests.index']);
+                $request_items->add(__('Requests'), ['route' => 'requests.index']);
             });
             //@TODO change the index to the correct blade
             $menu->group(['prefix' => 'tasks'], function($request_items) {
