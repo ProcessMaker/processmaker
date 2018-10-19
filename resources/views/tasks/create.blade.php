@@ -7,6 +7,7 @@
 @section('sidebar')
     @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_task')])
 @endsection
+
 @section('content')
 <div id="task">
     <task-form

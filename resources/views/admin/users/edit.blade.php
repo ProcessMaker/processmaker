@@ -4,11 +4,11 @@
   {{__('Edit Users')}}
 @endsection
 
-@Section('sidebar')
+@section('sidebar')
     @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
 @endsection
 
-@Section('content')
+@section('content')
     <div class="container" id="users-edit">
         <h1>{{__('Edit User')}}</h1>
         <div class="row">
@@ -40,6 +40,6 @@
     </div>
 @endsection
 
-@Section('js')
+@section('js')
     <script src="{{mix('js/admin/users/edit.js')}}"></script>
 @endsection

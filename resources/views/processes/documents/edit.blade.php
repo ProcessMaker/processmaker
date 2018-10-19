@@ -4,12 +4,12 @@
   {{__('Edit Document')}}
 @endsection
 
-@Section('sidebar')
+@section('sidebar')
 @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
 @endsection
 
-@Section('content')
+@section('content')
 @endsection
 
-@Section('js')
+@section('js')
 @endsection
