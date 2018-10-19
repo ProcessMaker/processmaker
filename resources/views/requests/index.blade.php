@@ -23,7 +23,7 @@
                             </a>
                         </b-card>
 
-                        <b-card header="<i class='fas fa-th-list fa-2x'></i>"
+                        <b-card header="<i class='far fa-clipboard fa-2x'></i>"
                                 header-class="d-flex align-items-center justify-content-center card-size-header border-0"
                                 text-variant="white" class="bg-info mb-3 d-flex flex-row card-border border-0">
                             <a href="#" @click="reload('started_me')" class="card-link text-light">

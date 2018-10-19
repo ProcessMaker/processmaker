@@ -5,7 +5,7 @@
                   pagination-path="meta">
             <template slot="uuids" slot-scope="props">
                 <b-link @click="openRequest(props.rowData, props.rowIndex)">
-                    {{props.rowData.uuid}}
+                    {{props.rowData.uuid_short}}
                 </b-link>
             </template>
 
@@ -151,6 +151,7 @@
                 data.meta.from = (data.meta.current_page - 1) * data.meta.per_page;
                 data.meta.to = data.meta.from + data.meta.count;
                 for (let record of data.data) {
+                    record['uuid_short'] = record['uuid'].split('-')[0];
                     //Format dates
                     record['created_at'] = this.formatDate(record['created_at']);
                     if (record['completed_at']) {
@@ -193,9 +194,10 @@
         }
     };
 </script>
+
 <style lang="scss" scoped>
     /deep/ .vuetable-th-slot-uuids {
-        min-width: 260px;
+        min-width: 100px;
         white-space: nowrap;
     }
 </style>
