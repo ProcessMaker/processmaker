@@ -4,6 +4,10 @@
   {{__('Tasks')}}
 @endsection
 
+@section('sidebar')
+  @include('layouts.sidebar', ['sidebar' => Menu::get('sidebar_task')])
+@endsection
+
 @section('content')
 <div class="container" id="tasks">
     <div class="row">
@@ -18,10 +22,6 @@
         <tasks-list :filter="filter"></tasks-list>
     </div>
 </div>
-@endsection
-
-@section('sidebar')
-  @include('layouts.sidebar', ['sidebar' => Menu::get('sidebar_task')])
 @endsection
 
 @section('js')
