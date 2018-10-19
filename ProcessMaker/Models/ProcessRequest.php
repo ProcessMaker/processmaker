@@ -204,7 +204,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
     {
         return $this->hasMany(ProcessRequestToken::class)
             ->with('user')
-            ->whereNotIn('element_type' , ['scriptTask2']);
+            ->whereNotIn('element_type' , ['scriptTask']);
     }
 
     /**
@@ -226,7 +226,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
      */
     public function scopeInProgress($query)
     {
-        $query->whereNull('completed_at');
+        $query->where('status' , '=', 'ACTIVE');
     }
 
     /**
@@ -236,6 +236,6 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
      */
     public function scopeCompleted($query)
     {
-        $query->whereNotNull('completed_at');
+        $query->where('status' , '=', 'COMPLETED');
     }
 }

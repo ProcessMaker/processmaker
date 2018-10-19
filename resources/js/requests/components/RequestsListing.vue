@@ -126,8 +126,20 @@
                 }
                 return assignedTo;
             },
-            formatStatus(color, status) {
-                return '<i class="fas fa-circle text-' + color + '"></i> <span>' + status + '</span>';
+            formatStatus(status) {
+                let color = 'success',
+                    label = 'In Progress';
+                switch (status) {
+                    case 'DRAFT':
+                        color = 'danger';
+                        label = 'Draft';
+                        break;
+                    case 'COMPLETED':
+                        color = 'primary';
+                        label = 'Completed';
+                        break;
+                }
+                return '<i class="fas fa-circle text-' + color + '"></i> <span>' + label + '</span>';
             },
             formatDate(value) {
                 let date = moment(value);
@@ -149,12 +161,7 @@
                         record['duration_at'] = moment(record['created_at']).fromNow();
                     }
                     //format Status
-                    record['status'] = this.formatStatus('success', 'In Progress');
-                    if (record['status'] === 'COMPLETED') {
-                        record['status'] = this.formatStatus('primary', 'Complete');
-                    } else if (record['status'] === 'DRAFT') {
-                        record['status'] = this.formatStatus('danger', 'Draft');
-                    }
+                    record['status'] = this.formatStatus(record['status']);
                 }
                 return data;
             },
