@@ -121,9 +121,10 @@ class Process extends Model implements HasMedia
         ];
 
         if ($existing) {
-            // ignore the unique rule for this id
+            // ignore the unique rule for this uuid
             $rules['name'] = [
                 'required',
+                'string',
                 Rule::unique('processes')->ignore($existing->uuid, 'uuid')
             ];
         }
@@ -233,7 +234,7 @@ class Process extends Model implements HasMedia
      * Get the next user in a cyclical assignment.
      *
      * @param string $processTaskUuid
-     * 
+     *
      * @return binary
      * @throws TaskDoesNotHaveUsersException
      */
@@ -260,9 +261,9 @@ class Process extends Model implements HasMedia
 
     /**
      * Get an array of all assignable users to a task.
-     * 
+     *
      * @param string $processTaskUuid
-     * 
+     *
      * @return array
      */
     public function getAssignableUsers($processTaskUuid)
@@ -287,7 +288,7 @@ class Process extends Model implements HasMedia
      *
      * @param binary $group_uuid
      * @param array $users
-     * 
+     *
      * @return array
      */
     private function getConsolidatedUsers($group_uuid, array &$users)
