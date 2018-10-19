@@ -114,9 +114,9 @@ class Process extends Model implements HasMedia
     {
         $rules = [
             'name' => 'required|unique:processes,name',
-            'description' => 'required',
+            'description' => 'required',            
             'status' => 'in:ACTIVE,INACTIVE',
-            'process_category_uuid' => 'nullable|exists:process_categories,uuid',
+            'process_category_uuid' => 'required|exists:process_categories,uuid',
             'bpmn' => 'nullable|bpmn_schema',
         ];
 
@@ -233,7 +233,7 @@ class Process extends Model implements HasMedia
      * Get the next user in a cyclical assignment.
      *
      * @param string $processTaskUuid
-     * 
+     *
      * @return binary
      * @throws TaskDoesNotHaveUsersException
      */
@@ -260,9 +260,9 @@ class Process extends Model implements HasMedia
 
     /**
      * Get an array of all assignable users to a task.
-     * 
+     *
      * @param string $processTaskUuid
-     * 
+     *
      * @return array
      */
     public function getAssignableUsers($processTaskUuid)
@@ -287,7 +287,7 @@ class Process extends Model implements HasMedia
      *
      * @param binary $group_uuid
      * @param array $users
-     * 
+     *
      * @return array
      */
     private function getConsolidatedUsers($group_uuid, array &$users)

@@ -44,13 +44,13 @@
 			<div class="invalid-feedback" v-for="description in addError.description">@{{description}}</div>
         </div>
         <div class="form-group">
-			{!!Form::label('category', 'Category');!!}
-			{!!Form::select('category', $processCategories, null, ['class'=> 'form-control', 'v-model'=> 'categoryOptions', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.category}'])!!}
-			<div class="invalid-feedback" v-for="category in addError.category">@{{category}}</div>
+			{!!Form::label('process_category_uuid', 'Category');!!}
+			{!!Form::select('process_category_uuid', $processCategories, null, ['class'=> 'form-control', 'v-model'=> 'categoryOptions', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.process_category_uuid}'])!!}
+			<div class="invalid-feedback" v-for="category in addError.process_category_uuid">@{{category}}</div>
         </div>
         <div class="form-group">
 			{!!Form::label('status', 'Status');!!}
-			{!!Form::select('status', ['ACTIVE'=> 'Active', 'INACTIVE'=> 'Inactive'], null, ['class'=> 'form-control', 'v-model'=> 'status', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.status}'])!!}
+			{!!Form::select('status', [''=>'Select','ACTIVE'=> 'Active', 'INACTIVE'=> 'Inactive'], null, ['class'=> 'form-control', 'v-model'=> 'status', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.status}'])!!}
 			<div class="invalid-feedback" v-for="status in addError.status">@{{status}}</div>
         </div>
       </div>
@@ -81,7 +81,7 @@
 		ProcessMaker.apiClient.post("/processes", {
 			name: this.name,
 			description: this.description,
-			process_category_uuid: this.categoryOptions,
+			process_category_uuid: this.process_category_uuid,
 			status: this.status
 			})
 			.then(response => {
