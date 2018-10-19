@@ -26,8 +26,6 @@ return[
     'system_preferences' => 'System Preferences',
     'preferences' => 'Preferences',
     'localization' => 'Localization',
-    'inbox_customization' => 'Inbox Customization',
-    'inbox_configuration' => 'Inbox Configuration',
     'languages' => 'Languages',
     'email_configuration' => 'Email Configuration',
     'notifications_configuration' => 'Notifications Configuration',
@@ -51,5 +49,14 @@ return[
   'sidebar_processes' => [
     'processes' => 'Processes',
     'categories' => 'Process Categories',
+    'scripts' => 'Scripts',
+    'forms' => 'Forms',
+    'environment_variables'=> 'Environment Variables'
+  ],
+  'topnav' => [
+    'requests' => 'Requests',
+    'tasks' => 'Tasks',
+    'processes' => 'Processes',
+    'admin' => 'Admin'
   ]
 ];

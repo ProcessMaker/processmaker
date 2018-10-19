@@ -142,14 +142,13 @@ return [
         ],
         */
 
-        /* Open API 3.0 support
-        'passport' => [ // Unique name of security
+        'pm-api' => [ // Unique name of security
             'type' => 'oauth2', // The type of the security scheme. Valid values are "basic", "apiKey" or "oauth2".
             'description' => 'Laravel passport oauth2 security.',
             'in' => 'header',
             'scheme' => 'https',
             'flows' => [
-                "password" => [
+                "authorizationCode" => [
                     "authorizationUrl" => config('app.url') . '/oauth/authorize',
                     "tokenUrl" => config('app.url') . '/oauth/token',
                     "refreshUrl" => config('app.url') . '/token/refresh',
@@ -157,7 +156,6 @@ return [
                 ],
             ],
         ],
-        */
     ],
 
     /*
