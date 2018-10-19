@@ -121,9 +121,10 @@ class Process extends Model implements HasMedia
         ];
 
         if ($existing) {
-            // ignore the unique rule for this id
+            // ignore the unique rule for this uuid
             $rules['name'] = [
                 'required',
+                'string',
                 Rule::unique('processes')->ignore($existing->uuid, 'uuid')
             ];
         }
