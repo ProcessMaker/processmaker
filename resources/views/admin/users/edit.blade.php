@@ -5,6 +5,7 @@
 @endsection
 
 @section('sidebar')
+
 @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
 @endsection
 
@@ -107,4 +108,5 @@
     } 
   });
 </script>
+    <script src="{{mix('js/admin/users/edit.js')}}"></script>
 @endsection

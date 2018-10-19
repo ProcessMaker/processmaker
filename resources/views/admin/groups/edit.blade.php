@@ -5,6 +5,7 @@
 @endsection
 
 @section('sidebar')
+
 @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
 @endsection
 
@@ -79,5 +80,6 @@
     }
   })       
 </script>
+
 
 @endsection
