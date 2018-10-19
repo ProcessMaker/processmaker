@@ -59,8 +59,8 @@
                     },
                     {
                         title: "Members",
-                        name: "members_count",
-                        sortField: "members_count"
+                        name: "group_members_count",
+                        sortField: "group_members_count"
                     },
                     {
                         title: "Created At",

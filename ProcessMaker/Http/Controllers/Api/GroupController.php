@@ -59,7 +59,7 @@ class GroupController extends Controller
             $count = array_search('membersCount', $include);
             if ($count !== false) {
                 unset($include[$count]);
-                $query->withCount('members');
+                $query->withCount('groupMembers');
             }
             if ($include) {
                 $query->with($include);
