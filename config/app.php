@@ -48,6 +48,10 @@ return [
     // The processmaker identifier of the web client application
     'web_client_application_id' => env('PM_CLIENT_ID', 'x-pm-local-client'),
 
+    // The processmaker BPM scripts configuration
+    'bpm_scripts_home' => env('BPM_SCRIPTS_HOME', '/home/vagrant'),
+    'bpm_scripts_docker' => env('BPM_SCRIPTS_DOCKER', '/usr/bin/docker'),
+
     'providers' => [
         Illuminate\Auth\AuthServiceProvider::class,
         Illuminate\Broadcasting\BroadcastServiceProvider::class,
@@ -82,7 +86,8 @@ return [
         ProcessMaker\Providers\RouteServiceProvider::class,
         ProcessMaker\Providers\BroadcastServiceProvider::class,
         ProcessMaker\Providers\WorkflowServiceProvider::class,
-
+        Laravel\Passport\PassportServiceProvider::class,
+        Collective\Html\HtmlServiceProvider::class,
 
     ],
 
@@ -121,6 +126,8 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
+        'Form' => Collective\Html\FormFacade::class,
+        'Html' => Collective\Html\HtmlFacade::class,
 
         /**
          * ProcessMaker specific Facades

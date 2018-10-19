@@ -6,7 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use ProcessMaker\Model\Application as Instance;
+use ProcessMaker\Models\ProcessRequest as Instance;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 
 class ProcessCompletedNotification extends Notification
@@ -24,9 +24,9 @@ class ProcessCompletedNotification extends Notification
      */
     public function __construct(ExecutionInstanceInterface $instance)
     {
-        $this->processUid = $instance->process->uid;
+        $this->processUid = $instance->process->uuid_text;
         $this->processName = $instance->process->name;
-        $this->instanceUid = $instance->uid;
+        $this->instanceUid = $instance->uuid_text;
     }
 
     /**
@@ -69,10 +69,10 @@ class ProcessCompletedNotification extends Notification
 
     public function toBroadcast($notifiable)
     {
-        $instance = Instance::where('uid', $this->instanceUid)->first();
+        $instance = Instance::withUuid($this->instanceUid)->first();
         return new BroadcastMessage([
             'name' => sprintf('Completed: %s', $this->processName),
-            'dateTime' => $instance->APP_FINISH_DATE->toIso8601String(),
+            'dateTime' => $instance->completed_at->toIso8601String(),
             'uid' => $this->processName,
             'url' => '/process',
         ]);

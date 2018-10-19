@@ -1,5 +1,5 @@
 import {mount, shallow, shallowMount} from "@vue/test-utils"
-import {Elements} from "../../../../resources/assets/js/designer/diagram/elements"
+import {Elements} from "../../../../resources/js/designer/diagram/elements"
 
 describe("Elements", () => {
     it("Instance of keys in elements", () => {

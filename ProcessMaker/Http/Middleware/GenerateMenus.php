@@ -20,51 +20,45 @@ class GenerateMenus
         app()->setLocale('en');
 
         Menu::make('topnav', function ($menu) {
-            $menu->add(__('Requests'), ['route' => 'requests']);
-            $menu->add(__('Tasks'), ['route' => 'tasks']);
-            $menu->add(__('Processes'), ['route' => 'processes']);
-            $menu->add(__('Admin'), ['route' => 'admin']);
+            $menu->group(['prefix' => 'requests'], function($request_items) {
+                $request_items->add(__('menus.topnav.requests'), ['route' => 'requests.index']);
+            });
+            //@TODO change the index to the correct blade
+            $menu->group(['prefix' => 'tasks'], function($request_items) {
+                $request_items->add(__('menus.topnav.tasks'), ['route' => 'tasks.index']);
+            });
+            //@TODO change the index to the correct blade
+            $menu->group(['prefix' => 'processes'], function($request_items) {
+                $request_items->add(__('menus.topnav.processes'), ['route' => 'processes.index']);
+            });
+            $menu->group(['prefix' => 'admin'], function($admin_items) {
+                $admin_items->add(__('menus.topnav.admin'), ['route' => 'users.index']);
+            });
         });
 
         // Build the menus
         Menu::make('sidebar_admin', function ($menu) {
             $submenu = $menu->add(__('menus.sidebar_admin.organization'));
             $submenu->add(__('menus.sidebar_admin.users'), [
-              'route' => 'management-users-index',
+              'route' => 'users.index',
               'icon' => 'fa-user',
               'id' => 'homeid'
           ]);
             $submenu->add(__('menus.sidebar_admin.groups'), [
-              'route' => 'management-groups-index',
+              'route' => 'groups.index',
               'icon' => 'fa-users',
               'id' => 'homeid'
           ]);
 
-          $submenu = $menu->add(__('menus.sidebar_admin.configuration'));
-          $submenu->add(__('menus.sidebar_admin.notifications_configuration'), [
-                'route' => 'home',
-                'icon' => 'fa-bell',
-                'id' => 'homeid'
-          ]);
-          $submenu->add(__('menus.sidebar_admin.environment_variables'), [
-                'route' => 'management-environment-variables',
-                'icon' => 'fa-globe',
-          ]);
           $submenu->add(__('menus.sidebar_admin.preferences'), [
-                'route' => 'preferences',
+                'route' => 'preferences.index',
                 'icon' => 'fa-globe',
-                'id' => 'homeid'
-          ]);
-          
-          $submenu->add(__('menus.sidebar_admin.colors_and_logos'), [
-                'route' => 'home',
-                'icon' => 'fa-palette',
                 'id' => 'homeid'
           ]);
 
           $submenu = $menu->add(__('menus.sidebar_admin.system_information'));
           $submenu->add(__('menus.sidebar_admin.app_version_details'), [
-                'route' => 'home',
+                'route' => 'about.index',
                 'icon' => 'fa-desktop',
                 'id' => 'homeid'
           ]);
@@ -75,47 +69,26 @@ class GenerateMenus
 
         });
         Menu::make('sidebar_task', function ($menu) {
-          $submenu = $menu->add(__('menus.sidebar_task.tasks'));
-          $submenu->add(__('menus.sidebar_task.assigned'), [
-              'route' => 'home',
-              'icon' => 'icon-assigned',
-              'id' => 'homeid'
-          ]);
-          $submenu->add(__('menus.sidebar_task.unassigned'), [
-              'route' => 'home',
-              'icon' => 'icon-unassigned',
-              'id' => 'homeid'
-            ]);
-          $submenu->add(__('menus.sidebar_task.completed'), [
-              'route' => 'home',
-              'icon' => 'icon-completed-1',
-              'id' => 'homeid'
-            ]);
-          $submenu->add(__('menus.sidebar_task.paused'), [
-              'route' => 'home',
-              'icon' => 'icon-paused-2',
-              'id' => 'homeid'
-            ]);
         });
         Menu::make('sidebar_request', function ($menu) {
           $submenu = $menu->add(__('menus.sidebar_request.request'));
           $submenu->add(__('menus.sidebar_request.in_progress'), [
-                'route' => 'requests',
+                'route' => 'requests.index',
                 'icon' => 'icon-assigned',
                 'id' => 'homeid'
           ]);
           $submenu->add(__('menus.sidebar_request.draft'), [
-              'route' => 'requests.drafts',
+              'route' => 'requests.index',
               'icon' => 'icon-draft',
               'id' => 'homeid'
           ]);
           $submenu->add(__('menus.sidebar_request.completed'), [
-              'route' => 'requests.completed',
+              'route' => 'requests.index',
               'icon' => 'icon-completed-1',
               'id' => 'homeid'
           ]);
           $submenu->add(__('menus.sidebar_request.paused'), [
-              'route' => 'requests.paused',
+              'route' => 'requests.index',
               'icon' => 'icon-paused-2',
               'id' => 'homeid'
           ]);
@@ -124,14 +97,29 @@ class GenerateMenus
         Menu::make('sidebar_processes', function ($menu) {
           $submenu = $menu->add(__('menus.sidebar_processes.processes'));
           $submenu->add(__('menus.sidebar_processes.processes'), [
-              'route' => 'processes',
+              'route' => 'processes.index',
               'icon' => 'fa-play-circle',
               'id' => 'processes'
           ]);
           $submenu->add(__('menus.sidebar_processes.categories'), [
-              'route' => 'process-categories-index',
-              'icon' => 'fa-list',
+              'route' => 'categories.index',
+              'icon' => 'fa-sitemap',
               'id' => 'process-categories'
+          ]);
+          $submenu->add(__('menus.sidebar_processes.scripts'), [
+              'route' => 'scripts.index',
+              'icon' => 'fa-code',
+              'id' => 'process-scripts'
+          ]);
+          $submenu->add(__('menus.sidebar_processes.forms'), [
+              'route' => 'forms.index',
+              'icon' => 'fa-file-alt',
+              'id' => 'process-forms'
+          ]);
+          $submenu->add(__('menus.sidebar_processes.environment_variables'), [
+              'route' => 'environment-variables.index',
+              'icon' => 'fa-cogs',
+              'id' => 'process-environment'
           ]);
         });
 
@@ -142,7 +130,7 @@ class GenerateMenus
           [
             'label' =>__('Profile'),
             'header' => false,
-            'route' => 'profile',
+            'route' => 'profile.index',
             'icon' => 'fa-user',
             'img' => '',
             'id' => 'dropdownItem'

@@ -9,14 +9,17 @@
 	],
 	"database": "redis",
 	"databaseConfig": {
-		"redis": {},
+		"redis": {
+			"host": "127.0.0.1",
+			"port": "REDISPORT"
+		},
 		"sqlite": {
 			"databasePath": "/database/laravel-echo-server.sqlite"
 		}
 	},
 	"devMode": true,
 	"host": null,
-	"port": "6001",
+	"port": "ECHOPORT",
 	"protocol": "https",
 	"socketio": {},
 	"sslCertPath": "/etc/ssl/certs/nginx-selfsigned.crt",

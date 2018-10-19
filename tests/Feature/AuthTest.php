@@ -1,17 +1,15 @@
 <?php
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use ProcessMaker\Model\Permission;
-use ProcessMaker\Model\User;
+use ProcessMaker\Models\Permission;
+use ProcessMaker\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
 {
-    use DatabaseTransactions;
 
     /**
      * Tests to determine if we can manually log someone in by setting them in the Auth framework immediately
@@ -22,7 +20,7 @@ class AuthTest extends TestCase
     {
         $user = factory(User::class)->create();
         Auth::login($user);
-        $this->assertEquals($user->id, Auth::id());
+        $this->assertEquals($user->uuid, Auth::id());
         Auth::logout();
         $this->assertNull(Auth::user());
     }
@@ -48,7 +46,7 @@ class AuthTest extends TestCase
             'username' => 'newuser',
             'password' => 'password'
         ]));
-        $this->assertEquals($user->id, Auth::id());
+        $this->assertEquals($user->uuid, Auth::id());
     }
 
 }

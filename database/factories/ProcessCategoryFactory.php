@@ -1,18 +1,16 @@
 <?php
 
-use Ramsey\Uuid\Uuid;
 use Faker\Generator as Faker;
-use ProcessMaker\Model\ProcessCategory;
+use ProcessMaker\Models\ProcessCategory;
 
 /**
  * Model factory for a process category.
  */
 $factory->define(ProcessCategory::class, function (Faker $faker) {
     return [
-        'uid' => Uuid::uuid4(),
-        'name' => $faker->name(),
+        'name' => $faker->unique()->sentence(),
         'status' => $faker->randomElement(
-            [ProcessCategory::STATUS_ACTIVE, ProcessCategory::STATUS_INACTIVE]
+            ['ACTIVE', 'INACTIVE']
         )
     ];
 });

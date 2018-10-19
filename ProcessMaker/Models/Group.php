@@ -1,0 +1,87 @@
+<?php
+
+namespace ProcessMaker\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Validation\Rule;
+use Spatie\BinaryUuid\HasBinaryUuid;
+
+/**
+ * Represents a group definition.
+ *
+ * @property string $uuid
+ * @property string $name
+ * @property \Carbon\Carbon $updated_at
+ * @property \Carbon\Carbon $created_at
+ *
+ *   @OA\Schema(
+ *   schema="groupsEditable",
+ *   @OA\Property(property="uuid", type="string", format="uuid"),
+ *   @OA\Property(property="name", type="string"),
+ *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
+ * ),
+ * @OA\Schema(
+ *   schema="groups",
+ *   allOf={@OA\Schema(ref="#/components/schemas/groupsEditable")},
+ *   @OA\Property(property="created_at", type="string", format="date-time"),
+ *   @OA\Property(property="updated_at", type="string", format="date-time"),
+ * )
+ *
+ */
+class Group extends Model
+{
+    use HasBinaryUuid;
+
+    protected $fillable = [
+        'name',
+        'description',
+        'status',
+    ];
+
+    public static function rules($existing = null)
+    {
+        $rules = [
+            'name' => 'required|string|unique:groups,name',
+            'status' => 'in:ACTIVE,INACTIVE'
+        ];
+
+        if ($existing) {
+            $rules['name'] = [
+                'required',
+                'string',
+                Rule::unique('groups')->ignore($existing->uuid, 'uuid')
+            ];
+        }
+
+        return $rules;
+    }
+
+    public function permissionAssignments()
+    {
+        return $this->morphMany(PermissionAssignment::class, 'assignable', null, 'assignable_uuid');
+    }
+
+    public function groupMembersFromMemberable()
+    {
+        return $this->morphMany(GroupMember::class, 'member', null, 'member_uuid');
+    }
+    
+    public function groupMembers()
+    {
+        return $this->hasMany(GroupMember::class);
+    }
+
+    public function permissions()
+    {
+        $permissions = [];
+        foreach ($this->groupMembersFromMemberable as $gm) {
+            $group = $gm->group;
+            $permissions =
+                array_merge($permissions, $group->permissions());
+        }
+        foreach ($this->permissionAssignments as $pa) {
+            $permissions[] = $pa->permission;
+        }
+        return $permissions;
+    }
+}

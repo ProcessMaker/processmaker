@@ -3,7 +3,7 @@
 namespace ProcessMaker\Transformers;
 
 use League\Fractal\TransformerAbstract;
-use ProcessMaker\Model\Script;
+use ProcessMaker\Models\Script;
 
 /**
  * Script transformer, used to prepare the JSON response returned in the
@@ -23,6 +23,7 @@ class ScriptTransformer extends TransformerAbstract
      */
     public function transform(Script $script)
     {
-        return $script->toArray();
+        $data = $script->toArray();
+        return $data;
     }
 }

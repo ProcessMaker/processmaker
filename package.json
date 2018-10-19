@@ -48,6 +48,7 @@
     "@fortawesome/fontawesome-free-webfonts": "^1.0.9",
     "@processmaker/vue-form-builder": "^0.2.0",
     "@tinymce/tinymce-vue": "^1.0.8",
+    "babel-eslint": "^10.0.1",
     "bootstrap": "^4.1.3",
     "bootstrap-vue": "^2.0.0-rc.11",
     "bpmn-moddle": "^5.1.5",
@@ -73,6 +74,7 @@
     "vue-events": "^3.1.0",
     "vue-json-pretty": "^1.4.1-beta.1",
     "vue-monaco": "^0.2.0",
+    "vue-multiselect": "^2.1.0",
     "vue-resource": "^1.5.1",
     "vue-router": "^3.0.1",
     "vue-template-compiler": "^2.5.17",
@@ -94,13 +96,13 @@
       ".*\\.(vue)$": "<rootDir>/node_modules/vue-jest"
     },
     "moduleNameMapper": {
-      "@pmjs(.*)$": "<rootDir>/resources/assets/js/$1"
+      "@pmjs(.*)$": "<rootDir>/resources/js/$1"
     },
     "transformIgnorePatterns": [
       "node_modules/(?!(vuetable-2)/)"
     ],
     "roots": [
-      "<rootDir>/resources/assets/js/",
+      "<rootDir>/resources/js/",
       "<rootDir>/tests/js/"
     ],
     "collectCoverage": true,

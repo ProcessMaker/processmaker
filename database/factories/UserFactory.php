@@ -1,25 +1,38 @@
 <?php
 
-use Ramsey\Uuid\Uuid;
 use Faker\Generator as Faker;
 use Illuminate\Support\Facades\Hash;
-use Carbon\Carbon;
-
+use ProcessMaker\Models\User;
 /**
  * Model factory for a User
  */
-$factory->define(\ProcessMaker\Model\User::class, function (Faker $faker) {
+$factory->define(User::class, function (Faker $faker) {
 
-    /**
-     * @todo Determine if we need more base columns populated
-     */
     return [
-        'uid' => Uuid::uuid4(),
-        'username' => $faker->userName,
+        'username' => $faker->unique()->userName,
+        'email' => $faker->unique()->email,
+        'password' => Hash::make($faker->password),
+
+        'status' => $faker->randomElement(['ACTIVE','INACTIVE']),
+
         'firstname' => $faker->firstName,
         'lastname' => $faker->lastName,
-        'password' => Hash::make($faker->password),
-        'time_zone' => $faker->timezone,
-        'lang' => 'en'
+        'address' => $faker->streetAddress,
+        'city' => $faker->city,
+        'state' => $faker->stateAbbr,
+        'postal' => $faker->postcode,
+
+        'phone' => $faker->phoneNumber,
+        'fax' => $faker->phoneNumber,
+        'cell' => $faker->phoneNumber,
+
+        'title' => $faker->jobTitle,
+        'birthdate' => $faker->dateTimeThisCentury,
+        'timezone' => $faker->timezone,
+        'language' => 'us_en',
+        'loggedin_at' => $faker->dateTimeThisCentury,
+
+        'is_administrator' => false,
+
     ];
 });

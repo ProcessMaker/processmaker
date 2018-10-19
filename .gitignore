@@ -17,6 +17,11 @@ yarn-error.log
 public/*
 !public/definitions
 tests/js/coverage
+tests/coverage-report
+tests/coverage-report/*
 .DS_Store
 /nbproject
 /tests/js/coverage/*
+storage/debugbar
+storage/debugbar/*
+storage/api-docs/api-docs.json

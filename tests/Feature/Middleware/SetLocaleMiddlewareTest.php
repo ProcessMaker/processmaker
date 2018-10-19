@@ -1,7 +1,6 @@
 <?php
 namespace Tests\Feature\Middleware;
 
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use ProcessMaker\Http\Middleware\SetLocale;
 use Tests\TestCase;
 use Illuminate\Support\Facades\App;
@@ -9,7 +8,6 @@ use Route;
 
 class SetLocaleMiddlewareTest extends TestCase
 {
-    use DatabaseTransactions;
 
     /**
      * Test to ensure that passing in a locale into the url sets it

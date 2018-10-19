@@ -1,15 +1,18 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use ProcessMaker\Model\EnvironmentVariable;
-use ProcessMaker\Model\Form;
-use ProcessMaker\Model\Process;
-use ProcessMaker\Model\Script;
+use ProcessMaker\Models\EnvironmentVariable;
+use ProcessMaker\Models\Form;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\Script;
 use ProcessMaker\Providers\WorkflowServiceProvider;
 
 class ProcessSeeder extends Seeder
 {
 
+    /**
+     * Array of [language => mime-type]
+     */
     const mimeTypes = [
         'javascript' => 'application/javascript',
         'lua' => 'application/x-lua',
@@ -24,6 +27,7 @@ class ProcessSeeder extends Seeder
     public function run()
     {
         foreach (glob(database_path('processes') . '/*.bpmn') as $filename) {
+            echo 'Creating: ', $filename, "\n";
             $process = factory(Process::class)->make([
                 'bpmn' => file_get_contents($filename),
             ]);
@@ -45,8 +49,10 @@ class ProcessSeeder extends Seeder
             }
             $process->save();
 
+            $definitions = $process->getDefinitions();
+
             //Create scripts from the BPMN process definition
-            $scriptTasks = $process->getDefinitions()->getElementsByTagName('scriptTask');
+            $scriptTasks = $definitions->getElementsByTagName('scriptTask');
             foreach ($scriptTasks as $scriptTaskNode) {
                 $scriptTask = $scriptTaskNode->getBpmnElementInstance();
                 //Create a row in the Scripts table
@@ -54,55 +60,30 @@ class ProcessSeeder extends Seeder
                     'title' => $scriptTask->getName('name') . ' Script',
                     'code' => $scriptTaskNode->getElementsByTagName('script')->item(0)->nodeValue,
                     'language' => $this->languageOfMimeType($scriptTask->getScriptFormat()),
-                    'process_id' => $process->id,
                 ]);
                 $scriptTaskNode->setAttributeNS(
-                    WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptRef', $script->uid
+                    WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptRef', $script->uuid_text
                 );
                 $scriptTaskNode->setAttributeNS(
                     WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptConfiguration', '{}'
                 );
             }
-            //Update the script references in the BPMN of the process
-            $process->bpmn = $process->getDefinitions()->saveXML();
-            $process->save();
-
-            $definitions = $process->getDefinitions();
 
             //Add forms to the process
-            $json = $this->loadForm('request.json');
-            factory(Form::class)->create([
-                'uid' => $definitions->getActivity('request')->getProperty('formRef'),
-                'title' => $json[0]->name,
-                'content' => $json,
-                'process_id' => $process->id,
-            ]);
-
-            $json = $this->loadForm('approve.json');
-            factory(Form::class)->create([
-                'uid' => $definitions->getActivity('approve')->getProperty('formRef'),
-                'content' => $this->loadForm('approve.json'),
-                'title' => $json[0]->name,
-                'content' => $json,
-                'process_id' => $process->id,
-            ]);
-
-            $json = $this->loadForm('validate.json');
-            factory(Form::class)->create([
-                'uid' => $definitions->getActivity('validate')->getProperty('formRef'),
-                'title' => $json[0]->name,
-                'content' => $json,
-                'process_id' => $process->id,
-            ]);
-            if ($definitions->findElementById('notavailable')) {
-                $json = $this->loadForm('notavailable.json');
-                factory(Form::class)->create([
-                    'uid' => $definitions->getActivity('notavailable')->getProperty('formRef'),
-                    'title' => $json[0]->name,
-                    'content' => $json,
-                    'process_id' => $process->id,
-                ]);
+            $tasks = $definitions->getElementsByTagName('task');
+            foreach($tasks as $task) {
+                $formRef = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'formRef');
+                $id = $task->getAttribute('id');
+                if ($formRef) {
+                    $form = $this->createForm($id, $formRef, $process);
+                    $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'formRef', $form->uuid_text);
+                }
             }
+
+
+            //Update the form and script references in the BPMN of the process
+            $process->bpmn = $definitions->saveXML();
+            $process->save();
 
             echo 'Process created: ', $process->uid, "\n";
             
@@ -118,15 +99,38 @@ class ProcessSeeder extends Seeder
     /**
      * Load the JSON of a form.
      *
-     * @param string $name
+     * @param string $id
+     * @param string $formRef
+     * @param string $process
      *
-     * @return object
+     * @return Form
      */
-    private function loadForm($name)
-    {
-        return json_decode(file_get_contents(database_path('processes/forms/' . $name)));
+    private function createForm($id, $formRef, $process) {
+
+        if (file_exists(database_path('processes/forms/' . $formRef . '.json'))) {
+            $json = json_decode(file_get_contents(database_path('processes/forms/' . $formRef . '.json')));
+            return factory(Form::class)->create([
+                        'title' => $json[0]->name,
+                        'content' => $json,
+                        'process_id' => $process->id,
+            ]);
+        } elseif (file_exists(database_path('processes/forms/' . $id . '.json'))) {
+            $json = json_decode(file_get_contents(database_path('processes/forms/' . $id . '.json')));
+            return factory(Form::class)->create([
+                        'uuid_text' => $formRef,
+                        'title' => $json[0]->name,
+                        'config' => $json,
+            ]);
+        }
     }
 
+    /**
+     * Get the language that corresponds to an specific mime-type.
+     *
+     * @param string $mime
+     *
+     * @return string
+     */
     private function languageOfMimeType($mime)
     {
         return in_array($mime, self::mimeTypes) ? array_search($mime, self::mimeTypes) : '';

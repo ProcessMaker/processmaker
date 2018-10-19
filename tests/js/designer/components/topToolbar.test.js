@@ -1,6 +1,6 @@
 import {mount, shallow, shallowMount} from "@vue/test-utils"
-import topToolbar from "../../../../resources/assets/js/designer/components/toptoolbar.vue"
-import EventBus from "../../../../resources/assets/js/designer/lib/event-bus"
+import topToolbar from "../../../../resources/js/designer/components/toptoolbar.vue"
+import EventBus from "../../../../resources/js/designer/lib/event-bus"
 
 describe("topToolbar.vue", () => {
     let cmp
