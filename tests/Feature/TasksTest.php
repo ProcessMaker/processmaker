@@ -2,6 +2,7 @@
 namespace Tests\Feature;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
+use ProcessMaker\Models\ProcessRequestToken;
 
 class TasksTest extends TestCase
 {

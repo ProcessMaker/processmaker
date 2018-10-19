@@ -44,21 +44,6 @@ class UserTest extends TestCase
         $response->assertSee('Edit User');
     }
 
-    /**
-     * Test to make sure the controller and route work with the view
-     *
-     * @return void
-     */
-    public function testCreateRoute()
-    {
-        // get the URL
-        $response = $this->webCall('GET', '/admin/users/create');
-
-        $response->assertStatus(200);
-        // check the correct view is called
-        $response->assertViewIs('admin.users.create');
-
-    }
 
     /**
      * Test to make sure the controller and route work with the view
