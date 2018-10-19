@@ -66,7 +66,6 @@ mix.webpackConfig({
     .copy('resources/js/designer/skins', 'public/js/designer/skins')
     .copy('resources/js/designer/plugins', 'public/js/designer/plugins')
     .copy('node_modules/snapsvg/dist/snap.svg.js', 'public/js')
-    .copy('resources/js/components/inbox.vue', 'public/js')
     .copy('resources/js/components/CustomActions.vue', 'public/js')
     .copy('resources/js/components/DetailRow.vue', 'public/js')
     .copy('resources/fonts/Open_Sans/', 'public/fonts')

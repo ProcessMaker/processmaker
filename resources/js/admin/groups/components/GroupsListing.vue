@@ -59,8 +59,8 @@
                     },
                     {
                         title: "Members",
-                        name: "members_count",
-                        sortField: "members_count"
+                        name: "group_members_count",
+                        sortField: "group_members_count"
                     },
                     {
                         title: "Created At",
@@ -146,5 +146,11 @@
     /deep/ th#_total_users {
         width: 150px;
         text-align: center;
+    }
+    /deep/ .vuetable-th-status {
+        min-width: 90px;
+    }
+    /deep/ .vuetable-th-members_count {
+        min-width: 90px;
     }
 </style>
