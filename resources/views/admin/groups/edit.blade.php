@@ -4,11 +4,11 @@
     {{__('Edit Groups')}}
 @endsection
 
-@Section('sidebar')
+@section('sidebar')
     @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
 @endsection
 
-@Section('content')
+@section('content')
     <div class="container" id="editGroup">
         <h1>{{__('Edit Group')}}</h1>
         <div class="row">
@@ -52,7 +52,7 @@
     </div>
 @endsection
 
-@Section('js')
+@section('js')
     <script>
         new Vue({
             el: '#editGroup',

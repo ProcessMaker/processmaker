@@ -62,7 +62,7 @@
                 // Load from our api client
                 ProcessMaker.apiClient
                     .get(
-                        "categories?current_page=" +
+                        "process_categories?current_page=" +
                         this.page +
                         "&per_page=" +
                         this.perPage +

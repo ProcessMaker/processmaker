@@ -11,7 +11,6 @@
 
             <template slot="actions" slot-scope="props">
                 <div class="actions">
-                    <i class="fas fa-ellipsis-h"></i>
                     <div class="popout">
                         <b-btn variant="action" @click="onAction('edit-item', props.rowData, props.rowIndex)"
                                v-b-tooltip.hover title="Edit"><i class="fas fa-edit"></i></b-btn>
@@ -27,125 +26,131 @@
 </template>
 
 <script>
-    import datatableMixin from "../../../components/common/mixins/datatable";
+import datatableMixin from "../../../components/common/mixins/datatable";
 
-    export default {
-        mixins: [datatableMixin],
-        props: ["filter", "uuid"],
-        data() {
-            return {
-                orderBy: "title",
+export default {
+  mixins: [datatableMixin],
+  props: ["filter", "uuid"],
+  data() {
+    return {
+      orderBy: "title",
 
-                sortOrder: [
-                    {
-                        field: "title",
-                        sortField: "title",
-                        direction: "asc"
-                    }
-                ],
+      sortOrder: [
+        {
+          field: "title",
+          sortField: "title",
+          direction: "asc"
+        }
+      ],
 
-                fields: [
-                    {
-                        title: 'Title',
-                        name: "__slot:title",
-                        field: "title",
-                        sortField: "title"
-                    },
-                    {
-                        title: "Description",
-                        name: "description",
-                        sortField: "description"
-                    },
-                    {
-                        title: "Type",
-                        name: "type",
-                        sortField: "type"
-                    },
-                    {
-                        title: "Modified",
-                        name: "updated_at",
-                        sortField: "updated_at",
-                        callback: this.formatDate
-                    },
-                    {
-                        title: "Created",
-                        name: "created_at",
-                        sortField: "created_at",
-                        callback: this.formatDate
-                    },
-                    {
-                        name: "__slot:actions",
-                        title: ""
-                    }
-                ]
-            };
+      fields: [
+        {
+          title: "Title",
+          name: "__slot:title",
+          field: "title",
+          sortField: "title"
         },
-
-        methods: {
-            onAction(actionType, data, index) {
-                switch (actionType) {
-                    case 'edit-form':
-                        window.location.href = '/processes/form-builder/' + data.uuid + '/edit';
-                        break;
-                    case 'edit-item':
-                        window.location.href = '/processes/forms/' + data.uuid + '/edit';
-                        break;
-                    case 'remove-item':
-                        let that = this;
-                        ProcessMaker.confirmModal('Caution!', '<b>Are you sure to delete the Form </b>' + data.title + '?', '', function () {
-                            ProcessMaker.apiClient
-                                .delete('forms/' + data.uuid)
-                                .then(response => {
-                                    ProcessMaker.alert('Form successfully eliminated', 'success');
-                                    that.fetch();
-                                })
-                        });
-                        break;
-                }
-            },
-            fetch() {
-                this.loading = true;
-                //change method sort by slot name
-                this.orderBy = this.orderBy === '__slot:title' ? 'title' : this.orderBy;
-                // Load from our api client
-                ProcessMaker.apiClient
-                    .get(
-                        'forms' +
-                        '?page=' +
-                        this.page +
-                        '&per_page=' +
-                        this.perPage +
-                        '&filter=' +
-                        this.filter +
-                        '&order_by=' +
-                        this.orderBy +
-                        '&order_direction=' +
-                        this.orderDirection
-                    )
-                    .then(response => {
-                        this.data = this.transform(response.data);
-                        this.loading = false;
-                    });
-            }
+        {
+          title: "Description",
+          name: "description",
+          sortField: "description"
         },
-
-        computed: {}
+        {
+          title: "Type",
+          name: "type",
+          sortField: "type"
+        },
+        {
+          title: "Modified",
+          name: "updated_at",
+          sortField: "updated_at",
+          callback: this.formatDate
+        },
+        {
+          title: "Created",
+          name: "created_at",
+          sortField: "created_at",
+          callback: this.formatDate
+        },
+        {
+          name: "__slot:actions",
+          title: ""
+        }
+      ]
     };
+  },
+
+  methods: {
+    onAction(actionType, data, index) {
+      switch (actionType) {
+        case "edit-form":
+          window.location.href =
+            "/processes/form-builder/" + data.uuid + "/edit";
+          break;
+        case "edit-item":
+          window.location.href = "/processes/forms/" + data.uuid + "/edit";
+          break;
+        case "remove-item":
+          let that = this;
+          ProcessMaker.confirmModal(
+            "Caution!",
+            "<b>Are you sure to delete the Form </b>" + data.title + "?",
+            "",
+            function() {
+              ProcessMaker.apiClient
+                .delete("forms/" + data.uuid)
+                .then(response => {
+                  ProcessMaker.alert("Form successfully eliminated", "success");
+                  that.fetch();
+                });
+            }
+          );
+          break;
+      }
+    },
+    fetch() {
+      this.loading = true;
+      //change method sort by slot name
+      this.orderBy = this.orderBy === "__slot:title" ? "title" : this.orderBy;
+      // Load from our api client
+      ProcessMaker.apiClient
+        .get(
+          "forms" +
+            "?page=" +
+            this.page +
+            "&per_page=" +
+            this.perPage +
+            "&filter=" +
+            this.filter +
+            "&order_by=" +
+            this.orderBy +
+            "&order_direction=" +
+            this.orderDirection
+        )
+        .then(response => {
+          this.data = this.transform(response.data);
+          this.loading = false;
+        });
+    }
+  },
+
+  computed: {}
+};
 </script>
 
 <style lang="scss" scoped>
-    /deep/ th#_total_users {
-        width: 150px;
-        text-align: center;
-    }
+/deep/ th#_total_users {
+  width: 150px;
+  text-align: center;
+}
 
-    /deep/ th#_description {
-        width: 250px;
-    }
+/deep/ th#_description {
+  width: 250px;
+}
 
-    /deep/ .rounded-user {
-        border-radius: 50% !important;
-        height: 1.5em;
-        margin-right: 0.5em;
-    }
+/deep/ .rounded-user {
+  border-radius: 50% !important;
+  height: 1.5em;
+  margin-right: 0.5em;
+}
 </style>

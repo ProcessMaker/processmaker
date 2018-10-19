@@ -57,17 +57,14 @@ class GroupController extends Controller
         if ($include) {
             $include = explode(',', $include);
             $count = array_search('membersCount', $include);
-
-            //$query = Group::with($include);
             if ($count !== false) {
                 unset($include[$count]);
-                $query->withCount('members');
+                $query->withCount('groupMembers');
             }
             if ($include) {
                 $query->with($include);
             }
         }
-
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
             $filter = '%' . $filter . '%';
@@ -77,14 +74,12 @@ class GroupController extends Controller
                     ->orWhere('status', 'like', $filter);
             });
         }
-
         $response =
             $query->orderBy(
                 $request->input('order_by', 'name'),
                 $request->input('order_direction', 'ASC')
             )
                 ->paginate($request->input('per_page', 10));
-
         return new ApiCollection($response);
     }
 
@@ -190,10 +185,8 @@ class GroupController extends Controller
     public function update(Group $group, Request $request)
     {
         $request->validate(Group::rules($group));
-
         $group->fill($request->input());
         $group->saveOrFail();
-
         return response([], 204);
     }
 

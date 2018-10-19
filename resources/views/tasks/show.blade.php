@@ -4,6 +4,10 @@
   {{__('Task')}}
 @endsection
 
+@section('sidebar')
+    @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
+@endsection
+
 @section('content')
 <div class="nav row taskNav">
     <div class="col-3 align-self-center">
