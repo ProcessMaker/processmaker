@@ -58,7 +58,7 @@ mix.webpackConfig({
     // See: https://github.com/JeffreyWay/laravel-mix/issues/1118
     .js('resources/js/app.js', 'public/js')
 
-    .extract(['vue', 'jquery', 'bootstrap-vue', 'axios', 'popper.js', 'lodash', 'bootstrap'])
+    .extract(['vue', 'jquery', 'bootstrap-vue', 'axios', 'popper.js', 'lodash', 'bootstrap', 'multiselect'])
     .copy('resources/img/*', 'public/img')
     .sass('resources/sass/sidebar/sidebar.scss', 'public/css')
     .sass('resources/sass/app.scss', 'public/css')

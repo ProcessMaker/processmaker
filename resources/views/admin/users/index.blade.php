@@ -38,33 +38,63 @@
             <div class="modal-body">
                 <div class="form-group">
                     {!!Form::label('username', __('Username'))!!}
-                    {!!Form::text('username', null, ['class'=> 'form-control', 'v-model'=> 'username', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.username}'])!!}
+                    {!!Form::text('username', null, ['class'=> 'form-control', 'v-model'=> 'username', 'v-bind:class'
+                    => '{\'form-control\':true, \'is-invalid\':addError.username}'])!!}
                     <div class="invalid-feedback" v-for="username in addError.username">@{{username}}</div>
                 </div>
                 <div class="form-group">
                     {!!Form::label('firstname', __('First name'))!!}
-                    {!!Form::text('firstname', null, ['class'=> 'form-control', 'v-model'=> 'firstname', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.firstname}'])!!}
+                    {!!Form::text('firstname', null, ['class'=> 'form-control', 'v-model'=> 'firstname', 'v-bind:class'
+                    => '{\'form-control\':true, \'is-invalid\':addError.firstname}'])!!}
                     <div class="invalid-feedback" v-for="firstname in addError.firstname">@{{firstname}}</div>
                 </div>
                 <div class="form-group">
                     {!!Form::label('lastname', __('Last name'))!!}
-                    {!!Form::text('lastname', null, ['class'=> 'form-control', 'v-model'=> 'lastname', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.lastname}'])!!}
+                    {!!Form::text('lastname', null, ['class'=> 'form-control', 'v-model'=> 'lastname', 'v-bind:class'
+                    => '{\'form-control\':true, \'is-invalid\':addError.lastname}'])!!}
                     <div class="invalid-feedback" v-for="lastname in addError.lastname">@{{lastname}}</div>
                 </div>
                 <div class="form-group">
                     {!!Form::label('email', __('Email'))!!}
-                    {!!Form::email('email', null, ['class'=> 'form-control', 'v-model'=> 'email', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.email}'])!!}
+                    {!!Form::email('email', null, ['class'=> 'form-control', 'v-model'=> 'email', 'v-bind:class' =>
+                    '{\'form-control\':true, \'is-invalid\':addError.email}'])!!}
                     <div class="invalid-feedback" v-for="email in addError.email">@{{email}}</div>
                 </div>
                 <div class="form-group">
                     {!!Form::label('password', __('Password'))!!}
-                    {!!Form::password('password', ['class'=> 'form-control', 'v-model'=> 'password', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.password}'])!!}
+                    {!!Form::password('password', ['class'=> 'form-control', 'v-model'=> 'password', 'v-bind:class' =>
+                    '{\'form-control\':true, \'is-invalid\':addError.password}'])!!}
                     <div class="invalid-feedback" v-for="password in addError.password">@{{password}}</div>
                 </div>
                 <div class="form-group">
                     {!!Form::label('confpassword', __('Confirm Password'))!!}
-                    {!!Form::password('confpassword', ['class'=> 'form-control', 'v-model'=> 'confpassword', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.password}'])!!}
+                    {!!Form::password('confpassword', ['class'=> 'form-control', 'v-model'=> 'confpassword',
+                    'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.password}'])!!}
 
+                </div>
+                <div class="form-group">
+                    {!!Form::label('groups', __('Groups'))!!}
+                    <multiselect v-model="value" :options="dataGroups" :multiple="true" track-by="name" :custom-label="customLabel"
+                        label="name">
+
+                        <template slot="tag" slot-scope="props">
+                            <span class="multiselect__tag  d-flex align-items-center" style="width:max-content;">
+                                <img class="option__image mr-1" :src="props.option.img" alt="Check it">
+                                <span class="option__desc mr-1">ff
+                                    <span class="option__title">ff</span>
+                                </span>
+                                <i aria-hidden="true" tabindex="1" @click="props.remove(props.option)" class="multiselect__tag-icon"></i>
+                            </span>
+                        </template>
+
+                        <template slot="option" slot-scope="props">
+                            <div class="option__desc d-flex align-items-center">
+                                <img class="option__image mr-1" :src="props.option.img" alt="options">
+                                <span class="option__title mr-1">ff</span>
+                                <span class="option__small">ff</span>
+                            </div>
+                        </template>
+                    </multiselect>
                 </div>
             </div>
             <div class="modal-footer">
@@ -80,6 +110,7 @@
 <script>
     new Vue({
         el: '#addUser',
+        components: {Multiselect},
         data: {
             username: '',
             firstname: '',
@@ -91,37 +122,37 @@
             submitted: false,
         },
         methods: {
-            validatePassword(){
-                if(this.password !== this.confpassword){
+            validatePassword() {
+                if (this.password !== this.confpassword) {
                     this.addError.password = ['Passwords must match']
                     this.password = ''
                     this.submitted = false
                     return false
-                } 
-                return true   
+                }
+                return true
             },
             onSubmit() {
                 this.submitted = true;
-                if(this.validatePassword()){
-                ProcessMaker.apiClient.post("/users", {
-                        username: this.username,
-                        firstname: this.firstname,
-                        lastname: this.lastname,
-                        email: this.email,
-                        password: this.password,
-                    })
-                    .then(response => {
-                        ProcessMaker.alert('{{__('User successfully added ')}}', 'success')
-                        window.location = "/admin/users/" + response.data.uuid + '/edit'
-                    })
-                    .catch(error => {
-                        if (error.response.status === 422) {
-                            this.addError = error.response.data.errors
-                        }
-                    })
-                    .finally(() => {
-                        this.submitted = false
-                    })
+                if (this.validatePassword()) {
+                    ProcessMaker.apiClient.post("/users", {
+                            username: this.username,
+                            firstname: this.firstname,
+                            lastname: this.lastname,
+                            email: this.email,
+                            password: this.password,
+                        })
+                        .then(response => {
+                            ProcessMaker.alert('{{__('User successfully added ')}}', 'success')
+                            window.location = "/admin/users/" + response.data.uuid + '/edit'
+                        })
+                        .catch(error => {
+                            if (error.response.status === 422) {
+                                this.addError = error.response.data.errors
+                            }
+                        })
+                        .finally(() => {
+                            this.submitted = false
+                        })
                 }
             }
         }
