@@ -69,27 +69,6 @@ class GenerateMenus
 
         });
         Menu::make('sidebar_task', function ($menu) {
-        //   $submenu = $menu->add(__('menus.sidebar_task.tasks'));
-        //   $submenu->add(__('menus.sidebar_task.assigned'), [
-        //       'route' => 'home',
-        //       'icon' => 'icon-assigned',
-        //       'id' => 'homeid'
-        //   ]);
-        //   $submenu->add(__('menus.sidebar_task.unassigned'), [
-        //       'route' => 'home',
-        //       'icon' => 'icon-unassigned',
-        //       'id' => 'homeid'
-        //     ]);
-        //   $submenu->add(__('menus.sidebar_task.completed'), [
-        //       'route' => 'home',
-        //       'icon' => 'icon-completed-1',
-        //       'id' => 'homeid'
-        //     ]);
-        //   $submenu->add(__('menus.sidebar_task.paused'), [
-        //       'route' => 'home',
-        //       'icon' => 'icon-paused-2',
-        //       'id' => 'homeid'
-        //     ]);
         });
         Menu::make('sidebar_request', function ($menu) {
           $submenu = $menu->add(__('menus.sidebar_request.request'));
