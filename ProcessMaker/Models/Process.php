@@ -114,9 +114,9 @@ class Process extends Model implements HasMedia
     {
         $rules = [
             'name' => 'required|unique:processes,name',
-            'description' => 'required',            
+            'description' => 'required',
             'status' => 'in:ACTIVE,INACTIVE',
-            'process_category_uuid' => 'required|exists:process_categories,uuid',
+            'process_category_uuid' => 'nullable|exists:process_categories,uuid',
             'bpmn' => 'nullable|bpmn_schema',
         ];
 
