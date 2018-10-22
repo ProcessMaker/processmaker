@@ -9,22 +9,6 @@ new Vue({
     data: {
         filter: '',
         userUuid: null,
-        options: [{
-                title: 'People',
-                desc: 'HR',
-                img: '/img/avatar-placeholder.gif'
-            },
-            {
-                title: 'Humans',
-                desc: 'HR',
-                img: '/img/avatar-placeholder.gif'
-            },
-            {
-                title: 'Workers',
-                desc: 'HR',
-                img: '/img/avatar-placeholder.gif'
-            }
-        ]
     },
     components: {
         UsersListing,
@@ -35,6 +19,6 @@ new Vue({
                 field: 'updated_at',
                 direction: 'desc'
             }]);
-        }
+        },
     }
 });
