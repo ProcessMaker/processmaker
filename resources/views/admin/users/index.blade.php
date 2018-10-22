@@ -74,20 +74,20 @@
 				</div>
 				<div class="form-group">
 					<label>Groups</label>
-					<multiselect v-model="value" :options="options" :multiple="true" track-by="title" :custom-label="customLabel"
+					<multiselect v-model="value" :options="options" :multiple="true" track-by="title" :custom-label="customLabel" :show-labels="false"
 					 label="name">
 
-						<template slot="tag">
+						<template slot="tag" slot-scope="props">
 							<span class="multiselect__tag  d-flex align-items-center" style="width:max-content;">
 								<img class="option__image mr-1" :src="options.img" alt="Check it">
 								<span class="option__desc mr-1">@{{ options.title }}
 									<span class="option__title">@{{ options.desc }}</span>
 								</span>
-								<i aria-hidden="true" tabindex="1" @click="options.remove(options)" class="multiselect__tag-icon"></i>
+								<i aria-hidden="true" tabindex="1" class="multiselect__tag-icon"></i>
 							</span>
 						</template>
 
-						<template slot="option">
+						<template slot="option" slot-scope="props">
 							<div class="option__desc d-flex align-items-center">
 								<img class="option__image mr-1" :src="options.img" alt="options">
 								<span class="option__title mr-1">@{{ options.title }}</span>
@@ -140,8 +140,8 @@
 			]
 		},
 		methods: {
-			customLabel(option) {
-				return ` ${option.img} ${option.title} ${option.desc} `
+			customLabel(options) {
+				return ` ${options.img} ${options.title} ${options.desc} `
 			},
 			validatePassword() {
 				if (this.password !== this.confpassword) {
