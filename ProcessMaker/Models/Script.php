@@ -66,9 +66,10 @@ class Script extends Model
             'language' => 'required|in:php,lua'
         ];
         if ($existing) {
-            // ignore the unique rule for this id
+            // ignore the unique rule for this uuid
             $rules['title'] = [
                 'required',
+                'string',
                 Rule::unique('scripts')->ignore($existing->uuid, 'uuid')
             ];
         }

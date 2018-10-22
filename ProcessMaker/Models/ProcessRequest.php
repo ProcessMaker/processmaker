@@ -40,12 +40,12 @@ use Spatie\BinaryUuid\HasBinaryUuid;
  *   schema="requests",
  *   allOf={@OA\Schema(ref="#/components/schemas/requestsEditable")},
  *   @OA\Property(property="uuid", type="string", format="uuid"),
- *   
+ *
  *   @OA\Property(property="process_collaboration_uuid", type="string", format="uuid"),
  *   @OA\Property(property="user_uuid", type="string", format="uuid"),
  *   @OA\Property(property="participant_uuid", type="string", format="uuid"),
- *   
- *  
+ *
+ *
  *   @OA\Property(property="process_category_uuid", type="string", format="uuid"),
  *   @OA\Property(property="created_at", type="string", format="date-time"),
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
@@ -72,7 +72,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
 
     /**
      * The attributes that should be hidden for serialization.
-     * 
+     *
      * BPMN data will be hidden. It will be able by its getter.
      *
      * @var array
@@ -194,5 +194,48 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
     public function process()
     {
         return $this->belongsTo(Process::class);
+    }
+
+    /**
+     * Get users of the request.
+     *
+     */
+    public function assigned()
+    {
+        return $this->hasMany(ProcessRequestToken::class)
+            ->with('user')
+            ->whereNotIn('element_type' , ['scriptTask']);
+    }
+
+    /**
+     * Filter process started with user
+     *
+     * @param $query
+     *
+     * @param $uuid User uuid
+     */
+    public function scopeStartedMe($query, $uuid)
+    {
+        $query->where('user_uuid', '=', $uuid);
+    }
+
+    /**
+     * Filter process not completed
+     *
+     * @param $query
+     */
+    public function scopeInProgress($query)
+    {
+        $query->where('status' , '=', 'ACTIVE');
+    }
+
+    /**
+     * Filter process completed
+     *
+     * @param $query
+     */
+    public function scopeCompleted($query)
+    {
+        $query->where('status' , '=', 'COMPLETED');
     }
 }

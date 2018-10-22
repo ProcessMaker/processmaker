@@ -90,6 +90,7 @@ html {
 .navbar {
   height: 60px;
   border-bottom: 1px solid #e9edf1;
+  margin-top: -7px;
 
   .dropdown-menu-right {
     width: 200px;
@@ -276,53 +277,60 @@ table.vuetable {
   margin-top: 16px;
   font-size: $font-size-base;
 
+  tr {
+    .actions {
+      .popout {
+        display: none;
+      }
+    }
+  }
+
   tr:hover td {
     background-color: $grey-bg;
+
+    .actions {
+      cursor: pointer;
+      text-align: right;
+      color: #788793;
+
+      .popout {
+        // display: none;
+        position: absolute;
+        background-color: $grey-bg;
+        right: 0;
+        top: 0;
+        margin: 3px;
+        font-size: $font-size-large;
+
+        button.btn-action {
+          color: #788793;
+          height: 32px;
+          width: 32px;
+          margin-left: 4px;
+          margin-right: 4px;
+          background-color: $grey-bg;
+          border: 0;
+          text-align: center;
+          padding: 0;
+
+          &:hover {
+            background-color: white;
+            border-radius: 2px;
+          }
+        }
+      }
+
+      .popout {
+        display: flex;
+      }
+    }
   }
 
   .vuetable-slot {
     position: relative;
   }
 
-  .actions {
-    cursor: pointer;
-    text-align: right;
-    color: #788793;
 
-    .popout {
-      display: none;
-      align-items: center;
-      position: absolute;
-      background-color: $grey-bg;
-      right: 0;
-      top: 0;
-      margin: 3px;
-      font-size: $font-size-large;
-
-      button.btn-action {
-        color: #788793;
-        height: 32px;
-        width: 32px;
-        margin-left: 4px;
-        margin-right: 4px;
-        background-color: $grey-bg;
-        border: 0;
-        text-align: center;
-        padding: 0;
-
-        &:hover {
-          background-color: white;
-          border-radius: 2px;
-        }
-      }
-    }
-
-    &:hover {
-      .popout {
-        display: flex;
-      }
-    }
-  }
 
   th {
     background-color: $grey-bg;
