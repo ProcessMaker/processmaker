@@ -1,31 +1,37 @@
 @extends('layouts.layout')
 @section('title')
-  {{__('Scripts')}}
+{{__('Scripts')}}
 @endsection
 
 @section('sidebar')
-  @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_processes')])
+@include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_processes')])
 @endsection
 
 @section('content')
-  <div class="container page-content" id="scriptIndex">
-    <div class="row">
-      <div class="col-sm-12">
-        <div class="row">
-          <div class="col-md-8 d-flex align-items-center col-sm-12">
-            <h1 class="page-title">{{__('Scripts')}}</h1>
-            <input id="script-listing-search" v-model="filter" class="form-control col-sm-3"
-                   placeholder="{{__('Search')}}...">
-          </div>
-          <div class="col-md-4 d-flex justify-content-end align-items-center col-sm-12 actions">
-            <button type="button" class="btn btn-action text-light" data-toggle="modal" data-target="#addScript"><i class="fas fa-plus"></i> {{__('Script')}}</button>
-          </div>
+<div class="container page-content" id="scriptIndex">
+  <h1>{{__('Scripts')}}</h1>
+  <div class="row">
+    <div class="col">
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="basic-addon1">
+            <i class="fas fa-search"></i>
+          </span>
         </div>
-        <script-listing :filter="filter"></script-listing>
+        <input v-model="filter" class="form-control" placeholder="{{__('Search')}}...">
       </div>
+
+    </div>
+    <div class="col-8" align="right">
+      <a href="#" class="btn btn-action" data-toggle="modal" data-target="#addScript"><i class="fas fa-plus"></i>
+        {{__('Script')}}</a>
     </div>
   </div>
-  <div class="modal" tabindex="-1" role="dialog" id="addScript">
+  <div class="container-fluid">
+    <script-listing :filter="filter"></script-listing>
+  </div>
+</div>
+<div class="modal" tabindex="-1" role="dialog" id="addScript">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -37,18 +43,22 @@
       <div class="modal-body">
         <div class="form-group">
           {!!Form::label('title', __('Title'))!!}
-          {!!Form::text('title', null, ['class'=> 'form-control', 'v-model'=> 'title', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.title}'])!!}
+          {!!Form::text('title', null, ['class'=> 'form-control', 'v-model'=> 'title', 'v-bind:class' =>
+          '{\'form-control\':true, \'is-invalid\':addError.title}'])!!}
           <div class="invalid-feedback" v-for="title in addError.title">@{{title}}</div>
         </div>
         <div class="form-group">
           {!!Form::label('description', __('Description'))!!}
-          {!!Form::textarea('description', null, ['rows'=>'2','class'=> 'form-control', 'v-model'=> 'description', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.description}'])!!}
+          {!!Form::textarea('description', null, ['rows'=>'2','class'=> 'form-control', 'v-model'=> 'description',
+          'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.description}'])!!}
           <div class="invalid-feedback" v-for="description in addError.description">@{{description}}</div>
         </div>
         <div class="form-group">
           {!!Form::label('language', __('Language'))!!}
-          {!!Form::select('language', [''=>__('Select'),'php' => 'PHP', 'lua' => 'Lua'], null, ['class'=> 'form-control', 'v-model'=> 'language', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.language}']);!!}
-        <div class="invalid-feedback" v-for="language in addError.language">@{{language}}</div>
+          {!!Form::select('language', [''=>__('Select'),'php' => 'PHP', 'lua' => 'Lua'], null, ['class'=>
+          'form-control', 'v-model'=> 'language', 'v-bind:class' => '{\'form-control\':true,
+          \'is-invalid\':addError.language}']);!!}
+          <div class="invalid-feedback" v-for="language in addError.language">@{{language}}</div>
         </div>
       </div>
       <div class="modal-footer">
@@ -76,23 +86,23 @@
       onSubmit() {
         this.submitted = true;
         ProcessMaker.apiClient.post("/scripts", {
-          title: this.title,
-          language: this.language,
-          description: this.description,
-          code: this.code
-        })
-        .then(response => {
-          ProcessMaker.alert('{{__('Script successfully added')}}', 'success')
-          window.location = "/processes/scripts/" + response.data.uuid
-        })
-        .catch(error => {
-          if (error.response.status === 422) {
-            this.addError = error.response.data.errors
-          }
-        })
-        .finally(()=> {
-          this.submitted = false
-        })
+            title: this.title,
+            language: this.language,
+            description: this.description,
+            code: this.code
+          })
+          .then(response => {
+            ProcessMaker.alert('{{__('Script successfully added ')}}', 'success')
+            window.location = "/processes/scripts/" + response.data.uuid
+          })
+          .catch(error => {
+            if (error.response.status === 422) {
+              this.addError = error.response.data.errors
+            }
+          })
+          .finally(() => {
+            this.submitted = false
+          })
       }
     }
   })
