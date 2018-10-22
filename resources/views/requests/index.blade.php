@@ -49,7 +49,7 @@
                     <div class="col">
                         <h1 class="page-title">@{{ title }}</h1>
                     </div>
-                    <div class="col">
+                    <div class="col mt-2">
                         <div class="input-group">
                             <div class="input-group-prepend">
                                 <span class="input-group-text" id="basic-addon1">
