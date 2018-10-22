@@ -4,7 +4,9 @@ use Illuminate\Database\Seeder;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Form;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\Script;
+use ProcessMaker\Models\User;
 use ProcessMaker\Providers\WorkflowServiceProvider;
 
 class ProcessSeeder extends Seeder
@@ -71,6 +73,7 @@ class ProcessSeeder extends Seeder
 
             //Add forms to the process
             $tasks = $definitions->getElementsByTagName('task');
+            $admin = User::where('username', 'admin')->firstOrFail();
             foreach($tasks as $task) {
                 $formRef = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'formRef');
                 $id = $task->getAttribute('id');
@@ -78,6 +81,13 @@ class ProcessSeeder extends Seeder
                     $form = $this->createForm($id, $formRef, $process);
                     $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'formRef', $form->uuid_text);
                 }
+                //Assign "admin" to the task 
+                factory(ProcessTaskAssignment::class)->create([
+                    'process_uuid' => $process->uuid,
+                    'process_task_uuid' => $id,
+                    'assignment_uuid' => $admin->uuid,
+                    'assignment_type' => 'user',
+                ]);
             }
 
 
