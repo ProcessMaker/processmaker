@@ -1,35 +1,38 @@
 @extends('layouts.layout')
 
 @section('title')
-  {{__('Environment Variables')}}
+{{__('Environment Variables')}}
 @endsection
 
 @section('sidebar')
-  @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
+@include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
 @endsection
 
 @section('content')
-    <div class="container page-content" id="variablesIndex">
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="row">
-                    <div class="col-md-8 d-flex align-items-center col-sm-12">
-                        <h1 class="page-title">{{__('Environment Variables')}}</h1>
-                        <input id="script-listing-search" v-model="filter" class="form-control col-sm-3"
-                               placeholder="{{__('Search')}}...">
-                    </div>
-                    <div class="col-md-4 d-flex justify-content-end align-items-center col-sm-12 actions">
-                        <a href="#" class="btn btn-action">
-                            <i class="fas fa-plus"></i> {{__('Environment Variable')}}
-                        </a>
-                    </div>
+<div class="container page-content" id="variablesIndex">
+    <h1>{{__('Environment Variables')}}</h1>
+    <div class="row">
+        <div class="col">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">
+                        <i class="fas fa-search"></i>
+                    </span>
                 </div>
-                <variables-listing :filter="filter"></variables-listing>
+                <input v-model="filter" class="form-control" placeholder="{{__('Search')}}...">
             </div>
+
+        </div>
+        <div class="col-8" align="right">
+            <a href="#" @click="show" class="btn btn-action"><i class="fas fa-plus"></i> {{__('Environment Variable')}}</a>
         </div>
     </div>
+    <div class="container-fluid">
+        <variables-listing :filter="filter"></variables-listing>
+    </div>
+</div>
 @endsection
 
 @section('js')
-    <script src="{{mix('js/processes/environment-variables/index.js')}}"></script>
+<script src="{{mix('js/processes/environment-variables/index.js')}}"></script>
 @endsection
