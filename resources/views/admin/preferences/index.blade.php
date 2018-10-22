@@ -4,6 +4,10 @@
   {{__('Preferences')}}
 @endsection
 
+@section('sidebar')
+    @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
+@endsection
+
 @section('content')
     <div class="container mt-4">
       <h3>Preferences</h3>

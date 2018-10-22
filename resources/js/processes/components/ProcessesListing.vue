@@ -1,33 +1,27 @@
 <template>
-    <div class="data-table">
-        <vuetable :dataManager="dataManager" :sortOrder="sortOrder" :css="css" :api-mode="false"
-                  @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data"
-                  pagination-path="meta">
-            <template slot="name" slot-scope="props">
-                <b-link @click="onAction('edit-designer', props.rowData, props.rowIndex)">
-                    {{props.rowData.name}}
-                </b-link>
-            </template>
+<div class="data-table">
+  <vuetable :dataManager="dataManager" :sortOrder="sortOrder" :css="css" :api-mode="false" @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data" pagination-path="meta">
+    <template slot="name" slot-scope="props">
+      <b-link @click="onAction('edit-designer', props.rowData, props.rowIndex)">
+        {{props.rowData.name}}
+      </b-link>
+    </template>
 
-            <template slot="actions" slot-scope="props">
-                <div class="actions">
-                    <i class="fas fa-ellipsis-h"></i>
-                    <div class="popout">
-                        <b-btn variant="action" @click="onAction('edit-item', props.rowData, props.rowIndex)"
-                               v-b-tooltip.hover title="Edit"><i class="fas fa-edit"></i></b-btn>
-                        <b-btn variant="action" @click="onAction('toggle-status', props.rowData, props.rowIndex)"
-                               v-b-tooltip.hover :title='activateBtnTitle(props.rowData)'>
-                            <i class="fas" v-bind:class='activateBtnCssClass(props.rowData)'></i>
-                        </b-btn>
-                        <b-btn variant="action" @click="onAction('remove-item', props.rowData, props.rowIndex)"
-                               v-b-tooltip.hover title="Remove"><i class="fas fa-trash-alt"></i></b-btn>
-                    </div>
-                </div>
-            </template>
-        </vuetable>
-        <pagination single="Process" plural="Processes" :perPageSelectEnabled="true" @changePerPage="changePerPage"
-                    @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
-    </div>
+    <template slot="actions" slot-scope="props">
+      <div class="actions">
+        <div class="popout">
+          <b-btn variant="action" @click="onAction('edit-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="Edit"><i class="fas fa-edit"></i></b-btn>
+          <b-btn variant="action" @click="onAction('toggle-status', props.rowData, props.rowIndex)" v-b-tooltip.hover :title='activateBtnTitle(props.rowData)'>
+            <i class="fas" v-bind:class='activateBtnCssClass(props.rowData)'></i>
+          </b-btn>
+          <b-btn variant="action" @click="onAction('see-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="See"><i class="far fa-eye"></i></b-btn>
+          <b-btn variant="action" @click="onAction('remove-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="Remove"><i class="fas fa-trash-alt"></i></b-btn>
+        </div>
+      </div>
+    </template>
+  </vuetable>
+  <pagination single="Process" plural="Processes" :perPageSelectEnabled="true" @changePerPage="changePerPage" @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
+</div>
 </template>
 
 <script>
@@ -40,16 +34,13 @@ export default {
     return {
       orderBy: "name",
 
-      sortOrder: [
-        {
-          field: "name",
-          sortField: "name",
-          direction: "asc"
-        }
-      ],
+      sortOrder: [{
+        field: "name",
+        sortField: "name",
+        direction: "asc"
+      }],
 
-      fields: [
-        {
+      fields: [{
           title: "Process",
           name: "__slot:name",
           field: "name",
@@ -129,9 +120,12 @@ export default {
     },
     formatUserName(user) {
       return (
-        (user.avatar
-          ? this.createImg({ src: user.avatar, class: "rounded-user" })
-          : '<i class="fa fa-user rounded-user"></i>') +
+        (user.avatar ?
+          this.createImg({
+            src: user.avatar,
+            class: "rounded-user"
+          }) :
+          '<i class="fa fa-user rounded-user"></i>') +
         "<span>" +
         user.fullname +
         "</span>"
@@ -156,17 +150,17 @@ export default {
       ProcessMaker.apiClient
         .get(
           "processes" +
-            "?page=" +
-            this.page +
-            "&per_page=" +
-            this.perPage +
-            "&filter=" +
-            this.filter +
-            "&order_by=" +
-            this.orderBy +
-            "&order_direction=" +
-            this.orderDirection +
-            "&include=category,user"
+          "?page=" +
+          this.page +
+          "&per_page=" +
+          this.perPage +
+          "&filter=" +
+          this.filter +
+          "&order_by=" +
+          this.orderBy +
+          "&order_direction=" +
+          this.orderDirection +
+          "&include=category,user"
         )
         .then(response => {
           this.data = this.transform(response.data);
@@ -181,17 +175,17 @@ export default {
 
 <style lang="scss" scoped>
 /deep/ th#_total_users {
-  width: 150px;
-  text-align: center;
+    width: 150px;
+    text-align: center;
 }
 
 /deep/ th#_description {
-  width: 250px;
+    width: 250px;
 }
 
 /deep/ .rounded-user {
-  border-radius: 50% !important;
-  height: 1.5em;
-  margin-right: 0.5em;
+    border-radius: 50% !important;
+    height: 1.5em;
+    margin-right: 0.5em;
 }
 </style>

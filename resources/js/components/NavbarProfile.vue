@@ -1,6 +1,6 @@
 <template>
     <div id="userMenu">
-        <div class="my-3">
+        <div>
             <b-btn id="avatarMenu" :disabled="popoverShow" class="avatar-circle">
                 <template v-if="sourceImage">
                     <img class="avatar-image avatar-circle" :src="user.avatar">
@@ -46,7 +46,6 @@
         props: ['info', 'url', 'items'],
         watch: {
             info(val) {
-                console.log(val);
                 this.user = val;
             },
         },
@@ -90,6 +89,7 @@
         -webkit-border-radius: 50%;
         -moz-border-radius: 50%;
         margin-left: 10px;
+        margin-top:2px;
         border: none;
     }
 
