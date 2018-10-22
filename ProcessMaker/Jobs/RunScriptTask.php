@@ -56,7 +56,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
                 'language' => Script::scriptFormat2Language($element->getProperty('scriptFormat', 'application/x-php'))
             ]);
         } else {
-            $script = Script::whereUuid($scriptRef)->firstOrFail();
+            $script = Script::withUuid($scriptRef)->firstOrFail();
         }
 
         $response = $script->runScript($data, $configuration);
