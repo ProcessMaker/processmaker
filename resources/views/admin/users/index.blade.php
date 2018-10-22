@@ -74,7 +74,7 @@
                 </div>
                 <div class="form-group">
                     {!!Form::label('groups', __('Groups'))!!}
-                    <multiselect v-model="value" :options="dataGroups" :multiple="true" track-by="name" :custom-label="customLabel"
+                    <multiselect v-model="value" :options="options" :multiple="true" track-by="name" :custom-label="customLabel"
                         label="name">
 
                         <template slot="tag" slot-scope="props">
@@ -107,10 +107,12 @@
 @endsection
 
 @section('js')
+<script src="{{mix('js/admin/users/index.js')}}"></script>
+
 <script>
     new Vue({
         el: '#addUser',
-        components: {Multiselect},
+        props: ['options'],
         data: {
             username: '',
             firstname: '',
@@ -158,5 +160,4 @@
         }
     })
 </script>
-<script src="{{mix('js/admin/users/index.js')}}"></script>
 @endsection

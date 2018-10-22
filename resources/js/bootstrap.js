@@ -2,7 +2,7 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 import BootstrapVue from 'bootstrap-vue'
 import Echo from 'laravel-echo'
 import VueRouter from 'vue-router'
-import Multiselect from 'vue-multiselect/src/Multiselect'
+
 
 
 
