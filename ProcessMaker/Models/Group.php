@@ -4,19 +4,18 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
-use Spatie\BinaryUuid\HasBinaryUuid;
 
 /**
  * Represents a group definition.
  *
- * @property string $uuid
+ * @property string $id
  * @property string $name
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
  *
  *   @OA\Schema(
  *   schema="groupsEditable",
- *   @OA\Property(property="uuid", type="string", format="uuid"),
+ *   @OA\Property(property="id", type="string", format="id"),
  *   @OA\Property(property="name", type="string"),
  *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
  * ),
@@ -30,7 +29,6 @@ use Spatie\BinaryUuid\HasBinaryUuid;
  */
 class Group extends Model
 {
-    use HasBinaryUuid;
 
     protected $fillable = [
         'name',
@@ -49,7 +47,7 @@ class Group extends Model
             $rules['name'] = [
                 'required',
                 'string',
-                Rule::unique('groups')->ignore($existing->uuid, 'uuid')
+                Rule::unique('groups')->ignore($existing->id, 'id')
             ];
         }
 
@@ -58,14 +56,14 @@ class Group extends Model
 
     public function permissionAssignments()
     {
-        return $this->morphMany(PermissionAssignment::class, 'assignable', null, 'assignable_uuid');
+        return $this->morphMany(PermissionAssignment::class, 'assignable', null, 'assignable_id');
     }
 
     public function groupMembersFromMemberable()
     {
-        return $this->morphMany(GroupMember::class, 'member', null, 'member_uuid');
+        return $this->morphMany(GroupMember::class, 'member', null, 'member_id');
     }
-    
+
     public function groupMembers()
     {
         return $this->hasMany(GroupMember::class);

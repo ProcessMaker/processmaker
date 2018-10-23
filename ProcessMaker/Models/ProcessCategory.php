@@ -5,12 +5,11 @@ namespace ProcessMaker\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\Process;
-use Spatie\BinaryUuid\HasBinaryUuid;
 
 /**
  * Represents a business process category definition.
  *
- * @property string $uuid
+ * @property string $id
  * @property string $name
  * @property string $status
  * @property \Carbon\Carbon $updated_at
@@ -24,14 +23,13 @@ use Spatie\BinaryUuid\HasBinaryUuid;
  * @OA\Schema(
  *   schema="ProcessCategory",
  *   allOf={@OA\Schema(ref="#/components/schemas/ProcessCategoryEditable")},
- *   @OA\Property(property="uuid", type="string", format="uuid"),
+ *   @OA\Property(property="id", type="string", format="id"),
  *   @OA\Property(property="created_at", type="string", format="date-time"),
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
  * )
  */
 class ProcessCategory extends Model
-{
-    use HasBinaryUuid;
+{    
 
     protected $fillable = [
         'name',
