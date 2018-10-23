@@ -8,25 +8,16 @@ use ProcessMaker\Models\User;
 class ProfileController extends Controller
 {
     /**
-   * Get your profile.
+   * edit your profile.
    *
    * @return \Illuminate\View\View|\Illuminate\Contracts\View
    */
-  public function index(User $user)
+  public function edit()
   {
-      return view('profile.index');
+      return view('profile.edit');
   }
     /**
-   * Edit your profile
-   *
-   * @return \Illuminate\View\View|\Illuminate\Contracts\View
-   */
-   public function edit(User $user)
-   {
-     return view('profile.edit',compact($user));
-   }
-    /**
-   * show other users profile
+   * show other profile
    *
    * @return \Illuminate\View\View|\Illuminate\Contracts\View
    */
@@ -34,5 +25,6 @@ class ProfileController extends Controller
    {
      return view('profile.show',compact($user));
    }
+
 
 }
