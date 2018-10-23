@@ -229,11 +229,11 @@ class ScriptsTest extends TestCase
             );
         }
         $url = route('api.script.preview', ['data'=>'{}','code'=>'return {response=1}', 'language'=>'lua']);
-        $response = $this->apiCall('GET', $url, []);
+        $response = $this->apiCall('POST', $url, []);
         $response->assertStatus(200);
 
         $url = route('api.script.preview', ['data'=>'{}','code'=>'<?php return ["response"=>1];', 'language'=>'php']);
-        $response = $this->apiCall('GET', $url, []);
+        $response = $this->apiCall('POST', $url, []);
         $response->assertStatus(200);
 
         $response->assertJsonStructure(['output'=>['response']]);
@@ -246,7 +246,7 @@ class ScriptsTest extends TestCase
     public function testPreviewScriptFail()
     {
         $url = self::API_TEST_SCRIPT.'/preview/?data=adkasdlasj&config=&code=adkasdlasj&language=JAVA';
-        $response = $this->apiCall('GET', $url, []);
+        $response = $this->apiCall('POST', $url, []);
         $response->assertStatus(500);
     }
 
