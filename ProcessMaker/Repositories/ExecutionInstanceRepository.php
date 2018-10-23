@@ -106,6 +106,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $instance->initiated_at = Carbon::now();
         $instance->data = $data;
         $instance->saveOrFail();
+        $instance->setId($instance->getKey());
     }
 
     /**
