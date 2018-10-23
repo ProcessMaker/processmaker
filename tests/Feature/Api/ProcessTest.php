@@ -25,7 +25,7 @@ class ProcessTest extends TestCase
 
     protected $resource = 'processes';
     protected $structure = [
-        'uuid',
+        'id',
         'process_category_id',
         'user_id',
         'description',
@@ -210,7 +210,7 @@ class ProcessTest extends TestCase
         $response->assertStatus(201);
         $response->assertJsonStructure($this->structure);
         $data = $response->json();
-        $process = Process::withUuid($data['uuid'])->first();
+        $process = Process::withUuid($data['id'])->first();
         $this->assertEquals($array['bpmn'], $process->bpmn);
     }
 
@@ -249,12 +249,12 @@ class ProcessTest extends TestCase
             ]
         );
 
-        //Test to create a process with a process category uuid that does not exist
+        //Test to create a process with a process category id that does not exist
         $this->assertModelCreationFails(
             Process::class,
             [
                 'user_id' => static::$DO_NOT_SEND,
-                'process_category_id' => 'uuid-not-exists'
+                'process_category_id' => 'id-not-exists'
             ],
             //Fields that should fail
             [
@@ -317,7 +317,7 @@ class ProcessTest extends TestCase
             'process_category_id' => null
         ]);
         factory(ProcessCollaboration::class)->create([
-            'process_id' => $process->uuid
+            'process_id' => $process->id
         ]);
 
         //Delete the process created
@@ -431,16 +431,16 @@ class ProcessTest extends TestCase
         $process = factory(Process::class)->create([
             'bpmn' => Process::getProcessTemplate('OnlyStartElement.bpmn')
         ]);
-        $uuid = $process->id;
+        $id = $process->id;
         $newBpmn = trim(Process::getProcessTemplate('SingleTask.bpmn'));
-        $route = route('api.' . $this->resource . '.update', [$uuid]);
+        $route = route('api.' . $this->resource . '.update', [$id]);
         $response = $this->apiCall('PUT', $route, [
             'bpmn' => $newBpmn
         ]);
         //validate status
         $this->assertStatus(200, $response);
         $response->assertJsonStructure($this->structure);
-        $updatedProcess = Process::withUuid($uuid)->first();
+        $updatedProcess = Process::withUuid($id)->first();
         $this->assertEquals($newBpmn, $updatedProcess->bpmn);
     }
 
@@ -450,9 +450,9 @@ class ProcessTest extends TestCase
     public function testUpdateInvalidBPMN()
     {
         $process = factory(Process::class)->create();
-        $uuid = $process->id;
+        $id = $process->id;
         $newBpmn = 'Invalid BPMN content';
-        $route = route('api.' . $this->resource . '.update', [$uuid]);
+        $route = route('api.' . $this->resource . '.update', [$id]);
         $response = $this->apiCall('PUT', $route, [
             'bpmn' => $newBpmn
         ]);

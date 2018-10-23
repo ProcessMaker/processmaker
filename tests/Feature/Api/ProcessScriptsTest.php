@@ -26,7 +26,7 @@ class ProcessScriptsTest extends TestCase
      */
     protected $process;
     private $requestStructure = [
-        'uuid',
+        'id',
         'process_id',
         'user_id',
         'status',

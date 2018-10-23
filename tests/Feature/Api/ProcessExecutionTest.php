@@ -23,7 +23,7 @@ class ProcessExecutionTest extends TestCase
      */
     protected $process;
     private $requestStructure = [
-        'uuid',
+        'id',
         'process_id',
         'user_id',
         'status',
@@ -52,9 +52,9 @@ class ProcessExecutionTest extends TestCase
         //Assign the task to $this->user
         $taskUuid = 'UserTaskUID';
         factory(ProcessTaskAssignment::class)->create([
-            'process_id' => $process->uuid,
+            'process_id' => $process->id,
             'process_task_id' => $taskUuid,
-            'assignment_id' => $this->user->uuid,
+            'assignment_id' => $this->user->id,
             'assignment_type' => 'user',
         ]);
         return $process;
@@ -79,7 +79,7 @@ class ProcessExecutionTest extends TestCase
         $response = $this->apiCall('GET', $route);
         $tasks = $response->json('data');
         //Complete the task
-        $route = route('api.tasks.update', [$tasks[0]['uuid'], 'status' => 'COMPLETED']);
+        $route = route('api.tasks.update', [$tasks[0]['id'], 'status' => 'COMPLETED']);
         $response = $this->apiCall('PUT', $route, $data);
         $task = $response->json();
         //Check the task is closed
@@ -142,14 +142,14 @@ class ProcessExecutionTest extends TestCase
         $response = $this->apiCall('GET', $route);
         $tasks = $response->json('data');
         //Complete the task
-        $route = route('api.tasks.update', [$tasks[0]['uuid'], 'status' => 'COMPLETED']);
+        $route = route('api.tasks.update', [$tasks[0]['id'], 'status' => 'COMPLETED']);
         $response = $this->apiCall('PUT', $route, $data);
         $task = $response->json();
         //Check the task is closed
         $this->assertEquals('CLOSED', $task['status']);
         $this->assertNotNull($task['completed_at']);
         //Try to complete the task again
-        $route = route('api.tasks.update', [$tasks[0]['uuid'], 'status' => 'COMPLETED']);
+        $route = route('api.tasks.update', [$tasks[0]['id'], 'status' => 'COMPLETED']);
         $response = $this->apiCall('PUT', $route, $data);
         $task = $response->json();
         $response->assertStatus(422);
@@ -174,11 +174,11 @@ class ProcessExecutionTest extends TestCase
         $response = $this->apiCall('GET', $route);
         $tasks = $response->json('data');
         //Update to a FAILING status
-        $route = route('api.tasks.update', [$tasks[0]['uuid'], 'status' => 'FAILING']);
+        $route = route('api.tasks.update', [$tasks[0]['id'], 'status' => 'FAILING']);
         $response = $this->apiCall('PUT', $route, $data);
         $response->assertStatus(422);
         //Update to a *invalid* status
-        $route = route('api.tasks.update', [$tasks[0]['uuid'], 'status' => '*invalid*']);
+        $route = route('api.tasks.update', [$tasks[0]['id'], 'status' => '*invalid*']);
         $response = $this->apiCall('PUT', $route, $data);
         $response->assertStatus(422);
     }
@@ -236,10 +236,10 @@ class ProcessExecutionTest extends TestCase
         $response = $this->apiCall('GET', $route);
         $tasks = $response->json('data');
         //Get the task information
-        $route = route('api.tasks.show', [$tasks[0]['uuid'], 'include' => 'definition']);
+        $route = route('api.tasks.show', [$tasks[0]['id'], 'include' => 'definition']);
         $response = $this->apiCall('GET', $route, $data);
         $response->assertJsonStructure([
-            'uuid',
+            'id',
             'status',
             'created_at',
             'element_id',

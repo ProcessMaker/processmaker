@@ -20,7 +20,7 @@ class AuthTest extends TestCase
     {
         $user = factory(User::class)->create();
         Auth::login($user);
-        $this->assertEquals($user->uuid, Auth::id());
+        $this->assertEquals($user->id, Auth::id());
         Auth::logout();
         $this->assertNull(Auth::user());
     }
@@ -46,7 +46,7 @@ class AuthTest extends TestCase
             'username' => 'newuser',
             'password' => 'password'
         ]));
-        $this->assertEquals($user->uuid, Auth::id());
+        $this->assertEquals($user->id, Auth::id());
     }
 
 }

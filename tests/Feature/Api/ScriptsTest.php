@@ -15,7 +15,7 @@ class ScriptsTest extends TestCase
     const API_TEST_SCRIPT = '/scripts';
 
     const STRUCTURE = [
-        'uuid',
+        'id',
         'title',
         'language',
         'code',

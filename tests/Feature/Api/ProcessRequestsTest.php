@@ -26,7 +26,7 @@ class ProcessRequestsTest extends TestCase
     const API_TEST_URL = '/requests';
 
     const STRUCTURE = [
-        'uuid',
+        'id',
         'process_id',
         'process_collaboration_id',
         'user_id',
@@ -62,7 +62,7 @@ class ProcessRequestsTest extends TestCase
         $response = $this->apiCall('POST', self::API_TEST_URL, [
             'process_id' => $process->id,
             'process_collaboration_id' => null,
-            'callable_id' => $this->faker->uuid,
+            'callable_id' => $this->faker->id,
             'status' => 'ACTIVE',
             'name' => 'RequestName',
             'data' => '{}'
@@ -157,7 +157,7 @@ class ProcessRequestsTest extends TestCase
      */
     public function testGetRequest()
     {
-        //get the uuid from the factory
+        //get the id from the factory
         $request = factory(ProcessRequest::class)->create()->id;
 
         //load api
@@ -175,9 +175,9 @@ class ProcessRequestsTest extends TestCase
      */
     public function testUpdateProcessRequestParametersRequired()
     {
-        $uuid = factory(ProcessRequest::class)->create(['name' => 'mytestrequestname'])->id;
+        $id = factory(ProcessRequest::class)->create(['name' => 'mytestrequestname'])->id;
         //The post must have the required parameters
-        $url = self::API_TEST_URL . '/' .$uuid;
+        $url = self::API_TEST_URL . '/' .$id;
 
         $response = $this->apiCall('PUT', $url, [
             'name' => null

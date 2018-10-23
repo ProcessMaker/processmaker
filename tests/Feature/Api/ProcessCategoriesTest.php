@@ -23,7 +23,7 @@ class ProcessCategoriesTest extends TestCase
 
     protected $resource = 'api.process_categories';
     protected $structure = [
-        'uuid',
+        'id',
         'name',
         'status',
         'created_at',
@@ -426,13 +426,13 @@ class ProcessCategoriesTest extends TestCase
     }
 
     /**
-     * Test validate binary uuid with special characters
+     * Test validate binary id with special characters
      * " ,
      */
     public function testUuidWithSpecialCharacters()
     {
         $item = factory(ProcessCategory::class)->create([
-            'uuid' => ProcessCategory::encodeUuid('2c3b2876-c035-11e8-9d22-88e9fe4ddbf3')
+            'id' => ProcessCategory::encodeUuid('2c3b2876-c035-11e8-9d22-88e9fe4ddbf3')
         ]);
 
         $route = route($this->resource . '.update', [$item->id]);

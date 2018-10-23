@@ -16,7 +16,7 @@ class UsersTest extends TestCase
   const API_TEST_URL = '/users';
 
   const STRUCTURE = [
-      'uuid',
+      'id',
       'username',
       'email',
       // 'password',
@@ -158,7 +158,7 @@ class UsersTest extends TestCase
    */
   public function testGetUser()
   {
-      //get the uuid from the factory
+      //get the id from the factory
       $user = factory(User::class)->create()->id;
 
       //load api
@@ -176,7 +176,7 @@ class UsersTest extends TestCase
    */
   // public function testGetUserIncledMembership()
   // {
-  //     //get the uuid from the factory
+  //     //get the id from the factory
   //     $user = factory(User::class)->create()->id;
   //
   //     //load api

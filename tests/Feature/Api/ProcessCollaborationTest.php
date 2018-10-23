@@ -26,7 +26,7 @@ class ProcessCollaborationTest extends TestCase
     protected $user;
 
     private $requestStructure = [
-        'uuid',
+        'id',
         'process_id',
         'user_id',
         'status',
@@ -46,21 +46,21 @@ class ProcessCollaborationTest extends TestCase
         ]);
         //Assign the task to $this->user
         factory(ProcessTaskAssignment::class)->create([
-            'process_id' => $process->uuid,
+            'process_id' => $process->id,
             'process_task_id' => '_5',
-            'assignment_id' => $this->user->uuid,
+            'assignment_id' => $this->user->id,
             'assignment_type' => 'user',
         ]);
         factory(ProcessTaskAssignment::class)->create([
-            'process_id' => $process->uuid,
+            'process_id' => $process->id,
             'process_task_id' => '_10',
-            'assignment_id' => $this->user->uuid,
+            'assignment_id' => $this->user->id,
             'assignment_type' => 'user',
         ]);
         factory(ProcessTaskAssignment::class)->create([
-            'process_id' => $process->uuid,
+            'process_id' => $process->id,
             'process_task_id' => '_24',
-            'assignment_id' => $this->user->uuid,
+            'assignment_id' => $this->user->id,
             'assignment_type' => 'user',
         ]);
         return $process;
@@ -86,7 +86,7 @@ class ProcessCollaborationTest extends TestCase
         $response = $this->apiCall('GET', $route);
         $tasks = $response->json('data');
         //Complete the task
-        $route = route('api.tasks.update', [$tasks[0]['uuid'], 'status' => 'COMPLETED']);
+        $route = route('api.tasks.update', [$tasks[0]['id'], 'status' => 'COMPLETED']);
         $response = $this->apiCall('PUT', $route, $data);
         $task = $response->json();
         //Get the list of tasks
@@ -95,7 +95,7 @@ class ProcessCollaborationTest extends TestCase
         $tasks = $response->json('data');
         //Complete the task
         $index = $this->findTaskByName($tasks, 'Process Order');
-        $route = route('api.tasks.update', [$tasks[$index]['uuid'], 'status' => 'COMPLETED']);
+        $route = route('api.tasks.update', [$tasks[$index]['id'], 'status' => 'COMPLETED']);
         $response = $this->apiCall('PUT', $route, $data);
         $task = $response->json();
         //Get the list of tasks
@@ -104,7 +104,7 @@ class ProcessCollaborationTest extends TestCase
         $tasks = $response->json('data');
         //Complete the Final task
         $index = $this->findTaskByName($tasks, 'Finish');
-        $route = route('api.tasks.update', [$tasks[$index]['uuid'], 'status' => 'COMPLETED']);
+        $route = route('api.tasks.update', [$tasks[$index]['id'], 'status' => 'COMPLETED']);
         $response = $this->apiCall('PUT', $route, $data);
         $task = $response->json();
         //Get the list of tasks

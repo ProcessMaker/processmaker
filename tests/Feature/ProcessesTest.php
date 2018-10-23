@@ -67,7 +67,7 @@ class ProcessesTest extends TestCase
     {
         $process = factory(Process::class)->create();
         $response = $this->webCall('DELETE', 'processes/'.$process->id.'');
-        $this->assertDatabaseMissing('processes', ['uuid' => $process->uuid]);
+        $this->assertDatabaseMissing('processes', ['id' => $process->id]);
         $response->assertRedirect('/processes');
     }
 }
