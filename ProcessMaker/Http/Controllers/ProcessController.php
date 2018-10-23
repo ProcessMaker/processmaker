@@ -3,7 +3,6 @@
 namespace ProcessMaker\Http\Controllers;
 use ProcessMaker\Models\Process;
 use Illuminate\Http\Request;
-use ProcessMaker\Http\Controllers\Api\ResourceRequestsTrait;
 use ProcessMaker\Models\ProcessCategory;
 
 class ProcessController extends Controller

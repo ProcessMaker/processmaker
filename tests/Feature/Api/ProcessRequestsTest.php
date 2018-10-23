@@ -3,11 +3,8 @@ namespace Tests\Feature\Api;
 
 use Faker\Factory as Faker;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Hash;
-use ProcessMaker\Http\Controllers\Api\ResourceRequestsTrait;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
