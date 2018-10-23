@@ -222,6 +222,7 @@ class ProcessExecutionTest extends TestCase
      */
     public function testGetTaskStatusPage()
     {
+        $this->withoutExceptionHandling();
         //Start a process request
         $route = route('api.process_events.trigger', [$this->process->id, 'event' => 'StartEventUID']);
         $data = [];
