@@ -222,7 +222,7 @@ class Process extends Model implements HasMedia
             default:
                 $user = null;
         }
-        return $user ? User::withUuid($user)->first() : null;
+        return $user ? User::where('id', $user)->first() : null;
     }
 
     /**

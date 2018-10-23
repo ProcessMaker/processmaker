@@ -22,7 +22,8 @@ class CreateProcessRequestsTable extends Migration
             $table->unsignedInteger('process_collaboration_id')->nullable();
             $table->unsignedInteger('user_id')->nullable();
             $table->unsignedInteger('participant_id')->nullable();
-            $table->unsignedInteger('callable_id');
+            // The callable id is the text id of the bpmn element
+            $table->string('callable_id');
             $table->enum('status', ['DRAFT', 'ACTIVE', 'COMPLETED']);
             $table->json('data');
             $table->string('name');

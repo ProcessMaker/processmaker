@@ -19,7 +19,9 @@ class CreateProcessRequestTokens extends Migration
             $table->unsignedInteger('user_id')->nullable();
             $table->unsignedInteger('process_id');
             $table->unsignedInteger('process_request_id');
-            $table->morphs('element');
+            // Element points to a bpmn element, not another model
+            $table->string('element_id');
+            $table->string('element_type');
             $table->string('element_name');
             $table->enum('status', ['ACTIVE', 'FAILING', 'COMPLETED', 'CLOSED', 'EVENT_CATCH'])
                     ->default('ACTIVE');

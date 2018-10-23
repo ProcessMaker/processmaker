@@ -101,6 +101,8 @@ class GroupMemberController extends Controller
 
         $group = Group::findOrFail($request->input('group_id'));
 
+        $member = $request->input('member_type')::where('id', $request->input('member_id'))->firstOrFail();
+
         $group_member = new GroupMember();
         $group_member->group()->associate($group);
         $group_member->member()->associate($member);
