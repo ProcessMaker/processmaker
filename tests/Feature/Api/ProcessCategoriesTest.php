@@ -428,4 +428,5 @@ class ProcessCategoriesTest extends TestCase
         $response->assertJsonStructure($this->errorStructure);
         $response->assertJsonStructure(['errors' => ['processes']]);
     }
+
 }

@@ -58,7 +58,7 @@ class ProcessRequestsTest extends TestCase
         $response = $this->apiCall('POST', self::API_TEST_URL, [
             'process_id' => $process->id,
             'process_collaboration_id' => null,
-            'callable_id' => $this->faker->id,
+            'callable_id' => $this->faker->randomDigit,
             'status' => 'ACTIVE',
             'name' => 'RequestName',
             'data' => '{}'

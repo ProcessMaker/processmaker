@@ -50,10 +50,10 @@ class ProcessExecutionTest extends TestCase
         $data['bpmn'] = Process::getProcessTemplate('SingleTask.bpmn');
         $process = factory(Process::class)->create($data);
         //Assign the task to $this->user
-        $taskUuid = 'UserTaskUID';
+        $taskId = 'UserTaskUID';
         factory(ProcessTaskAssignment::class)->create([
             'process_id' => $process->id,
-            'process_task_id' => $taskUuid,
+            'process_task_id' => $taskId,
             'assignment_id' => $this->user->id,
             'assignment_type' => 'user',
         ]);

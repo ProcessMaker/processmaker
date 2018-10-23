@@ -10,8 +10,6 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Encryption\Encrypter;
 
-use Spatie\BinaryUuid\UuidServiceProvider;
-
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Helper\TableCell;
@@ -132,12 +130,6 @@ class Install extends Command
         // Now store it
         Storage::disk('install')->put('.env', $contents);
 
-        // Tell the binary uuid service provider to re-boot
-        $provider = app()->make(UuidServiceProvider::class, ['app' => app()]);
-        // Recall boot
-        $provider->boot();
-
-        
         // Install migrations
         $this->call('migrate:fresh', [
             '--seed' => true,
