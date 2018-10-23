@@ -55,9 +55,4 @@ class UserController extends Controller
         return Group::where('status', 'ACTIVE')->get();
     }
 
-    public function profile()
-    {
-        return view('profile.index');
-    }
-
 }
