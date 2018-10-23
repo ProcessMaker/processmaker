@@ -9,29 +9,28 @@
     <div class="modeler-container">
       <modeler ref="modeler" :controls="controls" />
     </div>
-    <statusbar>
+    <status-bar>
         <template slot="secondary">
             Last Saved: {{lastSaved}}
         </template>
       {{statusText}}
       <font-awesome-icon :style="{color: statusColor}" :icon="statusIcon" />
-    </statusbar>
+    </status-bar>
 
   </div>    
 </template>
 
 
 <script>
-import Modeler from "@processmaker/modeler/src/components/Modeler.vue";
-import statusbar from "@processmaker/modeler/src/components/statusbar.vue";
+import {Modeler, StatusBar, BaseControls} from "@processmaker/modeler";
 import { library } from "@fortawesome/fontawesome-svg-core";
+
 import {
   faCheckCircle,
   faTimesCircle,
   faSave,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import InitialControls from "@processmaker/modeler/src/controls";
 import moment from 'moment';
 
 library.add(faSave)
@@ -40,13 +39,13 @@ export default {
   name: "ModelerApp",
   components: {
     Modeler,
-    statusbar,
+    StatusBar,
     FontAwesomeIcon
   },
   data() {
     return {
       process: window.ProcessMaker.modeler.process,
-      controls: InitialControls,
+      controls: BaseControls,
       statusText: "No errors detected",
       statusIcon: faCheckCircle,
       statusColor: "green"

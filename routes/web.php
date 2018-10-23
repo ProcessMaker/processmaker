@@ -20,6 +20,7 @@ Route::group(['middleware' => 'auth'], function () {
         ])->only(['edit']);
         Route::resource('scripts', 'ScriptController');
     });
+    Route::get('designer/{process}', 'Process\ModelerController');
     Route::resource('processes', 'ProcessController');
     Route::resource('profile', 'ProfileController')->only([
         'index', 'edit', 'show'
