@@ -78,14 +78,14 @@ class FormController extends Controller
      * @return ResponseFactory|Response
      *
      *     @OA\Get(
-     *     path="/forms/{formsUuid}",
+     *     path="/forms/formsId",
      *     summary="Get single forms by ID",
-     *     operationId="getFormsByUuid",
+     *     operationId="getFormsById",
      *     tags={"Forms"},
      *     @OA\Parameter(
      *         description="ID of forms to return",
      *         in="path",
-     *         name="formsUuid",
+     *         name="forms_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -144,14 +144,14 @@ class FormController extends Controller
      * @return ResponseFactory|Response
      *
      *     @OA\Put(
-     *     path="/forms/{formsUuid}",
+     *     path="/forms/formsId",
      *     summary="Update a form",
      *     operationId="updateForm",
      *     tags={"Forms"},
      *     @OA\Parameter(
      *         description="ID of form to return",
      *         in="path",
-     *         name="formsUuid",
+     *         name="forms_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -184,14 +184,14 @@ class FormController extends Controller
      *
      * @return ResponseFactory|Response
      *     @OA\Delete(
-     *     path="/forms/{formsUuid}",
+     *     path="/forms/formsId",
      *     summary="Delete a form",
      *     operationId="deleteForm",
      *     tags={"Forms"},
      *     @OA\Parameter(
      *         description="ID of form to return",
      *         in="path",
-     *         name="formsUuid",
+     *         name="forms_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",

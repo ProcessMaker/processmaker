@@ -77,14 +77,14 @@ class ProcessController extends Controller
      * @return Response
      *
      * @OA\Get(
-     *     path="/processes/{processUuid}",
+     *     path="/processes/processId",
      *     summary="Get single process by ID",
-     *     operationId="getProcessByUuid",
+     *     operationId="getProcessById",
      *     tags={"Process"},
      *     @OA\Parameter(
      *         description="ID of process to return",
      *         in="path",
-     *         name="processUuid",
+     *         name="process_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -159,14 +159,14 @@ class ProcessController extends Controller
      * @throws \Throwable
      *
      * @OA\Put(
-     *     path="/processes/{processUuid}",
+     *     path="/processes/processId",
      *     summary="Update a process",
      *     operationId="updateProcess",
      *     tags={"Process"},
      *     @OA\Parameter(
      *         description="ID of process to return",
      *         in="path",
-     *         name="processUuid",
+     *         name="process_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -203,14 +203,14 @@ class ProcessController extends Controller
      * @throws \Illuminate\Validation\ValidationException
      *
      * @OA\Delete(
-     *     path="/processes/{processUuid}",
+     *     path="/processes/processId",
      *     summary="Delete a process",
      *     operationId="deleteProcess",
      *     tags={"Process"},
      *     @OA\Parameter(
      *         description="ID of process to return",
      *         in="path",
-     *         name="processUuid",
+     *         name="process_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",

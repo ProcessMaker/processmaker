@@ -76,14 +76,14 @@ class ProcessCategoryController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      *     * @OA\Get(
-     *     path="/process_categories/{process_category_uuid}",
+     *     path="/process_categories/process_category_id",
      *     summary="Get single process category by ID",
-     *     operationId="getProcessCategoryByUuid",
+     *     operationId="getProcessCategoryById",
      *     tags={"ProcessCategories"},
      *     @OA\Parameter(
      *         description="ID of process category to return",
      *         in="path",
-     *         name="process_category_uuid",
+     *         name="process_category_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -141,14 +141,14 @@ class ProcessCategoryController extends Controller
      *
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      *      * @OA\Put(
-     *     path="/process_categories/{process_category_uuid}",
+     *     path="/process_categories/process_category_id",
      *     summary="Update a process Category",
      *     operationId="updateProcessCategory",
      *     tags={"ProcessCategories"},
      *     @OA\Parameter(
      *         description="ID of process category to return",
      *         in="path",
-     *         name="process_category_uuid",
+     *         name="process_category_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -182,14 +182,14 @@ class ProcessCategoryController extends Controller
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      * 
      *      * @OA\Delete(
-     *     path="/process_categories/{process_category_uuid}",
+     *     path="/process_categories/process_category_id",
      *     summary="Delete a process category",
      *     operationId="deleteProcessCategory",
      *     tags={"ProcessCategories"},
      *     @OA\Parameter(
      *         description="ID of process category to return",
      *         in="path",
-     *         name="process_category_uuid",
+     *         name="process_category_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",

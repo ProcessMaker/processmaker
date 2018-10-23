@@ -123,14 +123,14 @@ class GroupController extends Controller
      * @return \Illuminate\Http\Response
      *
      * @OA\Get(
-     *     path="/groups/{groupUuid}",
+     *     path="/groups/groupId",
      *     summary="Get single group by ID",
-     *     operationId="getGroupByUuid",
+     *     operationId="getGroupById",
      *     tags={"Groups"},
      *     @OA\Parameter(
      *         description="ID of group to return",
      *         in="path",
-     *         name="groupUuid",
+     *         name="group_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -158,14 +158,14 @@ class GroupController extends Controller
      * @throws \Throwable
      *
      * @OA\Put(
-     *     path="/groups/{groupUuid}",
+     *     path="/groups/groupId",
      *     summary="Update a group",
      *     operationId="updateGroup",
      *     tags={"Groups"},
      *     @OA\Parameter(
      *         description="ID of group to return",
      *         in="path",
-     *         name="groupUuid",
+     *         name="group_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -198,14 +198,14 @@ class GroupController extends Controller
      * @return ResponseFactory|Response
      *
      * @OA\Delete(
-     *     path="/groups/{groupUuid}",
+     *     path="/groups/groupId",
      *     summary="Delete a group",
      *     operationId="deleteGroup",
      *     tags={"Groups"},
      *     @OA\Parameter(
      *         description="ID of group to return",
      *         in="path",
-     *         name="groupUuid",
+     *         name="group_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
