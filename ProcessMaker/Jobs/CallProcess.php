@@ -24,6 +24,15 @@ class CallProcess extends BpmnAction
     }
 
     /**
+     * Return a list of tags to be used by horizon for tagging this job
+     */
+    public function tags() 
+    {
+        return ['bpmn', 'CallProcess'];
+    }
+
+
+    /**
      * Execute the job.
      *
      * @return void

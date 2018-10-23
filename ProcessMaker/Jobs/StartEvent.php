@@ -27,6 +27,16 @@ class StartEvent extends BpmnAction
     }
 
     /**
+     * Return a list of tags to be used by horizon for tagging this job
+     */
+    public function tags() 
+    {
+        return ['bpmn', 'StartEvent'];
+    }
+
+
+
+    /**
      * Start a $process from start event $element.
      *
      * @return \ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface

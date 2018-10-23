@@ -103,6 +103,15 @@ class User extends Authenticatable implements HasMedia
         'is_administrator' => 'bool'
     ];
 
+    /**
+     * Returns a utf-8 string representation of our binary uuid key
+     * @return string
+     */
+    public function getReadableKey()
+    {
+        return $this->uuid_text;
+    }
+
 /**
      * Validation rules
      *

@@ -29,6 +29,15 @@ class CompleteActivity extends BpmnAction implements ShouldQueue
     }
 
     /**
+     * Return a list of tags to be used by horizon for tagging this job
+     */
+    public function tags() 
+    {
+        return ['bpmn', 'CompleteActivity'];
+    }
+
+
+    /**
      * Execute the job.
      *
      * @return void

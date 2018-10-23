@@ -18,6 +18,14 @@ abstract class BpmnAction implements ShouldQueue
         SerializesModels;
 
     /**
+     * Return a list of tags to be used by horizon for tagging this job
+     */
+    public function tags() 
+    {
+        return ['bpmn'];
+    }
+
+    /**
      * Execute the job.
      *
      * @return void

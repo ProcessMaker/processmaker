@@ -34,6 +34,15 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
     }
 
     /**
+     * Return a list of tags to be used by horizon for tagging this job
+     */
+    public function tags() 
+    {
+        return ['bpmn', 'RunScriptTask'];
+    }
+
+
+    /**
      * Execute the script task.
      *
      * @return void
