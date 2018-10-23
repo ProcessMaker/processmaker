@@ -32,11 +32,10 @@ class ProcessController extends Controller
 
     public function store(Request $request) // store new process to DB
     {
-        $this->encodeRequestUuids($request, ['user_uuid']);
         $request->validate(Process::rules());
         $process = new Process();
         $process->fill($request->input());
-        $process->user_uuid = \Auth::user()->uuid;
+        $process->user_id = \Auth::user()->getKey();
         $process->bpmn = '';
         $process->saveOrFail();
         return redirect('/processes');
