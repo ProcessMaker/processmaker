@@ -14,7 +14,8 @@ class ProfileController extends Controller
    */
   public function edit()
   {
-      return view('profile.edit');
+      $current_user = \Auth::user();
+      return view('profile.edit', compact('current_user'));
   }
     /**
    * show other profile
