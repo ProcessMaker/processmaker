@@ -94,7 +94,6 @@
                 </div>
             </div>
         </div>
-        <pre>{{$groups}}</pre>
     </div>
 @endsection
 @section('js')
