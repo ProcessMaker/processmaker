@@ -13,10 +13,10 @@ class UsersTest extends TestCase
 
   use RequestHelper;
 
-  const API_TEST_URL = '/api/1.0/users';
+  const API_TEST_URL = '/users';
 
   const STRUCTURE = [
-      'uuid',
+      'id',
       'username',
       'email',
       // 'password',
@@ -158,8 +158,8 @@ class UsersTest extends TestCase
    */
   public function testGetUser()
   {
-      //get the uuid from the factory
-      $user = factory(User::class)->create()->uuid_text;
+      //get the id from the factory
+      $user = factory(User::class)->create()->id;
 
       //load api
       $response = $this->apiCall('GET', self::API_TEST_URL. '/' . $user);
@@ -176,8 +176,8 @@ class UsersTest extends TestCase
    */
   // public function testGetUserIncledMembership()
   // {
-  //     //get the uuid from the factory
-  //     $user = factory(User::class)->create()->uuid_text;
+  //     //get the id from the factory
+  //     $user = factory(User::class)->create()->id;
   //
   //     //load api
   //     $response = $this->apiCall('GET', self::API_TEST_URL. '/' . $user . '?include=memberships');
@@ -195,7 +195,7 @@ class UsersTest extends TestCase
   public function testUpdateUserParametersRequired()
   {
       //The post must have the required parameters
-      $url = self::API_TEST_URL . '/' . factory(User::class)->create()->uuid_text;
+      $url = self::API_TEST_URL . '/' . factory(User::class)->create()->id;
 
       $response = $this->apiCall('PUT', $url, [
           'username' => ''
@@ -212,7 +212,7 @@ class UsersTest extends TestCase
   {
       $faker = Faker::create();
 
-      $url = self::API_TEST_URL . '/' . factory(User::class)->create()->uuid_text;
+      $url = self::API_TEST_URL . '/' . factory(User::class)->create()->id;
 
       //Load the starting user data
       $verify = $this->apiCall('GET', $url);
@@ -233,6 +233,7 @@ class UsersTest extends TestCase
         'country' => $faker->country,
         'timezone' => $faker->timezone,
         'birthdate' => $faker->dateTimeThisCentury->format('Y-m-d'),
+        'password' => $faker->password(6,6),
       ]);
 
       //Validate the header status code
@@ -257,7 +258,7 @@ class UsersTest extends TestCase
 
       $user2 = factory(User::class)->create();
 
-      $url = self::API_TEST_URL . '/' . $user2->uuid_text;
+      $url = self::API_TEST_URL . '/' . $user2->id;
 
       $response = $this->apiCall('PUT', $url, [
           'username' => 'MyUserName',
@@ -273,7 +274,7 @@ class UsersTest extends TestCase
   public function testDeleteUser()
   {
       //Remove user
-      $url = self::API_TEST_URL . '/' . factory(User::class)->create()->uuid_text;
+      $url = self::API_TEST_URL . '/' . factory(User::class)->create()->id;
       $response = $this->apiCall('DELETE', $url);
 
       //Validate the header status code
@@ -286,7 +287,7 @@ class UsersTest extends TestCase
   public function testDeleteUserNotExist()
   {
       //User not exist
-      $url = self::API_TEST_URL . '/' . factory(User::class)->make()->uuid_text;
+      $url = self::API_TEST_URL . '/' . factory(User::class)->make()->id;
       $response = $this->apiCall('DELETE', $url);
 
       //Validate the header status code

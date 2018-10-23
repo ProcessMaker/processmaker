@@ -6,7 +6,7 @@
 
 @section('content')
     <div id="designer-container">
-      <designer process-uid="{{$process->uid}}" process-title="{{ $title }}"></designer>
+      <designer process-id="{{$process->id}}" process-title="{{ $title }}"></designer>
     </div>
 @endsection
 

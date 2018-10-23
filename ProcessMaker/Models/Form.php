@@ -5,14 +5,13 @@ namespace ProcessMaker\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
-use Spatie\BinaryUuid\HasBinaryUuid;
 
 /**
  * Class Form
  *
  * @package ProcessMaker\Models
  *
- * @property string uuid
+ * @property string id
  * @property string title
  * @property string description
  * @property array content
@@ -21,7 +20,7 @@ use Spatie\BinaryUuid\HasBinaryUuid;
  *
  *   @OA\Schema(
  *   schema="formsEditable",
- *   @OA\Property(property="uuid", type="string", format="uuid"),
+ *   @OA\Property(property="id", type="string", format="id"),
  *   @OA\Property(property="name", type="string"),
  *   @OA\Property(property="title", type="string"),
  *   @OA\Property(property="type", type="string"),
@@ -38,7 +37,6 @@ use Spatie\BinaryUuid\HasBinaryUuid;
  */
 class Form extends Model
 {
-    use HasBinaryUuid;
 
     protected $casts = [
         'config' => 'array'
@@ -70,7 +68,7 @@ class Form extends Model
             // ignore the unique rule for this id
             $rules['title'] = [
                 'required',
-                Rule::unique('forms')->ignore($existing->uuid, 'uuid')
+                Rule::unique('forms')->ignore($existing->id, 'id')
             ];
         }
         return $rules;

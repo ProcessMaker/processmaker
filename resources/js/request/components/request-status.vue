@@ -36,7 +36,7 @@
         <br>
         <h2>Completed Tasks</h2>
         <hr>
-        <div :key="delegation.uid" v-for="delegation in completed">
+        <div :key="delegation.id" v-for="delegation in completed">
           <div class="row">
             <div class="col-md-4">
               <span class="button-space">
@@ -86,8 +86,8 @@ import moment from "moment"
 
 export default {
   props: [
-    'processUid',
-    'instanceUid'
+    'processId',
+    'instanceId'
   ],
   data() {
     return {
@@ -98,7 +98,7 @@ export default {
     }
   },
   mounted() {
-    ProcessMaker.apiClient.get(`processes/${this.processUid}`)
+    ProcessMaker.apiClient.get(`processes/${this.processId}`)
       .then((response) => {
         this.process = response.data;
         this.update();
@@ -119,15 +119,15 @@ export default {
       return '/tasks/' +
         delegation.definition.id +
         '/' +
-        process.uid +
+        process.id +
         '/' +
-        delegation.application.uid +
+        delegation.application.id +
         '/' +
-        delegation.uid;
+        delegation.id;
     },
     update() {
       // Get first the current delegations
-      ProcessMaker.apiClient.get(`processes/${this.processUid}/instances/${this.instanceUid}/tokens`, {
+      ProcessMaker.apiClient.get(`processes/${this.processId}/instances/${this.instanceId}/tokens`, {
           params: {
             include: 'user',
             thread_status: 'ACTIVE'
@@ -138,7 +138,7 @@ export default {
         });
 
       // Now get completed delegations
-      ProcessMaker.apiClient.get(`processes/${this.processUid}/instances/${this.instanceUid}/tokens`, {
+      ProcessMaker.apiClient.get(`processes/${this.processId}/instances/${this.instanceId}/tokens`, {
           params: {
             thread_status: 'CLOSED'
           }

@@ -1,9 +1,11 @@
 <?php
+
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ProcessRequests;
@@ -12,16 +14,14 @@ use ProcessMaker\Http\Resources\ProcessRequests as ProcessRequestResource;
 
 class ProcessRequestController extends Controller
 {
-    use ResourceRequestsTrait;
-
     /**
      * Display a listing of the resource.
      *
-     * @param Request $httpRequest
+     * @param Request $request
      *
-     * @return Response
-     * 
-     *     /**
+     * @return ApiCollection
+     *
+     * /**
      * @OA\Get(
      *     path="/requests",
      *     summary="Returns all process Requests that the user has access to",
@@ -32,7 +32,7 @@ class ProcessRequestController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
      *     @OA\Parameter(ref="#/components/parameters/include"),
-     * 
+     *
      *     @OA\Response(
      *         response=200,
      *         description="list of processes",
@@ -52,24 +52,52 @@ class ProcessRequestController extends Controller
      *     ),
      * )
      */
-    public function index(Request $httpRequest)
+    public function index(Request $request)
     {
         $query = ProcessRequest::query();
 
-        $filter = $httpRequest->input('filter', '');
+        $includes = $request->input('include', '');
+        if ($includes) {
+            $includes = explode(',', $includes);
+            $validIncludes = ['assigned'];
+            $valid = [];
+            foreach ($includes as $include) {
+                if (in_array($include, $validIncludes)) {
+                    $valid[] = $include;
+                }
+                //include scopes
+                switch ($include) {
+                    case 'started_me':
+                        $query->startedMe(Auth::user()->id);
+                        break;
+                    case 'in_progress':
+                        $query->inProgress();
+                        break;
+                    case 'completed':
+                        $query->completed();
+                        break;
+                }
+            }
+            if ($valid) {
+                $query->with($valid);
+            }
+        }
+
+        $filter = $request->input('filter', '');
         if (!empty($filter)) {
             $filter = '%' . $filter . '%';
             $query->where(function ($query) use ($filter) {
-                $query->Where('name', 'like', $filter);
+                $query->Where('name', 'like', $filter)
+                    ->orWhere('status', 'like', $filter);
             });
         }
 
-        $response =
-            $query->orderBy(
-                $httpRequest->input('order_by', 'name'),
-                $httpRequest->input('order_direction', 'ASC')
+        $response = $query
+            ->orderBy(
+                $request->input('order_by', 'name'),
+                $request->input('order_direction', 'ASC')
             )
-                ->paginate($httpRequest->input('per_page', 10));
+            ->paginate($request->input('per_page', 10));
 
         return new ApiCollection($response);
     }
@@ -82,14 +110,14 @@ class ProcessRequestController extends Controller
      * @return Response
      *
      *      * @OA\Get(
-     *     path="/requests/{process_request_uuid}",
+     *     path="/requests/process_request_id",
      *     summary="Get single process request by ID",
-     *     operationId="getProcessRequestByUuid",
+     *     operationId="getProcessRequestById",
      *     tags={"ProcessRequests"},
      *     @OA\Parameter(
      *         description="ID of process request to return",
      *         in="path",
-     *         name="process_request_uuid",
+     *         name="process_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -114,7 +142,7 @@ class ProcessRequestController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Validation\ValidationException
-     * 
+     *
      * @OA\Post(
      *     path="/requests",
      *     summary="Save a new process request",
@@ -133,7 +161,6 @@ class ProcessRequestController extends Controller
      */
     public function store(Request $httpRequest)
     {
-        $this->encodeRequestUuids($httpRequest, ['process_uuid', 'process_collaboration_uuid', 'user_uuid']);
         $httpRequest->validate(ProcessRequest::rules());
         $processRequest = new ProcessRequest();
         $processRequest->fill($httpRequest->input());
@@ -148,16 +175,16 @@ class ProcessRequestController extends Controller
      * @param Request|ProcessRequest $httpRequest
      *
      * @return ResponseFactory|Response
-     * 
-     *     @OA\Put(
-     *     path="/requests/{process_request_uuid}",
+     *
+     * @OA\Put(
+     *     path="/requests/process_request_id",
      *     summary="Update a process request",
      *     operationId="updateProcessRequest",
      *     tags={"ProcessRequests"},
      *     @OA\Parameter(
      *         description="ID of process request to return",
      *         in="path",
-     *         name="process_request_uuid",
+     *         name="process_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -176,9 +203,8 @@ class ProcessRequestController extends Controller
      */
     public function update(ProcessRequest $request, Request $httpRequest)
     {
-        $this->encodeRequestUuids($httpRequest, ['process_uuid', 'process_collaboration_uuid', 'user_uuid']);
+        $httpRequest->validate(ProcessRequest::rules($request));
         $request->fill($httpRequest->json()->all());
-        $this->validateModel($request, ProcessRequest::rules($request));
         $request->saveOrFail();
         return response([], 204);
     }
@@ -189,16 +215,16 @@ class ProcessRequestController extends Controller
      * @param ProcessRequest $request
      *
      * @return ResponseFactory|Response
-     * 
-     *     @OA\Delete(
-     *     path="/requests/{process_request_uuid}",
+     *
+     * @OA\Delete(
+     *     path="/requests/process_request_id",
      *     summary="Delete a process request",
      *     operationId="deleteProcessRequest",
      *     tags={"ProcessRequests"},
      *     @OA\Parameter(
      *         description="ID of process request to return",
      *         in="path",
-     *         name="process_request_uuid",
+     *         name="process_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",

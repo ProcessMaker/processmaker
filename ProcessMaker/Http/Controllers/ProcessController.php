@@ -3,16 +3,19 @@
 namespace ProcessMaker\Http\Controllers;
 use ProcessMaker\Models\Process;
 use Illuminate\Http\Request;
-use ProcessMaker\Http\Controllers\Api\ResourceRequestsTrait;
+use ProcessMaker\Models\ProcessCategory;
 
 class ProcessController extends Controller
 {
-    use ResourceRequestsTrait;
-
     public function index()
     {
-        $processes = Process::all();  //what will be in the database = Model
-        return view('processes.index', ["processes"=>$processes]);
+        $processes = Process::all(); //what will be in the database = Model
+        $processCategories = ProcessCategory::all();
+        $processCategoryArray = [];
+        foreach($processCategories as $pc){
+            $processCategoryArray[$pc->uuid_text] = $pc->name;
+        }
+        return view('processes.index', ["processes"=>$processes, "processCategories"=>$processCategoryArray]);
     }
     public function edit(Process $process)
     {
@@ -26,11 +29,10 @@ class ProcessController extends Controller
 
     public function store(Request $request) // store new process to DB
     {
-        $this->encodeRequestUuids($request, ['user_uuid']);
         $request->validate(Process::rules());
         $process = new Process();
         $process->fill($request->input());
-        $process->user_uuid = \Auth::user()->uuid;
+        $process->user_id = \Auth::user()->getKey();
         $process->bpmn = '';
         $process->saveOrFail();
         return redirect('/processes');

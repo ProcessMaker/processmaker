@@ -18,7 +18,8 @@
                         <input v-model="filter" class="form-control col-sm-3" placeholder="{{__('Search')}}...">
                     </div>
                     <div class="col-md-4 d-flex justify-content-end align-items-center col-sm-12 actions">
-                        <button type="button" href="#" class="btn btn-action text-white" data-toggle="modal" data-target="#createGroup">
+                        <button type="button" href="#" class="btn btn-action text-white" data-toggle="modal"
+                                data-target="#createGroup">
                             <i class="fas fa-plus"></i> {{__('Group')}}
                         </button>
                     </div>
@@ -38,7 +39,17 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    @include('admin.groups.fields')
+                    <div class="form-group">
+                        {!! Form::label('name', 'Name') !!}
+                        {!! Form::text('name', null, ['id' => 'name','class'=> 'form-control', 'v-model' => 'formData.name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}']) !!}
+                        <small id="emailHelp" class="form-text text-muted">Group name must be distinct</small>
+                        <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
+                    </div>
+                    <div class="form-group">
+                        {!! Form::label('description', 'Description') !!}
+                        {!! Form::textarea('description', null, ['id' => 'description', 'rows' => 4, 'class'=> 'form-control', 'v-model' => 'formData.description', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.description}']) !!}
+                        <div class="invalid-feedback" v-for="description in errors.description">@{{description}}</div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-success" data-dismiss="modal">{{__('Close')}}</button>
@@ -55,7 +66,7 @@
             el: '#createGroup',
             data() {
                 return {
-                    formData:{},
+                    formData: {},
                     errors: {
                         'name': null,
                         'description': null,
@@ -63,7 +74,7 @@
                     }
                 }
             },
-            mounted () {
+            mounted() {
                 this.resetFormData();
                 this.resetErrors();
             },
@@ -92,7 +103,7 @@
                             ProcessMaker.alert('Create Group Successfully', 'success');
                             this.onClose();
                             //redirect show group
-                            window.location = "/admin/groups/" + response.data.uuid
+                            window.location = "/admin/groups/" + response.data.id
                         })
                         .catch(error => {
                             //define how display errors

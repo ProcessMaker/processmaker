@@ -3,8 +3,8 @@
       <div class="ibox-content m-b-sm border-bottom">
         <div class="p-xs">
           <h2>{{formTitle}}</h2>
-          <div v-show="formUid">
-            UID: <span class="badge badge-pill badge-secondary">{{formUid}}</span>
+          <div v-show="formId">
+            ID: <span class="badge badge-pill badge-secondary">{{formId}}</span>
           </div>
         </div>
       </div>
@@ -47,7 +47,7 @@
     export default {
         components: {Pagination},
         mixins: [datatableMixin],
-        props: ['processUid', 'filter','selectedElement'],
+        props: ['processId', 'filter','selectedElement'],
         data() {
             return {
                 // form models here
@@ -79,7 +79,7 @@
                     }
                 ],
                 data: [],
-                formUid: this.selectedElement.attributes['pm:formRef'],
+                formId: this.selectedElement.attributes['pm:formRef'],
                 formTitle: '...'
             };
         },
@@ -92,7 +92,7 @@
             },
             onAssign(data, index) {
                 //Set property to task
-                let formRef = data.uid;
+                let formRef = data.id;
                 //Hide popup
                 this.$refs.modal.hide()
                 let action = actions.bpmn.shape.assignTask({formRef})
@@ -109,7 +109,7 @@
                 let formRef = this.selectedElement.attributes['pm:formRef'];
                 if (formRef) {
                   ProcessMaker.apiClient
-                    .get('process/' + this.processUid + '/form/' + formRef)
+                    .get('process/' + this.processId + '/form/' + formRef)
                     .then(response => {
                         this.formTitle = response.data.title;
                     });
@@ -118,7 +118,7 @@
                 }
                 //Load Forms list
                 ProcessMaker.apiClient
-                    .get('process/' + this.processUid + '/forms',
+                    .get('process/' + this.processId + '/forms',
                         "roles?page=" +
                         this.page +
                         "&per_page=" +

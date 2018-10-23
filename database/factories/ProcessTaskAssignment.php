@@ -19,22 +19,22 @@ $factory->define(ProcessTaskAssignment::class, function (Faker $faker) {
     ]))->create();
 
     return [
-        'process_uuid' => function () {
-            return factory(Process::class)->create()->uuid;
+        'process_id' => function () {
+            return factory(Process::class)->create()->getKey();
         },
-        'process_task_uuid' => $faker->uuid,
-        'assignment_uuid' => $model->uuid,
-        'assignment_type' => $model instanceof User ? 'user' : 'group'
+        'process_task_id' => $faker->randomDigit,
+        'assignment_id' => $model->getKey(),
+        'assignment_type' => get_class($model)
     ];
 });
 
 $factory->defineAs(ProcessTaskAssignment::class, 'user', function (Faker $faker) use ($factory) {
     $follow = $factory->raw(ProcessTaskAssignment::class);
     $extras = [
-        'uuid' => function () {
-            return factory(User::class)->create()->uuid;
+        'id' => function () {
+            return factory(User::class)->create()->getKey();
         },
-        'assignment_type' => 'user'
+        'assignment_type' => User::class 
     ];
     return array_merge($follow, $extras);
 });
@@ -42,10 +42,10 @@ $factory->defineAs(ProcessTaskAssignment::class, 'user', function (Faker $faker)
 $factory->defineAs(ProcessTaskAssignment::class, 'group', function (Faker $faker) use ($factory) {
     $follow = $factory->raw(ProcessTaskAssignment::class);
     $extras = [
-        'uuid' => function () {
-            return factory(Group::class)->create()->uuid;
+        'id' => function () {
+            return factory(Group::class)->create()->getKey();
         },
-        'assignment_type' => 'group'
+        'assignment_type' => Group::class
     ];
     return array_merge($follow, $extras);
 });

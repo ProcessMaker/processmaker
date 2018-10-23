@@ -2,8 +2,8 @@
 
 namespace ProcessMaker\Http\Controllers\Process;
 
-use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Models\Script;
 
 class ScriptController extends Controller
 {
@@ -15,5 +15,10 @@ class ScriptController extends Controller
     public function index()
     {
         return view('processes.scripts.index');
+    }
+
+    public function show(Script $script)
+    {
+        return view('processes.scripts.edit', ['script' => $script]);
     }
 }

@@ -1,36 +1,19 @@
 <?php
 
-namespace Tests\Feature\Api\Administration;
+namespace Tests\Feature\Api;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\EnvironmentVariable;
+use Tests\Feature\Shared\RequestHelper;
 
 class EnvironmentVariablesTest extends TestCase
 {
-    const API_TEST_VARIABLES = '/api/1.0/environment_variables';
+    use RequestHelper;
 
-    /**
-     * User that will be making the request to the API
-     */
-    private $testUser = null;
-
-    /**
-     * Create an api that authenticates with the test users
-     */
-    private function api()
-    {
-        if (!$this->testUser) {
-            $this->testUser = factory(User::class)->create([
-                'password' => Hash::make('password'),
-            ]);
-        }
-        return call_user_func_array(
-            [$this->actingAs($this->testUser, 'api'), 'json'], func_get_args()
-        );
-    }
+    const API_TEST_VARIABLES = '/environment_variables';
 
     /** @test */
     public function it_should_create_an_environment_variable()
@@ -41,7 +24,7 @@ class EnvironmentVariablesTest extends TestCase
             'value' => 'testsecret'
         ];
 
-        $response = $this->api('POST', self::API_TEST_VARIABLES, $data);
+        $response = $this->apiCall('POST', self::API_TEST_VARIABLES, $data);
 
         // Check for created status code
         $response->assertStatus(201);
@@ -78,7 +61,7 @@ class EnvironmentVariablesTest extends TestCase
             'description' => 'test',
             'value' => 'testvalue'
         ];
-        $response = $this->api('POST', self::API_TEST_VARIABLES, $data);
+        $response = $this->apiCall('POST', self::API_TEST_VARIABLES, $data);
 
         // Check for validation error status code
         $response->assertStatus(422);
@@ -97,7 +80,7 @@ class EnvironmentVariablesTest extends TestCase
             'description' => 'test',
             'value' => 'testvalue'
         ];
-        $response = $this->api('POST', self::API_TEST_VARIABLES, $data);
+        $response = $this->apiCall('POST', self::API_TEST_VARIABLES, $data);
 
         // Check for validation error status code
         $response->assertStatus(422);
@@ -113,12 +96,12 @@ class EnvironmentVariablesTest extends TestCase
         ]);
         $variable->fresh();
         // Is now fetch the variable and see if success
-        $response = $this->api('get', self::API_TEST_VARIABLES . '/' . $variable->uuid_text);
+        $response = $this->apiCall('get', self::API_TEST_VARIABLES . '/' . $variable->id);
 
         $response->assertStatus(200);
 
         $response->assertJsonStructure([
-            'uuid',
+            'id',
             'name',
             'description',
         ]);
@@ -146,7 +129,7 @@ class EnvironmentVariablesTest extends TestCase
             'description' => 'testdescription',
             'value' => 'differentvalue'
         ];
-        $response = $this->api('PUT', self::API_TEST_VARIABLES . '/' . $variable->uuid_text, $data);
+        $response = $this->apiCall('PUT', self::API_TEST_VARIABLES . '/' . $variable->id, $data);
 
         // Check for validation error status code
         $response->assertStatus(422);
@@ -166,11 +149,11 @@ class EnvironmentVariablesTest extends TestCase
             'description' => 'newdescription',
             'value' => 'newvalue'
         ];
-        $response = $this->api('PUT', self::API_TEST_VARIABLES . '/' . $variable->uuid_text, $data);
+        $response = $this->apiCall('PUT', self::API_TEST_VARIABLES . '/' . $variable->id, $data);
 
         $response->assertStatus(200);
 
-        $data['uuid'] = $variable->uuid;
+        $data['id'] = $variable->id;
         unset($data['value']);
         $this->assertDatabaseHas('environment_variables', $data);
 
@@ -183,12 +166,12 @@ class EnvironmentVariablesTest extends TestCase
     public function it_should_return_paginated_environment_variables_during_index()
     {
         // Can't truncate because of DatabaseTransactions
-        EnvironmentVariable::whereNotNull('uuid')->delete();
+        EnvironmentVariable::whereNotNull('id')->delete();
 
         $this->withoutExceptionHandling();
         factory(EnvironmentVariable::class, 50)->create();
         // Fetch from index
-        $response = $this->api('GET', self::API_TEST_VARIABLES);
+        $response = $this->apiCall('GET', self::API_TEST_VARIABLES);
         // Verify 200 status code
         $response->assertStatus(200);
         // Grab users
@@ -207,7 +190,7 @@ class EnvironmentVariablesTest extends TestCase
             'name' => 'matchingfield'
         ]);
         // Fetch from index
-        $response = $this->api('GET', self::API_TEST_VARIABLES . '?filter=' . urlencode('matchingfield'));
+        $response = $this->apiCall('GET', self::API_TEST_VARIABLES . '?filter=' . urlencode('matchingfield'));
         $response->assertStatus(200);
         $data = json_decode($response->getContent(), true);
         // Ensure we have empty results
@@ -225,7 +208,7 @@ class EnvironmentVariablesTest extends TestCase
             'value' => 'testvalue'
         ]);
         $variable->fresh();
-        $response = $this->api('DELETE', self::API_TEST_VARIABLES . '/' . $variable->uuid_text);
+        $response = $this->apiCall('DELETE', self::API_TEST_VARIABLES . '/' . $variable->id);
 
         $response->assertStatus(200);
 

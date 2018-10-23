@@ -24,9 +24,9 @@ class ProcessCompletedNotification extends Notification
      */
     public function __construct(ExecutionInstanceInterface $instance)
     {
-        $this->processUid = $instance->process->uuid_text;
+        $this->processUid = $instance->process->getKey();
         $this->processName = $instance->process->name;
-        $this->instanceUid = $instance->uuid_text;
+        $this->instanceUid = $instance->getKey();
     }
 
     /**
@@ -69,7 +69,7 @@ class ProcessCompletedNotification extends Notification
 
     public function toBroadcast($notifiable)
     {
-        $instance = Instance::withUuid($this->instanceUid)->first();
+        $instance = Instance::find($this->instanceUid);
         return new BroadcastMessage([
             'name' => sprintf('Completed: %s', $this->processName),
             'dateTime' => $instance->completed_at->toIso8601String(),

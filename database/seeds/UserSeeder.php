@@ -4,6 +4,8 @@ use Illuminate\Database\Seeder;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
+use ProcessMaker\Models\Permission;
+use ProcessMaker\Models\PermissionAssignment;
 
 class UserSeeder extends Seeder
 {
@@ -15,10 +17,11 @@ class UserSeeder extends Seeder
     public function run()
     {
         //Create default All Users group
-        $group_uuid = factory(Group::class)->create([
+        $group_id = factory(Group::class)->create([
             'name' => 'Users',
             'status' => 'ACTIVE'
-        ])->uuid;
+        ])->id;
+
         //Create admin user
         $user = factory(User::class)->create([
             'username' => 'admin',
@@ -27,14 +30,14 @@ class UserSeeder extends Seeder
             'lastname' => 'admin',
             'timezone' => 'UTC',
             'status' => 'ACTIVE',
+            'is_administrator' => true,
         ]);
         $user->copyMedia(base_path().'/resources/img/avatar-placeholder.gif')->toMediaCollection(User::COLLECTION_PROFILE);
 
         factory(GroupMember::class)->create([
-          'member_uuid' => $user->uuid,
+          'member_id' => $user->id,
           'member_type' => User::class,
-          'group_uuid' => $group_uuid,
+          'group_id' => $group_id,
         ]);
-
     }
 }

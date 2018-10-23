@@ -14,10 +14,10 @@ class GroupsTest extends TestCase
 
   use RequestHelper;
 
-  const API_TEST_URL = '/api/1.0/groups';
+  const API_TEST_URL = '/groups';
 
   const STRUCTURE = [
-      'uuid',
+      'id',
       'name',
       'description',
       'status',
@@ -80,9 +80,7 @@ class GroupsTest extends TestCase
    */
   public function testListGroup()
   {
-
-      Group::query()->delete();
-
+      $existing = Group::count();
       $faker = Faker::create();
 
       factory(Group::class, 10)->create();
@@ -99,7 +97,7 @@ class GroupsTest extends TestCase
       ]);
 
       // Verify count
-      $this->assertEquals(10, $response->json()['meta']['total']);
+      $this->assertEquals(10 + $existing, $response->json()['meta']['total']);
 
   }
 
@@ -140,8 +138,8 @@ class GroupsTest extends TestCase
    */
   public function testGetGroup()
   {
-      //get the uuid from the factory
-      $group = factory(Group::class)->create()->uuid_text;
+      //get the id from the factory
+      $group = factory(Group::class)->create()->id;
 
       //load api
       $response = $this->apiCall('GET', self::API_TEST_URL. '/' . $group);
@@ -158,8 +156,8 @@ class GroupsTest extends TestCase
    */
   // public function testGetGroupIncludeMembership()
   // {
-  //     //get the uuid from the factory
-  //     $group = factory(Group::class)->create()->uuid_text;
+  //     //get the id from the factory
+  //     $group = factory(Group::class)->create()->id;
   //
   //     //load api
   //     $response = $this->apiCall('GET', self::API_TEST_URL. '/' . $group . '?include=memberships');
@@ -176,9 +174,9 @@ class GroupsTest extends TestCase
    */
   public function testUpdateGroupParametersRequired()
   {
-      $uuid = factory(Group::class)->create(['name' => 'mytestname'])->uuid_text;
+      $id = factory(Group::class)->create(['name' => 'mytestname'])->id;
       //The post must have the required parameters
-      $url = self::API_TEST_URL . '/' .$uuid;
+      $url = self::API_TEST_URL . '/' .$id;
 
       $response = $this->apiCall('PUT', $url, [
           'name' => ''
@@ -193,7 +191,7 @@ class GroupsTest extends TestCase
    */
   public function testUpdateGroup()
   {
-      $url = self::API_TEST_URL . '/' . factory(Group::class)->create()->uuid_text;
+      $url = self::API_TEST_URL . '/' . factory(Group::class)->create()->id;
 
       //Load the starting group data
       $verify = $this->apiCall('GET', $url);
@@ -225,7 +223,7 @@ class GroupsTest extends TestCase
 
       $group2 = factory(Group::class)->create();
 
-      $url = self::API_TEST_URL . '/' . $group2->uuid_text;
+      $url = self::API_TEST_URL . '/' . $group2->id;
 
       $response = $this->apiCall('PUT', $url, [
           'name' => 'MyGroupName',
@@ -241,7 +239,7 @@ class GroupsTest extends TestCase
   public function testDeleteGroup()
   {
       //Remove group
-      $url = self::API_TEST_URL . '/' . factory(Group::class)->create()->uuid_text;
+      $url = self::API_TEST_URL . '/' . factory(Group::class)->create()->id;
       $response = $this->apiCall('DELETE', $url);
 
       //Validate the header status code
@@ -254,7 +252,7 @@ class GroupsTest extends TestCase
   public function testDeleteGroupNotExist()
   {
       //Group not exist
-      $url = self::API_TEST_URL . '/' . factory(Group::class)->make()->uuid_text;
+      $url = self::API_TEST_URL . '/' . factory(Group::class)->make()->id;
       $response = $this->apiCall('DELETE', $url);
 
       //Validate the header status code

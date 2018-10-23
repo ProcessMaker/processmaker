@@ -23,7 +23,8 @@ return [
     /*
      * The fully qualified class name of the media model.
      */
-    'media_model' => ProcessMaker\Media::class,
+    'media_model' => Spatie\MediaLibrary\Models\Media::class,
+
 
     's3' => [
         /*

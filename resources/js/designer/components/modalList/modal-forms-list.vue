@@ -38,7 +38,7 @@
     export default {
         components: {Pagination},
         mixins: [dataTableMixin],
-        props: ['processUid'],
+        props: ['processId'],
         data() {
             return {
                 items: [],
@@ -79,13 +79,13 @@
                 this.$refs.modal.hide()
             },
             onEdit(data, index) {
-                window.location.href = '/designer/' + this.processUid + '/form/' + data.uid;
+                window.location.href = '/designer/' + this.processId + '/form/' + data.id;
             },
             onDelete(data, index) {
                 let that = this;
                 ProcessMaker.confirmModal('Caution!', '<b>Are you sure to delete the form </b>' + data.title + '?', '', function () {
                     ProcessMaker.apiClient
-                        .delete('process/' + that.processUid + '/form/' + data.uid)
+                        .delete('process/' + that.processId + '/form/' + data.id)
                         .then(response => {
                             ProcessMaker.alert('Form successfully eliminated', 'success');
                             that.fetch();
@@ -100,7 +100,7 @@
                 }
                 const CancelToken = ProcessMaker.apiClient.CancelToken;
                 ProcessMaker.apiClient
-                    .get('process/' + this.processUid + '/forms?page=' +
+                    .get('process/' + this.processId + '/forms?page=' +
                         this.page +
                         '&per_page=' +
                         this.perPage +

@@ -10,7 +10,6 @@ use ProcessMaker\Http\Resources\Groups as GroupResource;
 
 class GroupController extends Controller
 {
-    use ResourceRequestsTrait;
 
     /**
      * Display a listing of the resource.
@@ -51,42 +50,34 @@ class GroupController extends Controller
      */
     public function index(Request $request)
     {
-        $where = $this->getRequestFilterBy($request, ['name', 'description', 'status']);
-        $orderBy = $this->getRequestSortBy($request, 'name');
-        $perPage = $this->getPerPage($request);
-        $include = $this->getRequestInclude($request);
-
-        $count = array_search('membersCount', $include);
-
-        $query = Group::with($include);
-        if ($count !== false) {
-            unset($include[$count]);
-            $query = Group::with($include)
-                ->withCount('members');
-        }
-
-        $group = $query->where($where)
-            ->orderBy(...$orderBy)
-            ->paginate($perPage);
-        return new ApiCollection($group);
-
+        $include = $request->input('include', '');
         $query = Group::query();
-
+        if ($include) {
+            $include = explode(',', $include);
+            $count = array_search('membersCount', $include);
+            if ($count !== false) {
+                unset($include[$count]);
+                $query->withCount('groupMembers');
+            }
+            if ($include) {
+                $query->with($include);
+            }
+        }
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
             $filter = '%' . $filter . '%';
             $query->where(function ($query) use ($filter) {
-                $query->Where('name', 'like', $filter);
+                $query->Where('name', 'like', $filter)
+                    ->orWhere('description', 'like', $filter)
+                    ->orWhere('status', 'like', $filter);
             });
         }
-
         $response =
             $query->orderBy(
                 $request->input('order_by', 'name'),
                 $request->input('order_direction', 'ASC')
             )
                 ->paginate($request->input('per_page', 10));
-
         return new ApiCollection($response);
     }
 
@@ -126,18 +117,18 @@ class GroupController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  uuid $id
+     * @param  id $id
      * @return \Illuminate\Http\Response
      *
      * @OA\Get(
-     *     path="/groups/{groupUuid}",
+     *     path="/groups/groupId",
      *     summary="Get single group by ID",
-     *     operationId="getGroupByUuid",
+     *     operationId="getGroupById",
      *     tags={"Groups"},
      *     @OA\Parameter(
      *         description="ID of group to return",
      *         in="path",
-     *         name="groupUuid",
+     *         name="group_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -165,14 +156,14 @@ class GroupController extends Controller
      * @throws \Throwable
      *
      * @OA\Put(
-     *     path="/groups/{groupUuid}",
+     *     path="/groups/groupId",
      *     summary="Update a group",
      *     operationId="updateGroup",
      *     tags={"Groups"},
      *     @OA\Parameter(
      *         description="ID of group to return",
      *         in="path",
-     *         name="groupUuid",
+     *         name="group_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -192,10 +183,8 @@ class GroupController extends Controller
     public function update(Group $group, Request $request)
     {
         $request->validate(Group::rules($group));
-
         $group->fill($request->input());
         $group->saveOrFail();
-
         return response([], 204);
     }
 
@@ -207,14 +196,14 @@ class GroupController extends Controller
      * @return ResponseFactory|Response
      *
      * @OA\Delete(
-     *     path="/groups/{groupUuid}",
+     *     path="/groups/groupId",
      *     summary="Delete a group",
      *     operationId="deleteGroup",
      *     tags={"Groups"},
      *     @OA\Parameter(
      *         description="ID of group to return",
      *         in="path",
-     *         name="groupUuid",
+     *         name="group_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",

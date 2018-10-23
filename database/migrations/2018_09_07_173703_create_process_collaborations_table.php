@@ -15,18 +15,17 @@ class CreateProcessCollaborationsTable extends Migration
     {
         Schema::create('process_collaborations', function (Blueprint $table) {
             //Columns
-            $table->uuid('uuid');
-            $table->uuid('process_uuid');
+            $table->increments('id');
+            $table->unsignedInteger('process_id');
             $table->timestamps();
 
             //Indexes
-            $table->primary('uuid');
-            $table->index('process_uuid');
+            $table->index('process_id');
 
             //Foreign keys
             //A process can not be deleted if it has collaborations
-            $table->foreign('process_uuid')
-                ->references('uuid')->on('processes')
+            $table->foreign('process_id')
+                ->references('id')->on('processes')
                 ->onDelete('restrict');
         });
     }

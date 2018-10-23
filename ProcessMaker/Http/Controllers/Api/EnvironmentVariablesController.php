@@ -20,9 +20,9 @@ class EnvironmentVariablesController extends Controller
    * 
    *      @OA\Get(
     *     path="/environment_variables",
-    *     summary="Returns all environmentalVariables that the user has access to",
-    *     operationId="getEnvironmentalVariables",
-    *     tags={"Environmental Variables"},
+    *     summary="Returns all environmentVariables that the user has access to",
+    *     operationId="getEnvironmentVariables",
+    *     tags={"Environment Variables"},
     *     @OA\Parameter(ref="#/components/parameters/filter"),
     *     @OA\Parameter(ref="#/components/parameters/order_by"),
     *     @OA\Parameter(ref="#/components/parameters/order_direction"),
@@ -31,7 +31,7 @@ class EnvironmentVariablesController extends Controller
     *
     *     @OA\Response(
     *         response=200,
-    *         description="list of environmentalVariables",
+    *         description="list of environmentVariables",
     *         @OA\JsonContent(
     *             type="object",
     *             @OA\Property(
@@ -74,14 +74,14 @@ class EnvironmentVariablesController extends Controller
    * Creates a new global Environment Variable in the system
    * 
    *      * @OA\Get(
-    *     path="/environment_variables/{environment_variablesUuid}",
+    *     path="/environment_variables/{environment_variables_id}",
     *     summary="Get single environment_variables by ID",
-    *     operationId="getEnvironment_variablesByUuid",
-    *     tags={"Environmental Variables"},
+    *     operationId="getEnvironmentVariablesById",
+    *     tags={"Environment Variables"},
     *     @OA\Parameter(
     *         description="ID of environment_variables to return",
     *         in="path",
-    *         name="environment_variablesUuid",
+    *         name="environment_variables_id",
     *         required=true,
     *         @OA\Schema(
     *           type="string",
@@ -109,8 +109,8 @@ class EnvironmentVariablesController extends Controller
    *      @OA\Post(
     *     path="/environment_variables",
     *     summary="Save a new environment_variables",
-    *     operationId="createEnvironment_variables",
-    *     tags={"Environmental Variables"},
+    *     operationId="createEnvironmentVariables",
+    *     tags={"Environment Variables"},
     *     @OA\RequestBody(
     *       required=true,
     *       @OA\JsonContent(ref="#/components/schemas/environment_variablesEditable")
@@ -130,14 +130,14 @@ class EnvironmentVariablesController extends Controller
    * Update an environment variable
    * 
    *      @OA\Put(
-    *     path="/environment_variables/{environment_variablesUuid}",
+    *     path="/environment_variables/{environment_variables_id}",
     *     summary="Update a environment_variables",
-    *     operationId="updateEnvironment_variables",
-    *     tags={"Environmental Variables"},
+    *     operationId="updateEnvironmentVariables",
+    *     tags={"Environment Variables"},
     *     @OA\Parameter(
     *         description="ID of environment_variables to return",
     *         in="path",
-    *         name="environment_variablesUuid",
+    *         name="environment_variables_id",
     *         required=true,
     *         @OA\Schema(
     *           type="string",
@@ -165,14 +165,14 @@ class EnvironmentVariablesController extends Controller
 
   /**
    *      @OA\Delete(
-    *     path="/environment_variables/{environment_variablesUuid}",
+    *     path="/environment_variables/{environment_variables_id}",
     *     summary="Delete a environment_variables",
-    *     operationId="deleteEnvironment_variables",
-    *     tags={"Environmental Variables"},
+    *     operationId="deleteEnvironmentVariables",
+    *     tags={"Environment Variables"},
     *     @OA\Parameter(
     *         description="ID of environment_variables to return",
     *         in="path",
-    *         name="environment_variablesUuid",
+    *         name="environment_variables_id",
     *         required=true,
     *         @OA\Schema(
     *           type="string",

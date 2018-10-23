@@ -14,8 +14,7 @@ class CreateUsersTable extends Migration
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->uuid('uuid');
-            $table->primary('uuid');
+            $table->increments('id');
             $table->string('email')->unique();
             $table->string('password');
 
@@ -39,6 +38,8 @@ class CreateUsersTable extends Migration
             $table->date('birthdate')->nullable();
             $table->string('timezone')->nullable();
             $table->string('language')->nullable();
+
+            $table->boolean('is_administrator')->default(false);
 
             $table->date('expires_at')->nullable();
             $table->dateTime('loggedin_at')->nullable();

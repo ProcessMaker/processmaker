@@ -4,15 +4,13 @@
                   @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data"
                   pagination-path="meta">
             <template slot="ids" slot-scope="props">
-                <div class="actions">
-                    <b-btn variant="link" @click="openRequest(props.rowData, props.rowIndex)">{{props.rowData.id}}
-                    </b-btn>
-                </div>
+                <b-link @click="openRequest(props.rowData, props.rowIndex)">
+                    {{props.rowData.id_short}}
+                </b-link>
             </template>
 
             <template slot="actions" slot-scope="props">
                 <div class="actions">
-                    <i class="fas fa-ellipsis-h"></i>
                     <div class="popout">
                         <b-btn variant="action" @click="openRequest(props.rowData, props.rowIndex)" v-b-tooltip.hover
                                title="Open">
@@ -28,8 +26,6 @@
 </template>
 
 <script>
-    import Vuetable from "vuetable-2/src/components/Vuetable";
-    import Pagination from "../../components/common/Pagination";
     import datatableMixin from "../../components/common/mixins/datatable";
     import moment from "moment"
 
@@ -39,6 +35,7 @@
         data() {
             return {
                 orderBy: "id",
+                additionalParams: '',
                 sortOrder: [
                     {
                         field: "id",
@@ -56,24 +53,36 @@
                     },
                     {
                         title: "Process",
-                        name: "process.name",
-                        sortField: "process.name"
+                        name: "name",
+                        sortField: "name"
                     },
                     {
-                        title: "Assigned to",
-                        name: "delegations",
+                        title: "Status",
+                        name: "status",
+                        sortField: "status"
+                    },
+                    {
+                        title: "Stage",
+                        name: "stage",
+                    },
+                    {
+                        title: "Participants",
+                        name: "assigned",
                         callback: this.assignedTo
                     },
                     {
-                        title: "Due date",
-                        name: "delegations",
-                        callback: this.formatDueDate
+                        title: "Started",
+                        name: "created_at",
+                        sortField: "created_at",
                     },
                     {
-                        title: "Created on",
-                        name: "APP_CREATE_DATE",
-                        sortField: "APP_CREATE_DATE",
-                        callback: this.formatDate
+                        title: "Completed",
+                        name: "completed_at",
+                        sortField: "completed_at"
+                    },
+                    {
+                        title: "Duration",
+                        name: "duration_at"
                     },
                     {
                         name: "__slot:actions",
@@ -84,81 +93,57 @@
         },
         methods: {
             openRequest(data, index) {
-                window.open('/requests/' + data.uid + '/status','_self');
-            },
-            formatUid(id) {
-                return id;
+                window.open('/requests/' + data.id + '/status', '_self');
             },
             assignedTo(delegations) {
                 let assignedTo = '';
                 if (!delegations) return assignedTo;
-                let that = this;
                 let count = 0;
                 let usedAvatar = [];
-                delegations.forEach(function (delegation, key){
+                delegations.forEach(function (delegation, key) {
 
-                  if(usedAvatar.includes(delegation.user.uid) === false) {
+                    if (delegation.user && usedAvatar.includes(delegation.user.id) === false) {
 
-                    usedAvatar.push(delegation.user.uid);
+                        usedAvatar.push(delegation.user.id);
 
-                    if (key <= 4) {
-                        let user = delegation.user;
-                        assignedTo += user.avatar ? that.createImg({
-                                'src': user.avatar,
-                                'class': 'rounded-user',
-                                'title': user.fullname
-                            })
-                            : '<div class="circle"><span class="initials" title="' + user.fullname + '">'
-                            + user.firstname[0].toUpperCase() + user.lastname[0].toUpperCase() + '</span></div>';
-                    } else {
-                        count++;
+                        if (key <= 4) {
+                            let user = delegation.user;
+                            assignedTo += user.avatar
+                                ? '<img class="avatar-image-list avatar-circle-list" src="' + user.avatar + '" title="' + user.fullname + '"> '
+                                : '<button type="button" class="avatar-circle-list" title="' + user.fullname + '">' +
+                                '<span class="avatar-initials-list">' +
+                                user.firstname.charAt(0).toUpperCase() +
+                                user.lastname.charAt(0).toUpperCase() +
+                                '</span>' +
+                                '</button> ';
+                        } else {
+                            count++;
+                        }
                     }
-
-                  }
-
                 });
                 if (count) {
-                    assignedTo += '<div class="circle"><span class="initials">+' + count + '</span></div>';
+                    assignedTo += '<button type="button" class="avatar-circle-list"><span class="avatar-initials-list">+' + count + '</span></button>';
                 }
                 return assignedTo;
             },
-            createImg(properties, name) {
-                let container = document.createElement('div');
-                let node = document.createElement('img');
-                for (let property in properties) {
-                    node.setAttribute(property, properties[property]);
+            formatStatus(status) {
+                let color = 'success',
+                    label = 'In Progress';
+                switch (status) {
+                    case 'DRAFT':
+                        color = 'danger';
+                        label = 'Draft';
+                        break;
+                    case 'COMPLETED':
+                        color = 'primary';
+                        label = 'Completed';
+                        break;
                 }
-                container.appendChild(node);
-                return container.innerHTML;
-            },
-            formatDateWithDot(value) {
-                if (!value) {
-                    return '';
-                }
-                let duedate = moment(value);
-                let now = moment();
-                let diff = duedate.diff(now, 'hours');
-                let color = diff < 0 ? 'text-danger' : (diff <= 48 ? 'text-warning' : 'text-primary');
-                return '<i class="fas fa-circle ' + color + '"></i> ' + duedate.format('YYYY-MM-DD hh:mm');
+                return '<i class="fas fa-circle text-' + color + '"></i> <span>' + label + '</span>';
             },
             formatDate(value) {
                 let date = moment(value);
                 return date.format('YYYY-MM-DD hh:mm');
-            },
-            formatDueDate(delegations) {
-                let overdue = false;
-                let risk = false;
-                if (delegations) {
-                    delegations.forEach(function (delegation) {
-                        if (delegation.delay && delegation.delay.toUpperCase() === 'OVERDUE') {
-                            overdue = true;
-                        } else if (delegation.delay && delegation.delay.toUpperCase() === 'AT_RISK') {
-                            risk = true;
-                        }
-                    });
-                }
-                let status = overdue ? 'OVERDUE' : (risk ? 'AT RISK' : 'ON TIME');
-                return ' <span style="text-transform: uppercase; ">' + status + '</span>';
             },
             transform(data) {
                 // Clean up fields for meta pagination so vue table pagination can understand
@@ -166,22 +151,24 @@
                 data.meta.from = (data.meta.current_page - 1) * data.meta.per_page;
                 data.meta.to = data.meta.from + data.meta.count;
                 for (let record of data.data) {
-                    record['full_name'] = [record['firstname'], record['lastname']].join(' ');
+                    record['id_short'] = record['id'].split('-')[0];
+                    //Format dates
+                    record['created_at'] = this.formatDate(record['created_at']);
+                    if (record['completed_at']) {
+                        record['duration_at'] = moment(record['created_at']).from(record['completed_at']);
+                        record['completed_at'] = this.formatDate(record['completed_at']);
+                    } else {
+                        record['completed_at'] = '';
+                        record['duration_at'] = moment(record['created_at']).fromNow();
+                    }
+                    //format Status
+                    record['status'] = this.formatStatus(record['status']);
                 }
                 return data;
             },
             fetch() {
                 this.loading = true;
-
-                //get any additional query string parameters
-                let urlParts = window.location.href.split('?');
-                let additionalParams = '';
-                if (urlParts.length === 2) {
-                    additionalParams = '&' + urlParts[1];
-                }
-                if (this.status) {
-                    additionalParams += "&status=" + this.status;
-                }
+                this.additionalParams = this.additionalParams ? this.additionalParams : '&include=assigned';
 
                 // Load from our api client
                 ProcessMaker.apiClient
@@ -197,7 +184,7 @@
                         (this.orderBy === '__slot:ids' ? 'id' : this.orderBy) +
                         "&order_direction=" +
                         this.orderDirection +
-                        additionalParams
+                        this.additionalParams
                     )
                     .then(response => {
                         this.data = this.transform(response.data);
@@ -207,43 +194,10 @@
         }
     };
 </script>
+
 <style lang="scss" scoped>
-
-  /deep/ .table td {
-    vertical-align: middle !important;
-    padding: 3px;
-  }
-
-    /deep/ .circle {
-      border-radius: 100%;
-      height: 32px;
-      width: 32px;
-      background-color: #6c757d;
-      display: inline-table;
-      margin-right: 0.5em;
-      text-align: center;
-      vertical-align: middle;
-      margin:0;
+    /deep/ .vuetable-th-slot-ids {
+        min-width: 100px;
+        white-space: nowrap;
     }
-
-    /deep/ .rounded-user {
-        border-radius: 50% !important;
-        height: 32px;
-        margin:0;
-    }
-
-    /deep/ .initials {
-        color: white;
-        line-height: 2.5em;
-    }
-
-    /deep/ i.fa-circle {
-        &.active {
-            color: green;
-        }
-        &.inactive {
-            color: red;
-        }
-    }
-
 </style>

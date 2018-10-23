@@ -7,6 +7,7 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
+use Tests\Feature\Shared\RequestHelper;
 
 /**
  * Test the process execution with requests
@@ -18,21 +19,16 @@ class ProcessScriptsTest extends TestCase
 
     use ResourceAssertionsTrait;
     use WithFaker;
-
-    /**
-     *
-     * @var User $user
-     */
-    protected $user;
+    use RequestHelper;
 
     /**
      * @var Process $process
      */
     protected $process;
     private $requestStructure = [
-        'uuid',
-        'process_uuid',
-        'user_uuid',
+        'id',
+        'process_id',
+        'user_id',
         'status',
         'name',
         'initiated_at',
@@ -44,12 +40,8 @@ class ProcessScriptsTest extends TestCase
      * Initialize the controller tests
      *
      */
-    protected function setUp()
+    protected function withUserSetup()
     {
-        parent::setUp();
-        //Login as an valid user
-        $this->user = factory(User::class)->create();
-        $this->actingAs($this->user, 'api');
         $this->process = $this->createTestProcess();
     }
 
@@ -74,9 +66,9 @@ class ProcessScriptsTest extends TestCase
             );
         }
         //Start a process request
-        $route = route('api.process_events.trigger', [$this->process->uuid_text, 'event' => '_2']);
+        $route = route('api.process_events.trigger', [$this->process->id, 'event' => '_2']);
         $data = [];
-        $response = $this->json('POST', $route, $data);
+        $response = $this->apiCall('POST', $route, $data);
         //Verify status
         $this->assertStatus(201, $response);
         //Verify the structure
@@ -84,7 +76,7 @@ class ProcessScriptsTest extends TestCase
         $request = $response->json();
         //Get the active tasks of the request
         $route = route('api.tasks.index');
-        $response = $this->json('GET', $route);
+        $response = $this->apiCall('GET', $route);
         $tasks = $response->json('data');
         //Check that two script tasks were completed.
         $this->assertArraySubset([
@@ -97,7 +89,7 @@ class ProcessScriptsTest extends TestCase
                 'status' => 'CLOSED',
             ]], $tasks);
         //Get process instance
-        $processInstance = ProcessRequest::withUuid($tasks[0]['process_request_uuid'])->firstOrFail();
+        $processInstance = ProcessRequest::where('id', $tasks[0]['process_request_id'])->firstOrFail();
         //Check the data
         $this->assertArrayHasKey('random', $processInstance->data);
         $this->assertArrayHasKey('double', $processInstance->data);

@@ -7,6 +7,7 @@ use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
+use Tests\Feature\Shared\RequestHelper;
 
 /**
  * Tests routes related to processes / CRUD related methods
@@ -18,28 +19,16 @@ class ProcessCategoriesTest extends TestCase
 
     use WithFaker;
     use ResourceAssertionsTrait;
+    use RequestHelper;
 
-    protected $user;
     protected $resource = 'api.process_categories';
     protected $structure = [
-        'uuid',
+        'id',
         'name',
         'status',
         'created_at',
         'updated_at'
     ];
-
-    /**
-     * Initialize the controller tests
-     *
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-        //Login as an valid user
-        $this->user = factory(User::class)->create();
-        $this->actingAs($this->user, 'api');
-    }
 
     /**
      * Test the creation of processes
@@ -49,7 +38,7 @@ class ProcessCategoriesTest extends TestCase
         //Create a process category
         $route = route($this->resource . '.store');
         $base = factory(ProcessCategory::class)->make();
-        $response = $this->json('POST', $route, $base->toArray());
+        $response = $this->apiCall('POST', $route, $base->toArray());
         //validate status create
         $response->assertStatus(201);
         //validate structure
@@ -65,7 +54,7 @@ class ProcessCategoriesTest extends TestCase
     {
         $route = route($this->resource . '.store');
         $base = factory(ProcessCategory::class)->make(['name' => null]);
-        $response = $this->json('POST', $route, $base->toArray());
+        $response = $this->apiCall('POST', $route, $base->toArray());
         //validate status of error model
         $response->assertStatus(422);
         //validate structure of error
@@ -86,7 +75,7 @@ class ProcessCategoriesTest extends TestCase
         factory(ProcessCategory::class)->create(['name' => $name]);
 
         $base = factory(ProcessCategory::class)->make(['name' => $name]);
-        $response = $this->json('POST', $route, $base->toArray());
+        $response = $this->apiCall('POST', $route, $base->toArray());
         $response->assertStatus(422);
         $response->assertJsonStructure($this->errorStructure);
         $response->assertJsonStructure(['errors' => ['name']]);
@@ -106,7 +95,7 @@ class ProcessCategoriesTest extends TestCase
         $perPage = 10;
 
         $route = route($this->resource . '.index');
-        $response = $this->json('GET', $route . '?page=' . $page . '&per_page=' . $perPage);
+        $response = $this->apiCall('GET', $route . '?page=' . $page . '&per_page=' . $perPage);
         //Verify the status
         $response->assertStatus(200);
         //Verify the structure
@@ -148,7 +137,7 @@ class ProcessCategoriesTest extends TestCase
 
         //Get active processes
         $route = route($this->resource . '.index');
-        $response = $this->json('GET', $route . '?filter=ACTIVE&per_page=' . $perPage);
+        $response = $this->apiCall('GET', $route . '?filter=ACTIVE&per_page=' . $perPage);
         //Verify the status
         $response->assertStatus(200);
         //Verify the structure
@@ -165,7 +154,7 @@ class ProcessCategoriesTest extends TestCase
         $this->assertCount($meta['count'], $data);
 
         //Get inactive processes
-        $response = $this->json('GET', $route . '?filter=INACTIVE&per_page=' . $perPage);
+        $response = $this->apiCall('GET', $route . '?filter=INACTIVE&per_page=' . $perPage);
         //Verify the status
         $response->assertStatus(200);
         //Verify the structure
@@ -205,7 +194,7 @@ class ProcessCategoriesTest extends TestCase
 
         //Get active processes
         $route = route($this->resource . '.index');
-        $response = $this->json('GET', $route . '?status=ACTIVE&per_page=' . $perPage);
+        $response = $this->apiCall('GET', $route . '?status=ACTIVE&per_page=' . $perPage);
         //Verify the status
         $response->assertStatus(200);
         //Verify the structure
@@ -237,7 +226,7 @@ class ProcessCategoriesTest extends TestCase
 
         //Test the list sorted by name returns as first row {"name": "aaaaaa"}
         $route = route($this->resource . '.index');
-        $response = $this->json('GET', $route . '?order_by=name&order_direction=asc');
+        $response = $this->apiCall('GET', $route . '?order_by=name&order_direction=asc');
         //Verify the status
         $response->assertStatus(200);
         //Verify the structure
@@ -256,7 +245,7 @@ class ProcessCategoriesTest extends TestCase
 
 
         //Test the list sorted desc returns as first row {"name": "zzzzz"}
-        $response = $this->json('GET', $route . '?order_by=name&order_direction=DESC');
+        $response = $this->apiCall('GET', $route . '?order_by=name&order_direction=DESC');
         //Verify the status
         $response->assertStatus(200);
         //Verify the structure
@@ -288,11 +277,11 @@ class ProcessCategoriesTest extends TestCase
         factory(ProcessCategory::class, $rowsToAdd)->create();
 
         // The first page should have 5 items;
-        $response = $this->json('GET', route($this->resource . '.index', ['per_page' => 5, 'page' => 1]));
+        $response = $this->apiCall('GET', route($this->resource . '.index', ['per_page' => 5, 'page' => 1]));
         $response->assertJsonCount(5, 'data');
 
         // The second page should have the modulus of 2+$initialRows
-        $response = $this->json('GET', route($this->resource . '.index', ['per_page' => 5, 'page' => 2]));
+        $response = $this->apiCall('GET', route($this->resource . '.index', ['per_page' => 5, 'page' => 2]));
         $response->assertJsonCount((2 + $initialRows) % 5, 'data');
     }
 
@@ -307,8 +296,8 @@ class ProcessCategoriesTest extends TestCase
         $category = factory(ProcessCategory::class)->create();
 
         //Test that is correctly displayed
-        $route = route($this->resource . '.show', [$category->uuid_text]);
-        $response = $this->json('GET', $route);
+        $route = route($this->resource . '.show', [$category->id]);
+        $response = $this->apiCall('GET', $route);
         $response->assertStatus(200);
         $response->assertJsonStructure($this->structure);
     }
@@ -320,11 +309,12 @@ class ProcessCategoriesTest extends TestCase
     {
         $item = factory(ProcessCategory::class)->create();
 
-        $route = route($this->resource . '.update', [$item->uuid_text]);
+        $route = route($this->resource . '.update', [$item->id]);
         $fields = [
             'name' => $this->faker->name,
+            'status' => 'ACTIVE',
         ];
-        $response = $this->json('PUT', $route, $fields);
+        $response = $this->apiCall('PUT', $route, $fields);
         //validate status
         $response->assertStatus(200);
         //validate structure
@@ -340,11 +330,12 @@ class ProcessCategoriesTest extends TestCase
     {
         $item = factory(ProcessCategory::class)->create(['status' => 'ACTIVE']);
 
-        $route = route($this->resource . '.update', [$item->uuid_text]);
+        $route = route($this->resource . '.update', [$item->id]);
         $fields = [
+            'name' => 'test',
             'status' => 'INACTIVE',
         ];
-        $response = $this->json('PUT', $route, $fields);
+        $response = $this->apiCall('PUT', $route, $fields);
         //validate status
         $response->assertStatus(200);
         //validate structure
@@ -360,11 +351,12 @@ class ProcessCategoriesTest extends TestCase
     {
         $item = factory(ProcessCategory::class)->create();
 
-        $route = route($this->resource . '.update', [$item->uuid_text]);
+        $route = route($this->resource . '.update', [$item->id]);
         $fields = [
             'name' => null,
+            'status' => 'ACTIVE',
         ];
-        $response = $this->json('PUT', $route, $fields);
+        $response = $this->apiCall('PUT', $route, $fields);
         //validate status
         $response->assertStatus(422);
         //validate structure
@@ -381,11 +373,12 @@ class ProcessCategoriesTest extends TestCase
         factory(ProcessCategory::class)->create(['name' => $name]);
         $item = factory(ProcessCategory::class)->create();
 
-        $route = route($this->resource . '.update', [$item->uuid_text]);
+        $route = route($this->resource . '.update', [$item->id]);
         $fields = [
             'name' => $name,
+            'status' => 'ACTIVE',
         ];
-        $response = $this->json('PUT', $route, $fields);
+        $response = $this->apiCall('PUT', $route, $fields);
         //validate status
         $this->assertStatus(422, $response);
         //validate structure
@@ -399,11 +392,11 @@ class ProcessCategoriesTest extends TestCase
     {
         $item = factory(ProcessCategory::class)->create();
 
-        $route = route($this->resource . '.update', [$item->uuid_text]);
+        $route = route($this->resource . '.update', [$item->id]);
         $fields = [
             'status' => 'NOT_EXISTS',
         ];
-        $response = $this->json('PUT', $route, $fields);
+        $response = $this->apiCall('PUT', $route, $fields);
         //validate status
         $response->assertStatus(422);
         //validate structure
@@ -416,8 +409,8 @@ class ProcessCategoriesTest extends TestCase
     public function testDeleteProcessCategory()
     {
         $processCategory = factory(ProcessCategory::class)->create();
-        $route = route($this->resource . '.destroy', [$processCategory->uuid_text]);
-        $response = $this->json('DELETE', $route);
+        $route = route($this->resource . '.destroy', [$processCategory->id]);
+        $response = $this->apiCall('DELETE', $route);
         //validate status
         $response->assertStatus(204);
         $this->assertEmpty($response->getContent());
@@ -429,31 +422,11 @@ class ProcessCategoriesTest extends TestCase
     public function testDeleteFailProcessCategory()
     {
         $processCategory = factory(Process::class)->create();
-        $route = route($this->resource . '.destroy', [$processCategory->process_category_uuid_text]);
-        $response = $this->json('DELETE', $route);
+        $route = route($this->resource . '.destroy', [$processCategory->process_category_id]);
+        $response = $this->apiCall('DELETE', $route);
         $response->assertStatus(422);
         $response->assertJsonStructure($this->errorStructure);
         $response->assertJsonStructure(['errors' => ['processes']]);
     }
 
-    /**
-     * Test validate binary uuid with special characters
-     * " ,
-     */
-    public function testUuidWithSpecialCharacters()
-    {
-        $item = factory(ProcessCategory::class)->create([
-            'uuid' => ProcessCategory::encodeUuid('2c3b2876-c035-11e8-9d22-88e9fe4ddbf3')
-        ]);
-
-        $route = route($this->resource . '.update', [$item->uuid_text]);
-        $fields = [
-            'status' => 'ACTIVE',
-        ];
-        $response = $this->json('PUT', $route, $fields);
-        //validate status
-        $this->assertStatus(200, $response);
-        //validate update
-        $response->assertJsonFragment(['status' => 'ACTIVE']);
-    }
 }

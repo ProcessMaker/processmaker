@@ -12,17 +12,17 @@ use ProcessMaker\Models\User;
 $factory->define(ProcessRequestToken::class, function (Faker $faker) {
     return [
         'element_type' => 'TASK',
-        'element_uuid' => $faker->uuid,
+        'element_id' => $faker->randomDigit,
         'element_name' => $faker->name,
         'status' => $faker->randomElement(['ACTIVE','FAILING','COMPLETED','CLOSED','EVENT_CATCH']),
-        'process_uuid' => function () {
-            return factory(Process::class)->create()->uuid;
+        'process_id' => function () {
+            return factory(Process::class)->create()->getKey();
         },
-        'process_request_uuid' => function () {
-            return factory(ProcessRequest::class)->create()->uuid;
+        'process_request_id' => function () {
+            return factory(ProcessRequest::class)->create()->getKey();
         },
-        'user_uuid' => function () {
-            return factory(User::class)->create()->uuid;
+        'user_id' => function () {
+            return factory(User::class)->create()->getKey();
         },
         'completed_at' => $faker->dateTime,
         'due_at' => $faker->dateTime,

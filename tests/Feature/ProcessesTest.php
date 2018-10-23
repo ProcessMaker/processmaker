@@ -20,7 +20,7 @@ class ProcessesTest extends TestCase
     public function testEdit()
     {
       $process = factory(Process::class)->create(['name'=>'Test Edit']);
-      $response = $this->webGet('processes/'.$process->uuid_text . '/edit');
+      $response = $this->webGet('processes/'.$process->id . '/edit');
       $response->assertStatus(200);
       $response->assertViewIs('processes.edit');
       $response->assertSee('Test Edit');
@@ -35,7 +35,8 @@ class ProcessesTest extends TestCase
     }
     public function testStore()
     {
-        $response = $this->apiCall('POST' ,'/processes', [
+        $this->withoutExceptionHandling();
+        $response = $this->webCall('POST' ,'/processes', [
             'name' => 'Stored new user',
             'description' => 'descript',
             'status' => 'ACTIVE'
@@ -48,7 +49,7 @@ class ProcessesTest extends TestCase
     public function testShow()
     {
         $process = factory(Process::class)->create(['name'=>'Test show']);
-        $response = $this->webGet('processes/'.$process->uuid_text.'' );
+        $response = $this->webGet('processes/'.$process->id.'' );
         $response->assertViewIs('processes.show');
         $response->assertStatus(200);
         $response->assertSee('Test show');
@@ -56,7 +57,7 @@ class ProcessesTest extends TestCase
     public function testUpdate()
     {
         $process = factory(Process::class)->create([ 'name' => 'Test Update' ]);
-        $response = $this->apiCall('PUT' ,'processes/'.$process->uuid_text.'', [
+        $response = $this->webCall('PUT' ,'processes/'.$process->id.'', [
             'name' => 'Update Name',
             'description' => 'Descriptionnnnn'
             ]);
@@ -66,8 +67,8 @@ class ProcessesTest extends TestCase
     public function testDestroy()
     {
         $process = factory(Process::class)->create();
-        $response = $this->apiCall('DELETE', 'processes/'.$process->uuid_text.'');
-        $this->assertDatabaseMissing('processes', ['uuid' => $process->uuid]);
+        $response = $this->webCall('DELETE', 'processes/'.$process->id.'');
+        $this->assertDatabaseMissing('processes', ['id' => $process->id]);
         $response->assertRedirect('/processes');
     }
 }

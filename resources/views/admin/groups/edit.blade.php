@@ -4,18 +4,33 @@
     {{__('Edit Groups')}}
 @endsection
 
-@Section('sidebar')
+@section('sidebar')
     @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
 @endsection
 
-@Section('content')
+@section('content')
     <div class="container" id="editGroup">
         <h1>{{__('Edit Group')}}</h1>
         <div class="row">
             <div class="col-8">
                 <div class="card card-body">
                     {!! Form::open() !!}
-                    @include('admin.groups.fields')
+                    <div class="form-group">
+                        {!! Form::label('name', 'Name') !!}
+                        {!! Form::text('name', null, ['id' => 'name','class'=> 'form-control', 'v-model' => 'formData.name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}']) !!}
+                        <small id="emailHelp" class="form-text text-muted">Group name must be distinct</small>
+                        <div class="invalid-feedback" v-if="errors.name">@{{errors.name[0]}}</div>
+                    </div>
+                    <div class="form-group">
+                        {!! Form::label('description', 'Description') !!}
+                        {!! Form::textarea('description', null, ['id' => 'description', 'rows' => 4, 'class'=> 'form-control', 'v-model' => 'formData.description', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.description}']) !!}
+                        <div class="invalid-feedback" v-if="errors.description">@{{errors.description[0]}}</div>
+                    </div>
+                    <div class="form-group">
+                        {!! Form::label('status', 'Status') !!}
+                        {!! Form::select('status', ['ACTIVE' => 'Active', 'INACTIVE' => 'Inactive'], null, ['id' => 'status', 'class' => 'form-control', 'v-model' => 'formData.status', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.status}']) !!}
+                        <div class="invalid-feedback" v-if="errors.status">@{{errors.status[0]}}</div>
+                    </div>
                     <br>
                     <div class="text-right">
                         {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose']) !!}
@@ -37,7 +52,7 @@
     </div>
 @endsection
 
-@Section('js')
+@section('js')
     <script>
         new Vue({
             el: '#editGroup',
@@ -64,7 +79,7 @@
                 },
                 onUpdate() {
                     this.resetErrors();
-                    ProcessMaker.apiClient.put('groups/' + this.formData.uuid, this.formData)
+                    ProcessMaker.apiClient.put('groups/' + this.formData.id, this.formData)
                         .then(response => {
                             ProcessMaker.alert('Update Group Successfully', 'success');
                             this.onClose();

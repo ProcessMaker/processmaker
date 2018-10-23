@@ -21,18 +21,18 @@ class GenerateMenus
 
         Menu::make('topnav', function ($menu) {
             $menu->group(['prefix' => 'requests'], function($request_items) {
-                $request_items->add(__('Request'), ['route' => 'requests.index']);
+                $request_items->add(__('menus.topnav.requests'), ['route' => 'requests.index']);
             });
             //@TODO change the index to the correct blade
             $menu->group(['prefix' => 'tasks'], function($request_items) {
-                $request_items->add(__('Tasks'), ['route' => 'tasks.index']);
+                $request_items->add(__('menus.topnav.tasks'), ['route' => 'tasks.index']);
             });
             //@TODO change the index to the correct blade
             $menu->group(['prefix' => 'processes'], function($request_items) {
-                $request_items->add(__('Processes'), ['route' => 'processes.index']);
+                $request_items->add(__('menus.topnav.processes'), ['route' => 'processes.index']);
             });
             $menu->group(['prefix' => 'admin'], function($admin_items) {
-                $admin_items->add(__('Admin'), ['route' => 'users.index']);
+                $admin_items->add(__('menus.topnav.admin'), ['route' => 'users.index']);
             });
         });
 
@@ -69,27 +69,6 @@ class GenerateMenus
 
         });
         Menu::make('sidebar_task', function ($menu) {
-        //   $submenu = $menu->add(__('menus.sidebar_task.tasks'));
-        //   $submenu->add(__('menus.sidebar_task.assigned'), [
-        //       'route' => 'home',
-        //       'icon' => 'icon-assigned',
-        //       'id' => 'homeid'
-        //   ]);
-        //   $submenu->add(__('menus.sidebar_task.unassigned'), [
-        //       'route' => 'home',
-        //       'icon' => 'icon-unassigned',
-        //       'id' => 'homeid'
-        //     ]);
-        //   $submenu->add(__('menus.sidebar_task.completed'), [
-        //       'route' => 'home',
-        //       'icon' => 'icon-completed-1',
-        //       'id' => 'homeid'
-        //     ]);
-        //   $submenu->add(__('menus.sidebar_task.paused'), [
-        //       'route' => 'home',
-        //       'icon' => 'icon-paused-2',
-        //       'id' => 'homeid'
-        //     ]);
         });
         Menu::make('sidebar_request', function ($menu) {
           $submenu = $menu->add(__('menus.sidebar_request.request'));
@@ -123,24 +102,24 @@ class GenerateMenus
               'id' => 'processes'
           ]);
           $submenu->add(__('menus.sidebar_processes.categories'), [
-            //   'route' => 'processes.categories.index',
+              'route' => 'categories.index',
               'icon' => 'fa-sitemap',
               'id' => 'process-categories'
           ]);
           $submenu->add(__('menus.sidebar_processes.scripts'), [
-            //   'route' => 'processes.categories.index',
+              'route' => 'scripts.index',
               'icon' => 'fa-code',
-              'id' => 'process-categories'
+              'id' => 'process-scripts'
           ]);
           $submenu->add(__('menus.sidebar_processes.forms'), [
-            //   'route' => 'processes.categories.index',
+              'route' => 'forms.index',
               'icon' => 'fa-file-alt',
-              'id' => 'process-categories'
+              'id' => 'process-forms'
           ]);
-          $submenu->add(__('menus.sidebar_processes.environmentalVariables'), [
-            //   'route' => 'processes.categories.index',
+          $submenu->add(__('menus.sidebar_processes.environment_variables'), [
+              'route' => 'environment-variables.index',
               'icon' => 'fa-cogs',
-              'id' => 'process-categories'
+              'id' => 'process-environment'
           ]);
         });
 

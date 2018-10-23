@@ -1,34 +1,30 @@
 import Vue from 'vue'
 import ProcessesListing from './components/ProcessesListing'
-import ModalCreateProcess from "./components/modal/modal-process-add-edit.vue";
 
 new Vue({
     el: '#processIndex',
     data: {
         filter: '',
         processModal: false,
-        processUuid: null
+        processId: null
     },
     components: {
         ProcessesListing,
-        ModalCreateProcess
     },
     methods: {
         show() {
-            this.processUuid = null;
+            this.processId = null;
             this.processModal = true;
         },
-        edit(uuid) {
-            this.processUuid = uuid;
+        edit(id) {
+            this.processId = id;
             this.processModal = true;
         },
         reload() {
-            this.$refs.processListing.dataManager([
-                {
-                    field: 'updated_at',
-                    direction: 'desc'
-                }
-            ]);
+            this.$refs.processListing.dataManager([{
+                field: 'updated_at',
+                direction: 'desc'
+            }]);
         }
     }
 });

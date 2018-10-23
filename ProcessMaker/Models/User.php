@@ -7,29 +7,27 @@ use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-use Spatie\BinaryUuid\HasBinaryUuid;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use ProcessMaker\Traits\HasAuthorization;
 
 class User extends Authenticatable implements HasMedia
 {
     use HasApiTokens;
     use Notifiable;
-    use HasBinaryUuid;
     use HasMediaTrait;
+    use HasAuthorization;
 
     //Disk
     public const DISK_PROFILE = 'profile';
     //collection media library
     public const COLLECTION_PROFILE = 'profile';
 
-    public $incrementing = false;
-
     /**
      * The attributes that are mass assignable.
      *
      * @var array
-     * 
+     *
      *   @OA\Schema(
      *   schema="usersEditable",
      *   @OA\Property(property="email", type="string", format="email"),
@@ -54,7 +52,7 @@ class User extends Authenticatable implements HasMedia
      * @OA\Schema(
      *   schema="users",
      *   allOf={@OA\Schema(ref="#/components/schemas/usersEditable")},
-     *   @OA\Property(property="uuid", type="string", format="uuid"),
+     *   @OA\Property(property="id", type="string", format="id"),
      *   @OA\Property(property="created_at", type="string", format="date-time"),
      *   @OA\Property(property="updated_at", type="string", format="date-time"),
      * )
@@ -83,7 +81,7 @@ class User extends Authenticatable implements HasMedia
     ];
 
     protected $guarded = [
-        'uuid',
+        'id',
         'created_at',
         'updated_at',
     ];
@@ -97,7 +95,11 @@ class User extends Authenticatable implements HasMedia
         'loggedin_at',
     ];
 
-    /**
+    protected $casts = [
+        'is_administrator' => 'bool'
+    ];
+
+/**
      * Validation rules
      *
      * @param $existing
@@ -115,13 +117,13 @@ class User extends Authenticatable implements HasMedia
             // ignore the unique rule for this id
             $rules['username'] = [
                 'required',
-                Rule::unique('users')->ignore($existing->uuid, 'uuid')
+                Rule::unique('users')->ignore($existing->id, 'id')
             ];
 
             $rules['email'] = [
                 'required',
                 'email',
-                Rule::unique('users')->ignore($existing->uuid, 'uuid')
+                Rule::unique('users')->ignore($existing->id, 'id')
             ];
         }
         return $rules;
@@ -134,6 +136,8 @@ class User extends Authenticatable implements HasMedia
      */
     protected $hidden = [
         'password',
+        'groupMembersFromMemberable',
+        'permissionAssignments',
     ];
 
     /**
@@ -150,15 +154,14 @@ class User extends Authenticatable implements HasMedia
         ]);
     }
 
-    public function members()
+    public function groupMembersFromMemberable()
     {
-        // return $this->hasMany(GroupMember::class);
-        return GroupMember::where(['member_type' => self::class, 'member_uuid' => $this->uuid])->get();
+        return $this->morphMany(GroupMember::class, 'member', null, 'member_id');
     }
 
-    public function memberships()
+    public function permissionAssignments()
     {
-        return $this->morphMany(GroupMember::class, 'member', null, 'member_uuid');
+        return $this->morphMany(PermissionAssignment::class, 'assignable', null, 'assignable_id');
     }
 
     /**
@@ -193,4 +196,5 @@ class User extends Authenticatable implements HasMedia
         }
         return $url;
     }
+
 }

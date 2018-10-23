@@ -9,19 +9,18 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
-use Spatie\BinaryUuid\HasBinaryUuid;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
 /**
  * Represents a business process definition.
  *
- * @property string $uuid
- * @property string $uuid_text
- * @property string $process_category_uuid
- * @property string $process_category_uuid_text
- * @property string $user_uuid
- * @property string $user_uuid_text
+ * @property string $id
+ * @property string $id
+ * @property string $process_category_id
+ * @property string $process_category_id
+ * @property string $user_id
+ * @property string $user_id
  * @property string $bpmn
  * @property string $description
  * @property string $name
@@ -31,7 +30,7 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  *
  * @OA\Schema(
  *   schema="ProcessEditable",
- *   @OA\Property(property="process_category_uuid", type="string", format="uuid"),
+ *   @OA\Property(property="process_category_id", type="string", format="id"),
  *   @OA\Property(property="name", type="string"),
  *   @OA\Property(property="description", type="string"),
  *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
@@ -39,19 +38,15 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  * @OA\Schema(
  *   schema="Process",
  *   allOf={@OA\Schema(ref="#/components/schemas/ProcessEditable")},
- *   @OA\Property(property="user_uuid", type="string", format="uuid"),
- *   @OA\Property(property="uuid", type="string", format="uuid"),
+ *   @OA\Property(property="user_id", type="string", format="id"),
+ *   @OA\Property(property="id", type="string", format="id"),
  *   @OA\Property(property="created_at", type="string", format="date-time"),
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
  * )
  */
 class Process extends Model implements HasMedia
 {
-
-    use HasBinaryUuid;
     use HasMediaTrait;
-
-    public $incrementing = false;
 
     /**
      * The attributes that aren't mass assignable.
@@ -59,8 +54,8 @@ class Process extends Model implements HasMedia
      * @var array
      */
     protected $guarded = [
-        'uuid',
-        'user_uuid',
+        'id',
+        'user_id',
         'created_at',
         'updated_at',
     ];
@@ -88,9 +83,9 @@ class Process extends Model implements HasMedia
      *
      * @var array
      */
-    protected $uuids = [
-        'process_category_uuid',
-        'user_uuid',
+    protected $ids = [
+        'process_category_id',
+        'user_id',
     ];
 
     /**
@@ -100,7 +95,7 @@ class Process extends Model implements HasMedia
      */
     public function category()
     {
-        return $this->belongsTo(ProcessCategory::class, 'process_category_uuid');
+        return $this->belongsTo(ProcessCategory::class, 'process_category_id');
     }
 
     /**
@@ -116,15 +111,16 @@ class Process extends Model implements HasMedia
             'name' => 'required|unique:processes,name',
             'description' => 'required',
             'status' => 'in:ACTIVE,INACTIVE',
-            'process_category_uuid' => 'nullable|exists:process_categories,uuid',
-            'bpmn' => 'nullable|bpmn_schema',
+            'process_category_id' => 'nullable|exists:process_categories,id',
+            'bpmn' => 'nullable',
         ];
 
         if ($existing) {
             // ignore the unique rule for this id
             $rules['name'] = [
                 'required',
-                Rule::unique('processes')->ignore($existing->uuid, 'uuid')
+                'string',
+                Rule::unique('processes')->ignore($existing->id, 'id')
             ];
         }
 
@@ -137,7 +133,7 @@ class Process extends Model implements HasMedia
      */
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_uuid');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**
@@ -226,21 +222,21 @@ class Process extends Model implements HasMedia
             default:
                 $user = null;
         }
-        return $user ? User::withUuid($user)->first() : null;
+        return $user ? User::where('id', $user)->first() : null;
     }
 
     /**
      * Get the next user in a cyclical assignment.
      *
      * @param string $processTaskUuid
-     * 
+     *
      * @return binary
      * @throws TaskDoesNotHaveUsersException
      */
     private function getNextUserCyclicalAssignment($processTaskUuid)
     {
-        $last = ProcessRequestToken::where('process_uuid', $this->uuid)
-            ->where('element_uuid', $processTaskUuid)
+        $last = ProcessRequestToken::where('process_id', $this->id)
+            ->where('element_id', $processTaskUuid)
             ->orderBy('created_at', 'desc')
             ->first();
         $users = $this->getAssignableUsers($processTaskUuid);
@@ -250,7 +246,7 @@ class Process extends Model implements HasMedia
         sort($users);
         if ($last) {
             foreach ($users as $user) {
-                if ($user > $last->user_uuid) {
+                if ($user > $last->user_id) {
                     return $user;
                 }
             }
@@ -260,23 +256,23 @@ class Process extends Model implements HasMedia
 
     /**
      * Get an array of all assignable users to a task.
-     * 
+     *
      * @param string $processTaskUuid
-     * 
+     *
      * @return array
      */
     public function getAssignableUsers($processTaskUuid)
     {
-        $assignments = ProcessTaskAssignment::select(['assignment_uuid', 'assignment_type'])
-                ->where('process_uuid', $this->uuid)
-                ->where('process_task_uuid', $processTaskUuid)
+        $assignments = ProcessTaskAssignment::select(['assignment_id', 'assignment_type'])
+                ->where('process_id', $this->id)
+                ->where('process_task_id', $processTaskUuid)
                 ->get();
         $users = [];
         foreach ($assignments as $assignment) {
             if ($assignment->assignment_type === 'user') {
-                $users[$assignment->assignment_uuid] = $assignment->assignment_uuid;
+                $users[$assignment->assignment_id] = $assignment->assignment_id;
             } else {
-                $this->getConsolidatedUsers($assignment->assignment_uuid, $users);
+                $this->getConsolidatedUsers($assignment->assignment_id, $users);
             }
         }
         return array_values($users);
@@ -285,19 +281,19 @@ class Process extends Model implements HasMedia
     /**
      * Get a consolidated list of users within groups.
      *
-     * @param binary $group_uuid
+     * @param binary $group_id
      * @param array $users
-     * 
+     *
      * @return array
      */
-    private function getConsolidatedUsers($group_uuid, array &$users)
+    private function getConsolidatedUsers($group_id, array &$users)
     {
-        $groupMembers = GroupMember::where('group_uuid', $group_uuid)->get();
+        $groupMembers = GroupMember::where('group_id', $group_id)->get();
         foreach ($groupMembers as $groupMember) {
             if ($groupMember->member_type === 'user') {
-                $users[$groupMember->member_uuid] = $groupMember->member_uuid;
+                $users[$groupMember->member_id] = $groupMember->member_id;
             } else {
-                $this->getConsolidatedUsers($groupMember->member_uuid, $users);
+                $this->getConsolidatedUsers($groupMember->member_id, $users);
             }
         }
         return $users;
@@ -327,7 +323,7 @@ class Process extends Model implements HasMedia
     public function events()
     {
         $query = $this->newQuery();
-        $query->where('uuid', $this->uuid);
+        $query->where('id', $this->id);
         return new ProcessEvents($query, $this);
     }
 }

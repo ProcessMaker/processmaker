@@ -2,7 +2,7 @@
     <div id="editor-container">
         <div class="toolbar">
             <nav class="navbar navbar-expand-md override">
-                <span>{{process.name}} - {{script.title}} ({{script.language}})</span>
+                <span> {{script.title}} ({{script.language}})</span>
                 <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
                     <ul class="navbar-nav">
                         <li class="nav-item ">
@@ -49,7 +49,7 @@ import MonacoEditor from "vue-monaco";
 import _ from "lodash";
 
 export default {
-  props: [, "process", "script"],
+  props: ["process", "script"],
   data() {
     return {
         resizing: false,
@@ -87,7 +87,7 @@ export default {
         this.preview.executing = true;
       // Attempt to execute a script, using our temp variables
       ProcessMaker.apiClient
-        .post("script/preview", {
+        .post("scripts/preview", {
           code: this.code,
           language: this.script.language,
           data: this.preview.data,
@@ -102,12 +102,14 @@ export default {
         });
     },
     onClose() {
-      window.location.href = "/designer/" + this.process.uid;
+      window.location.href = '/processes/scripts';
     },
     save() {
       ProcessMaker.apiClient
-        .put("process/" + this.process.uid + "/script/" + this.script.uid, {
-          code: this.code
+        .put("scripts/" + this.script.id, {
+          code: this.code,
+          title: this.script.title,
+          language: this.script.language
         })
         .then(response => {
           ProcessMaker.alert(" Successfully saved", "success");
@@ -118,10 +120,12 @@ export default {
 </script>
 
 <style lang="scss">
+
 #editor-container {
-  height: calc(100vh - 60px);
   display: flex;
   flex-direction: column;
+  height: 100%;
+  overflow: hidden;
 
   .editor {
     flex-grow: 1;
@@ -130,7 +134,6 @@ export default {
         display: none;
     }
   }
-
   .preview {
     height: 200px;
     display: flex;

@@ -42,7 +42,7 @@
                     {{$process->category->name}}
                 </div>
             </div>
-            <process-call process-uid="{{$process->uid}}" process-id="{{$processId}}">
+            <process-call process-id="{{$process->id}}" process-id="{{$processId}}">
             </process-call>
         </div>
     </div>

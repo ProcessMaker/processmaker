@@ -1,13 +1,13 @@
 <template>
     <div id="designer-container">
-        <component :is="modalComponent" :if="modalComponent" @hidden="onHidden" :processUid="processUid"
+        <component :is="modalComponent" :if="modalComponent" @hidden="onHidden" :processId="processId"
                    :selectedElement="selectedElement"></component>
         <toptoolbar ref="toptoolbar" :title="processTitle"></toptoolbar>
         <toolbar ref="toolbar"></toolbar>
         <div id="designer-subcontainer">
             <div class="canvas-container" @scroll="onScroll">
                 <crown ref="crown"></crown>
-                <svgcanvas :processUid="processUid" :bpmn="bpmn" ref="svgcanvas"></svgcanvas>
+                <svgcanvas :processId="processId" :bpmn="bpmn" ref="svgcanvas"></svgcanvas>
             </div>
             <designerobjectsmenu></designerobjectsmenu>
         </div>
@@ -52,7 +52,7 @@ import crown from "./components/crown";
 import actions from "./actions";
 
 export default {
-  props: ["processUid", "processTitle"],
+  props: ["processId", "processTitle"],
   components: {
     crown,
     designerobjectsmenu,
@@ -176,7 +176,7 @@ export default {
   },
   mounted() {
     ProcessMaker.apiClient
-      .get(`processes/${this.processUid}/bpmn`, {
+      .get(`processes/${this.processId}/bpmn`, {
         params: {}
       })
       .then(response => {

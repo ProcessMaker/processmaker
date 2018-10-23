@@ -8,6 +8,7 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
+use Tests\Feature\Shared\RequestHelper;
 
 /**
  * Tests routes related to tokens list and show
@@ -21,14 +22,14 @@ class TasksTest extends TestCase
 
     use WithFaker;
     use ResourceAssertionsTrait;
+    use RequestHelper;
 
-    protected $user;
     protected $resource = 'tasks';
     protected $structure = [
-        'uuid',
-        'process_request_uuid',
-        'user_uuid',
-        'element_uuid',
+        'id',
+        'process_request_id',
+        'user_id',
+        'element_id',
         'element_type',
         'element_name',
         'status',
@@ -41,19 +42,6 @@ class TasksTest extends TestCase
     ];
 
     /**
-     * Initialize the controller tests
-     *
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-        //Login as an valid user
-        $this->user = factory(User::class)->create();
-        $this->actingAs($this->user, 'api');
-        $this->request = factory(ProcessRequest::class)->create();
-    }
-
-    /**
      * Test to get the list of tokens
      */
     public function testGetListOfTasks()
@@ -61,11 +49,11 @@ class TasksTest extends TestCase
         $request = factory(ProcessRequest::class)->create();
         // Create some tokens
         factory(ProcessRequestToken::class, 20)->create([
-            'process_request_uuid' => $request->uuid
+            'process_request_id' => $request->id
         ]);
         //Get a page of tokens
         $route = route('api.' . $this->resource . '.index', ['per_page' => 10, 'page' => 2]);
-        $response = $this->json('GET', $route);
+        $response = $this->apiCall('GET', $route);
         //Verify the status
         $response->assertStatus(200);
         //Verify the structure
@@ -81,16 +69,16 @@ class TasksTest extends TestCase
         // Create some tokens
         factory(ProcessRequestToken::class, 10)->create([
             'status' => 'ACTIVE',
-            'process_request_uuid' => $request->uuid
+            'process_request_id' => $request->id
         ]);
         factory(ProcessRequestToken::class, 10)->create([
             'status' => 'CLOSED',
-            'process_request_uuid' => $request->uuid
+            'process_request_id' => $request->id
         ]);
 
         //Get active tokens
         $route = route('api.' . $this->resource . '.index', ['per_page' => 10, 'filter' => 'ACTIVE']);
-        $response = $this->json('GET', $route);
+        $response = $this->apiCall('GET', $route);
         //Verify the status
         $response->assertStatus(200);
         //Verify the structure
@@ -106,16 +94,16 @@ class TasksTest extends TestCase
         // Create some tokens
         factory(ProcessRequestToken::class)->create([
             'completed_at' => null,
-            'process_request_uuid' => $request->uuid
+            'process_request_id' => $request->id
         ]);
         factory(ProcessRequestToken::class)->create([
             'completed_at' => Carbon::now(),
-            'process_request_uuid' => $request->uuid
+            'process_request_id' => $request->id
         ]);
 
         //List sorted by completed_at returns as first row {"completed_at": null}
         $route = route('api.' . $this->resource . '.index', ['order_by' => 'completed_at', 'order_direction' => 'asc']);
-        $response = $this->json('GET', $route);
+        $response = $this->apiCall('GET', $route);
         //Verify the status
         $response->assertStatus(200);
         //Verify the structure
@@ -140,13 +128,13 @@ class TasksTest extends TestCase
 
         // Now we create the specified number of tokens
         factory(ProcessRequestToken::class, $rowsToAdd)->create([
-            'process_request_uuid' => $request->uuid
+            'process_request_id' => $request->id
         ]);
 
         // Get the second page, should have 5 items
         $perPage = 5;
         $page = 2;
-        $response = $this->json('GET', route('api.' . $this->resource . '.index', ['per_page' => $perPage, 'page' => $page]));
+        $response = $this->apiCall('GET', route('api.' . $this->resource . '.index', ['per_page' => $perPage, 'page' => $page]));
         $response->assertJsonCount($perPage, 'data');
         // Verify the meta information
         $this->assertArraySubset(
@@ -170,12 +158,12 @@ class TasksTest extends TestCase
         $request = factory(ProcessRequest::class)->create();
         //Create a new process without category
         $token = factory(ProcessRequestToken::class)->create([
-            'process_request_uuid' => $request->uuid
+            'process_request_id' => $request->id
         ]);
 
         //Test that is correctly displayed
-        $route = route('api.' . $this->resource . '.show', [$token->uuid_text]);
-        $response = $this->json('GET', $route);
+        $route = route('api.' . $this->resource . '.show', [$token->id]);
+        $response = $this->apiCall('GET', $route);
         //Check the status
         $response->assertStatus(200);
         //Check the structure
@@ -191,16 +179,16 @@ class TasksTest extends TestCase
         $request = factory(ProcessRequest::class)->create();
         //Create a new process without category
         $token = factory(ProcessRequestToken::class)->create([
-            'process_request_uuid' => $request->uuid
+            'process_request_id' => $request->id
         ]);
 
         //Test that is correctly displayed
-        $route = route('api.' . $this->resource . '.show', [$token->uuid_text, 'include' => 'user,definition']);
-        $response = $this->json('GET', $route);
+        $route = route('api.' . $this->resource . '.show', [$token->id, 'include' => 'user,definition']);
+        $response = $this->apiCall('GET', $route);
         //Check the status
         $this->assertStatus(200, $response);
         //Check the structure
         $response->assertJsonStructure($this->structure);
-        $response->assertJsonStructure(['user'=>['uuid', 'email'],'definition'=>[]]);
+        $response->assertJsonStructure(['user'=>['id', 'email'],'definition'=>[]]);
     }
 }

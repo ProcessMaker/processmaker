@@ -131,7 +131,7 @@
             },
             saveForm() {
                 ProcessMaker.apiClient
-                    .put('forms/' + this.form.uuid , {
+                    .put('forms/' + this.form.id , {
                         title: this.config[0].name,
                         config: this.config
                     })

@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Api\Designer;
+namespace Tests\Feature\Api;
 
 use Faker\Factory as Faker;
 use Illuminate\Support\Facades\Hash;
@@ -13,7 +13,7 @@ class FormsTest extends TestCase
 {
     use RequestHelper;
 
-    const API_TEST_FORM = '/api/1.0/forms';
+    const API_TEST_FORM = '/forms';
 
     const STRUCTURE = [
         'title',
@@ -153,7 +153,7 @@ class FormsTest extends TestCase
                         'data2' => 'text 2'
                     ]
                 ]
-            ])->uuid_text;
+            ])->id;
         $response = $this->apiCall('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
@@ -168,7 +168,7 @@ class FormsTest extends TestCase
     public function testUpdateFormParametersRequired()
     {
         //Post should have the parameter title
-        $url = self::API_TEST_FORM . '/' . factory(Form::class)->create()->uuid_text;
+        $url = self::API_TEST_FORM . '/' . factory(Form::class)->create()->id;
         $response = $this->apiCall('PUT', $url, [
             'title' => '',
             'description' => ''
@@ -185,7 +185,7 @@ class FormsTest extends TestCase
     {
         //Post saved success
         $faker = Faker::create();
-        $url = self::API_TEST_FORM . '/' . factory(Form::class)->create()->uuid_text;
+        $url = self::API_TEST_FORM . '/' . factory(Form::class)->create()->id;
         $response = $this->apiCall('PUT', $url, [
             'title' => 'FormTitleTest',
             'description' => $faker->sentence(5),
@@ -205,7 +205,7 @@ class FormsTest extends TestCase
         $title = 'Some title';
         $url = self::API_TEST_FORM . '/' . factory(Form::class)->create([
             'title' => $title,
-        ])->uuid_text;
+        ])->id;
         $response = $this->apiCall('PUT', $url, [
             'title' => $title,
             'description' => $faker->sentence(5),
@@ -221,7 +221,7 @@ class FormsTest extends TestCase
     public function testDeleteForm()
     {
         //Remove Form
-        $url = self::API_TEST_FORM . '/' . factory(Form::class)->create()->uuid_text;
+        $url = self::API_TEST_FORM . '/' . factory(Form::class)->create()->id;
         $response = $this->apiCall('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(204);
@@ -233,7 +233,7 @@ class FormsTest extends TestCase
     public function testDeleteFormNotExist()
     {
         //form not exist
-        $url = self::API_TEST_FORM . '/' . factory(Form::class)->make()->uuid_text;
+        $url = self::API_TEST_FORM . '/' . factory(Form::class)->make()->id;
         $response = $this->apiCall('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(405);

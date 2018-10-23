@@ -3,18 +3,18 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\Nayra\Bpmn\TokenTrait;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
-use Spatie\BinaryUuid\HasBinaryUuid;
 
 /**
  * ProcessRequestToken is used to store the state of a token of the
  * Nayra engine
  *
- * @property string $uuid
- * @property string $process_request_uuid
- * @property string $user_uuid
- * @property string $element_uuid
+ * @property string $id
+ * @property string $process_request_id
+ * @property string $user_id
+ * @property string $element_id
  * @property string $element_type
  * @property string $status
  * @property \Carbon\Carbon $completed_at
@@ -28,10 +28,7 @@ use Spatie\BinaryUuid\HasBinaryUuid;
  */
 class ProcessRequestToken extends Model implements TokenInterface
 {
-    use HasBinaryUuid;
     use TokenTrait;
-
-    public $incrementing = false;
 
     /**
      * Attributes that are not mass assignable.
@@ -39,7 +36,7 @@ class ProcessRequestToken extends Model implements TokenInterface
      * @var array $guarded
      */
     protected $guarded = [
-        'uuid',
+        'id',
         'updated_at',
         'created_at',
     ];
@@ -60,10 +57,10 @@ class ProcessRequestToken extends Model implements TokenInterface
      *
      * @var array
      */
-    protected $uuids = [
-        'process_uuid',
-        'process_request_uuid',
-        'user_uuid',
+    protected $ids = [
+        'process_id',
+        'process_request_id',
+        'user_id',
     ];
 
     /**
@@ -72,6 +69,7 @@ class ProcessRequestToken extends Model implements TokenInterface
      * @var array
      */
     protected $appends = [
+        'previousUser'
     ];
 
     /**
@@ -83,7 +81,6 @@ class ProcessRequestToken extends Model implements TokenInterface
     {
         parent::__construct($argument);
         $this->bootElement([]);
-        $this->setId(self::generateUuid());
     }
 
     /**
@@ -92,7 +89,7 @@ class ProcessRequestToken extends Model implements TokenInterface
      */
     public function process()
     {
-        return $this->belongsTo(Process::class, 'process_uuid');
+        return $this->belongsTo(Process::class, 'process_id');
     }
 
     /**
@@ -101,7 +98,7 @@ class ProcessRequestToken extends Model implements TokenInterface
      */
     public function processRequest()
     {
-        return $this->belongsTo(ProcessRequest::class, 'process_request_uuid');
+        return $this->belongsTo(ProcessRequest::class, 'process_request_id');
     }
 
     /**
@@ -110,7 +107,25 @@ class ProcessRequestToken extends Model implements TokenInterface
      */
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_uuid');
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Returns the user that sent the task or
+     */
+    public function getPreviousUserAttribute()
+    {
+        $query = ProcessRequestToken::query();
+        $query->where('process_request_id', $this->process_request_id)
+                ->where('id', '!=', $this->id)
+                ->where('status', 'ACTIVE')
+                ->orderByDesc('completed_at');
+        $last = $query->get()->last();
+        if (empty($last)) {
+            return ProcessRequest::find($this->process_request_id)
+                    ->user;
+        }
+        return $last->user;
     }
 
     /**
@@ -121,7 +136,7 @@ class ProcessRequestToken extends Model implements TokenInterface
     public function getDefinition()
     {
         $definitions = $this->processRequest->process->getDefinitions();
-        $element = $definitions->findElementById($this->element_uuid);
+        $element = $definitions->findElementById($this->element_id);
         if (!$element) {
             return [];
         }

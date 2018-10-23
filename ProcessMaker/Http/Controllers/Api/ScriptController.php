@@ -134,14 +134,14 @@ class ScriptController extends Controller
      * @return ResponseFactory|Response
      * 
      *     @OA\Get(
-     *     path="/scripts/{scriptsUuid}",
+     *     path="/scripts/scriptsId",
      *     summary="Get single script by ID",
-     *     operationId="getScriptsByUuid",
+     *     operationId="getScriptsById",
      *     tags={"Scripts"},
      *     @OA\Parameter(
      *         description="ID of script to return",
      *         in="path",
-     *         name="scriptsUuid",
+     *         name="script_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -201,14 +201,14 @@ class ScriptController extends Controller
      * @return ResponseFactory|Response
      * 
      *     @OA\Put(
-     *     path="/scripts/{scriptsUuid}",
+     *     path="/scripts/scriptsId",
      *     summary="Update a script",
      *     operationId="updateScript",
      *     tags={"Scripts"},
      *     @OA\Parameter(
      *         description="ID of script to return",
      *         in="path",
-     *         name="ScriptsUuid",
+     *         name="script_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -232,7 +232,7 @@ class ScriptController extends Controller
         $script->fill($request->input());
         $script->saveOrFail();
 
-        return response([], 204);
+        return response($request, 204);
     }
 
     /**
@@ -243,14 +243,14 @@ class ScriptController extends Controller
      * @return ResponseFactory|Response
      * 
      *     @OA\Delete(
-     *     path="/scripts/{scriptsUuid}",
+     *     path="/scripts/scriptsId",
      *     summary="Delete a script",
      *     operationId="deleteScript",
      *     tags={"Scripts"},
      *     @OA\Parameter(
      *         description="ID of script to return",
      *         in="path",
-     *         name="scriptsUuid",
+     *         name="script_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
