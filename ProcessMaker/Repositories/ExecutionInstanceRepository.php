@@ -30,25 +30,24 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
     public function createExecutionInstance()
     {
         $instance = new Instance();
-        $instance->uuid_text = Instance::generateUuid();
-        $instance->setId($instance->uuid_text);
+        $instance->setId(uniqid('request', true));
         return $instance;
     }
 
     /**
      * Load an execution instance from a persistent storage.
      *
-     * @param string $uuid
+     * @param string $instanceId
      *
      * @return \ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface
      */
-    public function loadExecutionInstanceByUid($uuid, StorageInterface $storage)
+    public function loadExecutionInstanceByUid($instanceId, StorageInterface $storage)
     {
-        $instance = Instance::withUuid($uuid)->first();
+        $instance = Instance::find($instanceId);
         if (!$instance) {
             abort(404, 'Instance not found');
         }
-        $callableId = $instance->callable_uuid;
+        $callableId = $instance->callable_id;
         $process = $storage->getProcess($callableId);
         $dataStore = $storage->getFactory()->createDataStore();
         $dataStore->setData($instance->data);
@@ -59,9 +58,9 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         //Load tokens:
         foreach ($instance->tokens as $token) {
             $tokenInfo = [
-                'id' => $token->uuid_text,
+                'id' => $token->getKey(),
                 'status' => $token->status,
-                'element_ref' => $token->element_uuid,
+                'element_ref' => $token->element_id,
             ];
             $token->setProperties($tokenInfo);
             $element = $storage->getElementInstanceById($tokenInfo['element_ref']);
@@ -99,9 +98,9 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $definition = $process->getEngine()->getProcess();
 
         //Save the row
-        $instance->callable_uuid = $process->getId();
-        $instance->process_uuid = $definition->uuid;
-        $instance->user_uuid = Auth::user()->uuid;
+        $instance->callable_id = $process->getId();
+        $instance->process_id = $definition->getKey();
+        $instance->user_id = Auth::user()->getKey();
         $instance->name = $definition->name;
         $instance->status = 'DRAFT';
         $instance->initiated_at = Carbon::now();
@@ -154,15 +153,15 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
      */
     public function persistInstanceCollaboration(ExecutionInstanceInterface $instance, ParticipantInterface $participant, ExecutionInstanceInterface $source, ParticipantInterface $sourceParticipant)
     {
-        if ($source->process_collaboration_uuid === null) {
+        if ($source->process_collaboration_id === null) {
             $collaboration = new ProcessCollaboration();
-            $collaboration->process_uuid = $instance->process->uuid;
+            $collaboration->process_id = $instance->process->getKey();
             $collaboration->saveOrFail();
-            $source->process_collaboration_uuid = $collaboration->uuid;
+            $source->process_collaboration_id = $collaboration->getKey();
             $source->saveOrFail();
         }
-        $instance->process_collaboration_uuid = $source->process_collaboration_uuid;
-        $instance->participant_uuid = $participant ? $participant->getId() : null;
+        $instance->process_collaboration_id = $source->process_collaboration_id;
+        $instance->participant_id = $participant ? $participant->getId() : null;
         $instance->saveOrFail();
     }
 }

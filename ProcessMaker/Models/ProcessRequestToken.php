@@ -81,7 +81,6 @@ class ProcessRequestToken extends Model implements TokenInterface
     {
         parent::__construct($argument);
         $this->bootElement([]);
-        $this->setId(self::generateUuid());
     }
 
     /**
