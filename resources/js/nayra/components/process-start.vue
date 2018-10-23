@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="alert alert-success">Process UID: {{processUid}}</div>
+        <div class="alert alert-success">Process ID: {{processId}}</div>
         <div class="alert alert-success">Using Event: {{event}}</div>
         <div class="card">
             <div class="card-body">
@@ -15,7 +15,7 @@
     
     export default {
         props: [
-            'processUid',
+            'processId',
             'event'
         ],
         data() {
@@ -32,7 +32,7 @@
         },
         methods: {
             submit() {
-                ProcessMaker.apiClient.post('processes/' + this.processUid + '/events/' + this.event + '/script', {
+                ProcessMaker.apiClient.post('processes/' + this.processId + '/events/' + this.event + '/script', {
                     startDate: new Date().toISOString(),
                     endDate: '',
                     reason: '',

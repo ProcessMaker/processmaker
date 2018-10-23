@@ -34,9 +34,9 @@ class ProfileTest extends TestCase
     public function testEditRoute()
     {
 
-      $user_uuid = factory(User::class)->create()->uuid_text;
+      $user_id = factory(User::class)->create()->id;
       // get the URL
-      $response = $this->webCall('GET', '/profile/'. $user_uuid . '/edit');
+      $response = $this->webCall('GET', '/profile/'. $user_id . '/edit');
 
       $response->assertStatus(200);
       // check the correct view is called
@@ -50,9 +50,9 @@ class ProfileTest extends TestCase
     public function testShowRoute()
     {
 
-      $user_uuid = factory(User::class)->create()->uuid_text;
+      $user_id = factory(User::class)->create()->id;
       // get the URL
-      $response = $this->webCall('GET', '/profile/'. $user_uuid);
+      $response = $this->webCall('GET', '/profile/'. $user_id);
 
       $response->assertStatus(200);
       // check the correct view is called

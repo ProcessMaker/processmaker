@@ -3,27 +3,25 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Spatie\BinaryUuid\HasBinaryUuid;
 
 /**
  * Represents a business process task assignment definition.
  *
- * @property string $uuid
- * @property string process_task_uuid
- * @property string assignment_uuid
+ * @property string $id
+ * @property string process_task_id
+ * @property string assignment_id
  * @property string assignment_type
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
  *
  */
 class ProcessTaskAssignment extends Model
-{
-    use HasBinaryUuid;
+{    
 
     protected $fillable = [
-        'process_uuid',
-        'process_task_uuid',
-        'assignment_uuid',
+        'process_id',
+        'process_task_id',
+        'assignment_id',
         'assignment_type'
     ];
 
@@ -32,9 +30,9 @@ class ProcessTaskAssignment extends Model
      *
      * @var array
      */
-    protected $uuids = [
-        'process_uuid',
-        'assignment_uuid',
+    protected $ids = [
+        'process_id',
+        'assignment_id',
     ];
 
     /**
@@ -45,8 +43,8 @@ class ProcessTaskAssignment extends Model
     public static function rules()
     {
         return [
-            'process_task_uuid' => 'required|exists:processes,uuid',
-            'assignment_uuid' => 'required',
+            'process_task_id' => 'required|exists:processes,id',
+            'assignment_id' => 'required',
             'assignment_type' => 'required|in:USER,GROUP',
         ];
     }

@@ -27,10 +27,10 @@ class ActivityActivatedNotification extends Notification
      */
     public function __construct(TokenInterface $token)
     {
-        $this->processUid = $token->processRequest->process->uuid_text;
-        $this->instanceUid = $token->processRequest->uuid_text;
-        $this->tokenUid = $token->uuid_text;
-        $this->tokenElement = $token->element_uuid;
+        $this->processUid = $token->processRequest->process->getKey();
+        $this->instanceUid = $token->processRequest->getKey();
+        $this->tokenUid = $token->getKey();
+        $this->tokenElement = $token->element_id;
         $this->tokenStatus = $token->status;
     }
 
@@ -74,10 +74,10 @@ class ActivityActivatedNotification extends Notification
 
     public function toBroadcast($notifiable)
     {
-        $process = Process::withUuid($this->processUid)->first();
+        $process = Process::find($this->processUid);
         $definitions = $process->getDefinitions();
         $activity = $definitions->getActivity($this->tokenElement);
-        $token = Token::withUuid($this->tokenUid)->first();
+        $token = Token::find($this->tokenUid);
         return new BroadcastMessage([
             'message' => sprintf('Task created: %s', $activity->getName()),
             'name' => $activity->getName(),

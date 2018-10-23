@@ -6,7 +6,7 @@ new Vue({
   el: '#users-listing',
   data: {
     filter: '',
-    userUuid: null,
+    userId: null,
     userModal: false
   },
   components: {
@@ -15,7 +15,7 @@ new Vue({
   },
   methods: {
     show() {
-      this.userUuid = null;
+      this.userId = null;
       this.userModal = true;
     },
     reload() {

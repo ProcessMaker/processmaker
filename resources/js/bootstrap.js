@@ -79,11 +79,11 @@ window.ProcessMaker.alert = function(text, variant) {
   window.alert(variant + ": " + text);
 }
 
-let userUID = document.head.querySelector('meta[name="user-uuid"]');
+let userID = document.head.querySelector('meta[name="user-id"]');
 
-if(userUID) {
+if(userID) {
   window.ProcessMaker.user = {
-    uid: userUID.content
+    id: userID.content
   }
 }
 

@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
  * @package ProcessMaker\Models
  */
 class JsonData extends Model
-{    
+{
      public static function timezones(){
      $temp = json_decode(file_get_contents(resource_path(). '/js/data/timeszones.json'), true);
       $timezones=[];
@@ -19,6 +19,3 @@ class JsonData extends Model
       return $timezones;
      }
 }
-     
-     
-     

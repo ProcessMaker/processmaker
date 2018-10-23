@@ -14,14 +14,12 @@ class CreatePermissionAssignmentsTable extends Migration
     public function up()
     {
         Schema::create('permission_assignments', function (Blueprint $table) {
-          $table->uuid('uuid');
-          $table->primary('uuid');
-          $table->uuid('permission_uuid');
-          $table->uuid('assignable_uuid');
-          $table->string('assignable_type');
+          $table->increments('id');
+          $table->unsignedInteger('permission_id');
+          $table->morphs('assignable');
           $table->timestamps();
 
-          $table->foreign('permission_uuid')->references('uuid')->on('permissions');
+          $table->foreign('permission_id')->references('id')->on('permissions')->onDelete('cascade');
         });
     }
 

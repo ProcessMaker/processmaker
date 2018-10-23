@@ -19,11 +19,11 @@ class GroupMemberController extends Controller
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
-     * 
+     *
      *     @OA\Get(
      *     path="/group_members",
      *     summary="Returns all group_members that the user has access to",
-     *     operationId="getGroup_members",
+     *     operationId="getGroupMembers",
      *     tags={"Group members"},
      *     @OA\Parameter(ref="#/components/parameters/filter"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
@@ -58,7 +58,7 @@ class GroupMemberController extends Controller
         if (!empty($filter)) {
             $filter = '%' . $filter . '%';
             $query->where(function ($query) use ($filter) {
-                $query->Where('member_uuid', '=', $filter);
+                $query->Where('member_id', '=', $filter);
             });
         }
 
@@ -78,11 +78,11 @@ class GroupMemberController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
-     * 
+     *
      *     @OA\Post(
      *     path="/group_members",
      *     summary="Save a new group_members",
-     *     operationId="createGroup_members",
+     *     operationId="createGroupMembers",
      *     tags={"Group members"},
      *     @OA\RequestBody(
      *       required=true,
@@ -99,10 +99,9 @@ class GroupMemberController extends Controller
     {
         $request->validate(GroupMember::rules());
 
-        $group = Group::withUuid($request->input('group_uuid'))->first();
-        $member = $request->input('member_type')::withUuid(
-            $request->input('member_uuid')
-        )->first();
+        $group = Group::findOrFail($request->input('group_id'));
+
+        $member = $request->input('member_type')::where('id', $request->input('member_id'))->firstOrFail();
 
         $group_member = new GroupMember();
         $group_member->group()->associate($group);
@@ -115,18 +114,18 @@ class GroupMemberController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  uuid  $id
+     * @param  id  $id
      * @return \Illuminate\Http\Response
-     * 
+     *
      *     @OA\Get(
-     *     path="/group_members/{group_memberUuid}",
+     *     path="/group_members/group_memberId",
      *     summary="Get single group_member by ID",
-     *     operationId="getGroup_memberByUuid",
+     *     operationId="getGroupMemberById",
      *     tags={"Group members"},
      *     @OA\Parameter(
      *         description="ID of group_members to return",
      *         in="path",
-     *         name="group_memberUuid",
+     *         name="group_member_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -150,16 +149,16 @@ class GroupMemberController extends Controller
      * @param GroupMember $user
      *
      * @return ResponseFactory|Response
-     * 
+     *
      *     @OA\Delete(
-     *     path="/group_members/{group_memberUuid}",
+     *     path="/group_members/group_memberId",
      *     summary="Delete a group_members",
-     *     operationId="deleteGroup_members",
+     *     operationId="deleteGroupMembers",
      *     tags={"Group members"},
      *     @OA\Parameter(
      *         description="ID of group_members to return",
      *         in="path",
-     *         name="group_memberUuid",
+     *         name="group_member_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",

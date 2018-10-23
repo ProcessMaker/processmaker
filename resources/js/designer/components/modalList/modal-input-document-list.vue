@@ -37,7 +37,7 @@
     export default {
         components: {Pagination},
         mixins: [dataTableMixin],
-        props: ['processUid'],
+        props: ['processId'],
         data() {
             return {
                 // form models here
@@ -85,7 +85,7 @@
                 let that = this;
                 ProcessMaker.confirmModal('Caution!', '<b>Are you sure to delete the Input document </b>' + data.title + '?', '', function () {
                     ProcessMaker.apiClient
-                        .delete('process/' + that.processUid + '/input-document/' + data.uid)
+                        .delete('process/' + that.processId + '/input-document/' + data.id)
                         .then(response => {
                             ProcessMaker.alert('Input Document successfully eliminated', 'success');
                             that.fetch();
@@ -100,7 +100,7 @@
                 }
                 const CancelToken = ProcessMaker.apiClient.CancelToken;
                 ProcessMaker.apiClient
-                    .get('process/' + this.processUid +
+                    .get('process/' + this.processId +
                         '/input-documents?page=' +
                         this.page +
                         '&per_page=' +
