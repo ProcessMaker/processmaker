@@ -89,7 +89,7 @@ class ProcessScriptsTest extends TestCase
                 'status' => 'CLOSED',
             ]], $tasks);
         //Get process instance
-        $processInstance = ProcessRequest::withUuid($tasks[0]['process_request_id'])->firstOrFail();
+        $processInstance = ProcessRequest::where('id', $tasks[0]['process_request_id'])->firstOrFail();
         //Check the data
         $this->assertArrayHasKey('random', $processInstance->data);
         $this->assertArrayHasKey('double', $processInstance->data);

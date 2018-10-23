@@ -35,6 +35,7 @@ class ProcessesTest extends TestCase
     }
     public function testStore()
     {
+        $this->withoutExceptionHandling();
         $response = $this->webCall('POST' ,'/processes', [
             'name' => 'Stored new user',
             'description' => 'descript',
