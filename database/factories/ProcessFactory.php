@@ -15,11 +15,11 @@ $factory->define(Process::class, function (Faker $faker) {
         'bpmn' => file_get_contents($emptyProcess),
         'description' => $faker->paragraph(3),
         'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-        'user_uuid' => function () {
-            return factory(User::class)->create()->uuid;
+        'user_id' => function () {
+            return factory(User::class)->create()->getKey();
         },
-        'process_category_uuid' => function () {
-            return factory(ProcessCategory::class)->create()->uuid;
+        'process_category_id' => function () {
+            return factory(ProcessCategory::class)->create()->getKey();
         }
     ];
 });

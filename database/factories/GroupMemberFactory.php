@@ -10,10 +10,10 @@ use ProcessMaker\Models\GroupMember;
  */
 $factory->define(GroupMember::class, function (Faker $faker) {
     return [         
-        'member_uuid' => function () {
+        'member_id' => function () {
             return factory(User::class)->create()->uuid;
         },
-        'member_type' => 'user',
+        'member_type' => User::class,
         'group_uuid' => function () {
             return factory(Group::class)->create()->uuid;
         }
