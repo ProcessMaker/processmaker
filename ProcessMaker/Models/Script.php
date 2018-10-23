@@ -5,7 +5,6 @@ namespace ProcessMaker\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\EnvironmentVariable;
-use Spatie\BinaryUuid\HasBinaryUuid;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
 
 /**
@@ -13,7 +12,7 @@ use ProcessMaker\Exception\ScriptLanguageNotSupported;
  *
  * @package ProcessMaker\Model
  *
- * @property string uuid
+ * @property string id
  * @property string title
  * @property text description
  * @property string language
@@ -21,7 +20,7 @@ use ProcessMaker\Exception\ScriptLanguageNotSupported;
  *
  *   @OA\Schema(
  *   schema="scriptsEditable",
- *   @OA\Property(property="uuid", type="string", format="uuid"),
+ *   @OA\Property(property="id", type="string", format="id"),
  *   @OA\Property(property="title", type="string"),
  *   @OA\Property(property="description", type="string"),
  *   @OA\Property(property="language", type="string"),
@@ -37,12 +36,9 @@ use ProcessMaker\Exception\ScriptLanguageNotSupported;
  */
 class Script extends Model
 {
-    use HasBinaryUuid;
-
-    public $incrementing = false;
 
     protected $guarded = [
-        'uuid',
+        'id',
         'created_at',
         'updated_at',
     ];
@@ -66,11 +62,11 @@ class Script extends Model
             'language' => 'required|in:php,lua'
         ];
         if ($existing) {
-            // ignore the unique rule for this uuid
+            // ignore the unique rule for this id
             $rules['title'] = [
                 'required',
                 'string',
-                Rule::unique('scripts')->ignore($existing->uuid, 'uuid')
+                Rule::unique('scripts')->ignore($existing->id, 'id')
             ];
         }
         return $rules;

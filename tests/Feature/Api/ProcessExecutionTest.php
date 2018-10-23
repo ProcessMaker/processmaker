@@ -24,8 +24,8 @@ class ProcessExecutionTest extends TestCase
     protected $process;
     private $requestStructure = [
         'uuid',
-        'process_uuid',
-        'user_uuid',
+        'process_id',
+        'user_id',
         'status',
         'name',
         'initiated_at',
@@ -52,9 +52,9 @@ class ProcessExecutionTest extends TestCase
         //Assign the task to $this->user
         $taskUuid = 'UserTaskUID';
         factory(ProcessTaskAssignment::class)->create([
-            'process_uuid' => $process->uuid,
-            'process_task_uuid' => $taskUuid,
-            'assignment_uuid' => $this->user->uuid,
+            'process_id' => $process->uuid,
+            'process_task_id' => $taskUuid,
+            'assignment_id' => $this->user->uuid,
             'assignment_type' => 'user',
         ]);
         return $process;
@@ -66,7 +66,7 @@ class ProcessExecutionTest extends TestCase
     public function testExecuteAProcess()
     {
         //Start a process request
-        $route = route('api.process_events.trigger', [$this->process->uuid_text, 'event' => 'StartEventUID']);
+        $route = route('api.process_events.trigger', [$this->process->id, 'event' => 'StartEventUID']);
         $data = [];
         $response = $this->apiCall('POST', $route, $data);
         //Verify status
@@ -95,7 +95,7 @@ class ProcessExecutionTest extends TestCase
      */
     public function testGetListOfStartEvents()
     {
-        $route = route('api.processes.show', [$this->process->uuid_text, 'include' => 'events']);
+        $route = route('api.processes.show', [$this->process->id, 'include' => 'events']);
         $response = $this->apiCall('GET', $route);
         //Check the inclusion of events
         $response->assertJsonStructure(['events' => [['id', 'name']]]);
@@ -106,7 +106,7 @@ class ProcessExecutionTest extends TestCase
      */
     public function testStartProcessEmptyEventId()
     {
-        $route = route('api.process_events.trigger', [$this->process->uuid_text]);
+        $route = route('api.process_events.trigger', [$this->process->id]);
         $data = [];
         $response = $this->apiCall('POST', $route, $data);
         $response->assertStatus(404);
@@ -117,7 +117,7 @@ class ProcessExecutionTest extends TestCase
      */
     public function testStartProcessWithNonExistingEventId()
     {
-        $route = route('api.process_events.trigger', [$this->process->uuid_text, 'event' => 'non-existent']);
+        $route = route('api.process_events.trigger', [$this->process->id, 'event' => 'non-existent']);
         $data = [];
         $response = $this->apiCall('POST', $route, $data);
         $response->assertStatus(404);
@@ -129,7 +129,7 @@ class ProcessExecutionTest extends TestCase
     public function testCloseAClosedTask()
     {
         //Start a process request
-        $route = route('api.process_events.trigger', [$this->process->uuid_text, 'event' => 'StartEventUID']);
+        $route = route('api.process_events.trigger', [$this->process->id, 'event' => 'StartEventUID']);
         $data = [];
         $response = $this->apiCall('POST', $route, $data);
         //Verify status
@@ -161,7 +161,7 @@ class ProcessExecutionTest extends TestCase
     public function testUpdateTaskInvalidStatus()
     {
         //Start a process request
-        $route = route('api.process_events.trigger', [$this->process->uuid_text, 'event' => 'StartEventUID']);
+        $route = route('api.process_events.trigger', [$this->process->id, 'event' => 'StartEventUID']);
         $data = [];
         $response = $this->apiCall('POST', $route, $data);
         //Verify status
@@ -190,7 +190,7 @@ class ProcessExecutionTest extends TestCase
     {
         //Create two additional processes
         $this->createTestProcess();
-        $uncProcess = $this->createTestProcess(['process_category_uuid' => null]);
+        $uncProcess = $this->createTestProcess(['process_category_id' => null]);
         //Get the start event id
         $uncProcessEvents = $uncProcess->events;
         //Get the list of processes (with and without category) and its start events
@@ -223,7 +223,7 @@ class ProcessExecutionTest extends TestCase
     public function testGetTaskStatusPage()
     {
         //Start a process request
-        $route = route('api.process_events.trigger', [$this->process->uuid_text, 'event' => 'StartEventUID']);
+        $route = route('api.process_events.trigger', [$this->process->id, 'event' => 'StartEventUID']);
         $data = [];
         $response = $this->apiCall('POST', $route, $data);
         //Verify status
@@ -242,7 +242,7 @@ class ProcessExecutionTest extends TestCase
             'uuid',
             'status',
             'created_at',
-            'element_uuid',
+            'element_id',
             'element_name',
             'definition' => [
                 'id',

@@ -14,7 +14,7 @@ use \PermissionSeeder;
 class PermissionsTest extends TestCase
 {
     use RequestHelper;
-    
+
     protected function withUserSetup()
     {
         $this->user->is_administrator = false;
@@ -30,38 +30,38 @@ class PermissionsTest extends TestCase
             factory(Group::class)->create(['name' => 'Admin']);
         $super_admin_group =
             factory(Group::class)->create(['name' => 'Super Admin']);
-        
+
         factory(GroupMember::class)->create([
-            'member_uuid' => $this->user->uuid,
+            'member_id' => $this->user->id,
             'member_type' => User::class,
-            'group_uuid'  => $super_admin_group->uuid,
+            'group_id'  => $super_admin_group->id,
         ]);
 
         factory(GroupMember::class)->create([
-            'member_uuid' => $super_admin_group->uuid,
+            'member_id' => $super_admin_group->id,
             'member_type' => Group::class,
-            'group_uuid'  => $admin_group->uuid,
+            'group_id'  => $admin_group->id,
         ]);
 
         factory(PermissionAssignment::class)->create([
             'assignable_type' => Group::class,
-            'assignable_uuid' => $admin_group->uuid,
-            'permission_uuid' => $create_process_perm->uuid,
+            'assignable_id' => $admin_group->id,
+            'permission_id' => $create_process_perm->id,
         ]);
 
         factory(PermissionAssignment::class)->create([
             'assignable_type' => Group::class,
-            'assignable_uuid' => $super_admin_group->uuid,
-            'permission_uuid' => $update_process_perm->uuid,
+            'assignable_id' => $super_admin_group->id,
+            'permission_id' => $update_process_perm->id,
         ]);
 
         factory(PermissionAssignment::class)->create([
             'assignable_type' => get_class($this->user),
-            'assignable_uuid' => $this->user->uuid,
-            'permission_uuid' => $show_process_perm->uuid,
+            'assignable_id' => $this->user->id,
+            'permission_id' => $show_process_perm->id,
         ]);
         $this->user->giveDirectPermission($show_process_perm->guard_name);
-        
+
         $this->process = factory(\ProcessMaker\Models\Process::class)->create([
             'name' => 'foo',
         ]);
@@ -71,34 +71,34 @@ class PermissionsTest extends TestCase
     {
         $response = $this->apiCall('GET', '/processes');
         $response->assertStatus(200);
-        
-        $response = $this->apiCall('GET', '/processes/' . $this->process->uuid_text);
+
+        $response = $this->apiCall('GET', '/processes/' . $this->process->id);
         $response->assertStatus(200);
-        
+
         $destroy_process_perm = Permission::byGuardName('processes.destroy');
         Group::where('name', 'All Permissions')
             ->firstOrFail()
             ->permissionAssignments()
-            ->where('permission_uuid', $destroy_process_perm->uuid)
+            ->where('permission_id', $destroy_process_perm->id)
             ->delete();
 
         $this->user->refresh();
         $this->flushSession();
 
-        $response = $this->apiCall('DELETE', '/processes/' . $this->process->uuid_text);
+        $response = $this->apiCall('DELETE', '/processes/' . $this->process->id);
         $response->assertStatus(403);
         $response->assertSee('Not authorized');
 
         factory(PermissionAssignment::class)->create([
             'assignable_type' => Group::class,
-            'assignable_uuid' => $this->admin_group->uuid,
-            'permission_uuid' => Permission::byGuardName('processes.destroy')->uuid,
+            'assignable_id' => $this->admin_group->id,
+            'permission_id' => Permission::byGuardName('processes.destroy')->id,
         ]);
 
         $this->user->refresh();
         $this->flushSession();
 
-        $response = $this->apiCall('DELETE', '/processes/' . $this->process->uuid_text);
+        $response = $this->apiCall('DELETE', '/processes/' . $this->process->id);
         $response->assertStatus(204);
     }
 }
