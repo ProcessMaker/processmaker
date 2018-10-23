@@ -18,9 +18,9 @@ class GroupMembersTest extends TestCase
   const API_TEST_URL = '/group_members';
 
   const STRUCTURE = [
-      'uuid',
-      'group_uuid',
-      'member_uuid',
+      'id',
+      'group_id',
+      'member_id',
       'member_type',
       'updated_at',
       'created_at'
@@ -37,7 +37,7 @@ class GroupMembersTest extends TestCase
 
      $groupmembership = factory(GroupMember::class)->create();
 
-     $response = $this->apiCall('GET', self::API_TEST_URL.'/?filter='.$groupmembership->member_uuid_text);
+     $response = $this->apiCall('GET', self::API_TEST_URL.'/?filter='.$groupmembership->member_id);
      $response->assertStatus(200);
 
    }
@@ -64,8 +64,8 @@ class GroupMembersTest extends TestCase
       $group = factory(Group::class)->create();
 
       $response = $this->apiCall('POST', self::API_TEST_URL, [
-          'group_uuid' => $group->uuid_text,
-          'member_uuid' => $user->uuid_text,
+          'group_id' => $group->id,
+          'member_id' => $user->id,
           'member_type' => User::class,
       ]);
 
@@ -86,8 +86,8 @@ class GroupMembersTest extends TestCase
       $group2 = factory(Group::class)->create();
 
       $response = $this->apiCall('POST', self::API_TEST_URL, [
-          'group_uuid' => $group1->uuid_text,
-          'member_uuid' => $group2->uuid_text,
+          'group_id' => $group1->id,
+          'member_id' => $group2->id,
           'member_type' => Group::class,
       ]);
 
@@ -107,8 +107,8 @@ class GroupMembersTest extends TestCase
    */
   public function testGetGroupMember()
   {
-      //get the uuid from the factory
-      $group = factory(GroupMember::class)->create()->uuid_text;
+      //get the id from the factory
+      $group = factory(GroupMember::class)->create()->id;
 
       //load api
       $response = $this->apiCall('GET', self::API_TEST_URL. '/' . $group);
@@ -126,7 +126,7 @@ class GroupMembersTest extends TestCase
   public function testDeleteGroupMember()
   {
       //Remove group
-      $url = self::API_TEST_URL . '/' . factory(GroupMember::class)->create()->uuid_text;
+      $url = self::API_TEST_URL . '/' . factory(GroupMember::class)->create()->id;
       $response = $this->apiCall('DELETE', $url);
 
       //Validate the header status code
@@ -139,7 +139,7 @@ class GroupMembersTest extends TestCase
   public function testDeleteGroupMemberNotExist()
   {
       //GroupMember not exist
-      $url = self::API_TEST_URL . '/' . factory(GroupMember::class)->make()->uuid_text;
+      $url = self::API_TEST_URL . '/' . factory(GroupMember::class)->make()->id;
       $response = $this->apiCall('DELETE', $url);
 
       //Validate the header status code

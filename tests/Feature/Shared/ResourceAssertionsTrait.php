@@ -158,7 +158,7 @@ trait ResourceAssertionsTrait
 
         $base = factory($modelClass)->create();
 
-        $route = route('api.' . $this->resource . '.update', [$base->uuid_text]);
+        $route = route('api.' . $this->resource . '.update', [$base->id]);
         $fields = array_diff($attributes, [static::$DO_NOT_SEND]);
         $response = $this->apiCall('PUT', $route, $fields);
         //validate status
@@ -179,7 +179,7 @@ trait ResourceAssertionsTrait
 
         $base = factory($modelClass)->create();
 
-        $route = route('api.' . $this->resource . '.update', [$base->uuid_text]);
+        $route = route('api.' . $this->resource . '.update', [$base->id]);
         $fields = array_diff($attributes, [static::$DO_NOT_SEND]);
         $response = $this->apiCall('PUT', $route, $fields);
         //validate status
@@ -213,7 +213,7 @@ trait ResourceAssertionsTrait
 
     /**
      * Assert that the response has the given status code.
-     * 
+     *
      * @param string $expected
      * @param \Illuminate\Foundation\Testing\TestResponse $response
      */

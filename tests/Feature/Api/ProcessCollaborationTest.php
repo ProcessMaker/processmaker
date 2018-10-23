@@ -21,14 +21,14 @@ class ProcessCollaborationTest extends TestCase
 
     /**
      *
-     * @var User $user 
+     * @var User $user
      */
     protected $user;
 
     private $requestStructure = [
         'uuid',
-        'process_uuid',
-        'user_uuid',
+        'process_id',
+        'user_id',
         'status',
         'name',
         'initiated_at',
@@ -46,21 +46,21 @@ class ProcessCollaborationTest extends TestCase
         ]);
         //Assign the task to $this->user
         factory(ProcessTaskAssignment::class)->create([
-            'process_uuid' => $process->uuid,
-            'process_task_uuid' => '_5',
-            'assignment_uuid' => $this->user->uuid,
+            'process_id' => $process->uuid,
+            'process_task_id' => '_5',
+            'assignment_id' => $this->user->uuid,
             'assignment_type' => 'user',
         ]);
         factory(ProcessTaskAssignment::class)->create([
-            'process_uuid' => $process->uuid,
-            'process_task_uuid' => '_10',
-            'assignment_uuid' => $this->user->uuid,
+            'process_id' => $process->uuid,
+            'process_task_id' => '_10',
+            'assignment_id' => $this->user->uuid,
             'assignment_type' => 'user',
         ]);
         factory(ProcessTaskAssignment::class)->create([
-            'process_uuid' => $process->uuid,
-            'process_task_uuid' => '_24',
-            'assignment_uuid' => $this->user->uuid,
+            'process_id' => $process->uuid,
+            'process_task_id' => '_24',
+            'assignment_id' => $this->user->uuid,
             'assignment_type' => 'user',
         ]);
         return $process;
@@ -73,7 +73,7 @@ class ProcessCollaborationTest extends TestCase
     {
         $process = $this->createTestCollaborationProcess();
         //Start a process request
-        $route = route('api.process_events.trigger', [$process->uuid_text, 'event' => '_4']);
+        $route = route('api.process_events.trigger', [$process->id, 'event' => '_4']);
         $data = [];
         $response = $this->apiCall('POST', $route, $data);
         //Verify status

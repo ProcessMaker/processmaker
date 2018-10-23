@@ -296,7 +296,7 @@ class ProcessCategoriesTest extends TestCase
         $category = factory(ProcessCategory::class)->create();
 
         //Test that is correctly displayed
-        $route = route($this->resource . '.show', [$category->uuid_text]);
+        $route = route($this->resource . '.show', [$category->id]);
         $response = $this->apiCall('GET', $route);
         $response->assertStatus(200);
         $response->assertJsonStructure($this->structure);
@@ -309,7 +309,7 @@ class ProcessCategoriesTest extends TestCase
     {
         $item = factory(ProcessCategory::class)->create();
 
-        $route = route($this->resource . '.update', [$item->uuid_text]);
+        $route = route($this->resource . '.update', [$item->id]);
         $fields = [
             'name' => $this->faker->name,
         ];
@@ -329,7 +329,7 @@ class ProcessCategoriesTest extends TestCase
     {
         $item = factory(ProcessCategory::class)->create(['status' => 'ACTIVE']);
 
-        $route = route($this->resource . '.update', [$item->uuid_text]);
+        $route = route($this->resource . '.update', [$item->id]);
         $fields = [
             'status' => 'INACTIVE',
         ];
@@ -349,7 +349,7 @@ class ProcessCategoriesTest extends TestCase
     {
         $item = factory(ProcessCategory::class)->create();
 
-        $route = route($this->resource . '.update', [$item->uuid_text]);
+        $route = route($this->resource . '.update', [$item->id]);
         $fields = [
             'name' => null,
         ];
@@ -370,7 +370,7 @@ class ProcessCategoriesTest extends TestCase
         factory(ProcessCategory::class)->create(['name' => $name]);
         $item = factory(ProcessCategory::class)->create();
 
-        $route = route($this->resource . '.update', [$item->uuid_text]);
+        $route = route($this->resource . '.update', [$item->id]);
         $fields = [
             'name' => $name,
         ];
@@ -388,7 +388,7 @@ class ProcessCategoriesTest extends TestCase
     {
         $item = factory(ProcessCategory::class)->create();
 
-        $route = route($this->resource . '.update', [$item->uuid_text]);
+        $route = route($this->resource . '.update', [$item->id]);
         $fields = [
             'status' => 'NOT_EXISTS',
         ];
@@ -405,7 +405,7 @@ class ProcessCategoriesTest extends TestCase
     public function testDeleteProcessCategory()
     {
         $processCategory = factory(ProcessCategory::class)->create();
-        $route = route($this->resource . '.destroy', [$processCategory->uuid_text]);
+        $route = route($this->resource . '.destroy', [$processCategory->id]);
         $response = $this->apiCall('DELETE', $route);
         //validate status
         $response->assertStatus(204);
@@ -418,7 +418,7 @@ class ProcessCategoriesTest extends TestCase
     public function testDeleteFailProcessCategory()
     {
         $processCategory = factory(Process::class)->create();
-        $route = route($this->resource . '.destroy', [$processCategory->process_category_uuid_text]);
+        $route = route($this->resource . '.destroy', [$processCategory->process_category_id]);
         $response = $this->apiCall('DELETE', $route);
         $response->assertStatus(422);
         $response->assertJsonStructure($this->errorStructure);
@@ -435,7 +435,7 @@ class ProcessCategoriesTest extends TestCase
             'uuid' => ProcessCategory::encodeUuid('2c3b2876-c035-11e8-9d22-88e9fe4ddbf3')
         ]);
 
-        $route = route($this->resource . '.update', [$item->uuid_text]);
+        $route = route($this->resource . '.update', [$item->id]);
         $fields = [
             'status' => 'ACTIVE',
         ];
