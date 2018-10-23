@@ -80,30 +80,30 @@ class ScriptController extends Controller
      *     summary="Returns all scripts that the user has access to",
      *     operationId="getScriptsPreview",
      *     tags={"Scripts"},
- *         @OA\Parameter(
- *             parameter="data",
- *             name="data",
- *             in="query",
- *             @OA\Schema(type="string"),
- *         ),
- *         @OA\Parameter(
- *             parameter="config",
- *             name="config",
- *             in="query",
- *             @OA\Schema(type="string"),
- *         ),
- *         @OA\Parameter(
- *             parameter="code",
- *             name="code",
- *             in="query",
- *             @OA\Schema(type="string"),
- *         ),
- *         @OA\Parameter(
- *             parameter="language",
- *             name="language",
- *             in="query",
- *             @OA\Schema(type="string"),
- *         ),
+     *         @OA\Parameter(
+     *             parameter="data",
+     *             name="data",
+     *             in="query",
+     *             @OA\Schema(type="string"),
+     *         ),
+     *         @OA\Parameter(
+     *             parameter="config",
+     *             name="config",
+     *             in="query",
+     *             @OA\Schema(type="string"),
+     *         ),
+     *         @OA\Parameter(
+     *             parameter="code",
+     *             name="code",
+     *             in="query",
+     *             @OA\Schema(type="string"),
+     *         ),
+     *         @OA\Parameter(
+     *             parameter="language",
+     *             name="language",
+     *             in="query",
+     *             @OA\Schema(type="string"),
+     *         ),
      * 
      *     @OA\Response(
      *         response=200,
