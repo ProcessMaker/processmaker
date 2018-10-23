@@ -6,6 +6,7 @@
 
 @section('content')
 <div class="container" id="editGroup">
+	<div id="profileForm">
 	<h1>{{__('Profile')}}</h1>
 	<div class="row">
 		<div class="col-8">
@@ -118,13 +119,14 @@
 					<div class="invalid-feedback" v-if="errors.password">@{{errors.password[0]}}</div>
 				</div>
 				<div class="form-group">
-					{!! Form::label('password', 'Confirm Password') !!}
-					{!! Form::password('password', ['id' => 'password', 'rows' => 4, 'class'=> 'form-control', 'v-model'
-					=> 'password', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}']) !!}
-					<div class="invalid-feedback" v-if="errors.password">@{{errors.password[0]}}</div>
+					{!! Form::label('confpassword', 'Confirm confPassword') !!}
+					{!! Form::password('confpassword', ['id' => 'confpassword', 'rows' => 4, 'class'=> 'form-control', 'v-model'
+					=> 'confpassword', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.confpassword}']) !!}
+					<div class="invalid-feedback" v-if="errors.confpassword">@{{errors.confpassword[0]}}</div>
 				</div>
 			</div>
 		</div>
+	</div>
 	</div>
 </div>
 @endsection
@@ -136,6 +138,25 @@
 @section('js')
 <script src="{{mix('js/admin/profile/index.js')}}"></script>
 <script>
-	
+new Vue({
+  el: '#profileForm',
+  data: { 
+	firstname: "",
+	lastname: "",
+	errors: {},
+	email: "",
+	phone: "",
+	address: "",
+	city: "",
+	state: "",
+	code: "",
+	country: "",
+	timezone: "",
+	language: "",
+	username: "",
+	password: "",
+	confpassword: ""
+  }
+});
 </script>
 @endsection
