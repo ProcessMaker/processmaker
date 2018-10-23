@@ -22,8 +22,8 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
         Route::resource('categories', 'ProcessCategoryController');
     });
     Route::resource('processes', 'ProcessController');
-    Route::resource('profile', 'ProfileController')->only([
-        'index', 'edit', 'show'
+    Route::resource('profile', 'admin\UserController')->only([
+        'index'
     ]);
     Route::resource('requests', 'RequestController')->only([
         'index', 'edit', 'show'
