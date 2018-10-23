@@ -31,9 +31,9 @@ class GroupTest extends TestCase
      */
     public function testEditRoute()
     {
-        $groupUuid = factory(Group::class)->create()->id;
+        $groupId = factory(Group::class)->create()->getKey();
         // get the URL
-        $response = $this->webCall('GET', '/admin/groups/' . $groupUuid . '/edit');
+        $response = $this->webCall('GET', '/admin/groups/' . $groupId . '/edit');
 
         $response->assertStatus(200);
         // check the correct view is called

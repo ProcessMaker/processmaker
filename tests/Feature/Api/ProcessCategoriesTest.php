@@ -425,24 +425,4 @@ class ProcessCategoriesTest extends TestCase
         $response->assertJsonStructure(['errors' => ['processes']]);
     }
 
-    /**
-     * Test validate binary id with special characters
-     * " ,
-     */
-    public function testUuidWithSpecialCharacters()
-    {
-        $item = factory(ProcessCategory::class)->create([
-            'id' => ProcessCategory::encodeUuid('2c3b2876-c035-11e8-9d22-88e9fe4ddbf3')
-        ]);
-
-        $route = route($this->resource . '.update', [$item->id]);
-        $fields = [
-            'status' => 'ACTIVE',
-        ];
-        $response = $this->apiCall('PUT', $route, $fields);
-        //validate status
-        $this->assertStatus(200, $response);
-        //validate update
-        $response->assertJsonFragment(['status' => 'ACTIVE']);
-    }
 }

@@ -6,7 +6,6 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\User;
-use Spatie\BinaryUuid\HasBinaryUuid;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
 use Illuminate\Support\Facades\Hash;
@@ -125,7 +124,7 @@ class FilesTest extends TestCase
       $response->assertStatus(404);
 
       // Verify that if no model data is sent an error is returned
-      $response = $this->apiCall('POST', self::API_TEST_URL . '?model=user&model_id=NonExistentUuid', $data);
+      $response = $this->apiCall('POST', self::API_TEST_URL . '?model=user&model_id=NonExistentId', $data);
       $response->assertStatus(404);
 
       $response = $this->apiCall('POST', self::API_TEST_URL . '?model=user&model_id=' . $model->id, $data);
@@ -166,7 +165,7 @@ class FilesTest extends TestCase
       Storage::disk('public')->assertExists($addedMedia->id . '/updatedFile.txt');
 
       // Validate that the media table has been updated
-      $modelId = HasBinaryUuid::encodeUuid($addedMedia->id);
+      $modelId = $addedMedia->id;
       $updatedMediaModel = Media::find($modelId);
       $this->assertEquals('updatedFile.txt', $updatedMediaModel->file_name);
       $this->assertEquals('updatedFile', $updatedMediaModel->name);

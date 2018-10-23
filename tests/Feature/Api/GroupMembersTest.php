@@ -82,6 +82,7 @@ class GroupMembersTest extends TestCase
 
   public function testCreateGroupMembershipForGroup()
   {
+      $this->withoutExceptionHandling();
       $group1 = factory(Group::class)->create();
       $group2 = factory(Group::class)->create();
 

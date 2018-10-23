@@ -210,7 +210,7 @@ class ProcessTest extends TestCase
         $response->assertStatus(201);
         $response->assertJsonStructure($this->structure);
         $data = $response->json();
-        $process = Process::withUuid($data['id'])->first();
+        $process = Process::where('id', $data['id'])->first();
         $this->assertEquals($array['bpmn'], $process->bpmn);
     }
 
@@ -440,7 +440,7 @@ class ProcessTest extends TestCase
         //validate status
         $this->assertStatus(200, $response);
         $response->assertJsonStructure($this->structure);
-        $updatedProcess = Process::withUuid($id)->first();
+        $updatedProcess = Process::where('id', $id)->first();
         $this->assertEquals($newBpmn, $updatedProcess->bpmn);
     }
 
