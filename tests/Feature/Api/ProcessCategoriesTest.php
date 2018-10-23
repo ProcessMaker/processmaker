@@ -312,6 +312,7 @@ class ProcessCategoriesTest extends TestCase
         $route = route($this->resource . '.update', [$item->id]);
         $fields = [
             'name' => $this->faker->name,
+            'status' => 'ACTIVE',
         ];
         $response = $this->apiCall('PUT', $route, $fields);
         //validate status
@@ -331,6 +332,7 @@ class ProcessCategoriesTest extends TestCase
 
         $route = route($this->resource . '.update', [$item->id]);
         $fields = [
+            'name' => 'test',
             'status' => 'INACTIVE',
         ];
         $response = $this->apiCall('PUT', $route, $fields);
@@ -352,6 +354,7 @@ class ProcessCategoriesTest extends TestCase
         $route = route($this->resource . '.update', [$item->id]);
         $fields = [
             'name' => null,
+            'status' => 'ACTIVE',
         ];
         $response = $this->apiCall('PUT', $route, $fields);
         //validate status
@@ -373,6 +376,7 @@ class ProcessCategoriesTest extends TestCase
         $route = route($this->resource . '.update', [$item->id]);
         $fields = [
             'name' => $name,
+            'status' => 'ACTIVE',
         ];
         $response = $this->apiCall('PUT', $route, $fields);
         //validate status
@@ -423,26 +427,5 @@ class ProcessCategoriesTest extends TestCase
         $response->assertStatus(422);
         $response->assertJsonStructure($this->errorStructure);
         $response->assertJsonStructure(['errors' => ['processes']]);
-    }
-
-    /**
-     * Test validate binary id with special characters
-     * " ,
-     */
-    public function testUuidWithSpecialCharacters()
-    {
-        $item = factory(ProcessCategory::class)->create([
-            'id' => ProcessCategory::encodeUuid('2c3b2876-c035-11e8-9d22-88e9fe4ddbf3')
-        ]);
-
-        $route = route($this->resource . '.update', [$item->id]);
-        $fields = [
-            'status' => 'ACTIVE',
-        ];
-        $response = $this->apiCall('PUT', $route, $fields);
-        //validate status
-        $this->assertStatus(200, $response);
-        //validate update
-        $response->assertJsonFragment(['status' => 'ACTIVE']);
     }
 }

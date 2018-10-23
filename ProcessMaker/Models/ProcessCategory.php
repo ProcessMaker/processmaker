@@ -39,7 +39,7 @@ class ProcessCategory extends Model
     public static function rules()
     {
         $rules = [
-            'name' => 'required|string|max:100|unique_in_model',
+            'name' => 'required|string|max:100|unique:process_categories,name',
             'status' => 'required|string|in:ACTIVE,INACTIVE'
         ];
 
