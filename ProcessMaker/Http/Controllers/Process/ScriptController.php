@@ -17,7 +17,7 @@ class ScriptController extends Controller
         return view('processes.scripts.index');
     }
 
-    public function edit(Script $script)
+    public function show(Script $script)
     {
         return view('processes.scripts.edit', ['script' => $script]);
     }

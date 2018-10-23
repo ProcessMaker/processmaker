@@ -87,7 +87,7 @@ export default {
         this.preview.executing = true;
       // Attempt to execute a script, using our temp variables
       ProcessMaker.apiClient
-        .post("script/preview", {
+        .post("scripts/preview", {
           code: this.code,
           language: this.script.language,
           data: this.preview.data,
@@ -121,15 +121,11 @@ export default {
 
 <style lang="scss">
 
-.container {
-    max-width: 100%;
-    padding: 0 0 0 0;
-}
-
 #editor-container {
-  height: calc(100vh - 60px);
   display: flex;
   flex-direction: column;
+  height: 100%;
+  overflow: hidden;
 
   .editor {
     flex-grow: 1;

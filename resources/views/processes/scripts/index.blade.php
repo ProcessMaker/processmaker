@@ -68,7 +68,7 @@
       title: '',
       language: '',
       description: '',
-      code: '[]',
+      code: '',
       addError: {},
       submitted: false,
     },
