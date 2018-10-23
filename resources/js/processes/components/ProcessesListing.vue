@@ -29,7 +29,7 @@ import datatableMixin from "../../components/common/mixins/datatable";
 
 export default {
   mixins: [datatableMixin],
-  props: ["filter", "uid"],
+  props: ["filter", "id"],
   data() {
     return {
       orderBy: "name",
@@ -101,7 +101,7 @@ export default {
     onAction(action, data, index) {
       switch (action) {
         case "edit-item":
-          this.goToEdit(data.uuid);
+          this.goToEdit(data.id);
           break;
       }
     },

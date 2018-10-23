@@ -30,7 +30,7 @@ export default {
     FormTextArea,
     FormSelect
   },
-  props: ["processUid"],
+  props: ["processId"],
   data() {
     return {
       add: {
@@ -58,14 +58,14 @@ export default {
   methods: {
     onSave(open) {
       ProcessMaker.apiClient
-        .post("process/" + this.processUid + "/script", this.add)
+        .post("process/" + this.processId + "/script", this.add)
         .then(response => {
           ProcessMaker.alert("New Script Successfully Created", "success");
           this.onCancel();
           if (open) {
             //Change way to open the designer
             window.location.href =
-              "/processes/" + this.processUid + "/script/" + response.data.uid;
+              "/processes/" + this.processId + "/script/" + response.data.id;
           }
         })
         .catch(error => {

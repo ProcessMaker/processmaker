@@ -93,13 +93,13 @@
                 return '<i class="fas fa-circle ' + bubbleColor[status] + ' small"></i> ' + status.charAt(0).toUpperCase() + status.slice(1);
             },
             onEdit(data, index) {
-                window.location = "/admin/groups/" + data.uuid + "/edit";
+                window.location = "/admin/groups/" + data.id + "/edit";
             },
             onDelete(data, index) {
                 let that = this;
                 ProcessMaker.confirmModal('Caution!', '<b>Are you sure to delete the group </b>' + data.name + '?', '', function () {
                     ProcessMaker.apiClient
-                        .delete('groups/' + data.uuid)
+                        .delete('groups/' + data.id)
                         .then(response => {
                             ProcessMaker.alert('Group successfully eliminated', 'success');
                             that.fetch();

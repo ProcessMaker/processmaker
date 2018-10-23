@@ -1,7 +1,7 @@
 <template>
     <div class="card">
         <div class="card-header">
-            Form UID: <span class="badge badge-info">{{formUid}}</span>
+            Form ID: <span class="badge badge-info">{{formId}}</span>
         </div>
         <div class="card-body">
             <h5 class="card-title">Approve</h5>
@@ -31,10 +31,10 @@
 
     export default {
         props: [
-            'processUid',
-            'instanceUid',
-            'tokenUid',
-            'formUid',
+            'processId',
+            'instanceId',
+            'tokenId',
+            'formId',
 
             'startDate',
             'endDate',
@@ -56,9 +56,9 @@
         methods: {
             approve() {
                 ProcessMaker.apiClient.post(
-                        'processes/' + this.processUid +
-                        '/instances/' + this.instanceUid +
-                        '/tokens/' + this.tokenUid +
+                        'processes/' + this.processId +
+                        '/instances/' + this.instanceId +
+                        '/tokens/' + this.tokenId +
                         '/complete', 
                 {
                     approved: true,
@@ -68,9 +68,9 @@
             },
             reject() {
                 ProcessMaker.apiClient.post(
-                        'processes/' + this.processUid +
-                        '/instances/' + this.instanceUid +
-                        '/tokens/' + this.tokenUid +
+                        'processes/' + this.processId +
+                        '/instances/' + this.instanceId +
+                        '/tokens/' + this.tokenId +
                         '/complete', 
                 {
                     approved: false,

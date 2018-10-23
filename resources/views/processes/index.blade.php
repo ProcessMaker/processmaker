@@ -44,9 +44,9 @@
 			<div class="invalid-feedback" v-for="description in addError.description">@{{description}}</div>
         </div>
         <div class="form-group">
-			{!!Form::label('process_category_uuid', 'Category');!!}
-			{!!Form::select('process_category_uuid', $processCategories, null, ['class'=> 'form-control', 'v-model'=> 'categoryOptions', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.process_category_uuid}'])!!}
-			<div class="invalid-feedback" v-for="category in addError.process_category_uuid">@{{category}}</div>
+			{!!Form::label('process_category_id', 'Category');!!}
+			{!!Form::select('process_category_id', $processCategories, null, ['class'=> 'form-control', 'v-model'=> 'categoryOptions', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.process_category_id}'])!!}
+			<div class="invalid-feedback" v-for="category in addError.process_category_id">@{{category}}</div>
         </div>
         <div class="form-group">
 			{!!Form::label('status', 'Status');!!}
@@ -81,12 +81,12 @@
 		ProcessMaker.apiClient.post("/processes", {
 			name: this.name,
 			description: this.description,
-			process_category_uuid: this.process_category_uuid,
+			process_category_id: this.process_category_id,
 			status: this.status
 			})
 			.then(response => {
 			ProcessMaker.alert('Process successfully added', 'success')
-			window.location = "/processes/" + response.data.uuid
+			window.location = "/processes/" + response.data.id
 			console.log(response)
 			})
 			.catch(error => {

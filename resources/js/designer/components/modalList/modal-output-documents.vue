@@ -34,7 +34,7 @@
 
     export default {
         mixins: [dataTableMixin],
-        props: ['processUid'],
+        props: ['processId'],
         data() {
             return {
                 items: [],
@@ -91,7 +91,7 @@
                 let that = this;
                 ProcessMaker.confirmModal('Caution!', '<b>Are you sure to delete the Output document </b>' + data.title + '?', '', function () {
                     ProcessMaker.apiClient
-                        .delete('process/' + that.processUid + '/output-document/' + data.uid)
+                        .delete('process/' + that.processId + '/output-document/' + data.id)
                         .then(response => {
                             ProcessMaker.alert('Output Document successfully eliminated', 'success');
                             that.fetch();
@@ -107,7 +107,7 @@
                 const CancelToken = ProcessMaker.apiClient.CancelToken;
                 // Load from our api client
                 ProcessMaker.apiClient
-                    .get('process/' + this.processUid +
+                    .get('process/' + this.processId +
                         '/output-documents?page=' +
                         this.page +
                         '&per_page=' +

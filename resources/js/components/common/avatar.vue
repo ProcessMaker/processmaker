@@ -15,7 +15,7 @@
     export default {
         props: [
             'background',
-            'uid'
+            'id'
         ],
         computed: {
             backgroundColor() {
