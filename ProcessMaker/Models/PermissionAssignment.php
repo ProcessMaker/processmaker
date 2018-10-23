@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class PermissionAssignment extends Model
 {
-    use HasBinaryUuid;
+    
     protected $fillable = [
         'permission_id',
         'assignable_id',
