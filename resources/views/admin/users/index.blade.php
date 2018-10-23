@@ -74,8 +74,8 @@
 
                     </div>
                     <div class="form-group">
-                        <label>{{__('Groups')}}</label>
-                        <multiselect v-model="value" :options="dataGroups" :multiple="true" track-by="name"
+                        {!!Form::label('groups', __('Groups'))!!}
+                        <multiselect v-model="value" :options="dataGroups" :multiple="true" track-by="title"
                                      :custom-label="customLabel" :show-labels="false"
                                      label="name">
 
@@ -107,7 +107,6 @@
                 </div>
             </div>
         </div>
-        <pre>{{$groups}}</pre>
     </div>
 @endsection
 
@@ -127,8 +126,8 @@
                 addError: {},
                 submitted: false,
                 value: [],
-                dataGroups: [],
-                options: @json($groups)
+                options: @json($groups),
+                dataGroups: []
             },
             mounted() {
                 this.fillDataGroups(this.options);
