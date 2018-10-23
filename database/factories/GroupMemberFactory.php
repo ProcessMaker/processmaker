@@ -11,11 +11,11 @@ use ProcessMaker\Models\GroupMember;
 $factory->define(GroupMember::class, function (Faker $faker) {
     return [         
         'member_id' => function () {
-            return factory(User::class)->create()->uuid;
+            return factory(User::class)->create()->getKey();
         },
         'member_type' => User::class,
-        'group_uuid' => function () {
-            return factory(Group::class)->create()->uuid;
+        'group_id' => function () {
+            return factory(Group::class)->create()->getKey();
         }
     ];
 });

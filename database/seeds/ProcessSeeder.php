@@ -62,7 +62,7 @@ class ProcessSeeder extends Seeder
                     'language' => $this->languageOfMimeType($scriptTask->getScriptFormat()),
                 ]);
                 $scriptTaskNode->setAttributeNS(
-                    WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptRef', $script->uuid_text
+                    WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptRef', $script->id
                 );
                 $scriptTaskNode->setAttributeNS(
                     WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptConfiguration', '{}'
@@ -76,7 +76,7 @@ class ProcessSeeder extends Seeder
                 $id = $task->getAttribute('id');
                 if ($formRef) {
                     $form = $this->createForm($id, $formRef, $process);
-                    $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'formRef', $form->uuid_text);
+                    $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'formRef', $form->id);
                 }
             }
 
@@ -86,7 +86,7 @@ class ProcessSeeder extends Seeder
             $process->save();
 
             echo 'Process created: ', $process->uid, "\n";
-            
+
             //Create environment variables for the default processes
             factory(EnvironmentVariable::class)->create([
                 'name' => 'hours_of_work',
@@ -117,7 +117,7 @@ class ProcessSeeder extends Seeder
         } elseif (file_exists(database_path('processes/forms/' . $id . '.json'))) {
             $json = json_decode(file_get_contents(database_path('processes/forms/' . $id . '.json')));
             return factory(Form::class)->create([
-                        'uuid_text' => $formRef,
+                        'id' => $formRef,
                         'title' => $json[0]->name,
                         'config' => $json,
             ]);

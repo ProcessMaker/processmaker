@@ -112,14 +112,14 @@ class ProcessRequestController extends Controller
      * @return Response
      *
      *      * @OA\Get(
-     *     path="/requests/{process_request_uuid}",
+     *     path="/requests/process_request_id",
      *     summary="Get single process request by ID",
-     *     operationId="getProcessRequestByUuid",
+     *     operationId="getProcessRequestById",
      *     tags={"ProcessRequests"},
      *     @OA\Parameter(
      *         description="ID of process request to return",
      *         in="path",
-     *         name="process_request_uuid",
+     *         name="process_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -180,14 +180,14 @@ class ProcessRequestController extends Controller
      * @return ResponseFactory|Response
      *
      * @OA\Put(
-     *     path="/requests/{process_request_uuid}",
+     *     path="/requests/process_request_id",
      *     summary="Update a process request",
      *     operationId="updateProcessRequest",
      *     tags={"ProcessRequests"},
      *     @OA\Parameter(
      *         description="ID of process request to return",
      *         in="path",
-     *         name="process_request_uuid",
+     *         name="process_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -221,14 +221,14 @@ class ProcessRequestController extends Controller
      * @return ResponseFactory|Response
      *
      * @OA\Delete(
-     *     path="/requests/{process_request_uuid}",
+     *     path="/requests/process_request_id",
      *     summary="Delete a process request",
      *     operationId="deleteProcessRequest",
      *     tags={"ProcessRequests"},
      *     @OA\Parameter(
      *         description="ID of process request to return",
      *         in="path",
-     *         name="process_request_uuid",
+     *         name="process_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",

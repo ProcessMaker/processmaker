@@ -89,14 +89,14 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      * 
      *     @OA\Get(
-     *     path="/users/{userUuid}",
+     *     path="/users/userId",
      *     summary="Get single user by ID",
-     *     operationId="getUsersByUuid",
+     *     operationId="getUsersById",
      *     tags={"Users"},
      *     @OA\Parameter(
      *         description="ID of user to return",
      *         in="path",
-     *         name="userUuid",
+     *         name="user_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -155,14 +155,14 @@ class UserController extends Controller
      * @return ResponseFactory|Response
      * 
      *     @OA\Put(
-     *     path="/users/{userUuid}",
+     *     path="/users/userId",
      *     summary="Update a user",
      *     operationId="updateUsers",
      *     tags={"Users"},
      *     @OA\Parameter(
      *         description="ID of user to return",
      *         in="path",
-     *         name="userUuid",
+     *         name="user_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -196,14 +196,14 @@ class UserController extends Controller
      * @return ResponseFactory|Response
      * 
      *     @OA\Delete(
-     *     path="/users/{userUuid}",
+     *     path="/users/userId",
      *     summary="Delete a user",
      *     operationId="deleteUser",
      *     tags={"Users"},
      *     @OA\Parameter(
      *         description="ID of user to return",
      *         in="path",
-     *         name="userUuid",
+     *         name="user_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
