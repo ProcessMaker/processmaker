@@ -3,7 +3,7 @@
     <div class="navbar">
       <div>{{process.name}}</div>
       <div class="actions">
-          <font-awesome-icon icon="save">Save</font-awesome-icon>
+          <font-awesome-icon @click="saveBpmn" icon="save">Save</font-awesome-icon>
       </div>
     </div>
     <div class="modeler-container">
@@ -53,13 +53,38 @@ export default {
   },
   computed: {
       lastSaved() {
-          return moment(window.ProcessMaker.modeler.process.updated_at).fromNow()
+          return moment(this.process.updated_at).fromNow()
       }
   },
   mounted() {
      this.$refs.modeler.loadXML(window.ProcessMaker.modeler.xml);
   },
   methods: {
+    saveBpmn() {
+      this.$refs.modeler.toXML((err, xml) => {
+        if(err) {
+          alert("There was an error saving: " + err);
+        } else {
+          // lets save
+          // Call process update
+          ProcessMaker.apiClient.put('/processes/' + this.process.id, {
+            name: this.process.name,
+            description: this.process.description,
+            bpmn: xml
+          })
+          .then((response) => {
+            this.process.updated_at = response.data.updated_at;
+            // Now show alert
+            ProcessMaker.alert('Process Successfully Updated', 'success');
+          })
+          .catch((err) => {
+            alert('ERROR: ' + err);
+          })
+        }
+
+      });
+    }
+
    }
 };
 </script>

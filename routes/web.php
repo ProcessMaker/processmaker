@@ -21,8 +21,12 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
         Route::resource('scripts', 'ScriptController');
         Route::resource('categories', 'ProcessCategoryController');
     });
-    Route::get('designer/{process}', 'Process\ModelerController');
+
     Route::resource('processes', 'ProcessController');
+    // Ensure our modeler loads at a distinct url
+    Route::get('modeler/{process}', 'Process\ModelerController')->name('modeler');
+
+
     Route::resource('profile', 'ProfileController')->only([
         'index', 'edit', 'show'
     ]);

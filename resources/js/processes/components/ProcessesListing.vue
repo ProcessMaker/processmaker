@@ -98,8 +98,15 @@ export default {
     goToEdit(data) {
       window.location = "/processes/scripts/" + data + "/edit";
     },
+    goToDesigner(data) {
+      window.location = "/modeler/" + data;
+    },
     onAction(action, data, index) {
       switch (action) {
+        case 'edit-designer':
+          this.goToDesigner(data.id);
+          break;
+
         case "edit-item":
           this.goToEdit(data.id);
           break;
