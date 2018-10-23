@@ -165,8 +165,7 @@ class FilesTest extends TestCase
       Storage::disk('public')->assertExists($addedMedia->id . '/updatedFile.txt');
 
       // Validate that the media table has been updated
-      $modelId = $addedMedia->id;
-      $updatedMediaModel = Media::find($modelId);
+      $updatedMediaModel = Media::find($addedMedia->id);
       $this->assertEquals('updatedFile.txt', $updatedMediaModel->file_name);
       $this->assertEquals('updatedFile', $updatedMediaModel->name);
   }
