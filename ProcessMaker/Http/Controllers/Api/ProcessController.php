@@ -14,7 +14,6 @@ use ProcessMaker\Models\Process;
 
 class ProcessController extends Controller
 {
-    use ResourceRequestsTrait;
 
     /**
      * Get list Process
@@ -128,7 +127,7 @@ class ProcessController extends Controller
      */
     public function store(Request $request)
     {
-
+        $request->validate(Process::rules());
         $data = $request->json()->all();
 
         $process = new Process();
@@ -143,8 +142,6 @@ class ProcessController extends Controller
         else {
             $process->bpmn = Process::getProcessTemplate('OnlyStartElement.bpmn');
         }
-        //validate model trait
-        $this->validateModel($process, Process::rules());
         $process->saveOrFail();
         return new Resource($process->refresh());
     }
@@ -184,10 +181,21 @@ class ProcessController extends Controller
      */
     public function update(Request $request, Process $process)
     {
+        $request->validate(Process::rules($process));
+
+        //bpmn validation
+        libxml_use_internal_errors(true);
+        $definitions = $process->getDefinitions();
+        $res= $definitions->validateBPMNSchema(public_path('definitions/ProcessMaker.xsd'));
+        if (!$res) {
+            $schemaErrors = $definitions->getValidationErrors();
+            return response (
+                ['message'=>'The bpm definition is not valid',
+                    'errors'=> ['bpmn' => $schemaErrors]],
+                422);
+        }
 
         $process->fill($request->json()->all());
-        //validate model
-        $this->validateModel($process, Process::rules($process));
         $process->saveOrFail();
         return new Resource($process->refresh());
     }
@@ -223,10 +231,20 @@ class ProcessController extends Controller
      */
     public function destroy(Process $process)
     {
-        $this->validateModel($process, [
-            'collaborations' => 'empty',
-            'requests' => 'empty',
-        ]);
+        if ($process->collaborations->count() !== 0) {
+            return response (
+                ['message'=>'The item should not have associated collaboration',
+                    'errors'=> ['collaborations' => $process->collaborations->count()]],
+                422);
+        }
+
+        if ($process->requests->count() !== 0) {
+            return response (
+                ['message'=>'The item should not have associated requests',
+                    'errors'=> ['requests' => $process->requests->count()]],
+                422);
+        }
+
         $process->delete();
         return response('', 204);
     }
@@ -257,5 +275,72 @@ class ProcessController extends Controller
         return new ProcessRequests($processRequest);
     }
 
+
+
+    /**
+     * Get the where array to filter the resources.
+     *
+     * @param Request $request
+     * @param array $searchableColumns
+     *
+     * @return array
+     */
+    protected function getRequestFilterBy(Request $request, array $searchableColumns)
+    {
+        $where = [];
+        $filter = $request->input('filter');
+        if ($filter) {
+            foreach ($searchableColumns as $column) {
+                // for other columns, it can match a substring
+                $sub_search = '%';
+                if (array_search('status', explode('.', $column), true) !== false ) {
+                    // filtering by status must match the entire string
+                    $sub_search = '';
+                }
+                $where[] = [$column, 'like', $sub_search . $filter . $sub_search, 'or'];
+            }
+        }
+        return $where;
+    }
+
+    /**
+     * Get included relationships.
+     *
+     * @param Request $request
+     *
+     * @return array
+     */
+    protected function getRequestSortBy(Request $request, $default)
+    {
+        $column = $request->input('order_by', $default);
+        $direction = $request->input('order_direction', 'asc');
+        return [$column, $direction];
+    }
+
+    /**
+     * Get included relationships.
+     *
+     * @param Request $request
+     *
+     * @return array
+     */
+    protected function getRequestInclude(Request $request)
+    {
+        $include = $request->input('include');
+        return $include ? explode(',', $include) : [];
+    }
+
+
+    /**
+     * Get the size of the page.
+     * per_page=# (integer, the page requested) (Default: 10)
+     *
+     * @param Request $request
+     * @return type
+     */
+    protected function getPerPage(Request $request)
+    {
+        return $request->input('per_page', 10);
+    }
 
 }

@@ -112,7 +112,7 @@ class Process extends Model implements HasMedia
             'description' => 'required',
             'status' => 'in:ACTIVE,INACTIVE',
             'process_category_id' => 'nullable|exists:process_categories,id',
-            'bpmn' => 'nullable|bpmn_schema',
+            'bpmn' => 'nullable',
         ];
 
         if ($existing) {

@@ -210,7 +210,7 @@ class ProcessTest extends TestCase
         $response->assertStatus(201);
         $response->assertJsonStructure($this->structure);
         $data = $response->json();
-        $process = Process::withUuid($data['id'])->first();
+        $process = Process::find($data['id'])->first();
         $this->assertEquals($array['bpmn'], $process->bpmn);
     }
 
@@ -339,6 +339,7 @@ class ProcessTest extends TestCase
                 'name' => $name,
                 'user_id' => static::$DO_NOT_SEND,
                 'process_category_id' => static::$DO_NOT_SEND,
+                'description' => 'test'
             ]
         );
     }
@@ -354,7 +355,8 @@ class ProcessTest extends TestCase
             [
                 'user_id' => static::$DO_NOT_SEND,
                 'name' => 'A new name',
-                'process_category_id' => null
+                'process_category_id' => null,
+                'description' => 'test'
             ]
         );
     }
@@ -370,7 +372,8 @@ class ProcessTest extends TestCase
             [
                 'user_id' => static::$DO_NOT_SEND,
                 'name' => 'Another name',
-                'process_category_id' => factory(ProcessCategory::class)->create()->id
+                'process_category_id' => factory(ProcessCategory::class)->create()->id,
+                'description' => 'test'
             ]
         );
     }
@@ -435,12 +438,14 @@ class ProcessTest extends TestCase
         $newBpmn = trim(Process::getProcessTemplate('SingleTask.bpmn'));
         $route = route('api.' . $this->resource . '.update', [$id]);
         $response = $this->apiCall('PUT', $route, [
+            'name' => 'test name',
+            'description' => 'test description',
             'bpmn' => $newBpmn
         ]);
         //validate status
         $this->assertStatus(200, $response);
         $response->assertJsonStructure($this->structure);
-        $updatedProcess = Process::withUuid($id)->first();
+        $updatedProcess = Process::find($id)->first();
         $this->assertEquals($newBpmn, $updatedProcess->bpmn);
     }
 
@@ -459,6 +464,5 @@ class ProcessTest extends TestCase
         //validate status
         $this->assertStatus(422, $response);
         $response->assertJsonStructure($this->errorStructure);
-        $response->assertJsonStructure(['errors' => ['bpmn']]);
     }
 }
