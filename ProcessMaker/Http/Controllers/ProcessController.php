@@ -8,8 +8,6 @@ use ProcessMaker\Models\ProcessCategory;
 
 class ProcessController extends Controller
 {
-    use ResourceRequestsTrait;
-
     public function index()
     {
         $processes = Process::all(); //what will be in the database = Model

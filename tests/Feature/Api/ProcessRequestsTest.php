@@ -20,7 +20,6 @@ class ProcessRequestsTest extends TestCase
 {
 
     use RequestHelper;
-    use ResourceRequestsTrait;
     use WithFaker;
 
     const API_TEST_URL = '/requests';
@@ -203,7 +202,8 @@ class ProcessRequestsTest extends TestCase
         //Post saved success
         $response = $this->apiCall('PUT', $url, [
             'name' => $faker->unique()->name,
-            'data' => '{"test":1}'
+            'data' => '{"test":1}',
+            'process_id' => json_decode($verify->getContent())->process_id
         ]);
 
         //Validate the header status code
