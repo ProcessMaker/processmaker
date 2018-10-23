@@ -20,7 +20,7 @@ class StartEvent extends BpmnAction
      */
     public function __construct(Definitions $definitions, StartEventInterface $event, array $data)
     {
-        $this->definitionsId = $definitions->uuid_text;
+        $this->definitionsId = $definitions->getKey();
         $this->processId = $event->getOwnerProcess()->getId();
         $this->elementId = $event->getId();
         $this->data = $data;
