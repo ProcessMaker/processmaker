@@ -16,8 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  */
 class ProcessTaskAssignment extends Model
-{
-    use HasBinaryUuid;
+{    
 
     protected $fillable = [
         'process_id',
