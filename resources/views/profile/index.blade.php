@@ -5,8 +5,7 @@
 @endsection
 
 @section('content')
-<div class="container" id="editGroup">
-	<div id="profileForm">
+<div class="container" id="profileForm">
 	<h1>{{__('Profile')}}</h1>
 	<div class="row">
 		<div class="col-8">
@@ -103,8 +102,8 @@
 		</div>
 		<div class="col-4">
 			<div class="card card-body">
-				<div id="profile">
-					<profile></profile>
+				<div align="center" data-toggle="modal" data-target="#exampleModal">
+					<img src="https://via.placeholder.com/150x150" alt="HEY" style="border-radius: 50%">
 				</div>
 				<div class="form-group">
 					{!! Form::label('username', 'Username') !!}
@@ -127,7 +126,25 @@
 			</div>
 		</div>
 	</div>
-	</div>
+</div>
+<div class="modal" tabindex="-1" role="dialog" id="exampleModal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Modal body text goes here.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
 </div>
 @endsection
 
@@ -136,27 +153,26 @@
 @endsection
 
 @section('js')
-<script src="{{mix('js/admin/profile/index.js')}}"></script>
 <script>
-new Vue({
-  el: '#profileForm',
-  data: { 
-	firstname: "",
-	lastname: "",
-	errors: {},
-	email: "",
-	phone: "",
-	address: "",
-	city: "",
-	state: "",
-	code: "",
-	country: "",
-	timezone: "",
-	language: "",
-	username: "",
-	password: "",
-	confpassword: ""
-  }
-});
+	new Vue({
+		el: '#profileForm',
+		data: {
+			firstname: "",
+			lastname: "",
+			errors: {},
+			email: "",
+			phone: "",
+			address: "",
+			city: "",
+			state: "",
+			code: "",
+			country: "",
+			timezone: "",
+			language: "",
+			username: "",
+			password: "",
+			confpassword: ""
+		}
+	});
 </script>
 @endsection
