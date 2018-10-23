@@ -11,9 +11,9 @@ class ProcessController extends Controller
     {
         $processes = Process::all(); //what will be in the database = Model
         $processCategories = ProcessCategory::all();
-        $processCategoryArray = [];
+        $processCategoryArray = ['' => 'None'];
         foreach($processCategories as $pc){
-            $processCategoryArray[$pc->uuid_text] = $pc->name;
+            $processCategoryArray[$pc->id] = $pc->name;
         }
         return view('processes.index', ["processes"=>$processes, "processCategories"=>$processCategoryArray]);
     }
