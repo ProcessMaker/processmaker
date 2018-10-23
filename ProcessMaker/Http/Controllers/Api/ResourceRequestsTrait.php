@@ -68,7 +68,7 @@ trait ResourceRequestsTrait
     }
 
     /**
-     * Change uuid text to uuid binary
+     * Change id text to id binary
      *
      * @param Request $request
      * @param array $fields
@@ -120,7 +120,7 @@ trait ResourceRequestsTrait
             function($attribute, $value) use ($model) {
                 $modelClass = get_class($model);
                 $idColumn = $model->getKeyName();
-                return $modelClass::where($idColumn,'!=', $model->uuid)
+                return $modelClass::where($idColumn,'!=', $model->id)
                     ->where($attribute, $value)->count()===0;
             }
         );

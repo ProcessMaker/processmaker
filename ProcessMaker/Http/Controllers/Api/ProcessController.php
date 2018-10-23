@@ -62,8 +62,8 @@ class ProcessController extends Controller
         $processes = Process::with($include)
             ->select('processes.*')
             ->where($where)
-            ->leftJoin('process_categories as category', 'processes.process_category_uuid', '=', 'category.uuid')
-            ->leftJoin('users as user', 'processes.user_uuid', '=', 'user.uuid')
+            ->leftJoin('process_categories as category', 'processes.process_category_id', '=', 'category.id')
+            ->leftJoin('users as user', 'processes.user_id', '=', 'user.id')
             ->orderBy(...$orderBy)
             ->paginate($perPage);
         return new ApiCollection($processes);
@@ -128,15 +128,15 @@ class ProcessController extends Controller
      */
     public function store(Request $request)
     {
-        //Convert the string uuid to binary uuid
-        $this->encodeRequestUuids($request, ['process_category_uuid']);
+        //Convert the string id to binary id
+        $this->encodeRequestUuids($request, ['process_category_id']);
         $data = $request->json()->all();
 
         $process = new Process();
         $process->fill($data);
 
         //set current user
-        $process->user_uuid = Auth::user()->uuid;
+        $process->user_id = Auth::user()->id;
 
         if (isset($data['bpmn'])) {
             $process->bpmn = $data['bpmn'];
@@ -185,8 +185,8 @@ class ProcessController extends Controller
      */
     public function update(Request $request, Process $process)
     {
-        //Convert the string uuid to binary uuid
-        $this->encodeRequestUuids($request, ['process_category_uuid']);
+        //Convert the string id to binary id
+        $this->encodeRequestUuids($request, ['process_category_id']);
         $process->fill($request->json()->all());
         //validate model
         $this->validateModel($process, Process::rules($process));

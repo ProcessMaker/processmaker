@@ -70,7 +70,7 @@ class ProcessRequestController extends Controller
                 //include scopes
                 switch ($include) {
                     case 'started_me':
-                        $query->startedMe(Auth::user()->uuid);
+                        $query->startedMe(Auth::user()->id);
                         break;
                     case 'in_progress':
                         $query->inProgress();
@@ -163,7 +163,7 @@ class ProcessRequestController extends Controller
      */
     public function store(Request $httpRequest)
     {
-        $this->encodeRequestUuids($httpRequest, ['process_uuid', 'process_collaboration_uuid', 'user_uuid']);
+        $this->encodeRequestUuids($httpRequest, ['process_id', 'process_collaboration_id', 'user_id']);
         $httpRequest->validate(ProcessRequest::rules());
         $processRequest = new ProcessRequest();
         $processRequest->fill($httpRequest->input());
@@ -206,7 +206,7 @@ class ProcessRequestController extends Controller
      */
     public function update(ProcessRequest $request, Request $httpRequest)
     {
-        $this->encodeRequestUuids($httpRequest, ['process_uuid', 'process_collaboration_uuid', 'user_uuid']);
+        $this->encodeRequestUuids($httpRequest, ['process_id', 'process_collaboration_id', 'user_id']);
         $request->fill($httpRequest->json()->all());
         $this->validateModel($request, ProcessRequest::rules($request));
         $request->saveOrFail();

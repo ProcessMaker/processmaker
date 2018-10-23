@@ -16,7 +16,7 @@ class UserController extends Controller
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
-     * 
+     *
      *     @OA\Get(
      *     path="/users",
      *     summary="Returns all users",
@@ -87,7 +87,7 @@ class UserController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
-     * 
+     *
      *     @OA\Get(
      *     path="/users/userId",
      *     summary="Get single user by ID",
@@ -122,9 +122,9 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  uuid  $id
+     * @param  id  $id
      * @return \Illuminate\Http\Response
-     * 
+     *
      *     @OA\Post(
      *     path="/users",
      *     summary="Save a new users",
@@ -153,7 +153,7 @@ class UserController extends Controller
      * @param Request $request
      *
      * @return ResponseFactory|Response
-     * 
+     *
      *     @OA\Put(
      *     path="/users/userId",
      *     summary="Update a user",
@@ -194,7 +194,7 @@ class UserController extends Controller
      * @param User $user
      *
      * @return ResponseFactory|Response
-     * 
+     *
      *     @OA\Delete(
      *     path="/users/userId",
      *     summary="Delete a user",

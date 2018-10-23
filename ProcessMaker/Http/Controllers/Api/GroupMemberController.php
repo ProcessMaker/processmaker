@@ -19,7 +19,7 @@ class GroupMemberController extends Controller
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
-     * 
+     *
      *     @OA\Get(
      *     path="/group_members",
      *     summary="Returns all group_members that the user has access to",
@@ -58,7 +58,7 @@ class GroupMemberController extends Controller
         if (!empty($filter)) {
             $filter = '%' . $filter . '%';
             $query->where(function ($query) use ($filter) {
-                $query->Where('member_uuid', '=', $filter);
+                $query->Where('member_id', '=', $filter);
             });
         }
 
@@ -78,7 +78,7 @@ class GroupMemberController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
-     * 
+     *
      *     @OA\Post(
      *     path="/group_members",
      *     summary="Save a new group_members",
@@ -99,9 +99,9 @@ class GroupMemberController extends Controller
     {
         $request->validate(GroupMember::rules());
 
-        $group = Group::withUuid($request->input('group_uuid'))->first();
+        $group = Group::withUuid($request->input('group_id'))->first();
         $member = $request->input('member_type')::withUuid(
-            $request->input('member_uuid')
+            $request->input('member_id')
         )->first();
 
         $group_member = new GroupMember();
@@ -115,9 +115,9 @@ class GroupMemberController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  uuid  $id
+     * @param  id  $id
      * @return \Illuminate\Http\Response
-     * 
+     *
      *     @OA\Get(
      *     path="/group_members/group_memberId",
      *     summary="Get single group_member by ID",
@@ -150,7 +150,7 @@ class GroupMemberController extends Controller
      * @param GroupMember $user
      *
      * @return ResponseFactory|Response
-     * 
+     *
      *     @OA\Delete(
      *     path="/group_members/group_memberId",
      *     summary="Delete a group_members",

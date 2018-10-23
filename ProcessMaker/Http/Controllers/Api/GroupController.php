@@ -7,7 +7,6 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Http\Resources\Groups as GroupResource;
-use Spatie\BinaryUuid\HasBinaryUuid;
 
 class GroupController extends Controller
 {
@@ -119,7 +118,7 @@ class GroupController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  uuid $id
+     * @param  id $id
      * @return \Illuminate\Http\Response
      *
      * @OA\Get(
