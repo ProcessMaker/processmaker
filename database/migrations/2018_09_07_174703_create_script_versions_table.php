@@ -14,16 +14,15 @@ class CreateScriptVersionsTable extends Migration
     public function up()
     {
         Schema::create('script_versions', function (Blueprint $table) {
-            $table->uuid('uuid');
-            $table->primary('uuid');
-            $table->uuid('script_uuid');
+            $table->increments('id');
+            $table->unsignedInteger('script_id');
             $table->text('title');
             $table->text('description')->nullable();
             $table->string('type', 20)->default('FORM');
             $table->text('content')->nullable();
             $table->timestamps();
 
-            // $table->foreign('script_uuid')->references('uuid')->on('scripts');
+            $table->foreign('script_id')->references('id')->on('scripts')->onDelete('cascade');
         });
     }
 

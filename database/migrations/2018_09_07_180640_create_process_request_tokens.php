@@ -15,12 +15,11 @@ class CreateProcessRequestTokens extends Migration
     {
         Schema::create('process_request_tokens', function (Blueprint $table) {
             // Columns
-            $table->uuid('uuid');
-            $table->uuid('user_uuid')->nullable();
-            $table->uuid('process_uuid');
-            $table->uuid('process_request_uuid');
-            $table->string('element_uuid', 36);
-            $table->string('element_type', 36);
+            $table->increments('id');
+            $table->unsignedInteger('user_id')->nullable();
+            $table->unsignedInteger('process_id');
+            $table->unsignedInteger('process_request_id');
+            $table->morphs('element');
             $table->string('element_name');
             $table->enum('status', ['ACTIVE', 'FAILING', 'COMPLETED', 'CLOSED', 'EVENT_CATCH'])
                     ->default('ACTIVE');
@@ -31,15 +30,14 @@ class CreateProcessRequestTokens extends Migration
             $table->timestamps();
 
             // Indexes
-            $table->primary('uuid');
-            $table->index('process_uuid');
-            $table->index('process_request_uuid');
-            $table->index('user_uuid');
+            $table->index('process_id');
+            $table->index('process_request_id');
+            $table->index('user_id');
 
             // Foreign keys
-            $table->foreign('user_uuid')->references('uuid')->on('users')->onDelete('cascade');
-            $table->foreign('process_request_uuid')->references('uuid')->on('process_requests')->onDelete('cascade');
-            $table->foreign('process_uuid')->references('uuid')->on('processes')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('process_request_id')->references('id')->on('process_requests')->onDelete('cascade');
+            $table->foreign('process_id')->references('id')->on('processes')->onDelete('cascade');
         });
     }
 
