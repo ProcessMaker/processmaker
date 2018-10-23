@@ -99,10 +99,7 @@ class GroupMemberController extends Controller
     {
         $request->validate(GroupMember::rules());
 
-        $group = Group::withUuid($request->input('group_id'))->first();
-        $member = $request->input('member_type')::withUuid(
-            $request->input('member_id')
-        )->first();
+        $group = Group::findOrFail($request->input('group_id'));
 
         $group_member = new GroupMember();
         $group_member->group()->associate($group);

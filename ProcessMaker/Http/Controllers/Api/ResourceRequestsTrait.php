@@ -2,7 +2,6 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use Spatie\BinaryUuid\HasBinaryUuid;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\Collection;
@@ -67,21 +66,6 @@ trait ResourceRequestsTrait
         return $include ? explode(',', $include) : [];
     }
 
-    /**
-     * Change id text to id binary
-     *
-     * @param Request $request
-     * @param array $fields
-     */
-    protected function encodeRequestUuids(Request $request, array $fields = [])
-    {
-        foreach ($fields as $field) {
-            $value = $request->input($field);
-            if ($value) {
-                $request->merge([$field => HasBinaryUuid::encodeUuid($value)]);
-            }
-        }
-    }
 
     /**
      * Get the size of the page.

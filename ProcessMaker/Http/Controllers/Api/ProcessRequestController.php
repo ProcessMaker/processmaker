@@ -163,7 +163,6 @@ class ProcessRequestController extends Controller
      */
     public function store(Request $httpRequest)
     {
-        $this->encodeRequestUuids($httpRequest, ['process_id', 'process_collaboration_id', 'user_id']);
         $httpRequest->validate(ProcessRequest::rules());
         $processRequest = new ProcessRequest();
         $processRequest->fill($httpRequest->input());
@@ -205,8 +204,7 @@ class ProcessRequestController extends Controller
      * )
      */
     public function update(ProcessRequest $request, Request $httpRequest)
-    {
-        $this->encodeRequestUuids($httpRequest, ['process_id', 'process_collaboration_id', 'user_id']);
+    {        
         $request->fill($httpRequest->json()->all());
         $this->validateModel($request, ProcessRequest::rules($request));
         $request->saveOrFail();

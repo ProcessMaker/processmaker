@@ -15,7 +15,7 @@ class ProcessCategoryController extends Controller
      * Display a listing of the Process Categories.
      *
      * @return \Illuminate\Http\JsonResponse
-     * 
+     *
      * @OA\Get(
      *     path="/process_categories",
      *     summary="Returns all processes categories that the user has access to",
@@ -26,7 +26,7 @@ class ProcessCategoryController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
      *     @OA\Parameter(ref="#/components/parameters/include"),
-     * 
+     *
      *     @OA\Response(
      *         response=200,
      *         description="list of processes categories",
@@ -107,7 +107,7 @@ class ProcessCategoryController extends Controller
      * @param Request $request
      *
      * @return \Illuminate\Http\JsonResponse
-     * 
+     *
      *     * @OA\Post(
      *     path="/process_categories",
      *     summary="Save a new process Category",
@@ -180,7 +180,7 @@ class ProcessCategoryController extends Controller
      * @param ProcessCategory $processCategory
      *
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     * 
+     *
      *      * @OA\Delete(
      *     path="/process_categories/process_category_id",
      *     summary="Delete a process category",

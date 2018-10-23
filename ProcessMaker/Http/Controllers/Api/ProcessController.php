@@ -128,8 +128,7 @@ class ProcessController extends Controller
      */
     public function store(Request $request)
     {
-        //Convert the string id to binary id
-        $this->encodeRequestUuids($request, ['process_category_id']);
+
         $data = $request->json()->all();
 
         $process = new Process();
@@ -185,8 +184,7 @@ class ProcessController extends Controller
      */
     public function update(Request $request, Process $process)
     {
-        //Convert the string id to binary id
-        $this->encodeRequestUuids($request, ['process_category_id']);
+
         $process->fill($request->json()->all());
         //validate model
         $this->validateModel($process, Process::rules($process));

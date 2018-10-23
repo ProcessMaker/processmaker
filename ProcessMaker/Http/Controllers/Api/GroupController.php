@@ -10,7 +10,6 @@ use ProcessMaker\Http\Resources\Groups as GroupResource;
 
 class GroupController extends Controller
 {
-    use ResourceRequestsTrait;
 
     /**
      * Display a listing of the resource.
