@@ -99,13 +99,13 @@ class PermissionSeeder extends Seeder
         ]);
 
         if (!$user) {
-            $user = User::first()->uuid;
+            $user = User::first()->id;
         }
 
         factory(GroupMember::class)->create([
-            'group_uuid' => $group->uuid,
+            'group_id' => $group->id,
             'member_type' => User::class,
-            'member_uuid' => User::first()->uuid,
+            'member_id' => User::first()->id,
         ]);
 
         foreach($this->permissions as $permissionString) {
@@ -114,9 +114,9 @@ class PermissionSeeder extends Seeder
                 'guard_name' => $permissionString,
             ]);
             factory(PermissionAssignment::class)->create([
-                'permission_uuid' => $permission->uuid,
+                'permission_id' => $permission->id,
                 'assignable_type' => Group::class,
-                'assignable_uuid' => $group->uuid,
+                'assignable_id' => $group->id,
             ]);
         }
     }
