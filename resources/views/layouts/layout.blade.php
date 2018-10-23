@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @if(Auth::user())
-    <meta name="user-uuid" content="{{ Auth::user()->id }}">
+    <meta name="user-id" content="{{ Auth::user()->id }}">
     @endif
     @if(config('broadcasting.broadcaster') == 'socket.io')
     <meta name="broadcaster" content="{{config('broadcasting.broadcaster')}}">

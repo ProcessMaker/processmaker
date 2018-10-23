@@ -20,10 +20,10 @@ export default {
     VueFormRenderer
   },
   props: [
-    'processUid',
-    'instanceUid',
-    'tokenUid',
-    'formUid',
+    'processId',
+    'instanceId',
+    'tokenId',
+    'formId',
     'data',
   ],
   data() {
@@ -43,9 +43,9 @@ export default {
     submit() {
       var self = this;
       ProcessMaker.apiClient.post(
-          'processes/' + this.processUid +
-          '/instances/' + this.instanceUid +
-          '/tokens/' + this.tokenUid +
+          'processes/' + this.processId +
+          '/instances/' + this.instanceId +
+          '/tokens/' + this.tokenId +
           '/complete',
           this.formData)
         .then(function() {
@@ -62,9 +62,9 @@ export default {
       ProcessMaker.apiClient
         .get(
           "process/" +
-          this.processUid +
+          this.processId +
           "/form/" +
-          this.formUid
+          this.formId
         )
         .then(response => {
           this.json = response.data.content;

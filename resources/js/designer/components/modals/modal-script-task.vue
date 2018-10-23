@@ -44,7 +44,7 @@
       },
       mixins: [dataTableMixin],
       props: {
-          'processUid': String,
+          'processId': String,
           'selectedElement': Object
       },
       data() {
@@ -100,7 +100,7 @@
               this.updateElement({
                   script: data.code,
                   scriptFormat: this.getMimeType(data.language),
-                  scriptRef: data.uid,
+                  scriptRef: data.id,
                   scriptConfiguration: this.configuration,
               });
           }
@@ -141,7 +141,7 @@
               let scriptRef = this.selectedElement.attributes['pm:scriptRef'];
               if (scriptRef) {
                   ProcessMaker.apiClient
-                          .get('process/' + this.processUid + '/script/' + scriptRef)
+                          .get('process/' + this.processId + '/script/' + scriptRef)
                           .then(response => {
                               this.assignedScript = response.data;
                               console.log(response.data);
@@ -154,7 +154,7 @@
               //Get the list of scripts
               ProcessMaker.apiClient
                       .get('process/' +
-                              this.processUid +
+                              this.processId +
                               '/scripts?page=' +
                               this.page +
                               '&per_page=' +

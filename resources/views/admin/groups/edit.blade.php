@@ -79,7 +79,7 @@
                 },
                 onUpdate() {
                     this.resetErrors();
-                    ProcessMaker.apiClient.put('groups/' + this.formData.uuid, this.formData)
+                    ProcessMaker.apiClient.put('groups/' + this.formData.id, this.formData)
                         .then(response => {
                             ProcessMaker.alert('Update Group Successfully', 'success');
                             this.onClose();

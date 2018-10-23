@@ -15,7 +15,7 @@
 
     export default {
         props: [
-            'processUid'
+            'processId'
         ],
         data() {
             return {
@@ -90,7 +90,7 @@
             },
             saveBPMN (e){
                 let result = this.bpmnHandler.toXML()
-                ProcessMaker.apiClient.patch(`processes/${this.$props.processUid}/bpmn`, {
+                ProcessMaker.apiClient.patch(`processes/${this.$props.processId}/bpmn`, {
                     bpmn: result
                 }).then((response) => {
                     ProcessMaker.alert("Process saved", "success")
