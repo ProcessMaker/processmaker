@@ -36,7 +36,7 @@
     export default {
         components: {Pagination},
         mixins: [dataTableMixin],
-        props: ['processUid'],
+        props: ['processId'],
         data() {
             return {
                 items: [],
@@ -86,13 +86,13 @@
             },
             onEdit(data, index) {
                 window.location.href =
-                "/processes/" + this.processUid + "/script/" + data.uid;
+                "/processes/" + this.processId + "/script/" + data.id;
             },
             onDelete(data, index) {
                 let that = this;
                 ProcessMaker.confirmModal('Caution!', '<b>Are you sure to delete the Script </b>' + data.title + '?', '', function () {
                     ProcessMaker.apiClient
-                        .delete('process/' + that.processUid + '/script/' + data.uid)
+                        .delete('process/' + that.processId + '/script/' + data.id)
                         .then(response => {
                             ProcessMaker.alert('Script successfully eliminated', 'success');
                             that.fetch();
@@ -104,7 +104,7 @@
                 const CancelToken = ProcessMaker.apiClient.CancelToken;
                 ProcessMaker.apiClient
                     .get('process/' +
-                        this.processUid +
+                        this.processId +
                         '/scripts?page=' +
                         this.page +
                         '&per_page=' +

@@ -32,7 +32,7 @@ class TaskController extends Controller
                     ->orWhere('status', 'like', $filter);
             });
         }
-        $filterByFields = ['process_uuid', 'user_uuid', 'status', 'element_uuid', 'element_name'];
+        $filterByFields = ['process_id', 'user_id', 'status', 'element_id', 'element_name'];
         $parameters = $request->all();
         foreach ($parameters as $column => $filter) {
             if (in_array($column, $filterByFields)) {

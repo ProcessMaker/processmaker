@@ -2,7 +2,7 @@
     <div v-if="loaded" class="form-wrap container bg-light mt-3 p-5">
         <h3 class="pl-5">Profile</h3>
         <div class="modal-wrapper">
-            <avatar ref="avatar" :uid="uid" class="avatar-wrapper">
+            <avatar ref="avatar" :id="id" class="avatar-wrapper">
                 <template slot="optional">
                     <img class="profile-overlay" align="center" src="/img/avatar-profile-overlay.png"
                          @click="openModal()">
@@ -132,7 +132,7 @@
                 loaded: false,
                 // Points to a url of the image
                 image: '',
-                uid: window.ProcessMaker.user.uid,
+                id: window.ProcessMaker.user.id,
                 data: {},
                 states: states,
                 timezones: timezones,

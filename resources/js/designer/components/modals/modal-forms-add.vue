@@ -36,7 +36,7 @@
                 },
             }
         },
-        props: [ 'processUid'],
+        props: [ 'processId'],
         methods: {
             onHidden() {
                 this.$emit('hidden')
@@ -48,7 +48,7 @@
                 ProcessMaker.apiClient
                     .post(
                         'process/' +
-                        this.processUid +
+                        this.processId +
                         '/form',
                         {
                             title: this.title,
@@ -60,7 +60,7 @@
                         this.onClose();
                         if (open) {
                             //Change way to open the designer
-                            window.location.href = '/designer/' + this.processUid + '/form/' + response.data.uid;
+                            window.location.href = '/designer/' + this.processId + '/form/' + response.data.id;
                         }
                     })
                     .catch(error => {

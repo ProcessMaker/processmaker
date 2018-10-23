@@ -26,9 +26,9 @@ class ProcessScriptsTest extends TestCase
      */
     protected $process;
     private $requestStructure = [
-        'uuid',
-        'process_uuid',
-        'user_uuid',
+        'id',
+        'process_id',
+        'user_id',
         'status',
         'name',
         'initiated_at',
@@ -66,7 +66,7 @@ class ProcessScriptsTest extends TestCase
             );
         }
         //Start a process request
-        $route = route('api.process_events.trigger', [$this->process->uuid_text, 'event' => '_2']);
+        $route = route('api.process_events.trigger', [$this->process->id, 'event' => '_2']);
         $data = [];
         $response = $this->apiCall('POST', $route, $data);
         //Verify status
@@ -89,7 +89,7 @@ class ProcessScriptsTest extends TestCase
                 'status' => 'CLOSED',
             ]], $tasks);
         //Get process instance
-        $processInstance = ProcessRequest::withUuid($tasks[0]['process_request_uuid'])->firstOrFail();
+        $processInstance = ProcessRequest::where('id', $tasks[0]['process_request_id'])->firstOrFail();
         //Check the data
         $this->assertArrayHasKey('random', $processInstance->data);
         $this->assertArrayHasKey('double', $processInstance->data);

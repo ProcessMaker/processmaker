@@ -94,7 +94,7 @@ export default {
   methods: {
     onAction(action, rowData, index) {
       if (action === "edit") {
-        let link = "/tasks/" + rowData.uuid + "/edit";
+        let link = "/tasks/" + rowData.id + "/edit";
         window.location = link;
       }
     },

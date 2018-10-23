@@ -14,16 +14,15 @@ class CreateFormVersionsTable extends Migration
     public function up()
     {
         Schema::create('form_versions', function (Blueprint $table) {
-            $table->uuid('uuid');
-            $table->primary('uuid');
-            $table->uuid('form_uuid');
+            $table->increments('id');
+            $table->unsignedInteger('form_id');
             $table->text('title');
             $table->text('description')->nullable();
             $table->string('type', 20)->default('FORM');
             $table->text('content')->nullable();
             $table->timestamps();
 
-            $table->foreign('form_uuid')->references('uuid')->on('forms');
+            $table->foreign('form_id')->references('id')->on('forms')->onDelete('cascade');
         });
     }
 

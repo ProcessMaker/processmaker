@@ -15,21 +15,19 @@ class CreateProcessTaskAssignments extends Migration
     {
         Schema::create('process_task_assignments', function (Blueprint $table) {
             // columns
-            $table->uuid('uuid');
-            $table->uuid('process_uuid');
-            $table->string('process_task_uuid', 36);
-            $table->uuid('assignment_uuid');
-            $table->enum('assignment_type',['user','group']);
+            $table->increments('id');
+            $table->unsignedInteger('process_id');
+            $table->string('process_task_id', 36);
+            $table->morphs('assignment');
             $table->timestamps();
 
             // indexes
-            $table->primary('uuid');
-            $table->index('process_uuid');
+            $table->index('process_id');
 
             //Foreign keys
             //If a process is deleted it also delete its assignments
-            $table->foreign('process_uuid')
-                ->references('uuid')->on('processes')
+            $table->foreign('process_id')
+                ->references('id')->on('processes')
                 ->onDelete('cascade');
         });
     }

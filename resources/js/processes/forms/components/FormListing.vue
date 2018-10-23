@@ -30,7 +30,7 @@ import datatableMixin from "../../../components/common/mixins/datatable";
 
 export default {
   mixins: [datatableMixin],
-  props: ["filter", "uuid"],
+  props: ["filter", "id"],
   data() {
     return {
       orderBy: "title",
@@ -85,10 +85,10 @@ export default {
       switch (actionType) {
         case "edit-form":
           window.location.href =
-            "/processes/form-builder/" + data.uuid + "/edit";
+            "/processes/form-builder/" + data.id + "/edit";
           break;
         case "edit-item":
-          window.location.href = "/processes/forms/" + data.uuid + "/edit";
+          window.location.href = "/processes/forms/" + data.id + "/edit";
           break;
         case "remove-item":
           let that = this;
@@ -98,7 +98,7 @@ export default {
             "",
             function() {
               ProcessMaker.apiClient
-                .delete("forms/" + data.uuid)
+                .delete("forms/" + data.id)
                 .then(response => {
                   ProcessMaker.alert("Form successfully eliminated", "success");
                   that.fetch();

@@ -43,7 +43,9 @@ class TokenRepository implements TokenRepositoryInterface
      */
     public function createTokenInstance(): TokenInterface
     {
-        return new Token();
+        $token = new Token();
+        $token->setId(uniqid('request', true));
+        return $token;
     }
 
     public function loadTokenByUid($uid): TokenInterface
@@ -61,22 +63,22 @@ class TokenRepository implements TokenRepositoryInterface
      */
     public function persistActivityActivated(ActivityInterface $activity, TokenInterface $token)
     {
+        $this->instanceRepository->persistInstanceUpdated($token->getInstance());
         $user = $token->getInstance()->process->getNextUser($activity);
-        $token->uuid_text = $token->getId();
         $token->status = $token->getStatus();
-        $token->element_uuid = $activity->getId();
+        $token->element_id = $activity->getId();
         $token->element_type = $activity instanceof ScriptTaskInterface ? 'scriptTask' : 'task';
         $token->element_name = $activity->getName();
-        $token->process_uuid = $token->getInstance()->process->uuid;
-        $token->process_request_uuid = $token->getInstance()->uuid;
-        $token->user_uuid = $user ? $user->uuid : null;
+        $token->process_id = $token->getInstance()->process->getKey();
+        $token->process_request_id = $token->getInstance()->getKey();
+        $token->user_id = $user ? $user->getKey() : null;
         //Default 3 days of due date
         $due = $activity->getProperty('dueDate', '72');
         $token->due_at = $due ? Carbon::now()->addHours($due) : null;
         $token->initiated_at = null;
         $token->riskchanges_at = $due ? Carbon::now()->addHours($due * 0.7) : null;
         $token->saveOrFail();
-        $this->instanceRepository->persistInstanceUpdated($token->getInstance());
+        $token->setId($token->getKey());
     }
     
     private function assignTaskUser(ActivityInterface $activity, TokenInterface $token, Instance $instance)
@@ -108,13 +110,13 @@ class TokenRepository implements TokenRepositoryInterface
      */
     public function persistActivityCompleted(ActivityInterface $activity, TokenInterface $token)
     {
-        $token->uuid_text = $token->getId();
+        $this->instanceRepository->persistInstanceUpdated($token->getInstance());
         $token->status = $token->getStatus();
-        $token->element_uuid = $activity->getId();
-        $token->process_request_uuid = $token->getInstance()->uuid;
+        $token->element_id = $activity->getId();
+        $token->process_request_id = $token->getInstance()->getKey();
         $token->completed_at = Carbon::now();
         $token->save();
-        $this->instanceRepository->persistInstanceUpdated($token->getInstance());
+        $token->setId($token->getKey());
     }
 
     /**
@@ -127,68 +129,68 @@ class TokenRepository implements TokenRepositoryInterface
      */
     public function persistActivityClosed(ActivityInterface $activity, TokenInterface $token)
     {
-        $token->uuid_text = $token->getId();
-        $token->status = $token->getStatus();
-        $token->element_uuid = $activity->getId();
-        $token->process_request_uuid = $token->getInstance()->uuid;
-        $token->save();
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
+        $token->status = $token->getStatus();
+        $token->element_id = $activity->getId();
+        $token->process_request_id = $token->getInstance()->getKey();
+        $token->save();
+        $token->setId($token->getKey());
     }
 
     public function persistCatchEventTokenArrives(CatchEventInterface $intermediateCatchEvent, TokenInterface $token)
     {
-        $token->uuid_text = $token->getId();
+        $this->instanceRepository->persistInstanceUpdated($token->getInstance());
         $token->status = $token->getStatus();
-        $token->element_uuid = $intermediateCatchEvent->getId();
+        $token->element_id = $intermediateCatchEvent->getId();
         $token->element_type = 'event';
         $token->element_name = $intermediateCatchEvent->getName();
-        $token->process_uuid = $token->getInstance()->process->uuid;
-        $token->process_request_uuid = $token->getInstance()->uuid;
-        $token->user_uuid = null;
+        $token->process_id = $token->getInstance()->process->getKey();
+        $token->process_request_id = $token->getInstance()->getKey();
+        $token->user_id = null;
         $token->due_at = null;
         $token->initiated_at = null;
         $token->riskchanges_at = null;
         $token->saveOrFail();
-        $this->instanceRepository->persistInstanceUpdated($token->getInstance());
+        $token->setId($token->getKey());
     }
 
     public function persistCatchEventTokenConsumed(CatchEventInterface $intermediateCatchEvent, TokenInterface $token)
     {
-        $token->uuid_text = $token->getId();
+        $this->instanceRepository->persistInstanceUpdated($token->getInstance());
         $token->status = 'CLOSED';
-        $token->element_uuid = $intermediateCatchEvent->getId();
-        $token->process_request_uuid = $token->getInstance()->uuid;
+        $token->element_id = $intermediateCatchEvent->getId();
+        $token->process_request_id = $token->getInstance()->getKey();
         $token->completed_at = Carbon::now();
         $token->save();
-        $this->instanceRepository->persistInstanceUpdated($token->getInstance());
+        $token->setId($token->getKey());
     }
 
     public function persistCatchEventMessageArrives(CatchEventInterface $intermediateCatchEvent, TokenInterface $token)
     {
-        $token->uuid_text = $token->getId();
+        $this->instanceRepository->persistInstanceUpdated($token->getInstance());
         $token->status = $token->getStatus();
-        $token->element_uuid = $intermediateCatchEvent->getId();
+        $token->element_id = $intermediateCatchEvent->getId();
         $token->element_type = 'event';
         $token->element_name = $intermediateCatchEvent->getName();
-        $token->process_uuid = $token->getInstance()->process->uuid;
-        $token->process_request_uuid = $token->getInstance()->uuid;
-        $token->user_uuid = null;
+        $token->process_id = $token->getInstance()->process->getKey();
+        $token->process_request_id = $token->getInstance()->getKey();
+        $token->user_id = null;
         $token->due_at = null;
         $token->initiated_at = null;
         $token->riskchanges_at = null;
         $token->saveOrFail();
-        $this->instanceRepository->persistInstanceUpdated($token->getInstance());
+        $token->setId($token->getKey());
     }
 
     public function persistCatchEventMessageConsumed(CatchEventInterface $intermediateCatchEvent, TokenInterface $token)
     {
-        $token->uuid_text = $token->getId();
+        $this->instanceRepository->persistInstanceUpdated($token->getInstance());
         $token->status = 'CLOSED';
-        $token->element_uuid = $intermediateCatchEvent->getId();
-        $token->process_request_uuid = $token->getInstance()->uuid;
+        $token->element_id = $intermediateCatchEvent->getId();
+        $token->process_request_id = $token->getInstance()->getKey();
         $token->completed_at = Carbon::now();
         $token->save();
-        $this->instanceRepository->persistInstanceUpdated($token->getInstance());
+        $token->setId($token->getKey());
     }
 
     public function persistCatchEventTokenPassed(CatchEventInterface $intermediateCatchEvent, Collection $consumedTokens)

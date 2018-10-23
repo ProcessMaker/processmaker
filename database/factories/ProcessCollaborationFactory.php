@@ -9,8 +9,8 @@ use ProcessMaker\Models\ProcessCollaboration;
  */
 $factory->define(ProcessCollaboration::class, function (Faker $faker) {
     return [
-        'process_uuid' => function () {
-            return factory(Process::class)->create()->uuid;
+        'process_id' => function () {
+            return factory(Process::class)->create()->getKey();
         },
     ];
 });

@@ -9,8 +9,8 @@
 
     export default {
         props: [
-            'processUid',
-            'processId'
+            'processId',
+            'bpmnProcessId'
         ],
         data() {
             return {
@@ -26,7 +26,7 @@
         },
         methods: {
             submit() {
-                ProcessMaker.apiClient.post('processes/' + this.processUid + '/' + this.processId + '/call', {
+                ProcessMaker.apiClient.post('processes/' + this.processId + '/' + this.bpmnProcessId + '/call', {
                     startDate: new Date().toISOString(),
                     endDate: '',
                     reason: '',

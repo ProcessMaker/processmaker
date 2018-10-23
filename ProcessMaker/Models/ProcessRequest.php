@@ -5,20 +5,19 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
-use Spatie\BinaryUuid\HasBinaryUuid;
 
 /**
  * Represents an Eloquent model of a Request which is an instance of a Process.
  *
- * @property string $uuid
- * @property string $uuid_text
- * @property string $process_uuid
- * @property string $process_uuid_text
- * @property string $user_uuid
- * @property string $user_uuid_text
- * @property string $process_collaboration_uuid
- * @property string $process_collaboration_uuid_text
- * @property string $participant_uuid
+ * @property string $id
+ * @property string $id
+ * @property string $process_id
+ * @property string $process_id
+ * @property string $user_id
+ * @property string $user_id
+ * @property string $process_collaboration_id
+ * @property string $process_collaboration_id
+ * @property string $participant_id
  * @property string $name
  * @property string $status
  * @property string $data
@@ -31,22 +30,22 @@ use Spatie\BinaryUuid\HasBinaryUuid;
  *  * @OA\Schema(
  *   schema="requestsEditable",
  *   @OA\Property(property="name", type="string"),
- *   @OA\Property(property="process_uuid", type="string", format="uuid"),
- * @OA\Property(property="callable_uuid", type="string", format="uuid"),
+ *   @OA\Property(property="process_id", type="string", format="id"),
+ * @OA\Property(property="callable_id", type="string", format="id"),
  *   @OA\Property(property="data", type="string", format="json"),
  *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
  * ),
  * @OA\Schema(
  *   schema="requests",
  *   allOf={@OA\Schema(ref="#/components/schemas/requestsEditable")},
- *   @OA\Property(property="uuid", type="string", format="uuid"),
+ *   @OA\Property(property="id", type="string", format="id"),
  *
- *   @OA\Property(property="process_collaboration_uuid", type="string", format="uuid"),
- *   @OA\Property(property="user_uuid", type="string", format="uuid"),
- *   @OA\Property(property="participant_uuid", type="string", format="uuid"),
+ *   @OA\Property(property="process_collaboration_id", type="string", format="id"),
+ *   @OA\Property(property="user_id", type="string", format="id"),
+ *   @OA\Property(property="participant_id", type="string", format="id"),
  *
  *
- *   @OA\Property(property="process_category_uuid", type="string", format="uuid"),
+ *   @OA\Property(property="process_category_id", type="string", format="id"),
  *   @OA\Property(property="created_at", type="string", format="date-time"),
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
  * )
@@ -55,9 +54,6 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
 {
 
     use ExecutionInstanceTrait;
-    use HasBinaryUuid;
-
-    public $incrementing = false;
 
     /**
      * The attributes that aren't mass assignable.
@@ -65,7 +61,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
      * @var array
      */
     protected $guarded = [
-        'uuid',
+        'id',
         'created_at',
         'updated_at',
     ];
@@ -86,10 +82,10 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
      *
      * @var array
      */
-    protected $uuids = [
-        'process_uuid',
-        'process_collaboration_uuid',
-        'user_uuid',
+    protected $ids = [
+        'process_id',
+        'process_collaboration_id',
+        'user_id',
     ];
 
     /**
@@ -127,9 +123,9 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
             'name' => 'required|unique:process_requests,name',
             'data' => 'required',
             'status' => 'in:DRAFT,ACTIVE,COMPLETED',
-            'process_uuid' => 'required|exists:processes,uuid',
-            'process_collaboration_uuid' => 'nullable|exists:process_collaborations,uuid',
-            'user_uuid' => 'exists:users,uuid',
+            'process_id' => 'required|exists:processes,id',
+            'process_collaboration_id' => 'nullable|exists:process_collaborations,id',
+            'user_id' => 'exists:users,id',
         ];
 
         if ($existing) {
@@ -138,7 +134,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
                 'required',
                 'string',
                 'max:100',
-                Rule::unique('process_requests')->ignore($existing->uuid, 'uuid')
+                Rule::unique('process_requests')->ignore($existing->id, 'id')
             ];
         }
 
@@ -156,7 +152,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
     public function hasUserParticipated(User $user)
     {
         return $this->tokens()
-            ->where('user_uuid', $user->uuid)
+            ->where('user_id', $user->id)
             ->exists();
     }
 
@@ -175,7 +171,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
      */
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_uuid');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**
@@ -184,7 +180,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
      */
     public function collaboration()
     {
-        return $this->belongsTo(ProcessCollaboration::class, 'process_collaboration_uuid');
+        return $this->belongsTo(ProcessCollaboration::class, 'process_collaboration_id');
     }
 
     /**
@@ -212,11 +208,11 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
      *
      * @param $query
      *
-     * @param $uuid User uuid
+     * @param $id User id
      */
-    public function scopeStartedMe($query, $uuid)
+    public function scopeStartedMe($query, $id)
     {
-        $query->where('user_uuid', '=', $uuid);
+        $query->where('user_id', '=', $id);
     }
 
     /**

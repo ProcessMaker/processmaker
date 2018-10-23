@@ -21,7 +21,7 @@
     import FormInput from "@processmaker/vue-form-elements/src/components/FormInput";
 
     const newData = {
-        uid: null,
+        id: null,
         name: '',
         status: 'ACTIVE',
         edit: false,
@@ -72,12 +72,12 @@
                 return this.isEditing() ? ProcessMaker.apiClient.put : ProcessMaker.apiClient.post;
             },
             savePath() {
-                return this.isEditing() ? 'category/' + this.formData.uid : 'category';
+                return this.isEditing() ? 'category/' + this.formData.id : 'category';
             },
             save() {
                 this.request()(
                         this.savePath(), {
-                            uid: this.formData.uid,
+                            id: this.formData.id,
                             name: this.formData.name,
                             status: this.formData.status,
                         }
