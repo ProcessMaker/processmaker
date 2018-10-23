@@ -66,10 +66,10 @@
 				</div>
 				<div class="row">
 					<div class="form-group col">
-						{!! Form::label('code', 'Postal Code') !!}
-						{!! Form::text('code', null, ['id' => 'code', 'rows' => 4, 'class'=> 'form-control', 'v-model'
-						=> 'formdata.code', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.code}']) !!}
-						<div class="invalid-feedback" v-if="errors.code">@{{errors.code[0]}}</div>
+						{!! Form::label('postal', 'Postal code') !!}
+						{!! Form::text('postal', null, ['id' => 'postal', 'rows' => 4, 'class'=> 'form-control', 'v-model'
+						=> 'formdata.postal', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.postal}']) !!}
+						<div class="invalid-feedback" v-if="errors.postal">@{{errors.postal[0]}}</div>
 					</div>
 					<div class="form-group col">
 						{!! Form::label('country', 'Country') !!}
