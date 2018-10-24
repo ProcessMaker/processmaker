@@ -9,7 +9,7 @@
 | used to check if an authenticated user can listen to the channel.
 |
 */
-Broadcast::channel('ProcessMaker.Model.User.{id}', function ($user, $id) {
+Broadcast::channel('ProcessMaker.Models.User.{id}', function ($user, $id) {
     return (int)$user->id === (int)$id;
 });
 

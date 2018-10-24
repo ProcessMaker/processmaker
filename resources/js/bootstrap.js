@@ -97,3 +97,10 @@ window.Echo = new Echo({
   key: key.content,
   host:host.content
 });
+
+if (userID) {
+    window.Echo.private(`ProcessMaker.Models.User.${userID.content}`)
+        .notification((token) => {
+            ProcessMaker.pushNotification(token);
+        });
+}
