@@ -149,7 +149,7 @@
 @endsection
 
 @section('sidebar')
-@include('layouts.sidebar', ['sidebar' => Menu::get('sidebar_admin')])
+@include('layouts.sidebar', ['sidebar' => Menu::get('sidebar_designer')])
 @endsection
 
 @section('js')
