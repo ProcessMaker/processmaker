@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Storage;
 use Laravel\Horizon\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Models\Media;
-use Spatie\BinaryUuid\HasBinaryUuid;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class FileController extends Controller
@@ -51,14 +50,14 @@ class FileController extends Controller
     {
         // We get the model instance with the data that the user sent
         $modelClass = 'ProcessMaker\\Models\\' . ucwords($request->query('model', null));
-        $modelId = $request->query('model_uuid', null);
+        $modelId = $request->query('model_id', null);
 
         // If no model info was sent in the request
         if ($modelClass === null || $modelId === null || !class_exists($modelClass)) {
             throw new NotFoundHttpException();
         }
 
-        $model = $modelClass::find(HasBinaryUuid::encodeUuid($modelId));
+        $model = $modelClass::find($modelId);
 
         // If we can't find the model's instance
         if ($model === null) {
@@ -68,8 +67,8 @@ class FileController extends Controller
         $addedMedia = $model->addMediaFromRequest('file')->toMediaCollection('local');
 
         return response([
-            'uuid' => $addedMedia->uuid_text,
-            'model_id' => $addedMedia->model_id_text,
+            'id' => $addedMedia->id,
+            'model_id' => $addedMedia->model_id,
             'file_name' => $addedMedia->file_name,
             'mime_type' => $addedMedia->mime_type
         ], 200);
@@ -85,7 +84,7 @@ class FileController extends Controller
     public function show(Media $file)
     {
         $path = Storage::disk('public')->getAdapter()->getPathPrefix() .
-                $file->uuid_text . '/' .
+                $file->id . '/' .
                 $file->file_name;
         return response()->download($path);
     }
@@ -121,7 +120,7 @@ class FileController extends Controller
         $modelId = $file->model_id;
         $model = $modelType::find($modelId);
 
-        $model->deleteMedia($file->uuid);
+        $model->deleteMedia($file->id);
 
         return response([], 204);
     }

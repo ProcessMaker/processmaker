@@ -15,3 +15,15 @@ use Illuminate\Foundation\Inspiring;
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->describe('Display an inspiring quote');
+
+Artisan::command('notifications:resend {username}', function ($username) {
+    $user = ProcessMaker\Models\User::where('username', $username)->firstOrFail();
+    $tokens = ProcessMaker\Models\ProcessRequestToken
+        ::where('status', 'ACTIVE')
+        ->where('user_id', $user->getKey())
+        ->get();
+    foreach ($tokens as $token) {
+        $notification = new ProcessMaker\Notifications\ActivityActivatedNotification($token);
+        $user->notify($notification);
+    }
+})->describe('Resend to user the notifications of his/her active tasks');

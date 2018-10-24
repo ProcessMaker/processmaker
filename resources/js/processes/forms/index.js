@@ -7,7 +7,7 @@ new Vue({
     data: {
         filter: '',
         formModal: false,
-        formUuid: null
+        formId: null
     },
     components: {
         FormListing,
@@ -15,7 +15,7 @@ new Vue({
     },
     methods: {
         show() {
-            this.formUuid = null;
+            this.formId = null;
             this.formModal = true;
         },
         reload() {

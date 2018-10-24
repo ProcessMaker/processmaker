@@ -3,13 +3,10 @@
 namespace ProcessMaker\Http\Controllers;
 use ProcessMaker\Models\Process;
 use Illuminate\Http\Request;
-use ProcessMaker\Http\Controllers\Api\ResourceRequestsTrait;
 use ProcessMaker\Models\ProcessCategory;
 
 class ProcessController extends Controller
 {
-    use ResourceRequestsTrait;
-
     public function index()
     {
         $processes = Process::all(); //what will be in the database = Model
@@ -32,18 +29,18 @@ class ProcessController extends Controller
 
     public function store(Request $request) // store new process to DB
     {
-        $this->encodeRequestUuids($request, ['user_uuid']);
         $request->validate(Process::rules());
         $process = new Process();
         $process->fill($request->input());
-        $process->user_uuid = \Auth::user()->uuid;
+        $process->user_id = \Auth::user()->getKey();
         $process->bpmn = '';
         $process->saveOrFail();
         return redirect('/processes');
     }
     public function show(Process $process) // show new process to UI
     {
-        return view('processes.show', ["process"=>$process]);  // from data item in index, once clicked, this page will show with ability to edit and destroy
+        // Redirect to our modeler
+        return redirect()->to(route('modeler'));
     }
     public function update(Process $process, Request $request) // update existing process to DB
     {

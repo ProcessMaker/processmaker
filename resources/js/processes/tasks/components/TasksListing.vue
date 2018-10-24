@@ -20,7 +20,7 @@ import datatableMixin from "../../../components/common/mixins/datatable";
 
 export default {
   mixins: [datatableMixin],
-  props: ["filter", "uid"],
+  props: ["filter", "id"],
   data() {
     return {
       orderBy: "code",
@@ -35,8 +35,8 @@ export default {
         },
         {
           title: "Code",
-          name: "uid",
-          sortField: "uid"
+          name: "id",
+          sortField: "id"
         },
         {
           title: "Title",
@@ -101,7 +101,7 @@ export default {
       ProcessMaker.apiClient
         .get(
           "process/" +
-          this.uid +
+          this.id +
           "/tasks?page=" +
           this.page +
           "&per_page=" +

@@ -95,14 +95,14 @@ trait ResourceAssertionsTrait
     /**
      * Verify model update.
      *
-     * @param string $uuid
+     * @param string $id
      * @param array $includes
      *
      * @return \Illuminate\Foundation\Testing\TestResponse
      */
-    protected function assertModelShow($uuid, array $includes = [])
+    protected function assertModelShow($id, array $includes = [])
     {
-        $route = route('api.' . $this->resource . '.show', [$uuid]);
+        $route = route('api.' . $this->resource . '.show', [$id]);
         $structure = $this->structure;
         if ($includes) {
             $structure = array_merge($structure, $includes);
@@ -117,13 +117,13 @@ trait ResourceAssertionsTrait
     /**
      * Verify the deletion of a model.
      *
-     * @param type $uuid
+     * @param type $id
      *
      * @return \Illuminate\Foundation\Testing\TestResponse
      */
-    protected function assertCorrectModelDeletion($uuid)
+    protected function assertCorrectModelDeletion($id)
     {
-        $route = route('api.'. $this->resource . '.destroy', [$uuid]);
+        $route = route('api.'. $this->resource . '.destroy', [$id]);
         $response = $this->apiCall('DELETE', $route);
         $response->assertStatus(204);
         $this->assertEmpty($response->getContent());
@@ -133,13 +133,13 @@ trait ResourceAssertionsTrait
     /**
      * Verify the deletion of a model.
      *
-     * @param type $uuid
+     * @param type $id
      *
      * @return \Illuminate\Foundation\Testing\TestResponse
      */
-    protected function assertModelDeletionFails($uuid, array $errors = [])
+    protected function assertModelDeletionFails($id, array $errors = [])
     {
-        $route = route('api.' . $this->resource . '.destroy', [$uuid]);
+        $route = route('api.' . $this->resource . '.destroy', [$id]);
         $response = $this->apiCall('DELETE', $route);
         $response->assertStatus(422);
         $response->assertJsonStructure($this->errorStructure);
@@ -158,7 +158,7 @@ trait ResourceAssertionsTrait
 
         $base = factory($modelClass)->create();
 
-        $route = route('api.' . $this->resource . '.update', [$base->uuid_text]);
+        $route = route('api.' . $this->resource . '.update', [$base->id]);
         $fields = array_diff($attributes, [static::$DO_NOT_SEND]);
         $response = $this->apiCall('PUT', $route, $fields);
         //validate status
@@ -179,7 +179,7 @@ trait ResourceAssertionsTrait
 
         $base = factory($modelClass)->create();
 
-        $route = route('api.' . $this->resource . '.update', [$base->uuid_text]);
+        $route = route('api.' . $this->resource . '.update', [$base->id]);
         $fields = array_diff($attributes, [static::$DO_NOT_SEND]);
         $response = $this->apiCall('PUT', $route, $fields);
         //validate status
@@ -213,7 +213,7 @@ trait ResourceAssertionsTrait
 
     /**
      * Assert that the response has the given status code.
-     * 
+     *
      * @param string $expected
      * @param \Illuminate\Foundation\Testing\TestResponse $response
      */

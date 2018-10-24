@@ -14,8 +14,6 @@ use ProcessMaker\Http\Resources\ProcessRequests as ProcessRequestResource;
 
 class ProcessRequestController extends Controller
 {
-    use ResourceRequestsTrait;
-
     /**
      * Display a listing of the resource.
      *
@@ -70,7 +68,7 @@ class ProcessRequestController extends Controller
                 //include scopes
                 switch ($include) {
                     case 'started_me':
-                        $query->startedMe(Auth::user()->uuid);
+                        $query->startedMe(Auth::user()->id);
                         break;
                     case 'in_progress':
                         $query->inProgress();
@@ -112,14 +110,14 @@ class ProcessRequestController extends Controller
      * @return Response
      *
      *      * @OA\Get(
-     *     path="/requests/{process_request_uuid}",
+     *     path="/requests/process_request_id",
      *     summary="Get single process request by ID",
-     *     operationId="getProcessRequestByUuid",
+     *     operationId="getProcessRequestById",
      *     tags={"ProcessRequests"},
      *     @OA\Parameter(
      *         description="ID of process request to return",
      *         in="path",
-     *         name="process_request_uuid",
+     *         name="process_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -163,7 +161,6 @@ class ProcessRequestController extends Controller
      */
     public function store(Request $httpRequest)
     {
-        $this->encodeRequestUuids($httpRequest, ['process_uuid', 'process_collaboration_uuid', 'user_uuid']);
         $httpRequest->validate(ProcessRequest::rules());
         $processRequest = new ProcessRequest();
         $processRequest->fill($httpRequest->input());
@@ -180,14 +177,14 @@ class ProcessRequestController extends Controller
      * @return ResponseFactory|Response
      *
      * @OA\Put(
-     *     path="/requests/{process_request_uuid}",
+     *     path="/requests/process_request_id",
      *     summary="Update a process request",
      *     operationId="updateProcessRequest",
      *     tags={"ProcessRequests"},
      *     @OA\Parameter(
      *         description="ID of process request to return",
      *         in="path",
-     *         name="process_request_uuid",
+     *         name="process_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -206,9 +203,8 @@ class ProcessRequestController extends Controller
      */
     public function update(ProcessRequest $request, Request $httpRequest)
     {
-        $this->encodeRequestUuids($httpRequest, ['process_uuid', 'process_collaboration_uuid', 'user_uuid']);
+        $httpRequest->validate(ProcessRequest::rules($request));
         $request->fill($httpRequest->json()->all());
-        $this->validateModel($request, ProcessRequest::rules($request));
         $request->saveOrFail();
         return response([], 204);
     }
@@ -221,14 +217,14 @@ class ProcessRequestController extends Controller
      * @return ResponseFactory|Response
      *
      * @OA\Delete(
-     *     path="/requests/{process_request_uuid}",
+     *     path="/requests/process_request_id",
      *     summary="Delete a process request",
      *     operationId="deleteProcessRequest",
      *     tags={"ProcessRequests"},
      *     @OA\Parameter(
      *         description="ID of process request to return",
      *         in="path",
-     *         name="process_request_uuid",
+     *         name="process_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",

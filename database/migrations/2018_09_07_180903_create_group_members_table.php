@@ -14,17 +14,15 @@ class CreateGroupMembersTable extends Migration
     public function up()
     {
         Schema::create('group_members', function (Blueprint $table) {
-            $table->uuid('uuid');
-            $table->primary('uuid');
-            $table->uuid('group_uuid');
-            $table->uuid('member_uuid');
-            $table->string('member_type');
+            $table->increments('id');
+            $table->unsignedInteger('group_id');
+            $table->morphs('member');
             $table->timestamps();
 
-            $table->index('group_uuid');
-            $table->index(['member_uuid','member_type']);
+            $table->index('group_id');
+            $table->index(['member_id','member_type']);
 
-            $table->foreign('group_uuid')->references('uuid')->on('groups');
+            $table->foreign('group_id')->references('id')->on('groups')->onDelete('cascade');
         });
     }
 

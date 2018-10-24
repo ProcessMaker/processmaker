@@ -91,7 +91,7 @@
             }
         },
         props: {
-            'processUid': String,
+            'processId': String,
             'selectedElement': Object
         },
         methods: {
@@ -103,13 +103,13 @@
                 switch (selectedType) {
                     case 'task':
                         ProcessMaker.apiClient
-                            .get('process/' + this.processUid + '/forms')
+                            .get('process/' + this.processId + '/forms')
                             .then(response => {
                                 options.splice(0);
                                 options.push({ value: '', content: 'None'});
                                 response.data.data.map(function (form) {
                                     options.push({
-                                        value: form.uid,
+                                        value: form.id,
                                         content: form.title
                                     })
                                 });
@@ -117,13 +117,13 @@
                         break;
                     case 'scriptTask':
                         ProcessMaker.apiClient
-                            .get('process/' + this.processUid + '/scripts')
+                            .get('process/' + this.processId + '/scripts')
                             .then(response => {
                                 options.splice(0);
                                 options.push({ value: '', content: 'None'});
                                 response.data.data.map(function (script) {
                                     options.push({
-                                        value: script.uid,
+                                        value: script.id,
                                         content: script.title
                                     })
                                 });

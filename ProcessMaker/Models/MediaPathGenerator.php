@@ -16,7 +16,7 @@ class MediaPathGenerator implements PathGenerator
 
     public function getPath(Media $media): string
     {
-        return ($media->uuid_text) . '/';
+        return ($media->id) . '/';
     }
 
     public function getPathForConversions(Media $media): string

@@ -101,7 +101,7 @@ export default {
     onAction(action, data, index) {
       switch (action) {
         case "edit-item":
-          this.goToEdit(data.uuid);
+          this.goToEdit(data.id);
           break;
         case "remove-item":
           ProcessMaker.confirmModal(
@@ -110,7 +110,7 @@ export default {
             "",
             () => {
               ProcessMaker.apiClient
-                .delete("users/" + data.uuid)
+                .delete("users/" + data.id)
                 .then(response => {
                   ProcessMaker.alert("User Marked As Deleted", "warning");
                   this.$emit("reload");

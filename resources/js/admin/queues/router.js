@@ -8,7 +8,7 @@ Vue.use(Router);
 
 let router = new Router({
     mode: 'history',
-    base: '/manage/queues',
+    base: '/admin/queues',
     routes: [
         {
             path: '/',

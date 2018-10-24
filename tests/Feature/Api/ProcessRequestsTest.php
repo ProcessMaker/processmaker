@@ -3,11 +3,8 @@ namespace Tests\Feature\Api;
 
 use Faker\Factory as Faker;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Hash;
-use ProcessMaker\Http\Controllers\Api\ResourceRequestsTrait;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
@@ -20,17 +17,16 @@ class ProcessRequestsTest extends TestCase
 {
 
     use RequestHelper;
-    use ResourceRequestsTrait;
     use WithFaker;
 
     const API_TEST_URL = '/requests';
 
     const STRUCTURE = [
-        'uuid',
-        'process_uuid',
-        'process_collaboration_uuid',
-        'user_uuid',
-        'participant_uuid',
+        'id',
+        'process_id',
+        'process_collaboration_id',
+        'user_id',
+        'participant_id',
         'status',
         'name',
         'completed_at',
@@ -60,9 +56,9 @@ class ProcessRequestsTest extends TestCase
         $process = factory(Process::class)->create();
 
         $response = $this->apiCall('POST', self::API_TEST_URL, [
-            'process_uuid' => $process->uuid_text,
-            'process_collaboration_uuid' => null,
-            'callable_uuid' => $this->faker->uuid,
+            'process_id' => $process->id,
+            'process_collaboration_id' => null,
+            'callable_id' => $this->faker->randomDigit,
             'status' => 'ACTIVE',
             'name' => 'RequestName',
             'data' => '{}'
@@ -85,8 +81,8 @@ class ProcessRequestsTest extends TestCase
 
         //Post request name duplicated
         $response = $this->apiCall('POST', self::API_TEST_URL, [
-            'process_uuid' => $process->uuid_text,
-            'process_collaboration_uuid' => null,
+            'process_id' => $process->id,
+            'process_collaboration_id' => null,
             'status' => 'ACTIVE',
             'name' => 'duplicated name',
             'data' => '{}'
@@ -157,8 +153,8 @@ class ProcessRequestsTest extends TestCase
      */
     public function testGetRequest()
     {
-        //get the uuid from the factory
-        $request = factory(ProcessRequest::class)->create()->uuid_text;
+        //get the id from the factory
+        $request = factory(ProcessRequest::class)->create()->id;
 
         //load api
         $response = $this->apiCall('GET', self::API_TEST_URL. '/' . $request);
@@ -175,9 +171,9 @@ class ProcessRequestsTest extends TestCase
      */
     public function testUpdateProcessRequestParametersRequired()
     {
-        $uuid = factory(ProcessRequest::class)->create(['name' => 'mytestrequestname'])->uuid_text;
+        $id = factory(ProcessRequest::class)->create(['name' => 'mytestrequestname'])->id;
         //The post must have the required parameters
-        $url = self::API_TEST_URL . '/' .$uuid;
+        $url = self::API_TEST_URL . '/' .$id;
 
         $response = $this->apiCall('PUT', $url, [
             'name' => null
@@ -195,7 +191,7 @@ class ProcessRequestsTest extends TestCase
     {
         $faker = Faker::create();
 
-        $url = self::API_TEST_URL . '/' . factory(ProcessRequest::class)->create()->uuid_text;
+        $url = self::API_TEST_URL . '/' . factory(ProcessRequest::class)->create()->id;
 
         //Load the starting request data
         $verify = $this->apiCall('GET', $url);
@@ -203,7 +199,8 @@ class ProcessRequestsTest extends TestCase
         //Post saved success
         $response = $this->apiCall('PUT', $url, [
             'name' => $faker->unique()->name,
-            'data' => '{"test":1}'
+            'data' => '{"test":1}',
+            'process_id' => json_decode($verify->getContent())->process_id
         ]);
 
         //Validate the header status code
@@ -227,7 +224,7 @@ class ProcessRequestsTest extends TestCase
 
         $request2 = factory(ProcessRequest::class)->create();
 
-        $url = self::API_TEST_URL . '/' . $request2->uuid_text;
+        $url = self::API_TEST_URL . '/' . $request2->id;
 
         $response = $this->apiCall('PUT', $url, [
             'name' => 'MyRequestName',
@@ -243,7 +240,7 @@ class ProcessRequestsTest extends TestCase
     public function testDeleteProcessRequest()
     {
         //Remove request
-        $url = self::API_TEST_URL . '/' . factory(ProcessRequest::class)->create()->uuid_text;
+        $url = self::API_TEST_URL . '/' . factory(ProcessRequest::class)->create()->id;
         $response = $this->apiCall('DELETE', $url);
 
         //Validate the header status code
@@ -256,7 +253,7 @@ class ProcessRequestsTest extends TestCase
     public function testDeleteProcessRequestNotExist()
     {
         //ProcessRequest not exist
-        $url = self::API_TEST_URL . '/' . factory(ProcessRequest::class)->make()->uuid_text;
+        $url = self::API_TEST_URL . '/' . factory(ProcessRequest::class)->make()->id;
         $response = $this->apiCall('DELETE', $url);
 
         //Validate the header status code

@@ -30,7 +30,7 @@
                     'helper': 'Form Name must be distinct'
                 },
                 'formData': {
-                    'uuid': null,
+                    'id': null,
                     'title': '',
                     'description': '',
                     'type': 'FORM'
@@ -55,7 +55,7 @@
         methods: {
             resetData() {
                 this.formData = Object.assign({}, {
-                    uuid: null,
+                    id: null,
                     title: '',
                     description: '',
                     type: 'FORM'
@@ -70,10 +70,10 @@
                 });
             },
             isEditing() {
-                return !!this.formData.uuid
+                return !!this.formData.id
             },
             fillData(data) {
-                if (data && data.uuid) {
+                if (data && data.id) {
                     let that = this;
                     $.each(that.formData, function (value) {
                         if (that.inputData.hasOwnProperty(value)) {
@@ -86,7 +86,7 @@
                 return this.isEditing() ? ProcessMaker.apiClient.put : ProcessMaker.apiClient.post;
             },
             savePath() {
-                return this.isEditing() ? 'forms/' + this.formData.uuid : 'forms';
+                return this.isEditing() ? 'forms/' + this.formData.id : 'forms';
             },
             onClose() {
                 this.$emit('close');

@@ -26,10 +26,10 @@ class TasksTest extends TestCase
 
     protected $resource = 'tasks';
     protected $structure = [
-        'uuid',
-        'process_request_uuid',
-        'user_uuid',
-        'element_uuid',
+        'id',
+        'process_request_id',
+        'user_id',
+        'element_id',
         'element_type',
         'element_name',
         'status',
@@ -49,7 +49,7 @@ class TasksTest extends TestCase
         $request = factory(ProcessRequest::class)->create();
         // Create some tokens
         factory(ProcessRequestToken::class, 20)->create([
-            'process_request_uuid' => $request->uuid
+            'process_request_id' => $request->id
         ]);
         //Get a page of tokens
         $route = route('api.' . $this->resource . '.index', ['per_page' => 10, 'page' => 2]);
@@ -69,11 +69,11 @@ class TasksTest extends TestCase
         // Create some tokens
         factory(ProcessRequestToken::class, 10)->create([
             'status' => 'ACTIVE',
-            'process_request_uuid' => $request->uuid
+            'process_request_id' => $request->id
         ]);
         factory(ProcessRequestToken::class, 10)->create([
             'status' => 'CLOSED',
-            'process_request_uuid' => $request->uuid
+            'process_request_id' => $request->id
         ]);
 
         //Get active tokens
@@ -94,11 +94,11 @@ class TasksTest extends TestCase
         // Create some tokens
         factory(ProcessRequestToken::class)->create([
             'completed_at' => null,
-            'process_request_uuid' => $request->uuid
+            'process_request_id' => $request->id
         ]);
         factory(ProcessRequestToken::class)->create([
             'completed_at' => Carbon::now(),
-            'process_request_uuid' => $request->uuid
+            'process_request_id' => $request->id
         ]);
 
         //List sorted by completed_at returns as first row {"completed_at": null}
@@ -128,7 +128,7 @@ class TasksTest extends TestCase
 
         // Now we create the specified number of tokens
         factory(ProcessRequestToken::class, $rowsToAdd)->create([
-            'process_request_uuid' => $request->uuid
+            'process_request_id' => $request->id
         ]);
 
         // Get the second page, should have 5 items
@@ -158,11 +158,11 @@ class TasksTest extends TestCase
         $request = factory(ProcessRequest::class)->create();
         //Create a new process without category
         $token = factory(ProcessRequestToken::class)->create([
-            'process_request_uuid' => $request->uuid
+            'process_request_id' => $request->id
         ]);
 
         //Test that is correctly displayed
-        $route = route('api.' . $this->resource . '.show', [$token->uuid_text]);
+        $route = route('api.' . $this->resource . '.show', [$token->id]);
         $response = $this->apiCall('GET', $route);
         //Check the status
         $response->assertStatus(200);
@@ -179,16 +179,16 @@ class TasksTest extends TestCase
         $request = factory(ProcessRequest::class)->create();
         //Create a new process without category
         $token = factory(ProcessRequestToken::class)->create([
-            'process_request_uuid' => $request->uuid
+            'process_request_id' => $request->id
         ]);
 
         //Test that is correctly displayed
-        $route = route('api.' . $this->resource . '.show', [$token->uuid_text, 'include' => 'user,definition']);
+        $route = route('api.' . $this->resource . '.show', [$token->id, 'include' => 'user,definition']);
         $response = $this->apiCall('GET', $route);
         //Check the status
         $this->assertStatus(200, $response);
         //Check the structure
         $response->assertJsonStructure($this->structure);
-        $response->assertJsonStructure(['user'=>['uuid', 'email'],'definition'=>[]]);
+        $response->assertJsonStructure(['user'=>['id', 'email'],'definition'=>[]]);
     }
 }

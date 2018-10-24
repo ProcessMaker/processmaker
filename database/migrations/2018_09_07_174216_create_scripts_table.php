@@ -14,8 +14,7 @@ class CreateScriptsTable extends Migration
     public function up()
     {
         Schema::create('scripts', function (Blueprint $table) {
-            $table->uuid('uuid');
-            $table->primary('uuid');
+            $table->increments('id');
             $table->text('title');
             $table->text('description')->nullable();
             $table->string('language', 20)->default('PHP');

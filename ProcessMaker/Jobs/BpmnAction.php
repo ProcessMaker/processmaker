@@ -25,15 +25,15 @@ abstract class BpmnAction implements ShouldQueue
     public function handle()
     {
         //Load the process definition
-        $processModel = Definitions::withUuid($this->definitionsId)->first();
+        $processModel = Definitions::find($this->definitionsId);
         $definitions = $processModel->getDefinitions();
 
         //Load the instances of the process and its collaborators
         $instance = isset($this->instanceId) ? $definitions->getEngine()->loadExecutionInstance($this->instanceId) : null;
         if ($instance && $instance->collaboration) {
             foreach ($instance->collaboration->requests as $request) {
-                if ($request->uuid !== $instance->uuid) {
-                    $definitions->getEngine()->loadExecutionInstance($request->uuid_text);
+                if ($request->getKey() !== $instance->getKey()) {
+                    $definitions->getEngine()->loadExecutionInstance($request->getKey());
                 }
             }
         }

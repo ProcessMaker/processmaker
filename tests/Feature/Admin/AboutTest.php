@@ -22,9 +22,9 @@ class AboutTest extends TestCase
       // get the URL
       $response = $this->webCall('GET', '/admin/about');
       // check the correct view is called
+      $response->assertStatus(200);
       $response->assertViewIs('admin.about.index');
 
-      $response->assertStatus(200);
 
     }
 }

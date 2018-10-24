@@ -22,9 +22,9 @@ class CompleteActivity extends BpmnAction implements ShouldQueue
      */
     public function __construct(Definitions $definitions, ExecutionInstanceInterface $instance, TokenInterface $token, array $data)
     {
-        $this->definitionsId = $definitions->uuid_text;
-        $this->instanceId = $instance->uuid_text;
-        $this->tokenId = $token->uuid_text;
+        $this->definitionsId = $definitions->getKey();
+        $this->instanceId = $instance->getKey();
+        $this->tokenId = $token->getKey();
         $this->data = $data;
     }
 

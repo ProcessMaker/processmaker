@@ -3,12 +3,11 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Spatie\BinaryUuid\HasBinaryUuid;
 
 /**
  * Represents media files stored in the database
  *
- * @property integer 'uuid',
+ * @property integer 'id',
  * @property integer 'model_id',
  * @property string 'model_type',
  * @property string 'collection_name',
@@ -27,7 +26,6 @@ use Spatie\BinaryUuid\HasBinaryUuid;
  */
 class Media extends Model
 {
-    use HasBinaryUuid;
 
     /**
      * The attributes that are mass assignable.
@@ -82,7 +80,7 @@ class Media extends Model
      *
      * @var array
      */
-    protected $uuids = [
+    protected $ids = [
         'model_id',
     ];
 
