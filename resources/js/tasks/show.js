@@ -11,11 +11,5 @@ new Vue({
         TaskView
     },
     mounted() {
-        // Listen for notifications
-        let userId = document.head.querySelector('meta[name="user-id"]').content;
-        Echo.private(`ProcessMaker.Models.User.${userId}`)
-            .notification((token) => {
-                ProcessMaker.pushNotification(token);
-            });
     }
 });
