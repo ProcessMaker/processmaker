@@ -108,9 +108,6 @@ class ScriptsTest extends TestCase
      */
     public function testListScriptsWithQueryParameter()
     {
-        $this->markTestSkipped(
-            'This test is broken. Needs to be fixed'
-        );
         $title = 'search script title';
         factory(Script::class)->create([
             'title' => $title,

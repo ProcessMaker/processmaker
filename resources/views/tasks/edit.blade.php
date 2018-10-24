@@ -33,32 +33,14 @@
         </ul>
     </nav>
 
-    <div class="d-flex container mt-3">
-        <div class="col-9 mt-5 mb-5">
-            <div class="container mb-5 p-5">
-                <h3 class="font-weight-bold">Request</h3>
-                <form>
-                    <div class="form-group">
-                        <label for="groupName">Start Date</label>
-                        <input type="text" class="form-control" id="groupName">
-                    </div>
-                    <div class="form-group">
-                        <label for="groupName">End Date</label>
-                        <input type="text" class="form-control" id="groupName">
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="description">Reason</label>
-                        <textarea class="form-control" id="description" rows="3"></textarea>
-                    </div>
-                    <h3 class="font-weight-bold mb-3">Approve?</h3>
-                    <div class="mb-2">
-                        <input type="checkbox" aria-label="Checkbox for following text input">
-                        <span class="text-secondary"> Yes</span>
-                    </div>
-                    <div class="form-group">
-                        <button class="btn btn-primary" type="submit">Continue</button>
-                    </div>
-                </form>
+    <div id="task" class="d-flex container mt-3">
+        <div class="col-9">
+            <div class="card card-body border-0">
+                <task-form process-id="{{$task->processRequest->process->getKey()}}"
+                           instance-id="{{$task->processRequest->getKey()}}"
+                           token-id="{{$task->getKey()}}"
+                           :form="{{json_encode($task->getForm()->config)}}"
+                           :data="{{json_encode($task->processRequest->data)}}" />
             </div>
             <div style="margin-top: 68px;">
                 <div class="row">
@@ -69,7 +51,7 @@
                             </div>
                             <div class="row mt-3">
                                 <div class="col-1">
-                                    <img class="mr-2" src="../avatar-placeholder.gif" style="height: 45px; border-radius: 50%;"/>
+                                    <!-- img class="mr-2" src="../avatar-placeholder.gif" style="height: 45px; border-radius: 50%;"/ -->
                                 </div>
                                 <div class="form-group col">
                                     <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
@@ -94,7 +76,7 @@
                     <i class="fas fa-caret-square-up text-secondary col"></i>
                 </div>
                 <div class="text-secondary">Assigned to:</div><div class="mt-1">
-                    {{$task->user !== null ? $task->user : ''}}
+                    {{$task->user !== null ? $task->user->username : ''}}
                 </div>
                 <div class="text-secondary mt-2">Assigned:</div><div class="mt-1">
                     {{$task->created_at}}
