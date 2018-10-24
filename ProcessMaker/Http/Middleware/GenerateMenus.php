@@ -127,14 +127,14 @@ class GenerateMenus
 
         Menu::make('dropdown_nav', function ($menu) {
           $task_items = [
-        //   [
-        //     'label' =>__('Profile'),
-        //     'header' => false,
-        //     'route' => 'profile.edit',
-        //     'icon' => 'fa-user',
-        //     'img' => '',
-        //     'id' => 'dropdownItem'
-        //   ],
+          [
+            'label' =>__('Profile'),
+            'header' => false,
+            'route' => 'profile.edit',
+            'icon' => 'fa-user',
+            'img' => '',
+            'id' => 'dropdownItem'
+          ],
           [
             'label' => __('Help'),
             'header' => false,
