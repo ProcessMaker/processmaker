@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Controllers;
 
 use Illuminate\Http\Request;
 use ProcessMaker\Models\User;
+use ProcessMaker\Models\JsonData;
 
 class ProfileController extends Controller
 {
@@ -15,7 +16,10 @@ class ProfileController extends Controller
   public function edit()
   {
       $current_user = \Auth::user();
-      return view('profile.edit', compact('current_user'));
+      $states = JsonData::states();
+      $timezones = JsonData::timezones();
+      $countries = JsonData::countries();
+      return view('profile.edit', compact('current_user', 'states', 'timezones', 'countries'));
   }
     /**
    * show other profile
