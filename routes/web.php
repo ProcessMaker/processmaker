@@ -15,8 +15,8 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
         Route::resource('environment-variables', 'EnvironmentVariablesController');
         Route::resource('documents', 'DocumentController');
         Route::resource('screens', 'ScreenController');
-        Route::resource('form-builder', 'FormBuilderController')->parameters([
-            'form-builder' => 'form'
+        Route::resource('screen-builder', 'ScreenBuilderController')->parameters([
+            'screen-builder' => 'screen'
         ])->only(['edit']);
         Route::resource('scripts', 'ScriptController');
         Route::resource('categories', 'ProcessCategoryController');
