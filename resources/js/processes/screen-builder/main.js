@@ -1,8 +1,8 @@
 import Vue from 'vue'
-import formBuilder from './form'
+import screenBuilder from './screen'
 
 // Bootstrap our Designer application
 new Vue({
-    el: '#form-container',
+    el: '#screen-container',
     components: { formBuilder }
 });

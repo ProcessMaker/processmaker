@@ -1,12 +1,12 @@
 <?php
 
 use Faker\Generator as Faker;
-use ProcessMaker\Models\Form;
+use ProcessMaker\Models\Screen;
 
 /**
- * Model factory for a Form.
+ * Model factory for a screen.
  */
-$factory->define(Form::class, function (Faker $faker) {
+$factory->define(Screen::class, function (Faker $faker) {
     return [
         'title' => $faker->sentence(3),
         'description' => $faker->sentence(5)

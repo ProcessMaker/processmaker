@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateFormVersionsTable extends Migration
+class CreateScreensTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,13 @@ class CreateFormVersionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('form_versions', function (Blueprint $table) {
+        Schema::create('screens', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('form_id');
             $table->text('title');
-            $table->text('description')->nullable();
+            $table->text('description');
             $table->string('type', 20)->default('FORM');
-            $table->text('content')->nullable();
+            $table->json('config')->nullable();
             $table->timestamps();
-
-            $table->foreign('form_id')->references('id')->on('forms')->onDelete('cascade');
         });
     }
 
@@ -33,6 +30,6 @@ class CreateFormVersionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('form_versions');
+        Schema::dropIfExists('screens');
     }
 }
