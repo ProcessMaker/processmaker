@@ -46,14 +46,6 @@ class ProcessesTest extends TestCase
         $this->assertDatabaseHas('processes', ['name' => 'Stored new user']);  // how do I verify DB table name?
 
     }
-    public function testShow()
-    {
-        $process = factory(Process::class)->create(['name'=>'Test show']);
-        $response = $this->webGet('processes/'.$process->id.'' );
-        $response->assertViewIs('processes.show');
-        $response->assertStatus(200);
-        $response->assertSee('Test show');
-    }
     public function testUpdate()
     {
         $process = factory(Process::class)->create([ 'name' => 'Test Update' ]);
