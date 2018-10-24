@@ -38,10 +38,12 @@ class RequestController extends Controller
     /**
      * request show
      *
-     * @return \Illuminate\View\View|\Illuminate\Contracts\View
+     * @param Request $request
+     * @param ProcessRequest $instance
+     * @return \Illuminate\Contracts\View|\Illuminate\View\View
      */
-    public function show(Request $request)
+    public function show(Request $httpRequest, ProcessRequest $request)
     {
-        return view('requests.show', compact($request));
+        return view('requests.show', ['instance' => $request]);
     }
 }
