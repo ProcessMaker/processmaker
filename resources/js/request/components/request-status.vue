@@ -105,7 +105,7 @@ export default {
       })
     // Listen for notifications
     let userId = document.head.querySelector('meta[name="user-id"]').content;
-    Echo.private(`ProcessMaker.Model.User.${userId}`)
+    Echo.private(`ProcessMaker.Models.User.${userId}`)
       .notification((token) => {
         ProcessMaker.pushNotification(token);
         this.update();
