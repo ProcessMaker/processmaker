@@ -14,7 +14,7 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
     Route::namespace('Process')->prefix('processes')->group(function () {
         Route::resource('environment-variables', 'EnvironmentVariablesController');
         Route::resource('documents', 'DocumentController');
-        Route::resource('forms', 'FormController');
+        Route::resource('screens', 'ScreenController');
         Route::resource('form-builder', 'FormBuilderController')->parameters([
             'form-builder' => 'form'
         ])->only(['edit']);
