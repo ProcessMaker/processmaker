@@ -34,8 +34,8 @@
     </nav>
 
     <div id="task" class="d-flex container mt-3">
-        <div class="col-9 mt-5 mb-5">
-            <div class="container mb-5 p-5">
+        <div class="col-9">
+            <div class="card card-body border-0">
                 <task-form process-id="{{$task->processRequest->process->getKey()}}"
                            instance-id="{{$task->processRequest->getKey()}}"
                            token-id="{{$task->getKey()}}"
@@ -51,7 +51,7 @@
                             </div>
                             <div class="row mt-3">
                                 <div class="col-1">
-                                    <img class="mr-2" src="../avatar-placeholder.gif" style="height: 45px; border-radius: 50%;"/>
+                                    <!-- img class="mr-2" src="../avatar-placeholder.gif" style="height: 45px; border-radius: 50%;"/ -->
                                 </div>
                                 <div class="form-group col">
                                     <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
@@ -76,7 +76,7 @@
                     <i class="fas fa-caret-square-up text-secondary col"></i>
                 </div>
                 <div class="text-secondary">Assigned to:</div><div class="mt-1">
-                    {{$task->user !== null ? $task->user : ''}}
+                    {{$task->user !== null ? $task->user->username : ''}}
                 </div>
                 <div class="text-secondary mt-2">Assigned:</div><div class="mt-1">
                     {{$task->created_at}}
