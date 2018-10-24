@@ -1,7 +1,7 @@
 <template>
     <b-modal v-model="opened" size="md" centered @hidden="onClose" @show="onReset" @close="onClose"
-             title="Create New Form" v-cloak>
-        <create-form ref="fieldForm" v-on:save="afterSave"></create-form>
+             title="Create New Screen" v-cloak>
+        <create-screen ref="fieldsScreen" v-on:save="afterSave"></create-screen>
 
         <div slot="modal-footer">
             <b-button @click="onClose" class="btn btn-outline-success btn-sm text-uppercase">
@@ -16,10 +16,10 @@
 </template>
 
 <script>
-    import CreateForm from "../fields-form";
+    import CreateScreen from "../fields-screen";
 
     export default {
-        components: {CreateForm},
+        components: {CreateScreen},
         props: ['show'],
         data() {
             return {
@@ -39,14 +39,14 @@
                 this.$emit('close');
             },
             onReset() {
-                this.$refs.fieldForm.resetData();
+                this.$refs.fieldsScreen.resetData();
             },
             onSave() {
-                this.$refs.fieldForm.onSave();
+                this.$refs.fieldsScreen.onSave();
             },
             afterSave() {
                 this.onClose();
-                ProcessMaker.alert('Create Form Successfully', 'success');
+                ProcessMaker.alert('Created Screen Successfully', 'success');
                 this.$emit('reload');
             }
         }

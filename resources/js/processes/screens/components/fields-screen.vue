@@ -21,13 +21,13 @@
         data() {
             return {
                 'typeOptions': [
-                    {value: 'FORM', content: 'FORM'},
+                    {value: 'FORM', content: 'Form'},
                 ],
                 'labels': {
                     'title': 'Title',
                     'description': 'Description',
                     'type': 'Type',
-                    'helper': 'Form Name must be distinct'
+                    'helper': 'Screen Name must be distinct'
                 },
                 'formData': {
                     'id': null,
@@ -86,7 +86,7 @@
                 return this.isEditing() ? ProcessMaker.apiClient.put : ProcessMaker.apiClient.post;
             },
             savePath() {
-                return this.isEditing() ? 'forms/' + this.formData.id : 'forms';
+                return this.isEditing() ? 'screens/' + this.formData.id : 'screens';
             },
             onClose() {
                 this.$emit('close');

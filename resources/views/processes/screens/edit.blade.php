@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-    {{__('Edit Form')}}
+    {{__('Edit Screen')}}
 @endsection
 
 @section('sidebar')
@@ -9,12 +9,12 @@
 @endsection
 
 @section('content')
-    <div class="container" id="form-edit">
-        <h1>{{__('Edit Form')}}</h1>
+    <div class="container" id="screen-edit">
+        <h1>{{__('Edit Screen')}}</h1>
         <div class="row">
             <div class="col-8">
                 <div class="card card-body">
-                    <form-edit ref="formEdit" :input-data="{{$form}}" v-on:update="afterUpdate"></form-edit>
+                    <screen-edit ref="screenEdit" :input-data="{{$screen}}" v-on:update="afterUpdate"></screen-edit>
                     <footer class="modal-footer">
                         <div>
                             <b-button @click="onClose" class="btn btn-outline-success btn-sm text-uppercase">
@@ -32,5 +32,5 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/processes/forms/edit.js')}}"></script>
+    <script src="{{mix('js/processes/screens/edit.js')}}"></script>
 @endsection
