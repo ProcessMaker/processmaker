@@ -58,7 +58,7 @@
                         </div>
                         <div class="form-group col">
                             {!! Form::label('state', 'State or Region') !!}
-                            {!! Form::select('state', [$current_user->state=>$current_user->state], $current_user->state, ['id' => 'state','class'=> 'form-control',
+                            {!! Form::select('state', [$current_user->state=>$current_user->state, $states], $current_user->state, ['id' => 'state','class'=> 'form-control',
                             'v-model' => 'formdata.state',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.state}']) !!}
                             <div class="invalid-feedback" v-if="errors.state">@{{errors.state[0]}}</div>
@@ -73,7 +73,7 @@
                         </div>
                         <div class="form-group col">
                             {!! Form::label('country', 'Country') !!}
-                            {!! Form::select('country', [$current_user->country=>$current_user->country], $current_user->country, ['id' => 'country','class'=> 'form-control',
+                            {!! Form::select('country', [$current_user->country=>$current_user->country, $countries], $current_user->country, ['id' => 'country','class'=> 'form-control',
                             'v-model' => 'formdata.country',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.country}']) !!}
                             <div class="invalid-feedback" v-if="errors.country">@{{errors.country[0]}}</div>
@@ -83,7 +83,7 @@
                     <div class="row">
                         <div class="form-group col">
                             {!! Form::label('timezone', 'Timezone') !!}
-                            {!! Form::select('timezone', [$current_user->timezone=>$current_user->timezone], $current_user->timezone, ['id' => 'timezone','class'=>
+                            {!! Form::select('timezone', [$current_user->timezone=>$current_user->timezone, $timezones], $current_user->timezone, ['id' => 'timezone','class'=>
                             'form-control',
                             'v-model' => 'formdata.timezone',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.timezone}']) !!}
@@ -160,7 +160,7 @@
             data: {
                 formdata: @json($current_user),
                 errors: {},
-                confpassword: "",
+				confpassword: "",
                 options: [
                     {
                         src: @json($current_user['avatar']),
