@@ -83,7 +83,8 @@
                                 <span class="option__desc mr-1">@{{ props.option.name }}
                                     <span class="option__title">@{{ props.option.desc }}</span>
                                 </span>
-                                <i aria-hidden="true" tabindex="1" class="multiselect__tag-icon"></i>
+                                <i aria-hidden="true" tabindex="1" @click="props.remove(props.option)"
+                                   class="multiselect__tag-icon"></i>
                             </span>
                         </template>
 
@@ -152,14 +153,14 @@
                                                 member_type: "ProcessMaker\\Models\\User",
                                                 member_id: response.data.id,
                                                 group_id: group.id
-                                                
+
                                             })
-                                        })
-                                        ProcessMaker.alert('{{__('User successfully added ')}}', 'success') 
+                                        });
+                                        ProcessMaker.alert('{{__('User successfully added ')}}', 'success')
                                         window.location = "/admin/users/" + response.data.id + '/edit'
                                     })
                                     .catch(error => {
-                                        
+
                                         if (error.response.status === 422) {
                                             this.addError = error.response.data.errors
                                         }

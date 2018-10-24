@@ -63,7 +63,8 @@
                                 <span class="option__desc mr-1">@{{ props.option.name }}
                                     <span class="option__title">@{{ props.option.desc }}</span>
                                 </span>
-                                <i aria-hidden="true" tabindex="1" class="multiselect__tag-icon"></i>
+                                <i aria-hidden="true" tabindex="1" @click="props.remove(props.option)"
+                                   class="multiselect__tag-icon"></i>
                             </span>
                             </template>
 
@@ -97,7 +98,6 @@
     </div>
 @endsection
 @section('js')
-    <script src="{{mix('js/admin/users/index.js')}}"></script>
     <script>
         new Vue({
             el: '#editUser',
@@ -138,15 +138,15 @@
                     let that = this;
                     that.dataGroups = [];
                     let values = [];
-                    $.each(data, function (key, value) {
+                    data.forEach(value => {
                         let option = value;
                         option.img = '/img/avatar-placeholder.gif';
                         option.desc = ' ';
                         that.dataGroups.push(option);
                         //fill groups selected
                         if (that.formData && that.formData.hasOwnProperty('memberships')) {
-                            $.each(that.formData.memberships, function (keyMember, dataMember) {
-                                if (dataMember.group_uuid === option.uuid) {
+                            that.formData.memberships.forEach(member => {
+                                if (member.group_id === option.id) {
                                     values.push(option);
                                 }
                             });
@@ -157,18 +157,75 @@
                 onClose() {
                     window.location.href = '/admin/users';
                 },
+                validatePassword() {
+                    if (!this.formData.password && !this.formData.confpassword) {
+                        return true;
+                    }
+                    if (this.formData.password.trim() === '' && this.formData.confpassword.trim() === '') {
+                        return true
+                    }
+                    if (this.formData.password !== this.formData.confpassword) {
+                        this.errors.password = ['Passwords must match']
+                        this.password = ''
+                        this.submitted = false
+                        return false
+                    }
+                    return true
+                },
                 onUpdate() {
                     this.resetErrors();
-                    ProcessMaker.apiClient.put('users/' + this.formData.uuid, this.formData)
+                    if (!this.validatePassword()) return false ;
+
+                    let that = this;
+
+                    ProcessMaker.apiClient.put('users/' + that.formData.id, that.formData)
                         .then(response => {
+
+                            //Remove member that has previously registered and is not in the post data.
+                            if (that.formData && that.formData.hasOwnProperty('memberships') && that.formData.memberships) {
+                                that.formData.memberships.forEach(dataMember => {
+                                    let deleteMember = true;
+                                    that.value.forEach(group => {
+                                        if (dataMember.group_id === group.id) {
+                                            deleteMember = false;
+                                            return false;
+                                        }
+                                    });
+                                    if(deleteMember) {
+                                        ProcessMaker.apiClient.delete('group_members/'+ dataMember.id);
+                                    }
+                                });
+                            }
+                            //Add member who were not previously registered.
+                            that.value.forEach(group => {
+                                let save = true;
+                                if (that.formData && that.formData.hasOwnProperty('memberships') && that.formData.memberships) {
+                                    that.formData.memberships.forEach(dataMember => {
+                                        if (dataMember.group_id === group.id) {
+                                            save = false;
+                                            return false;
+                                        }
+                                    });
+                                }
+                                if (save) {
+                                    ProcessMaker.apiClient
+                                        .post('group_members', {
+                                                'group_id': group.id,
+                                                'member_type': 'ProcessMaker\\Models\\User',
+                                                'member_id': that.formData.id
+                                            }
+                                        );
+                                }
+                            });
+
                             ProcessMaker.alert('Update User Successfully', 'success');
-                            this.onClose();
+                            that.onClose();
                         })
                         .catch(error => {
                             //define how display errors
                             if (error.response.status && error.response.status === 422) {
                                 // Validation error
-                                this.errors = error.response.data.errors;
+                                that.errors = error.response.data.errors;
                             }
                         });
                 }

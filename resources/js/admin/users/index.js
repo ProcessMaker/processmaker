@@ -1,8 +1,6 @@
 import Vue from 'vue';
 import UsersListing from './components/UsersListing';
-import Multiselect from 'vue-multiselect/src/Multiselect';
 
-Vue.component('multiselect', Multiselect)
 
 new Vue({
     el: '#users-listing',
