@@ -101,7 +101,6 @@ export default {
     ProcessMaker.apiClient.get(`processes/${this.processId}`)
       .then((response) => {
         this.process = response.data;
-        this.update();
       })
     // Listen for notifications
     let userId = document.head.querySelector('meta[name="user-id"]').content;
