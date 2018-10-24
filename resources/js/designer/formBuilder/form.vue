@@ -122,15 +122,15 @@ export default {
       alert("Preview Form was Submitted")
     },
     onClose() {
-      window.location.href = '/designer/' + this.process.uid;
+      window.location.href = '/designer/' + this.process.id;
     },
     saveForm() {
       ProcessMaker.apiClient
         .put(
           'process/' +
-          this.process.uid +
+          this.process.id +
           '/form/' +
-          this.form.uid, {
+          this.form.id, {
             content: this.config
           }
         )

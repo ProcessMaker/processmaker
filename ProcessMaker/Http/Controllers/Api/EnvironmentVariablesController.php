@@ -74,14 +74,14 @@ class EnvironmentVariablesController extends Controller
    * Creates a new global Environment Variable in the system
    * 
    *      * @OA\Get(
-    *     path="/environment_variables/{environment_variablesUuid}",
+    *     path="/environment_variables/{environment_variables_id}",
     *     summary="Get single environment_variables by ID",
-    *     operationId="getEnvironment_variablesByUuid",
+    *     operationId="getEnvironmentVariablesById",
     *     tags={"Environment Variables"},
     *     @OA\Parameter(
     *         description="ID of environment_variables to return",
     *         in="path",
-    *         name="environment_variablesUuid",
+    *         name="environment_variables_id",
     *         required=true,
     *         @OA\Schema(
     *           type="string",
@@ -109,7 +109,7 @@ class EnvironmentVariablesController extends Controller
    *      @OA\Post(
     *     path="/environment_variables",
     *     summary="Save a new environment_variables",
-    *     operationId="createEnvironment_variables",
+    *     operationId="createEnvironmentVariables",
     *     tags={"Environment Variables"},
     *     @OA\RequestBody(
     *       required=true,
@@ -130,14 +130,14 @@ class EnvironmentVariablesController extends Controller
    * Update an environment variable
    * 
    *      @OA\Put(
-    *     path="/environment_variables/{environment_variablesUuid}",
+    *     path="/environment_variables/{environment_variables_id}",
     *     summary="Update a environment_variables",
-    *     operationId="updateEnvironment_variables",
+    *     operationId="updateEnvironmentVariables",
     *     tags={"Environment Variables"},
     *     @OA\Parameter(
     *         description="ID of environment_variables to return",
     *         in="path",
-    *         name="environment_variablesUuid",
+    *         name="environment_variables_id",
     *         required=true,
     *         @OA\Schema(
     *           type="string",
@@ -165,14 +165,14 @@ class EnvironmentVariablesController extends Controller
 
   /**
    *      @OA\Delete(
-    *     path="/environment_variables/{environment_variablesUuid}",
+    *     path="/environment_variables/{environment_variables_id}",
     *     summary="Delete a environment_variables",
-    *     operationId="deleteEnvironment_variables",
+    *     operationId="deleteEnvironmentVariables",
     *     tags={"Environment Variables"},
     *     @OA\Parameter(
     *         description="ID of environment_variables to return",
     *         in="path",
-    *         name="environment_variablesUuid",
+    *         name="environment_variables_id",
     *         required=true,
     *         @OA\Schema(
     *           type="string",

@@ -6,18 +6,18 @@ new Vue({
     data: {
         filter: '',
         processModal: false,
-        processUuid: null
+        processId: null
     },
     components: {
         ProcessesListing,
     },
     methods: {
         show() {
-            this.processUuid = null;
+            this.processId = null;
             this.processModal = true;
         },
-        edit(uuid) {
-            this.processUuid = uuid;
+        edit(id) {
+            this.processId = id;
             this.processModal = true;
         },
         reload() {

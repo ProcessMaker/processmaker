@@ -37,9 +37,9 @@ class UserTest extends TestCase
     public function testEditRoute()
     {
 
-        $user_uuid = factory(User::class)->create()->uuid_text;
+        $user_id = factory(User::class)->create()->id;
         // get the URL
-        $response = $this->webCall('GET', '/admin/users/' . $user_uuid . '/edit');
+        $response = $this->webCall('GET', '/admin/users/' . $user_id . '/edit');
 
         $response->assertStatus(200);
         // check the correct view is called
@@ -72,7 +72,7 @@ class UserTest extends TestCase
     {
         $user = factory(User::class)->create();
         // get the URL
-        $response = $this->webCall('GET', '/admin/users/' . $user->uuid_text);
+        $response = $this->webCall('GET', '/admin/users/' . $user->id);
         $response->assertStatus(200);
         // check the correct view is called
         $response->assertViewIs('admin.users.show');

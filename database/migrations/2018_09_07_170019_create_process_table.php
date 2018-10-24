@@ -15,9 +15,9 @@ class CreateProcessTable extends Migration
     {
         Schema::create('processes', function (Blueprint $table) {
             // Columns
-            $table->uuid('uuid');
-            $table->uuid('process_category_uuid')->nullable();
-            $table->uuid('user_uuid');
+            $table->increments('id');
+            $table->unsignedInteger('process_category_id')->nullable();
+            $table->unsignedInteger('user_id');
             $table->text('bpmn');
             $table->text('description');
             $table->string('name');
@@ -25,12 +25,11 @@ class CreateProcessTable extends Migration
             $table->timestamps();
 
             // Indexes
-            $table->primary('uuid');
-            $table->index('process_category_uuid');
+            $table->index('process_category_id');
 
             // Foreign keys
-            $table->foreign('user_uuid')->references('uuid')->on('users')->onDelete('cascade');
-            $table->foreign('process_category_uuid')->references('uuid')->on('process_categories')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('process_category_id')->references('id')->on('process_categories')->onDelete('cascade');
         });
     }
 

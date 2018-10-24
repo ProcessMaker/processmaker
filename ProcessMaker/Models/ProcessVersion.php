@@ -3,16 +3,15 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Spatie\BinaryUuid\HasBinaryUuid;
 
 /**
  * ProcessVersion is used to store the historical version of a process.
  *
- * @property string uuid
+ * @property string id
  * @property string bpmn
  * @property string name
- * @property string process_category_uuid
- * @property string process_uuid
+ * @property string process_category_id
+ * @property string process_id
  * @property string status
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
@@ -20,17 +19,13 @@ use Spatie\BinaryUuid\HasBinaryUuid;
  */
 class ProcessVersion extends Model
 {
-    use HasBinaryUuid;
-
-    public $incrementing = false;
-
     /**
      * Attributes that are not mass assignable.
      *
      * @var array $fillable
      */
     protected $guarded = [
-        'uuid',
+        'id',
         'bpmn',
         'updated_at',
         'created_at',
@@ -52,9 +47,9 @@ class ProcessVersion extends Model
      *
      * @var array
      */
-    protected $uuids = [
-        'process_category_uuid',
-        'process_uuid',
+    protected $ids = [
+        'process_category_id',
+        'process_id',
     ];
 
     /**
@@ -67,8 +62,8 @@ class ProcessVersion extends Model
         return [
             'name' => 'required',
             'status' => 'in:ACTIVE,INACTIVE',
-            'process_category_uuid' => 'exists:process_categories,uuid',
-            'process_uuid' => 'exists:processes,uuid',
+            'process_category_id' => 'exists:process_categories,id',
+            'process_id' => 'exists:processes,id',
         ];
     }
 
@@ -78,7 +73,7 @@ class ProcessVersion extends Model
      */
     public function process()
     {
-        return $this->belongsTo(Process::class, 'process_uuid');
+        return $this->belongsTo(Process::class, 'process_id');
     }
 
     /**
@@ -87,7 +82,7 @@ class ProcessVersion extends Model
      */
     public function processCategory()
     {
-        return $this->belongsTo(ProcessCategory::class, 'process_category_uuid');
+        return $this->belongsTo(ProcessCategory::class, 'process_category_id');
     }
 
 }

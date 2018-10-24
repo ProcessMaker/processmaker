@@ -29,7 +29,7 @@ import datatableMixin from "../../components/common/mixins/datatable";
 
 export default {
   mixins: [datatableMixin],
-  props: ["filter", "uid"],
+  props: ["filter", "id"],
   data() {
     return {
       orderBy: "name",
@@ -98,10 +98,17 @@ export default {
     goToEdit(data) {
       window.location = "/processes/scripts/" + data + "/edit";
     },
+    goToDesigner(data) {
+      window.location = "/modeler/" + data;
+    },
     onAction(action, data, index) {
       switch (action) {
+        case 'edit-designer':
+          this.goToDesigner(data.id);
+          break;
+
         case "edit-item":
-          this.goToEdit(data.uuid);
+          this.goToEdit(data.id);
           break;
       }
     },

@@ -80,30 +80,30 @@ class ScriptController extends Controller
      *     summary="Returns all scripts that the user has access to",
      *     operationId="getScriptsPreview",
      *     tags={"Scripts"},
- *         @OA\Parameter(
- *             parameter="data",
- *             name="data",
- *             in="query",
- *             @OA\Schema(type="string"),
- *         ),
- *         @OA\Parameter(
- *             parameter="config",
- *             name="config",
- *             in="query",
- *             @OA\Schema(type="string"),
- *         ),
- *         @OA\Parameter(
- *             parameter="code",
- *             name="code",
- *             in="query",
- *             @OA\Schema(type="string"),
- *         ),
- *         @OA\Parameter(
- *             parameter="language",
- *             name="language",
- *             in="query",
- *             @OA\Schema(type="string"),
- *         ),
+     *         @OA\Parameter(
+     *             parameter="data",
+     *             name="data",
+     *             in="query",
+     *             @OA\Schema(type="string"),
+     *         ),
+     *         @OA\Parameter(
+     *             parameter="config",
+     *             name="config",
+     *             in="query",
+     *             @OA\Schema(type="string"),
+     *         ),
+     *         @OA\Parameter(
+     *             parameter="code",
+     *             name="code",
+     *             in="query",
+     *             @OA\Schema(type="string"),
+     *         ),
+     *         @OA\Parameter(
+     *             parameter="language",
+     *             name="language",
+     *             in="query",
+     *             @OA\Schema(type="string"),
+     *         ),
      * 
      *     @OA\Response(
      *         response=200,
@@ -134,14 +134,14 @@ class ScriptController extends Controller
      * @return ResponseFactory|Response
      * 
      *     @OA\Get(
-     *     path="/scripts/{scriptsUuid}",
+     *     path="/scripts/scriptsId",
      *     summary="Get single script by ID",
-     *     operationId="getScriptsByUuid",
+     *     operationId="getScriptsById",
      *     tags={"Scripts"},
      *     @OA\Parameter(
      *         description="ID of script to return",
      *         in="path",
-     *         name="scriptsUuid",
+     *         name="script_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -201,14 +201,14 @@ class ScriptController extends Controller
      * @return ResponseFactory|Response
      * 
      *     @OA\Put(
-     *     path="/scripts/{scriptsUuid}",
+     *     path="/scripts/scriptsId",
      *     summary="Update a script",
      *     operationId="updateScript",
      *     tags={"Scripts"},
      *     @OA\Parameter(
      *         description="ID of script to return",
      *         in="path",
-     *         name="ScriptsUuid",
+     *         name="script_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -243,14 +243,14 @@ class ScriptController extends Controller
      * @return ResponseFactory|Response
      * 
      *     @OA\Delete(
-     *     path="/scripts/{scriptsUuid}",
+     *     path="/scripts/scriptsId",
      *     summary="Delete a script",
      *     operationId="deleteScript",
      *     tags={"Scripts"},
      *     @OA\Parameter(
      *         description="ID of script to return",
      *         in="path",
-     *         name="scriptsUuid",
+     *         name="script_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",

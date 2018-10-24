@@ -4,7 +4,6 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
-use Spatie\BinaryUuid\HasBinaryUuid;
 
 /**
  * @OA\Schema(
@@ -19,13 +18,10 @@ use Spatie\BinaryUuid\HasBinaryUuid;
  *   @OA\Property(property="created_at", type="string", format="date-time"),
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
  * )
- * 
+ *
  */
 class EnvironmentVariable extends Model
 {
-    use HasBinaryUuid;
-
-    public $incrementing = false;
 
     protected $fillable = [
         'name',

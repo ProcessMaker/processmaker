@@ -25,9 +25,9 @@ class ProcessTest extends TestCase
 
     protected $resource = 'processes';
     protected $structure = [
-        'uuid',
-        'process_category_uuid',
-        'user_uuid',
+        'id',
+        'process_category_id',
+        'user_id',
         'description',
         'name',
         'status',
@@ -169,16 +169,16 @@ class ProcessTest extends TestCase
         //Create a process without category
         $this->assertCorrectModelCreation(
             Process::class, [
-                'user_uuid' => static::$DO_NOT_SEND,
-                'process_category_uuid' => null,
+                'user_id' => static::$DO_NOT_SEND,
+                'process_category_id' => null,
             ]
         );
 
         //Create a process without sending the category
         $this->assertCorrectModelCreation(
             Process::class, [
-                'user_uuid' => static::$DO_NOT_SEND,
-                'process_category_uuid' => static::$DO_NOT_SEND,
+                'user_id' => static::$DO_NOT_SEND,
+                'process_category_id' => static::$DO_NOT_SEND,
             ]
         );
 
@@ -186,13 +186,13 @@ class ProcessTest extends TestCase
         $category = factory(ProcessCategory::class)->create();
         $this->assertCorrectModelCreation(
             Process::class, [
-                'user_uuid' => static::$DO_NOT_SEND,
-                'process_category_uuid' => $category->uuid_text,
+                'user_id' => static::$DO_NOT_SEND,
+                'process_category_id' => $category->id,
             ]
         );
 
     }
-    
+
     /**
      * Test the creation of processes with BPMN definition
      */
@@ -200,8 +200,8 @@ class ProcessTest extends TestCase
     {
         $route = route('api.' . $this->resource . '.store');
         $base = factory(Process::class)->make([
-                'user_uuid' => static::$DO_NOT_SEND,
-                'process_category_uuid' => static::$DO_NOT_SEND,
+                'user_id' => static::$DO_NOT_SEND,
+                'process_category_id' => static::$DO_NOT_SEND,
             ]);
         $array = array_diff($base->toArray(), [static::$DO_NOT_SEND]);
         //Add a bpmn content
@@ -210,7 +210,7 @@ class ProcessTest extends TestCase
         $response->assertStatus(201);
         $response->assertJsonStructure($this->structure);
         $data = $response->json();
-        $process = Process::withUuid($data['uuid'])->first();
+        $process = Process::where('id', $data['id'])->first();
         $this->assertEquals($array['bpmn'], $process->bpmn);
     }
 
@@ -224,8 +224,8 @@ class ProcessTest extends TestCase
             Process::class,
             [
                 'name' => null,
-                'user_uuid' => static::$DO_NOT_SEND,
-                'process_category_uuid' => static::$DO_NOT_SEND
+                'user_id' => static::$DO_NOT_SEND,
+                'process_category_id' => static::$DO_NOT_SEND
             ],
             //Fields that should fail
             [
@@ -240,8 +240,8 @@ class ProcessTest extends TestCase
             Process::class,
             [
                 'name' => $name,
-                'user_uuid' => static::$DO_NOT_SEND,
-                'process_category_uuid' => static::$DO_NOT_SEND
+                'user_id' => static::$DO_NOT_SEND,
+                'process_category_id' => static::$DO_NOT_SEND
             ],
             //Fields that should fail
             [
@@ -249,16 +249,16 @@ class ProcessTest extends TestCase
             ]
         );
 
-        //Test to create a process with a process category uuid that does not exist
+        //Test to create a process with a process category id that does not exist
         $this->assertModelCreationFails(
             Process::class,
             [
-                'user_uuid' => static::$DO_NOT_SEND,
-                'process_category_uuid' => 'uuid-not-exists'
+                'user_id' => static::$DO_NOT_SEND,
+                'process_category_id' => 'id-not-exists'
             ],
             //Fields that should fail
             [
-                'process_category_uuid'
+                'process_category_id'
             ]
         );
     }
@@ -271,21 +271,21 @@ class ProcessTest extends TestCase
     {
         //Create a new process without category
         $process = factory(Process::class)->create([
-            'process_category_uuid' => null
+            'process_category_id' => null
         ]);
 
         //Test that is correctly displayed
-        $this->assertModelShow($process->uuid_text, []);
+        $this->assertModelShow($process->id, []);
 
         //Test that is correctly displayed with null category
-        $this->assertModelShow($process->uuid_text, ['category'])
+        $this->assertModelShow($process->id, ['category'])
             ->assertJsonFragment(['category' => null]);
 
         //Create a new process with category
         $process = factory(Process::class)->create();
 
         //Test that is correctly displayed including category and user
-        $this->assertModelShow($process->uuid_text, ['category','user']);
+        $this->assertModelShow($process->id, ['category','user']);
     }
 
     /**
@@ -299,29 +299,29 @@ class ProcessTest extends TestCase
         $process = factory(Process::class)->create();
 
         //Delete the process created
-        $this->assertCorrectModelDeletion($process->uuid_text);
+        $this->assertCorrectModelDeletion($process->id);
 
         //Create a request without collaboration
         $request = factory(ProcessRequest::class)->create([
-            'process_collaboration_uuid' => null
+            'process_collaboration_id' => null
         ]);
         $process = $request->process;
 
         //Delete the process created
-        $this->assertModelDeletionFails($process->uuid_text, [
+        $this->assertModelDeletionFails($process->id, [
             'requests'
         ]);
 
         //Create a request with collaboration
         $process = factory(Process::class)->create([
-            'process_category_uuid' => null
+            'process_category_id' => null
         ]);
         factory(ProcessCollaboration::class)->create([
-            'process_uuid' => $process->uuid
+            'process_id' => $process->id
         ]);
 
         //Delete the process created
-        $this->assertModelDeletionFails($process->uuid_text, [
+        $this->assertModelDeletionFails($process->id, [
             'collaborations'
         ]);
     }
@@ -337,8 +337,9 @@ class ProcessTest extends TestCase
             Process::class,
             [
                 'name' => $name,
-                'user_uuid' => static::$DO_NOT_SEND,
-                'process_category_uuid' => static::$DO_NOT_SEND,
+                'user_id' => static::$DO_NOT_SEND,
+                'process_category_id' => static::$DO_NOT_SEND,
+                'description' => 'test'
             ]
         );
     }
@@ -352,9 +353,10 @@ class ProcessTest extends TestCase
         $this->assertModelUpdate(
             Process::class,
             [
-                'user_uuid' => static::$DO_NOT_SEND,
+                'user_id' => static::$DO_NOT_SEND,
                 'name' => 'A new name',
-                'process_category_uuid' => null
+                'process_category_id' => null,
+                'description' => 'test'
             ]
         );
     }
@@ -368,9 +370,10 @@ class ProcessTest extends TestCase
         $this->assertModelUpdate(
             Process::class,
             [
-                'user_uuid' => static::$DO_NOT_SEND,
+                'user_id' => static::$DO_NOT_SEND,
                 'name' => 'Another name',
-                'process_category_uuid' => factory(ProcessCategory::class)->create()->uuid_text
+                'process_category_id' => factory(ProcessCategory::class)->create()->id,
+                'description' => 'test'
             ]
         );
     }
@@ -386,8 +389,8 @@ class ProcessTest extends TestCase
             [
                 'name' => '',
                 'description' => '',
-                'user_uuid' => static::$DO_NOT_SEND,
-                'process_category_uuid' => static::$DO_NOT_SEND,
+                'user_id' => static::$DO_NOT_SEND,
+                'process_category_id' => static::$DO_NOT_SEND,
             ],
             [
                 'name',
@@ -399,11 +402,11 @@ class ProcessTest extends TestCase
         $this->assertModelUpdateFails(
             Process::class,
             [
-                'user_uuid' => static::$DO_NOT_SEND,
-                'process_category_uuid' => 'process_category_uuid_not_exists'
+                'user_id' => static::$DO_NOT_SEND,
+                'process_category_id' => 'process_category_id_not_exists'
             ],
             [
-                'process_category_uuid'
+                'process_category_id'
             ]
         );
 
@@ -414,8 +417,8 @@ class ProcessTest extends TestCase
             Process::class,
             [
                 'name' => $name,
-                'user_uuid' => static::$DO_NOT_SEND,
-                'process_category_uuid' => static::$DO_NOT_SEND,
+                'user_id' => static::$DO_NOT_SEND,
+                'process_category_id' => static::$DO_NOT_SEND,
             ],
             [
                 'name'
@@ -431,16 +434,18 @@ class ProcessTest extends TestCase
         $process = factory(Process::class)->create([
             'bpmn' => Process::getProcessTemplate('OnlyStartElement.bpmn')
         ]);
-        $uuid = $process->uuid_text;
+        $id = $process->id;
         $newBpmn = trim(Process::getProcessTemplate('SingleTask.bpmn'));
-        $route = route('api.' . $this->resource . '.update', [$uuid]);
+        $route = route('api.' . $this->resource . '.update', [$id]);
         $response = $this->apiCall('PUT', $route, [
+            'name' => 'test name',
+            'description' => 'test description',
             'bpmn' => $newBpmn
         ]);
         //validate status
         $this->assertStatus(200, $response);
         $response->assertJsonStructure($this->structure);
-        $updatedProcess = Process::withUuid($uuid)->first();
+        $updatedProcess = Process::where('id', $id)->first();
         $this->assertEquals($newBpmn, $updatedProcess->bpmn);
     }
 
@@ -450,15 +455,14 @@ class ProcessTest extends TestCase
     public function testUpdateInvalidBPMN()
     {
         $process = factory(Process::class)->create();
-        $uuid = $process->uuid_text;
+        $id = $process->id;
         $newBpmn = 'Invalid BPMN content';
-        $route = route('api.' . $this->resource . '.update', [$uuid]);
+        $route = route('api.' . $this->resource . '.update', [$id]);
         $response = $this->apiCall('PUT', $route, [
             'bpmn' => $newBpmn
         ]);
         //validate status
         $this->assertStatus(422, $response);
         $response->assertJsonStructure($this->errorStructure);
-        $response->assertJsonStructure(['errors' => ['bpmn']]);
     }
 }

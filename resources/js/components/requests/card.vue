@@ -4,7 +4,7 @@
             <div class="inner">
                 <div>
                     <span class="name" v-html="transformedName"></span>
-                    <i v-show="spin===process.uuid" class="fa fa-spinner fa-spin fa-fw"></i>
+                    <i v-show="spin===process.id" class="fa fa-spinner fa-spin fa-fw"></i>
                 </div>
                 <div ref="description" class="description" v-html="truncatedDescription"></div>
             </div>
@@ -14,7 +14,7 @@
 
 <script>
 export default {
-  props: ["name", "description", "filter", "uid", "process"],
+  props: ["name", "description", "filter", "id", "process"],
   data() {
       return {
           spin: 0
@@ -25,7 +25,7 @@ export default {
       //Start a process
       this.spin = process.id;
       let startEventId = process.events[0].id;
-      window.ProcessMaker.apiClient.post('/process_events/'+this.process.uuid + '?event=' + startEventId)
+      window.ProcessMaker.apiClient.post('/process_events/'+this.process.id + '?event=' + startEventId)
         .then((response) => {
             this.spin = 0;
             var instance = response.data;

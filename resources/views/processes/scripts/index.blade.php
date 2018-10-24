@@ -78,7 +78,7 @@
       title: '',
       language: '',
       description: '',
-      code: '[]',
+      code: '',
       addError: {},
       submitted: false,
     },
@@ -86,23 +86,23 @@
       onSubmit() {
         this.submitted = true;
         ProcessMaker.apiClient.post("/scripts", {
-            title: this.title,
-            language: this.language,
-            description: this.description,
-            code: this.code
-          })
-          .then(response => {
-            ProcessMaker.alert('{{__('Script successfully added ')}}', 'success')
-            window.location = "/processes/scripts/" + response.data.uuid
-          })
-          .catch(error => {
-            if (error.response.status === 422) {
-              this.addError = error.response.data.errors
-            }
-          })
-          .finally(() => {
-            this.submitted = false
-          })
+          title: this.title,
+          language: this.language,
+          description: this.description,
+          code: this.code
+        })
+        .then(response => {
+          ProcessMaker.alert('{{__('Script successfully added')}}', 'success')
+          window.location = "/processes/scripts/" + response.data.id
+        })
+        .catch(error => {
+          if (error.response.status === 422) {
+            this.addError = error.response.data.errors
+          }
+        })
+        .finally(()=> {
+          this.submitted = false
+        })
       }
     }
   })

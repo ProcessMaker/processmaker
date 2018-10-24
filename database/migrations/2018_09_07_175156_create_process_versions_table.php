@@ -15,22 +15,21 @@ class CreateProcessVersionsTable extends Migration
     {
         Schema::create('process_versions', function (Blueprint $table) {
             // Columns
-            $table->uuid('uuid');
+            $table->increments('id');
             $table->text('bpmn');
             $table->string('name');
-            $table->uuid('process_category_uuid');
-            $table->uuid('process_uuid');
+            $table->unsignedInteger('process_category_id');
+            $table->unsignedInteger('process_id');
             $table->enum('status', ['ACTIVE', 'INACTIVE'])
                     ->default('ACTIVE');
             $table->timestamps();
 
             // Indexes
-            $table->primary('uuid');
-            $table->index('process_uuid');
+            $table->index('process_id');
 
             // Foreign keys
-            $table->foreign('process_uuid')->references('uuid')->on('processes')->onDelete('cascade');
-            $table->foreign('process_category_uuid')->references('uuid')->on('process_categories')->onDelete('cascade');
+            $table->foreign('process_id')->references('id')->on('processes')->onDelete('cascade');
+            $table->foreign('process_category_id')->references('id')->on('process_categories')->onDelete('cascade');
         });
     }
 

@@ -10,12 +10,11 @@ use ProcessMaker\Http\Resources\ProcessCategory as Resource;
 
 class ProcessCategoryController extends Controller
 {
-    use ResourceRequestsTrait;
     /**
      * Display a listing of the Process Categories.
      *
      * @return \Illuminate\Http\JsonResponse
-     * 
+     *
      * @OA\Get(
      *     path="/process_categories",
      *     summary="Returns all processes categories that the user has access to",
@@ -26,7 +25,7 @@ class ProcessCategoryController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
      *     @OA\Parameter(ref="#/components/parameters/include"),
-     * 
+     *
      *     @OA\Response(
      *         response=200,
      *         description="list of processes categories",
@@ -63,7 +62,7 @@ class ProcessCategoryController extends Controller
             $request->input('order_by', 'name'),
             $request->input('order_direction', 'asc')
         );
-        $include = $this->getRequestInclude($request);
+        $include  = $request->input('include') ? explode(',',$request->input('include')) : [];
         $query->with($include);
         $response = $query->paginate($request->input('per_page', 10));
         return new ApiCollection($response);
@@ -76,14 +75,14 @@ class ProcessCategoryController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      *     * @OA\Get(
-     *     path="/process_categories/{process_category_uuid}",
+     *     path="/process_categories/process_category_id",
      *     summary="Get single process category by ID",
-     *     operationId="getProcessCategoryByUuid",
+     *     operationId="getProcessCategoryById",
      *     tags={"ProcessCategories"},
      *     @OA\Parameter(
      *         description="ID of process category to return",
      *         in="path",
-     *         name="process_category_uuid",
+     *         name="process_category_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -107,7 +106,7 @@ class ProcessCategoryController extends Controller
      * @param Request $request
      *
      * @return \Illuminate\Http\JsonResponse
-     * 
+     *
      *     * @OA\Post(
      *     path="/process_categories",
      *     summary="Save a new process Category",
@@ -126,9 +125,9 @@ class ProcessCategoryController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate(ProcessCategory::rules());
         $category = new ProcessCategory();
         $category->fill($request->json()->all());
-        $this->validateModel($category, ProcessCategory::rules($category));
         $category->saveOrFail();
         return new Resource($category);
     }
@@ -141,14 +140,14 @@ class ProcessCategoryController extends Controller
      *
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      *      * @OA\Put(
-     *     path="/process_categories/{process_category_uuid}",
+     *     path="/process_categories/process_category_id",
      *     summary="Update a process Category",
      *     operationId="updateProcessCategory",
      *     tags={"ProcessCategories"},
      *     @OA\Parameter(
      *         description="ID of process category to return",
      *         in="path",
-     *         name="process_category_uuid",
+     *         name="process_category_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -167,9 +166,8 @@ class ProcessCategoryController extends Controller
      */
     public function update(Request $request, ProcessCategory $processCategory)
     {
+        $request->validate(ProcessCategory::rules($processCategory));
         $processCategory->fill($request->json()->all());
-        //validate model trait
-        $this->validateModel($processCategory, ProcessCategory::rules($processCategory));
         $processCategory->saveOrFail();
         return new Resource($processCategory);
     }
@@ -180,16 +178,16 @@ class ProcessCategoryController extends Controller
      * @param ProcessCategory $processCategory
      *
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     * 
+     *
      *      * @OA\Delete(
-     *     path="/process_categories/{process_category_uuid}",
+     *     path="/process_categories/process_category_id",
      *     summary="Delete a process category",
      *     operationId="deleteProcessCategory",
      *     tags={"ProcessCategories"},
      *     @OA\Parameter(
      *         description="ID of process category to return",
      *         in="path",
-     *         name="process_category_uuid",
+     *         name="process_category_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -204,9 +202,12 @@ class ProcessCategoryController extends Controller
      */
     public function destroy(ProcessCategory $processCategory)
     {
-        $this->validateModel($processCategory, [
-            'processes' => 'empty'
-        ]);
+        if ($processCategory->processes->count() !== 0) {
+            return response (
+                ['message'=>'The item should not have associated processes',
+                    'errors'=> ['processes' => $processCategory->processes->count()]],
+                    422);
+        }
 
         $processCategory->delete();
         return response('', 204);

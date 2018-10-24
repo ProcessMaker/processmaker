@@ -10,13 +10,11 @@ use ProcessMaker\Http\Resources\Users as UserResource;
 
 class UserController extends Controller
 {
-    use ResourceRequestsTrait;
-
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
-     * 
+     *
      *     @OA\Get(
      *     path="/users",
      *     summary="Returns all users",
@@ -87,16 +85,16 @@ class UserController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
-     * 
+     *
      *     @OA\Get(
-     *     path="/users/{userUuid}",
+     *     path="/users/userId",
      *     summary="Get single user by ID",
-     *     operationId="getUsersByUuid",
+     *     operationId="getUsersById",
      *     tags={"Users"},
      *     @OA\Parameter(
      *         description="ID of user to return",
      *         in="path",
-     *         name="userUuid",
+     *         name="user_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -111,10 +109,9 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate(User::rules());
         $user = new User();
         $user->fill($request->json()->all());
-        //validate model
-        $this->validateModel($user, User::rules($user));
         $user->saveOrFail();
         return new UserResource($user->refresh());
     }
@@ -122,9 +119,9 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  uuid  $id
+     * @param  id  $id
      * @return \Illuminate\Http\Response
-     * 
+     *
      *     @OA\Post(
      *     path="/users",
      *     summary="Save a new users",
@@ -153,16 +150,16 @@ class UserController extends Controller
      * @param Request $request
      *
      * @return ResponseFactory|Response
-     * 
+     *
      *     @OA\Put(
-     *     path="/users/{userUuid}",
+     *     path="/users/userId",
      *     summary="Update a user",
      *     operationId="updateUsers",
      *     tags={"Users"},
      *     @OA\Parameter(
      *         description="ID of user to return",
      *         in="path",
-     *         name="userUuid",
+     *         name="user_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -181,9 +178,8 @@ class UserController extends Controller
      */
     public function update(User $user, Request $request)
     {
+        $request->validate(User::rules($user));
         $user->fill($request->json()->all());
-        //validate model
-        $this->validateModel($user, User::rules($user));
         $user->saveOrFail();
         return response([], 204);
     }
@@ -194,16 +190,16 @@ class UserController extends Controller
      * @param User $user
      *
      * @return ResponseFactory|Response
-     * 
+     *
      *     @OA\Delete(
-     *     path="/users/{userUuid}",
+     *     path="/users/userId",
      *     summary="Delete a user",
      *     operationId="deleteUser",
      *     tags={"Users"},
      *     @OA\Parameter(
      *         description="ID of user to return",
      *         in="path",
-     *         name="userUuid",
+     *         name="user_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",

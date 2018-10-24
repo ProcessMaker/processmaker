@@ -6,7 +6,6 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\User;
-use Spatie\BinaryUuid\HasBinaryUuid;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
 use Illuminate\Support\Facades\Hash;
@@ -19,7 +18,7 @@ class FilesTest extends TestCase
   const API_TEST_URL = '/files';
 
   const STRUCTURE = [
-      'uuid',
+      'id',
       'model_id',
       'model_type',
       'collection_name',
@@ -94,7 +93,7 @@ class FilesTest extends TestCase
       $model = factory(User::class)->create();
       $addedMedia = $model->addMedia($fileUpload)->toMediaCollection('local');
 
-      $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $addedMedia->uuid_text);
+      $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $addedMedia->id);
 
       // Validate the header status code
       $response->assertStatus(200);
@@ -125,17 +124,17 @@ class FilesTest extends TestCase
       $response->assertStatus(404);
 
       // Verify that if no model data is sent an error is returned
-      $response = $this->apiCall('POST', self::API_TEST_URL . '?model=user&model_uuid=NonExistentUuid', $data);
+      $response = $this->apiCall('POST', self::API_TEST_URL . '?model=user&model_id=NonExistentId', $data);
       $response->assertStatus(404);
 
-      $response = $this->apiCall('POST', self::API_TEST_URL . '?model=user&model_uuid=' . $model->uuid_text, $data);
+      $response = $this->apiCall('POST', self::API_TEST_URL . '?model=user&model_id=' . $model->id, $data);
 
       // Validate the header status code
       $response->assertStatus(200);
 
       // Validate that a file was created in the media directory
       $mediaObj = json_decode($response->getContent());
-      Storage::disk('public')->assertExists($mediaObj->uuid . '/test.txt');
+      Storage::disk('public')->assertExists($mediaObj->id . '/test.txt');
   }
 
     /**
@@ -157,17 +156,16 @@ class FilesTest extends TestCase
           'file' => $fileUploadUpdate
       ];
 
-      $response = $this->apiCall('PUT', self::API_TEST_URL . '/' . $addedMedia->uuid_text, $data);
+      $response = $this->apiCall('PUT', self::API_TEST_URL . '/' . $addedMedia->id, $data);
 
       // Validate the header status code
       $response->assertStatus(201);
 
       // Validate that the file was updated in the directory of the inserted media
-      Storage::disk('public')->assertExists($addedMedia->uuid_text . '/updatedFile.txt');
+      Storage::disk('public')->assertExists($addedMedia->id . '/updatedFile.txt');
 
       // Validate that the media table has been updated
-      $modelId = HasBinaryUuid::encodeUuid($addedMedia->uuid_text);
-      $updatedMediaModel = Media::find($modelId);
+      $updatedMediaModel = Media::find($addedMedia->id);
       $this->assertEquals('updatedFile.txt', $updatedMediaModel->file_name);
       $this->assertEquals('updatedFile', $updatedMediaModel->name);
   }
@@ -185,7 +183,7 @@ class FilesTest extends TestCase
       $model = factory(User::class)->create();
       $addedMedia = $model->addMedia($fileUpload)->toMediaCollection('local');
 
-      $response = $this->apiCall('DELETE', self::API_TEST_URL . '/' . $addedMedia->uuid_text);
+      $response = $this->apiCall('DELETE', self::API_TEST_URL . '/' . $addedMedia->id);
 
       // Validate the header status code
       $response->assertStatus(204);
