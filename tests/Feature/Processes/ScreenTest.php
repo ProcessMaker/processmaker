@@ -6,7 +6,7 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\Feature\Shared\RequestHelper;
 
-class FormTest extends TestCase
+class ScreenTest extends TestCase
 {
     use RequestHelper;
     
@@ -19,9 +19,9 @@ class FormTest extends TestCase
     {
 
       // get the URL
-      $response = $this->webCall('GET', '/processes/forms');
+      $response = $this->webCall('GET', '/processes/screens');
       // check the correct view is called
-      $response->assertViewIs('processes.forms.index');
+      $response->assertViewIs('processes.screens.index');
 
       $response->assertStatus(200);
 
