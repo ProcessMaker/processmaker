@@ -15,8 +15,8 @@ new Vue({
     },
     methods: {
         show() {
-            this.ScreenId = null;
-            this.ScreenModal = true;
+            this.screenId = null;
+            this.screenModal = true;
         },
         reload() {
             this.$refs.screenListing.dataManager([

@@ -4,5 +4,5 @@ import screenBuilder from './screen'
 // Bootstrap our Designer application
 new Vue({
     el: '#screen-container',
-    components: { formBuilder }
+    components: { screenBuilder }
 });
