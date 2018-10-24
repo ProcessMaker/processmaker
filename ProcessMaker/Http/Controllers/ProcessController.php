@@ -39,7 +39,8 @@ class ProcessController extends Controller
     }
     public function show(Process $process) // show new process to UI
     {
-        return view('processes.show', ["process"=>$process]);  // from data item in index, once clicked, this page will show with ability to edit and destroy
+        // Redirect to our modeler
+        return redirect()->to(route('modeler'));
     }
     public function update(Process $process, Request $request) // update existing process to DB
     {
