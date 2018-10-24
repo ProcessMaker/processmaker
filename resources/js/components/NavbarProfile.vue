@@ -1,21 +1,9 @@
 <template>
     <div id="userMenu">
-        <div>
-            <b-btn id="avatarMenu" :disabled="popoverShow" class="avatar-circle">
-                <template v-if="sourceImage">
-                    <img class="avatar-image avatar-circle" :src="user.avatar">
-                </template>
-                <template v-else>
-                    <span class="avatar-initials"> {{ initials }} </span>
-                </template>
-            </b-btn>
-        </div>
+        <avatar-image id="avatarMenu" class-container="d-flex m-1" size="40" class-image="m-1"
+                      :input-data="information"></avatar-image>
 
-        <b-popover target="avatarMenu"
-                   triggers="click blur"
-                   placement="bottomleft"
-                   container="userMenu"
-                   ref="popover"
+        <b-popover target="avatarMenu" triggers="click blur" placement="bottomleft" container="userMenu" ref="popover"
                    @hidden="onHidden">
             <template slot="title">
                 <div class="wrap-name">{{fullName}}</div>
@@ -33,6 +21,11 @@
 </template>
 
 <script>
+    import Vue from 'vue';
+    import AvatarImage from '../components/AvatarImage';
+
+    Vue.component('avatar-image', AvatarImage);
+
     export default {
         data() {
             return {
@@ -41,6 +34,7 @@
                 initials: null,
                 fullName: null,
                 popoverShow: false,
+                information: []
             }
         },
         props: ['info', 'url', 'items'],
@@ -63,6 +57,13 @@
                 }
                 this.initials = this.user.firstname[0] + this.user.lastname[0];
                 this.fullName = this.user.firstname + ' ' + this.user.lastname;
+                this.information = [{
+                    src: this.user.avatar,
+                    title: '',
+                    initials: this.initials
+                }];
+                console.log(this.information);
+
             }
         },
         mounted() {
@@ -78,27 +79,6 @@
         font-size: 16px;
         font-weight: 600;
         color: #333333;
-    }
-
-    .avatar-circle {
-        width: 40px;
-        height: 40px;
-        background-color: rgb(251, 181, 4);
-        text-align: center;
-        border-radius: 50%;
-        -webkit-border-radius: 50%;
-        -moz-border-radius: 50%;
-        margin-left: 10px;
-        margin-top:2px;
-        border: none;
-    }
-
-    .avatar-initials {
-        position: relative;
-        font-size: 20px;
-        line-height: 18px;
-        color: #fff;
-        margin: -12px;
     }
 
     .wrap-name {
