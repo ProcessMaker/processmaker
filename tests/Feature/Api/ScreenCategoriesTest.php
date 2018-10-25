@@ -2,26 +2,26 @@
 namespace Tests\Feature\Api;
 
 use Illuminate\Foundation\Testing\WithFaker;
-use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
 
 /**
- * Tests routes related to processes / CRUD related methods
+ * Tests routes related to screens / CRUD related methods
  *
- * @group process_tests
+ * @group screen_tests
  */
-class ProcessCategoriesTest extends TestCase
+class ScreenCategoriesTest extends TestCase
 {
 
     use WithFaker;
     use ResourceAssertionsTrait;
     use RequestHelper;
 
-    protected $resource = 'api.process_categories';
+    protected $resource = 'api.screen_categories';
     protected $structure = [
         'id',
         'name',
@@ -31,13 +31,13 @@ class ProcessCategoriesTest extends TestCase
     ];
 
     /**
-     * Test the creation of processes
+     * Test the creation of screens
      */
-    public function testCreateProcessCategory()
+    public function testCreateScreenCategory()
     {
-        //Create a process category
+        //Create a screen category
         $route = route($this->resource . '.store');
-        $base = factory(ProcessCategory::class)->make();
+        $base = factory(ScreenCategory::class)->make();
         $response = $this->apiCall('POST', $route, $base->toArray());
         //validate status create
         $response->assertStatus(201);
@@ -53,7 +53,7 @@ class ProcessCategoriesTest extends TestCase
     public function testCreateNameRequired()
     {
         $route = route($this->resource . '.store');
-        $base = factory(ProcessCategory::class)->make(['name' => null]);
+        $base = factory(ScreenCategory::class)->make(['name' => null]);
         $response = $this->apiCall('POST', $route, $base->toArray());
         //validate status of error model
         $response->assertStatus(422);
@@ -64,17 +64,17 @@ class ProcessCategoriesTest extends TestCase
     }
 
     /**
-     * Test create duplicate name Process Category
+     * Test create duplicate name Screen Category
      */
     public function testCreateDuplicateName()
     {
         $route = route($this->resource . '.store');
 
-        //create process category
+        //create screen category
         $name = 'Some name';
-        factory(ProcessCategory::class)->create(['name' => $name]);
+        factory(ScreenCategory::class)->create(['name' => $name]);
 
-        $base = factory(ProcessCategory::class)->make(['name' => $name]);
+        $base = factory(ScreenCategory::class)->make(['name' => $name]);
         $response = $this->apiCall('POST', $route, $base->toArray());
         $response->assertStatus(422);
         $response->assertJsonStructure($this->errorStructure);
@@ -82,15 +82,15 @@ class ProcessCategoriesTest extends TestCase
     }
 
     /**
-     * Test to verify our process categories listing api endpoint works without any filters
+     * Test to verify our screen categories listing api endpoint works without any filters
      */
-    public function testProcessesListing()
+    public function testScreensListing()
     {
-        $initialCount = ProcessCategory::count();
-        // Create some processes
-        $countProcesses = 20;
-        factory(ProcessCategory::class, $countProcesses)->create();
-        //Get a page of processes
+        $initialCount = ScreenCategory::count();
+        // Create some screens
+        $countScreens = 20;
+        factory(ScreenCategory::class, $countScreens)->create();
+        //Get a page of screens
         $page = 2;
         $perPage = 10;
 
@@ -104,38 +104,38 @@ class ProcessCategoriesTest extends TestCase
         $meta = $response->json('meta');
         // Verify the meta values
         $this->assertArraySubset([
-            'total' => $initialCount + $countProcesses,
+            'total' => $initialCount + $countScreens,
             'count' => $perPage,
             'per_page' => $perPage,
             'current_page' => $page,
-            'total_pages' => ceil(($initialCount + $countProcesses) / $perPage),
+            'total_pages' => ceil(($initialCount + $countScreens) / $perPage),
         ], $meta);
         //Verify the data size
         $this->assertCount($meta['count'], $data);
     }
 
     /**
-     * Test to verify our processes categories listing API endpoint works without any filters
+     * Test to verify our screens categories listing API endpoint works without any filters
      */
     public function testFiltering()
     {
         $perPage = 10;
-        $initialActiveCount = ProcessCategory::where('status','ACTIVE')->count();
-        $initialInactiveCount = ProcessCategory::where('status','INACTIVE')->count();
+        $initialActiveCount = ScreenCategory::where('status','ACTIVE')->count();
+        $initialInactiveCount = ScreenCategory::where('status','INACTIVE')->count();
 
-        // Create some processes
-        $processActive = [
+        // Create some screens
+        $screenActive = [
             'num' => 10,
             'status' => 'ACTIVE'
         ];
-        $processInactive = [
+        $screenInactive = [
             'num' => 15,
             'status' => 'INACTIVE'
         ];
-        factory(ProcessCategory::class, $processActive['num'])->create(['status' => $processActive['status']]);
-        factory(ProcessCategory::class, $processInactive['num'])->create(['status' => $processInactive['status']]);
+        factory(ScreenCategory::class, $screenActive['num'])->create(['status' => $screenActive['status']]);
+        factory(ScreenCategory::class, $screenInactive['num'])->create(['status' => $screenInactive['status']]);
 
-        //Get active processes
+        //Get active screens
         $route = route($this->resource . '.index');
         $response = $this->apiCall('GET', $route . '?filter=ACTIVE&per_page=' . $perPage);
         //Verify the status
@@ -146,14 +146,14 @@ class ProcessCategoriesTest extends TestCase
         $meta = $response->json('meta');
         // Verify the meta values
         $this->assertArraySubset( [
-            'total' => $initialActiveCount + $processActive['num'],
+            'total' => $initialActiveCount + $screenActive['num'],
             'count' => $perPage,
             'per_page' => $perPage,
         ], $meta);
         //Verify the data size
         $this->assertCount($meta['count'], $data);
 
-        //Get inactive processes
+        //Get inactive screens
         $response = $this->apiCall('GET', $route . '?filter=INACTIVE&per_page=' . $perPage);
         //Verify the status
         $response->assertStatus(200);
@@ -163,7 +163,7 @@ class ProcessCategoriesTest extends TestCase
         $meta = $response->json('meta');
         // Verify the meta values
         $this->assertArraySubset( [
-            'total' => $initialInactiveCount + $processInactive['num'],
+            'total' => $initialInactiveCount + $screenInactive['num'],
             'count' => $perPage,
             'per_page' => $perPage,
         ], $meta);
@@ -177,22 +177,22 @@ class ProcessCategoriesTest extends TestCase
     public function testFilteringStatus()
     {
         $perPage = 10;
-        $initialActiveCount = ProcessCategory::where('status','ACTIVE')->count();
-        $initialInactiveCount = ProcessCategory::where('status','INACTIVE')->count();
+        $initialActiveCount = ScreenCategory::where('status','ACTIVE')->count();
+        $initialInactiveCount = ScreenCategory::where('status','INACTIVE')->count();
 
-        // Create some processes
-        $processActive = [
+        // Create some screens
+        $screenActive = [
             'num' => 10,
             'status' => 'ACTIVE'
         ];
-        $processInactive = [
+        $screenInactive = [
             'num' => 15,
             'status' => 'INACTIVE'
         ];
-        factory(ProcessCategory::class, $processActive['num'])->create(['status' => $processActive['status']]);
-        factory(ProcessCategory::class, $processInactive['num'])->create(['status' => $processInactive['status']]);
+        factory(ScreenCategory::class, $screenActive['num'])->create(['status' => $screenActive['status']]);
+        factory(ScreenCategory::class, $screenInactive['num'])->create(['status' => $screenInactive['status']]);
 
-        //Get active processes
+        //Get active screens
         $route = route($this->resource . '.index');
         $response = $this->apiCall('GET', $route . '?status=ACTIVE&per_page=' . $perPage);
         //Verify the status
@@ -203,7 +203,7 @@ class ProcessCategoriesTest extends TestCase
         $meta = $response->json('meta');
         // Verify the meta values
         $this->assertArraySubset( [
-            'total' => $initialActiveCount + $processActive['num'],
+            'total' => $initialActiveCount + $screenActive['num'],
             'count' => $perPage,
             'per_page' => $perPage,
         ], $meta);
@@ -212,15 +212,15 @@ class ProcessCategoriesTest extends TestCase
     }
 
     /**
-     * Test to verify our process categories listing api endpoint works with sorting
+     * Test to verify our screen categories listing api endpoint works with sorting
      */
     public function testSorting()
     {
-        // Create some processes
-        factory(ProcessCategory::class)->create([
+        // Create some screens
+        factory(ScreenCategory::class)->create([
             'name' => 'aaaaaa'
         ]);
-        factory(ProcessCategory::class)->create([
+        factory(ScreenCategory::class)->create([
             'name' => 'zzzzz'
         ]);
 
@@ -262,19 +262,19 @@ class ProcessCategoriesTest extends TestCase
     }
 
     /**
-     * Test pagination of process list
+     * Test pagination of screen list
      *
      */
     public function testPagination()
     {
-        // Number of processes in the tables at the moment of starting the test
-        $initialRows = ProcessCategory::all()->count();
+        // Number of screens in the tables at the moment of starting the test
+        $initialRows = ScreenCategory::all()->count();
 
         // Number of rows to be created for the test
         $rowsToAdd = 7;
 
-        // Now we create the specified number of processes
-        factory(ProcessCategory::class, $rowsToAdd)->create();
+        // Now we create the specified number of screens
+        factory(ScreenCategory::class, $rowsToAdd)->create();
 
         // The first page should have 5 items;
         $response = $this->apiCall('GET', route($this->resource . '.index', ['per_page' => 5, 'page' => 1]));
@@ -288,12 +288,12 @@ class ProcessCategoriesTest extends TestCase
 
 
     /**
-     * Test show process category
+     * Test show screen category
      */
-    public function testShowProcessCategory()
+    public function testShowScreenCategory()
     {
-        //Create a new process category
-        $category = factory(ProcessCategory::class)->create();
+        //Create a new screen category
+        $category = factory(ScreenCategory::class)->create();
 
         //Test that is correctly displayed
         $route = route($this->resource . '.show', [$category->id]);
@@ -303,11 +303,11 @@ class ProcessCategoriesTest extends TestCase
     }
 
     /*
-    + Test update process category
+    + Test update screen category
      */
-    public function testUpdateProcess()
+    public function testUpdateScreen()
     {
-        $item = factory(ProcessCategory::class)->create();
+        $item = factory(ScreenCategory::class)->create();
 
         $route = route($this->resource . '.update', [$item->id]);
         $fields = [
@@ -328,7 +328,7 @@ class ProcessCategoriesTest extends TestCase
      */
     public function testChangeStatus()
     {
-        $item = factory(ProcessCategory::class)->create(['status' => 'ACTIVE']);
+        $item = factory(ScreenCategory::class)->create(['status' => 'ACTIVE']);
 
         $route = route($this->resource . '.update', [$item->id]);
         $fields = [
@@ -349,7 +349,7 @@ class ProcessCategoriesTest extends TestCase
      */
     public function testValidateNameNotNull()
     {
-        $item = factory(ProcessCategory::class)->create();
+        $item = factory(ScreenCategory::class)->create();
 
         $route = route($this->resource . '.update', [$item->id]);
         $fields = [
@@ -370,8 +370,8 @@ class ProcessCategoriesTest extends TestCase
     public function testValidateNameUnique()
     {
         $name = 'Some name';
-        factory(ProcessCategory::class)->create(['name' => $name]);
-        $item = factory(ProcessCategory::class)->create();
+        factory(ScreenCategory::class)->create(['name' => $name]);
+        $item = factory(ScreenCategory::class)->create();
 
         $route = route($this->resource . '.update', [$item->id]);
         $fields = [
@@ -390,7 +390,7 @@ class ProcessCategoriesTest extends TestCase
      */
     public function testValidateStatus()
     {
-        $item = factory(ProcessCategory::class)->create();
+        $item = factory(ScreenCategory::class)->create();
 
         $route = route($this->resource . '.update', [$item->id]);
         $fields = [
@@ -404,12 +404,12 @@ class ProcessCategoriesTest extends TestCase
     }
 
     /**
-     * Delete process category
+     * Delete screen category
      */
-    public function testDeleteProcessCategory()
+    public function testDeleteScreenCategory()
     {
-        $processCategory = factory(ProcessCategory::class)->create();
-        $route = route($this->resource . '.destroy', [$processCategory->id]);
+        $screenCategory = factory(ScreenCategory::class)->create();
+        $route = route($this->resource . '.destroy', [$screenCategory->id]);
         $response = $this->apiCall('DELETE', $route);
         //validate status
         $response->assertStatus(204);
@@ -417,16 +417,16 @@ class ProcessCategoriesTest extends TestCase
     }
 
     /**
-     * test can not delete the category because you have assigned processes
+     * test can not delete the category because you have assigned screens
      */
-    public function testDeleteFailProcessCategory()
+    public function testDeleteFailScreenCategory()
     {
-        $process = factory(Process::class)->create();
-        $route = route($this->resource . '.destroy', [$process->process_category_id]);
+        $screen = factory(Screen::class)->create();
+        $route = route($this->resource . '.destroy', [$screen->screen_category_id]);
         $response = $this->apiCall('DELETE', $route);
         $response->assertStatus(422);
         $response->assertJsonStructure($this->errorStructure);
-        $response->assertJsonStructure(['errors' => ['processes']]);
+        $response->assertJsonStructure(['errors' => ['screens']]);
     }
 
 }

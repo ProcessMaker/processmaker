@@ -42,12 +42,13 @@ class Screen extends Model
         'config' => 'array'
     ];
 
-    protected $fillable = [
-        'title',
-        'description',
-        'config',
-        'label',
-        'type',
+    /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = [
+        'id',
         'created_at',
         'updated_at',
     ];

@@ -15,11 +15,15 @@ class CreateScreensTable extends Migration
     {
         Schema::create('screens', function (Blueprint $table) {
             $table->increments('id');
+            $table->unsignedInteger('screen_category_id')->nullable();
             $table->text('title');
             $table->text('description');
             $table->string('type', 20)->default('FORM');
             $table->json('config')->nullable();
             $table->timestamps();
+
+            // Indexes
+            $table->index('screen_category_id');
         });
     }
 
