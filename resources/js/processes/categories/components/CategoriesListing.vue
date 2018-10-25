@@ -1,17 +1,21 @@
 <template>
     <div class="data-table">
-        <vuetable :dataManager="dataManager" :sortOrder="sortOrder" :css="css" :api-mode="false"  @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data" pagination-path="meta">
+        <vuetable :dataManager="dataManager" :sortOrder="sortOrder" :css="css" :api-mode="false"
+                  @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data"
+                  pagination-path="meta">
             <template slot="actions" slot-scope="props">
-            <div class="actions">
-                <i class="fas fa-ellipsis-h"></i>
-                <div class="popout">
-                    <b-btn variant="action" @click="onAction('edit-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="Edit"><i class="fas fa-edit"></i></b-btn>
-                    <b-btn variant="action" @click="onAction('remove-item', props.rowData, props.rowIndex)" v-b-tooltip.hover title="Remove"><i class="fas fa-trash-alt"></i></b-btn>
+                <div class="actions">
+                    <div class="popout">
+                        <b-btn variant="action" @click="onAction('edit-item', props.rowData, props.rowIndex)"
+                               v-b-tooltip.hover title="Edit"><i class="fas fa-edit"></i></b-btn>
+                        <b-btn variant="action" @click="onAction('remove-item', props.rowData, props.rowIndex)"
+                               v-b-tooltip.hover title="Remove"><i class="fas fa-trash-alt"></i></b-btn>
+                    </div>
                 </div>
-          </div>
             </template>
         </vuetable>
-        <pagination single="Category" plural="Categdories" :perPageSelectEnabled="true" @changePerPage="changePerPage" @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
+        <pagination single="Category" plural="Categories" :perPageSelectEnabled="true" @changePerPage="changePerPage"
+                    @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
     </div>
 </template>
 
@@ -80,23 +84,24 @@
             },
             transform(data) {
                 // format in a way vuetable is expecting
-                data = Object.assign({}, data, data.meta, { meta: null })
+                data = Object.assign({}, data, data.meta, {meta: null})
                 return data;
             },
-            onPaginationData() { },
+            onPaginationData() {
+            },
             onAction(action, data, index) {
                 switch (action) {
                     case "edit-item":
-                        this.$emit('edit', data)
-                        break
+                        window.location = "/processes/categories/" + data.id + "/edit";
+                        break;
                     case "remove-item":
                         ProcessMaker.confirmModal(
                             'Caution!',
-                            '<b>Are you sure to delete the process </b>' + data.name + '?', '', () => {
+                            '<b>Are you sure to delete the process category </b>' + data.name + '?', '', () => {
                                 this.$emit('delete', data)
                             }
-                        )
-                        break
+                        );
+                        break;
                 }
             },
             formatStatus(value) {

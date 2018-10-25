@@ -21,21 +21,19 @@ new Vue({
             this.$refs.addEdit.$refs.modal.show()
         },
         deleteCategory(data) {
-            //@todo implement
-            ProcessMaker.apiClient.delete('category/' + data.id)
+            ProcessMaker.apiClient.delete('process_categories/' + data.id)
                 .then(response => {
                     ProcessMaker.alert('Category Successfully Deleted', 'success');
                     this.reload();
-                })
-                .catch(error => {
-                    if (error.response.status === 422) {
-                        let errors = error.response.data.errors;
-                        ProcessMaker.alert(errors.processCategory.join(', '), 'danger');
-                    }
                 });
         },
         reload() {
-            this.$refs.list.fetch();
+            this.$refs.list.dataManager([
+                {
+                    field: 'updated_at',
+                    direction: 'desc'
+                }
+            ]);
         }
     }
 });
