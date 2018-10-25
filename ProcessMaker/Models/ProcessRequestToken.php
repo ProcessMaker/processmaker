@@ -142,4 +142,15 @@ class ProcessRequestToken extends Model implements TokenInterface
         }
         return $element->getBpmnElementInstance()->getProperties();
     }
+
+    /**
+     * Get the form assigned to the task.
+     *
+     * @return Form
+     */
+    public function getForm()
+    {
+        $definition = $this->getDefinition();
+        return Form::find($definition['formRef']);
+    }
 }

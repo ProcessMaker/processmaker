@@ -4,7 +4,9 @@ use Illuminate\Database\Seeder;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Form;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\Script;
+use ProcessMaker\Models\User;
 use ProcessMaker\Providers\WorkflowServiceProvider;
 
 class ProcessSeeder extends Seeder
@@ -71,13 +73,21 @@ class ProcessSeeder extends Seeder
 
             //Add forms to the process
             $tasks = $definitions->getElementsByTagName('task');
+            $admin = User::where('username', 'admin')->firstOrFail();
             foreach($tasks as $task) {
                 $formRef = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'formRef');
                 $id = $task->getAttribute('id');
                 if ($formRef) {
                     $form = $this->createForm($id, $formRef, $process);
-                    $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'formRef', $form->id);
+                    $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'formRef', $form->getKey());
                 }
+                //Assign "admin" to the task 
+                factory(ProcessTaskAssignment::class)->create([
+                    'process_id' => $process->getKey(),
+                    'process_task_id' => $id,
+                    'assignment_id' => $admin->getKey(),
+                    'assignment_type' => 'user',
+                ]);
             }
 
 
@@ -117,7 +127,6 @@ class ProcessSeeder extends Seeder
         } elseif (file_exists(database_path('processes/forms/' . $id . '.json'))) {
             $json = json_decode(file_get_contents(database_path('processes/forms/' . $id . '.json')));
             return factory(Form::class)->create([
-                        'id' => $formRef,
                         'title' => $json[0]->name,
                         'config' => $json,
             ]);

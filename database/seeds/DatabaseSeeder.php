@@ -12,7 +12,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             UserSeeder::class,
-            // ProcessSeeder::class,
+            ProcessSeeder::class,
             PermissionSeeder::class
         ]);
     }
