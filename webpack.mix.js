@@ -40,7 +40,6 @@ mix.webpackConfig({
     .js('resources/js/processes/scripts/index.js', 'public/js/processes/scripts')
     .js('resources/js/processes/environment-variables/index.js', 'public/js/processes/environment-variables')
     .js('resources/js/processes/forms/index.js', 'public/js/processes/forms')
-    .js('resources/js/processes/forms/edit.js', 'public/js/processes/forms')
     .js('resources/js/processes/form-builder/main.js', 'public/js/processes/form-builder')
     .js('resources/js/requests/index.js', 'public/js/requests')
 
