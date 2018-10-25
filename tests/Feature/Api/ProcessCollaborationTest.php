@@ -114,8 +114,6 @@ class ProcessCollaborationTest extends TestCase
         $this->assertEquals('CLOSED', $tasks[0]['status']);
         $this->assertEquals('CLOSED', $tasks[1]['status']);
         $this->assertEquals('CLOSED', $tasks[2]['status']);
-        $this->assertEquals('CLOSED', $tasks[3]['status']);
-        $this->assertEquals('CLOSED', $tasks[4]['status']);
     }
 
     /**
