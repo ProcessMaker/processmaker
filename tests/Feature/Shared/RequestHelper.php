@@ -55,7 +55,17 @@ trait RequestHelper
         if (!$this->debug) { return; }
 
         if ($this->hasFailed() && isset($this->_debug_response)) {
-            $json = $this->_debug_response->json();
+            try {
+                $json = $this->_debug_response->json();
+            } catch (\Exception $e) {
+                $exception = $this->_debug_response->exception;
+                $json = [
+                    'message' => $exception->getMessage(),
+                    'file' => $exception->getFile(),
+                    'line' => $exception->getLine(),
+                    'trace' => $exception->getTrace(),
+                ];
+            }
             $json['trace'] = array_slice($json['trace'], 0, 5);
             echo "\nResponse Debug Information:\n";
             var_dump($json);
