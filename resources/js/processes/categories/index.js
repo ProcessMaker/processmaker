@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import CategoriesListing from './components/CategoriesListing'
-import ModalCategoryAddEdit from "./components/modal/modal-category-add-edit";
 
 new Vue({
     el: '#process-categories-listing',
@@ -9,8 +8,7 @@ new Vue({
         formData: null,
     },
     components: {
-        CategoriesListing,
-        ModalCategoryAddEdit,
+        CategoriesListing
     },
     methods: {
         editCategory(data) {
