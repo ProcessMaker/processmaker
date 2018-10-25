@@ -3,9 +3,9 @@
         <vuetable :dataManager="dataManager" :sortOrder="sortOrder" :css="css" :api-mode="false"
                   @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data"
                   pagination-path="meta">
-            <template slot="uuids" slot-scope="props">
+            <template slot="ids" slot-scope="props">
                 <b-link @click="openRequest(props.rowData, props.rowIndex)">
-                    {{props.rowData.uuid_short}}
+                    {{props.rowData.id}}
                 </b-link>
             </template>
 
@@ -34,21 +34,21 @@
         props: ["filter"],
         data() {
             return {
-                orderBy: "uuid",
+                orderBy: "id",
                 additionalParams: '',
                 sortOrder: [
                     {
-                        field: "uuid",
-                        sortField: "uuid",
+                        field: "id",
+                        sortField: "id",
                         direction: "asc"
                     }
                 ],
                 fields: [
                     {
-                        name: "__slot:uuids",
-                        title: "uuid",
-                        field: 'uuid',
-                        sortField: "uuid",
+                        name: "__slot:ids",
+                        title: "id",
+                        field: 'id',
+                        sortField: "id",
                         width: '50px'
                     },
                     {
@@ -93,7 +93,7 @@
         },
         methods: {
             openRequest(data, index) {
-                window.open('/requests/' + data.uuid + '/status', '_self');
+                window.open('/requests/' + data.id + '/status', '_self');
             },
             assignedTo(delegations) {
                 let assignedTo = '';
@@ -102,9 +102,9 @@
                 let usedAvatar = [];
                 delegations.forEach(function (delegation, key) {
 
-                    if (delegation.user && usedAvatar.includes(delegation.user.uuid) === false) {
+                    if (delegation.user && usedAvatar.includes(delegation.user.id) === false) {
 
-                        usedAvatar.push(delegation.user.uuid);
+                        usedAvatar.push(delegation.user.id);
 
                         if (key <= 4) {
                             let user = delegation.user;
@@ -151,7 +151,6 @@
                 data.meta.from = (data.meta.current_page - 1) * data.meta.per_page;
                 data.meta.to = data.meta.from + data.meta.count;
                 for (let record of data.data) {
-                    record['uuid_short'] = record['uuid'].split('-')[0];
                     //Format dates
                     record['created_at'] = this.formatDate(record['created_at']);
                     if (record['completed_at']) {
@@ -181,7 +180,7 @@
                         "&filter=" +
                         this.filter +
                         "&order_by=" +
-                        (this.orderBy === '__slot:uuids' ? 'uuid' : this.orderBy) +
+                        (this.orderBy === '__slot:ids' ? 'id' : this.orderBy) +
                         "&order_direction=" +
                         this.orderDirection +
                         this.additionalParams
@@ -196,7 +195,7 @@
 </script>
 
 <style lang="scss" scoped>
-    /deep/ .vuetable-th-slot-uuids {
+    /deep/ .vuetable-th-slot-ids {
         min-width: 100px;
         white-space: nowrap;
     }

@@ -51,7 +51,7 @@
     import Multiselect from "vue-multiselect/src/Multiselect";
 
     const emptyUser = {
-        uuid: null,
+        id: null,
         username: '',
         firstname: '',
         lastname: '',
@@ -121,7 +121,7 @@
             },
             reset() {
                 this.formData = Object.assign({}, {
-                    uuid: null,
+                    id: null,
                     username: '',
                     firstname: '',
                     lastname: '',
@@ -139,10 +139,10 @@
                 });
             },
             isEditing() {
-                return !!this.formData.uuid
+                return !!this.formData.id
             },
             fillData(data) {
-                if (data && data.uuid) {
+                if (data && data.id) {
                     let that = this;
                     $.each(that.formData, function (value) {
                         if (that.inputData.hasOwnProperty(value)) {
@@ -163,7 +163,7 @@
                     //fill groups selected
                     if (that.inputData && that.inputData.hasOwnProperty('memberships')) {
                         $.each(that.inputData.memberships, function (keyMember, dataMember) {
-                            if (dataMember.group_uuid === option.uuid) {
+                            if (dataMember.group_id === option.id) {
                                 values.push(option);
                             }
                         });
@@ -175,12 +175,12 @@
                 return this.isEditing() ? ProcessMaker.apiClient.put : ProcessMaker.apiClient.post;
             },
             savePath() {
-                return this.isEditing() ? 'users/' + this.formData.uuid : 'users';
+                return this.isEditing() ? 'users/' + this.formData.id : 'users';
             },
             onClose() {
                 this.$emit('close');
             },
-            saveGroups(uuid, update) {
+            saveGroups(id, update) {
 
                 let that = this;
                 //Remove member that has previously registered and is not in the post data.
@@ -188,14 +188,14 @@
                     $.each(that.inputData.memberships, function (keyMember, dataMember) {
                         let deleteMember = true;
                         $.each(that.value, function (key, group) {
-                            if (dataMember.group_uuid === group.uuid) {
+                            if (dataMember.group_id === group.id) {
                                 deleteMember = false;
                                 return false;
                             }
                         });
                         if(deleteMember) {
                             ProcessMaker.apiClient
-                                .delete('group_members/'+ dataMember.uuid);
+                                .delete('group_members/'+ dataMember.id);
                         }
                     });
                 }
@@ -204,7 +204,7 @@
                     let save = true;
                     if (that.inputData && that.inputData.hasOwnProperty('memberships') && that.inputData.memberships) {
                         $.each(that.inputData.memberships, function (keyMember, dataMember) {
-                            if (dataMember.group_uuid === group.uuid) {
+                            if (dataMember.group_id === group.id) {
                                 save = false;
                                 return false;
                             }
@@ -213,9 +213,9 @@
                     if (save) {
                         ProcessMaker.apiClient
                             .post('group_members', {
-                                    'group_uuid': group.uuid,
+                                    'group_id': group.id,
                                     'member_type': 'ProcessMaker\\Models\\User',
-                                    'member_uuid': uuid
+                                    'member_id': id
                                 }
                             );
                     }
@@ -242,10 +242,10 @@
                     this.savePath(), this.formData
                 ).then(response => {
                     if (this.isEditing()) {
-                        this.saveGroups(this.formData.uuid, true);
+                        this.saveGroups(this.formData.id, true);
                         this.$emit('update');
                     } else {
-                        this.saveGroups(response.data.uuid, false);
+                        this.saveGroups(response.data.id, false);
                         this.$emit('save');
                     }
                 })

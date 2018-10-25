@@ -45,11 +45,11 @@ trait HasAuthorization
     public function giveDirectPermission($permission_names)
     {
         foreach ((array) $permission_names as $permission_name) {
-            $perm_uuid = Permission::byGuardName($permission_name)->uuid;
+            $perm_id = Permission::byGuardName($permission_name)->id;
             PermissionAssignment::create([
-                'permission_uuid' => $perm_uuid,
+                'permission_id' => $perm_id,
                 'assignable_type' => User::class,
-                'assignable_uuid' => $this->uuid,
+                'assignable_id' => $this->id,
             ]);
         }
     }

@@ -14,15 +14,15 @@ $factory->define(ProcessRequest::class, function (Faker $faker) {
         'name' => $faker->sentence(3),
         'data' => '{}',
         'status' => $faker->randomElement(['DRAFT', 'ACTIVE', 'COMPLETED']),
-        'callable_uuid' => $faker->uuid,
-        'user_uuid' => function () {
-            return factory(User::class)->create()->uuid;
+        'callable_id' => $faker->randomDigit,
+        'user_id' => function () {
+            return factory(User::class)->create()->getKey();
         },
-        'process_uuid' => function () {
-            return factory(Process::class)->create()->uuid;
+        'process_id' => function () {
+            return factory(Process::class)->create()->getKey();
         },
-        'process_collaboration_uuid' => function () {
-            return factory(ProcessCollaboration::class)->create()->uuid;
+        'process_collaboration_id' => function () {
+            return factory(ProcessCollaboration::class)->create()->getKey();
         }
     ];
 });

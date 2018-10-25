@@ -2,15 +2,14 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Spatie\BinaryUuid\HasBinaryUuid;
 
 /**
  * Represents an Eloquent model of a Request which is an instance of a Process.
  *
- * @property string $uuid
- * @property string $uuid_text
- * @property string $process_uuid
- * @property string $process_uuid_text
+ * @property string $id
+ * @property string $id
+ * @property string $process_id
+ * @property string $process_id
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
  *
@@ -18,24 +17,20 @@ use Spatie\BinaryUuid\HasBinaryUuid;
 class ProcessCollaboration extends Model
 {
 
-    use HasBinaryUuid;
-
-    public $incrementing = false;
-
     /**
      * The attributes that aren't mass assignable.
      *
      * @var array
      */
     protected $guarded = [
-        'uuid',
+        'id',
         'created_at',
         'updated_at',
     ];
 
     /**
      * The attributes that should be hidden for serialization.
-     * 
+     *
      * BPMN data will be hidden. It will be able by its getter.
      *
      * @var array
@@ -48,8 +43,8 @@ class ProcessCollaboration extends Model
      *
      * @var array
      */
-    protected $uuids = [
-        'process_uuid',
+    protected $ids = [
+        'process_id',
     ];
 
     /**

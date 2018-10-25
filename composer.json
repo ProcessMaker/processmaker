@@ -22,13 +22,10 @@
     "laravel/tinker": "^1.0",
     "laravelcollective/html": "^5.4.0",
     "lavary/laravel-menu": "^1.7",
-    "nolanpro/laravel-passport-binary-uuid-adapter": "1.0.5",
     "phing/phing": "^2.16",
     "predis/predis": "^1.1",
     "processmaker/nayra": "dev-master",
     "ralouphie/getallheaders": "^2.0",
-    "ramsey/uuid": "^3.7",
-    "spatie/laravel-binary-uuid": "^1.2",
     "spatie/laravel-fractal": "^5.3",
     "spatie/laravel-medialibrary": "^7.0.0",
     "symfony/psr-http-message-bridge": "1.*",
@@ -83,11 +80,5 @@
     "preferred-install": "dist",
     "sort-packages": true,
     "optimize-autoloader": true
-  },
-  "repositories": [
-    {
-        "type": "vcs",
-        "url": "https://github.com/nolanpro/laravel-passport-binary-uuid-adapter"
-    }
-]
+  }
 }

@@ -17,12 +17,13 @@ class CreateProcessRequestsTable extends Migration
     {
         Schema::create('process_requests', function (Blueprint $table) {
             //Columns
-            $table->uuid('uuid');
-            $table->uuid('process_uuid');
-            $table->uuid('process_collaboration_uuid')->nullable();
-            $table->uuid('user_uuid')->nullable();
-            $table->string('participant_uuid', 36)->nullable();
-            $table->string('callable_uuid', 36);
+            $table->increments('id');
+            $table->unsignedInteger('process_id');
+            $table->unsignedInteger('process_collaboration_id')->nullable();
+            $table->unsignedInteger('user_id')->nullable();
+            $table->string('participant_id')->nullable();
+            // The callable id is the text id of the bpmn element
+            $table->string('callable_id');
             $table->enum('status', ['DRAFT', 'ACTIVE', 'COMPLETED']);
             $table->json('data');
             $table->string('name');
@@ -31,24 +32,23 @@ class CreateProcessRequestsTable extends Migration
             $table->timestamps();
 
             //Indexes
-            $table->primary('uuid');
-            $table->index('process_uuid');
-            $table->index('user_uuid');
-            $table->index('process_collaboration_uuid');
-            $table->index('participant_uuid');
+            $table->index('process_id');
+            $table->index('user_id');
+            $table->index('process_collaboration_id');
+            $table->index('participant_id');
 
             //Foreign keys
             //If the collaboration is deleted the request stays without collaboration
-            $table->foreign('process_collaboration_uuid')
-                ->references('uuid')->on('process_collaborations')
+            $table->foreign('process_collaboration_id')
+                ->references('id')->on('process_collaborations')
                 ->onDelete('set null');
             //A process can not be deleted if it has requests
-            $table->foreign('process_uuid')
-                ->references('uuid')->on('processes')
+            $table->foreign('process_id')
+                ->references('id')->on('processes')
                 ->onDelete('restrict');
             //An user can not be deleted if it has requests
-            $table->foreign('user_uuid')
-                ->references('uuid')->on('users')
+            $table->foreign('user_id')
+                ->references('id')->on('users')
                 ->onDelete('restrict');
         });
     }

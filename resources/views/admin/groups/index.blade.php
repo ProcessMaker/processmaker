@@ -103,7 +103,7 @@
                             ProcessMaker.alert('{{_('Create Group Successfully')}}', 'success');
                             this.onClose();
                             //redirect show group
-                            window.location = "/admin/groups/" + response.data.uuid
+                            window.location = "/admin/groups/" + response.data.id
                         })
                         .catch(error => {
                             //define how display errors

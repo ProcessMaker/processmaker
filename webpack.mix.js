@@ -19,12 +19,14 @@ mix.webpackConfig({
             new MonocoEditorPlugin()
         ],
         resolve: {
+            symlinks: false,
             alias: {
+                // This is so we can override some of Laravel Horizon's javascript with our own so we can embed in our UI
                 Horizon: path.resolve(__dirname, 'vendor/laravel/horizon/resources/assets/js/')
             }
         }
     }).js('resources/js/app-layout.js', 'public/js')
-    .js('resources/js/designer/main.js', 'public/js/designer')
+    .js('resources/js/processes/modeler/index.js', 'public/js/processes/modeler')
     .js('resources/js/admin/users/index.js', 'public/js/admin/users')
     .js('resources/js/admin/users/edit.js', 'public/js/admin/users')
     .js('resources/js/admin/profile/index.js', 'public/js/admin/profile')
@@ -70,5 +72,7 @@ mix.webpackConfig({
     .copy('resources/js/components/DetailRow.vue', 'public/js')
     .copy('resources/fonts/Open_Sans/', 'public/fonts')
     .copy('resources/js/components/FilterBar.vue', 'public/js')
+    // Copy files necessary for images for the designer/modeler to it's own img directory
+    .copy('node_modules/@processmaker/modeler/dist/img', 'public/modeler/img')
 
     .version()

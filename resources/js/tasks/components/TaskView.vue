@@ -37,15 +37,15 @@
     },
     props: [
       'data',
-      'formUid',
-      'instanceUid',
-      'processUid',
+      'formId',
+      'instanceId',
+      'processId',
       'tokenCompleted',
       'tokenCreated',
-      'tokenUid',
+      'tokenId',
       'userAvatar',
       'userName',
-      'userUid',
+      'userId',
     ],
     data() {
       return {
@@ -60,7 +60,7 @@
           avatar: '',
           fullname: ''
         },
-        statusURL: '/requests/' + this.instanceUid + '/status'
+        statusURL: '/requests/' + this.instanceId + '/status'
       };
     },
     watch: {
@@ -118,7 +118,7 @@
 
         // Load JSON from our api client
         ProcessMaker.apiClient
-                .get("process/" + this.processUid + "/form/" + this.formUid)
+                .get("process/" + this.processId + "/form/" + this.formId)
                 .then(response => {
                   this.json = this.disableForm(response.data.content);
                   this.loading = false;

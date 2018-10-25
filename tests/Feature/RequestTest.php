@@ -22,7 +22,7 @@ class RequestTest extends TestCase
       $response->assertStatus(200);
       // check the correct view is called
       $response->assertViewIs('requests.index');
-      
+
     }
 
       /**
@@ -33,9 +33,9 @@ class RequestTest extends TestCase
     public function testEditRoute()
     {
 
-      $Request_uuid = factory(ProcessRequest::class)->create()->uuid_text;
+      $Request_id = factory(ProcessRequest::class)->create()->id;
       // get the URL
-      $response = $this->webCall('GET', '/requests/'. $Request_uuid . '/edit');
+      $response = $this->webCall('GET', '/requests/'. $Request_id . '/edit');
 
       $response->assertStatus(200);
       // check the correct view is called
@@ -50,9 +50,9 @@ class RequestTest extends TestCase
     public function testShowRoute()
     {
 
-      $Request_uuid = factory(ProcessRequest::class)->create()->uuid_text;
+      $Request_id = factory(ProcessRequest::class)->create()->id;
       // get the URL
-      $response = $this->webCall('GET', '/requests/'. $Request_uuid);
+      $response = $this->webCall('GET', '/requests/'. $Request_id);
 
       $response->assertStatus(200);
       // check the correct view is called
