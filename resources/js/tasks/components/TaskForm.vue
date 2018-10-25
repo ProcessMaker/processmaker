@@ -1,14 +1,5 @@
 <template>
-<div class="container">
-  <h1>{{loading === false ? 'Task Details' : 'Loading Task Details...'}}</h1>
-  <div class="row" v-if="loading === false">
-    <div class="col">
-      <div class="card card-body">
-        <vue-form-renderer @submit="submit" v-model="formData" :config="json" />
-      </div>
-    </div>
-  </div>
-</div>
+  <vue-form-renderer @submit="submit" v-model="formData" :config="form" />
 </template>
 
 <script>
@@ -23,53 +14,29 @@ export default {
     'processId',
     'instanceId',
     'tokenId',
-    'formId',
-    'data',
+    'form',
+    'data'
   ],
   data() {
     return {
-      loading: true,
-      json: [{
-        name: "Default",
-        items: []
-      }],
       formData: this.data
     };
   },
   mounted() {
-    this.fetch();
   },
   methods: {
     submit() {
       var self = this;
-      ProcessMaker.apiClient.post(
-          'processes/' + this.processId +
-          '/instances/' + this.instanceId +
-          '/tokens/' + this.tokenId +
-          '/complete',
+      ProcessMaker.apiClient.put(
+          'tasks/' + this.tokenId +
+          '?status=COMPLETED',
           this.formData)
         .then(function() {
-          document.location.href = '/tasks?successfulRouting=true';
+          document.location.href = '/tasks';
         });
     },
     update(data) {
       this.formData = data;
-    },
-    fetch() {
-      this.loading = true;
-
-      // Load from our api client
-      ProcessMaker.apiClient
-        .get(
-          "process/" +
-          this.processId +
-          "/form/" +
-          this.formId
-        )
-        .then(response => {
-          this.json = response.data.content;
-          this.loading = false;
-        });
     }
   }
 }

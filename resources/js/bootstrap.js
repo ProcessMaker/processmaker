@@ -101,5 +101,12 @@ let host = document.head.querySelector('meta[name="broadcasting-host"]');
 window.Echo = new Echo({
   broadcaster: broadcaster.content,
   key: key.content,
-  host: host.content
+  host:host.content
 });
+
+if (userID) {
+    window.Echo.private(`ProcessMaker.Models.User.${userID.content}`)
+        .notification((token) => {
+            ProcessMaker.pushNotification(token);
+        });
+}
