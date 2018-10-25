@@ -1,35 +1,35 @@
-import Vue from 'vue'
-import CategoriesListing from './components/CategoriesListing'
+import Vue from "vue";
+import CategoriesListing from "./components/CategoriesListing";
 
 new Vue({
-    el: '#process-categories-listing',
+    el: "#process-categories-listing",
     data: {
-        filter: '',
-        formData: null,
+        filter: "",
+        formData: null
     },
     components: {
         CategoriesListing
     },
     methods: {
-        editCategory(data) {
+        editCategory (data) {
             this.formData = Object.assign({}, data);
-            this.showModal()
+            this.showModal();
         },
-        showModal() {
-            this.$refs.addEdit.$refs.modal.show()
+        showModal () {
+            this.$refs.addEdit.$refs.modal.show();
         },
-        deleteCategory(data) {
-            ProcessMaker.apiClient.delete('process_categories/' + data.id)
-                .then(response => {
-                    ProcessMaker.alert('Category Successfully Deleted', 'success');
+        deleteCategory (data) {
+            ProcessMaker.apiClient.delete(`process_categories/${data.id}`)
+                .then((response) => {
+                    ProcessMaker.alert("Category Successfully Deleted", "success");
                     this.reload();
                 });
         },
-        reload() {
+        reload () {
             this.$refs.list.dataManager([
                 {
-                    field: 'updated_at',
-                    direction: 'desc'
+                    field: "updated_at",
+                    direction: "desc"
                 }
             ]);
         }

@@ -1,20 +1,20 @@
-import Vue from 'vue'
-import FormListing from './components/FormListing'
+import Vue from "vue";
+import FormListing from "./components/FormListing";
 
 new Vue({
-    el: '#formIndex',
+    el: "#formIndex",
     data: {
-        filter: '',
+        filter: ""
     },
     components: {
         FormListing
     },
     methods: {
-        reload() {
+        reload () {
             this.$refs.formListing.dataManager([
                 {
-                    field: 'updated_at',
-                    direction: 'desc'
+                    field: "updated_at",
+                    direction: "desc"
                 }
             ]);
         }
