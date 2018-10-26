@@ -9,19 +9,28 @@
 @endsection
 
 @section('content')
-<div class="container row-fluid page-content" id="processIndex">
-  <div class="row">
-    <div class="col-md-1">
-      <h1 class="page-title">{{__('Processes')}}</h1>
-    </div>
-    <div class="col-md-7">
-      <input id="processes-listing-search" v-model="filter" class="form-control col-sm-3" placeholder="{{__('Search')}}...">
-    </div>
-    <div class="col-md-4" align="right">
-      <button type="button" class="btn btn-action text-light" data-toggle="modal" data-target="#addProcess"><i class="fas fa-plus"></i> {{__('Process')}}</button>
-    </div>
-  </div>
-  <processes-listing ref="processListing" :filter="filter" v-on:edit="edit" v-on:reload="reload"></processes-listing>
+<div class="container page-content" id="processIndex">
+	<h1>{{__('Processes')}}</h1>
+	<div class="row">
+		<div class="col">
+			<div class="input-group">
+				<div class="input-group-prepend">
+					<span class="input-group-text" id="basic-addon1">
+						<i class="fas fa-search"></i>
+					</span>
+				</div>
+				<input v-model="filter" class="form-control" placeholder="{{__('Search')}}...">
+			</div>
+
+		</div>
+		<div class="col-8" align="right">
+			<a href="#" class="btn btn-action" data-toggle="modal" data-target="#addProcess"><i class="fas fa-plus"></i>
+				{{__('Process')}}</a>
+		</div>
+	</div>
+	<div class="container-fluid">
+		<processes-listing ref="processListing" :filter="filter" v-on:edit="edit" v-on:reload="reload"></processes-listing>
+	</div>
 </div>
 <div class="modal" tabindex="-1" role="dialog" id="addProcess">
   <div class="modal-dialog" role="document">
