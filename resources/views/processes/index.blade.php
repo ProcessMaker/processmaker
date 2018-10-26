@@ -94,7 +94,7 @@
 			status: this.status
 			})
 			.then(response => {
-			ProcessMaker.alert('{{__('Process successfully added'}})', 'success')
+			ProcessMaker.alert('{{__('Process successfully added')}}', 'success')
 			window.location = "/processes/" + response.data.id
 			})
 			.catch(error => {
