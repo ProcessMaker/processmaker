@@ -119,8 +119,8 @@ export default {
                 user.fullname +
                 '">' +
                 '<span class="avatar-initials-list">' +
-                user.firstname.charAt(0).toUpperCase() +
-                user.lastname.charAt(0).toUpperCase() +
+                user.user.firstname.match('/./ug')[0].toUpperCase() +
+                user.user.lastname.match('/./ug')[0].toUpperCase() +
                 "</span>" +
                 "</button> ";
           } else {
