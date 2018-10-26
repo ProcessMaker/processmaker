@@ -8,6 +8,8 @@ import {Navbar} from 'bootstrap-vue/es/components';
 import ConfirmationModal from './components/Confirm';
 import NavbarProfile from "./components/NavbarProfile";
 
+//Event bus ProcessMaker
+window.ProcessMaker.events = new Vue();
 
 // Assign our navbar component to our global ProcessMaker object
 window.ProcessMaker.navbar = new Vue({

@@ -29,20 +29,13 @@
     export default {
         data() {
             return {
-                user: null,
                 sourceImage: false,
-                initials: null,
                 fullName: null,
                 popoverShow: false,
                 information: []
             }
         },
-        props: ['info', 'url', 'items'],
-        watch: {
-            info(val) {
-                this.user = val;
-            },
-        },
+        props: ['info', 'items'],
         methods: {
             onClose() {
                 this.popoverShow = false;
@@ -50,24 +43,27 @@
             onHidden() {
                 this.popoverShow = false;
             },
-            formatData() {
-                this.user = this.info;
-                if (this.info.avatar) {
+            formatData(user) {
+                if (user.avatar) {
                     this.sourceImage = true;
                 }
-                this.initials = this.user.firstname[0] + this.user.lastname[0];
-                this.fullName = this.user.firstname + ' ' + this.user.lastname;
+                this.fullName = user.fullname;
                 this.information = [{
-                    src: this.user.avatar,
+                    src: user.avatar,
                     title: '',
-                    initials: this.initials
+                    initials: user.firstname[0] + user.lastname[0]
                 }];
-                console.log(this.information);
-
+            },
+            updateAvatar() {
+                ProcessMaker.apiClient.get("users/" + window.ProcessMaker.user.id)
+                    .then(response => {
+                        this.formatData(response.data);
+                    });
             }
         },
         mounted() {
-            this.formatData();
+            this.formatData(this.info);
+            window.ProcessMaker.events.$on('update-profile-avatar', this.updateAvatar);
         }
     }
 </script>

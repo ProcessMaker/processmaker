@@ -16,7 +16,7 @@
     </span>
 </template>
 
-
+git s
 <script>
     export default {
         props: ['size', 'rounded', 'classContainer', 'classImage', 'inputData'],
@@ -74,7 +74,6 @@
                     });
                 }
                 this.options = options;
-                console.log(this.options);
             }
         },
         mounted() {
