@@ -1,7 +1,7 @@
 const {
     mix
 } = require('laravel-mix');
-//const MonocoEditorPlugin = require('monaco-editor-webpack-plugin')
+const MonocoEditorPlugin = require('monaco-editor-webpack-plugin')
 
 /*
  |--------------------------------------------------------------------------
@@ -16,18 +16,18 @@ const {
 
 mix.webpackConfig({
         plugins: [
- //           new MonocoEditorPlugin()
+            new MonocoEditorPlugin()
         ],
         resolve: {
             symlinks: false,
             alias: {
+                // This is so we can override some of Laravel Horizon's javascript with our own so we can embed in our UI
                 Horizon: path.resolve(__dirname, 'vendor/laravel/horizon/resources/assets/js/')
             }
         }
     }).js('resources/js/app-layout.js', 'public/js')
     .js('resources/js/processes/modeler/index.js', 'public/js/processes/modeler')
     .js('resources/js/admin/users/index.js', 'public/js/admin/users')
-    .js('resources/js/admin/users/edit.js', 'public/js/admin/users')
     .js('resources/js/admin/profile/index.js', 'public/js/admin/profile')
     .js('resources/js/admin/groups/index.js', 'public/js/admin/groups')
     .js('resources/js/admin/queues/index.js', 'public/js/admin/queues')
@@ -36,7 +36,7 @@ mix.webpackConfig({
     .js('resources/js/processes/tasks/index.js', 'public/js/processes/tasks')
     .js('resources/js/processes/index.js', 'public/js/processes')
     .js('resources/js/processes/categories/index.js', 'public/js/processes/categories')
-    //.js('resources/js/processes/scripts/index.js', 'public/js/processes/scripts')
+    .js('resources/js/processes/scripts/index.js', 'public/js/processes/scripts')
     .js('resources/js/processes/environment-variables/index.js', 'public/js/processes/environment-variables')
     .js('resources/js/processes/forms/index.js', 'public/js/processes/forms')
     .js('resources/js/processes/forms/edit.js', 'public/js/processes/forms')
@@ -50,7 +50,7 @@ mix.webpackConfig({
     .js('resources/js/tasks/index.js', 'public/js/tasks/index.js')
     .js('resources/js/tasks/show.js', 'public/js/tasks/show.js')
     .js('resources/js/designer/formBuilder/main.js', 'public/js/formBuilder')
-    //.js('resources/js/designer/ScriptEditor/main.js', 'public/js/designer/ScriptEditor')
+    .js('resources/js/designer/ScriptEditor/main.js', 'public/js/designer/ScriptEditor')
 
 
 

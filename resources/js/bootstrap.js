@@ -3,6 +3,10 @@ import BootstrapVue from 'bootstrap-vue'
 import Echo from 'laravel-echo'
 import VueRouter from 'vue-router'
 
+
+
+
+
 window._ = require('lodash');
 window.Popper = require('popper.js').default;
 
@@ -29,21 +33,23 @@ window.Vue = require('vue');
 window.Vue.use(BootstrapVue);
 window.Vue.use(VueRouter);
 
+
+
 window.ProcessMaker = {
-    /**
-     * ProcessMaker Notifications
-     */
-    notifications: [],
-    /**
-     * Push a notification.
-     *
-     * @param {object} notification
-     *
-     * @returns {void}
-     */
-    pushNotification(notification) {
-        this.notifications.push(notification);
-    }
+  /**
+   * ProcessMaker Notifications
+   */
+  notifications: [],
+  /**
+   * Push a notification.
+   *
+   * @param {object} notification
+   *
+   * @returns {void}
+   */
+  pushNotification(notification) {
+    this.notifications.push(notification);
+  }
 };
 
 /**
@@ -64,9 +70,9 @@ window.ProcessMaker.apiClient.defaults.headers.common['X-Requested-With'] = 'XML
 let token = document.head.querySelector('meta[name="csrf-token"]');
 
 if (token) {
-    window.ProcessMaker.apiClient.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
+  window.ProcessMaker.apiClient.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
 } else {
-    console.error('CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token');
+  console.error('CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token');
 }
 
 
@@ -75,13 +81,13 @@ window.ProcessMaker.apiClient.defaults.baseURL = '/api/1.0/';
 window.ProcessMaker.apiClient.defaults.timeout = 5000;
 
 // Default alert functionality
-window.ProcessMaker.alert = function(text, variant) {
+window.ProcessMaker.alert = function (text, variant) {
   window.alert(variant + ": " + text);
 }
 
 let userID = document.head.querySelector('meta[name="user-id"]');
 
-if(userID) {
+if (userID) {
   window.ProcessMaker.user = {
     id: userID.content
   }

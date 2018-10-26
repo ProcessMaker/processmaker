@@ -13,7 +13,7 @@ class TasksTest extends TestCase
         $response = $this->webGet(self::TASKS_URL, []); 
         $response->assertStatus(200);
         $response->assertViewIs('tasks.index'); 
-        $response->assertSee('class="container" id="tasks"'); 
+        $response->assertSee('Tasks'); 
     }
 
 }

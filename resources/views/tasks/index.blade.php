@@ -1,29 +1,38 @@
 @extends('layouts.layout')
 
 @section('title')
-  {{__('Tasks')}}
+{{__('Tasks')}}
 @endsection
 
 @section('sidebar')
-  @include('layouts.sidebar', ['sidebar' => Menu::get('sidebar_task')])
+@include('layouts.sidebar', ['sidebar' => Menu::get('sidebar_task')])
 @endsection
 
 @section('content')
-<div class="container" id="tasks">
-    <div class="row">
-        <div class="col">
-            <h1>{{__('Tasks')}}</h1>
+<div class="container page-content" id="tasks">
+  <h1>{{__('Tasks')}}</h1>
+  <div class="row">
+    <div class="col">
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="basic-addon1">
+            <i class="fas fa-search"></i>
+          </span>
         </div>
-        <div class="col-4" style="margin-top:20px">
-            <input v-model="filter" class="form-control" placeholder="{{__('Search')}}...">
-        </div>
+        <input v-model="filter" class="form-control" placeholder="{{__('Search')}}...">
+      </div>
+
     </div>
-    <div style="margin-top:-20px;">
-        <tasks-list :filter="filter"></tasks-list>
+    <div class="col-8" align="right">
+      
     </div>
+  </div>
+  <div class="container-fluid">
+    <tasks-list :filter="filter"></tasks-list>
+  </div>
 </div>
 @endsection
 
 @section('js')
-    <script src="{{mix('js/tasks/index.js')}}"></script>
+<script src="{{mix('js/tasks/index.js')}}"></script>
 @endsection
