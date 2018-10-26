@@ -5,9 +5,7 @@
 @endsection
 
 @section('content')
-<div id="profile">
-  <profile></profile>
-</div>
+
 @endsection
 
 @section('sidebar')
@@ -15,5 +13,4 @@
 @endsection
 
 @section('js')
-<script src="{{mix('js/admin/profile/index.js')}}"></script>
 @endsection
