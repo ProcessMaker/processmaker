@@ -72,7 +72,7 @@
                 return this.isEditing() ? ProcessMaker.apiClient.put : ProcessMaker.apiClient.post;
             },
             savePath() {
-                return this.isEditing() ? 'category/' + this.formData.id : 'category';
+                return this.isEditing() ? 'process_categories/' + this.formData.id : 'process_categories';
             },
             save() {
                 this.request()(
