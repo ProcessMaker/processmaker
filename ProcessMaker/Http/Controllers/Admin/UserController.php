@@ -30,7 +30,7 @@ class UserController extends Controller
     public function edit(User $user)
     {
         //include memberships
-        $user->memberships;
+        $user->memberships = $user->groupMembersFromMemberable()->get();
         $groups = $this->getAllGroups();
         return view('admin.users.edit', compact(['user', 'groups']));
     }
