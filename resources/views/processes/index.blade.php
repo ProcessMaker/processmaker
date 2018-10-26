@@ -43,23 +43,23 @@
       </div>
       <div class="modal-body">
         <div class="form-group">
-			{!!Form::label('name', 'Name');!!}
-			{!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.name}'])!!}
+			{!! Form::label('name', 'Name') !!}
+			{!! Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.name}']) !!}
 			<div class="invalid-feedback" v-for="name in addError.name">@{{name}}</div>
         </div>
         <div class="form-group">
-			{!!Form::label('description', 'Description');!!}
-			{!!Form::textarea('description', null, ['class'=> 'form-control', 'rows' => '3', 'v-model'=> 'description', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.description}'])!!}
+			{!! Form::label('description', 'Description') !!}
+			{!! Form::textarea('description', null, ['class'=> 'form-control', 'rows' => '3', 'v-model'=> 'description', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.description}']) !!}
 			<div class="invalid-feedback" v-for="description in addError.description">@{{description}}</div>
         </div>
         <div class="form-group">
-			{!!Form::label('process_category_id', 'Category');!!}
-			{!!Form::select('process_category_id', $processCategories, null, ['class'=> 'form-control', 'v-model'=> 'categoryOptions', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.process_category_id}'])!!}
+			{!! Form::label('process_category_id', 'Category')!!}
+			{!! Form::select('process_category_id', $processCategories, null, ['class'=> 'form-control', 'v-model'=> 'process_category_id', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.process_category_id}']) !!}
 			<div class="invalid-feedback" v-for="category in addError.process_category_id">@{{category}}</div>
         </div>
         <div class="form-group">
-			{!!Form::label('status', 'Status');!!}
-			{!!Form::select('status', [''=>'Select','ACTIVE'=> 'Active', 'INACTIVE'=> 'Inactive'], null, ['class'=> 'form-control', 'v-model'=> 'status', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.status}'])!!}
+			{!! Form::label('status', 'Status') !!}
+			{!! Form::select('status', [''=>'Select', 'ACTIVE'=> 'Active', 'INACTIVE'=> 'Inactive'], null, ['class'=> 'form-control', 'v-model'=> 'status', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.status}']) !!}
 			<div class="invalid-feedback" v-for="status in addError.status">@{{status}}</div>
         </div>
       </div>
@@ -75,33 +75,39 @@
 @section('js')
 <script>
 	new Vue({
-	el: '#addProcess',
-	data: {
-		name: '',
-		categoryOptions: '',
-		description: '',
-		addError: {},
-		submitted: false,
-		status: ''
-	},
-	methods: {
-		onSubmit() {
-		this.submitted = true;
-		ProcessMaker.apiClient.post("/processes", {
-			name: this.name,
-			description: this.description,
-			process_category_id: this.process_category_id,
-			status: this.status
-			})
-			.then(response => {
-			ProcessMaker.alert('{{__('Process successfully added')}}', 'success')
-			window.location = "/processes/" + response.data.id
-			})
-			.catch(error => {
-			if (error.response.status === 422) {
-				this.addError = error.response.data.errors
-			}
-		}
+        el: '#addProcess',
+        data: {
+            name: '',
+            categoryOptions: '',
+            description: '',
+            process_category_id: '',
+            addError: {},
+            submitted: false,
+            status: ''
+        },
+        methods: {
+            onSubmit() {
+                this.submitted = true;
+                ProcessMaker.apiClient.post("/processes", {
+                    name: this.name,
+                    description: this.description,
+                    process_category_id: this.process_category_id,
+                    status: this.status
+                })
+                .then(response => {
+					ProcessMaker.alert('{{__('Process successfully added')}}', 'success')
+                    window.location = "/processes/" + response.data.id
+                })
+                .catch(error => {
+                    if (error.response.status === 422) {
+                        this.addError = error.response.data.errors
+                    }
+                })
+                .finally(() => {
+                    this.submitted = false
+                })
+            }
+        }
 	})
 </script>
 <script src="{{mix('js/processes/index.js')}}"></script>
