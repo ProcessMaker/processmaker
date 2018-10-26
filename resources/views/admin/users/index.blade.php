@@ -9,23 +9,29 @@
 @endsection
 
 @section('content')
-<div class="container page-content" id="users-listing" v-cloak>
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="row">
-                <div class="col-md-8 d-flex align-items-center col-sm-12">
-                    <h1 class="page-title">{{__('Users')}}</h1>
-                    <input v-model="filter" class="form-control col-sm-3" placeholder="{{__('Search')}}...">
-                </div>
-                <div class="col-md-4 d-flex justify-content-end align-items-center col-sm-12 actions">
+<div class="container page-content" id="users-listing">
+  <h1>{{__('Users')}}</h1>
+  <div class="row">
+    <div class="col">
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="basic-addon1">
+            <i class="fas fa-search"></i>
+          </span>
+        </div>
+        <input v-model="filter" class="form-control" placeholder="{{__('Search')}}...">
+      </div>
+
+    </div>
+    <div class="col-8" align="right">
                     <button type="button" class="btn btn-action text-light" data-toggle="modal" data-target="#addUser"><i
                             class="fas fa-plus"></i>
                         {{__('User')}}</button>
-                </div>
-            </div>
-            <users-listing ref="listing" :filter="filter" v-on:reload="reload"></users-listing>
-        </div>
     </div>
+  </div>
+  <div class="container-fluid">
+    <users-listing ref="listing" :filter="filter" v-on:reload="reload"></users-listing>
+  </div>
 </div>
 <div class="modal" tabindex="-1" role="dialog" id="addUser">
     <div class="modal-dialog" role="document">
