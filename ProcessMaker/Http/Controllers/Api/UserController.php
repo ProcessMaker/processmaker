@@ -217,4 +217,48 @@ class UserController extends Controller
         $user->delete();
         return response([], 204);
     }
+
+
+
+    /**
+     * Upload file avatar
+     *
+     * @param User $user
+     * @param Request $request
+     *
+     * @throws \Exception
+     */
+    private function uploadAvatar(User $user, Request $request)
+    {
+        //verify data
+        $data = $request->all();
+        if (preg_match('/^data:image\/(\w+);base64,/', $data['avatar'] , $type)) {
+            $data = substr($data['avatar'], strpos($data['avatar'], ',') + 1);
+            $type = strtolower($type[1]); // jpg, png, gif
+
+            if (!in_array($type, [ 'jpg', 'jpeg', 'gif', 'png' , 'svg'])) {
+                throw new \Exception('invalid image type');
+            }
+
+            $data = base64_decode($data);
+
+            if ($data === false) {
+                throw new \Exception('base64_decode failed');
+            }
+
+            file_put_contents("/tmp/img.{$type}", $data);
+
+            $user->addMedia("/tmp/img.{$type}")
+                ->toMediaCollection(User::COLLECTION_PROFILE, User::DISK_PROFILE);
+        } else if (isset($data['avatar']) && !empty($data['avatar'])) {
+            $request->validate([
+                'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            ]);
+
+            $user->addMedia($request->avatar)
+                ->toMediaCollection(User::COLLECTION_PROFILE, User::DISK_PROFILE);
+        }
+    }
+
+
 }

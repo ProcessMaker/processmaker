@@ -5,6 +5,7 @@
 @endsection
 
 @section('content')
+
     <div class="container" id="profileForm">
         <h1>{{__('Profile')}}</h1>
         <div class="row">
@@ -102,6 +103,7 @@
             </div>
             <div class="col-4">
                 <div class="card card-body">
+
                     <div align="center" data-toggle="modal" data-target="#exampleModal">
                         <avatar-image class-container="d-flex" size="150" class-image="m-1"
                                       :input-data="options"></avatar-image>
@@ -126,9 +128,15 @@
                     </div>
                 </div>
             </div>
+            <div class="text-right">
+                {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose']) !!}
+                {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'onUpdate']) !!}
+            </div>
+            {!! Form::close() !!}
         </div>
     </div>
-    <div class="modal" tabindex="-1" role="dialog" id="exampleModal">
+
+    <div class="modal" tabindex="-1" role="dialog" id="exampleModal" ref="exampleModal">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -151,20 +159,17 @@
                 </div>
 
                 <div class="modal-footer">
-                    <b-button @click="browse" class="btn btn-success btn-sm text-uppercase"><i class="fas fa-upload"></i>
-                        BROWSE
-                    </b-button>
+                    <button @click="browse" class="btn btn-success btn-sm text-uppercase"><i class="fas fa-upload"></i>
+                        Browse
+                    </button>
 
-                    <b-button @click="hideModal" class="btn btn-outline-success btn-md">
-                        CANCEL
-                    </b-button>
+                    <button @click="hideModal" class="btn btn-outline-success btn-md">
+                        Cancel
+                    </button>
 
-                    <b-button @click="saveAndEmit" class="btn btn-success btn-sm text-uppercase">
-                        CONTINUE
-                    </b-button>
-
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <button @click="saveAndEmit" class="btn btn-success btn-sm text-uppercase">
+                        Continue
+                    </button>
                 </div>
             </div>
         </div>
@@ -192,23 +197,25 @@
                 saveAndEmit() {
                     // We will close our modal, but we will ALSO emit a message stating the image has been updated
                     // The parent component will listen for that message and update it's data to reflect the new image
-                    this.$refs.croppie.result({}, (output) => {
-                        this.$emit('image-update', output);
+                    this.$refs.croppie.result({}, (selectedImage) => {
+                        // Update the profile's avatar image with the selected one
+                        let optionValues = formVueInstance.$data.options[0];
+                        optionValues.src = selectedImage;
+                        formVueInstance.$data.options.splice(0, 1, optionValues)
+                        formVueInstance.$data.formdata.image = selectedImage;
 
                         // And finally close the modal
                         this.hideModal();
-
                     })
-
                 },
                 browse() {
                     this.$refs.customFile.click();
                 },
                 openModal() {
-                    this.$refs.profileModal.show();
+                    this.$refs.exampleModal.hidden = false;
                 },
                 hideModal() {
-                    this.$refs.profileModal.hide();
+                    $('#exampleModal').modal("hide")
                 },
                 onFileChange(e) {
                     let files = e.target.files || e.dataTransfer.files;
@@ -234,12 +241,13 @@
     </script>
 
     <script>
-        new Vue({
+        let formVueInstance = new Vue({
             el: '#profileForm',
             data: {
                 formdata: @json($current_user),
                 errors: {},
-				confpassword: "",
+				confpassword: '',
+                image: '',
                 options: [
                     {
                         src: @json($current_user['avatar']),
@@ -247,6 +255,22 @@
                         initials: @json($current_user['firstname'][0]) + @json($current_user['lastname'][0])
                     }
                 ]
+            },
+            methods: {
+                onUpdate() {
+                    if (this.image) {
+                        this.formdata.avatar = this.image;
+                    }
+
+                    ProcessMaker.apiClient.put('users/' + this.formdata.id, this.formdata)
+                        .then((response) => {
+                            ProcessMaker.alert('Save profile success', 'success');
+                            location.reload();
+                        });
+                },
+                onClose() {
+
+                },
             }
         });
     </script>
