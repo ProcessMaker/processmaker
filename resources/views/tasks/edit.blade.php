@@ -10,15 +10,15 @@
 
 @section('content')
 
+    <h2 class="m-3">Task: {{$task->element_name}}</h2>
     <div id="task" class="d-flex container mt-3">
         <div class="col-9">
-            <h2>Task: {{$task->element_name}}</h2>
             <div class="card card-body border-0">
                 <task-form process-id="{{$task->processRequest->process->getKey()}}"
                            instance-id="{{$task->processRequest->getKey()}}"
                            token-id="{{$task->getKey()}}"
                            :form="{{json_encode($task->getForm()->config)}}"
-                           :data="{{json_encode($task->processRequest->data)}}" />
+                           :data="{{json_encode($task->processRequest->data)}}"/>
             </div>
             <div style="margin-top: 68px;">
                 <div class="row">
@@ -48,55 +48,46 @@
         </div>
 
         <div class="col-3">
-
-            <div class="list-group">
-                <div class="list-group-item list-group-item-action bg-secondary text-light">
-                </div><div class="list-group">
-                    <div class="list-group-item list-group-item-action bg-secondary text-light"><h3>{{__('Completed')}}</h3></div>
-                    <div class="list-group-item list-group-item-action">
-                        <i class="far fa-calendar-alt fa-lg"></i> {{$task->due_at->diffForHumans()}}
-                        <br />
-                        {{$task->due_at->format(config('app.dateformat'))}}
-                    </div>
-                    <div class="list-group-item list-group-item-action"><h4>{{__('Assigned To')}}</h4> <br />
-                        <img src="https://via.placeholder.com/40" style="border-radius: 50%;"> Jane Manager
-                    </div>
-
-                    <div class="list-group-item list-group-item-action">
-                        <i class="far fa-calendar-alt fa-lg"></i> {{__('Assigned 999 days ago')}}
-                        <br />
-                        <h4>10/12/17 18:25</h4>
-                    </div>
-
-                    <div class="list-group-item list-group-item-action"><h4>{{__('Request')}}</h4> <br />
-                        <a href="http://www.processmaker.com"> #39393 Dummy process link </a>
-                    </div>
-
-                    <div class="list-group-item list-group-item-action"><h4>{{__('Assigned To')}}</h4> <br />
-                        <img src="https://via.placeholder.com/40" style="border-radius: 50%;"> Alonso Requestor
-                    </div>
-
+            <div class="card">
+                <div class="card-header text-white bg-success">
+                    {{$task['status']}}
                 </div>
-
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <i class='far fa-calendar-alt fa-1x'></i>
+                        <small class="text-muted"> {{__('Due in :day', ['day' => $task->due_at->diffForHumans()])}}</small>
+                        <br>
+                        {{$task->due_at->format(config('app.dateformat'))}}
+                    </li>
+                    <li class="list-group-item">{{__('Assigned To')}} <br>
+                        {{--<avatar-image class-container="d-flex" size="150" class-image="m-1"
+                                      input-data="options"></avatar-image>--}}
+                    </li>
+                    <li class="list-group-item">
+                        <i class='far fa-calendar-alt fa-1x'></i>
+                        <small class="text-muted"> {{__('Assigned :day days ago', ['day' => 5])}}</small>
+                        <br>
+                        {{$task['updated_at']}}
+                    </li>
+                    <li class="list-group-item">
+                        {{__('Request')}} <br>{{$task->process_request}}
+                        <button type="button"class="btn btn-link text-capitalize">
+                            {{$task['process_request']['name']}}
+                        </button>
+                    </li>
+                    <li class="list-group-item">
+                        {{__('Requested By')}} <br>
+                    </li>
+                </ul>
             </div>
         </div>
-        @endsection
 
-        @section('js')
-            <script src="{{mix('js/tasks/show.js')}}"></script>
-        @endsection
+    </div>
+@endsection
 
-        @section('css')
-            <style lang="scss" scoped>
+@section('js')
+    <script src="{{mix('js/tasks/show.js')}}"></script>
+@endsection
 
-                .taskNav {
-                    height:40px;
-                    background-color:#b6bfc6;
-                }
-
-                .pill {
-                    border-radius: 20px;
-                }
-
-            </style>
+@section('css')
 @endsection
