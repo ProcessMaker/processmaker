@@ -76,30 +76,26 @@ class ScriptController extends Controller
      * Previews executing a script, with sample data/config data
      * 
      *     @OA\Get(
-     *     path="/scripts/preview",
+     *     path="/scripts/ew",
      *     summary="Returns all scripts that the user has access to",
      *     operationId="getScriptsPreview",
      *     tags={"Scripts"},
      *         @OA\Parameter(
-     *             parameter="data",
      *             name="data",
      *             in="query",
      *             @OA\Schema(type="string"),
      *         ),
      *         @OA\Parameter(
-     *             parameter="config",
      *             name="config",
      *             in="query",
      *             @OA\Schema(type="string"),
      *         ),
      *         @OA\Parameter(
-     *             parameter="code",
      *             name="code",
      *             in="query",
      *             @OA\Schema(type="string"),
      *         ),
      *         @OA\Parameter(
-     *             parameter="language",
      *             name="language",
      *             in="query",
      *             @OA\Schema(type="string"),
