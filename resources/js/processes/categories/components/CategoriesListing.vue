@@ -75,7 +75,8 @@
                         "&order_by=" +
                         this.orderBy +
                         "&order_direction=" +
-                        this.orderDirection
+                        this.orderDirection +
+                        '&include=processesCount'
                     )
                     .then(response => {
                         this.data = this.transform(response.data);

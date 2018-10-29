@@ -5,29 +5,32 @@
 @endsection
 
 @section('sidebar')
-@include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_processes')])
+    @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_processes')])
 @endsection
 
 @section('content')
     <div class="container page-content" id="process-categories-listing">
+        <h1>{{__('Process Categories')}}</h1>
         <div class="row">
-            <div class="col-sm-12">
-                <div class="row">
-                    <div class="col-md-8 d-flex align-items-center col-sm-12">
-                        <h1 class="page-title">{{__('Process Categories')}}</h1>
-                        <input v-model="filter" class="form-control col-sm-3" placeholder="{{__('Search')}}...">
+            <div class="col">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">
+                        <i class="fas fa-search"></i>
+                        </span>
                     </div>
-                    <div class="col-md-4 d-flex justify-content-end align-items-center col-sm-12 actions">
-                        <button type="button" class="btn btn-action text-light" data-toggle="modal"
-                                data-target="#createProcessCategory">
-                            <i class="fas fa-plus"></i> {{__('Category')}}
-                        </button>
-                    </div>
+                    <input v-model="filter" class="form-control" placeholder="{{__('Search')}}...">
                 </div>
-                <categories-listing ref="list" @edit="editCategory" @delete="deleteCategory" :filter="filter">
-                </categories-listing>
+            </div>
+            <div class="col-8" align="right">
+                <button type="button" class="btn btn-action text-light" data-toggle="modal"
+                        data-target="#createProcessCategory">
+                    <i class="fas fa-plus"></i> {{__('Category')}}
+                </button>
             </div>
         </div>
+        <categories-listing ref="list" @edit="editCategory" @delete="deleteCategory"
+                            :filter="filter"></categories-listing>
     </div>
 
     <div class="modal" tabindex="-1" role="dialog" id="createProcessCategory">
@@ -47,7 +50,6 @@
                         <small class="form-text text-muted">{{ __('Category Name must be distinct') }}</small>
                         <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
                     </div>
-
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary"
@@ -57,10 +59,6 @@
                 </div>
             </div>
 
-        </div>
-        <div class="col-8" align="right">
-            <a href="#" @click="showModal" class="btn btn-action" data-toggle="modal" data-target="#createGroup"><i class="fas fa-plus"></i>
-                {{__('Category')}}</a>
         </div>
     </div>
 @endsection
