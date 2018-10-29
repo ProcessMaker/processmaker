@@ -1,18 +1,18 @@
-import Vue from 'vue';
-import GroupsListing from './components/GroupsListing';
+import Vue from "vue";
+import GroupsListing from "./components/GroupsListing";
 
 new Vue({
-    el: '#listGroups',
+    el: "#listGroups",
     data: {
-        filter: ''
+        filter: ""
     },
     components: {GroupsListing},
     methods: {
-        reload() {
+        reload () {
             this.$refs.groupList.dataManager([
                 {
-                    field: 'updated_at',
-                    direction: 'desc'
+                    field: "updated_at",
+                    direction: "desc"
                 }
             ]);
         }

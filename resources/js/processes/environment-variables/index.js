@@ -1,11 +1,11 @@
-import Vue from 'vue'
-import VariablesListing from './components/VariablesListing'
+import Vue from "vue";
+import VariablesListing from "./components/VariablesListing";
 
 // Bootstrap our Variables listing
 new Vue({
-    el: '#variablesIndex',
+    el: "#variablesIndex",
     data: {
-        filter: '',
+        filter: ""
     },
     components: {
         VariablesListing
