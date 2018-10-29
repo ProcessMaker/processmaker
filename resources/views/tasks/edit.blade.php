@@ -27,8 +27,8 @@
             </div>
             <div class="col-4">
                 <div class="card">
-                    <div class="card-header text-white bg-success">
-                        <h4 style="margin:0; padding:0; line-height:1">{{$task['status']}}</h4>
+                    <div :class="statusCard">
+                        <h4 style="margin:0; padding:0; line-height:1">{{__($task->advanceStatus)}}</h4>
                     </div>
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">
@@ -39,7 +39,7 @@
                         </li>
                         <li class="list-group-item">
                             <h5>{{__('Assigned To')}}</h5>
-                            <img style="width:32px; height:32px" class="rounded-circle" src="https://bpm4.processmaker.local/storage/1/avatar-placeholder.gif"> <span>Bob Worker</span>
+                            <avatar-image size="32" class="align-left" :input-data="userAssigned"></avatar-image>
 
                         </li>
                         <li class="list-group-item">
@@ -71,8 +71,28 @@
     <script>
         new Vue({
             el: '#task',
-            data: {},
+            data: {
+                task: @json($task),
+                statusCard: 'card-header text-capitalize text-white bg-success',
+                userAssigned:[],
+                userRequested: []
+            },
             mounted() {
+                console.log("Information task")
+                console.log(this.task);
+                this.statusCard = 'card-header text-capitalize text-white bg-success';
+                switch (this.advanceStatus) {
+                    case 'closed':
+                        this.statusCard = 'card-header text-capitalize text-white bg-secondary';
+                        break;
+                    case 'overdue':
+                        this.statusCard = 'card-header text-capitalize text-white bg-danger';
+                        break;
+                }
+                this.userAssigned = [{
+                    src: this.task.previousUser.avatar,
+                    title: this.task.previousUser.fullname
+                }]
             }
         });
     </script>
