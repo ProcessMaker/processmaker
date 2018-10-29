@@ -103,7 +103,6 @@
                         {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose']) !!}
                         {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'onUpdate']) !!}
                     </div>
-                    {!! Form::close() !!}
                 </div>
             </div>
             <div class="col-4">
