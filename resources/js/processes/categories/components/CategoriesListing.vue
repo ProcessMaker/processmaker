@@ -57,7 +57,7 @@
                         title: ""
                     }
                 ]
-            }
+            };
         },
         methods: {
             fetch() {
@@ -66,15 +66,15 @@
                 // Load from our api client
                 ProcessMaker.apiClient
                     .get(
-                        'process_categories?current_page=' +
+                        "process_categories?current_page=" +
                         this.page +
-                        '&per_page=' +
+                        "&per_page=" +
                         this.perPage +
-                        '&filter=' +
+                        "&filter=" +
                         this.filter +
-                        '&order_by=' +
+                        "&order_by=" +
                         this.orderBy +
-                        '&order_direction=' +
+                        "&order_direction=" +
                         this.orderDirection +
                         '&include=processesCount'
                     )
@@ -83,27 +83,37 @@
                         this.loading = false;
                     });
             },
+            transform(data) {
+                // format in a way vuetable is expecting
+                data = Object.assign({}, data, data.meta, {meta: null});
+                return data;
+            },
+            onPaginationData() {
+            },
             onAction(action, data, index) {
                 switch (action) {
                     case "edit-item":
-                        this.$emit('edit', data)
-                        break
+                        this.$emit("edit", data);
+                        break;
                     case "remove-item":
                         ProcessMaker.confirmModal(
-                            'Caution!',
-                            '<b>Are you sure to delete the process </b>' + data.name + '?', '', () => {
-                                this.$emit('delete', data)
+                            "Caution!",
+                            "<b>Are you sure to delete the process </b>" + data.name + "?",
+                            "",
+                            () => {
+                                this.$emit("delete", data);
                             }
-                        )
-                        break
+                        );
+                        break;
                 }
             },
             formatStatus(value) {
-                let response = '<i class="fas fa-circle ' + value.toLowerCase() + '"></i> ';
+                let response =
+                    '<i class="fas fa-circle ' + value.toLowerCase() + '"></i> ';
                 return response + _.capitalize(value);
-            },
+            }
         }
-    }
+    };
 </script>
 
 <style lang="scss" scoped>
