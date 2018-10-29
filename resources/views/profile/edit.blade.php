@@ -99,6 +99,11 @@
                             <div class="invalid-feedback" v-if="errors.language">@{{errors.language[0]}}</div>
                         </div>
                     </div>
+                    <div class="text-right">
+                        {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose']) !!}
+                        {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'onUpdate']) !!}
+                    </div>
+                    {!! Form::close() !!}
                 </div>
             </div>
             <div class="col-4">
@@ -128,11 +133,6 @@
                     </div>
                 </div>
             </div>
-            <div class="text-right">
-                {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose']) !!}
-                {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'onUpdate']) !!}
-            </div>
-            {!! Form::close() !!}
         </div>
     </div>
 
