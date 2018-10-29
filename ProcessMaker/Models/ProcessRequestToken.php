@@ -2,10 +2,11 @@
 
 namespace ProcessMaker\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 use ProcessMaker\Nayra\Bpmn\TokenTrait;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
+use ProcessMaker\Repositories\DefinitionsRepository;
 
 /**
  * ProcessRequestToken is used to store the state of a token of the
@@ -69,7 +70,19 @@ class ProcessRequestToken extends Model implements TokenInterface
      * @var array
      */
     protected $appends = [
-        'previousUser'
+        'previousUser',
+        'advanceStatus'
+    ];
+
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = [
+        'due_at',
+        'initiated_at',
+        'riskchanges_at',
     ];
 
     /**
@@ -110,23 +123,6 @@ class ProcessRequestToken extends Model implements TokenInterface
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    /**
-     * Returns the user that sent the task or
-     */
-    public function getPreviousUserAttribute()
-    {
-        $query = ProcessRequestToken::query();
-        $query->where('process_request_id', $this->process_request_id)
-                ->where('id', '!=', $this->id)
-                ->where('status', 'ACTIVE')
-                ->orderByDesc('completed_at');
-        $last = $query->get()->last();
-        if (empty($last)) {
-            return ProcessRequest::find($this->process_request_id)
-                    ->user;
-        }
-        return $last->user;
-    }
 
     /**
      * Get the BPMN definition of the element where the token is.
@@ -146,11 +142,56 @@ class ProcessRequestToken extends Model implements TokenInterface
     /**
      * Get the form assigned to the task.
      *
-     * @return Form
+     * @return Screen
      */
-    public function getForm()
+    public function getScreen()
     {
         $definition = $this->getDefinition();
-        return Form::find($definition['formRef']);
+        return empty($definition['screenRef']) ? null : Form::find($definition['screenRef']);
+    }
+
+    /**
+     * Returns the user that sent the task or
+     */
+    public function getPreviousUserAttribute()
+    {
+        $query = ProcessRequestToken::query();
+        $query->where('process_request_id', $this->process_request_id)
+            ->where('id', '!=', $this->id)
+            ->where('status', 'ACTIVE')
+            ->orderByDesc('completed_at');
+        $last = $query->get()->last();
+        if (empty($last)) {
+            return ProcessRequest::find($this->process_request_id)
+                ->user;
+        }
+        return $last->user;
+    }
+
+
+    /**
+     * Returns the state of the advance of the request token (open, completed, overdue)
+     *
+     * @return string
+     */
+    public function getAdvanceStatusAttribute()
+    {
+        $result = 'open';
+
+        $isOverdue = Carbon::now()->gte(Carbon::parse($this->due_at));
+
+        if ($isOverdue && $this->status === 'ACTIVE') {
+           $result = 'overdue';
+        }
+
+        if (!$isOverdue && $this->status === 'ACTIVE') {
+            $result = 'open';
+        }
+
+        if ($this->status === 'CLOSED') {
+            $result = 'completed';
+        }
+
+        return $result;
     }
 }

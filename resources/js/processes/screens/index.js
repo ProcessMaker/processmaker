@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import ScreenListing from './components/ScreenListing'
-import ModalCreateScreen from "./components/modal/modal-screen-add";
 
 new Vue({
     el: '#screenIndex',
@@ -11,7 +10,6 @@ new Vue({
     },
     components: {
         ScreenListing,
-        ModalCreateScreen
     },
     methods: {
         show() {

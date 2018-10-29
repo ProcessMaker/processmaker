@@ -1,15 +1,17 @@
 import Vue from "vue";
-import GroupsListing from "./components/GroupsListing";
+import FormListing from "./components/FormListing";
 
 new Vue({
-    el: "#listGroups",
+    el: "#formIndex",
     data: {
         filter: ""
     },
-    components: {GroupsListing},
+    components: {
+        FormListing
+    },
     methods: {
         reload () {
-            this.$refs.groupList.dataManager([
+            this.$refs.formListing.dataManager([
                 {
                     field: "updated_at",
                     direction: "desc"

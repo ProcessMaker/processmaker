@@ -3,7 +3,7 @@
 @section('content')
 <div class="container" id="start">
     <validate-form 
-        process-id="{{$process->id}}" instance-id="{{$instance->id}}" token-id="{{$token->id}}" form-id="{{$token->definition['formRef']}}"
+        process-id="{{$process->id}}" instance-id="{{$instance->id}}" token-id="{{$token->id}}" form-id="{{$token->definition['screenRef']}}"
         start-date="{{$startDate}}" end-date="{{$endDate}}" reason="{{$reason}}" approved="{{$approved}}"></validate-form>
 </div>
 @endsection

@@ -2,12 +2,17 @@
 
 namespace ProcessMaker\Http\Controllers;
 
-use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\ProcessRequestToken;
 
 class TaskController extends Controller
 {
+    private static $dueLabels = [
+        'open' => 'Due in :day',
+        'completed' => 'Completed on',
+        'overdue' => 'Due :day',
+    ];
+
     public function index()
     {
         return view('tasks.index');
@@ -20,6 +25,6 @@ class TaskController extends Controller
 
     public function edit(ProcessRequestToken $task)
     {
-        return view('tasks.edit', ['task' => $task]);
+        return view('tasks.edit', ['task' => $task, 'dueLabels' => self::$dueLabels]);
     }
 }

@@ -131,7 +131,7 @@
             },
             saveScreen() {
                 ProcessMaker.apiClient
-                    .put('scripts/' + this.script.id , {
+                    .put('screens/' + this.screen.id , {
                         title: this.config[0].name,
                         config: this.config
                     })

@@ -48,6 +48,20 @@ class ProcessCategoryController extends Controller
     public function index(Request $request)
     {
         $query = ProcessCategory::query();
+        $include = $request->input('include', '');
+
+        if ($include) {
+            $include = explode(',', $include);
+            $count = array_search('processesCount', $include);
+            if ($count !== false) {
+                unset($include[$count]);
+                $query->withCount('processes');
+            }
+            if ($include) {
+                $query->with($include);
+            }
+        }
+
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
             $query->where(function ($query) use ($filter) {
@@ -62,8 +76,6 @@ class ProcessCategoryController extends Controller
             $request->input('order_by', 'name'),
             $request->input('order_direction', 'asc')
         );
-        $include  = $request->input('include') ? explode(',',$request->input('include')) : [];
-        $query->with($include);
         $response = $query->paginate($request->input('per_page', 10));
         return new ApiCollection($response);
     }

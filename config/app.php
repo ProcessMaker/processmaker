@@ -31,6 +31,9 @@ return [
     // The timezone for the application
     'timezone' => 'UTC',
 
+    // The date format for the application
+    'dateformat' => env('DATE_FORMAT', 'm/d/Y H:i'),
+
     // The system locale
     'locale' => 'en',
 

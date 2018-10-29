@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-  {{__('Edit Task')}}
+    {{__('Edit Task')}}
 @endsection
 
 @section('sidebar')
@@ -9,126 +9,112 @@
 @endsection
 
 @section('content')
-    <nav>
-        <ul class="nav row" style="height:40px; background-color:#b6bfc6;">
-            <li class="nav-item col-3 align-self-center">
-                <a class="nav-link active text-light p-0 ml-3" href="{{route('tasks.index')}}">
-                    <i class="fas fa-long-arrow-alt-left fa-lg mr-2"></i>
-                    BACK TO TASK LIST
-                </a>
-            </li>
-            <li class="nav-item col-3 align-self-center text-right">
-                <a class="nav-link text-light p-0" href="#">
-                    <h4 class="m-0">Task: {{$task->element_name}}</h4>
-                </a>
-            </li>
-            <li class="nav-item col align-self-center">
-                <a class="nav-link p-0" href="#" >
-                    <span class="pill badge-light p-1 pl-2 pr-2" style="border-radius: 20px;">
-                        <i class="fas fa-circle text-primary mr-2"></i>
-                        <span>{{ucfirst(strtolower($task->status))}}</span>
-                    </span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-
-    <div id="task" class="d-flex container mt-3">
-        <div class="col-9">
-            <div class="card card-body border-0">
-                <task-form process-id="{{$task->processRequest->process->getKey()}}"
-                           instance-id="{{$task->processRequest->getKey()}}"
-                           token-id="{{$task->getKey()}}"
-                           :form="{{json_encode($task->getForm()->config)}}"
-                           :data="{{json_encode($task->processRequest->data)}}" />
-            </div>
-            <div style="margin-top: 68px;">
-                <div class="row">
-                    <div class="col">
-                        <div class="card card-body border-0">
-                            <div align="center" style="color: #788793;">
-                                You have not posted any comments yet.
-                            </div>
-                            <div class="row mt-3">
-                                <div class="col-1">
-                                    <!-- img class="mr-2" src="../avatar-placeholder.gif" style="height: 45px; border-radius: 50%;"/ -->
-                                </div>
-                                <div class="form-group col">
-                                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-10"></div>
-                                <div class="form-group col text-right">
-                                    <button class="btn btn-success">comment</button>
-                                </div>
-                            </div>
-                        </div>
+    <div id="task" class="container">
+        <h1>{{$task->element_name}}</h1>
+        <div class="row">
+            @if ($task->getF() && ($task->advanceStatus==='open' || $task->advanceStatus==='overdue'))
+            <div class="col-8">
+                <div class="container-fluid">
+                    <div class="card card-body">
+                        <task-screen process-id="{{$task->processRequest->process->getKey()}}"
+                                   instance-id="{{$task->processRequest->getKey()}}"
+                                   token-id="{{$task->getKey()}}"
+                                   :screen="{{json_encode($task->getScreen()->config)}}"
+                                   :data="{{json_encode($task->processRequest->data)}}"/>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="col-3">
-            <div class="card card-body border-0">
-                <div class="row">
-                    <h4 class="text-primary col-9">Task Details</h4>
-                    <i class="fas fa-caret-square-up text-secondary col"></i>
+            @elseif ($task->advanceStatus==='completed')
+            <div class="col-8">
+                <div class="container-fluid">
+                    <div class="card card-body" align="center">
+                        <h1>Task Completed <i class="fas fa-clipboard-check"></i></h1>
+                    </div>
                 </div>
-                <div class="text-secondary">Assigned to:</div><div class="mt-1">
-                    {{$task->user !== null ? $task->user->username : ''}}
-                </div>
-                <div class="text-secondary mt-2">Assigned:</div><div class="mt-1">
-                    {{$task->created_at}}
-                </div>
-
-                <div class="text-secondary mt-5">Date Created:</div>
-                <div class="mt-1">{{\Carbon\Carbon::parse($task->created_at)->diffForHumans()}}</div>
-                <div class="text-secondary mt-2">Due Date:</div>
-                <div class="mt-1">{{\Carbon\Carbon::parse($task->due_at)->diffForHumans()}}</div>
-                <div class="text-secondary mt-2">Last Modified:</div>
-                <div class="mt-1 mb-4">{{\Carbon\Carbon::parse($task->updated_at)->diffForHumans()}}</div>
             </div>
-            <br>
-            <div class="card card-body border-0">
-                <div class="row">
-                    <h4 class="text-primary col-9">Request Details</h4>
-                    <i class="fas fa-caret-square-up text-secondary col"></i>
-                </div>
-                <div class="text-secondary">Process:</div>
-                <div class="mt-1">{{$task->processRequest->name}}</div>
-                <div class="text-secondary mt-2">Created by:</div>
-                <div class="mt-1">{{$task->processRequest->user->getFullName()}}</div>
-                <div class="text-secondary mt-5">Date Created:</div>
-                <div class="mt-1">{{$task->processRequest->created_at}}</div>
-                <div class="text-secondary mt-2">Created:</div>
-                <div class="mt-1">{{\Carbon\Carbon::parse($task->processRequest->created_at)->diffForHumans()}}</div>
-                <div class="text-secondary mt-2">Last Modified:</div>
-                <div class="mt-1">{{\Carbon\Carbon::parse($task->processRequest->updated_at)->diffForHumans()}}</div>
-                <div class="text-secondary mt-2">Duration:</div>
-                <div class="mt-1 mb-4">
-                    {{\Carbon\Carbon::parse($task->processRequest->initiated_at)->diffForHumans()}}
+            @endif
+            <div class="col-4">
+                <div class="card">
+                    <div :class="statusCard">
+                        <h4 style="margin:0; padding:0; line-height:1">{{__($task->advanceStatus)}}</h4>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <i class='far fa-calendar-alt'></i>
+                            <small> {{__($dueLabels[$task->advanceStatus], ['day' => $task->due_at->diffForHumans()])}}</small>
+                            <br>
+                            {{$task->due_at->format(config('app.dateformat'))}}
+                        </li>
+                        <li class="list-group-item">
+                            <h5>{{__('Assigned To')}}</h5>
+                            <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
+                                      :input-data="userAssigned"></avatar-image>
+                        </li>
+                        <li class="list-group-item">
+                            <i class="far fa-calendar-alt"></i>
+                            <small> {{__('Assigned :day', ['day' => $task->created_at->diffForHumans()])}}</small>
+                            <br>
+                            {{$task->created_at->format(config('app.dateformat'))}}
+                        </li>
+                        <li class="list-group-item">
+                            <h5>{{__('Request')}}</h5>
+                            <a href="{{route('requests.show', [$task->process_request_id])}}">
+                                #{{$task->process_request_id}} {{$task->process->name}}
+                            </a>
+                            <br><br>
+                            <h5>{{__('Requested By')}}</h5>
+                            <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
+                                      :input-data="userRequested"></avatar-image>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
+
 @endsection
 
 @section('js')
     <script src="{{mix('js/tasks/show.js')}}"></script>
+    <script>
+        new Vue({
+            el: '#task',
+            data: {
+                task: @json($task),
+                assigned: @json($task->user),
+                requested: @json($task->processRequest->user),
+                statusCard: 'card-header text-capitalize text-white bg-success',
+                userAssigned: [],
+                userRequested: []
+            },
+            methods: {
+                classHeaderCard(status) {
+                    let header = 'bg-success';
+                    switch (status) {
+                        case 'completed':
+                            header = 'bg-secondary';
+                            break;
+                        case 'overdue':
+                            header = 'bg-danger';
+                            break;
+                    }
+                    return 'card-header text-capitalize text-white ' + header;
+                },
+                assignedUserAvatar(user) {
+                    return [{
+                        src: user.avatar,
+                        name: user.fullname
+                    }];
+                }
+            },
+            mounted() {
+                this.statusCard = this.classHeaderCard(this.task.advanceStatus)
+                this.userAssigned = this.assignedUserAvatar(this.assigned)
+                this.userRequested = this.assignedUserAvatar(this.requested)
+            }
+        });
+    </script>
 @endsection
 
 @section('css')
-    <style lang="scss" scoped>
-
-        .taskNav {
-            height:40px;
-            background-color:#b6bfc6;
-        }
-
-        .pill {
-            border-radius: 20px;
-        }
-
-    </style>
 @endsection
