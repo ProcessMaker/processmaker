@@ -146,7 +146,7 @@ class ProcessRequestToken extends Model implements TokenInterface
     public function getForm()
     {
         $definition = $this->getDefinition();
-        return Form::find($definition['formRef']);
+        return empty($definition['formRef']) ? null : Form::find($definition['formRef']);
     }
 
     /**

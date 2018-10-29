@@ -12,6 +12,7 @@
     <div id="task" class="container">
         <h1>{{$task->element_name}}</h1>
         <div class="row">
+            @if ($task->getForm() && ($task->advanceStatus==='open' || $task->advanceStatus==='overdue'))
             <div class="col-8">
                 <div class="container-fluid">
                     <div class="card card-body">
@@ -23,6 +24,15 @@
                     </div>
                 </div>
             </div>
+            @elseif ($task->advanceStatus==='completed')
+            <div class="col-8">
+                <div class="container-fluid">
+                    <div class="card card-body" align="center">
+                        <h1>Task Completed <i class="fas fa-clipboard-check"></i></h1>
+                    </div>
+                </div>
+            </div>
+            @endif
             <div class="col-4">
                 <div class="card">
                     <div :class="statusCard">
@@ -31,14 +41,14 @@
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">
                             <i class='far fa-calendar-alt'></i>
-                            <small> {{__('Due in :day', ['day' => $task->due_at->diffForHumans()])}}</small>
+                            <small> {{__($dueLabels[$task->advanceStatus], ['day' => $task->due_at->diffForHumans()])}}</small>
                             <br>
                             {{$task->due_at->format(config('app.dateformat'))}}
                         </li>
                         <li class="list-group-item align-center">
                             <h5>{{__('Assigned To')}}</h5>
-                            <avatar-image size="32" class="d-flex pull-left align-items-center"
-                                          :input-data="userAssigned"></avatar-image>
+                        <avatar-image size="32" class="d-flex pull-left align-items-center"
+                                      :input-data="userAssigned"></avatar-image>
                         </li>
                         <li class="list-group-item">
                             <i class="far fa-calendar-alt"></i>
@@ -53,14 +63,14 @@
                             </a>
                             <br><br>
                             <h5>{{__('Requested By')}}</h5>
-                            <avatar-image size="32" class="d-flex pull-left align-items-center"
-                                          :input-data="userRequested"></avatar-image>
+                        <avatar-image size="32" class="d-flex pull-left align-items-center"
+                                      :input-data="userRequested"></avatar-image>
                         </li>
                     </ul>
                 </div>
             </div>
-
         </div>
+    </div>
     </div>
 
 @endsection
@@ -82,7 +92,7 @@
                 classHeaderCard(status) {
                     let header = 'bg-success';
                     switch (status) {
-                        case 'closed':
+                        case 'completed':
                             header = 'bg-secondary';
                             break;
                         case 'overdue':
@@ -99,7 +109,7 @@
                 }
             },
             mounted() {
-                this.statusCard = this.classHeaderCard(this.advanceStatus)
+                this.statusCard = this.classHeaderCard(this.task.advanceStatus)
                 this.userAssigned = this.assignedUserAvatar(this.assigned)
                 this.userRequested = this.assignedUserAvatar(this.requested)
             }
