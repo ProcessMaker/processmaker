@@ -1,9 +1,10 @@
 <template>
     <span :class="classContainer">
         <template v-for="(value, key) in options">
-            <template v-if="value.src">
+            <template v-if="value.src" class="align-center">
                 <b-img center :src="value.src" :rounded="round" :width="sizeImage" :height="sizeImage"
                        blank-color="bg-secondary" :class="image" :title="value.title"/>
+                <span v-if="value.name" class="text-center text-capitalize">  {{value.name}}</span>
             </template>
             <template v-else>
                 <button class="rounded-circle bg-warning border-0" :style="styleButton" :title="value.title">
@@ -68,6 +69,7 @@
                         options.push({
                             src: value.src ? value.src : '',
                             title: value.title ? value.title : '',
+                            name: value.name ? value.name : '',
                             initials: value.initials ? value.initials : ''
                         })
                     });

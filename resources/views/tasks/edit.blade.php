@@ -15,14 +15,12 @@
             <div class="col-8">
                 <div class="container-fluid">
                     <div class="card card-body">
-
                         <task-form process-id="{{$task->processRequest->process->getKey()}}"
                                    instance-id="{{$task->processRequest->getKey()}}"
                                    token-id="{{$task->getKey()}}"
                                    :form="{{json_encode($task->getForm()->config)}}"
                                    :data="{{json_encode($task->processRequest->data)}}"/>
                     </div>
-                    <!-- end form /-->
                 </div>
             </div>
             <div class="col-4">
@@ -37,13 +35,10 @@
                             <br>
                             {{$task->due_at->format(config('app.dateformat'))}}
                         </li>
-                        <li class="list-group-item">
+                        <li class="list-group-item align-center">
                             <h5>{{__('Assigned To')}}</h5>
-                            <div style="display:flex; align-items:center; justify-content: left;">
-                                <avatar-image size="32" class="align-left"
-                                              :input-data="userAssigned"></avatar-image>
-                                <span>{{$task->user->fullname}}</span>
-                            </div>
+                            <avatar-image size="32" class="d-flex pull-left align-items-center"
+                                          :input-data="userAssigned"></avatar-image>
                         </li>
                         <li class="list-group-item">
                             <i class="far fa-calendar-alt"></i>
@@ -53,12 +48,13 @@
                         </li>
                         <li class="list-group-item">
                             <h5>{{__('Request')}}</h5>
-                            <a href="#">
+                            <a href="{{route('requests.show', [$task->process_request_id])}}">
                                 #{{$task->process_request_id}} {{$task->process->name}}
                             </a>
                             <br><br>
                             <h5>{{__('Requested By')}}</h5>
-                            <img style="width:32px; height:32px" class="rounded-circle" src="https://bpm4.processmaker.local/storage/1/avatar-placeholder.gif"> <span>Joe Manager</span>
+                            <avatar-image size="32" class="d-flex pull-left align-items-center"
+                                          :input-data="userRequested"></avatar-image>
                         </li>
                     </ul>
                 </div>
@@ -76,26 +72,36 @@
             el: '#task',
             data: {
                 task: @json($task),
+                assigned: @json($task->user),
+                requested: @json($task->processRequest->user),
                 statusCard: 'card-header text-capitalize text-white bg-success',
-                userAssigned:[],
+                userAssigned: [],
                 userRequested: []
             },
-            mounted() {
-                console.log("Information task")
-                console.log(this.task);
-                this.statusCard = 'card-header text-capitalize text-white bg-success';
-                switch (this.advanceStatus) {
-                    case 'closed':
-                        this.statusCard = 'card-header text-capitalize text-white bg-secondary';
-                        break;
-                    case 'overdue':
-                        this.statusCard = 'card-header text-capitalize text-white bg-danger';
-                        break;
+            methods: {
+                classHeaderCard(status) {
+                    let header = 'bg-success';
+                    switch (status) {
+                        case 'closed':
+                            header = 'bg-secondary';
+                            break;
+                        case 'overdue':
+                            header = 'bg-danger';
+                            break;
+                    }
+                    return 'card-header text-capitalize text-white ' + header;
+                },
+                assignedUserAvatar(user) {
+                    return [{
+                        src: user.avatar,
+                        name: user.fullname
+                    }];
                 }
-                this.userAssigned = [{
-                    src: this.task.previousUser.avatar,
-                    title: this.task.previousUser.fullname
-                }]
+            },
+            mounted() {
+                this.statusCard = this.classHeaderCard(this.advanceStatus)
+                this.userAssigned = this.assignedUserAvatar(this.assigned)
+                this.userRequested = this.assignedUserAvatar(this.requested)
             }
         });
     </script>
