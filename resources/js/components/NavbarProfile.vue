@@ -23,11 +23,10 @@
 <script>
     import Vue from 'vue';
     import AvatarImage from '../components/AvatarImage';
-
     import VueCroppie from 'vue-croppie';
 
     Vue.component('avatar-image', AvatarImage);
-    Vue.use('vue-croppie', VueCroppie);
+    Vue.use(VueCroppie);
 
     export default {
         data() {
