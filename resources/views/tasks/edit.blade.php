@@ -44,14 +44,14 @@
                         </li>
                         <li class="list-group-item">
                             <i class="far fa-calendar-alt"></i>
-                            <small>Assigned 365 Days Ago</small>
+                            <small> {{__('Assigned :day', ['day' => $task->created_at->diffForHumans()])}}</small>
                             <br>
-                            10/12/2017 17:30
+                            {{$task->created_at->format(config('app.dateformat'))}}
                         </li>
                         <li class="list-group-item">
-                            <h5>{{__('Request')}}</h5> <br>
+                            <h5>{{__('Request')}}</h5>
                             <a href="#">
-                                {{$task['process_request']['name']}}
+                                #{{$task->process_request_id}} {{$task->process->name}}
                             </a>
                             <br><br>
                             <h5>{{__('Requested By')}}</h5>
