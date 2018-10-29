@@ -10,9 +10,9 @@
 
 @section('content')
 
-    <h4 class="m-0">Task: {{$task->element_name}}</h4>
     <div id="task" class="d-flex container mt-3">
         <div class="col-9">
+            <h2>Task: {{$task->element_name}}</h2>
             <div class="card card-body border-0">
                 <task-form process-id="{{$task->processRequest->process->getKey()}}"
                            instance-id="{{$task->processRequest->getKey()}}"
