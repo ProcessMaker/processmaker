@@ -60,12 +60,12 @@ export default {
           sortField: "element_name"
         },
         {
-          title: "PROCESS",
+          title: "Request",
           name: "process.name",
           sortField: "process.name"
         },
         {
-          title: "SENT BY",
+          title: "Assignee",
           name: "previousUser",
           callback: this.formatName,
           sortField: "previousUser.lastname"
@@ -75,12 +75,6 @@ export default {
           name: "due_at",
           callback: this.formatDueDate,
           sortField: "due_at"
-        },
-        {
-          title: "MODIFIED",
-          name: "updated_at",
-          callback: this.formatDate,
-          sortField: "updated_at"
         },
         {
           name: "__slot:actions",
