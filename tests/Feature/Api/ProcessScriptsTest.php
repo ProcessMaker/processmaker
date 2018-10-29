@@ -4,6 +4,7 @@ namespace Tests\Feature\Api;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
@@ -73,21 +74,14 @@ class ProcessScriptsTest extends TestCase
         $this->assertStatus(201, $response);
         //Verify the structure
         $response->assertJsonStructure($this->requestStructure);
-        $request = $response->json();
-        //Get the active tasks of the request
-        $route = route('api.tasks.index');
-        $response = $this->apiCall('GET', $route);
-        $tasks = $response->json('data');
-        //Check that two script tasks were completed.
-        $this->assertArraySubset([
-            [
-                'element_type' => 'scriptTask',
-                'status' => 'CLOSED',
-            ],
-            [
-                'element_type' => 'scriptTask',
-                'status' => 'CLOSED',
-            ]], $tasks);
+
+        //Get the closed tasks of the request
+        $tasks = ProcessRequestToken::where('process_id', '=', $this->process->id)
+            ->where('element_type', '=', 'scriptTask')
+            ->where('status', '=', 'CLOSED')
+            ->get();
+        $this->assertEquals(count($tasks), 2);
+
         //Get process instance
         $processInstance = ProcessRequest::where('id', $tasks[0]['process_request_id'])->firstOrFail();
         //Check the data

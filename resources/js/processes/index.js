@@ -1,29 +1,29 @@
-import Vue from 'vue'
-import ProcessesListing from './components/ProcessesListing'
+import Vue from "vue";
+import ProcessesListing from "./components/ProcessesListing";
 
 new Vue({
-    el: '#processIndex',
+    el: "#processIndex",
     data: {
-        filter: '',
+        filter: "",
         processModal: false,
         processId: null
     },
     components: {
-        ProcessesListing,
+        ProcessesListing
     },
     methods: {
-        show() {
+        show () {
             this.processId = null;
             this.processModal = true;
         },
-        edit(id) {
+        edit (id) {
             this.processId = id;
             this.processModal = true;
         },
-        reload() {
+        reload () {
             this.$refs.processListing.dataManager([{
-                field: 'updated_at',
-                direction: 'desc'
+                field: "updated_at",
+                direction: "desc"
             }]);
         }
     }

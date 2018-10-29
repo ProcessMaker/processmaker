@@ -1,10 +1,10 @@
-import Vue from 'vue'
-import TasksList from './components/TasksList'
+import Vue from "vue";
+import TasksList from "./components/TasksList";
 
 new Vue({
-    el: '#tasks',
+    el: "#tasks",
     data: {
-        filter: ''
+        filter: ""
     },
     components: {TasksList}
 });

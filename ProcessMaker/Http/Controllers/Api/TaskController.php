@@ -39,6 +39,8 @@ class TaskController extends Controller
                 $query->where($column, 'like', $filter);
             }
         }
+        //list only display elements type task
+        $query->where('element_type', '=', 'task');
         $query->orderBy(
             $request->input('order_by', 'updated_at'), $request->input('order_direction', 'asc')
         );

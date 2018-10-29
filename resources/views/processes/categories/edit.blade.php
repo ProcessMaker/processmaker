@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-    {{__('Edit Forms')}}
+    {{__('Edit Process Category')}}
 @endsection
 
 @section('sidebar')
@@ -9,24 +9,24 @@
 @endsection
 
 @section('content')
-    <div class="container" id="editGroup">
-        <h1>{{__('Edit Form')}}</h1>
+    <div class="container" id="editProcessCategory">
+        <h1>{{__('Edit Process Category')}}</h1>
         <div class="row">
             <div class="col-8">
                 <div class="card card-body">
                     {!! Form::open() !!}
                     <div class="form-group">
-                        {!! Form::label('title', 'Name') !!}
-                        {!! Form::text('title', null, ['id' => 'title','class'=> 'form-control', 'v-model' => 'formData.title',
-                        'v-bind:class' => '{"form-control":true, "is-invalid":errors.title}']) !!}
-                        <small class="form-text text-muted">Form title must be distinct</small>
-                        <div class="invalid-feedback" v-if="errors.title">@{{errors.title[0]}}</div>
+                        {!! Form::label('name', 'Category Name') !!}
+                        {!! Form::text('name', null, ['id' => 'name','class'=> 'form-control', 'v-model' => 'formData.name',
+                        'v-bind:class' => '{"form-control":true, "is-invalid":errors.name}']) !!}
+                        <small class="form-text text-muted">{{ __('Category Name must be distinct') }}</small>
+                        <div class="invalid-feedback" v-if="errors.name">@{{errors.name[0]}}</div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('description', 'Description') !!}
-                        {!! Form::textarea('description', null, ['id' => 'description', 'rows' => 4, 'class'=> 'form-control',
-                        'v-model' => 'formData.description', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.description}']) !!}
-                        <div class="invalid-feedback" v-if="errors.description">@{{errors.description[0]}}</div>
+                        {!! Form::label('status', 'Status') !!}
+                        {!! Form::select('status', ['ACTIVE' => 'Active', 'INACTIVE' => 'Inactive'], null, ['id' => 'status',
+                        'class' => 'form-control', 'v-model' => 'formData.status', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.status}']) !!}
+                        <div class="invalid-feedback" v-if="errors.status">@{{errors.status[0]}}</div>
                     </div>
                     <br>
                     <div class="text-right">
@@ -43,13 +43,12 @@
 @section('js')
     <script>
         new Vue({
-            el: '#editGroup',
+            el: '#editProcessCategory',
             data() {
                 return {
-                    formData: @json($form),
+                    formData: @json($processCategory),
                     errors: {
-                        'title': null,
-                        'description': null,
+                        'name': null,
                         'status': null
                     }
                 }
@@ -57,19 +56,19 @@
             methods: {
                 resetErrors() {
                     this.errors = Object.assign({}, {
-                        title: null,
+                        name: null,
                         description: null,
                         status: null
                     });
                 },
                 onClose() {
-                    window.location.href = '/processes/forms';
+                    window.location.href = '/processes/categories';
                 },
                 onUpdate() {
                     this.resetErrors();
-                    ProcessMaker.apiClient.put('forms/' + this.formData.id, this.formData)
+                    ProcessMaker.apiClient.put('process_categories/' + this.formData.id, this.formData)
                         .then(response => {
-                            ProcessMaker.alert('Update Form Successfully', 'success');
+                            ProcessMaker.alert('Update Process Category Successfully', 'success');
                             this.onClose();
                         })
                         .catch(error => {

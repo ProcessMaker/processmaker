@@ -12,7 +12,7 @@ class UserTest extends TestCase
     use RequestHelper;
 
     /**
-     * Test to make sure the controller and route work wiht the view
+     * Test to make sure the controller and route work with the view
      *
      * @return void
      */

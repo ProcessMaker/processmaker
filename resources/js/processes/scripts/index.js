@@ -1,10 +1,10 @@
-import Vue from 'vue'
-import ScriptListing from './components/ScriptListing'
+import Vue from "vue";
+import ScriptListing from "./components/ScriptListing";
 
 new Vue({
-    el: '#scriptIndex',
+    el: "#scriptIndex",
     data: {
-        filter: ''
+        filter: ""
     },
     components: {
         ScriptListing

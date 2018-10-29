@@ -14,6 +14,7 @@
                 </div>
             </template>
         </vuetable>
+
         <pagination single="Category" plural="Categdories" :perPageSelectEnabled="true" @changePerPage="changePerPage"
                     @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
     </div>
@@ -94,6 +95,7 @@
                 switch (action) {
                     case "edit-item":
                         this.$emit("edit", data);
+                        window.location = "/processes/categories/" + data.id + "/edit";
                         break;
                     case "remove-item":
                         ProcessMaker.confirmModal(
