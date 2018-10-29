@@ -1,7 +1,6 @@
 require('./bootstrap');
 let Vue = window.Vue;
 
-import avatar from "./components/common/avatar";
 import requestModal from "./components/requests/modal";
 import notifications from "./components/requests/notifications";
 import {
@@ -23,7 +22,6 @@ window.ProcessMaker.navbar = new Vue({
         Navbar,
         requestModal,
         notifications,
-        avatar,
         ConfirmationModal,
         NavbarProfile
     },
