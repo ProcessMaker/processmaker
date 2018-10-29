@@ -37,7 +37,7 @@ class ProcessCompletedNotification extends Notification
      */
     public function via($notifiable)
     {
-        return ['broadcast'];
+        return ['broadcast', 'database'];
     }
 
     /**
@@ -54,6 +54,11 @@ class ProcessCompletedNotification extends Notification
             ->line('Thank you for using our application!');
     }
 
+    public function toDatabase($notifiable)
+    {
+        return $this->toArray($notifiable);
+    }
+
     /**
      * Get the array representation of the notification.
      *
@@ -62,21 +67,18 @@ class ProcessCompletedNotification extends Notification
      */
     public function toArray($notifiable)
     {
+        $instance = Instance::find($this->instanceUid);
         return [
-            //
+            'name' => sprintf('Completed: %s', $this->processName),
+            'dateTime' => $instance->completed_at->toIso8601String(),
+            'uid' => $this->processName,
+            'url' => '/process',
         ];
     }
 
     public function toBroadcast($notifiable)
     {
-        $instance = Instance::find($this->instanceUid);
-        return new BroadcastMessage([
-            'name' => sprintf('Completed: %s', $this->processName),
-            'dateTime' => $instance->completed_at->toIso8601String(),
-            'uid' => $this->processName,
-            'url' => '/process',
-        ]);
-
+        return new BroadcastMessage($this->toArray($notifiable));
     }
 
 }
