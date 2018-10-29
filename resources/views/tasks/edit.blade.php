@@ -54,9 +54,9 @@
                 </div><div class="list-group">
                     <div class="list-group-item list-group-item-action bg-secondary text-light"><h3>{{__('Completed')}}</h3></div>
                     <div class="list-group-item list-group-item-action">
-                        <i class="far fa-calendar-alt fa-lg"></i> {{__('Due in 99 days')}}
+                        <i class="far fa-calendar-alt fa-lg"></i> {{$task->due_at->diffForHumans()}}
                         <br />
-                        <h4>10/12/18 18:25</h4>
+                        {{$task->due_at->format(config('app.dateformat'))}}
                     </div>
                     <div class="list-group-item list-group-item-action"><h4>{{__('Assigned To')}}</h4> <br />
                         <img src="https://via.placeholder.com/40" style="border-radius: 50%;"> Jane Manager

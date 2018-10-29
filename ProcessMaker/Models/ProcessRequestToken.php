@@ -74,6 +74,17 @@ class ProcessRequestToken extends Model implements TokenInterface
     ];
 
     /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = [
+        'due_at',
+        'initiated_at',
+        'riskchanges_at',
+    ];
+
+    /**
      * Boot application as a process instance.
      *
      * @param array $argument
