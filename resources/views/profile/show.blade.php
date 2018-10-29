@@ -6,7 +6,7 @@
 
 @section('content')
   <div class="container" id="profileForm">
-    <h1>{{$user->firstname}} {{$user->lastname}}</h1>
+    <h1>{{__('Profile')}}</h1>
     <div class="row">
       <div class="col-8">
         <div class="card card-body">
