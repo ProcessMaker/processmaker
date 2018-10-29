@@ -29,19 +29,25 @@ use ProcessMaker\Models\Process;
  * )
  */
 class ProcessCategory extends Model
-{    
+{
 
     protected $fillable = [
         'name',
         'status'
     ];
 
-    public static function rules()
+    public static function rules($existing=null)
     {
         $rules = [
             'name' => 'required|string|max:100|unique:process_categories,name',
             'status' => 'required|string|in:ACTIVE,INACTIVE'
         ];
+        if ($existing) {
+            $rules['name'] = [
+                'required','max:100','string',
+                Rule::unique('process_categories')->ignore($existing->id, 'id')
+            ];
+        }
 
         return $rules;
     }
