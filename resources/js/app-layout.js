@@ -1,3 +1,6 @@
+require('./bootstrap');
+let Vue = window.Vue;
+
 import avatar from "./components/common/avatar";
 import requestModal from "./components/requests/modal";
 import notifications from "./components/requests/notifications";
@@ -7,10 +10,6 @@ import NavbarProfile from "./components/NavbarProfile";
 import Multiselect from 'vue-multiselect/src/Multiselect';
 
 Vue.component('multiselect', Multiselect);
-
-require("./bootstrap");
-
-let Vue = window.Vue;
 
 // Assign our navbar component to our global ProcessMaker object
 window.ProcessMaker.navbar = new Vue({
