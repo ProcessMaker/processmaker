@@ -49,6 +49,11 @@ export default {
       ],
       fields: [
         {
+          title: "ID",
+          name: "id",
+          sortField: "id"
+        },
+        {
           title: "TASK",
           name: "__slot:name",
           field: "element_name",
