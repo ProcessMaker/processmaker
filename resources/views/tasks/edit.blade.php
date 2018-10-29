@@ -9,84 +9,73 @@
 @endsection
 
 @section('content')
+    <div id="task" class="container">
+        <h1>{{$task->element_name}}</h1>
+        <div class="row">
+            <div class="col-8">
+                <div class="container-fluid">
+                    <div class="card card-body">
 
-    <h2 class="m-3">Task: {{$task->element_name}}</h2>
-    <div id="task" class="d-flex container mt-3">
-        <div class="col-9">
-            <div class="card card-body border-0">
-                <task-form process-id="{{$task->processRequest->process->getKey()}}"
-                           instance-id="{{$task->processRequest->getKey()}}"
-                           token-id="{{$task->getKey()}}"
-                           :form="{{json_encode($task->getForm()->config)}}"
-                           :data="{{json_encode($task->processRequest->data)}}"/>
-            </div>
-            <div style="margin-top: 68px;">
-                <div class="row">
-                    <div class="col">
-                        <div class="card card-body border-0">
-                            <div align="center" style="color: #788793;">
-                                You have not posted any comments yet.
-                            </div>
-                            <div class="row mt-3">
-                                <div class="col-1">
-                                    <!-- img class="mr-2" src="../avatar-placeholder.gif" style="height: 45px; border-radius: 50%;"/ -->
-                                </div>
-                                <div class="form-group col">
-                                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-10"></div>
-                                <div class="form-group col text-right">
-                                    <button class="btn btn-success">comment</button>
-                                </div>
-                            </div>
-                        </div>
+                        <task-form process-id="{{$task->processRequest->process->getKey()}}"
+                                   instance-id="{{$task->processRequest->getKey()}}"
+                                   token-id="{{$task->getKey()}}"
+                                   :form="{{json_encode($task->getForm()->config)}}"
+                                   :data="{{json_encode($task->processRequest->data)}}"/>
                     </div>
+                    <!-- end form /-->
                 </div>
             </div>
-        </div>
+            <div class="col-4">
+                <div class="card">
+                    <div class="card-header text-white bg-success">
+                        <h4 style="margin:0; padding:0; line-height:1">{{$task['status']}}</h4>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <i class='far fa-calendar-alt'></i>
+                            <small> {{__('Due in :day', ['day' => $task->due_at->diffForHumans()])}}</small>
+                            <br>
+                            {{$task->due_at->format(config('app.dateformat'))}}
+                        </li>
+                        <li class="list-group-item">
+                            <h5>{{__('Assigned To')}}</h5>
+                            <img style="width:32px; height:32px" class="rounded-circle" src="https://bpm4.processmaker.local/storage/1/avatar-placeholder.gif"> <span>Bob Worker</span>
 
-        <div class="col-3">
-            <div class="card">
-                <div class="card-header text-white bg-success">
-                    {{$task['status']}}
+                        </li>
+                        <li class="list-group-item">
+                            <i class="far fa-calendar-alt"></i>
+                            <small>Assigned 365 Days Ago</small>
+                            <br>
+                            10/12/2017 17:30
+                        </li>
+                        <li class="list-group-item">
+                            <h5>{{__('Request')}}</h5> <br>
+                            <a href="#">
+                                {{$task['process_request']['name']}}
+                            </a>
+                            <br><br>
+                            <h5>{{__('Requested By')}}</h5>
+                            <img style="width:32px; height:32px" class="rounded-circle" src="https://bpm4.processmaker.local/storage/1/avatar-placeholder.gif"> <span>Joe Manager</span>
+                        </li>
+                    </ul>
                 </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">
-                        <i class='far fa-calendar-alt fa-1x'></i>
-                        <small class="text-muted"> {{__('Due in :day', ['day' => $task->due_at->diffForHumans()])}}</small>
-                        <br>
-                        {{$task->due_at->format(config('app.dateformat'))}}
-                    </li>
-                    <li class="list-group-item">{{__('Assigned To')}} <br>
-                        {{--<avatar-image class-container="d-flex" size="150" class-image="m-1"
-                                      input-data="options"></avatar-image>--}}
-                    </li>
-                    <li class="list-group-item">
-                        <i class='far fa-calendar-alt fa-1x'></i>
-                        <small class="text-muted"> {{__('Assigned :day days ago', ['day' => 5])}}</small>
-                        <br>
-                        {{$task['updated_at']}}
-                    </li>
-                    <li class="list-group-item">
-                        {{__('Request')}} <br>{{$task->process_request}}
-                        <button type="button"class="btn btn-link text-capitalize">
-                            {{$task['process_request']['name']}}
-                        </button>
-                    </li>
-                    <li class="list-group-item">
-                        {{__('Requested By')}} <br>
-                    </li>
-                </ul>
             </div>
-        </div>
 
+        </div>
     </div>
+
 @endsection
 
 @section('js')
     <script src="{{mix('js/tasks/show.js')}}"></script>
+    <script>
+        new Vue({
+            el: '#task',
+            data: {},
+            mounted() {
+            }
+        });
+    </script>
 @endsection
 
 @section('css')
