@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-  {{__('Edit Task')}}
+    {{__('Edit Task')}}
 @endsection
 
 @section('sidebar')
@@ -9,30 +9,8 @@
 @endsection
 
 @section('content')
-    <nav>
-        <ul class="nav row" style="height:40px; background-color:#b6bfc6;">
-            <li class="nav-item col-3 align-self-center">
-                <a class="nav-link active text-light p-0 ml-3" href="{{route('tasks.index')}}">
-                    <i class="fas fa-long-arrow-alt-left fa-lg mr-2"></i>
-                    BACK TO TASK LIST
-                </a>
-            </li>
-            <li class="nav-item col-3 align-self-center text-right">
-                <a class="nav-link text-light p-0" href="#">
-                    <h4 class="m-0">Task: {{$task->element_name}}</h4>
-                </a>
-            </li>
-            <li class="nav-item col align-self-center">
-                <a class="nav-link p-0" href="#" >
-                    <span class="pill badge-light p-1 pl-2 pr-2" style="border-radius: 20px;">
-                        <i class="fas fa-circle text-primary mr-2"></i>
-                        <span>{{ucfirst(strtolower($task->status))}}</span>
-                    </span>
-                </a>
-            </li>
-        </ul>
-    </nav>
 
+    <h4 class="m-0">Task: {{$task->element_name}}</h4>
     <div id="task" class="d-flex container mt-3">
         <div class="col-9">
             <div class="card card-body border-0">
@@ -70,65 +48,55 @@
         </div>
 
         <div class="col-3">
-            <div class="card card-body border-0">
-                <div class="row">
-                    <h4 class="text-primary col-9">Task Details</h4>
-                    <i class="fas fa-caret-square-up text-secondary col"></i>
-                </div>
-                <div class="text-secondary">Assigned to:</div><div class="mt-1">
-                    {{$task->user !== null ? $task->user->username : ''}}
-                </div>
-                <div class="text-secondary mt-2">Assigned:</div><div class="mt-1">
-                    {{$task->created_at}}
+
+            <div class="list-group">
+                <div class="list-group-item list-group-item-action bg-secondary text-light">
+                </div><div class="list-group">
+                    <div class="list-group-item list-group-item-action bg-secondary text-light"><h3>{{__('Completed')}}</h3></div>
+                    <div class="list-group-item list-group-item-action">
+                        <i class="far fa-calendar-alt fa-lg"></i> {{__('Due in 99 days')}}
+                        <br />
+                        <h4>10/12/18 18:25</h4>
+                    </div>
+                    <div class="list-group-item list-group-item-action"><h4>{{__('Assigned To')}}</h4> <br />
+                        <img src="https://via.placeholder.com/40" style="border-radius: 50%;"> Jane Manager
+                    </div>
+
+                    <div class="list-group-item list-group-item-action">
+                        <i class="far fa-calendar-alt fa-lg"></i> {{__('Assigned 999 days ago')}}
+                        <br />
+                        <h4>10/12/17 18:25</h4>
+                    </div>
+
+                    <div class="list-group-item list-group-item-action"><h4>{{__('Request')}}</h4> <br />
+                        <a href="http://www.processmaker.com"> #39393 Dummy process link </a>
+                    </div>
+
+                    <div class="list-group-item list-group-item-action"><h4>{{__('Assigned To')}}</h4> <br />
+                        <img src="https://via.placeholder.com/40" style="border-radius: 50%;"> Alonso Requestor
+                    </div>
+
                 </div>
 
-                <div class="text-secondary mt-5">Date Created:</div>
-                <div class="mt-1">{{\Carbon\Carbon::parse($task->created_at)->diffForHumans()}}</div>
-                <div class="text-secondary mt-2">Due Date:</div>
-                <div class="mt-1">{{\Carbon\Carbon::parse($task->due_at)->diffForHumans()}}</div>
-                <div class="text-secondary mt-2">Last Modified:</div>
-                <div class="mt-1 mb-4">{{\Carbon\Carbon::parse($task->updated_at)->diffForHumans()}}</div>
-            </div>
-            <br>
-            <div class="card card-body border-0">
-                <div class="row">
-                    <h4 class="text-primary col-9">Request Details</h4>
-                    <i class="fas fa-caret-square-up text-secondary col"></i>
-                </div>
-                <div class="text-secondary">Process:</div>
-                <div class="mt-1">{{$task->processRequest->name}}</div>
-                <div class="text-secondary mt-2">Created by:</div>
-                <div class="mt-1">{{$task->processRequest->user->getFullName()}}</div>
-                <div class="text-secondary mt-5">Date Created:</div>
-                <div class="mt-1">{{$task->processRequest->created_at}}</div>
-                <div class="text-secondary mt-2">Created:</div>
-                <div class="mt-1">{{\Carbon\Carbon::parse($task->processRequest->created_at)->diffForHumans()}}</div>
-                <div class="text-secondary mt-2">Last Modified:</div>
-                <div class="mt-1">{{\Carbon\Carbon::parse($task->processRequest->updated_at)->diffForHumans()}}</div>
-                <div class="text-secondary mt-2">Duration:</div>
-                <div class="mt-1 mb-4">
-                    {{\Carbon\Carbon::parse($task->processRequest->initiated_at)->diffForHumans()}}
-                </div>
             </div>
         </div>
-    </div>
-@endsection
+        @endsection
 
-@section('js')
-    <script src="{{mix('js/tasks/show.js')}}"></script>
-@endsection
+        @section('js')
+            <script src="{{mix('js/tasks/show.js')}}"></script>
+        @endsection
 
-@section('css')
-    <style lang="scss" scoped>
+        @section('css')
+            <style lang="scss" scoped>
 
-        .taskNav {
-            height:40px;
-            background-color:#b6bfc6;
-        }
+                .taskNav {
+                    height:40px;
+                    background-color:#b6bfc6;
+                }
 
-        .pill {
-            border-radius: 20px;
-        }
+                .pill {
+                    border-radius: 20px;
+                }
 
-    </style>
+            </style>
 @endsection
