@@ -39,8 +39,11 @@
                         </li>
                         <li class="list-group-item">
                             <h5>{{__('Assigned To')}}</h5>
-                            <avatar-image size="32" class="align-left" :input-data="userAssigned"></avatar-image>
-
+                            <div style="display:flex; align-items:center; justify-content: left;">
+                                <avatar-image size="32" class="align-left"
+                                              :input-data="userAssigned"></avatar-image>
+                                <span>{{$task->user->fullname}}</span>
+                            </div>
                         </li>
                         <li class="list-group-item">
                             <i class="far fa-calendar-alt"></i>
