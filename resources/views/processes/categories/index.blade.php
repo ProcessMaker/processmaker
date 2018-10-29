@@ -5,7 +5,7 @@
 @endsection
 
 @section('sidebar')
-    @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_processes')])
+@include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_processes')])
 @endsection
 
 @section('content')
@@ -56,6 +56,11 @@
                             id="disabledForNow">{{__('Save')}}</button>
                 </div>
             </div>
+
+        </div>
+        <div class="col-8" align="right">
+            <a href="#" @click="showModal" class="btn btn-action" data-toggle="modal" data-target="#createGroup"><i class="fas fa-plus"></i>
+                {{__('Category')}}</a>
         </div>
     </div>
 @endsection
@@ -92,4 +97,3 @@
         })
     </script>
 @endsection
-

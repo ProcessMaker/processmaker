@@ -57,7 +57,7 @@
                         title: ""
                     }
                 ]
-            }
+            };
         },
         methods: {
             fetch() {
@@ -84,7 +84,7 @@
             },
             transform(data) {
                 // format in a way vuetable is expecting
-                data = Object.assign({}, data, data.meta, {meta: null})
+                data = Object.assign({}, data, data.meta, {meta: null});
                 return data;
             },
             onPaginationData() {
@@ -96,20 +96,23 @@
                         break;
                     case "remove-item":
                         ProcessMaker.confirmModal(
-                            'Caution!',
-                            '<b>Are you sure to delete the process category </b>' + data.name + '?', '', () => {
-                                this.$emit('delete', data)
+                            "Caution!",
+                            "<b>Are you sure to delete the process </b>" + data.name + "?",
+                            "",
+                            () => {
+                                this.$emit("delete", data);
                             }
                         );
                         break;
                 }
             },
             formatStatus(value) {
-                let response = '<i class="fas fa-circle ' + value.toLowerCase() + '"></i> ';
+                let response =
+                    '<i class="fas fa-circle ' + value.toLowerCase() + '"></i> ';
                 return response + _.capitalize(value);
-            },
+            }
         }
-    }
+    };
 </script>
 
 <style lang="scss" scoped>

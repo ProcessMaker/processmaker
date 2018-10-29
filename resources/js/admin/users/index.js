@@ -1,28 +1,18 @@
-import Vue from "vue";
-import UsersListing from "./components/UsersListing";
-import ModalCreateUser from "./components/modal-user-add.vue";
+import Vue from 'vue';
+import UsersListing from './components/UsersListing';
 
 new Vue({
-    el: "#users-listing",
+    el: '#users-listing',
     data: {
-        filter: "",
-        userId: null,
-        userModal: false
+        filter: '',
     },
-    components: {
-        UsersListing,
-        ModalCreateUser
-    },
+    components: {UsersListing},
     methods: {
-        show () {
-            this.userId = null;
-            this.userModal = true;
-        },
-        reload () {
+        reload() {
             this.$refs.listing.dataManager([{
-                field: "updated_at",
-                direction: "desc"
+                field: 'updated_at',
+                direction: 'desc'
             }]);
-        }
+        },
     }
 });

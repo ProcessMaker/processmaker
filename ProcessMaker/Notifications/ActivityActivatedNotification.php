@@ -42,7 +42,7 @@ class ActivityActivatedNotification extends Notification
      */
     public function via($notifiable)
     {
-        return ['broadcast'];
+        return ['broadcast', 'database'];
     }
 
     /**
@@ -60,6 +60,17 @@ class ActivityActivatedNotification extends Notification
     }
 
     /**
+     * Get the database representation of the notification.
+     *
+     * @param  mixed  $notifiable
+     * @return array
+     */
+    public function toDatabase($notifiable)
+    {
+        return $this->toArray($notifiable);
+    }
+
+    /*
      * Get the array representation of the notification.
      *
      * @param  mixed  $notifiable
@@ -67,18 +78,11 @@ class ActivityActivatedNotification extends Notification
      */
     public function toArray($notifiable)
     {
-        return [
-            //
-        ];
-    }
-
-    public function toBroadcast($notifiable)
-    {
         $process = Process::find($this->processUid);
         $definitions = $process->getDefinitions();
         $activity = $definitions->getActivity($this->tokenElement);
         $token = Token::find($this->tokenUid);
-        return new BroadcastMessage([
+        return [
             'message' => sprintf('Task created: %s', $activity->getName()),
             'name' => $activity->getName(),
             'processName' => $process->name,
@@ -91,9 +95,19 @@ class ActivityActivatedNotification extends Notification
                 $this->processUid,
                 $this->instanceUid,
                 $this->tokenUid
-            ),
-        ]);
+            )
+        ];
+    }
 
+    /*
+     * Get the broadcast representation of the notification.
+     *
+     * @param  mixed  $notifiable
+     * @return array
+     */
+    public function toBroadcast($notifiable)
+    {
+        return new BroadcastMessage($this->toArray($notifiable));
     }
 
 }

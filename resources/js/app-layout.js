@@ -4,6 +4,9 @@ import notifications from "./components/requests/notifications";
 import {Navbar} from "bootstrap-vue/es/components";
 import ConfirmationModal from "./components/Confirm";
 import NavbarProfile from "./components/NavbarProfile";
+import Multiselect from 'vue-multiselect/src/Multiselect';
+
+Vue.component('multiselect', Multiselect);
 
 require("./bootstrap");
 
