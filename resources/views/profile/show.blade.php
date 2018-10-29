@@ -5,8 +5,8 @@
 @endsection
 
 @section('content')
-<div id="profile">
-  <profile></profile>
+<div class="container">
+  {{$user->firstname}}
 </div>
 @endsection
 

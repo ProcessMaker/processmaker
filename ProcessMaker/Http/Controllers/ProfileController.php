@@ -3,7 +3,7 @@
 namespace ProcessMaker\Http\Controllers;
 
 use Illuminate\Http\Request;
-use ProcessMaker\Models\User;
+use ProcessMaker\Models\User as User;
 
 class ProfileController extends Controller
 {
@@ -16,23 +16,18 @@ class ProfileController extends Controller
   {
       return view('profile.index');
   }
-    /**
-   * Edit your profile
-   *
-   * @return \Illuminate\View\View|\Illuminate\Contracts\View
-   */
-   public function edit(User $user)
-   {
-     return view('profile.edit',compact($user));
-   }
+
     /**
    * show other users profile
    *
    * @return \Illuminate\View\View|\Illuminate\Contracts\View
    */
-   public function show(User $user)
+   public function show($id)
    {
-     return view('profile.show',compact($user));
+
+     $user = User::findOrFail($id);
+
+     return view('profile.show',compact('user'));
    }
 
 }
