@@ -1,41 +1,37 @@
-import Vue from 'vue'
-import CategoriesListing from './components/CategoriesListing'
-import ModalCategoryAddEdit from "./components/modal/modal-category-add-edit";
+import Vue from "vue";
+import CategoriesListing from "./components/CategoriesListing";
 
 new Vue({
-    el: '#process-categories-listing',
+    el: "#process-categories-listing",
     data: {
-        filter: '',
-        formData: null,
+        filter: "",
+        formData: null
     },
     components: {
-        CategoriesListing,
-        ModalCategoryAddEdit,
+        CategoriesListing
     },
     methods: {
-        editCategory(data) {
+        editCategory (data) {
             this.formData = Object.assign({}, data);
-            this.showModal()
+            this.showModal();
         },
-        showModal() {
-            this.$refs.addEdit.$refs.modal.show()
+        showModal () {
+            this.$refs.addEdit.$refs.modal.show();
         },
-        deleteCategory(data) {
-            //@todo implement
-            ProcessMaker.apiClient.delete('category/' + data.id)
-                .then(response => {
-                    ProcessMaker.alert('Category Successfully Deleted', 'success');
+        deleteCategory (data) {
+            ProcessMaker.apiClient.delete(`process_categories/${data.id}`)
+                .then((response) => {
+                    ProcessMaker.alert("Category Successfully Deleted", "success");
                     this.reload();
-                })
-                .catch(error => {
-                    if (error.response.status === 422) {
-                        let errors = error.response.data.errors;
-                        ProcessMaker.alert(errors.processCategory.join(', '), 'danger');
-                    }
                 });
         },
-        reload() {
-            this.$refs.list.fetch();
+        reload () {
+            this.$refs.list.dataManager([
+                {
+                    field: "updated_at",
+                    direction: "desc"
+                }
+            ]);
         }
     }
 });

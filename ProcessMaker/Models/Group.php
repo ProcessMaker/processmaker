@@ -17,6 +17,7 @@ use Illuminate\Validation\Rule;
  *   schema="groupsEditable",
  *   @OA\Property(property="id", type="string", format="id"),
  *   @OA\Property(property="name", type="string"),
+ *   @OA\Property(property="description", type="string"),
  *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
  * ),
  * @OA\Schema(

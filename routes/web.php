@@ -19,7 +19,9 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
             'form-builder' => 'form'
         ])->only(['edit']);
         Route::resource('scripts', 'ScriptController');
-        Route::resource('categories', 'ProcessCategoryController');
+        Route::resource('categories', 'ProcessCategoryController')->parameters([
+            'categories' => 'processCategory'
+        ]);
     });
 
     Route::resource('processes', 'ProcessController');

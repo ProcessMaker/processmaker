@@ -38,7 +38,6 @@ mix.webpackConfig({
     .js('resources/js/processes/scripts/index.js', 'public/js/processes/scripts')
     .js('resources/js/processes/environment-variables/index.js', 'public/js/processes/environment-variables')
     .js('resources/js/processes/forms/index.js', 'public/js/processes/forms')
-    .js('resources/js/processes/forms/edit.js', 'public/js/processes/forms')
     .js('resources/js/processes/form-builder/main.js', 'public/js/processes/form-builder')
     .js('resources/js/requests/index.js', 'public/js/requests')
 
@@ -48,8 +47,6 @@ mix.webpackConfig({
     .js('resources/js/request/status.js', 'public/js/request')
     .js('resources/js/tasks/index.js', 'public/js/tasks/index.js')
     .js('resources/js/tasks/show.js', 'public/js/tasks/show.js')
-    .js('resources/js/designer/formBuilder/main.js', 'public/js/formBuilder')
-    .js('resources/js/designer/ScriptEditor/main.js', 'public/js/designer/ScriptEditor')
 
 
 
@@ -63,8 +60,6 @@ mix.webpackConfig({
     .sass('resources/sass/sidebar/sidebar.scss', 'public/css')
     .sass('resources/sass/app.scss', 'public/css')
     .sass('resources/sass/admin/queues.scss', 'public/css/admin')
-    .copy('resources/js/designer/skins', 'public/js/designer/skins')
-    .copy('resources/js/designer/plugins', 'public/js/designer/plugins')
     .copy('node_modules/snapsvg/dist/snap.svg.js', 'public/js')
     .copy('resources/js/components/CustomActions.vue', 'public/js')
     .copy('resources/js/components/DetailRow.vue', 'public/js')
