@@ -165,7 +165,8 @@ class ProcessRequestToken extends Model implements TokenInterface
     public function getAdvanceStatusAttribute()
     {
         $result = 'open';
-        $isOverdue = Carbon::now()->lte(Carbon::parse($this->due_at));
+
+        $isOverdue = Carbon::now()->gte(Carbon::parse($this->due_at));
 
         if ($isOverdue && $this->status === 'ACTIVE') {
            $result = 'overdue';
