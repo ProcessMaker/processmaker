@@ -4,7 +4,7 @@
             <template v-if="value.src" class="align-center">
                 <b-img center :src="value.src" :rounded="round" :width="sizeImage" :height="sizeImage"
                        blank-color="bg-secondary" :class="image" :title="value.title"/>
-                <span v-if="value.name" class="text-center text-capitalize">  {{value.name}}</span>
+                <span v-if="value.name" class="text-center text-capitalize m-1">  {{value.name}}</span>
             </template>
             <template v-else>
                 <button class="rounded-circle bg-warning border-0" :style="styleButton" :title="value.title">

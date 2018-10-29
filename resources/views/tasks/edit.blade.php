@@ -45,9 +45,9 @@
                             <br>
                             {{$task->due_at->format(config('app.dateformat'))}}
                         </li>
-                        <li class="list-group-item align-center">
+                        <li class="list-group-item">
                             <h5>{{__('Assigned To')}}</h5>
-                        <avatar-image size="32" class="d-flex pull-left align-items-center"
+                            <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
                                       :input-data="userAssigned"></avatar-image>
                         </li>
                         <li class="list-group-item">
@@ -63,14 +63,13 @@
                             </a>
                             <br><br>
                             <h5>{{__('Requested By')}}</h5>
-                        <avatar-image size="32" class="d-flex pull-left align-items-center"
+                            <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
                                       :input-data="userRequested"></avatar-image>
                         </li>
                     </ul>
                 </div>
             </div>
         </div>
-    </div>
     </div>
 
 @endsection
