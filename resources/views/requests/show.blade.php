@@ -33,7 +33,7 @@
                     <div class="tab-content" id="requestTabContent">
                         <div class="tab-pane fade show active" id="pending" role="tabpanel"
                              aria-labelledby="pending-tab">
-                            <request-detail :process-request-id="requestId" status="ACTIVE"></request-detail>
+                            <request-detail ref="pending" :process-request-id="requestId" status="ACTIVE"></request-detail>
                         </div>
                         <div class="tab-pane fade" id="summary" role="tabpanel" aria-labelledby="summary-tab">
                             <table class="vuetable table table-hover">
@@ -52,7 +52,7 @@
                             </table>
                         </div>
                         <div class="tab-pane fade" id="completed" role="tabpanel" aria-labelledby="completed-tab">
-                            <request-detail :process-request-id="requestId" status="CLOSED"></request-detail>
+                            <request-detail ref="completed" :process-request-id="requestId" status="CLOSED"></request-detail>
                         </div>
                     </div>
                 </div>
@@ -179,6 +179,8 @@
                  *
                  */
                 refreshRequest() {
+                    this.$refs.pending.fetch();
+                    this.$refs.completed.fetch();
                     ProcessMaker.apiClient.get(`requests/${this.requestId}`, {
                         params: {
                             include: 'participantTokens,user,summary'

@@ -7,5 +7,3 @@ Vue.component('request-detail', RequestDetail);
 Vue.component('avatar-image', AvatarImage);
 
 Vue.prototype.moment = moment;
-
-console.log(moment);
