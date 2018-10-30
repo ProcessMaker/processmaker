@@ -4,16 +4,16 @@ namespace Tests\Feature\Api;
 
 use Faker\Factory as Faker;
 use Illuminate\Support\Facades\Hash;
-use ProcessMaker\Models\Form;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
 
-class FormsTest extends TestCase
+class ScreenTest extends TestCase
 {
     use RequestHelper;
 
-    const API_TEST_FORM = '/forms';
+    const API_TEST_SCREEN = '/screens';
 
     const STRUCTURE = [
         'title',
@@ -22,12 +22,12 @@ class FormsTest extends TestCase
     ];
 
     /**
-     * Test verify the parameter required for create form
+     * Test verify the parameter required for create screen
      */
     public function testNotCreatedForParameterRequired()
     {
         //Post should have the parameter required
-        $url = self::API_TEST_FORM;
+        $url = self::API_TEST_SCREEN;
         $response = $this->apiCall('POST', $url, []);
 
         //validating the answer is an error
@@ -36,15 +36,15 @@ class FormsTest extends TestCase
     }
 
     /**
-     * Create form successfully
+     * Create screen successfully
      */
-    public function testCreateForm()
+    public function testCreateScreen()
     {
         //Post title duplicated
         $faker = Faker::create();
-        $url = self::API_TEST_FORM;
+        $url = self::API_TEST_SCREEN;
         $response = $this->apiCall('POST', $url, [
-            'title' => 'Title Form',
+            'title' => 'Title Screen',
             'description' => $faker->sentence(10)
         ]);
 
@@ -53,19 +53,19 @@ class FormsTest extends TestCase
 
 
     /**
-     * Can not create a form with an existing title
+     * Can not create a screen with an existing title
      */
-    public function testNotCreateFormWithTitleExists()
+    public function testNotCreateScreenWithTitleExists()
     {
-        factory(Form::class)->create([
-            'title' => 'Title Form',
+        factory(Screen::class)->create([
+            'title' => 'Title Screen',
         ]);
 
         //Post title duplicated
         $faker = Faker::create();
-        $url = self::API_TEST_FORM;
+        $url = self::API_TEST_SCREEN;
         $response = $this->apiCall('POST', $url, [
-            'title' => 'Title Form',
+            'title' => 'Title Screen',
             'description' => $faker->sentence(10)
         ]);
         $response->assertStatus(422);
@@ -73,17 +73,17 @@ class FormsTest extends TestCase
     }
 
     /**
-     * Get a list of Form in process without query parameters.
+     * Get a list of Screen in process without query parameters.
      */
-    public function testListForm()
+    public function testListScreen()
     {
-        Form::query()->delete();
-        //add Form to process
+        Screen::query()->delete();
+        //add Screen to process
         $faker = Faker::create();
-        factory(Form::class, 10)->create();
+        factory(Screen::class, 10)->create();
 
-        //List Form
-        $url = self::API_TEST_FORM;
+        //List Screen
+        $url = self::API_TEST_SCREEN;
         $response = $this->apiCall('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
@@ -103,19 +103,19 @@ class FormsTest extends TestCase
     }
 
     /**
-     * Get a list of Form with parameters
+     * Get a list of Screen with parameters
      */
-    public function testListFormWithQueryParameter()
+    public function testListScreenWithQueryParameter()
     {
-        $title = 'search Title Form';
-        factory(Form::class)->create([
+        $title = 'search Title Screen';
+        factory(Screen::class)->create([
             'title' => $title,
         ]);
 
-        //List Form with filter option
+        //List Screen with filter option
         $perPage = Faker::create()->randomDigitNotNull;
         $query = '?page=1&per_page=' . $perPage . '&order_by=description&order_direction=DESC&filter=' . urlencode($title);
-        $url = self::API_TEST_FORM . $query;
+        $url = self::API_TEST_SCREEN . $query;
         $response = $this->apiCall('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
@@ -140,12 +140,12 @@ class FormsTest extends TestCase
     }
 
     /**
-     * Get a Form of a process.
+     * Get a Screen of a process.
      */
-    public function testGetForm()
+    public function testGetScreen()
     {
-        //load Form
-        $url = self::API_TEST_FORM . '/' . factory(Form::class)->create([
+        //load Screen
+        $url = self::API_TEST_SCREEN . '/' . factory(Screen::class)->create([
                 'config' => [
                     'field' => 'field 1',
                     'field 2' => [
@@ -163,12 +163,12 @@ class FormsTest extends TestCase
     }
 
     /**
-     * Update Form parameter are required
+     * Update Screen parameter are required
      */
-    public function testUpdateFormParametersRequired()
+    public function testUpdateScreenParametersRequired()
     {
         //Post should have the parameter title
-        $url = self::API_TEST_FORM . '/' . factory(Form::class)->create()->id;
+        $url = self::API_TEST_SCREEN . '/' . factory(Screen::class)->create()->id;
         $response = $this->apiCall('PUT', $url, [
             'title' => '',
             'description' => ''
@@ -179,15 +179,15 @@ class FormsTest extends TestCase
     }
 
     /**
-     * Update Form in process successfully
+     * Update Screen in process successfully
      */
-    public function testUpdateForm()
+    public function testUpdateScreen()
     {
         //Post saved success
         $faker = Faker::create();
-        $url = self::API_TEST_FORM . '/' . factory(Form::class)->create()->id;
+        $url = self::API_TEST_SCREEN . '/' . factory(Screen::class)->create()->id;
         $response = $this->apiCall('PUT', $url, [
-            'title' => 'FormTitleTest',
+            'title' => 'ScreenTitleTest',
             'description' => $faker->sentence(5),
             'config' => '',
         ]);
@@ -196,14 +196,14 @@ class FormsTest extends TestCase
     }
 
     /**
-     * Update Form with same title
+     * Update Screen with same title
      */
-    public function testUpdateSameTitleForm()
+    public function testUpdateSameTitleScreen()
     {
         //Post saved success
         $faker = Faker::create();
         $title = 'Some title';
-        $url = self::API_TEST_FORM . '/' . factory(Form::class)->create([
+        $url = self::API_TEST_SCREEN . '/' . factory(Screen::class)->create([
             'title' => $title,
         ])->id;
         $response = $this->apiCall('PUT', $url, [
@@ -216,24 +216,24 @@ class FormsTest extends TestCase
     }
 
     /**
-     * Delete Form in process
+     * Delete Screen in process
      */
-    public function testDeleteForm()
+    public function testDeleteScreen()
     {
-        //Remove Form
-        $url = self::API_TEST_FORM . '/' . factory(Form::class)->create()->id;
+        //Remove Screen
+        $url = self::API_TEST_SCREEN . '/' . factory(Screen::class)->create()->id;
         $response = $this->apiCall('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(204);
     }
 
     /**
-     * Delete Form in process
+     * Delete Screen in process
      */
-    public function testDeleteFormNotExist()
+    public function testDeleteScreenNotExist()
     {
-        //form not exist
-        $url = self::API_TEST_FORM . '/' . factory(Form::class)->make()->id;
+        //screen not exist
+        $url = self::API_TEST_SCREEN . '/' . factory(Screen::class)->make()->id;
         $response = $this->apiCall('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(405);

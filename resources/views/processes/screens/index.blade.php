@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-    {{__('Forms')}}
+    {{__('Screens')}}
 @endsection
 
 @section('sidebar')
@@ -9,33 +9,36 @@
 @endsection
 
 @section('content')
-    <div class="container page-content" id="formIndex">
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="row">
-                    <div class="col-md-8 d-flex align-items-center col-sm-12">
-                        <h1 class="page-title">{{__('Forms')}}</h1>
-                        <input id="processes-listing-search" v-model="filter" class="form-control col-sm-3"
-                               placeholder="{{__('Search')}}...">
-                    </div>
-                    <div class="col-md-4 d-flex justify-content-end align-items-center col-sm-12 actions">
-                        <button type="button" href="#" class="btn btn-action text-white" data-toggle="modal"
-                                data-target="#createForm">
-                            <i class="fas fa-plus"></i> {{__('Form')}}
-                        </button>
-                    </div>
-                </div>
-                <form-listing ref="formListing" :filter="filter" v-on:reload="reload"></form-listing>
+  <div class="container page-content" id="screenIndex">
+      <h1>{{__('Screens')}}</h1>
+      <div class="row">
+          <div class="col">
+              <div class="input-group">
+                  <div class="input-group-prepend">
+                      <span class="input-group-text" id="basic-addon1">
+                      <i class="fas fa-search"></i>
+                      </span>
+                  </div>
+                  <input v-model="filter" class="form-control" placeholder="{{__('Search')}}...">
+              </div>
+          </div>
+          <div class="col-8" align="right">
+            <button type="button" href="#" class="btn btn-action text-white" data-toggle="modal"
+                    data-target="#createScreen">
+                <i class="fas fa-plus"></i> {{__('Screen')}}
+            </button>
+          </div>
+      </div>
+
+                <screen-listing ref="screenListing" :filter="filter" v-on:reload="reload"></screen-listing>
             </div>
 
-        </div>
-    </div>
 
-    <div class="modal fade" id="createForm" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal fade" id="createScreen" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1>{{__('Create New Form')}}</h1>
+                    <h1>{{__('Create New Screen')}}</h1>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -45,7 +48,7 @@
                         {!! Form::label('title', 'Name') !!}
                         {!! Form::text('title', null, ['id' => 'title','class'=> 'form-control', 'v-model' => 'formData.title',
                         'v-bind:class' => '{"form-control":true, "is-invalid":errors.title}']) !!}
-                        <small id="emailHelp" class="form-text text-muted">Form title must be distinct</small>
+                        <small id="emailHelp" class="form-text text-muted">Screen title must be distinct</small>
                         <div class="invalid-feedback" v-for="title in errors.title">@{{title}}</div>
                     </div>
                     <div class="form-group">
@@ -65,17 +68,16 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/processes/forms/index.js')}}"></script>
+    <script src="{{mix('js/processes/screens/index.js')}}"></script>
     <script>
         new Vue({
-            el: '#createForm',
+            el: '#createScreen',
             data() {
                 return {
                     formData: {},
                     errors: {
                         'title': null,
                         'description': null,
-                        'status': null
                     }
                 }
             },
@@ -88,22 +90,20 @@
                     this.formData = Object.assign({}, {
                         title: null,
                         description: null,
-                        status: 'ACTIVE'
                     });
                 },
                 resetErrors() {
                     this.errors = Object.assign({}, {
                         title: null,
                         description: null,
-                        status: null
                     });
                 },
                 onSubmit() {
                     this.resetErrors();
-                    ProcessMaker.apiClient.post('forms', this.formData)
+                    ProcessMaker.apiClient.post('screens', this.formData)
                         .then(response => {
-                            ProcessMaker.alert('Create Form Successfully', 'success');
-                            window.location = '/processes/forms';
+                            ProcessMaker.alert('Created Screen Successfully', 'success');
+                            window.location = '/processes/screens';
                         })
                         .catch(error => {
                             if (error.response.status && error.response.status === 422) {

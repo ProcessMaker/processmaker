@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use ProcessMaker\Models\EnvironmentVariable;
-use ProcessMaker\Models\Form;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\Script;
@@ -71,15 +71,15 @@ class ProcessSeeder extends Seeder
                 );
             }
 
-            //Add forms to the process
+            //Add screens to the process
             $tasks = $definitions->getElementsByTagName('task');
             $admin = User::where('username', 'admin')->firstOrFail();
             foreach($tasks as $task) {
-                $formRef = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'formRef');
+                $screenRef = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef');
                 $id = $task->getAttribute('id');
-                if ($formRef) {
-                    $form = $this->createForm($id, $formRef, $process);
-                    $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'formRef', $form->getKey());
+                if ($screenRef) {
+                    $screen = $this->createScreen($id, $screenRef, $process);
+                    $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef', $screen->getKey());
                 }
                 //Assign "admin" to the task 
                 factory(ProcessTaskAssignment::class)->create([
@@ -91,7 +91,7 @@ class ProcessSeeder extends Seeder
             }
 
 
-            //Update the form and script references in the BPMN of the process
+            //Update the screen and script references in the BPMN of the process
             $process->bpmn = $definitions->saveXML();
             $process->save();
 
@@ -107,26 +107,26 @@ class ProcessSeeder extends Seeder
     }
 
     /**
-     * Load the JSON of a form.
+     * Load the JSON of a screen.
      *
      * @param string $id
-     * @param string $formRef
+     * @param string $screenRef
      * @param string $process
      *
-     * @return Form
+     * @return Screen
      */
-    private function createForm($id, $formRef, $process) {
+    private function createScreen($id, $screenRef, $process) {
 
-        if (file_exists(database_path('processes/forms/' . $formRef . '.json'))) {
-            $json = json_decode(file_get_contents(database_path('processes/forms/' . $formRef . '.json')));
-            return factory(Form::class)->create([
+        if (file_exists(database_path('processes/screens/' . $screenRef . '.json'))) {
+            $json = json_decode(file_get_contents(database_path('processes/screens/' . $screenRef . '.json')));
+            return factory(Screen::class)->create([
                         'title' => $json[0]->name,
                         'content' => $json,
                         'process_id' => $process->id,
             ]);
-        } elseif (file_exists(database_path('processes/forms/' . $id . '.json'))) {
-            $json = json_decode(file_get_contents(database_path('processes/forms/' . $id . '.json')));
-            return factory(Form::class)->create([
+        } elseif (file_exists(database_path('processes/screens/' . $id . '.json'))) {
+            $json = json_decode(file_get_contents(database_path('processes/screens/' . $id . '.json')));
+            return factory(Screen::class)->create([
                         'title' => $json[0]->name,
                         'config' => $json,
             ]);

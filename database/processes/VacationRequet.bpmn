@@ -25,15 +25,15 @@
       <outgoing>_3</outgoing>
       <outputSet/>
     </startEvent>
-    <task completionQuantity="1" id="approve" isForCompensation="false" name="Request approval" pm:formRef="200f95eb-76d8-459d-b56a-ea605bea4e3f" startQuantity="1">
+    <task completionQuantity="1" id="approve" isForCompensation="false" name="Request approval" pm:screenRef="200f95eb-76d8-459d-b56a-ea605bea4e3f" startQuantity="1">
       <incoming>_2</incoming>
       <outgoing>_15</outgoing>
     </task>
-    <task completionQuantity="1" id="validate" isForCompensation="false" name="Registration in HR" pm:formRef="300f95eb-76d8-459d-b56a-ea605bea4e3f" startQuantity="1">
+    <task completionQuantity="1" id="validate" isForCompensation="false" name="Registration in HR" pm:screenRef="300f95eb-76d8-459d-b56a-ea605bea4e3f" startQuantity="1">
       <incoming>_17</incoming>
       <outgoing>_9</outgoing>
     </task>
-    <task completionQuantity="1" id="request" isForCompensation="false" name="Fill a request" pm:formRef="100f95eb-76d8-459d-b56a-ea605bea4e3f" startQuantity="1">
+    <task completionQuantity="1" id="request" isForCompensation="false" name="Fill a request" pm:screenRef="100f95eb-76d8-459d-b56a-ea605bea4e3f" startQuantity="1">
       <incoming>_3</incoming>
       <outgoing>_2</outgoing>
     </task>
