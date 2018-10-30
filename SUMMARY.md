@@ -6,6 +6,7 @@
 
 * [Overview](start-here/overview.md)
 * [How to Use This Document](start-here/how-to-use-this-document.md)
+* [Getting Started Guide](start-here/getting-started-guide.md)
 
 ## Using ProcessMaker
 
