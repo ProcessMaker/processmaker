@@ -181,6 +181,7 @@ class UserController extends Controller
         $request->validate(User::rules($user));
         $user->fill($request->json()->all());
         $user->saveOrFail();
+        $this->uploadAvatar($user, $request);
         return response([], 204);
     }
 

@@ -201,7 +201,8 @@
                         let optionValues = formVueInstance.$data.options[0];
                         optionValues.src = selectedImage;
                         formVueInstance.$data.options.splice(0, 1, optionValues)
-                        formVueInstance.$data.formdata.image = selectedImage;
+                        formVueInstance.$data.formdata.avatar = selectedImage;
+                        formVueInstance.$data.image = selectedImage;
 
                         // And finally close the modal
                         this.hideModal();
