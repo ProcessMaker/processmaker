@@ -93,7 +93,7 @@ export default {
   },
   methods: {
     openRequest(data, index) {
-      window.open("/requests/" + data.id);
+      window.location.href = "/requests/" + data.id;
     },
     assignedTo(delegations) {
       let assignedTo = "";
