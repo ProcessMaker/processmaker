@@ -233,14 +233,11 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
         $query->where('status' , '=', 'COMPLETED');
     }
 
-    public function participantTokens()
-    {
-        return $this->hasMany(ProcessRequestToken::class)
-            ->with('user')
-            ->whereNotIn('element_type' , ['scriptTask'])
-            ->distinct('user.id');
-    }
-
+    /**
+     * Returns the list of users that have participated in the request
+     *
+     * @return \Illuminate\Support\Collection
+     */
     public function participants()
     {
         $query = DB::table('process_request_tokens');
