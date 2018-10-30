@@ -14,20 +14,6 @@
                 <avatar-image class="d-inline-flex pull-left align-items-center" size="25" class-image="m-1"
                               :input-data="props.rowData.participants"></avatar-image>
             </template>
-
-            <template slot="actions" slot-scope="props">
-                <div class="actions">
-                    <div class="popout">
-                        <b-btn variant="action" @click="onAction('edit', props.rowData, props.rowIndex)"
-                               v-b-tooltip.hover title=""><i class="fas fa-edit"></i></b-btn>
-                        <b-btn variant="action" @click="onAction('pause', props.rowData, props.rowIndex)"
-                               v-b-tooltip.hover title=""><i class="fas fa-pause"></i></b-btn>
-                        <b-btn variant="action" @click="onAction('undo', props.rowData, props.rowIndex)"
-                               v-b-tooltip.hover title=""><i class="fas fa-undo"></i></b-btn>
-                    </div>
-                </div>
-            </template>
-
         </vuetable>
 
     </div>
@@ -69,10 +55,6 @@
                         name: "due_at",
                         callback: this.formatDueDate,
                         sortField: "due_at"
-                    },
-                    {
-                        name: "__slot:actions",
-                        title: ""
                     }
                 ]
             };
@@ -142,21 +124,5 @@
 </script>
 
 <style lang="scss">
-    /deep/ th#_total_users {
-        width: 150px;
-        text-align: center;
-    }
 
-    /deep/ th#_description {
-        width: 250px;
-    }
-
-    /deep/ i.fa-circle {
-        &.active {
-            color: green;
-        }
-        &.inactive {
-            color: red;
-        }
-    }
 </style>
