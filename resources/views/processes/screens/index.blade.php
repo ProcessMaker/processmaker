@@ -9,27 +9,30 @@
 @endsection
 
 @section('content')
-    <div class="container page-content" id="screenIndex">
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="row">
-                    <div class="col-md-8 d-flex align-items-center col-sm-12">
-                        <h1 class="page-title">{{__('Screens')}}</h1>
-                        <input id="processes-listing-search" v-model="filter" class="form-control col-sm-3"
-                               placeholder="{{__('Search')}}...">
-                    </div>
-                    <div class="col-md-4 d-flex justify-content-end align-items-center col-sm-12 actions">
-                        <button type="button" href="#" class="btn btn-action text-white" data-toggle="modal"
-                                data-target="#createScreen">
-                            <i class="fas fa-plus"></i> {{__('Screen')}}
-                        </button>
-                    </div>
-                </div>
+  <div class="container page-content" id="screenIndex">
+      <h1>{{__('Screens')}}</h1>
+      <div class="row">
+          <div class="col">
+              <div class="input-group">
+                  <div class="input-group-prepend">
+                      <span class="input-group-text" id="basic-addon1">
+                      <i class="fas fa-search"></i>
+                      </span>
+                  </div>
+                  <input v-model="filter" class="form-control" placeholder="{{__('Search')}}...">
+              </div>
+          </div>
+          <div class="col-8" align="right">
+            <button type="button" href="#" class="btn btn-action text-white" data-toggle="modal"
+                    data-target="#createScreen">
+                <i class="fas fa-plus"></i> {{__('Screen')}}
+            </button>
+          </div>
+      </div>
+
                 <screen-listing ref="screenListing" :filter="filter" v-on:reload="reload"></screen-listing>
             </div>
 
-        </div>
-    </div>
 
     <div class="modal fade" id="createScreen" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
