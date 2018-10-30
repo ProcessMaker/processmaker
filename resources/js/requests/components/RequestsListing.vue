@@ -143,13 +143,13 @@
                 this.loading = true;
                 switch(this.type) {
                     case '':
-                        this.additionalParams = '&include=started_me'
+                        this.additionalParams = '&type=started_me'
                         break
                     case 'all':
                         this.additionalParams = ''
                         break
                     default:
-                        this.additionalParams = '&include=' + this.type;
+                        this.additionalParams = '&type=' + this.type;
                 }
 
                 // Load from our api client
