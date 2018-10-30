@@ -75,10 +75,6 @@ export default {
           name: "due_at",
           callback: this.formatDueDate,
           sortField: "due_at"
-        },
-        {
-          name: "__slot:actions",
-          title: ""
         }
       ]
     };
