@@ -14,15 +14,17 @@ class RequestController extends Controller
      *
      * @return \Illuminate\View\View|\Illuminate\Contracts\View
      */
-    public function index()
+    public function index($type = null)
     {
         //load counters
         $allRequest = ProcessRequest::count();
-        $startedMe = ProcessRequest::startedMe(Auth::user()->uuid)->count();
+        $startedMe = ProcessRequest::startedMe(Auth::user()->id)->count();
         $inProgress = ProcessRequest::inProgress()->count();
         $completed = ProcessRequest::completed()->count();
 
-        return view('requests.index', compact(['allRequest', 'startedMe', 'inProgress', 'completed']));
+        return view('requests.index', compact(
+            ['allRequest', 'startedMe', 'inProgress', 'completed', 'type']
+        ));
     }
 
     /**

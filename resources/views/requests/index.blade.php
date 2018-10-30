@@ -18,16 +18,15 @@
 
                     <b-card header="<i class='far fa-clipboard fa-2x'></i>" header-class="d-flex align-items-center justify-content-center card-size-header border-0"
                         text-variant="white" class="bg-info mb-3 d-flex flex-row card-border border-0">
-                        <a href="#" @click="reload('started_me')" class="card-link text-light">
+                        <a href="{{ route('requests_by_type', ['type' => '']) }}" class="card-link text-light">
                             <h1 class="m-0 font-weight-bold">{{$startedMe}}</h1>
                             <h4 class="card-text">{{__('Started by Me')}}</h4>
                         </a>
                     </b-card>
 
-
                     <b-card header="<i class='fas fa-clipboard-list fa-2x'></i>" header-class="d-flex align-items-center justify-content-center card-size-header border-0"
                         text-variant="white" class="bg-success mb-3 d-flex flex-row card-border border-0">
-                        <a href="#" @click="reload('in_progress')" class="card-link text-light">
+                        <a href="{{ route('requests_by_type', ['type' => 'in_progress']) }}" class="card-link text-light">
                             <h1 class="m-0 font-weight-bold">{{$inProgress}}</h1>
                             <h4 class="card-text">{{__('In Progress')}}</h4>
                         </a>
@@ -35,7 +34,7 @@
 
                     <b-card header="<i class='fas fa-clipboard-check fa-2x'></i>" header-class="d-flex align-items-center justify-content-center card-size-header border-0"
                         text-variant="white" class="bg-primary mb-3 d-flex flex-row card-border border-0">
-                        <a href="#" @click="reload('completed')" class="card-link text-light">
+                        <a href="{{ route('requests_by_type', ['type' => 'completed']) }}" class="card-link text-light">
                             <h1 class="m-0 font-weight-bold">{{$completed}}</h1>
                             <h4 class="card-text">{{__('Complete')}}</h4>
                         </a>
@@ -43,7 +42,7 @@
 
                     <b-card header="<i class='fas fa-clipboard fa-2x'></i>" header-class="d-flex align-items-center justify-content-center card-size-header border-0"
                         text-variant="white" class="bg-warning mb-3 d-flex flex-row  card-border border-0">
-                        <a href="#" @click="reload('')" class="card-link text-light">
+                        <a href="{{ route('requests_by_type', ['type' => 'all']) }}" class="card-link text-light">
                             <h1 class="m-0 font-weight-bold">{{$allRequest}}</h1>
                             <h4 class="card-text">{{__('All Request')}}</h4>
                         </a>
@@ -67,7 +66,7 @@
                     </div>
                 </div>
             </template>
-            <requests-listing ref="requestList" :filter="filter"></requests-listing>
+            <requests-listing ref="requestList" :filter="filter" type="{{ $type }}"></requests-listing>
         </div>
     </div>
 </div>

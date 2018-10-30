@@ -20,7 +20,7 @@
 
     export default {
         mixins: [datatableMixin],
-        props: ["filter"],
+        props: ["filter", "type"],
         data() {
             return {
                 orderBy: "id",
@@ -141,7 +141,16 @@
             },
             fetch() {
                 this.loading = true;
-                this.additionalParams = this.additionalParams ? this.additionalParams : '&include=assigned';
+                switch(this.type) {
+                    case '':
+                        this.additionalParams = '&include=started_me'
+                        break
+                    case 'all':
+                        this.additionalParams = ''
+                        break
+                    default:
+                        this.additionalParams = '&include=' + this.type;
+                }
 
                 // Load from our api client
                 ProcessMaker.apiClient
@@ -150,7 +159,7 @@
                         this.page +
                         "&per_page=" +
                         this.perPage +
-                        "&include=process,delegations,delegations.user" +
+                        // "&include=process,delegations,delegations.user" +
                         "&filter=" +
                         this.filter +
                         "&order_by=" +
