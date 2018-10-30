@@ -34,7 +34,7 @@ class RequestController extends Controller
     {
         $request->participantTokens;
         $request->user;
-        $request->summary= $request->summary();
+        $request->summary = $request->summary();
         return view('requests.show', compact('request'));
     }
 }

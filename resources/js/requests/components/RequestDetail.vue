@@ -48,7 +48,7 @@
                         title: "ASSIGNED",
                         name: "__slot:participants",
                         field: "participants",
-                        sortField: "previousUser.lastname"
+                        sortField: "user.lastname"
                     },
                     {
                         title: "DUE DATE",
@@ -85,9 +85,9 @@
                 //load data for participants
                 for (let record of data.data) {
                     record['participants'] = [{
-                        src: record['previousUser']['avatar'],
-                        name: record['previousUser']['fullname'],
-                        initials: record['previousUser']['firstname'][0] + record['previousUser']['lastname'][0]
+                        src: record['user']['avatar'],
+                        name: record['user']['fullname'],
+                        initials: record['user']['firstname'][0] + record['user']['lastname'][0]
                     }]
 
                     let color = 'text-primary';
@@ -105,22 +105,27 @@
                     .get(
                         "tasks?page=" +
                         this.page +
-                        "&include=process,processRequest,processRequest.user" +
+                        "&include=user" +
                         "&process_request_id=" +
                         this.processRequestId +
                         "&status=" +
                         this.status +
                         "&per_page=" +
                         this.perPage +
-                        "&order_by=" +
-                        this.orderBy +
-                        "&order_direction=" +
-                        this.orderDirection
+                        this.getSortParam()
                     )
                     .then(response => {
                         this.data = this.transform(response.data);
                         this.loading = false;
                     });
+            },
+            getSortParam: function() {
+                if (this.sortOrder instanceof Array && this.sortOrder.length > 0) {
+                    return "&order_by=" + this.sortOrder[0].sortField +
+                      "&order_direction=" + this.sortOrder[0].direction;
+                } else {
+                    return '';
+                }
             }
         }
     };
