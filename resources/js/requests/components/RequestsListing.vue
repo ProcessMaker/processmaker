@@ -160,6 +160,7 @@
                         "&per_page=" +
                         this.perPage +
                         // "&include=process,delegations,delegations.user" +
+                        "&include=process,assigned" +
                         "&filter=" +
                         this.filter +
                         "&order_by=" +
