@@ -216,58 +216,94 @@
 
 
 @section('js')
-    <script src="{{mix('js/requests/show.js')}}"></script>
-    <script>
-        new Vue({
-            el: "#request",
-            data() {
-                return {
-                    requestId: @json($request->getKey()),
-                    request: @json($request),
-                    refreshTasks: 0
-                };
+<script src="{{mix('js/requests/show.js')}}"></script>
+<script>
+    new Vue({
+        el: "#request",
+        data() {
+            return {
+                requestId: @json($request->getKey()),
+                request: @json($request),
+                refreshTasks: 0
+            };
+        },
+        computed: {
+            /**
+             * Get the list of participants in the request.
+             *
+             */
+            participants(){
+                const participants = [];
+                this.request.participant_tokens.forEach(token => {
+                    participants.push(token.user);
+                });
+                return participants;
             },
-            computed: {
-                participants(){
-                    const participants = [];
-                    this.participantTokens;
-                    return participants;
-                },
-                /**
-                 * Request Summary - that is blank place holder if there are in progress tasks,
-                 * if the request is completed it will show key value pairs.
-                 */
-                showSummary(){
-                    return this.request.status !== 'ACTIVE';
-                },
-                summary() {
-                    return ;
-                }
+            /**
+             * Request Summary - that is blank place holder if there are in progress tasks,
+             * if the request is completed it will show key value pairs.
+             *
+             */
+            showSummary(){
+                return this.request.status === 'COMPLETED';
             },
-            methods: {
-                refreshData() {
-                    ProcessMaker.apiClient.get(`requests/${this.requestId}`, {
-                        params: {
-                            include: 'participantTokens'
-                        }
-                    })
-                        .then((response) => {
-                            for(let attribute in response) {
-                                this.updateModel(this.request, attribute, response[attribute]);
-                            }
-                        });
-                },
-                updateModel(obj, prop, value, defaultValue) {
-                    const descriptor = Object.getOwnPropertyDescriptor(obj, prop);
-                    value = value !== undefined ? value : (descriptor ? obj[prop] : defaultValue);
-                    if (descriptor && !(descriptor.get instanceof Function)) {
-                        delete obj[prop];
-                        Vue.set(obj, prop, value);
-                    } else if (descriptor && obj[prop] !== value) {
-                        Vue.set(obj, prop, value);
-                    }
-                }
+            /**
+             * Get the summary of the Request.
+             *
+             */
+            summary() {
+                return [{key:"date", value:"5/67/8"}];
             }
-        });
-    </script>
+        },
+        methods: {
+            /**
+             * Refresh the Request details.
+             *
+             */
+            refreshRequest() {
+                ProcessMaker.apiClient.get(`requests/${this.requestId}`, {
+                    params: {
+                        include: 'participantTokens'
+                    }
+                })
+                .then((response) => {
+                    for(let attribute in response) {
+                        this.updateModel(this.request, attribute, response[attribute]);
+                    }
+                    this.refreshTasks++;
+                });
+            },
+            /**
+             * Update a model property.
+             *
+             */
+            updateModel(obj, prop, value, defaultValue) {
+                const descriptor = Object.getOwnPropertyDescriptor(obj, prop);
+                value = value !== undefined ? value : (descriptor ? obj[prop] : defaultValue);
+                if (descriptor && !(descriptor.get instanceof Function)) {
+                    delete obj[prop];
+                    Vue.set(obj, prop, value);
+                } else if (descriptor && obj[prop] !== value) {
+                    Vue.set(obj, prop, value);
+                }
+            },
+            /**
+             * Listen for Request updates.
+             *
+             */
+            listenRequestUpdates() {
+                let userId = document.head.querySelector('meta[name="user-id"]').content;
+                Echo.private(`ProcessMaker.Models.User.${userId}`)
+                    .notification((token) => {
+                        if (token.request_id===this.requestId) {
+                            this.refreshRequest();
+                        }
+                    });
+            }
+        },
+        mounted() {
+            this.listenRequestUpdates();
+        }
+    });
+</script>
 @endsection
