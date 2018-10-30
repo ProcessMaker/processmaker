@@ -14,8 +14,8 @@ class ProcessRequests extends ApiResource
         if (in_array('summary', $include)) {
             $array['summary'] = $this->summary();
         }
-        if (in_array('participantTokens', $include)) {
-            $array['participant_tokens'] = $this->participantTokens()->get();
+        if (in_array('participants', $include)) {
+            $array['participants'] = $this->participants();
         }
         return $array;
     }

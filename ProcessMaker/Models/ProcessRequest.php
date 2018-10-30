@@ -1,7 +1,9 @@
 <?php
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
@@ -231,12 +233,20 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
         $query->where('status' , '=', 'COMPLETED');
     }
 
-    public function participantTokens()
+    /**
+     * Returns the list of users that have participated in the request
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function participants()
     {
-        return $this->hasMany(ProcessRequestToken::class)
-            ->with('user')
-            ->whereNotIn('element_type' , ['scriptTask'])
-            ->distinct('user.id');
+        $query = DB::table('process_request_tokens');
+        $query->join('users', 'users.id', '=', 'process_request_tokens.user_id'  );
+        $query->where('process_request_id', $this->id)
+                ->whereNotIn('element_type', ['scriptTask']);
+        $query->select('users.*');
+        $query->distinct();
+        return $query->get();
     }
 
     /**
