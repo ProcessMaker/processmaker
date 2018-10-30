@@ -33,7 +33,7 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
         'index', 'edit', 'show'
     ]);
     Route::resource('requests', 'RequestController')->only([
-        'index', 'edit', 'show'
+        'index', 'show'
     ]);
     Route::resource('tasks', 'TaskController');
 
