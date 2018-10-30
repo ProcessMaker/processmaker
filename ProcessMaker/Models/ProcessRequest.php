@@ -10,12 +10,8 @@ use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
  * Represents an Eloquent model of a Request which is an instance of a Process.
  *
  * @property string $id
- * @property string $id
- * @property string $process_id
  * @property string $process_id
  * @property string $user_id
- * @property string $user_id
- * @property string $process_collaboration_id
  * @property string $process_collaboration_id
  * @property string $participant_id
  * @property string $name
@@ -233,5 +229,13 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
     public function scopeCompleted($query)
     {
         $query->where('status' , '=', 'COMPLETED');
+    }
+
+    public function participantTokens()
+    {
+        return $this->hasMany(ProcessRequestToken::class)
+            ->with('user')
+            ->whereNotIn('element_type' , ['scriptTask'])
+            ->distinct('user.id');
     }
 }
