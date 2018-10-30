@@ -58,11 +58,13 @@
 
 ## Script Central
 
+* [First Topic](script-central-1/first-topic.md)
+
 ## Connector Development
 
 * [First Topic](connector-development/first-topic.md)
 
-## Package Development and Deployment
+## Package Development and Distribution
 
-* [First Topic](plugin-development/first-topic.md)
+* [First Topic](package-development-distribution/first-topic.md)
 
