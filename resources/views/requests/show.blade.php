@@ -263,7 +263,7 @@
             refreshRequest() {
                 ProcessMaker.apiClient.get(`requests/${this.requestId}`, {
                     params: {
-                        include: 'participantTokens'
+                        include: 'participantTokens,user'
                     }
                 })
                 .then((response) => {
