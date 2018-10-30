@@ -9,6 +9,11 @@ folders:
     -
         map: '.'
         to: /home/vagrant/processmaker
+# Uncomment and modify the following if you want to
+# link a local directory for package development
+#    -
+#        map: '../bpm-plugins'
+#        to: /home/vagrant/bpm-plugins
 sites:
     -
         map: bpm4.local.processmaker.com
