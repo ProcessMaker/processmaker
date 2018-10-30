@@ -36,6 +36,7 @@
                             <request-detail ref="pending" :process-request-id="requestId" status="ACTIVE"></request-detail>
                         </div>
                         <div class="tab-pane fade" id="summary" role="tabpanel" aria-labelledby="summary-tab">
+                            <template v-if="showSummary">
                             <table class="vuetable table table-hover">
                                 <thead>
                                 <tr>
@@ -50,6 +51,7 @@
                                 </tr>
                                 </tbody>
                             </table>
+                            </template>
                         </div>
                         <div class="tab-pane fade" id="completed" role="tabpanel" aria-labelledby="completed-tab">
                             <request-detail ref="completed" :process-request-id="requestId" status="CLOSED"></request-detail>
