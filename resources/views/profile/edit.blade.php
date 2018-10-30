@@ -265,7 +265,7 @@
                     ProcessMaker.apiClient.put('users/' + this.formdata.id, this.formdata)
                         .then((response) => {
                             ProcessMaker.alert('Save profile success', 'success');
-                            location.reload();
+                            window.ProcessMaker.events.$emit('update-profile-avatar');
                         });
                 },
                 onClose() {
