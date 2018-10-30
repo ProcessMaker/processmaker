@@ -31,6 +31,5 @@ div.main {
 @endsection
 
 @section('js')
-    <script src="{{mix('js/designer/ScriptEditor/main.js')}}"></script>
+    <script src="{{mix('js/processes/scripts/edit.js')}}"></script>
 @endsection
-
