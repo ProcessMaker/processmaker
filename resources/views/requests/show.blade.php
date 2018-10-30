@@ -10,7 +10,8 @@
 
 @section('content')
     <div id="request" class="container">
-        <h1>Request Title #123</h1>
+
+        <h1>{{$request->name}} # {{$request->getKey()}}</h1>
         <div class="row">
             <div class="col-8">
 
@@ -37,183 +38,40 @@
                             <request-detail :process-request-id="requestId" status="CLOSED"></request-detail>
                         </div>
                     </div>
-
-                    {{--<ul class="nav nav-tabs">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="#">{{__('Pending Tasks')}}</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">{{__('Request Summary')}}</a>
-                        </li>
-                        <li class="nav-item justify-content-end">
-                            <a class="nav-link" href="#">{{__('Completed')}}</a>
-                        </li>
-                    </ul>
-
-                    <div class="data-table">
-                        <table data-v-15965e3b="" class="vuetable table table-hover">
-                            <thead data-v-15965e3b="">
-                            <tr data-v-15965e3b="">
-                                <th data-v-15965e3b="" class="vuetable-th-slot-name sortable">TASK <i
-                                            class="sort-icon fas fa-sort"></i></th>
-                                <th data-v-15965e3b="" id="_previousUser" class="vuetable-th-previousUser sortable">
-                                    ASSIGNED <i class="sort-icon fas fa-sort"></i></th>
-                                <th data-v-15965e3b="" id="_due_at" class="vuetable-th-due_at ascending sortable">DUE
-                                    DATE <i class="sort-icon fas fa-sort-up"></i></th>
-                                <th data-v-15965e3b="" class="vuetable-th-slot-actions"></th>
-                            </tr>
-                            </thead>
-                            <tbody data-v-15965e3b="" class="vuetable-body">
-                            <tr data-v-15965e3b="" item-index="0" render="true" class="">
-                                <td data-v-15965e3b="" class="vuetable-slot"><a data-v-15965e3b="" href="#"
-                                                                                target="_self" class="">
-                                        Get available days
-                                    </a></td>
-                                <td data-v-15965e3b="" class=""><img class="avatar-image-list avatar-circle-list"
-                                                                     src="https://bpm4.processmaker.local/storage/1/avatar-placeholder.gif">
-                                    <span>admin admin</span></td>
-                                <td data-v-15965e3b="" class=""><span class="text-primary">2018-10-27 16:26:23</span>
-                                </td>
-                                <td data-v-15965e3b="" class="vuetable-slot">
-                                    <div data-v-15965e3b="" class="actions">
-                                        <div data-v-15965e3b="" class="popout">
-                                            <button data-v-15965e3b="" title="" type="button" class="btn btn-action"
-                                                    data-original-title=""><i data-v-15965e3b=""
-                                                                              class="fas fa-edit"></i></button>
-                                            <button data-v-15965e3b="" title=""
-                                                    type="button" class="btn btn-action" data-original-title=""><i
-                                                        data-v-15965e3b="" class="fas fa-pause"></i></button>
-                                            <button data-v-15965e3b="" title="" type="button" class="btn btn-action"
-                                                    data-original-title=""><i
-                                                        data-v-15965e3b="" class="fas fa-undo"></i></button>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr data-v-15965e3b="" item-index="1" render="true" class="">
-                                <td data-v-15965e3b="" class="vuetable-slot"><a data-v-15965e3b="" href="#"
-                                                                                target="_self" class="">
-                                        Fill a request
-                                    </a></td>
-                                <td data-v-15965e3b="" class=""><img class="avatar-image-list avatar-circle-list"
-                                                                     src="https://bpm4.processmaker.local/storage/1/avatar-placeholder.gif">
-                                    <span>admin admin</span></td>
-                                <td data-v-15965e3b="" class=""><span class="text-primary">2018-10-27 16:26:26</span>
-                                </td>
-                                <td data-v-15965e3b="" class="vuetable-slot">
-                                    <div data-v-15965e3b="" class="actions">
-                                        <div data-v-15965e3b="" class="popout">
-                                            <button data-v-15965e3b="" title="" type="button" class="btn btn-action"
-                                                    data-original-title=""><i data-v-15965e3b=""
-                                                                              class="fas fa-edit"></i></button>
-                                            <button data-v-15965e3b="" title=""
-                                                    type="button" class="btn btn-action" data-original-title=""><i
-                                                        data-v-15965e3b="" class="fas fa-pause"></i></button>
-                                            <button data-v-15965e3b="" title="" type="button" class="btn btn-action"
-                                                    data-original-title=""><i
-                                                        data-v-15965e3b="" class="fas fa-undo"></i></button>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr data-v-15965e3b="" item-index="1" render="true" class="">
-                                <td data-v-15965e3b="" class="vuetable-slot"><a data-v-15965e3b="" href="#"
-                                                                                target="_self" class="">
-                                        Fill a request
-                                    </a></td>
-                                <td data-v-15965e3b="" class=""><img class="avatar-image-list avatar-circle-list"
-                                                                     src="https://bpm4.processmaker.local/storage/1/avatar-placeholder.gif">
-                                    <span>admin admin</span></td>
-                                <td data-v-15965e3b="" class=""><span class="text-primary">2018-10-27 16:26:26</span>
-                                </td>
-                                <td data-v-15965e3b="" class="vuetable-slot">
-                                    <div data-v-15965e3b="" class="actions">
-                                        <div data-v-15965e3b="" class="popout">
-                                            <button data-v-15965e3b="" title="" type="button" class="btn btn-action"
-                                                    data-original-title=""><i data-v-15965e3b=""
-                                                                              class="fas fa-edit"></i></button>
-                                            <button data-v-15965e3b="" title=""
-                                                    type="button" class="btn btn-action" data-original-title=""><i
-                                                        data-v-15965e3b="" class="fas fa-pause"></i></button>
-                                            <button data-v-15965e3b="" title="" type="button" class="btn btn-action"
-                                                    data-original-title=""><i
-                                                        data-v-15965e3b="" class="fas fa-undo"></i></button>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr data-v-15965e3b="" item-index="1" render="true" class="">
-                                <td data-v-15965e3b="" class="vuetable-slot"><a data-v-15965e3b="" href="#"
-                                                                                target="_self" class="">
-                                        Fill a request
-                                    </a></td>
-                                <td data-v-15965e3b="" class=""><img class="avatar-image-list avatar-circle-list"
-                                                                     src="https://bpm4.processmaker.local/storage/1/avatar-placeholder.gif">
-                                    <span>admin admin</span></td>
-                                <td data-v-15965e3b="" class=""><span class="text-primary">2018-10-27 16:26:26</span>
-                                </td>
-                                <td data-v-15965e3b="" class="vuetable-slot">
-                                    <div data-v-15965e3b="" class="actions">
-                                        <div data-v-15965e3b="" class="popout">
-                                            <button data-v-15965e3b="" title="" type="button" class="btn btn-action"
-                                                    data-original-title=""><i data-v-15965e3b=""
-                                                                              class="fas fa-edit"></i></button>
-                                            <button data-v-15965e3b="" title=""
-                                                    type="button" class="btn btn-action" data-original-title=""><i
-                                                        data-v-15965e3b="" class="fas fa-pause"></i></button>
-                                            <button data-v-15965e3b="" title="" type="button" class="btn btn-action"
-                                                    data-original-title=""><i
-                                                        data-v-15965e3b="" class="fas fa-undo"></i></button>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>--}}
                 </div>
             </div>
             <div class="col-4">
+                <template v-if="statusLabel">
                 <div class="card">
-                    <div class="card-header bg-danger text-white">
-                        <h4 style="margin:0; padding:0; line-height:1">Error</h4>
+                    <div :class="classStatusCard">
+                        <h4 style="margin:0; padding:0; line-height:1">@{{ statusLabel }}</h4>
                     </div>
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">
-                            <h5>Requested By</h5>
-                            <img style="width:32px; height:32px" class="rounded-circle"
-                                 src="https://bpm4.processmaker.local/storage/1/avatar-placeholder.gif"> <span>Joe Manager</span>
+                            <h5>{{__('Requested By')}}</h5>
+                            <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
+                                          :input-data="requestBy"></avatar-image>
                         </li>
                         <li class="list-group-item">
-                            <h5>Participants</h5>
-                            <img style="width:32px; height:32px" class="rounded-circle"
-                                 src="https://bpm4.processmaker.local/storage/1/avatar-placeholder.gif">
-                            <img style="width:32px; height:32px" class="rounded-circle"
-                                 src="https://bpm4.processmaker.local/storage/1/avatar-placeholder.gif">
-                            <img style="width:32px; height:32px" class="rounded-circle"
-                                 src="https://bpm4.processmaker.local/storage/1/avatar-placeholder.gif">
-                            <img style="width:32px; height:32px" class="rounded-circle"
-                                 src="https://bpm4.processmaker.local/storage/1/avatar-placeholder.gif">
-                            <img style="width:32px; height:32px" class="rounded-circle"
-                                 src="https://bpm4.processmaker.local/storage/1/avatar-placeholder.gif">
+                            <h5>{{__('Participants')}}</h5>
+                            <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
+                                          :input-data="participants"></avatar-image>
                         </li>
                         <li class="list-group-item">
                             <i class="far fa-calendar-alt"></i>
-                            <small>Failed On</small>
+                            <small>@{{ labelDate }}</small>
                             <br>
-                            10/12/2017 17:30
+                            @{{ statusDate }}
                         </li>
-
                     </ul>
                 </div>
+                </template>
             </div>
 
         </div>
     </div>
 
 @endsection
-
-
 
 @section('js')
 <script src="{{mix('js/requests/show.js')}}"></script>
@@ -235,7 +93,12 @@
             participants(){
                 const participants = [];
                 this.request.participant_tokens.forEach(token => {
-                    participants.push(token.user);
+                    let user = token.user;
+                    //change populate data
+                    user.src = user.avatar;
+                    user.title = user.fullname;
+                    user.initials = user.firstname.match(/./u)[0] + user.lastname.match(/./u)[0];
+                    participants.push(user);
                 });
                 return participants;
             },
@@ -253,7 +116,45 @@
              */
             summary() {
                 return [{key:"date", value:"5/67/8"}];
-            }
+            },
+            classStatusCard() {
+                let header = {
+                    "ACTIVE" : "bg-success",
+                    "CLOSED" : "bg-secondary",
+                    "ERROR" : "bg-danger"
+                };
+                return 'card-header text-capitalize text-white ' + header[this.request.status.toUpperCase()];
+            },
+            statusLabel() {
+                let label = {
+                    "ACTIVE" : 'In Progress',
+                    "CLOSED" : 'Completed',
+                    "ERROR" : 'Error'
+                };
+                return label[this.request.status.toUpperCase()];
+            },
+            labelDate() {
+                let label = {
+                    "ACTIVE" : 'Create On',
+                    "CLOSED" : 'Completed On',
+                    "ERROR" : 'Failed On'
+                };
+                return label[this.request.status.toUpperCase()];
+            },
+            statusDate() {
+                let status = {
+                    "ACTIVE" : this.request.created_at,
+                    "CLOSED" : this.request.completed_at,
+                    "ERROR" :  this.request.updated_at
+                };
+                return status[this.request.status.toUpperCase()];
+            },
+            requestBy() {
+                return [{
+                    src: this.request.user.avatar,
+                    name: this.request.user.fullname
+                }]
+            },
         },
         methods: {
             /**
@@ -303,7 +204,7 @@
         },
         mounted() {
             this.listenRequestUpdates();
-        }
+        },
     });
 </script>
 @endsection
