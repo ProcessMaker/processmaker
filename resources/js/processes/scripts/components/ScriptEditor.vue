@@ -87,7 +87,7 @@
                 this.preview.executing = true;
                 // Attempt to execute a script, using our temp variables
                 ProcessMaker.apiClient
-                    .post("script/preview", {
+                    .post("scripts/preview", {
                         code: this.code,
                         language: this.script.language,
                         data: this.preview.data,
