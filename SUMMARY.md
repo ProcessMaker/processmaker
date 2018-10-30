@@ -56,5 +56,13 @@
 * [Install Supported Software](install-processmaker/installing-stacks.md)
 * [Install ProcessMaker](install-processmaker/install-processmaker-on-premise.md)
 
-## Code Central
+## Script Central
+
+## Connector Development
+
+* [First Topic](connector-development/first-topic.md)
+
+## Package Development and Deployment
+
+* [First Topic](plugin-development/first-topic.md)
 
