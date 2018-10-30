@@ -8,17 +8,6 @@
                     {{props.rowData.id}}
                 </b-link>
             </template>
-
-            <template slot="actions" slot-scope="props">
-                <div class="actions">
-                    <div class="popout">
-                        <b-btn variant="action" @click="openRequest(props.rowData, props.rowIndex)" v-b-tooltip.hover
-                               title="Open">
-                            <i class="fas fa-folder-open"></i>
-                        </b-btn>
-                    </div>
-                </div>
-            </template>
         </vuetable>
         <pagination single="Request" plural="Requests" :perPageSelectEnabled="true" @changePerPage="changePerPage"
                     @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
@@ -62,10 +51,6 @@
                         sortField: "status"
                     },
                     {
-                        title: "Stage",
-                        name: "stage",
-                    },
-                    {
                         title: "Participants",
                         name: "assigned",
                         callback: this.assignedTo
@@ -80,21 +65,10 @@
                         name: "completed_at",
                         sortField: "completed_at"
                     },
-                    {
-                        title: "Duration",
-                        name: "duration_at"
-                    },
-                    {
-                        name: "__slot:actions",
-                        title: ""
-                    }
                 ]
             };
         },
         methods: {
-            openRequest(data, index) {
-                window.open('/requests/' + data.id + '/status', '_self');
-            },
             assignedTo(delegations) {
                 let assignedTo = '';
                 if (!delegations) return assignedTo;
@@ -143,7 +117,7 @@
             },
             formatDate(value) {
                 let date = moment(value);
-                return date.format('YYYY-MM-DD hh:mm');
+                return date.format('M/D/YY HH:MM');
             },
             transform(data) {
                 // Clean up fields for meta pagination so vue table pagination can understand
