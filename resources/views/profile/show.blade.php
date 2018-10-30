@@ -31,7 +31,7 @@
       </div>
       <div class="col-4">
         <div class="card card-body">
-          <div align="center" data-toggle="modal" data-target="#exampleModal">
+          <div align="center">
             <img src="https://via.placeholder.com/150x150" style="border-radius: 50%">
              <h1>{{$user->firstname}} {{$user->lastname}}</h1>
              <h4>{{$user->title}}</h4>
