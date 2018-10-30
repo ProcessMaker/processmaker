@@ -1,28 +1,20 @@
-import Vue from 'vue'
-import FormListing from './components/FormListing'
-import ModalCreateForm from "./components/modal/modal-form-add";
+import Vue from "vue";
+import FormListing from "./components/FormListing";
 
 new Vue({
-    el: '#formIndex',
+    el: "#formIndex",
     data: {
-        filter: '',
-        formModal: false,
-        formId: null
+        filter: ""
     },
     components: {
-        FormListing,
-        ModalCreateForm
+        FormListing
     },
     methods: {
-        show() {
-            this.formId = null;
-            this.formModal = true;
-        },
-        reload() {
+        reload () {
             this.$refs.formListing.dataManager([
                 {
-                    field: 'updated_at',
-                    direction: 'desc'
+                    field: "updated_at",
+                    direction: "desc"
                 }
             ]);
         }

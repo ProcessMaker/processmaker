@@ -1,10 +1,9 @@
-import Vue from 'vue'
-import Preferences from './components/Preferences'
-
+import Vue from "vue";
+import Preferences from "./components/Preferences";
 
 new Vue({
-  el: '#preferences',
-  components: {
-    Preferences,
-  }
+    el: "#preferences",
+    components: {
+        Preferences
+    }
 });
