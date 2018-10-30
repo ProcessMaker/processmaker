@@ -78,7 +78,7 @@
                                 <i class="far fa-calendar-alt"></i>
                                 <small>@{{ labelDate }}</small>
                                 <br>
-                                @{{ statusDate }}
+                                @{{moment(statusDate).format('MM/DD/YYYY HH:MM')}}
                             </li>
                         </ul>
                     </div>

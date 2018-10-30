@@ -53,14 +53,10 @@
                     {
                         title: "DUE DATE",
                         name: "due_at",
-                        callback: this.formatDueDate,
                         sortField: "due_at"
                     }
                 ]
             };
-        },
-        mounted: function mounted() {
-
         },
         methods: {
             onAction(action, rowData, index) {
@@ -70,16 +66,16 @@
                         break
                 }
             },
-            formatDueDate(value) {
-                let duedate = moment(value);
-                let now = moment();
-                let diff = duedate.diff(now, "hours");
-                let color =
-                    diff < 0 ? "text-danger" : diff <= 1 ? "text-warning" : "text-primary";
-                return '<span class="' + color + '">' + value + "</span>";
+            formatDueDate(value, status) {
+                let color = 'text-primary';
+                if (status === 'overdue') {
+                    color = 'badge badge-danger'
+                }
+
+                return '<span class="' + color + '">' + this.formatDate(value) + '</span>';
             },
             formatDate(value) {
-                return moment(value).fromNow();
+                return moment(value).format('MM/DD/YYYY HH:MM');
             },
             transform(data) {
                 // Clean up fields for meta pagination so vue table pagination can understand
@@ -93,6 +89,13 @@
                         name: record['previousUser']['fullname'],
                         initials: record['previousUser']['firstname'][0] + record['previousUser']['lastname'][0]
                     }]
+
+                    let color = 'text-primary';
+                    if (record['status'] === 'overdue') {
+                        color = 'badge badge-danger'
+                    }
+
+                    record['due_at'] = this.formatDueDate(record['due_at'], record['status']);
                 }
                 return data;
             },
