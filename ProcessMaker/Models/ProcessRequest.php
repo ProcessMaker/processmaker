@@ -10,12 +10,8 @@ use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
  * Represents an Eloquent model of a Request which is an instance of a Process.
  *
  * @property string $id
- * @property string $id
- * @property string $process_id
  * @property string $process_id
  * @property string $user_id
- * @property string $user_id
- * @property string $process_collaboration_id
  * @property string $process_collaboration_id
  * @property string $participant_id
  * @property string $name
@@ -93,8 +89,8 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
      * @var array
      */
     protected $casts = [
-        'completed_at' => 'datetime',
-        'initiated_at' => 'datetime',
+        'completed_at' => 'datetime:c',
+        'initiated_at' => 'datetime:c',
         'data' => 'array'
     ];
 

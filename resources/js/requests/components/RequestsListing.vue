@@ -57,8 +57,8 @@
                     },
                     {
                         title: "Started",
-                        name: "created_at",
-                        sortField: "created_at",
+                        name: "initiated_at",
+                        sortField: "initiated_at",
                     },
                     {
                         title: "Completed",
@@ -117,7 +117,7 @@
             },
             formatDate(value) {
                 let date = moment(value);
-                return date.format('M/D/YY HH:MM');
+                return date.format('M/D/YY HH:mm');
             },
             transform(data) {
                 // Clean up fields for meta pagination so vue table pagination can understand
@@ -126,13 +126,11 @@
                 data.meta.to = data.meta.from + data.meta.count;
                 for (let record of data.data) {
                     //Format dates
-                    record['created_at'] = this.formatDate(record['created_at']);
+                    record['initiated_at'] = this.formatDate(record['initiated_at']);
                     if (record['completed_at']) {
-                        record['duration_at'] = moment(record['created_at']).from(record['completed_at']);
                         record['completed_at'] = this.formatDate(record['completed_at']);
                     } else {
                         record['completed_at'] = '';
-                        record['duration_at'] = moment(record['created_at']).fromNow();
                     }
                     //format Status
                     record['status'] = this.formatStatus(record['status']);
@@ -159,7 +157,6 @@
                         this.page +
                         "&per_page=" +
                         this.perPage +
-                        // "&include=process,delegations,delegations.user" +
                         "&include=process,assigned" +
                         "&filter=" +
                         this.filter +
