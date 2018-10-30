@@ -1,3 +1,4 @@
+import Vue from "vue";
 import ScriptEditor from './components/ScriptEditor'
 
 new Vue({

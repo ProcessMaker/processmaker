@@ -106,7 +106,7 @@
             },
             save() {
                 ProcessMaker.apiClient
-                    .put("scripts/" + this.script.uuid, {
+                    .put("scripts/" + this.script.id, {
                         code: this.code,
                         title: this.script.title,
                         language: this.script.language
