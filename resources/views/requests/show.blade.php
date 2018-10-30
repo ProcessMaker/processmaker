@@ -111,11 +111,10 @@
                  */
                 participants() {
                     const participants = [];
-                    this.request.participant_tokens.forEach(token => {
-                        let user = token.user;
-                        //change populate data
+                    this.request.participants.forEach(user => {
                         user.src = user.avatar;
                         user.title = user.fullname;
+                        user.name = user.fullname;
                         user.initials = user.firstname.match(/./u)[0] + user.lastname.match(/./u)[0];
                         participants.push(user);
                     });
@@ -139,7 +138,7 @@
                 classStatusCard() {
                     let header = {
                         "ACTIVE": "bg-success",
-                        "CLOSED": "bg-secondary",
+                        "COMPLETED": "bg-secondary",
                         "ERROR": "bg-danger"
                     };
                     return 'card-header text-capitalize text-white ' + header[this.request.status.toUpperCase()];
@@ -147,7 +146,7 @@
                 statusLabel() {
                     let label = {
                         "ACTIVE": 'In Progress',
-                        "CLOSED": 'Completed',
+                        "COMPLETED": 'Completed',
                         "ERROR": 'Error'
                     };
                     return label[this.request.status.toUpperCase()];
@@ -155,7 +154,7 @@
                 labelDate() {
                     let label = {
                         "ACTIVE": 'Create On',
-                        "CLOSED": 'Completed On',
+                        "COMPLETED": 'Completed On',
                         "ERROR": 'Failed On'
                     };
                     return label[this.request.status.toUpperCase()];
@@ -163,7 +162,7 @@
                 statusDate() {
                     let status = {
                         "ACTIVE": this.request.created_at,
-                        "CLOSED": this.request.completed_at,
+                        "COMPLETED": this.request.completed_at,
                         "ERROR": this.request.updated_at
                     };
                     return status[this.request.status.toUpperCase()];
@@ -171,7 +170,10 @@
                 requestBy() {
                     return [{
                         src: this.request.user.avatar,
-                        name: this.request.user.fullname
+                        name: this.request.user.fullname,
+                        title: this.request.user.fullname,
+                        initials: this.request.user.firstname.match(/./u)[0]
+                                + this.request.user.lastname.match(/./u)[0]
                     }]
                 },
             },
@@ -189,8 +191,8 @@
                         }
                     })
                         .then((response) => {
-                            for (let attribute in response) {
-                                this.updateModel(this.request, attribute, response[attribute]);
+                            for (let attribute in response.data) {
+                                this.updateModel(this.request, attribute, response.data[attribute]);
                             }
                             this.refreshTasks++;
                         });

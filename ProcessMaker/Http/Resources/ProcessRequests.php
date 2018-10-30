@@ -14,9 +14,6 @@ class ProcessRequests extends ApiResource
         if (in_array('summary', $include)) {
             $array['summary'] = $this->summary();
         }
-        if (in_array('participants', $include)) {
-            $array['participants'] = $this->participants();
-        }
         return $array;
     }
 }

@@ -236,17 +236,12 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
     /**
      * Returns the list of users that have participated in the request
      *
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
     public function participants()
     {
-        $query = DB::table('process_request_tokens');
-        $query->join('users', 'users.id', '=', 'process_request_tokens.user_id'  );
-        $query->where('process_request_id', $this->id)
-                ->whereNotIn('element_type', ['scriptTask']);
-        $query->select('users.*');
-        $query->distinct();
-        return $query->get();
+        return $this->hasManyThrough(User::class, ProcessRequestToken::class, 'process_request_id', 'id', $this->getKeyName(), 'user_id')
+            ->distinct();
     }
 
     /**

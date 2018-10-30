@@ -32,7 +32,7 @@ class RequestController extends Controller
      */
     public function show(ProcessRequest $request)
     {
-        $request->participantTokens;
+        $request->participants;
         $request->user;
         $request->summary = $request->summary();
         return view('requests.show', compact('request'));
