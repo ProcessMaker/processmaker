@@ -238,4 +238,20 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
             ->whereNotIn('element_type' , ['scriptTask'])
             ->distinct('user.id');
     }
+
+    /**
+     * Returns the summary data in an array key/value
+     */
+    public function summary()
+    {
+        $result = [];
+        foreach($this->data as $key => $value) {
+            $result[] = [
+                'key' => $key,
+                'value' => $value
+            ];
+        }
+
+        return $result;
+    }
 }
