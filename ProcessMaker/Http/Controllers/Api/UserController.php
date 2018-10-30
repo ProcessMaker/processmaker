@@ -181,7 +181,9 @@ class UserController extends Controller
         $request->validate(User::rules($user));
         $user->fill($request->json()->all());
         $user->saveOrFail();
-        $this->uploadAvatar($user, $request);
+        if ($request->has('avatar')) {
+            $this->uploadAvatar($user, $request);
+        }
         return response([], 204);
     }
 
@@ -233,6 +235,7 @@ class UserController extends Controller
     {
         //verify data
         $data = $request->all();
+
         if (preg_match('/^data:image\/(\w+);base64,/', $data['avatar'] , $type)) {
             $data = substr($data['avatar'], strpos($data['avatar'], ',') + 1);
             $type = strtolower($type[1]); // jpg, png, gif
