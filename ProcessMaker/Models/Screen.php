@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 
 /**
- * Class Form
+ * Class Screen
  *
  * @package ProcessMaker\Models
  *
@@ -19,7 +19,7 @@ use Illuminate\Validation\Rule;
  * @property Carbon type
  *
  *   @OA\Schema(
- *   schema="formsEditable",
+ *   schema="screensEditable",
  *   @OA\Property(property="id", type="string", format="id"),
  *   @OA\Property(property="name", type="string"),
  *   @OA\Property(property="title", type="string"),
@@ -28,26 +28,27 @@ use Illuminate\Validation\Rule;
  *   @OA\Property(property="config", type="string"),
  * ),
  * @OA\Schema(
- *   schema="forms",
- *   allOf={@OA\Schema(ref="#/components/schemas/formsEditable")},
+ *   schema="screens",
+ *   allOf={@OA\Schema(ref="#/components/schemas/screensEditable")},
  *   @OA\Property(property="created_at", type="string", format="date-time"),
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
  * )
  *
  */
-class Form extends Model
+class Screen extends Model
 {
 
     protected $casts = [
         'config' => 'array'
     ];
 
-    protected $fillable = [
-        'title',
-        'description',
-        'config',
-        'label',
-        'type',
+    /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = [
+        'id',
         'created_at',
         'updated_at',
     ];
@@ -62,13 +63,13 @@ class Form extends Model
     public static function rules($existing = null)
     {
         $rules = [
-            'title' => 'required|unique:forms,title',
+            'title' => 'required|unique:screens,title',
         ];
         if ($existing) {
             // ignore the unique rule for this id
             $rules['title'] = [
                 'required',
-                Rule::unique('forms')->ignore($existing->id, 'id')
+                Rule::unique('screens')->ignore($existing->id, 'id')
             ];
         }
         return $rules;

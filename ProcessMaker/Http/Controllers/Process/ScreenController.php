@@ -5,29 +5,29 @@ namespace ProcessMaker\Http\Controllers\Process;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\View\View;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Models\Form;
+use ProcessMaker\Models\Screen;
 
-class FormController extends Controller
+class ScreenController extends Controller
 {
     /**
-     * Get the list of forms
+     * Get the list of screens
      *
      * @return Factory|View
      */
     public function index()
     {
-        return view('processes.forms.index');
+        return view('processes.screens.index');
     }
 
     /**
      * Get page edit
      *
-     * @param Form $form
+     * @param Screen $screen
      *
      * @return Factory|View
      */
-    public function edit(Form $form)
+    public function edit(Screen $screen)
     {
-        return view('processes.forms.edit',compact('form'));
+        return view('processes.screens.edit', compact('screen'));
     }
 }

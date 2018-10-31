@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use ProcessMaker\Nayra\Bpmn\TokenTrait;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
+use ProcessMaker\Repositories\DefinitionsRepository;
 
 /**
  * ProcessRequestToken is used to store the state of a token of the
@@ -141,12 +142,12 @@ class ProcessRequestToken extends Model implements TokenInterface
     /**
      * Get the form assigned to the task.
      *
-     * @return Form
+     * @return Screen
      */
-    public function getForm()
+    public function getScreen()
     {
         $definition = $this->getDefinition();
-        return empty($definition['formRef']) ? null : Form::find($definition['formRef']);
+        return empty($definition['screenRef']) ? null : Form::find($definition['screenRef']);
     }
 
     /**

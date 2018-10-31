@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-    {{__('Forms Builder')}}
+    {{__('Screens Builder')}}
 @endsection
 
 @section('sidebar')
@@ -9,11 +9,11 @@
 @endsection
 
 @section('content')
-    <div id="form-container">
-        <form-builder :form="{{$form}}"></form-builder>
+    <div id="screen-container">
+        <screen-builder :screen="{{$screen}}"></screen-builder>
     </div>
 @endsection
 
 @section('js')
-    <script src="{{mix('js/processes/form-builder/main.js')}}"></script>
+    <script src="{{mix('js/processes/screen-builder/main.js')}}"></script>
 @endsection

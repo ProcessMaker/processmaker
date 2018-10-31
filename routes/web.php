@@ -14,9 +14,9 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
     Route::namespace('Process')->prefix('processes')->group(function () {
         Route::resource('environment-variables', 'EnvironmentVariablesController');
         Route::resource('documents', 'DocumentController');
-        Route::resource('forms', 'FormController');
-        Route::resource('form-builder', 'FormBuilderController')->parameters([
-            'form-builder' => 'form'
+        Route::resource('screens', 'ScreenController');
+        Route::resource('screen-builder', 'ScreenBuilderController')->parameters([
+            'screen-builder' => 'screen'
         ])->only(['edit']);
         Route::resource('scripts', 'ScriptController');
         Route::resource('categories', 'ProcessCategoryController')->parameters([
@@ -25,13 +25,10 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
     });
 
     Route::resource('processes', 'ProcessController');
+    Route::get('profile/edit', 'ProfileController@edit')->name('profile.edit');
+    Route::get('profile/{id}', 'ProfileController@show');
     // Ensure our modeler loads at a distinct url
     Route::get('modeler/{process}', 'Process\ModelerController')->name('modeler');
-
-    Route::get('/', 'HomeController@index')->name('home');
-
-    Route::resource('profile', 'ProfileController')->only(['index','edit', 'show']);
-
     Route::resource('requests', 'RequestController')->only([
         'index', 'edit', 'show'
     ]);

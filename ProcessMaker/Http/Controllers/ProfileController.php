@@ -3,31 +3,37 @@
 namespace ProcessMaker\Http\Controllers;
 
 use Illuminate\Http\Request;
-use ProcessMaker\Models\User as User;
+use ProcessMaker\Models\User;
+use ProcessMaker\Models\JsonData;
 
 class ProfileController extends Controller
 {
-    /**
-   * Get your profile.
-   *
-   * @return \Illuminate\View\View|\Illuminate\Contracts\View
-   */
-  public function index(User $user)
-  {
-      return view('profile.index');
-  }
 
     /**
-   * show other users profile
-   *
-   * @return \Illuminate\View\View|\Illuminate\Contracts\View
-   */
-   public function show($id)
-   {
+     * edit your profile.
+     *
+     * @return \Illuminate\View\View|\Illuminate\Contracts\View
+     */
+    public function edit()
+    {
+        $current_user = \Auth::user();
+        $states = JsonData::states();
+        $timezones = JsonData::timezones();
+        $countries = JsonData::countries();
+        return view('profile.edit',
+            compact('current_user', 'states', 'timezones', 'countries'));
+    }
 
-     $user = User::findOrFail($id);
+    /**
+     * show other users profile
+     *
+     * @return \Illuminate\View\View|\Illuminate\Contracts\View
+     */
+    public function show($id)
+    {
 
-     return view('profile.show',compact('user'));
-   }
+        $user = User::findOrFail($id);
 
+        return view('profile.show', compact('user'));
+    }
 }
