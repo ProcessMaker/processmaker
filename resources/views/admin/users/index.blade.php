@@ -81,7 +81,7 @@
                 </div>
                 <div class="form-group">
                     {!!Form::label('groups', __('Groups'))!!}
-                    <multiselect v-model="selectedGroups" :options="availableGroups" :multiple="true" track-by="title"
+                    <multiselect v-model="selectedGroups" :options="availableGroups" :multiple="true" track-by="name"
                         :custom-label="customLabel" :show-labels="false" label="name">
 
                         <template slot="tag" slot-scope="props">
