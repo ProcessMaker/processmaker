@@ -6,7 +6,6 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use ProcessMaker\Nayra\Bpmn\TokenTrait;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
-use ProcessMaker\Repositories\DefinitionsRepository;
 
 /**
  * ProcessRequestToken is used to store the state of a token of the
@@ -146,7 +145,7 @@ class ProcessRequestToken extends Model implements TokenInterface
     public function getScreen()
     {
         $definition = $this->getDefinition();
-        return empty($definition['screenRef']) ? null : Form::find($definition['screenRef']);
+        return empty($definition['screenRef']) ? null : Screen::find($definition['screenRef']);
     }
 
     /**
@@ -173,5 +172,17 @@ class ProcessRequestToken extends Model implements TokenInterface
         }
 
         return $result;
+    }
+
+    /**
+     * Prepare a date for array / JSON serialization.
+     *
+     * @param  \DateTimeInterface  $date
+     *
+     * @return string
+     */
+    protected function serializeDate(\DateTimeInterface $date)
+    {
+        return $date->format(Carbon::ISO8601);
     }
 }

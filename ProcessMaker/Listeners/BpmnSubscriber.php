@@ -30,7 +30,7 @@ class BpmnSubscriber
     public function ActivityActivated(ActivityActivatedEvent $event)
     {
         $token = $event->token;
-        // Log::info('Nofity activity activated: ' . json_encode($token->getProperties()));
+        Log::info('Nofity activity activated: ' . json_encode($token->getProperties()));
 
         //Send the notification to the assigned user
         $user = $event->token->user;
