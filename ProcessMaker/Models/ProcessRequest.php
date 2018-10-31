@@ -1,6 +1,7 @@
 <?php
 namespace ProcessMaker\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
@@ -127,7 +128,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
         $rules = [
             'name' => 'required|unique:process_requests,name',
             'data' => 'required',
-            'status' => 'in:DRAFT,ACTIVE,COMPLETED',
+            'status' => 'in:ACTIVE,COMPLETED,ERROR',
             'process_id' => 'required|exists:processes,id',
             'process_collaboration_id' => 'nullable|exists:process_collaborations,id',
             'user_id' => 'exists:users,id',
@@ -238,5 +239,46 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
     public function scopeCompleted($query)
     {
         $query->where('status' , '=', 'COMPLETED');
+    }
+
+    /**
+     * Returns the list of users that have participated in the request
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function participants()
+    {
+        return $this->hasManyThrough(User::class, ProcessRequestToken::class, 'process_request_id', 'id', $this->getKeyName(), 'user_id')
+            ->distinct();
+    }
+
+    /**
+     * Returns the summary data in an array key/value
+     */
+    public function summary()
+    {
+        $result = [];
+        if (is_array($this->data)) {
+            foreach($this->data as $key => $value) {
+                $result[] = [
+                    'key' => $key,
+                    'value' => $value
+                ];
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Prepare a date for array / JSON serialization.
+     *
+     * @param  \DateTimeInterface  $date
+     *
+     * @return string
+     */
+    protected function serializeDate(\DateTimeInterface $date)
+    {
+        return $date->format(Carbon::ISO8601);
     }
 }

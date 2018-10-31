@@ -37,7 +37,7 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
         ->where('type', 'all|in_progress|completed')
         ->name('requests_by_type');
     Route::resource('requests', 'RequestController')->only(
-        'index', 'edit', 'show'
+        'index', 'show'
     );
 
     Route::resource('tasks', 'TaskController');
