@@ -10,8 +10,15 @@
                 </b-link>
             </template>
 
-            <template slot="participants" slot-scope="props">
-                <avatar-image class-container="d-flex justify-content-start" size="25" class-image="m-1" :input-data="props.rowData.participants"></avatar-image>
+            <template slot="requestName" slot-scope="props">
+                <b-link @click="onAction('showRequestSummary', props.rowData, props.rowIndex)">
+                    {{props.rowData.process.name}}
+                </b-link>
+            </template>
+
+            <template slot="assignee" slot-scope="props">
+                <avatar-image class="d-inline-flex pull-left align-items-center" size="25" class-image="m-1"
+                              :input-data="props.rowData.user" display-name="true"></avatar-image>
             </template>
 
             <template slot="actions" slot-scope="props">
@@ -35,7 +42,10 @@
 
 <script>
     import datatableMixin from "../../components/common/mixins/datatable";
+    import AvatarImage from "../../components/AvatarImage"
     import moment from "moment";
+
+    Vue.component('avatar-image', AvatarImage);
 
     export default {
         mixins: [datatableMixin],
@@ -49,9 +59,14 @@
                         field: "due_at",
                         sortField: "due_at",
                         direction: "asc"
-                    }
+                    },
                 ],
                 fields: [
+                    {
+                        title: "ID",
+                        name: "id",
+                        sortField: "id"
+                    },
                     {
                         title: "TASK",
                         name: "__slot:name",
@@ -59,31 +74,22 @@
                         sortField: "element_name"
                     },
                     {
-                        title: "PROCESS",
-                        name: "process.name",
-                        sortField: "process.name"
+                        title: "REQUEST",
+                        name: "__slot:requestName",
+                        field: "request",
+                        sortField: "request.name"
                     },
                     {
-                        title: "SENT BY",
-                        name: "__slot:participants",
-                        field: "participants",
-                        sortField: "previousUser.lastname"
+                        title: "ASSIGNEE",
+                        name: "__slot:assignee",
+                        field: "user",
+                        sortField: "user.lastname"
                     },
                     {
                         title: "DUE DATE",
                         name: "due_at",
                         callback: this.formatDueDate,
                         sortField: "due_at"
-                    },
-                    {
-                        title: "MODIFIED",
-                        name: "updated_at",
-                        callback: this.formatDate,
-                        sortField: "updated_at"
-                    },
-                    {
-                        name: "__slot:actions",
-                        title: ""
                     }
                 ]
             };
@@ -98,36 +104,39 @@
         methods: {
             onAction(action, rowData, index) {
                 if (action === "edit") {
-                    let link = "/tasks/" + rowData.uuid + "/edit";
+                    let link = "/tasks/" + rowData.id + "/edit";
+                    window.location = link;
+                }
+
+                if (action === "showRequestSummary") {
+                    let link = "/requests/" + rowData.process_request.id;
                     window.location = link;
                 }
             },
             formatDueDate(value) {
-                let duedate = moment(value);
+                let dueDate = moment(value);
                 let now = moment();
-                let diff = duedate.diff(now, "hours");
+                let diff = dueDate.diff(now, "hours");
                 let color =
                     diff < 0 ? "text-danger" : diff <= 1 ? "text-warning" : "text-primary";
-                return '<span class="' + color + '">' + value + "</span>";
+                return '<span class="' + color + '">' +   dueDate.format('MM/DD/YYYY HH:MM') +
+                    "</span>";
             },
-            formatDate(value) {
-                return moment(value).fromNow();
+            getTaskStatus() {
+                let path = new URL(location.href);
+                let status = path.searchParams.get('status');
+                return ((status === null) ? 'ACTIVE' : status);
             },
-            transform(data) {
-                // Clean up fields for meta pagination so vue table pagination can understand
-                data.meta.last_page = data.meta.total_pages;
-                data.meta.from = (data.meta.current_page - 1) * data.meta.per_page;
-                data.meta.to = data.meta.from + data.meta.count;
-                //load data for participants
-                for (let record of data.data) {
-                    record['participants'] = [{
-                        src: record['previousUser']['avatar'],
-                        title: record['previousUser']['fullname'],
-                        initials: record['previousUser']['firstname'][0] + record['previousUser']['lastname'][0]
-                    }]
+
+            getSortParam: function() {
+                if (this.sortOrder instanceof Array && this.sortOrder.length > 0) {
+                    return "&order_by=" + this.sortOrder[0].sortField +
+                        "&order_direction=" + this.sortOrder[0].direction;
+                } else {
+                    return '';
                 }
-                return data;
             },
+
             fetch() {
                 this.loading = true;
                 if (this.cancelToken) {
@@ -136,25 +145,20 @@
                 }
                 const CancelToken = ProcessMaker.apiClient.CancelToken;
 
-                //@todo change the method to obtain ID of the process.
-                var path = location.pathname.split("/");
 
                 // Load from our api client
                 ProcessMaker.apiClient
                     .get(
                         "tasks?page=" +
                         this.page +
-                        "&include=process,processRequest,processRequest.user" +
-                        "&status=ACTIVE" +
+                        "&include=process,processRequest,processRequest.user,user" +
+                        "&status=" + this.getTaskStatus() +
                         "&per_page=" +
                         this.perPage +
                         "&filter=" +
                         this.filter +
-                        "&order_by=" +
-                        this.orderBy +
-                        "&order_direction=" +
-                        this.orderDirection,
-                        {
+                        this.getSortParam()
+                        ,{
                             cancelToken: new CancelToken(c => {
                                 this.cancelToken = c;
                             })

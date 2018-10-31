@@ -69,6 +69,17 @@ class GenerateMenus
 
         });
         Menu::make('sidebar_task', function ($menu) {
+          $submenu = $menu->add(__('Tasks'));
+          $submenu->add(__('To Do'), [
+                'route' => 'tasks.index',
+                'icon' => 'icon-assigned',
+                'id' => 'homeid'
+          ]);
+          $submenu->add(__('Completed'), [
+              'route' => ['tasks.index', 'status' => 'CLOSED'],
+              'icon' => 'icon-draft',
+              'id' => 'homeid'
+          ]);
         });
         Menu::make('sidebar_request', function ($menu) {
           $submenu = $menu->add(__('menus.sidebar_request.request'));
