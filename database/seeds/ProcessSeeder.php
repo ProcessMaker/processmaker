@@ -121,7 +121,7 @@ class ProcessSeeder extends Seeder
             $json = json_decode(file_get_contents(database_path('processes/screens/' . $screenRef . '.json')));
             return factory(Screen::class)->create([
                         'title' => $json[0]->name,
-                        'content' => $json,
+                        'config' => $json,
                         'process_id' => $process->id,
             ]);
         } elseif (file_exists(database_path('processes/screens/' . $id . '.json'))) {

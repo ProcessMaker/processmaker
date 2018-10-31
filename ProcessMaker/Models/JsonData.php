@@ -18,4 +18,12 @@ class JsonData extends Model
       }
       return $timezones;
      }
+
+     public static function states(){
+      return json_decode(file_get_contents(resource_path(). '/js/data/states_hash.json'), true);
+     }
+
+     public static function countries(){
+      return json_decode(file_get_contents(resource_path(). '/js/data/countries.json'), true);
+     }
 }

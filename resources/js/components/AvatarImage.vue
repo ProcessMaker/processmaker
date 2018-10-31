@@ -81,6 +81,5 @@
         mounted() {
             this.default();
         }
-
-    }
+    };
 </script>
