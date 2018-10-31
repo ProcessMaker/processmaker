@@ -37,20 +37,36 @@
                         </div>
                         <div class="tab-pane fade" id="summary" role="tabpanel" aria-labelledby="summary-tab">
                             <template v-if="showSummary">
-                            <table class="vuetable table table-hover">
-                                <thead>
-                                <tr>
-                                    <th scope="col">{{ __('Key') }}</th>
-                                    <th scope="col">{{ __('Value') }}</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr v-for="item in summary">
-                                    <td>@{{item.key}}</td>
-                                    <td>@{{item.value}}</td>
-                                </tr>
-                                </tbody>
-                            </table>
+                                <table class="vuetable table table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">{{ __('Key') }}</th>
+                                        <th scope="col">{{ __('Value') }}</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr v-for="item in summary">
+                                        <td>@{{item.key}}</td>
+                                        <td>@{{item.value}}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </template>
+                            <template v-else>
+                                <div class="card m-3">
+                                    <div class="card-header">
+                                        <h5>
+                                            {{ __('Request In Progress') }}
+                                        </h5>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <p class="card-text">
+                                            This request is currently in progress.
+                                            This screen will be populated once the request is completed.
+                                        </p>
+                                    </div>
+                                </div>
                             </template>
                         </div>
                         <div class="tab-pane fade" id="completed" role="tabpanel" aria-labelledby="completed-tab">
