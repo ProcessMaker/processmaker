@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-    {{__('Edit Forms')}}
+    {{__('Edit Screens')}}
 @endsection
 
 @section('sidebar')
@@ -10,7 +10,7 @@
 
 @section('content')
     <div class="container" id="editGroup">
-        <h1>{{__('Edit Form')}}</h1>
+        <h1>{{__('Edit Screen')}}</h1>
         <div class="row">
             <div class="col-8">
                 <div class="card card-body">
@@ -46,7 +46,7 @@
             el: '#editGroup',
             data() {
                 return {
-                    formData: @json($form),
+                    formData: @json($screen),
                     errors: {
                         'title': null,
                         'description': null,
@@ -63,13 +63,13 @@
                     });
                 },
                 onClose() {
-                    window.location.href = '/processes/forms';
+                    window.location.href = '/processes/screens';
                 },
                 onUpdate() {
                     this.resetErrors();
-                    ProcessMaker.apiClient.put('forms/' + this.formData.id, this.formData)
+                    ProcessMaker.apiClient.put('screens/' + this.formData.id, this.formData)
                         .then(response => {
-                            ProcessMaker.alert('Update Form Successfully', 'success');
+                            ProcessMaker.alert('Updated Screen Successfully', 'success');
                             this.onClose();
                         })
                         .catch(error => {

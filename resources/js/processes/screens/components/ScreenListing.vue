@@ -4,7 +4,7 @@
                   @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data"
                   pagination-path="meta">
             <template slot="title" slot-scope="props">
-                <b-link @click="onAction('edit-form', props.rowData, props.rowIndex)">
+                <b-link @click="onAction('edit-screen', props.rowData, props.rowIndex)">
                     {{props.rowData.title}}
                 </b-link>
             </template>
@@ -20,7 +20,7 @@
                 </div>
             </template>
         </vuetable>
-        <pagination single="Form" plural="Forms" :perPageSelectEnabled="true" @changePerPage="changePerPage"
+        <pagination single="Screen" plural="Screens" :perPageSelectEnabled="true" @changePerPage="changePerPage"
                     @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
     </div>
 </template>
@@ -83,24 +83,24 @@ export default {
   methods: {
     onAction(actionType, data, index) {
       switch (actionType) {
-        case "edit-form":
+        case "edit-screen":
           window.location.href =
-            "/processes/form-builder/" + data.id + "/edit";
+            "/processes/screen-builder/" + data.id + "/edit";
           break;
         case "edit-item":
-          window.location.href = "/processes/forms/" + data.id + "/edit";
+          window.location.href = "/processes/screens/" + data.id + "/edit";
           break;
         case "remove-item":
           let that = this;
           ProcessMaker.confirmModal(
             "Caution!",
-            "<b>Are you sure to delete the Form </b>" + data.title + "?",
+            "<b>Are you sure to delete the Screen </b>" + data.title + "?",
             "",
             function() {
               ProcessMaker.apiClient
-                .delete("forms/" + data.id)
+                .delete("screens/" + data.id)
                 .then(response => {
-                  ProcessMaker.alert("Form successfully eliminated", "success");
+                  ProcessMaker.alert("Screen successfully deleted", "success");
                   that.fetch();
                 });
             }
@@ -115,7 +115,7 @@ export default {
       // Load from our api client
       ProcessMaker.apiClient
         .get(
-          "forms" +
+          "screens" +
             "?page=" +
             this.page +
             "&per_page=" +

@@ -50,7 +50,7 @@ return[
     'processes' => 'Processes',
     'categories' => 'Process Categories',
     'scripts' => 'Scripts',
-    'forms' => 'Forms',
+    'screens' => 'Screens',
     'environment_variables'=> 'Environment Variables'
   ],
   'topnav' => [

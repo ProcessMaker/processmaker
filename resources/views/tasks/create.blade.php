@@ -11,7 +11,7 @@
 @section('content')
 <div id="task">
     <task-form
-        process-id="{{$process->id}}" instance-id="{{$instance->id}}" token-id="{{$token->id}}" form-id="{{$token->definition['formRef']}}"
+        process-id="{{$process->id}}" instance-id="{{$instance->id}}" token-id="{{$token->id}}" form-id="{{$token->definition['screenRef']}}"
         :data="{{json_encode($data)}}"></task-form>
 </div>
 @endsection
