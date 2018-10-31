@@ -78,7 +78,7 @@
                             </li>
                             <li class="list-group-item">
                                 <i class="far fa-calendar-alt"></i>
-                                <small>@{{ labelDate }}</small>
+                                <small>@{{ labelDate }} @{{ moment(statusDate).fromNow() }}</small>
                                 <br>
                                 @{{moment(statusDate).format('MM/DD/YYYY HH:MM')}}
                             </li>
@@ -153,7 +153,7 @@
                 },
                 labelDate() {
                     let label = {
-                        "ACTIVE": 'Create On',
+                        "ACTIVE": 'Created',
                         "COMPLETED": 'Completed On',
                         "ERROR": 'Failed On'
                     };
