@@ -66,9 +66,9 @@ export default {
         },
         {
           title: "Assignee",
-          name: "previousUser",
+          name: "user",
           callback: this.formatName,
-          sortField: "previousUser.lastname"
+          sortField: "user.lastname"
         },
         {
           title: "DUE DATE",
@@ -142,7 +142,7 @@ export default {
         .get(
           "tasks?page=" +
             this.page +
-            "&include=process,processRequest,processRequest.user" +
+            "&include=process,processRequest,processRequest.user,user" +
             "&status=ACTIVE" +
             "&per_page=" +
             this.perPage +
