@@ -9,8 +9,13 @@
                 </b-link>
             </template>
             <template slot="participants" slot-scope="props">
-                <avatar-image v-for="participant in props.rowData.assigned" :key="participant.id" class="d-inline-flex pull-left align-items-center" size="25" class-image="m-1"
-                              :input-data="participant.user"></avatar-image>
+                <avatar-image v-for="participant in props.rowData.participants"
+                              :key="participant.id"
+                              class="d-inline-flex pull-left align-items-center"
+                              size="25"
+                              class-image="m-1"
+                              hide-name="true"
+                              :input-data="participant"></avatar-image>
             </template>
         </vuetable>
         <pagination single="Request" plural="Requests" :perPageSelectEnabled="true" @changePerPage="changePerPage"
@@ -113,9 +118,6 @@ export default {
                 }
                 //format Status
                 record['status'] = this.formatStatus(record['status']);
-
-                // make assignees unique
-                record.assigned = _.uniqBy(record.assigned, 'user_id');
             }
             return data;
         },
@@ -139,7 +141,7 @@ export default {
                     this.page +
                     "&per_page=" +
                     this.perPage +
-                    "&include=process,assigned" +
+                    "&include=process,participants" +
                     "&filter=" +
                     this.filter +
                     "&order_by=" +
@@ -158,8 +160,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/deep/ .vuetable-th-slot-ids {
-  min-width: 100px;
-  white-space: nowrap;
-}
+    /deep/ .vuetable-th-slot-ids {
+        min-width: 100px;
+        white-space: nowrap;
+    }
 </style>

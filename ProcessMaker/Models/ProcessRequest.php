@@ -103,6 +103,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
     public static $allowedIncludes = [
         'assigned',
         'process',
+        'participants',
     ];
 
     /**

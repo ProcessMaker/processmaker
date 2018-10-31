@@ -85,12 +85,12 @@
                             <li class="list-group-item">
                                 <h5>{{__('Requested By')}}</h5>
                                 <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
-                                              :input-data="requestBy"></avatar-image>
+                                              :input-data="requestBy" display-name="true"></avatar-image>
                             </li>
                             <li class="list-group-item">
                                 <h5>{{__('Participants')}}</h5>
                                 <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
-                                              :input-data="participants"></avatar-image>
+                                              :input-data="participants"  hide-name="true"></avatar-image>
                             </li>
                             <li class="list-group-item">
                                 <i class="far fa-calendar-alt"></i>
@@ -126,15 +126,15 @@
                  *
                  */
                 participants() {
-                    const participants = [];
+                    /*const participants = [];
                     this.request.participants.forEach(user => {
                         user.src = user.avatar;
                         user.title = user.fullname;
                         user.name = '';
                         user.initials = user.firstname.match(/./u)[0] + user.lastname.match(/./u)[0];
                         participants.push(user);
-                    });
-                    return participants;
+                    });*/
+                    return this.request.participants;
                 },
                 /**
                  * Request Summary - that is blank place holder if there are in progress tasks,
@@ -184,13 +184,7 @@
                     return status[this.request.status.toUpperCase()];
                 },
                 requestBy() {
-                    return [{
-                        src: this.request.user.avatar,
-                        name: this.request.user.fullname,
-                        title: this.request.user.fullname,
-                        initials: this.request.user.firstname.match(/./u)[0]
-                                + this.request.user.lastname.match(/./u)[0]
-                    }]
+                    return [this.request.user]
                 },
             },
             methods: {
