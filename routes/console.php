@@ -23,6 +23,7 @@ Artisan::command('notifications:resend {username}', function ($username) {
         ->where('user_id', $user->getKey())
         ->get();
     foreach ($tokens as $token) {
+        dump($token->id);
         $notification = new ProcessMaker\Notifications\ActivityActivatedNotification($token);
         $user->notify($notification);
     }

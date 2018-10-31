@@ -26,22 +26,15 @@ class RequestController extends Controller
     }
 
     /**
-     * Edit a request
-     *
-     * @return \Illuminate\View\View|\Illuminate\Contracts\View
-     */
-    public function edit(Request $request)
-    {
-        return view('requests.edit', compact($request));
-    }
-
-    /**
      * request show
      *
      * @return \Illuminate\View\View|\Illuminate\Contracts\View
      */
-    public function show(Request $request)
+    public function show(ProcessRequest $request)
     {
-        return view('requests.show', compact($request));
+        $request->participants;
+        $request->user;
+        $request->summary = $request->summary();
+        return view('requests.show', compact('request'));
     }
 }

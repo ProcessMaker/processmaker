@@ -102,7 +102,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $instance->process_id = $definition->getKey();
         $instance->user_id = Auth::user()->getKey();
         $instance->name = $definition->name;
-        $instance->status = 'DRAFT';
+        $instance->status = 'ACTIVE';
         $instance->initiated_at = Carbon::now();
         $instance->data = $data;
         $instance->saveOrFail();

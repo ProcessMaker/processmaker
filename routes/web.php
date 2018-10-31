@@ -33,7 +33,7 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
     Route::get('/', 'HomeController@index')->name('home');
 
     Route::resource('requests', 'RequestController')->only([
-        'index', 'edit', 'show'
+        'index', 'show'
     ]);
     Route::resource('tasks', 'TaskController');
 
