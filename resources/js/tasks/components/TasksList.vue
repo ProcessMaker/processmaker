@@ -18,7 +18,7 @@
 
             <template slot="assignee" slot-scope="props">
                 <avatar-image class="d-inline-flex pull-left align-items-center" size="25" class-image="m-1"
-                              :input-data="props.rowData.avatarData"></avatar-image>
+                              :input-data="props.rowData.user" display-name="true"></avatar-image>
             </template>
 
             <template slot="actions" slot-scope="props">
@@ -135,26 +135,6 @@
                 } else {
                     return '';
                 }
-            },
-
-            transform(data) {
-                // Clean up fields for meta pagination so vue table pagination can understand
-                data.meta.last_page = data.meta.total_pages;
-                data.meta.from = (data.meta.current_page - 1) * data.meta.per_page;
-                data.meta.to = data.meta.from + data.meta.count;
-
-                //load data for participants
-                for (let record of data.data) {
-                    record['avatarData'] = [{
-                        id: record['user']['id'],
-                        src: record['user']['avatar'],
-                        title:record['user']['fullname'],
-                        name:record['user']['fullname'],
-                        initials: record['user']['firstname'][0] + record['user']['lastname'][0]
-                    }]
-
-                }
-                return data;
             },
 
             fetch() {

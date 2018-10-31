@@ -1,17 +1,21 @@
 <template>
     <span :class="classContainer">
         <template v-for="(value, key) in options">
-            <template v-if="value.src" class="align-center">
+                <template v-if="value.src" class="align-center">
+                <a :href="value.id">
                 <b-img center :src="value.src" :rounded="round" :width="sizeImage" :height="sizeImage"
-                       blank-color="bg-secondary" :class="image" :title="value.title"/>
-                <span v-if="value.name" class="text-center text-capitalize m-1">  {{value.name}}</span>
+                       blank-color="bg-secondary" :class="image" :title="value.tooltip"/>
+                </a>
             </template>
             <template v-else>
-                <button class="rounded-circle bg-warning border-0" :style="styleButton" :title="value.title">
+                <a :href="value.id">
+                <button class="rounded-circle bg-warning border-0" :style="styleButton" :title="value.tooltip"
+                        :href="value.id">
                     <span class="text-white text-center text-uppercase"> {{value.initials}}</span>
                 </button>
+                </a>
             </template>
-
+            <span v-if="displayName" class="text-center text-capitalize m-1"> {{value.name}}</span>
         </template>
 
     </span>
@@ -19,7 +23,7 @@
 
 <script>
     export default {
-        props: ['size', 'rounded', 'classContainer', 'classImage', 'inputData'],
+        props: ['size', 'rounded', 'classContainer', 'classImage', 'inputData', 'displayName'],
         data() {
             return {
                 round: 'circle',
@@ -62,17 +66,24 @@
             formatSizeButton(size) {
                 this.styleButton = 'width: ' + size + 'px; height: ' + size + 'px; font-size:' + size / 2.5 + 'px';
             },
+            formatValue(value)  {
+                return {
+                    id: value.id ? 'profile/' + value.id : '#',
+                    src: value.src ? value.src : value.avatar ? value.avatar : '',
+                    tooltip: value.tooltip ? value.tooltip : value.fullname ? this.displayName ? value.title : value.fullname : '',
+                    name: value.name ? value.name : value.fullname ? value.fullname : '',
+                    initials: value.initials ? value.initials : (value.firstname && value.lastname ) ? (value.firstname.match(/./u)[0] + value.lastname.match(/./u)[0]) : ''
+                }
+            },
             formatInputData(data) {
                 let options = [];
                 if (data && Array.isArray(data)) {
                     data.forEach(function (value) {
-                        options.push({
-                            src: value.src ? value.src : '',
-                            title: value.title ? value.title : '',
-                            name: value.name ? value.name : '',
-                            initials: value.initials ? value.initials : ''
-                        })
+                        console.log(value);
+                        options.push(this.formatValue(value));
                     });
+                } else {
+                    options.push(this.formatValue(data));
                 }
                 this.options = options;
             }
