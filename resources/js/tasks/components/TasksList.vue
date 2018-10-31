@@ -109,7 +109,7 @@
                 }
 
                 if (action === "showRequestSummary") {
-                    let link = "/requests/" + rowData.id;
+                    let link = "/requests/" + rowData.process_request.id;
                     window.location = link;
                 }
             },
