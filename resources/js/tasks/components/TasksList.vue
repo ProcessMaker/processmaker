@@ -51,7 +51,7 @@
                         field: "due_at",
                         sortField: "due_at",
                         direction: "asc"
-                    }
+                    },
                 ],
                 fields: [
                     {
@@ -68,13 +68,14 @@
                     {
                         title: "REQUEST",
                         name: "__slot:requestName",
-                        field: "process.name",
-                        sortField: "process.name"
+                        field: "request",
+                        sortField: "request.name"
                     },
                     {
                         title: "ASSIGNEE",
                         name: "user",
                         callback: this.formatName,
+                        field: "user",
                         sortField: "user.lastname"
                     },
                     {
@@ -141,6 +142,15 @@
                 let status = path.searchParams.get('status');
                 return ((status === null) ? 'ACTIVE' : status);
             },
+
+            getSortParam: function() {
+                if (this.sortOrder instanceof Array && this.sortOrder.length > 0) {
+                    return "&order_by=" + this.sortOrder[0].sortField +
+                        "&order_direction=" + this.sortOrder[0].direction;
+                } else {
+                    return '';
+                }
+            },
             fetch() {
                 this.loading = true;
                 if (this.cancelToken) {
@@ -161,11 +171,8 @@
                         this.perPage +
                         "&filter=" +
                         this.filter +
-                        "&order_by=" +
-                        this.orderBy +
-                        "&order_direction=" +
-                        this.orderDirection,
-                        {
+                        this.getSortParam()
+                        ,{
                             cancelToken: new CancelToken(c => {
                                 this.cancelToken = c;
                             })
