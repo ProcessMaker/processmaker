@@ -14,7 +14,7 @@
     <div class="row">
         <div class="col-sm-12">
             <template v-if="title">
-                <b-card-group deck class="mb-3">
+                <b-card-group deck>
 
                     <b-card header="<i class='far fa-clipboard fa-2x'></i>" header-class="d-flex align-items-center justify-content-center card-size-header border-0"
                         text-variant="white" class="bg-info mb-3 d-flex flex-row card-border border-0">
