@@ -38,7 +38,7 @@
                     <div :class="statusCard">
                         <h4 style="margin:0; padding:0; line-height:1">{{__($task->advanceStatus)}}</h4>
                     </div>
-                    <ul class="list-group list-group-flush">
+                    <ul class="list-group list-group-flush w-100">
                         <li class="list-group-item">
                             <i class='far fa-calendar-alt'></i>
                             <small> {{__($dueLabels[$task->advanceStatus], ['day' => $task->due_at->diffForHumans()])}}</small>

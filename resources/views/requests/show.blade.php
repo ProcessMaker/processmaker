@@ -65,7 +65,7 @@
                         <div :class="classStatusCard">
                             <h4 style="margin:0; padding:0; line-height:1">@{{ statusLabel }}</h4>
                         </div>
-                        <ul class="list-group list-group-flush">
+                        <ul class="list-group list-group-flush w-100">
                             <li class="list-group-item">
                                 <h5>{{__('Requested By')}}</h5>
                                 <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
@@ -187,7 +187,7 @@
                     this.$refs.completed.fetch();
                     ProcessMaker.apiClient.get(`requests/${this.requestId}`, {
                         params: {
-                            include: 'participantTokens,user,summary'
+                            include: 'participants,user,summary'
                         }
                     })
                         .then((response) => {
