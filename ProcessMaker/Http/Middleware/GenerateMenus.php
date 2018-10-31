@@ -72,25 +72,21 @@ class GenerateMenus
         });
         Menu::make('sidebar_request', function ($menu) {
           $submenu = $menu->add(__('menus.sidebar_request.request'));
-          $submenu->add(__('menus.sidebar_request.in_progress'), [
-                'route' => 'requests.index',
-                'icon' => 'icon-assigned',
-                'id' => 'homeid'
+          $submenu->add(__('menus.sidebar_request.started_me'), [
+              'route' => ['requests_by_type', ''],
+              'icon' => 'fa-id-badge',
           ]);
-          $submenu->add(__('menus.sidebar_request.draft'), [
-              'route' => 'requests.index',
-              'icon' => 'icon-draft',
-              'id' => 'homeid'
+          $submenu->add(__('menus.sidebar_request.in_progress'), [
+                'route' => ['requests_by_type', 'in_progress'],
+                'icon' => 'fa-clipboard-list',
           ]);
           $submenu->add(__('menus.sidebar_request.completed'), [
-              'route' => 'requests.index',
-              'icon' => 'icon-completed-1',
-              'id' => 'homeid'
+              'route' => ['requests_by_type', 'completed'],
+              'icon' => 'fa-clipboard-check',
           ]);
-          $submenu->add(__('menus.sidebar_request.paused'), [
-              'route' => 'requests.index',
-              'icon' => 'icon-paused-2',
-              'id' => 'homeid'
+          $submenu->add(__('menus.sidebar_request.all'), [
+              'route' => ['requests_by_type', 'all'],
+              'icon' => 'fa-clipboard',
           ]);
        });
 
