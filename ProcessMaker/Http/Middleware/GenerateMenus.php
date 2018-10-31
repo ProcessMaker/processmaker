@@ -76,7 +76,7 @@ class GenerateMenus
                 'id' => 'homeid'
           ]);
           $submenu->add(__('Completed'), [
-              'route' => 'tasks.index',
+              'route' => ['tasks.index', 'status' => 'CLOSED'],
               'icon' => 'icon-draft',
               'id' => 'homeid'
           ]);
