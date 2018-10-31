@@ -1,15 +1,19 @@
 require('./bootstrap');
 let Vue = window.Vue;
 
-import avatar from "./components/common/avatar";
 import requestModal from "./components/requests/modal";
 import notifications from "./components/requests/notifications";
-import {Navbar} from "bootstrap-vue/es/components";
+import {
+    Navbar
+} from "bootstrap-vue/es/components";
 import ConfirmationModal from "./components/Confirm";
 import NavbarProfile from "./components/NavbarProfile";
 import Multiselect from 'vue-multiselect/src/Multiselect';
 
 Vue.component('multiselect', Multiselect);
+
+//Event bus ProcessMaker
+window.ProcessMaker.events = new Vue();
 
 // Assign our navbar component to our global ProcessMaker object
 window.ProcessMaker.navbar = new Vue({
@@ -18,11 +22,10 @@ window.ProcessMaker.navbar = new Vue({
         Navbar,
         requestModal,
         notifications,
-        avatar,
         ConfirmationModal,
         NavbarProfile
     },
-    data () {
+    data() {
         return {
             messages: ProcessMaker.notifications,
             alertShow: false,
@@ -35,7 +38,7 @@ window.ProcessMaker.navbar = new Vue({
             confirmShow: false
         };
     },
-    mounted () {
+    mounted() {
         Vue.nextTick() // This is needed to override the default alert method.
             .then(() => {
                 if (document.querySelector("meta[name='alert']")) {
@@ -70,12 +73,11 @@ window.ProcessMaker.confirmModal = function (title, message, variant, callback) 
 window.ProcessMaker.apiClient.interceptors.response.use(
     response =>
     // No need to handle success responses
-        response
-    , (error) => {
+    response, (error) => {
         let elem = document.getElementById("content-inner");
         if (error.response.status != 422 && error.response.status != 404 && elem !== null) {
-        // Replace our content div with our error div
-        // Remove our #content-inner
+            // Replace our content div with our error div
+            // Remove our #content-inner
             elem.parentNode.removeChild(elem);
             // Now show our #api-error div
             elem = document.getElementById("api-error");
@@ -90,7 +92,7 @@ window.ProcessMaker.apiClient.interceptors.response.use(
 
 new Vue({
     el: "#sidebar",
-    data () {
+    data() {
         return {
             expanded: false
         };

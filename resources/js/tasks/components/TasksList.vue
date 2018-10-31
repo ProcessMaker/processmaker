@@ -120,7 +120,7 @@
                 let color =
                     diff < 0 ? "text-danger" : diff <= 1 ? "text-warning" : "text-primary";
                 return '<span class="' + color + '">' +   dueDate.format('MM/DD/YYYY HH:MM') +
-                "</span>";
+                    "</span>";
             },
             getTaskStatus() {
                 let path = new URL(location.href);
