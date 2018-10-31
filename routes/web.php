@@ -27,22 +27,21 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
     });
 
     Route::resource('processes', 'ProcessController');
+    Route::get('profile/edit', 'ProfileController@edit')->name('profile.edit');
+    Route::get('profile/{id}', 'ProfileController@show');
     // Ensure our modeler loads at a distinct url
     Route::get('modeler/{process}', 'Process\ModelerController')->name('modeler');
 
-    Route::resource('profile', 'ProfileController')->only([
-        'index', 'edit', 'show'
-    ]);
+    Route::get('/', 'HomeController@index')->name('home');
+
     Route::get('requests/{type}', 'RequestController@index')
         ->where('type', 'all|in_progress|completed')
         ->name('requests_by_type');
-    Route::resource('requests', 'RequestController')->only(
+    Route::resource('requests', 'RequestController')->only([
         'index', 'show'
-    );
+    ]);
 
     Route::resource('tasks', 'TaskController');
-
-    $this->get('/', 'HomeController@index')->name('home');
 });
 
 // Add our broadcasting routes
