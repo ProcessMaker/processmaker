@@ -60,7 +60,7 @@ class ProcessRequestController extends Controller
         if ($includes) {
             $includes = explode(',', $includes);
             $query->with($includes);
-            $validIncludes = ['assigned'];
+            $validIncludes = ['assigned', 'participants'];
             $valid = [];
             foreach ($includes as $include) {
                 if (in_array($include, $validIncludes)) {

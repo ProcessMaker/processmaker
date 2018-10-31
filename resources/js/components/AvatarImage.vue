@@ -15,15 +15,14 @@
                 </button>
                 </a>
             </template>
-            <span v-if="displayName" class="text-center text-capitalize m-1"> {{value.name}}</span>
+            <span v-if="!hideName" class="text-center text-capitalize m-1"> {{value.name}}</span>
         </template>
-
     </span>
 </template>
 
 <script>
     export default {
-        props: ['size', 'rounded', 'classContainer', 'classImage', 'inputData', 'displayName'],
+        props: ['size', 'rounded', 'classContainer', 'classImage', 'inputData', 'hideName'],
         data() {
             return {
                 round: 'circle',
@@ -69,10 +68,10 @@
             },
             formatValue(value)  {
                 return {
-                    id: value.id ? 'profile/' + value.id : '#',
+                    id: value.id ? '/profile/' + value.id : '#',
                     src: value.src ? value.src : value.avatar ? value.avatar : '',
                     tooltip: value.tooltip ? value.tooltip : value.fullname ? this.displayName ? value.title : value.fullname : '',
-                    name: value.name ? value.name : value.fullname ? value.fullname : '',
+                    name: value.name !== undefined ? value.name : ( value.fullname ? value.fullname : '' ),
                     initials: value.initials ? value.initials : (value.firstname && value.lastname ) ? (value.firstname.match(/./u)[0] + value.lastname.match(/./u)[0]) : ''
                 }
             },

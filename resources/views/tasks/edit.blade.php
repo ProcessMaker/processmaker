@@ -109,8 +109,8 @@
             },
             mounted() {
                 this.statusCard = this.classHeaderCard(this.task.advanceStatus)
-                this.userAssigned = this.assignedUserAvatar(this.assigned)
-                this.userRequested = this.assignedUserAvatar(this.requested)
+                this.userAssigned = this.assigned
+                this.userRequested = this.requested
             }
         });
     </script>

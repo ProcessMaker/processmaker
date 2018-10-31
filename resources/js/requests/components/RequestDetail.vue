@@ -84,11 +84,7 @@
                 data.meta.to = data.meta.from + data.meta.count;
                 //load data for participants
                 for (let record of data.data) {
-                    record['participants'] = [{
-                        src: record['user']['avatar'],
-                        name: record['user']['fullname'],
-                        initials: record['user']['firstname'][0] + record['user']['lastname'][0]
-                    }]
+                    record['participants'] = [record['user']];
 
                     let color = 'text-primary';
                     if (record['status'] === 'overdue') {
