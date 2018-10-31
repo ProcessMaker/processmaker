@@ -27,6 +27,13 @@ class ProcessRequestController extends Controller
      *     summary="Returns all process Requests that the user has access to",
      *     operationId="getProcessesRequests",
      *     tags={"ProcessRequests"},
+     *     @OA\Parameter(
+     *         name="type",
+     *         in="query",
+     *         description="Only return requests by type",
+     *         required=false,
+     *         @OA\Schema(type="string", enum={"all", "in_progress", "completed"}),
+     *     ),
      *     @OA\Parameter(ref="#/components/parameters/filter"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
@@ -53,35 +60,27 @@ class ProcessRequestController extends Controller
      * )
      */
     public function index(Request $request)
-    {
+    {   
         $query = ProcessRequest::query();
 
         $includes = $request->input('include', '');
-        if ($includes) {
-            $includes = explode(',', $includes);
-            $query->with($includes);
-            $validIncludes = ['assigned', 'participants'];
-            $valid = [];
-            foreach ($includes as $include) {
-                if (in_array($include, $validIncludes)) {
-                    $valid[] = $include;
-                }
-                //include scopes
-                switch ($include) {
-                    case 'started_me':
-                        $query->startedMe(Auth::user()->id);
-                        break;
-                    case 'in_progress':
-                        $query->inProgress();
-                        break;
-                    case 'completed':
-                        $query->completed();
-                        break;
-                }
+        foreach (array_filter(explode(',', $includes)) as $include) {
+            if (in_array($include, ProcessRequest::$allowedIncludes)) {
+                $query->with($include);
             }
-            if ($valid) {
-                $query->with($valid);
-            }
+        }
+
+        // type filter
+        switch ($request->input('type')) {
+            case 'started_me':
+                $query->startedMe(Auth::user()->id);
+                break;
+            case 'in_progress':
+                $query->inProgress();
+                break;
+            case 'completed':
+                $query->completed();
+                break;
         }
 
         $filter = $request->input('filter', '');

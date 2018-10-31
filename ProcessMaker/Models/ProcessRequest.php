@@ -24,13 +24,13 @@ use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
  * @property \Carbon\Carbon $created_at
  * @property Process $process
  *
- *  * @OA\Schema(
+ * @OA\Schema(
  *   schema="requestsEditable",
  *   @OA\Property(property="name", type="string"),
  *   @OA\Property(property="process_id", type="string", format="id"),
- * @OA\Property(property="callable_id", type="string", format="id"),
+ *   @OA\Property(property="callable_id", type="string", format="id"),
  *   @OA\Property(property="data", type="string", format="json"),
- *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
+ *   @OA\Property(property="status", type="string", enum={"DRAFT", "ACTIVE", "COMPLETED"}),
  * ),
  * @OA\Schema(
  *   schema="requests",
@@ -40,7 +40,6 @@ use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
  *   @OA\Property(property="process_collaboration_id", type="string", format="id"),
  *   @OA\Property(property="user_id", type="string", format="id"),
  *   @OA\Property(property="participant_id", type="string", format="id"),
- *
  *
  *   @OA\Property(property="process_category_id", type="string", format="id"),
  *   @OA\Property(property="created_at", type="string", format="date-time"),
@@ -91,9 +90,20 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
      * @var array
      */
     protected $casts = [
-        'completed_at' => 'datetime',
-        'initiated_at' => 'datetime',
+        'completed_at' => 'datetime:c',
+        'initiated_at' => 'datetime:c',
         'data' => 'array'
+    ];
+
+    /**
+     * Associated records that can be included with this model
+     *
+     * @var array
+     */
+    public static $allowedIncludes = [
+        'assigned',
+        'process',
+        'participants',
     ];
 
     /**

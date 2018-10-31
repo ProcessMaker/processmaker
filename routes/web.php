@@ -1,5 +1,7 @@
 <?php
 
+use ProcessMaker\Http\Controllers\Api\Requests\RequestsController;
+
 Route::group(['middleware' => ['auth', 'authorize']], function () {
 
 // Routes related to Authentication (password reset, etc)
@@ -32,14 +34,14 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
 
     Route::get('/', 'HomeController@index')->name('home');
 
+    Route::get('requests/{type}', 'RequestController@index')
+        ->where('type', 'all|in_progress|completed')
+        ->name('requests_by_type');
     Route::resource('requests', 'RequestController')->only([
         'index', 'show'
     ]);
+
     Route::resource('tasks', 'TaskController');
-
-
-
-
 });
 
 // Add our broadcasting routes

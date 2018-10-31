@@ -10,10 +10,10 @@ return[
   ],
   'sidebar_request' => [
     'request' => 'Requests',
+    'started_me' => 'Started By Me',
     'in_progress' => 'In Progress',
-    'draft' => 'Draft',
     'completed' => 'Completed',
-    'paused' => 'Paused',
+    'all' => 'All',
   ],
   'sidebar_admin' => [
     'organization' => 'organization',
