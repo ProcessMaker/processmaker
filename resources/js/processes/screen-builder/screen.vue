@@ -13,7 +13,7 @@
 
                 <ul class="navbar-nav  pull-right">
                     <li class="nav-item">
-                        <a class="nav-link" @click="saveForm" href="#"><i class="fas fa-save"></i></a>
+                        <a class="nav-link" @click="saveScreen" href="#"><i class="fas fa-save"></i></a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" @click="onClose" href="#"><i class="fas fa-times"></i></a>
@@ -22,7 +22,7 @@
             </nav>
         </div>
 
-        <vue-form-builder @change="updateConfig" ref="formbuilder" v-show="mode === 'editor'" config="config"/>
+        <vue-form-builder @change="updateConfig" ref="screenBuilder" v-show="mode === 'editor'" config="config"/>
         <div id="preview" v-if="mode === 'preview'">
             <div id="data-input">
                 <div class="card-header">
@@ -104,15 +104,15 @@
         },
         props: [
             'process',
-            'form'
+            'screen'
         ],
         mounted() {
-            this.$refs.formbuilder.config = this.form.config ? this.form.config : [{
+            this.$refs.screenBuilder.config = this.screen.config ? this.screen.config : [{
                 name: "Default",
                 items: []
             }];
-            if (this.form.title) {
-                this.$refs.formbuilder.config[0].name = this.form.title;
+            if (this.screen.title) {
+                this.$refs.screenBuilder.config[0].name = this.screen.title;
             }
             this.updatePreview({});
         },
@@ -124,14 +124,14 @@
                 this.previewData = data
             },
             previewSubmit() {
-                alert("Preview Form was Submitted")
+                alert("Preview Screen was Submitted")
             },
             onClose() {
-                window.location.href = '/processes/forms';
+                window.location.href = '/processes/screens';
             },
-            saveForm() {
+            saveScreen() {
                 ProcessMaker.apiClient
-                    .put('forms/' + this.form.id , {
+                    .put('screens/' + this.screen.id , {
                         title: this.config[0].name,
                         config: this.config
                     })

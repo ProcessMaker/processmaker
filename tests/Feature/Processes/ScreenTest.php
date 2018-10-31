@@ -2,11 +2,11 @@
 
 namespace Tests\Feature\Processes;
 
-use ProcessMaker\Models\Form;
+use ProcessMaker\Models\Screen;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
 
-class FormTest extends TestCase
+class ScreenTest extends TestCase
 {
     use RequestHelper;
 
@@ -18,9 +18,9 @@ class FormTest extends TestCase
     public function testIndexRoute()
     {
       // get the URL
-      $response = $this->webCall('GET', '/processes/forms');
+      $response = $this->webCall('GET', '/processes/screens');
       // check the correct view is called
-      $response->assertViewIs('processes.forms.index');
+      $response->assertViewIs('processes.screens.index');
 
       $response->assertStatus(200);
 
@@ -34,12 +34,12 @@ class FormTest extends TestCase
     public function testEditRoute()
     {
         // get the URL
-        $response = $this->webCall('GET', '/processes/forms/' .
-            factory(Form::class)->create()->id . '/edit');
+        $response = $this->webCall('GET', '/processes/screens/' .
+            factory(Screen::class)->create()->id . '/edit');
 
         $response->assertStatus(200);
         // check the correct view is called
-        $response->assertViewIs('processes.forms.edit');
-        $response->assertSee('Edit Forms');
+        $response->assertViewIs('processes.screens.edit');
+        $response->assertSee('Edit Screen');
     }
 }

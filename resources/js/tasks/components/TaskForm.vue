@@ -40,7 +40,7 @@ export default {
     'processId',
     'instanceId',
     'tokenId',
-    'form',
+    'screen',
     'data'
   ],
   data() {
