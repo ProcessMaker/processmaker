@@ -64,7 +64,8 @@
                 this.formatSizeButton(this.sizeImage);
             },
             formatSizeButton(size) {
-                this.styleButton = 'width: ' + size + 'px; height: ' + size + 'px; font-size:' + size / 2.5 + 'px';
+                this.styleButton = 'width: ' + size + 'px; height: ' + size + 'px; font-size:' + size / 2.5 +
+                    'px; margin-right:5px;';
             },
             formatValue(value)  {
                 return {
@@ -79,7 +80,6 @@
                 let options = [];
                 if (data && Array.isArray(data)) {
                     data.forEach(function (value) {
-                        console.log(value);
                         options.push(this.formatValue(value));
                     });
                 } else {

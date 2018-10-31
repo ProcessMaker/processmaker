@@ -72,6 +72,7 @@ class ProcessCompletedNotification extends Notification
             'name' => sprintf('Completed: %s', $this->processName),
             'dateTime' => $instance->completed_at->toIso8601String(),
             'uid' => $this->processName,
+            'request_id' => $instance->getKey(),
             'url' => '/process',
         ];
     }

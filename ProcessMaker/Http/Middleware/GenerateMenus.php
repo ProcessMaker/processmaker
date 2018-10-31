@@ -111,10 +111,10 @@ class GenerateMenus
               'icon' => 'fa-code',
               'id' => 'process-scripts'
           ]);
-          $submenu->add(__('menus.sidebar_processes.forms'), [
-              'route' => 'forms.index',
+          $submenu->add(__('menus.sidebar_processes.screens'), [
+              'route' => 'screens.index',
               'icon' => 'fa-file-alt',
-              'id' => 'process-forms'
+              'id' => 'process-screens'
           ]);
           $submenu->add(__('menus.sidebar_processes.environment_variables'), [
               'route' => 'environment-variables.index',

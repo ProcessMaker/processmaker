@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Passport\Passport;
 use ProcessMaker\Model\Application;
-use ProcessMaker\Model\Form;
+use ProcessMaker\Model\Screen;
 use ProcessMaker\Model\Delegation;
 use ProcessMaker\Model\InputDocument;
 use ProcessMaker\Model\OutputDocument;

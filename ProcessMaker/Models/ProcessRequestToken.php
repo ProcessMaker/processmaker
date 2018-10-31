@@ -141,12 +141,12 @@ class ProcessRequestToken extends Model implements TokenInterface
     /**
      * Get the form assigned to the task.
      *
-     * @return Form
+     * @return Screen
      */
-    public function getForm()
+    public function getScreen()
     {
         $definition = $this->getDefinition();
-        return empty($definition['formRef']) ? null : Form::find($definition['formRef']);
+        return empty($definition['screenRef']) ? null : Screen::find($definition['screenRef']);
     }
 
     /**
@@ -192,5 +192,17 @@ class ProcessRequestToken extends Model implements TokenInterface
         }
 
         return $result;
+    }
+
+    /**
+     * Prepare a date for array / JSON serialization.
+     *
+     * @param  \DateTimeInterface  $date
+     *
+     * @return string
+     */
+    protected function serializeDate(\DateTimeInterface $date)
+    {
+        return $date->format(Carbon::ISO8601);
     }
 }

@@ -37,15 +37,16 @@ mix.webpackConfig({
     .js('resources/js/processes/index.js', 'public/js/processes')
     .js('resources/js/processes/categories/index.js', 'public/js/processes/categories')
     .js('resources/js/processes/scripts/index.js', 'public/js/processes/scripts')
+    .js('resources/js/processes/scripts/edit.js', 'public/js/processes/scripts')
     .js('resources/js/processes/environment-variables/index.js', 'public/js/processes/environment-variables')
-    .js('resources/js/processes/forms/index.js', 'public/js/processes/forms')
-    .js('resources/js/processes/form-builder/main.js', 'public/js/processes/form-builder')
+    .js('resources/js/processes/screens/index.js', 'public/js/processes/screens')
+    .js('resources/js/processes/screen-builder/main.js', 'public/js/processes/screen-builder')
     .js('resources/js/requests/index.js', 'public/js/requests')
 
 
     .js('resources/js/nayra/start.js', 'public/js/nayra')
 
-    .js('resources/js/request/status.js', 'public/js/request')
+    .js('resources/js/requests/show.js', 'public/js/requests')
     .js('resources/js/tasks/index.js', 'public/js/tasks/index.js')
     .js('resources/js/tasks/show.js', 'public/js/tasks/show.js')
 

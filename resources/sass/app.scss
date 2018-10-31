@@ -79,8 +79,9 @@ html {
 }
 
 .input-group-prepend {
-  border-right:0;
+  border-right: 0;
 }
+
 .input-group-text {
   background-color: #fff;
   border-color: #b9bfc4;
@@ -435,6 +436,10 @@ table.vuetable {
 // API error template
 #api-error {
   display: none;
+}
+
+.list-group {
+  width: 300px;
 }
 
 .error-content {

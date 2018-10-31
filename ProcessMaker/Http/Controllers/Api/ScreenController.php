@@ -4,24 +4,24 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Models\Form;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Http\Resources\ApiCollection;
 
-class FormController extends Controller
+class ScreenController extends Controller
 {
     /**
-     * Get a list of Forms.
+     * Get a list of Screens.
      *
      * @param Request $request
      *
      * @return ResponseFactory|Response
      *
      *     @OA\Get(
-     *     path="/forms",
-     *     summary="Returns all forms that the user has access to",
-     *     operationId="getForms",
-     *     tags={"Forms"},
+     *     path="/screens",
+     *     summary="Returns all screens that the user has access to",
+     *     operationId="getScreens",
+     *     tags={"Screens"},
      *     @OA\Parameter(ref="#/components/parameters/filter"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
@@ -30,13 +30,13 @@ class FormController extends Controller
      *
      *     @OA\Response(
      *         response=200,
-     *         description="list of forms",
+     *         description="list of screens",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(
      *                 property="data",
      *                 type="array",
-     *                 @OA\Items(ref="#/components/schemas/forms"),
+     *                 @OA\Items(ref="#/components/schemas/screens"),
      *             ),
      *             @OA\Property(
      *                 property="meta",
@@ -49,7 +49,7 @@ class FormController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Form::query();
+        $query = Screen::query();
 
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
@@ -71,21 +71,21 @@ class FormController extends Controller
     }
 
     /**
-     * Get a single Form.
+     * Get a single Screen.
      *
-     * @param Form $form
+     * @param Screen $screen
      *
      * @return ResponseFactory|Response
      *
      *     @OA\Get(
-     *     path="/forms/formsId",
-     *     summary="Get single forms by ID",
-     *     operationId="getFormsById",
-     *     tags={"Forms"},
+     *     path="/screens/screensId",
+     *     summary="Get single screens by ID",
+     *     operationId="getScreensById",
+     *     tags={"Screens"},
      *     @OA\Parameter(
-     *         description="ID of forms to return",
+     *         description="ID of screens to return",
      *         in="path",
-     *         name="forms_id",
+     *         name="screens_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -93,65 +93,65 @@ class FormController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Successfully found the forms",
-     *         @OA\JsonContent(ref="#/components/schemas/forms")
+     *         description="Successfully found the screens",
+     *         @OA\JsonContent(ref="#/components/schemas/screens")
      *     ),
      * )
      */
-    public function show(Form $form)
+    public function show(Screen $screen)
     {
-        return new ApiResource($form);
+        return new ApiResource($screen);
     }
 
     /**
-     * Create a new Form.
+     * Create a new Screen.
      *
      * @param Request $request
      *
      * @return ResponseFactory|Response
      *
      *     @OA\Post(
-     *     path="/forms",
-     *     summary="Save a new forms",
-     *     operationId="createForms",
-     *     tags={"Forms"},
+     *     path="/screens",
+     *     summary="Save a new screens",
+     *     operationId="createScreens",
+     *     tags={"Screens"},
      *     @OA\RequestBody(
      *       required=true,
-     *       @OA\JsonContent(ref="#/components/schemas/formsEditable")
+     *       @OA\JsonContent(ref="#/components/schemas/screensEditable")
      *     ),
      *     @OA\Response(
      *         response=201,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/forms")
+     *         @OA\JsonContent(ref="#/components/schemas/screens")
      *     ),
      * )
      */
     public function store(Request $request)
     {
-        $request->validate(Form::rules());
-        $form = new Form();
-        $form->fill($request->input());
-        $form->saveOrFail();
-        return new ApiResource($form);
+        $request->validate(Screen::rules());
+        $screen = new Screen();
+        $screen->fill($request->input());
+        $screen->saveOrFail();
+        return new ApiResource($screen);
     }
 
     /**
-     * Update a Form.
+     * Update a Screen.
      *
-     * @param Form $form
+     * @param Screen $screen
      * @param Request $request
      *
      * @return ResponseFactory|Response
      *
      *     @OA\Put(
-     *     path="/forms/formsId",
-     *     summary="Update a form",
-     *     operationId="updateForm",
-     *     tags={"Forms"},
+     *     path="/screens/screensId",
+     *     summary="Update a screen",
+     *     operationId="updateScreen",
+     *     tags={"Screens"},
      *     @OA\Parameter(
-     *         description="ID of form to return",
+     *         description="ID of screen to return",
      *         in="path",
-     *         name="forms_id",
+     *         name="screens_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -159,39 +159,39 @@ class FormController extends Controller
      *     ),
      *     @OA\RequestBody(
      *       required=true,
-     *       @OA\JsonContent(ref="#/components/schemas/formsEditable")
+     *       @OA\JsonContent(ref="#/components/schemas/screensEditable")
      *     ),
      *     @OA\Response(
      *         response=200,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/forms")
+     *         @OA\JsonContent(ref="#/components/schemas/screens")
      *     ),
      * )
      */
-    public function update(Form $form, Request $request)
+    public function update(Screen $screen, Request $request)
     {
-        $request->validate(Form::rules($form));
-        $form->fill($request->input());
-        $form->saveOrFail();
+        $request->validate(Screen::rules($screen));
+        $screen->fill($request->input());
+        $screen->saveOrFail();
 
         return response([], 204);
     }
 
     /**
-     * Delete a Form.
+     * Delete a Screen.
      *
-     * @param Form $form
+     * @param Screen $screen
      *
      * @return ResponseFactory|Response
      *     @OA\Delete(
-     *     path="/forms/formsId",
-     *     summary="Delete a form",
-     *     operationId="deleteForm",
-     *     tags={"Forms"},
+     *     path="/screens/screensId",
+     *     summary="Delete a screen",
+     *     operationId="deleteScreen",
+     *     tags={"Screens"},
      *     @OA\Parameter(
-     *         description="ID of form to return",
+     *         description="ID of screen to return",
      *         in="path",
-     *         name="forms_id",
+     *         name="screens_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -200,13 +200,13 @@ class FormController extends Controller
      *     @OA\Response(
      *         response=204,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/forms")
+     *         @OA\JsonContent(ref="#/components/schemas/screens")
      *     ),
      * )
      */
-    public function destroy(Form $form)
+    public function destroy(Screen $screen)
     {
-        $form->delete();
+        $screen->delete();
         return response([], 204);
     }
 

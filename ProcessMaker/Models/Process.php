@@ -79,16 +79,6 @@ class Process extends Model implements HasMedia
     private $bpmnDefinitions;
 
     /**
-     * The binary UUID attributes that should be converted to text.
-     *
-     * @var array
-     */
-    protected $ids = [
-        'process_category_id',
-        'user_id',
-    ];
-
-    /**
      * Category of the process.
      *
      * @return BelongsTo
