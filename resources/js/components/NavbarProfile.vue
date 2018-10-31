@@ -1,21 +1,9 @@
 <template>
     <div id="userMenu">
-        <div>
-            <b-btn id="avatarMenu" :disabled="popoverShow" class="avatar-circle">
-                <template v-if="sourceImage">
-                    <img class="avatar-image avatar-circle" :src="user.avatar">
-                </template>
-                <template v-else>
-                    <span class="avatar-initials"> {{ initials }} </span>
-                </template>
-            </b-btn>
-        </div>
+        <avatar-image id="avatarMenu" class-container="d-flex m-1" size="40" class-image="m-1"
+                      :input-data="information"></avatar-image>
 
-        <b-popover target="avatarMenu"
-                   triggers="click blur"
-                   placement="bottomleft"
-                   container="userMenu"
-                   ref="popover"
+        <b-popover target="avatarMenu" triggers="click blur" placement="bottomleft" container="userMenu" ref="popover"
                    @hidden="onHidden">
             <template slot="title">
                 <div class="wrap-name">{{fullName}}</div>
@@ -33,22 +21,23 @@
 </template>
 
 <script>
+    import Vue from 'vue';
+    import AvatarImage from '../components/AvatarImage';
+    import VueCroppie from 'vue-croppie';
+
+    Vue.component('avatar-image', AvatarImage);
+    Vue.use(VueCroppie);
+
     export default {
         data() {
             return {
-                user: null,
                 sourceImage: false,
-                initials: null,
                 fullName: null,
                 popoverShow: false,
+                information: []
             }
         },
-        props: ['info', 'url', 'items'],
-        watch: {
-            info(val) {
-                this.user = val;
-            },
-        },
+        props: ['info', 'items'],
         methods: {
             onClose() {
                 this.popoverShow = false;
@@ -56,17 +45,27 @@
             onHidden() {
                 this.popoverShow = false;
             },
-            formatData() {
-                this.user = this.info;
-                if (this.info.avatar) {
+            formatData(user) {
+                if (user.avatar) {
                     this.sourceImage = true;
                 }
-                this.initials = this.user.firstname[0] + this.user.lastname[0];
-                this.fullName = this.user.firstname + ' ' + this.user.lastname;
+                this.fullName = user.fullname;
+                this.information = [{
+                    src: user.avatar,
+                    title: '',
+                    initials: user.firstname[0] + user.lastname[0]
+                }];
+            },
+            updateAvatar() {
+                ProcessMaker.apiClient.get("users/" + window.ProcessMaker.user.id)
+                    .then(response => {
+                        this.formatData(response.data);
+                    });
             }
         },
         mounted() {
-            this.formatData();
+            this.formatData(this.info);
+            window.ProcessMaker.events.$on('update-profile-avatar', this.updateAvatar);
         }
     }
 </script>
@@ -78,27 +77,6 @@
         font-size: 16px;
         font-weight: 600;
         color: #333333;
-    }
-
-    .avatar-circle {
-        width: 40px;
-        height: 40px;
-        background-color: rgb(251, 181, 4);
-        text-align: center;
-        border-radius: 50%;
-        -webkit-border-radius: 50%;
-        -moz-border-radius: 50%;
-        margin-left: 10px;
-        margin-top:2px;
-        border: none;
-    }
-
-    .avatar-initials {
-        position: relative;
-        font-size: 20px;
-        line-height: 18px;
-        color: #fff;
-        margin: -12px;
     }
 
     .wrap-name {
