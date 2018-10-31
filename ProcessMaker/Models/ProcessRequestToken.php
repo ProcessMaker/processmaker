@@ -146,7 +146,7 @@ class ProcessRequestToken extends Model implements TokenInterface
     public function getScreen()
     {
         $definition = $this->getDefinition();
-        return empty($definition['screenRef']) ? null : Form::find($definition['screenRef']);
+        return empty($definition['screenRef']) ? null : Screen::find($definition['screenRef']);
     }
 
     /**

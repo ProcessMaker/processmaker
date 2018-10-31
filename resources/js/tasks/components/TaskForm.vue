@@ -1,5 +1,5 @@
 <template>
-  <vue-form-renderer @submit="submit" v-model="formData" :config="form" />
+  <vue-form-renderer @submit="submit" v-model="formData" :config="screen" />
 </template>
 
 <script>

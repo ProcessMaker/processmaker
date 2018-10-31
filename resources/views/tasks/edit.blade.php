@@ -12,7 +12,7 @@
     <div id="task" class="container">
         <h1>{{$task->element_name}}</h1>
         <div class="row">
-            @if ($task->getF() && ($task->advanceStatus==='open' || $task->advanceStatus==='overdue'))
+            @if ($task->getScreen() && ($task->advanceStatus==='open' || $task->advanceStatus==='overdue'))
             <div class="col-8">
                 <div class="container-fluid">
                     <div class="card card-body">
