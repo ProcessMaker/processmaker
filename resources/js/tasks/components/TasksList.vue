@@ -10,6 +10,12 @@
                 </b-link>
             </template>
 
+            <template slot="requestName" slot-scope="props">
+                <b-link @click="onAction('showRequestSummary', props.rowData, props.rowIndex)">
+                    {{props.rowData.process.name}}
+                </b-link>
+            </template>
+
             <template slot="actions" slot-scope="props">
                 <div class="actions">
                     <div class="popout">
@@ -60,12 +66,13 @@
                         sortField: "element_name"
                     },
                     {
-                        title: "Request",
-                        name: "process.name",
+                        title: "REQUEST",
+                        name: "__slot:requestName",
+                        field: "process.name",
                         sortField: "process.name"
                     },
                     {
-                        title: "Assignee",
+                        title: "ASSIGNEE",
                         name: "user",
                         callback: this.formatName,
                         sortField: "user.lastname"
@@ -92,6 +99,11 @@
                     let link = "/tasks/" + rowData.id + "/edit";
                     window.location = link;
                 }
+
+                if (action === "showRequestSummary") {
+                    let link = "/requests/" + rowData.id;
+                    window.location = link;
+                }
             },
             formatName(user) {
                 if (user === "undefined" || user === null) {
@@ -116,15 +128,13 @@
                     name;
             },
             formatDueDate(value) {
-                let duedate = moment(value);
+                let dueDate = moment(value);
                 let now = moment();
-                let diff = duedate.diff(now, "hours");
+                let diff = dueDate.diff(now, "hours");
                 let color =
                     diff < 0 ? "text-danger" : diff <= 1 ? "text-warning" : "text-primary";
-                return '<span class="' + color + '">' + value + "</span>";
-            },
-            formatDate(value) {
-                return moment(value).fromNow();
+                return '<span class="' + color + '">' +   dueDate.format('MM/DD/YYYY HH:MM') +
+                "</span>";
             },
             getTaskStatus() {
                 let path = new URL(location.href);
