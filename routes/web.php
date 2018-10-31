@@ -29,6 +29,9 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
     Route::get('profile/{id}', 'ProfileController@show');
     // Ensure our modeler loads at a distinct url
     Route::get('modeler/{process}', 'Process\ModelerController')->name('modeler');
+
+    Route::get('/', 'HomeController@index')->name('home');
+
     Route::resource('requests', 'RequestController')->only([
         'index', 'edit', 'show'
     ]);
