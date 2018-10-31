@@ -249,11 +249,13 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
     public function summary()
     {
         $result = [];
-        foreach($this->data as $key => $value) {
-            $result[] = [
-                'key' => $key,
-                'value' => $value
-            ];
+        if (is_array($this->data)) {
+            foreach($this->data as $key => $value) {
+                $result[] = [
+                    'key' => $key,
+                    'value' => $value
+                ];
+            }
         }
 
         return $result;
