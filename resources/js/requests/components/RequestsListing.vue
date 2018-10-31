@@ -8,6 +8,10 @@
                     {{props.rowData.id}}
                 </b-link>
             </template>
+            <template slot="participants" slot-scope="props">
+                <avatar-image v-for="participant in props.rowData.assigned" :key="participant.id" class="d-inline-flex pull-left align-items-center" size="25" class-image="m-1"
+                              :input-data="participant.user"></avatar-image>
+            </template>
         </vuetable>
         <pagination single="Request" plural="Requests" :perPageSelectEnabled="true" @changePerPage="changePerPage"
                     @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
@@ -16,7 +20,10 @@
 
 <script>
 import datatableMixin from "../../components/common/mixins/datatable";
+import AvatarImage from "../../components/AvatarImage"
 import moment from "moment";
+
+Vue.component('avatar-image', AvatarImage);
 
 export default {
     mixins: [datatableMixin],
@@ -52,8 +59,8 @@ export default {
                 },
                 {
                     title: "Participants",
-                    name: "assigned",
-                    callback: this.assignedTo
+                    name: "__slot:participants",
+                    sortField: "assigned"
                 },
                 {
                     title: "Started",
@@ -71,37 +78,6 @@ export default {
     methods: {
         openRequest(data, index) {
           window.location.href = "/requests/" + data.id;
-        },
-        assignedTo(delegations) {
-            let assignedTo = '';
-            if (!delegations) return assignedTo;
-            let count = 0;
-            let usedAvatar = [];
-            delegations.forEach(function (delegation, key) {
-
-                if (delegation.user && usedAvatar.includes(delegation.user.id) === false) {
-
-                    usedAvatar.push(delegation.user.id);
-
-                    if (key <= 4) {
-                        let user = delegation.user;
-                        assignedTo += user.avatar
-                            ? '<img class="avatar-image-list avatar-circle-list" src="' + user.avatar + '" title="' + user.fullname + '"> '
-                            : '<button type="button" class="avatar-circle-list" title="' + user.fullname + '">' +
-                            '<span class="avatar-initials-list">' +
-                            user.firstname.charAt(0).toUpperCase() +
-                            user.lastname.charAt(0).toUpperCase() +
-                            '</span>' +
-                            '</button> ';
-                    } else {
-                        count++;
-                    }
-                }
-            });
-            if (count) {
-                assignedTo += '<button type="button" class="avatar-circle-list"><span class="avatar-initials-list">+' + count + '</span></button>';
-            }
-            return assignedTo;
         },
         formatStatus(status) {
             let color = 'success',
@@ -137,6 +113,9 @@ export default {
                 }
                 //format Status
                 record['status'] = this.formatStatus(record['status']);
+
+                // make assignees unique
+                record.assigned = _.uniqBy(record.assigned, 'user_id');
             }
             return data;
         },
