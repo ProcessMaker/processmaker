@@ -60,7 +60,8 @@
                 this.formatSizeButton(this.sizeImage);
             },
             formatSizeButton(size) {
-                this.styleButton = 'width: ' + size + 'px; height: ' + size + 'px; font-size:' + size / 2.5 + 'px';
+                this.styleButton = 'width: ' + size + 'px; height: ' + size + 'px; font-size:' + size / 2.5 +
+                    'px; margin-right:5px;';
             },
             formatInputData(data) {
                 let options = [];

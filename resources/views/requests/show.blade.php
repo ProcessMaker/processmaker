@@ -114,7 +114,7 @@
                     this.request.participants.forEach(user => {
                         user.src = user.avatar;
                         user.title = user.fullname;
-                        user.name = user.fullname;
+                        user.name = '';
                         user.initials = user.firstname.match(/./u)[0] + user.lastname.match(/./u)[0];
                         participants.push(user);
                     });
