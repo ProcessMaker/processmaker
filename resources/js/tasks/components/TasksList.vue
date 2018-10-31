@@ -16,6 +16,11 @@
                 </b-link>
             </template>
 
+            <template slot="assignee" slot-scope="props">
+                <avatar-image class="d-inline-flex pull-left align-items-center" size="25" class-image="m-1"
+                              :input-data="props.rowData.avatarData"></avatar-image>
+            </template>
+
             <template slot="actions" slot-scope="props">
                 <div class="actions">
                     <div class="popout">
@@ -37,7 +42,10 @@
 
 <script>
     import datatableMixin from "../../components/common/mixins/datatable";
+    import AvatarImage from "../../components/AvatarImage"
     import moment from "moment";
+
+    Vue.component('avatar-image', AvatarImage);
 
     export default {
         mixins: [datatableMixin],
@@ -73,8 +81,7 @@
                     },
                     {
                         title: "ASSIGNEE",
-                        name: "user",
-                        callback: this.formatName,
+                        name: "__slot:assignee",
                         field: "user",
                         sortField: "user.lastname"
                     },
@@ -106,28 +113,6 @@
                     window.location = link;
                 }
             },
-            formatName(user) {
-                if (user === "undefined" || user === null) {
-                    return "";
-                }
-                let name = "<span>" + user.firstname + " " + user.lastname + "</span>";
-
-                let initials =
-                    '<span class="avatar-initials-list">' +
-                    user.firstname.charAt(0).toUpperCase() +
-                    user.lastname.charAt(0).toUpperCase() +
-                    "</span>";
-
-                return user.avatar
-                    ? '<img class="avatar-image-list avatar-circle-list" src="' +
-                    user.avatar +
-                    '"> ' +
-                    name
-                    : '<button type="button" class="avatar-circle-list">' +
-                    initials +
-                    "</button> " +
-                    name;
-            },
             formatDueDate(value) {
                 let dueDate = moment(value);
                 let now = moment();
@@ -151,6 +136,27 @@
                     return '';
                 }
             },
+
+            transform(data) {
+                // Clean up fields for meta pagination so vue table pagination can understand
+                data.meta.last_page = data.meta.total_pages;
+                data.meta.from = (data.meta.current_page - 1) * data.meta.per_page;
+                data.meta.to = data.meta.from + data.meta.count;
+
+                //load data for participants
+                for (let record of data.data) {
+                    record['avatarData'] = [{
+                        id: record['user']['id'],
+                        src: record['user']['avatar'],
+                        title:record['user']['fullname'],
+                        name:record['user']['fullname'],
+                        initials: record['user']['firstname'][0] + record['user']['lastname'][0]
+                    }]
+
+                }
+                return data;
+            },
+
             fetch() {
                 this.loading = true;
                 if (this.cancelToken) {
