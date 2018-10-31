@@ -109,7 +109,7 @@
                 <div class="card card-body">
 
                     <div align="center" data-toggle="modal" data-target="#exampleModal">
-                        <avatar-image class-container="d-flex" size="150" class-image="m-1"
+                        <avatar-image size="150" class-image="m-1"
                                       :input-data="options"></avatar-image>
                     </div>
                     <div class="form-group">
