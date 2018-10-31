@@ -22,8 +22,16 @@ class RequestController extends Controller
         $inProgress = ProcessRequest::inProgress()->count();
         $completed = ProcessRequest::completed()->count();
 
+        $title = 'My Requests';
+
+        $types = ['all'=>'All Requests','in_progress'=>'Requests In Progress','completed'=>'Completed Requests'];
+
+        if(array_key_exists($type,$types)){
+          $title = $types[$type];
+        }
+
         return view('requests.index', compact(
-            ['allRequest', 'startedMe', 'inProgress', 'completed', 'type']
+            ['allRequest', 'startedMe', 'inProgress', 'completed', 'type','title']
         ));
     }
 

@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-{{__('Requests')}}
+{{__($title)}}
 @endsection
 
 @section('sidebar')
@@ -10,7 +10,7 @@
 
 @section('content')
 <div class="container page-content mt-2" id="requests-listing">
-    <h1>{{__('Requests')}}</h1>
+    <h1>{{__($title)}}</h1>
     <div class="row">
         <div class="col-sm-12">
             <template v-if="title">
@@ -62,7 +62,7 @@
                         </div>
                     </div>
                     <div class="col-8" align="right">
-                        
+
                     </div>
                 </div>
             </template>
