@@ -11,22 +11,47 @@
         <div class="col-8">
             <div class="card card-body">
                 <h4 class="mt-2">{{__('Contact Information')}}</h4>
-                <div><i class="fas fa-envelope fa-lg text-secondary pr-1"></i><a href="mailto:{{$user->email}}">{{$user->email}}</a> </div>        
-                <div><i class="fas fa-phone fa-lg text-secondary pr-1"></i>{{__('Phone')}}  <a href="{{'tel:' . $user->phone}}">{{$user->phone}}</a></div>
-                @if ($user->fax)
-                <div><i class="fas fa-phone fa-lg text-secondary pr-1"></i>{{__('Fax')}}  {{$user->fax}}</div>
+                <table class="table">
+                  <tr>
+                    <td align="center"><i class="fas fa-envelope fa-lg text-secondary pr-1"></i></td>
+                    <td>{{__('Email')}}</td>
+                    <td width="100%"><a href="mailto:{{$user->email}}">{{$user->email}}</a></td>
+                  </tr>
+                  <tr>
+                    <td align="center"><i class="fas fa-phone fa-lg text-secondary pr-1"></i></td>
+                    <td>{{__('Phone')}}</td>
+                    <td><a href="{{'tel:' . $user->phone}}">{{$user->phone}}</a></td>
+                  </tr>
+                  @if ($user->fax)
+                  <tr>
+                    <td align="center"><i class="fas fa-fax fa-lg text-secondary pr-1"></i></td>
+                    <td>{{__('Fax')}}</td>
+                    <td><a href="{{'tel:' . $user->fax}}">{{$user->fax}}</a></td>
+                  </tr>
                 @endif
                 @if ($user->cell)
-                <div><i class="fas fa-phone fa-lg text-secondary pr-1"></i>{{__('Cell')}}  <a href="{{'tel:' . $user->cell}}">{{$user->cell}}</a></div>
-                @endif
+                  <tr>
+                    <td align="center"><i class="fas fa-mobile-alt fa-lg text-secondary pr-1"></i></td>
+                    <td>{{__('Cell')}}</td>
+                    <td><a href="{{'tel:' . $user->cell}}">{{$user->cell}}</a></td>
+                  </tr>
+                  @endif
+
+
                 @if($user->address)
-                <h4 class="mt-2">{{__('Address')}}</h4>
-                <div>{{$user->address}}</div>
-                <div>{{$user->city}}, {{$user->state}} </div>
-                <div>{{$user->postal}} {{$user->country}}</div>
+                  <tr>
+                    <td colspan="3">
+                <h4 class="mb-0 mt-3">{{__('Address')}}</h4>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="3">
+                {{$user->address}}<br>
+                {{$user->city}}, {{$user->state}} {{$user->postal}} {{$user->country}}
+              </td>
+            </tr>
                 @endif
-                <h4 class="mt-2">{{__('Current Local Time')}}</h4>
-                <div><i class="far fa-calendar-alt fa-lg text-secondary pr-1"></i>{{ Carbon\Carbon::now()->setTimezone($user->timezone)->format(config('app.dateformat')) }}</div>
+  </table>
             </div>
         </div>
         <div class="col-4">
@@ -35,6 +60,9 @@
                     <avatar-image size="150" :input-data="avatar"></avatar-image>
                     <h1>{{$user->firstname}} {{$user->lastname}}</h1>
                     <h4>{{$user->title}}</h4>
+                    <hr>
+                    <h5 class="mt-2">{{__('Current Local Time')}}</h5>
+                    <div><i class="far fa-calendar-alt fa-lg text-secondary pr-1"></i>{{ Carbon\Carbon::now()->setTimezone($user->timezone)->format(config('app.dateformat')) }}</div>
                 </div>
             </div>
         </div>
