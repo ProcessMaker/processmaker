@@ -1,7 +1,7 @@
 <template>
     <span :class="classContainer">
         <template v-for="(value, key) in options">
-                <template v-if="value.src" class="align-center">
+            <template v-if="value.src" class="align-center">
                 <a :href="value.id">
                 <b-img center :src="value.src" :rounded="round" :width="sizeImage" :height="sizeImage"
                        blank-color="bg-secondary" :class="image" :title="value.tooltip"/>
@@ -79,8 +79,9 @@
             formatInputData(data) {
                 let options = [];
                 if (data && Array.isArray(data)) {
-                    data.forEach(function (value) {
-                        options.push(this.formatValue(value));
+                    let that = this;
+                    data.forEach(value => {
+                        options.push(that.formatValue(value));
                     });
                 } else {
                     options.push(this.formatValue(data));
