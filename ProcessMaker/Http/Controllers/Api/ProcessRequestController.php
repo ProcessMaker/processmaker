@@ -59,6 +59,7 @@ class ProcessRequestController extends Controller
         $includes = $request->input('include', '');
         if ($includes) {
             $includes = explode(',', $includes);
+            $query->with($includes);
             $validIncludes = ['assigned'];
             $valid = [];
             foreach ($includes as $include) {
