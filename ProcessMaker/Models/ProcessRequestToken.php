@@ -70,7 +70,6 @@ class ProcessRequestToken extends Model implements TokenInterface
      * @var array
      */
     protected $appends = [
-        'previousUser',
         'advanceStatus'
     ];
 
@@ -149,25 +148,6 @@ class ProcessRequestToken extends Model implements TokenInterface
         $definition = $this->getDefinition();
         return empty($definition['screenRef']) ? null : Form::find($definition['screenRef']);
     }
-
-    /**
-     * Returns the user that sent the task or
-     */
-    public function getPreviousUserAttribute()
-    {
-        $query = ProcessRequestToken::query();
-        $query->where('process_request_id', $this->process_request_id)
-            ->where('id', '!=', $this->id)
-            ->where('status', 'ACTIVE')
-            ->orderByDesc('completed_at');
-        $last = $query->get()->last();
-        if (empty($last)) {
-            return ProcessRequest::find($this->process_request_id)
-                ->user;
-        }
-        return $last->user;
-    }
-
 
     /**
      * Returns the state of the advance of the request token (open, completed, overdue)
