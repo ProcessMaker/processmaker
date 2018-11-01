@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-    {{__('Process Categories')}}
+    {{__('Environment Variables')}}
 @endsection
 
 @section('sidebar')
