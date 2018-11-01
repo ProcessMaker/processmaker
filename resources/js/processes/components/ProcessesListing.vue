@@ -103,7 +103,7 @@
                 return data.status === "ACTIVE" ? "Deactivate" : "Activate";
             },
             goToEdit(data) {
-                window.location = "/processes/processes/" + data + "/edit";
+                window.location = "/processes/" + data + "/edit";
             },
             goToDesigner(data) {
                 window.location = "/modeler/" + data;
