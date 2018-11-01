@@ -89,19 +89,20 @@
           title: this.title,
           language: this.language,
           description: this.description,
-          code: this.code
+          code: "[]"
         })
         .then(response => {
-          ProcessMaker.alert('{{__('Script successfully added')}}', 'success')
-          window.location = "/processes/scripts/" + response.data.id
+          ProcessMaker.alert('{{__('Script successfully added')}}', 'success');
+          window.location = "/processes/scripts/" + response.data.id + "/edit";
         })
         .catch(error => {
           if (error.response.status === 422) {
-            this.addError = error.response.data.errors
+            this.addError = error.response.data.errors;
           }
+          this.submitted = false;
         })
         .finally(()=> {
-          this.submitted = false
+          this.submitted = false;
         })
       }
     }
