@@ -29,7 +29,7 @@
                 </button>
             </div>
         </div>
-        <variables-listing ref="list" :filter="filter"></variables-listing>
+        <variables-listing ref="listVariable" :filter="filter" @delete="deleteVariable"></variables-listing>
     </div>
 
     <div class="modal" tabindex="-1" role="dialog" id="createEnvironmentVariable">
