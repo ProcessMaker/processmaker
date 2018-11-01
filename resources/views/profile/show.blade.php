@@ -7,19 +7,19 @@
 @section('content')
 <div class="container" id="profileForm">
     <h1>{{__('Profile')}}</h1>
-    <nav>
-        <div class="nav nav-tabs" id="nav-tab" role="tablist">
-            <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab"
-                aria-controls="nav-home" aria-selected="true">Information</a>
-            <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab"
-                aria-controls="nav-profile" aria-selected="false">Permissions</a>
-            <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab"
-                aria-controls="nav-contact" aria-selected="false">Groups</a>
-        </div>
-    </nav>
     <div class="row">
         <div class="col-8">
-            <div class="card card-body tab-content" id="nav-tabContent">
+            <nav>
+                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab"
+                        aria-controls="nav-home" aria-selected="true">Information</a>
+                    <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab"
+                        aria-controls="nav-profile" aria-selected="false">Permissions</a>
+                    <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab"
+                        aria-controls="nav-contact" aria-selected="false">Groups</a>
+                </div>
+            </nav>
+            <div class="card card-body tab-content mt-3" id="nav-tabContent">
                 <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
                     <h4 class="mt-2">{{__('Contact Information')}}</h4>
                     <table class="table">
@@ -64,7 +64,76 @@
                         @endif
                     </table>
                 </div>
-                <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">...cee</div>
+                <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Owner</th>
+                                <th>Group</th>
+                                <th>Others</th>
+                                <th>Administrators</th>
+                                <th>Managers</th>
+                                <th>Engineers</th>
+                                <th>Sales</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <tr>
+                                <td>Add</td>
+                                <td align="center"><input type="checkbox"></td>
+                                <td align="center"><input type="checkbox"></td>
+                                <td align="center"><input type="checkbox"></td>
+                                <td align="center"><input type="checkbox"></td>
+                                <td align="center"><input type="checkbox"></td>
+                                <td align="center"><input type="checkbox"></td>
+                                <td align="center"><input type="checkbox"></td>
+                            </tr>
+                            <tr>
+                                <td>Edit</td>
+                                <td align="center"><input type="checkbox"></td>
+                                <td align="center"><input type="checkbox"></td>
+                                <td align="center"><input type="checkbox"></td>
+                                <td align="center"><input type="checkbox"></td>
+                                <td align="center"><input type="checkbox"></td>
+                                <td align="center"><input type="checkbox"></td>
+                                <td align="center"><input type="checkbox"></td>
+                            </tr>
+                            <tr>
+                                <td>Delete</td>
+                                <td align="center"><input type="checkbox"></td>
+                                <td align="center"><input type="checkbox"></td>
+                                <td align="center"><input type="checkbox"></td>
+                                <td align="center"><input type="checkbox"></td>
+                                <td align="center"><input type="checkbox"></td>
+                                <td align="center"><input type="checkbox"></td>
+                                <td align="center"><input type="checkbox"></td>
+                            </tr>
+                            <tr>
+                                <td>Rename</td>
+                                <td align="center"><input type="checkbox"></td>
+                                <td align="center"><input type="checkbox"></td>
+                                <td align="center"><input type="checkbox"></td>
+                                <td align="center"><input type="checkbox"></td>
+                                <td align="center"><input type="checkbox"></td>
+                                <td align="center"><input type="checkbox"></td>
+                                <td align="center"><input type="checkbox"></td>
+
+                            </tr>
+                            <tr>
+                                <td>Move</td>
+                                <td align="center"><input type="checkbox"></td>
+                                <td align="center"><input type="checkbox"></td>
+                                <td align="center"><input type="checkbox"></td>
+                                <td align="center"><input type="checkbox"></td>
+                                <td align="center"><input type="checkbox"></td>
+                                <td align="center"><input type="checkbox"></td>
+                                <td align="center"><input type="checkbox"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">...vvv</div>
             </div>
         </div>
