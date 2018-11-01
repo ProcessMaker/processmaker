@@ -51,13 +51,13 @@
                         title: "Created At",
                         name: "created_at",
                         sortField: "created_at",
-                        callback: this.format
+                        callback: 'formatDate|M/D/YY HH:mm'
                     },
                     {
                         title: "Updated At",
                         name: "updated_at",
                         sortField: "updated_at",
-                        callback: this.format
+                        callback: 'formatDate|M/D/YY HH:mm'
                     },
                     {
                         name: "__slot:actions",
@@ -67,9 +67,6 @@
             };
         },
         methods: {
-            format(value) {
-                return this.formatDate(value, 'M/D/YY HH:mm');
-            },
             onAction(action, data, index) {
                 switch (action) {
                     case "edit-item":
