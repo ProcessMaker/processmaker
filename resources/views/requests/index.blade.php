@@ -16,7 +16,7 @@
             <template v-if="title">
                 <b-card-group deck>
 
-                    <b-card header="<i class='far fa-id-badge fa-2x'></i>" header-class="d-flex align-items-center justify-content-center card-size-header border-0"
+                    <b-card header="<i class='fas fa-id-badge fa-2x'></i>" header-class="d-flex align-items-center justify-content-center card-size-header border-0"
                         text-variant="white" class="bg-info mb-3 d-flex flex-row card-border border-0">
                         <a href="{{ route('requests_by_type', ['type' => '']) }}" class="card-link text-light">
                             <h1 class="m-0 font-weight-bold">{{$startedMe}}</h1>
