@@ -103,7 +103,7 @@
                     ProcessMaker.apiClient.post('screens', this.formData)
                         .then(response => {
                             ProcessMaker.alert('Created Screen Successfully', 'success');
-                            window.location = '/processes/screens';
+                            window.location = '/processes/screens/' + response.data.id + '/edit';
                         })
                         .catch(error => {
                             if (error.response.status && error.response.status === 422) {
