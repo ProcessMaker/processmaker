@@ -24,7 +24,8 @@ You can develop ProcessMaker as well as ProcessMaker packages locally. In order 
 ##### Steps for Development Installation
 - Clone the repository into a directory
 - Perform `composer install` to install required libraries. If you are on windows, you may need to run `composer install --ignore-platform-reqs` due to Horizon requiring the pcntl extension. You can safely ignore this as the application runs in the virtual machine which has the appropriate extensions installed.
-- Perform `npm
+- Perform `npm install` in the project directory
+- Perform `npm run dev` to build the front-end assets
 - Modify your local `/etc/hosts` file to point `bpm4.local.processmaker.com` to `192.168.10.10`. On Windows, this file is located at `C:\Windows\System32\Drivers\etc\hosts`.
 - Execute `vagrant up` in the project directory to bring up the laravel homestead virtual machine
 - Execute `vagrant ssh` to ssh into the newly created virtual machine
