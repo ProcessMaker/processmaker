@@ -151,7 +151,7 @@
                         <vue-croppie :style="{display: (image) ? 'block' : 'none' }" ref="croppie"
                                      :viewport="{ width: 380, height: 380, type: 'circle' }"
                                      :boundary="{ width: 400, height: 400 }"
-                                     :enableOrientation="false" :enableResize="false">
+                                     :enable-orientation="false" :enable-resize="false">
                         </vue-croppie>
                     </div>
                     <input type="file" class="custom-file-input" ref="customFile" @change="onFileChange">
