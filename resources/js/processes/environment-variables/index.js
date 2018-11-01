@@ -3,7 +3,7 @@ import VariablesListing from "./components/VariablesListing";
 
 // Bootstrap our Variables listing
 new Vue({
-    el: "#variablesIndex",
+    el: "#process-variables-listing",
     data: {
         filter: ""
     },
