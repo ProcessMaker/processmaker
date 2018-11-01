@@ -36,7 +36,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">{{__('Create New Process Variable')}}</h5>
+                    <h5 class="modal-title">{{__('Create Environment Variable')}}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -52,7 +52,7 @@
                     <div class="form-group">
                         {!!Form::label('description', __('Description'))!!}
                         {!!Form::textArea('description', null, ['class'=> 'form-control', 'v-model'=> 'description',
-                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.description}'])!!}
+                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.description}','rows'=>3])!!}
                         <div class="invalid-feedback" v-for="description in errors.description">@{{description}}</div>
                     </div>
                     <div class="form-group">
