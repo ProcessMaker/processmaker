@@ -9,29 +9,29 @@
 @endsection
 
 @section('content')
-  <div class="container page-content" id="screenIndex">
-      <h1>{{__('Screens')}}</h1>
-      <div class="row">
-          <div class="col">
-              <div class="input-group">
-                  <div class="input-group-prepend">
-                      <span class="input-group-text" id="basic-addon1">
+    <div class="container page-content" id="screenIndex">
+        <h1>{{__('Screens')}}</h1>
+        <div class="row">
+            <div class="col">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
                       <i class="fas fa-search"></i>
                       </span>
-                  </div>
-                  <input v-model="filter" class="form-control" placeholder="{{__('Search')}}...">
-              </div>
-          </div>
-          <div class="col-8" align="right">
-            <button type="button" href="#" class="btn btn-action text-white" data-toggle="modal"
-                    data-target="#createScreen">
-                <i class="fas fa-plus"></i> {{__('Screen')}}
-            </button>
-          </div>
-      </div>
-
-                <screen-listing ref="screenListing" :filter="filter" v-on:reload="reload"></screen-listing>
+                    </div>
+                    <input v-model="filter" class="form-control" placeholder="{{__('Search')}}...">
+                </div>
             </div>
+            <div class="col-8" align="right">
+                <button type="button" href="#" class="btn btn-action text-white" data-toggle="modal"
+                        data-target="#createScreen">
+                    <i class="fas fa-plus"></i> {{__('Screen')}}
+                </button>
+            </div>
+        </div>
+
+        <screen-listing ref="screenListing" :filter="filter" v-on:reload="reload"></screen-listing>
+    </div>
 
 
     <div class="modal fade" id="createScreen" tabindex="-1" role="dialog" aria-hidden="true">
@@ -103,7 +103,7 @@
                     ProcessMaker.apiClient.post('screens', this.formData)
                         .then(response => {
                             ProcessMaker.alert('Created Screen Successfully', 'success');
-                            window.location = '/processes/screens/' + response.data.id + '/edit';
+                            window.location = '/processes/screen-builder/' + response.data.id + '/edit';
                         })
                         .catch(error => {
                             if (error.response.status && error.response.status === 422) {
