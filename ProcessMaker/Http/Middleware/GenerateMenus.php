@@ -72,12 +72,12 @@ class GenerateMenus
           $submenu = $menu->add(__('Tasks'));
           $submenu->add(__('To Do'), [
                 'route' => 'tasks.index',
-                'icon' => 'icon-assigned',
+                'icon' => 'fa-list',
                 'id' => 'homeid'
           ]);
           $submenu->add(__('Completed'), [
               'route' => ['tasks.index', 'status' => 'CLOSED'],
-              'icon' => 'icon-draft',
+              'icon' => 'fa-check-square',
               'id' => 'homeid'
           ]);
         });

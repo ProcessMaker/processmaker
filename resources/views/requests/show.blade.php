@@ -17,13 +17,13 @@
 
                 <div class="container-fluid">
                     <ul class="nav nav-tabs" id="requestTab" role="tablist">
-                        <li class="nav-item">
+                        <li class="nav-item" v-if="status !== 'Completed'">
                             <a class="nav-link active" id="pending-tab" data-toggle="tab" href="#pending" role="tab"
                                aria-controls="pending" aria-selected="true">{{__('Pending Tasks')}}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="summary-tab" data-toggle="tab" href="#summary" role="tab"
-                               aria-controls="summary" aria-selected="false">{{__('Request Summary')}}</a>
+                            <a  id="summary-tab" data-toggle="tab" href="#summary" role="tab"
+                               aria-controls="summary" aria-selected="false" v-bind:class="{ 'nav-link':true, active: (status === 'Completed') }">{{__('Request Summary')}}</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" id="completed-tab" data-toggle="tab" href="#completed" role="tab"
@@ -32,10 +32,10 @@
                     </ul>
                     <div class="tab-content" id="requestTabContent">
                         <div class="tab-pane fade show active" id="pending" role="tabpanel"
-                             aria-labelledby="pending-tab">
+                             aria-labelledby="pending-tab" v-if="status !== 'Completed'">
                             <request-detail ref="pending" :process-request-id="requestId" status="ACTIVE"></request-detail>
                         </div>
-                        <div class="tab-pane fade" id="summary" role="tabpanel" aria-labelledby="summary-tab">
+                        <div v-bind:class="{ 'tab-pane':true, active: (status === 'Completed') }" id="summary" role="tabpanel" aria-labelledby="summary-tab">
                             <template v-if="showSummary">
                                 <table class="vuetable table table-hover">
                                     <thead>
@@ -117,7 +117,8 @@
                 return {
                     requestId: @json($request->getKey()),
                     request: @json($request),
-                    refreshTasks: 0
+                    refreshTasks: 0,
+                    status: ''
                 };
             },
             computed: {
@@ -165,6 +166,10 @@
                         "COMPLETED": 'Completed',
                         "ERROR": 'Error'
                     };
+
+                    if(this.request.status.toUpperCase() === 'COMPLETED'){
+                      this.status = 'Completed'
+                    }
                     return label[this.request.status.toUpperCase()];
                 },
                 labelDate() {

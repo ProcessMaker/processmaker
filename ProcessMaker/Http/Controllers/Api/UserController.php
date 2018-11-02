@@ -236,6 +236,11 @@ class UserController extends Controller
         //verify data
         $data = $request->all();
 
+        //if the avatar is an url (neither page nor file) we do not update the avatar
+        if (filter_var($data['avatar'], FILTER_VALIDATE_URL)) {
+            return;
+        }
+
         if (preg_match('/^data:image\/(\w+);base64,/', $data['avatar'] , $type)) {
             $data = substr($data['avatar'], strpos($data['avatar'], ',') + 1);
             $type = strtolower($type[1]); // jpg, png, gif
@@ -256,7 +261,7 @@ class UserController extends Controller
                 ->toMediaCollection(User::COLLECTION_PROFILE, User::DISK_PROFILE);
         } else if (isset($data['avatar']) && !empty($data['avatar'])) {
             $request->validate([
-                'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'avatar' => 'required',
             ]);
 
             $user->addMedia($request->avatar)

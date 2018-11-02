@@ -5,7 +5,7 @@
 @endsection
 
 @section('sidebar')
-    @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
+    @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_task')])
 @endsection
 
 @section('content')
@@ -31,8 +31,8 @@
             </div>
         </div>
 
-    </div> 
-    
+    </div>
+
     <div class="col-3">
         <div class="card card-body border-0">
             <div class="row">
@@ -77,7 +77,7 @@
 <style lang="scss" scoped>
 
 .taskNav {
-    height:40px; 
+    height:40px;
     background-color:#b6bfc6;
 }
 
