@@ -33,3 +33,8 @@ sudo cp /home/vagrant/processmaker/homestead/etc/supervisor/conf.d/* /etc/superv
 # Reload supervisor to ensure starting echo server and horizon
 sudo service supervisor stop
 sudo service supervisor start
+
+# Copy the server's ssl certificates so we can trust them on the host machine
+mkdir -p /home/vagrant/processmaker/storage/ssl
+sudo cp /etc/nginx/ssl/bpm4.local.processmaker.com.crt /home/vagrant/processmaker/storage/ssl
+sudo cp /etc/nginx/ssl/bpm4.local.processmaker.com.key /home/vagrant/processmaker/storage/ssl
