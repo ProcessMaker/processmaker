@@ -62,9 +62,10 @@
 
 ## Connector Development
 
-* [First Topic](connector-development/first-topic.md)
+* [What is a Connector?](connector-development/first-topic.md)
+* [Build A Connector](connector-development/build-a-connector.md)
 
 ## Package Development and Distribution
 
-* [First Topic](package-development-distribution/first-topic.md)
+* [What is a Package?](package-development-distribution/first-topic.md)
 

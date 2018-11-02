@@ -8,10 +8,20 @@ description: Start a Request by starting a process.
 
 Follow these steps to start a Request:
 
-1. Do one of the following:
-   * [Log in](../log-in.md#log-in) to ProcessMaker. The **Started by Me** tab in the **Requests** page displays.
-   * Click the **Requests** page if it is not currently displayed. The **Started by Me** tab displays.
-2. Click **+ Request**. ~~Explain what happens next. Is there a page in which to select which process to start a request?~~
+1. [Log in](../log-in.md#log-in) to ProcessMaker. The **Requests** page displays.
+2. Click **+ Request** from the top options bar, as highlighted below.  This button is always available.
+
+   ![](../../.gitbook/assets/+-request-button-highlighted%20%281%29.png)
+
+   The **New Request** screen displays. This screen displays processes for which you are authorized to start a new Request.
+
+3. Do one of the following:
+   * Select the process for which to start a new Request.
+   * From the **Search** field, enter text to filter the list of processes, and then select the process to start a new Request.
+
+{% hint style="info" %}
+If a Process Owner has not designed a process or you do not have authorization to start a Request in a process, the following message displays: **No Requests have been defined yet or are available to you**.
+{% endhint %}
 
 ## Related Topics
 

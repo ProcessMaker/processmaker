@@ -31,7 +31,7 @@ Follow these steps to log in to ProcessMaker:
 2. Enter your ProcessMaker username in the **Username** field.
 3. Enter your ProcessMaker password in the **Password** field.
 4. Click the **Remember me** check box to not enter your log in credentials in the future.
-5. Click **LOGIN**.
+5. Click **LOG IN**.
 
 ## Reset Your Password
 
