@@ -11,9 +11,13 @@
 npm-debug.log
 yarn-error.log
 .env
-!public/
-public/*
-!public/definitions
+/public/hot
+/public/storage
+/public/*.js
+/public/modeler
+/public/img
+/public/fonts
+/public/mix-manifest.json
 tests/js/coverage
 tests/coverage-report
 tests/coverage-report/*
