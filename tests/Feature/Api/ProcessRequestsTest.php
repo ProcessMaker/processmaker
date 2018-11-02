@@ -149,6 +149,45 @@ class ProcessRequestsTest extends TestCase
     }
 
     /**
+     * Get a list of Request by type 
+     */
+    public function testListRequestWithType()
+    {
+        $in_progress = factory(ProcessRequest::class)->create([
+            'status' => 'ACTIVE',
+        ]);
+        
+        $completed = factory(ProcessRequest::class)->create([
+            'status' => 'COMPLETED',
+        ]);
+        $response = $this->apiCall('GET', self::API_TEST_URL . '/?type=completed');
+        $json = $response->json();
+        $this->assertCount(1, $json['data']);
+        $this->assertEquals($completed->id, $json['data'][0]['id']);
+        
+        $response = $this->apiCall('GET', self::API_TEST_URL . '/?type=in_progress');
+        $json = $response->json();
+        $this->assertCount(1, $json['data']);
+        $this->assertEquals($in_progress->id, $json['data'][0]['id']);
+    }
+    
+    /**
+     * Get a list of Request with assocations included
+     */
+    public function testListRequestWithIncludes()
+    {
+        $process = factory(Process::class)->create();
+
+        factory(ProcessRequest::class)->create([
+            'process_id' => $process->id,
+        ]);
+
+        $response = $this->apiCall('GET', self::API_TEST_URL . '/?include=process');
+        $json = $response->json();
+        $this->assertEquals($process->id, $json['data'][0]['process']['id']);
+    }
+
+    /**
      * Get a request
      */
     public function testGetRequest()

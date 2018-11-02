@@ -52,7 +52,7 @@ class EnvironmentVariable extends Model
     public static function rules($existing = null)
     {
         $rules = [
-        'description' => 'nullable',
+        'description' => 'required',
         'value' => 'nullable',
         ];
         if($existing) {

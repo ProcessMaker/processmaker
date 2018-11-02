@@ -21,7 +21,10 @@ class TaskController extends Controller
      */
     public function index(Request $request)
     {
-        $query = ProcessRequestToken::query();
+        $query = ProcessRequestToken
+            ::join('process_requests as request', 'request.id', '=', 'process_request_tokens.process_request_id')
+            ->join('users as user', 'user.id', '=', 'process_request_tokens.user_id')
+            ->select('process_request_tokens.*');
         $include  = $request->input('include') ? explode(',',$request->input('include')) : [];
         $query->with($include);
         $filter = $request->input('filter', '');
@@ -29,14 +32,18 @@ class TaskController extends Controller
             $filter = '%' . $filter . '%';
             $query->where(function ($query) use ($filter) {
                 $query->Where('element_name', 'like', $filter)
-                    ->orWhere('status', 'like', $filter);
+                    ->orWhere('process_request_tokens.status', 'like', $filter)
+                    ->orWhere('request.name', 'like', $filter)
+                    ->orWhere('user.firstname', 'like', $filter)
+                    ->orWhere('user.lastname', 'like', $filter);
             });
         }
-        $filterByFields = ['process_id', 'user_id', 'status', 'element_id', 'element_name'];
+        $filterByFields = ['process_id', 'user_id', 'process_request_tokens.status' => 'status', 'element_id', 'element_name', 'process_request_id'];
         $parameters = $request->all();
         foreach ($parameters as $column => $filter) {
             if (in_array($column, $filterByFields)) {
-                $query->where($column, 'like', $filter);
+                $key = array_search($column, $filterByFields);
+                $query->where(is_string($key) ? $key : $column, 'like', $filter);
             }
         }
         //list only display elements type task

@@ -91,7 +91,15 @@ export default {
           this.goToEdit(data.id);
           break;
         case "remove-item":
-          //@todo implement
+            ProcessMaker.confirmModal(
+                "Caution!",
+                "<b>Are you sure to delete the Script </b>" + data.title + "?",
+                "",
+                () => {
+                    this.$emit("delete", data);
+                }
+            );
+            break;
           break;
       }
     },

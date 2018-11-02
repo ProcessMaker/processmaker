@@ -5,14 +5,14 @@
 @endsection
 
 @section('sidebar')
-    @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
+    @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_task')])
 @endsection
 
 @section('content')
     <div id="task" class="container">
         <h1>{{$task->element_name}}</h1>
         <div class="row">
-            @if ($task->getF() && ($task->advanceStatus==='open' || $task->advanceStatus==='overdue'))
+            @if ($task->getScreen() && ($task->advanceStatus==='open' || $task->advanceStatus==='overdue'))
             <div class="col-8">
                 <div class="container-fluid">
                     <div class="card card-body">
@@ -38,7 +38,7 @@
                     <div :class="statusCard">
                         <h4 style="margin:0; padding:0; line-height:1">{{__($task->advanceStatus)}}</h4>
                     </div>
-                    <ul class="list-group list-group-flush">
+                    <ul class="list-group list-group-flush w-100">
                         <li class="list-group-item">
                             <i class='far fa-calendar-alt'></i>
                             <small> {{__($dueLabels[$task->advanceStatus], ['day' => $task->due_at->diffForHumans()])}}</small>
@@ -109,8 +109,8 @@
             },
             mounted() {
                 this.statusCard = this.classHeaderCard(this.task.advanceStatus)
-                this.userAssigned = this.assignedUserAvatar(this.assigned)
-                this.userRequested = this.assignedUserAvatar(this.requested)
+                this.userAssigned = this.assigned
+                this.userRequested = this.requested
             }
         });
     </script>

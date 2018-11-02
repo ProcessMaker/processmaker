@@ -14,25 +14,25 @@ class RequestController extends Controller
      *
      * @return \Illuminate\View\View|\Illuminate\Contracts\View
      */
-    public function index()
+    public function index($type = null)
     {
         //load counters
         $allRequest = ProcessRequest::count();
-        $startedMe = ProcessRequest::startedMe(Auth::user()->uuid)->count();
+        $startedMe = ProcessRequest::startedMe(Auth::user()->id)->count();
         $inProgress = ProcessRequest::inProgress()->count();
         $completed = ProcessRequest::completed()->count();
 
-        return view('requests.index', compact(['allRequest', 'startedMe', 'inProgress', 'completed']));
-    }
+        $title = 'My Requests';
 
-    /**
-     * Edit a request
-     *
-     * @return \Illuminate\View\View|\Illuminate\Contracts\View
-     */
-    public function edit(Request $request)
-    {
-        return view('requests.edit', compact($request));
+        $types = ['all'=>'All Requests','in_progress'=>'Requests In Progress','completed'=>'Completed Requests'];
+
+        if(array_key_exists($type,$types)){
+          $title = $types[$type];
+        }
+
+        return view('requests.index', compact(
+            ['allRequest', 'startedMe', 'inProgress', 'completed', 'type','title']
+        ));
     }
 
     /**
@@ -40,8 +40,11 @@ class RequestController extends Controller
      *
      * @return \Illuminate\View\View|\Illuminate\Contracts\View
      */
-    public function show(Request $request)
+    public function show(ProcessRequest $request)
     {
-        return view('requests.show', compact($request));
+        $request->participants;
+        $request->user;
+        $request->summary = $request->summary();
+        return view('requests.show', compact('request'));
     }
 }

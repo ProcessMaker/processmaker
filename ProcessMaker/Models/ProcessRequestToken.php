@@ -6,7 +6,6 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use ProcessMaker\Nayra\Bpmn\TokenTrait;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
-use ProcessMaker\Repositories\DefinitionsRepository;
 
 /**
  * ProcessRequestToken is used to store the state of a token of the
@@ -70,7 +69,6 @@ class ProcessRequestToken extends Model implements TokenInterface
      * @var array
      */
     protected $appends = [
-        'previousUser',
         'advanceStatus'
     ];
 
@@ -147,27 +145,8 @@ class ProcessRequestToken extends Model implements TokenInterface
     public function getScreen()
     {
         $definition = $this->getDefinition();
-        return empty($definition['screenRef']) ? null : Form::find($definition['screenRef']);
+        return empty($definition['screenRef']) ? null : Screen::find($definition['screenRef']);
     }
-
-    /**
-     * Returns the user that sent the task or
-     */
-    public function getPreviousUserAttribute()
-    {
-        $query = ProcessRequestToken::query();
-        $query->where('process_request_id', $this->process_request_id)
-            ->where('id', '!=', $this->id)
-            ->where('status', 'ACTIVE')
-            ->orderByDesc('completed_at');
-        $last = $query->get()->last();
-        if (empty($last)) {
-            return ProcessRequest::find($this->process_request_id)
-                ->user;
-        }
-        return $last->user;
-    }
-
 
     /**
      * Returns the state of the advance of the request token (open, completed, overdue)
@@ -193,5 +172,17 @@ class ProcessRequestToken extends Model implements TokenInterface
         }
 
         return $result;
+    }
+
+    /**
+     * Prepare a date for array / JSON serialization.
+     *
+     * @param  \DateTimeInterface  $date
+     *
+     * @return string
+     */
+    protected function serializeDate(\DateTimeInterface $date)
+    {
+        return $date->format(Carbon::ISO8601);
     }
 }

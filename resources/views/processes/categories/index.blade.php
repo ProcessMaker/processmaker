@@ -83,7 +83,7 @@
                     })
                         .then(response => {
                             ProcessMaker.alert('{{__('Category successfully added ')}}', 'success');
-                            window.location = '/processes/categories';
+                            window.location = '/processes/categories/' + response.data.id + '/edit';
                         })
                         .catch(error => {
                             if (error.response.status === 422) {

@@ -62,6 +62,12 @@
                     <div class="invalid-feedback" v-for="lastname in addError.lastname">@{{lastname}}</div>
                 </div>
                 <div class="form-group">
+                    {!!Form::label('status', 'Status');!!}
+                    {!!Form::select('size', ['ACTIVE' => 'Active', 'INACTIVE' => 'Inactive'], 'Active', ['class'=> 'form-control', 'v-model'=> 'status',
+                    'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.status}']);!!}
+                    <div class="invalid-feedback" v-for="status in addError.status">@{{status}}</div>
+                </div>
+                <div class="form-group">
                     {!!Form::label('email', __('Email'))!!}
                     {!!Form::email('email', null, ['class'=> 'form-control', 'v-model'=> 'email', 'v-bind:class' =>
                     '{\'form-control\':true, \'is-invalid\':addError.email}'])!!}
@@ -81,7 +87,7 @@
                 </div>
                 <div class="form-group">
                     {!!Form::label('groups', __('Groups'))!!}
-                    <multiselect v-model="selectedGroups" :options="availableGroups" :multiple="true" track-by="title"
+                    <multiselect v-model="selectedGroups" :options="availableGroups" :multiple="true" track-by="name"
                         :custom-label="customLabel" :show-labels="false" label="name">
 
                         <template slot="tag" slot-scope="props">
@@ -122,6 +128,7 @@
                     username: '',
                     firstname: '',
                     lastname: '',
+                    status: '',
                     email: '',
                     password: '',
                     confpassword: '',
@@ -150,6 +157,7 @@
                                     username: this.username,
                                     firstname: this.firstname,
                                     lastname: this.lastname,
+                                    status: this.status,
                                     email: this.email,
                                     password: this.password
                                 })

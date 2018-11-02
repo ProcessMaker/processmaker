@@ -1,5 +1,7 @@
 <?php
 
+use ProcessMaker\Http\Controllers\Api\Requests\RequestsController;
+
 Route::group(['middleware' => ['auth', 'authorize']], function () {
 
 // Routes related to Authentication (password reset, etc)
@@ -25,19 +27,21 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
     });
 
     Route::resource('processes', 'ProcessController');
+    Route::get('profile/edit', 'ProfileController@edit')->name('profile.edit');
+    Route::get('profile/{id}', 'ProfileController@show');
     // Ensure our modeler loads at a distinct url
     Route::get('modeler/{process}', 'Process\ModelerController')->name('modeler');
 
+    Route::get('/', 'HomeController@index')->name('home');
 
-    Route::resource('profile', 'ProfileController')->only([
-        'index', 'edit', 'show'
-    ]);
+    Route::get('requests/{type}', 'RequestController@index')
+        ->where('type', 'all|in_progress|completed')
+        ->name('requests_by_type');
     Route::resource('requests', 'RequestController')->only([
-        'index', 'edit', 'show'
+        'index', 'show'
     ]);
-    Route::resource('tasks', 'TaskController');
 
-    $this->get('/', 'HomeController@index')->name('home');
+    Route::resource('tasks', 'TaskController');
 });
 
 // Add our broadcasting routes
