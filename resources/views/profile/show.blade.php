@@ -79,178 +79,18 @@
                             </tr>
                         </thead>
                         <tbody>
-
+                            @foreach ($permissions as $permission)
                             <tr>
-                                <td>About</td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
+                                <td>{{$permission->name}}</td>
+                                <td align="center">{!!Form::checkbox($permission->name, $permission->gaurd, true)!!}</td>
+                                <td align="center">{!!Form::checkbox($permission->name, $permission->gaurd, true)!!}</td>
+                                <td align="center">{!!Form::checkbox($permission->name, $permission->gaurd, true)!!}</td>
+                                <td align="center">{!!Form::checkbox($permission->name, $permission->gaurd, true)!!}</td>
+                                <td align="center">{!!Form::checkbox($permission->name, $permission->gaurd, true)!!}</td>
+                                <td align="center">{!!Form::checkbox($permission->name, $permission->gaurd, true)!!}</td>
+                                <td align="center">{!!Form::checkbox($permission->name, $permission->gaurd, true)!!}</td>
                             </tr>
-                            <tr>
-                                <td>Documents</td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                            </tr>
-                            <tr>
-                                <td>Environment Variables</td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                            </tr>
-                            <tr>
-                                <td>Files</td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                            </tr>
-                            <tr>
-                                <td>Forms</td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-
-                            </tr>
-                            <tr>
-                                <td>Group Members</td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                            </tr>
-                            <tr>
-                                <td>Groups</td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                            </tr>
-                            <tr>
-                                <td>Notifications</td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                            </tr>
-                            <tr>
-                                <td>Preferences</td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                            </tr>
-                            <tr>
-                                <td>Process Categories</td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                            </tr>
-                            <tr>
-                                <td>Process Events</td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                            </tr>
-                            <tr>
-                                <td>Processes</td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                            </tr>
-                            <tr>
-                                <td>Profile</td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                            </tr>
-                            <tr>
-                                <td>Requests</td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                            </tr>
-                            <tr>
-                                <td>Scripts</td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                            </tr>
-                            <tr>
-                                <td>Tasks</td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                            </tr>
-                            <tr>
-                                <td>Tasks</td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                                <td align="center"><input type="checkbox"></td>
-                            </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
