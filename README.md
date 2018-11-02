@@ -13,32 +13,35 @@ ProcessMaker is an open source, workflow management software suite, which includ
 ### Development
 
 #### System Requirements
-You can develop ProcessMaker as well as ProcessMaker packages locally. In order to do so, you must have the following:
-- [Virtualbox  5.2](https://www.virtualbox.org/) or above
-- [Vagrant 2.2.0](https://www.vagrantup.com/) or above
-- [PHP 7.2.0](https://php.net) or above
-  - Windows users can install [XAMPP](https://www.apachefriends.org/index.html)
-- [Composer](https://getcomposer.org/)
-- [Node.js 10.13.0](https://nodejs.org/en/) or above
 
-##### Steps for Development Installation
-- Clone the repository into a directory
-- Perform `composer install` to install required libraries. If you are on windows, you may need to run `composer install --ignore-platform-reqs` due to Horizon requiring the pcntl extension. You can safely ignore this as the application runs in the virtual machine which has the appropriate extensions installed.
-- Perform `npm install` in the project directory
-- Perform `npm run dev` to build the front-end assets
-- Modify your local `/etc/hosts` file to point `bpm4.local.processmaker.com` to `192.168.10.10`. On Windows, this file is located at `C:\Windows\System32\Drivers\etc\hosts`.
-  - If you need to change the ip address to something else to avoid conflicts on your network, modify the `Homestead.yaml` file accordingly. Do not commit this change to the repository.
-- Execute `vagrant up` in the project directory to bring up the laravel homestead virtual machine
-- Execute `vagrant ssh` to ssh into the newly created virtual machine
-- Execute `php artisan bpm:install` in `/home/vagrant/processmaker` to start the ProcessMaker Installation
-  - Specify `localhost` as your local database server
-  - Specify `3306` as your local database port
-  - Specify `workflow` as your local database name
-  - Specify `homestead` as your local database username
-  - Specify `secret` as your local database password
-  - Specify `https://bpm4.local.processmaker.com` as your application url
-- Visit `https://bpm4.local.processmaker.com` in your browser to access the application
-  - Login with the username of `admin` and password of `admin`
+You can develop ProcessMaker as well as ProcessMaker packages locally. In order to do so, you must have the following:
+
+* [Virtualbox  5.2](https://www.virtualbox.org/) or above
+* [Vagrant 2.2.0](https://www.vagrantup.com/) or above
+* [PHP 7.2.0](https://php.net) or above
+  * Windows users can install [XAMPP](https://www.apachefriends.org/index.html)
+* [Composer](https://getcomposer.org/)
+* [Node.js 10.13.0](https://nodejs.org/en/) or above
+
+**Steps for Development Installation**
+
+* Clone the repository into a directory
+* Perform `composer install` to install required libraries. If you are on windows, you may need to run `composer install --ignore-platform-reqs` due to Horizon requiring the pcntl extension. You can safely ignore this as the application runs in the virtual machine which has the appropriate extensions installed.
+* Perform `npm install` in the project directory
+* Perform `npm run dev` to build the front-end assets
+* Modify your local `/etc/hosts` file to point `bpm4.local.processmaker.com` to `192.168.10.10`. On Windows, this file is located at `C:\Windows\System32\Drivers\etc\hosts`.
+  * If you need to change the ip address to something else to avoid conflicts on your network, modify the `Homestead.yaml` file accordingly. Do not commit this change to the repository.
+* Execute `vagrant up` in the project directory to bring up the laravel homestead virtual machine
+* Execute `vagrant ssh` to ssh into the newly created virtual machine
+* Execute `php artisan bpm:install` in `/home/vagrant/processmaker` to start the ProcessMaker Installation
+  * Specify `localhost` as your local database server
+  * Specify `3306` as your local database port
+  * Specify `workflow` as your local database name
+  * Specify `homestead` as your local database username
+  * Specify `secret` as your local database password
+  * Specify `https://bpm4.local.processmaker.com` as your application url
+* Visit `https://bpm4.local.processmaker.com` in your browser to access the application
+  * Login with the username of `admin` and password of `admin`
 
 When developing, make sure to turn on debugging in your `.env` so you can see the actual error instead of the Whoops page.
 
@@ -48,13 +51,7 @@ APP_DEBUG=TRUE
 
 Optionally, trust the self-signed certificate on your host machine so you don't get the "Not Secure" warnings in chrome and postman.
 
-For OSX:
-1. In your-repository-root/storage/ssl, double-click on bpm4.local.processmaker.com.crt
-1. Click on "Add" to add it to your login keychain
-1. In the Keychain Access window click on the Certificates category on the bottom left.
-1. Double-click on the bpm4 certificate
-1. Open the Trust section. For "When using this certificate", select "always trust"
-1. Close the window. You will be asked for your password. Close and reopen the processmaker tab in chrome.
+For OSX: 1. In your-repository-root/storage/ssl, double-click on bpm4.local.processmaker.com.crt 1. Click on "Add" to add it to your login keychain 1. In the Keychain Access window click on the Certificates category on the bottom left. 1. Double-click on the bpm4 certificate 1. Open the Trust section. For "When using this certificate", select "always trust" 1. Close the window. You will be asked for your password. Close and reopen the processmaker tab in chrome.
 
 #### API
 
