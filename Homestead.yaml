@@ -20,5 +20,6 @@ sites:
         to: /home/vagrant/processmaker/public
 databases:
     - workflow
+    - test
 name: bpm4
 hostname: bpm4
