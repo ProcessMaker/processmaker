@@ -8,7 +8,7 @@
 * [How to Use This Document](start-here/how-to-use-this-document.md)
 * [Getting Started Guide](start-here/getting-started-guide.md)
 
-## Using ProcessMaker
+## Use ProcessMaker
 
 * [Log In](using-processmaker/log-in.md)
 * [Profile Settings](using-processmaker/profile-settings.md)
@@ -26,7 +26,7 @@
 * [Notifications](using-processmaker/notifications.md)
 * [Log Out](using-processmaker/log-out.md)
 
-## Designing Processes
+## Design Processes
 
 * [Process Management](designing-processes/viewing-processes/README.md)
   * [What is a Process?](designing-processes/viewing-processes/what-is-a-process.md)
@@ -63,7 +63,7 @@
 ## Connector Development
 
 * [What is a Connector?](connector-development/first-topic.md)
-* [Build A Connector](connector-development/build-a-connector.md)
+* [Build a Connector](connector-development/build-a-connector.md)
 
 ## Package Development and Distribution
 
