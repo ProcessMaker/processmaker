@@ -75,6 +75,39 @@
 @endsection
 
 @section('js')
+<<<<<<< HEAD
+<script>
+  new Vue({
+    el: '#addScript',
+    data: {
+      title: '',
+      language: '',
+      description: '',
+      code: '',
+      addError: {},
+      submitted: false,
+    },
+    methods: {
+      onSubmit() {
+        this.submitted = true;
+        ProcessMaker.apiClient.post("/scripts", {
+          title: this.title,
+          language: this.language,
+          description: this.description,
+          code: this.code
+        })
+        .then(response => {
+          ProcessMaker.alert('{{__('Script successfully added')}}', 'success')
+          window.location = "/processes/scripts/" + response.data.id + "/edit"
+        })
+        .catch(error => {
+          if (error.response.status === 422) {
+            this.addError = error.response.data.errors
+          }
+        })
+        .finally(()=> {
+          this.submitted = false
+=======
     <script src="{{mix('js/processes/scripts/index.js')}}"></script>
     <script>
         new Vue({
@@ -111,6 +144,7 @@
                         })
                 }
             }
+>>>>>>> develop
         })
     </script>
 @endsection

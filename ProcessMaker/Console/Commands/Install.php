@@ -45,25 +45,9 @@ class Install extends Command
     private $env;
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
+     * The encryption key we will use for for fresh install and any encryption during install
      */
-    public function __construct()
-    {
-        parent::__construct();
-
-        // Our initial .env values
-        $this->env = [
-            'APP_DEBUG' => 'FALSE',
-            'APP_NAME' => 'ProcessMaker',
-            'APP_ENV' => 'production',
-            'APP_KEY' => 'base64:'.base64_encode(Encrypter::generateKey($this->laravel['config']['app.cipher'])),
-            'BROADCAST_DRIVER' => 'redis',
-            'BROADCASTER_KEY' => '21a795019957dde6bcd96142e05d4b10'
-        ];
-
-    }
+    private $key;
 
     /**
      * Installs a fresh copy of ProcessMaker BPM
@@ -72,6 +56,21 @@ class Install extends Command
      */
     public function handle()
     {
+        // Setup our initial encryption key and set our running laravel app key to it
+        $this->key = 'base64:'.base64_encode(Encrypter::generateKey($this->laravel['config']['app.cipher']));
+        config(['app.key' => $this->key]);
+
+        // Our initial .env values
+        $this->env = [
+            'APP_DEBUG' => 'FALSE',
+            'APP_NAME' => 'ProcessMaker',
+            'APP_ENV' => 'production',
+            'APP_KEY' => $this->key,
+            'BROADCAST_DRIVER' => 'redis',
+            'BROADCASTER_KEY' => '21a795019957dde6bcd96142e05d4b10'
+        ];
+
+
         // Configure the filesystem to be local
         config(['filesystems.disks.install' => [
             'driver' => 'local',
