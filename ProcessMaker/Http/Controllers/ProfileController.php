@@ -34,7 +34,9 @@ class ProfileController extends Controller
     {
 
         $user = User::findOrFail($id);
-        $permissions = Permission::all();
-        return view('profile.show', compact('user', 'permissions'));
+        $all_permissions = Permission::all();
+        $users_permission_ids = $user->permissionAssignments()->pluck('permission_id')->toArray();
+        return view('profile.show', compact('user', 'all_permissions', 'users_permission_ids'));
     }
 }
+
