@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Controllers;
 use Illuminate\Http\Request;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\JsonData;
+use ProcessMaker\Models\Permission;
 
 class ProfileController extends Controller
 {
@@ -33,7 +34,7 @@ class ProfileController extends Controller
     {
 
         $user = User::findOrFail($id);
-
-        return view('profile.show', compact('user'));
+        $permissions = Permission::all();
+        return view('profile.show', compact('user', 'permissions'));
     }
 }
