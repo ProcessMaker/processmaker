@@ -40,7 +40,6 @@ sudo cp /etc/nginx/ssl/bpm4.local.processmaker.com.crt /home/vagrant/processmake
 sudo cp /etc/nginx/ssl/bpm4.local.processmaker.com.key /home/vagrant/processmaker/storage/ssl
 
 # Copy over the composer file to our home vagrant user to allow for local package and workflow engine development
-mkdir /home/vagrant/.composer
-sudo cp /home/vagrant/processmaker/homestead/home/vagrant/composer/config.json /home/vagrant/.composer
+sudo cp /home/vagrant/processmaker/homestead/home/vagrant/.composer/config.json /home/vagrant/.composer
 sudo chown -R vagrant: /home/vagrant/.composer
 
