@@ -65,7 +65,7 @@
                     </table>
                 </div>
                 <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
-                    {{ Form::open(array('url' => 'foo/bar')) }}
+                    {{ Form::open(['route' => ['profile.update', $user->id], 'method' => 'put']) }}
                     <table class="table">
                         <thead>
                             <tr>
@@ -80,11 +80,12 @@
                             @endphp
                             <tr>
                                 <td>{{$permission->name}}</td>
-                                <td align="center">{!!Form::checkbox($permission->name, $permission->gaurd, $checked)!!}</td>
+                                <td align="center">{!!Form::checkbox('permission_'.$permission->id, true, $checked)!!}</td>
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
+                    {{ Form::submit('Click Me!') }}
                     {{ Form::close() }}
                 </div>
                 <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">...vvv</div>
