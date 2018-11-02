@@ -18,7 +18,7 @@ class CreateScriptsTable extends Migration
             $table->text('title');
             $table->text('description')->nullable();
             $table->string('language', 20)->default('PHP');
-            $table->text('code');
+            $table->text('code')->nullable();
             $table->timestamps();
         });
     }

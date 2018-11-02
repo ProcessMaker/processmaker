@@ -64,6 +64,7 @@ class Screen extends Model
     {
         $rules = [
             'title' => 'required|unique:screens,title',
+            'description' => 'required'
         ];
         if ($existing) {
             // ignore the unique rule for this id

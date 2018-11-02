@@ -7,6 +7,16 @@
 @section('content')
 <div class="container" id="profileForm">
     <h1>{{__('Profile')}}</h1>
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab"
+                aria-controls="nav-home" aria-selected="true">Information</a>
+            <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab"
+                aria-controls="nav-profile" aria-selected="false">Permissions</a>
+            <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab"
+                aria-controls="nav-contact" aria-selected="false">Groups</a>
+        </div>
+    </nav>
     <div class="row">
         <div class="col-8">
             <nav>
@@ -47,6 +57,7 @@
                             <td><a href="{{'tel:' . $user->cell}}">{{$user->cell}}</a></td>
                         </tr>
                         @endif
+<<<<<<< HEAD
 
 
                         @if($user->address)
@@ -79,6 +90,8 @@
                             </tr>
                         </thead>
                         <tbody>
+=======
+>>>>>>> develop
 
                             <tr>
                                 <td>Add</td>
@@ -120,6 +133,7 @@
                                 <td align="center"><input type="checkbox"></td>
                                 <td align="center"><input type="checkbox"></td>
 
+<<<<<<< HEAD
                             </tr>
                             <tr>
                                 <td>Move</td>
@@ -134,6 +148,24 @@
                         </tbody>
                     </table>
                 </div>
+=======
+                        @if($user->address)
+                        <tr>
+                            <td colspan="3">
+                                <h4 class="mb-0 mt-3">{{__('Address')}}</h4>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3">
+                                {{$user->address}}<br>
+                                {{$user->city}}, {{$user->state}} {{$user->postal}} {{$user->country}}
+                            </td>
+                        </tr>
+                        @endif
+                    </table>
+                </div>
+                <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">...cee</div>
+>>>>>>> develop
                 <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">...vvv</div>
             </div>
         </div>

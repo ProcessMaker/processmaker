@@ -32,7 +32,10 @@ class TaskController extends Controller
             $filter = '%' . $filter . '%';
             $query->where(function ($query) use ($filter) {
                 $query->Where('element_name', 'like', $filter)
-                    ->orWhere('process_request_tokens.status', 'like', $filter);
+                    ->orWhere('process_request_tokens.status', 'like', $filter)
+                    ->orWhere('request.name', 'like', $filter)
+                    ->orWhere('user.firstname', 'like', $filter)
+                    ->orWhere('user.lastname', 'like', $filter);
             });
         }
         $filterByFields = ['process_id', 'user_id', 'process_request_tokens.status' => 'status', 'element_id', 'element_name', 'process_request_id'];
