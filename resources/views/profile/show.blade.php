@@ -65,34 +65,27 @@
                     </table>
                 </div>
                 <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+                    {{ Form::open(array('url' => 'foo/bar')) }}
                     <table class="table">
                         <thead>
                             <tr>
                                 <th></th>
-                                <th>Create</th>
-                                <th>Destroy</th>
-                                <th>Edit</th>
-                                <th>Show</th>
-                                <th>Store</th>
-                                <th>Update</th>
-                                <th>Menu</th>
+                                <th>Has permission</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($permissions as $permission)
+                            @foreach ($all_permissions as $permission)
+                            @php
+                                $checked = in_array($permission->id, $users_permission_ids);
+                            @endphp
                             <tr>
                                 <td>{{$permission->name}}</td>
-                                <td align="center">{!!Form::checkbox($permission->name, $permission->gaurd, true)!!}</td>
-                                <td align="center">{!!Form::checkbox($permission->name, $permission->gaurd, true)!!}</td>
-                                <td align="center">{!!Form::checkbox($permission->name, $permission->gaurd, true)!!}</td>
-                                <td align="center">{!!Form::checkbox($permission->name, $permission->gaurd, true)!!}</td>
-                                <td align="center">{!!Form::checkbox($permission->name, $permission->gaurd, true)!!}</td>
-                                <td align="center">{!!Form::checkbox($permission->name, $permission->gaurd, true)!!}</td>
-                                <td align="center">{!!Form::checkbox($permission->name, $permission->gaurd, true)!!}</td>
+                                <td align="center">{!!Form::checkbox($permission->name, $permission->gaurd, $checked)!!}</td>
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
+                    {{ Form::close() }}
                 </div>
                 <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">...vvv</div>
             </div>
