@@ -14,6 +14,12 @@ folders:
 #    -
 #        map: '../bpm-plugins'
 #        to: /home/vagrant/bpm-plugins
+#
+# Uncomment and modify the following if you want to
+# link a local directory for nayra (workflow engine) development
+#    -
+#        map: '../nayra'
+#        to: /home/vagrant/nayra
 sites:
     -
         map: bpm4.local.processmaker.com
