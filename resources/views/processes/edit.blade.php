@@ -11,8 +11,8 @@
 @section('content')
 <!doctype html>
 
-<div class="container">
-    <h1>Edit Process</h1>
+<div class="container" id="editProcess">
+    <h1>{{__('Edit Process')}}</h1>
     <div class="row">
         <div class="col-8">
             <div class="card card-body">
@@ -20,9 +20,10 @@
                 <div class="form-group">
                     {!!Form::label('processTitle', __('Process title'))!!}
                     {!!Form::text('processTitle', null,
-                        ['class'=> 'form-control',
+                        [ 'id'=> 'name',
+                            'class'=> 'form-control',
                             'v-model'=> 'formData.name',
-                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.username}'
+                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'
                         ])
                     !!}
                     <div class="invalid-feedback" v-if="errors.processTitle">@{{errors.name[0]}}</div>
@@ -41,22 +42,22 @@
                 </div>
                 <div class="form-group p-0">
                     {!! Form::label('category', 'Category') !!}
-                    {!! Form::select('status', $categories, null,
-                        ['id' => 'status',
+                    {!! Form::select('category', $categories, null,
+                        ['id' => 'process_category_id',
                             'class' => 'form-control',
-                            'v-model' => 'formData.status',
-                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.status}'
+                            'v-model' => 'formData.process_category_id',
+                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.category}'
                         ])
                     !!}
                     <div class="invalid-feedback" v-if="errors.category">@{{errors.category[0]}}</div>
                 </div>
                 <div class="form-group p-0">
-                    {!! Form::label('summaryScreen', 'Summary Screen') !!}
-                    {!! Form::select('summaryScreen', $screens, null,
-                        ['id' => 'summaryScreen',
+                    {!! Form::label('summaryScreen', 'Summary screen') !!}
+                    {!! Form::select('summaryScreen', ['null' => '- No screen -'] + $screens, null,
+                        ['id' => 'summary_screen_id',
                             'class' => 'form-control',
-                            'v-model' => 'formData.status',
-                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.status}'
+                            'v-model' => 'formData.summary_screen_id',
+                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.screen}'
                         ])
                     !!}
                 </div>
@@ -89,5 +90,61 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/processes/index.js')}}"></script>
+    <script>
+    test = new Vue({
+        el: '#editProcess',
+        data() {
+            return {
+                formData: @json($process),
+                dataGroups: [],
+                value: [],
+                errors: {
+                    name: null,
+                    description: null,
+                    category: null,
+                    status: null,
+                    screen: null
+                }
+            }
+        },
+        methods: {
+            resetErrors() {
+                this.errors = Object.assign({}, {
+                    name: null,
+                    description: null,
+                    category: null,
+                    status: null,
+                    screen: null
+                });
+            },
+            onClose() {
+                window.location.href = '/processes';
+            },
+            onUpdate() {
+                this.resetErrors();
+                let that = this;
+
+                //if the summary screen id is not a number (e.g. null string)
+                // is set to null
+                this.formData.summary_screen_id =
+                    isNaN(this.formData.summary_screen_id)
+                        ? null
+                        : this.formData.summary_screen_id;
+
+                ProcessMaker.apiClient.put('processes/' + that.formData.id, that.formData)
+                    .then(response => {
+                        ProcessMaker.alert('{{__('Update User Successfully')}}', 'success');
+                        that.onClose();
+                    })
+                    .catch(error => {
+                    //define how display errors
+                        if (error.response.status && error.response.status === 422) {
+                            // Validation error
+                            that.errors = error.response.data.errors;
+                        }
+                    });
+            }
+        }
+    });
+</script>
 @endsection

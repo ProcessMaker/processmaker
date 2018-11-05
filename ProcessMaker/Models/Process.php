@@ -16,10 +16,8 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  * Represents a business process definition.
  *
  * @property string $id
- * @property string $id
  * @property string $process_category_id
- * @property string $process_category_id
- * @property string $user_id
+ * @property string $summary_screen_id
  * @property string $user_id
  * @property string $bpmn
  * @property string $description
@@ -86,6 +84,11 @@ class Process extends Model implements HasMedia
     public function category()
     {
         return $this->belongsTo(ProcessCategory::class, 'process_category_id');
+    }
+
+    public function summaryScreen()
+    {
+       return $this->hasOne(Screen::class, 'summary_screen_id');
     }
 
     /**

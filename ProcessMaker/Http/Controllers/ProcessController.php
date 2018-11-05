@@ -20,14 +20,15 @@ class ProcessController extends Controller
     }
     public function edit(Process $process)
     {
-        $categories = ProcessCategory::where('status', 'ACTIVE')
-                        ->orderBy('name')
+        $categories = ProcessCategory::orderBy('name')
                         ->get()
-                        ->pluck('name', 'id');
+                        ->pluck('name', 'id')
+                        ->toArray();
 
         $screens = Screen::orderBy('title')
                     ->get()
-                    ->pluck('title', 'id');
+                    ->pluck('title', 'id')
+                    ->toArray();
 
         return view('processes.edit', compact('process', 'categories', 'screens'));
     }
