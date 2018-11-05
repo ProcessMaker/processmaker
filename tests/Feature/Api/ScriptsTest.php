@@ -106,6 +106,11 @@ class ScriptsTest extends TestCase
         factory(Script::class, $total)->create([
             'code' => $faker->sentence($faker->randomDigitNotNull)
         ]);
+        
+        // Create script with a key set. These should NOT be in the results.
+        factory(Script::class)->create([
+            'key' => 'some-key'
+        ]);
 
         //List scripts
         $url = self::API_TEST_SCRIPT;
