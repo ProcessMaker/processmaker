@@ -42,6 +42,14 @@
                         <option>Draft</option>
                     </select>
                 </div>
+                <div class="form-group p-0">
+                    <label for="summaryForm">Summary Form</label>
+                    <select class="form-control" id="summaryForm">
+                        <option>Form1</option>
+                        <option>Form2</option>
+                        <option>Form3</option>
+                    </select>
+                </div>
                 <div class="d-flex justify-content-end mt-2">
                     <button type="button" class="btn btn-outline-success">Close</button>
                     <button type="button" class="btn btn-success ml-2">Save</button>
