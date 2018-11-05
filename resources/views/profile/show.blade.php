@@ -79,13 +79,14 @@
                                 $checked = in_array($permission->id, $users_permission_ids);
                             @endphp
                             <tr>
-                                <td>{{$permission->name}}</td>
+                                <td>{{$permission->name}}<br>{{$permission->description}}</td>
                                 <td align="center">{!!Form::checkbox('permission_'.$permission->id, true, $checked)!!}</td>
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
-                    {{ Form::submit('Click Me!') }}
+                    <hr>
+                    {{ Form::submit('SUBMIT', ['class' => 'btn btn-secondary float-right']) }}
                     {{ Form::close() }}
                 </div>
                 <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">...vvv</div>
