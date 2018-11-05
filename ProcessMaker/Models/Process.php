@@ -316,12 +316,4 @@ class Process extends Model implements HasMedia
         $query->where('id', $this->id);
         return new ProcessEvents($query, $this);
     }
-
-    /**
-     * Get the Screen of this request.
-     */
-    public function screen()
-    {
-        return $this->belongsTo(Screen::class, 'summary_screen_id');
-    }
 }
