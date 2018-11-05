@@ -8,7 +8,7 @@
       </li>
       <li class="logo-closed" id="menu-toggle">
         <a href="#">
-            <img src="/img/processmaker_icon_logo-md.png">
+            <img src={{asset(env('ICON_PATH_PATH', 'img/processmaker_icon_logo-md.png'))}}>
         </a>
       </li>
     </ul>
