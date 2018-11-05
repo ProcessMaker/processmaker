@@ -42,7 +42,16 @@ return [
         |--------------------------------------------------------------------------
          */
         'middleware' => [
-            'api' => [],
+            'api' => [
+                \ProcessMaker\Http\Middleware\EncryptCookies::class,
+                \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+                \Illuminate\Session\Middleware\StartSession::class,
+                \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+                \ProcessMaker\Http\Middleware\VerifyCsrfToken::class,
+                \Illuminate\Routing\Middleware\SubstituteBindings::class,
+                \Laravel\Passport\Http\Middleware\CreateFreshApiToken::class,
+                'auth',
+            ],
             'asset' => [],
             'docs' => [],
             'oauth2_callback' => [],
@@ -142,7 +151,7 @@ return [
         ],
         */
 
-        'pm-api' => [ // Unique name of security
+        'pm_api_auth' => [ // Unique name of security
             'type' => 'oauth2', // The type of the security scheme. Valid values are "basic", "apiKey" or "oauth2".
             'flows' => [
                 "authorizationCode" => [
@@ -152,6 +161,10 @@ return [
                 ],
             ],
         ],
+        'pm_api_bearer' => [ // personal access token
+            'type' => 'http',
+            'scheme' => 'bearer',
+        ]
     ],
 
     /*

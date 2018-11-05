@@ -38,3 +38,6 @@ sudo service supervisor start
 mkdir -p /home/vagrant/processmaker/storage/ssl
 sudo cp /etc/nginx/ssl/bpm4.local.processmaker.com.crt /home/vagrant/processmaker/storage/ssl
 sudo cp /etc/nginx/ssl/bpm4.local.processmaker.com.key /home/vagrant/processmaker/storage/ssl
+
+# Create the test DB for phpunit
+mysql -u root -e "CREATE DATABASE IF NOT EXISTS test"

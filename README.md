@@ -173,28 +173,11 @@ And for a show method
 
 Reload the swagger UI at `api/documentation` page in your browser to see the results and debug any errors with the annotations.
 
-All api requests are authenticated with laravel passport oauth2. You need to generate a swagger ui client for your current logged in user.
+By default, Swagger UI will use your bpm4 app auth. So as long as you're logged into the app you
+should be able to run API Commands from Swagger UI as your logged in user.
 
-First, get your user's uuid in text format.
-
-```text
-$ php artisan tinker
->>> User::first()->uuid_text
-```
-
-Copy the UUID that looks like `1eaee1f0-cd80-11e8-9feb-0242cdbcf107`
-
-Then use php artisan to create the client
-
-```text
-php artisan passport:client
-```
-
-It will ask you several questions. For `Which user ID should the client be assigned to?` enter the uuid you got before. For `What should we name the client?` enter `swagger-ui` and for `Where should we redirect` enter your app's url with the path `/api/oauth2-callback`, for example `https://bpm4.processmaker.local/api/oauth2-callback` \(don't forget to match http and https\)
-
-Copy the resulting client id and client secret. Then in the swagger UI click on Authorize and enter the client id and secret. You should now be able to use the "Try it out" functionality.
-
-You can add `SWAGGER_CLIENT_ID` and `SWAGGER_CLIENT_SECRET` to your .env so you don't have to keep entering it.
+You can also create a personal access token to test it as an API user would. Enter the personal access token by clicking on the
+Authenticate button on the top right of Swagger UI.
 
 **More Info**
 
