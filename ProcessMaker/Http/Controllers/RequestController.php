@@ -47,7 +47,7 @@ class RequestController extends Controller
         $request->participants;
         $request->user;
         $request->summary = $request->summary();
-        $request->process->screen;
+        $request->process->summaryScreen;
         return view('requests.show', compact('request'));
     }
 }

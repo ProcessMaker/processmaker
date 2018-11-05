@@ -155,7 +155,7 @@
                  * If the screen summary is configured.
                  **/
                 showScreenSummary() {
-                    return this.request.process.screen !== null
+                    return this.request.process.summary_screen !== null
                 },
                 /**
                  * Get the summary of the Request.
@@ -168,7 +168,7 @@
                  * Get Screen summary
                  * */
                 screenSummary() {
-                    return this.request.process.screen.config;
+                    return this.request.process.summary_screen.config;
                 },
                 /**
                  * prepare data screen
@@ -230,7 +230,7 @@
                     this.$refs.completed.fetch();
                     ProcessMaker.apiClient.get(`requests/${this.requestId}`, {
                         params: {
-                            include: 'participants,user,summary,process.screen'
+                            include: 'participants,user,summary,process.summaryScreen'
                         }
                     })
                         .then((response) => {
