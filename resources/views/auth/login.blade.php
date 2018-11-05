@@ -3,7 +3,7 @@
 
 <div align="center">
   <div class="formContainer">
-    <img src="/img/md-blue-logo.png">
+    <img src={{asset(env('LOGIN_LOGO_PATH', 'img/md-blue-logo.png'))}}>
     <form method="POST" class="form" action="{{ route('login') }}">
     @if (session()->has('login-error'))
       <div class="alert alert-danger">{{ session()->get('login-error')}}</div>
