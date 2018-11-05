@@ -88,7 +88,7 @@ class Process extends Model implements HasMedia
 
     public function summaryScreen()
     {
-       return $this->hasOne(Screen::class, 'summary_screen_id');
+       return $this->belongsTo(Screen::class, 'summary_screen_id');
     }
 
     /**
