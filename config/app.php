@@ -29,10 +29,10 @@ return [
     'cache_lifetime' => env('APP_CACHE_LIFETIME', 60),
 
     // The timezone for the application
-    'timezone' => 'UTC',
+    'timezone' => env('APP_TIMEZONE', 'UTC'),
 
     // The date format for the application
-    'dateformat' => env('DATE_FORMAT', 'm/d/Y H:i'),
+    'dateformat' => env('DATE_FORMAT', 'MM/DD/YYYY h:i g'),
 
     // The system locale
     'locale' => 'en',
