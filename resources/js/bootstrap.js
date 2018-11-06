@@ -77,10 +77,12 @@ window.ProcessMaker.alert = function (text, variant) {
 };
 
 let userID = document.head.querySelector("meta[name=\"user-id\"]");
+let formatDate = document.head.querySelector("meta[name=\"datetime-format\"]");
 
 if (userID) {
     window.ProcessMaker.user = {
-        id: userID.content
+        id: userID.content,
+        datetime_format: formatDate.content
     };
 }
 

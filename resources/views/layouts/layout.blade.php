@@ -8,6 +8,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @if(Auth::user())
     <meta name="user-id" content="{{ Auth::user()->id }}">
+    <meta name="datetime-format" content="{{ Auth::user()->datetime_format }}">
     @endif
     @if(config('broadcasting.broadcaster') == 'socket.io')
     <meta name="broadcaster" content="{{config('broadcasting.broadcaster')}}">
