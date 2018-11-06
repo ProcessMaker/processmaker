@@ -15,6 +15,7 @@ class CreateScriptsTable extends Migration
     {
         Schema::create('scripts', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('key')->unique()->nullable();
             $table->text('title');
             $table->text('description')->nullable();
             $table->string('language', 20)->default('PHP');
