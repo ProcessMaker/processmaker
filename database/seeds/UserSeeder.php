@@ -6,6 +6,7 @@ use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\PermissionAssignment;
+use Laravel\Passport\ClientRepository;
 
 class UserSeeder extends Seeder
 {
@@ -14,7 +15,7 @@ class UserSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(ClientRepository $clients)
     {
         //Create default All Users group
         $group_id = factory(Group::class)->create([
@@ -39,5 +40,9 @@ class UserSeeder extends Seeder
           'member_type' => User::class,
           'group_id' => $group_id,
         ]);
+
+        $clients->createPersonalAccessClient(
+            null, 'PmApi', 'http://localhost'
+        );
     }
 }
