@@ -18,21 +18,12 @@
         </div>
         <div class="row">
           <div class="form-group col">
-            {!!Form::label('timeZone', 'Time Zone');!!}
-            {!!Form::select('timezone', $timezones, null, ['class'=> 'form-control']);!!}
-          </div>
-          <div class="form-group col">
             {!!Form::label('fullName', 'Full Name Format');!!}
             {!!Form::select('size', ['firstName' => 'First Name', 'lastName' => 'Last Name'], null, ['class'=> 'form-control']);!!}
             <small id="emailHelp" class="form-text text-muted">Format to display user's full name across all applications</small>
           </div>
         </div>
         <div class="row">
-          <div class="form-group col">
-            {!!Form::label('dateFormat', 'Global Date Format');!!}
-            {!!Form::select('size', ['YY-DD-MM' => 'YY-DD-MM', 'MM-DD-YY' => 'MM-DD-YY', 'MM-DD-YYYY'=> 'MM-DD-YYYY', 'YYYY-DD-MM'=> 'YYYY-DD-MM'],null, ['class'=> 'form-control']);!!}
-            <small id="emailHelp" class="form-text text-muted">Default Date Format. Dates across all applications will be displayed using this format</small>
-          </div>
           <div class="form-group col">
             {!!Form::label('defaultLang', 'Default Language');!!}
             {!!Form::select('size', ['english' => 'English'], null, ['class'=> 'form-control']);!!}
