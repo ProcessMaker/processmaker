@@ -78,11 +78,13 @@ window.ProcessMaker.alert = function (text, variant) {
 
 let userID = document.head.querySelector("meta[name=\"user-id\"]");
 let formatDate = document.head.querySelector("meta[name=\"datetime-format\"]");
+let timezone = document.head.querySelector("meta[name=\"timezone\"]");
 
 if (userID) {
     window.ProcessMaker.user = {
         id: userID.content,
-        datetime_format: formatDate.content
+        datetime_format: formatDate.content,
+        timezone: timezone.content
     };
 }
 

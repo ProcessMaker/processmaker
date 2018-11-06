@@ -9,6 +9,7 @@
     @if(Auth::user())
     <meta name="user-id" content="{{ Auth::user()->id }}">
     <meta name="datetime-format" content="{{ Auth::user()->datetime_format }}">
+    <meta name="timezone" content="{{ Auth::user()->timezone }}">
     @endif
     @if(config('broadcasting.broadcaster') == 'socket.io')
     <meta name="broadcaster" content="{{config('broadcasting.broadcaster')}}">
