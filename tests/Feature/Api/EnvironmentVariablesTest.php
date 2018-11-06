@@ -217,4 +217,30 @@ class EnvironmentVariablesTest extends TestCase
             'value' => 'testvalue'
         ]);
     }
+
+    /** @test */
+    public function it_value_does_not_change_if_value_is_null()
+    {
+        // Create an environment variable with a set name
+        $variable = factory(EnvironmentVariable::class)->create([
+            'name' => 'testname',
+            'value' => 'testvalue'
+        ]);
+        $variable->fresh();
+        $data = [
+            'name' => 'newname',
+            'description' => 'newdescription',
+            'value' => ''
+        ];
+        $response = $this->apiCall('PUT', self::API_TEST_VARIABLES . '/' . $variable->id, $data);
+
+        $response->assertStatus(200);
+
+        $data['id'] = $variable->id;
+        unset($data['value']);
+        $this->assertDatabaseHas('environment_variables', $data);
+
+        $variable = EnvironmentVariable::where('name', 'newname')->first();
+        $this->assertEquals('testvalue', $variable->value);
+    }
 }

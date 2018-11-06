@@ -17,7 +17,7 @@ class EnvironmentVariablesController extends Controller
    * @param Request $request
    *
    * @return ResponseFactory|Response A list of matched users and paging data
-   * 
+   *
    *      @OA\Get(
     *     path="/environment_variables",
     *     summary="Returns all environmentVariables that the user has access to",
@@ -72,7 +72,7 @@ class EnvironmentVariablesController extends Controller
 
   /**
    * Creates a new global Environment Variable in the system
-   * 
+   *
    *      * @OA\Get(
     *     path="/environment_variables/{environment_variables_id}",
     *     summary="Get single environment_variables by ID",
@@ -105,7 +105,7 @@ class EnvironmentVariablesController extends Controller
   /**
    * Return an environment variable instance
    * Using implicit model binding, will automatically return 404 if variable now found
-   * 
+   *
    *      @OA\Post(
     *     path="/environment_variables",
     *     summary="Save a new environment_variables",
@@ -128,7 +128,7 @@ class EnvironmentVariablesController extends Controller
   }
   /**
    * Update an environment variable
-   * 
+   *
    *      @OA\Put(
     *     path="/environment_variables/{environment_variables_id}",
     *     summary="Update a environment_variables",
@@ -156,9 +156,13 @@ class EnvironmentVariablesController extends Controller
    */
   public function update(EnvironmentVariable $environment_variable, Request $request)
   {
+      $fields = ['name', 'description'];
+      if ($request->filled('value')) {
+          $fields[] = 'value';
+      }
       // Validate the request, passing in the existing variable to tweak unique rule on name
       $request->validate(EnvironmentVariable::rules($environment_variable));
-      $environment_variable->fill($request->all());
+      $environment_variable->fill($request->only($fields));
       $environment_variable->save();
       return new EnvironmentVariableResource($environment_variable);
   }
