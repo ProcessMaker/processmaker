@@ -66,13 +66,7 @@
                 </div>
                 <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
                     {{ Form::open(['route' => ['profile.update', $user->id], 'method' => 'put']) }}
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th>Has permission</th>
-                            </tr>
-                        </thead>
+                    <table class="table mb-0">
                         <tbody>
                             @foreach ($all_permissions as $permission)
                             @php
@@ -85,7 +79,7 @@
                             @endforeach
                         </tbody>
                     </table>
-                    <hr>
+                    <hr class="mt-0">
                     {{ Form::submit('SUBMIT', ['class' => 'btn btn-secondary float-right']) }}
                     {{ Form::close() }}
                 </div>
