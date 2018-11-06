@@ -73,7 +73,7 @@
                                 $checked = in_array($permission->id, $users_permission_ids);
                             @endphp
                             <tr>
-                                <td>{{$permission->name}}<br>{{$permission->description}}</td>
+                                <td><span class="font-weight-bold">{{$permission->name}}</span><br>{{$permission->description}}</td>
                                 <td align="center">{!!Form::checkbox('permission_'.$permission->id, true, $checked)!!}</td>
                             </tr>
                             @endforeach
