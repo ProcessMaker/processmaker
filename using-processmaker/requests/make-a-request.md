@@ -16,8 +16,11 @@ Follow these steps to start a Request:
    The **New Request** screen displays. This screen displays processes for which you are authorized to start a new Request.
 
 3. Do one of the following:
+
    * Select the process for which to start a new Request.
    * From the **Search** field, enter text to filter the list of processes, and then select the process to start a new Request.
+
+   The process you selected starts a Request.
 
 {% hint style="info" %}
 If a Process Owner has not designed a process or you do not have authorization to start a Request in a process, the following message displays: **No Requests have been defined yet or are available to you**.
