@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Controllers;
 use ProcessMaker\Models\Process;
 use Illuminate\Http\Request;
 use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\Screen;
 
 class ProcessController extends Controller
 {
@@ -19,7 +20,17 @@ class ProcessController extends Controller
     }
     public function edit(Process $process)
     {
-        return view('processes.edit', ["process"=>$process]);
+        $categories = ProcessCategory::orderBy('name')
+                        ->get()
+                        ->pluck('name', 'id')
+                        ->toArray();
+
+        $screens = Screen::orderBy('title')
+                    ->get()
+                    ->pluck('title', 'id')
+                    ->toArray();
+
+        return view('processes.edit', compact('process', 'categories', 'screens'));
     }
 
     public function create() // create new process
