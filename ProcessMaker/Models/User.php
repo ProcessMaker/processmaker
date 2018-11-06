@@ -47,6 +47,7 @@ class User extends Authenticatable implements HasMedia
      *   @OA\Property(property="cell", type="string"),
      *   @OA\Property(property="title", type="string"),
      *   @OA\Property(property="timezone", type="string"),
+     *   @OA\Property(property="datetime_format", type="string"),
      *   @OA\Property(property="language", type="string"),
      *   @OA\Property(property="loggedin_at", type="string"),
      *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
