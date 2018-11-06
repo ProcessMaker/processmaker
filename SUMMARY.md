@@ -58,7 +58,7 @@
 
 ## Script Central
 
-* [First Topic](script-central-1/first-topic.md)
+* [Write and Test Scripts](script-central-1/first-topic.md)
 
 ## Connector Development
 
