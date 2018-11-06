@@ -55,6 +55,7 @@ class ProfileController extends Controller
                         'assignable_type' => User::class, 
                         'assignable_id' => $user->id
                     ]);
+                    return redirect()->back();
                 }
             } else { 
                 if(in_array($permission->id,$users_permission_ids)){
@@ -64,6 +65,7 @@ class ProfileController extends Controller
                         'assignable_type' => User::class, 
                         'assignable_id' => $user->id
                     ])->delete();
+                    return redirect()->back();
                 }
             }
         }
