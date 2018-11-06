@@ -5,6 +5,7 @@ namespace ProcessMaker\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
+use ProcessMaker\Traits\SerializeToIso8601;
 
 /**
  * Class Screen
@@ -37,6 +38,7 @@ use Illuminate\Validation\Rule;
  */
 class Screen extends Model
 {
+    use SerializeToIso8601;
 
     protected $casts = [
         'config' => 'array'

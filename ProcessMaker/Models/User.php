@@ -7,6 +7,7 @@ use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
+use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use ProcessMaker\Traits\HasAuthorization;
@@ -17,6 +18,7 @@ class User extends Authenticatable implements HasMedia
     use Notifiable;
     use HasMediaTrait;
     use HasAuthorization;
+    use SerializeToIso8601;
 
     //Disk
     public const DISK_PROFILE = 'profile';

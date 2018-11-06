@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
+use ProcessMaker\Traits\SerializeToIso8601;
 
 /**
  * Represents an Eloquent model of a Script
@@ -36,6 +37,7 @@ use ProcessMaker\Exception\ScriptLanguageNotSupported;
  */
 class Script extends Model
 {
+    use SerializeToIso8601;
 
     protected $guarded = [
         'id',

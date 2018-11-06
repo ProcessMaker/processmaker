@@ -9,6 +9,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
+use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
@@ -47,6 +48,7 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 class Process extends Model implements HasMedia
 {
     use HasMediaTrait;
+    use SerializeToIso8601;
 
     /**
      * The attributes that aren't mass assignable.
