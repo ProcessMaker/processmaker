@@ -12,7 +12,8 @@ use ProcessMaker\Exception\ScriptLanguageNotSupported;
  *
  * @package ProcessMaker\Model
  *
- * @property string id
+ * @property integer id
+ * @property string key
  * @property string title
  * @property text description
  * @property string language
@@ -58,6 +59,7 @@ class Script extends Model
     public static function rules($existing = null)
     {
         $rules = [
+            'key' => 'unique:scripts,key',
             'title' => 'required|unique:scripts,title',
             'language' => 'required|in:php,lua'
         ];
