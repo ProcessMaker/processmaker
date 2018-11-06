@@ -11,40 +11,70 @@
 @section('content')
 <!doctype html>
 
-<div class="container">
-    <h1>Edit Process</h1>
+<div class="container" id="editProcess">
+    <h1>{{__('Edit Process')}}</h1>
     <div class="row">
         <div class="col-8">
             <div class="card card-body">
                 
                 <div class="form-group">
-                    <label for="processTitle">Title</label>
-                    <input type="text" class="form-control" id="processTitle" value="{{$process->name}}">
-                    
+                    {!!Form::label('processTitle', __('Process title'))!!}
+                    {!!Form::text('processTitle', null,
+                        [ 'id'=> 'name',
+                            'class'=> 'form-control',
+                            'v-model'=> 'formData.name',
+                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'
+                        ])
+                    !!}
+                    <div class="invalid-feedback" v-if="errors.processTitle">@{{errors.name[0]}}</div>
                 </div>
                 <div class="form-group">
-                    <label for="processTitle">Description</label>
-                    <textarea class="form-control" rows="3" id="processDescription"></textarea>
+                    {!! Form::label('description', 'Description') !!}
+                    {!! Form::textarea('description', null,
+                        ['id' => 'description',
+                            'rows' => 4,
+                            'class'=> 'form-control',
+                            'v-model' => 'formData.description',
+                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.description}'
+                        ])
+                    !!}
+                    <div class="invalid-feedback" v-if="errors.description">@{{errors.description[0]}}</div>
                 </div>
                 <div class="form-group p-0">
-                    <label for="dropdownSelect">Category</label>
-                    <select class="form-control" id="dropdownSelect">
-                        <option>No Category</option>
-                        <option>Category</option>
-                        <option>Heyo</option>
-                    </select>
+                    {!! Form::label('category', 'Category') !!}
+                    {!! Form::select('category', $categories, null,
+                        ['id' => 'process_category_id',
+                            'class' => 'form-control',
+                            'v-model' => 'formData.process_category_id',
+                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.category}'
+                        ])
+                    !!}
+                    <div class="invalid-feedback" v-if="errors.category">@{{errors.category[0]}}</div>
                 </div>
                 <div class="form-group p-0">
-                    <label for="dropdownSelect">Status</label>
-                    <select class="form-control" id="dropdownSelect">
-                        <option>Active</option>
-                        <option>Inactive</option>
-                        <option>Draft</option>
-                    </select>
+                    {!! Form::label('summaryScreen', 'Summary screen') !!}
+                    {!! Form::select('summaryScreen', ['null' => '- No screen -'] + $screens, null,
+                        ['id' => 'summary_screen_id',
+                            'class' => 'form-control',
+                            'v-model' => 'formData.summary_screen_id',
+                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.screen}'
+                        ])
+                    !!}
+                </div>
+                <div class="form-group p-0">
+                    {!! Form::label('status', 'Status') !!}
+                    {!! Form::select('status', ['ACTIVE' => 'Active', 'INACTIVE' => 'Inactive'], null,
+                        ['id' => 'status',
+                        'class' => 'form-control',
+                        'v-model' => 'formData.status',
+                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.status}'])
+                    !!}
+                    <div class="invalid-feedback" v-if="errors.status">@{{errors.status[0]}}</div>
                 </div>
                 <div class="d-flex justify-content-end mt-2">
-                    <button type="button" class="btn btn-outline-success">Close</button>
-                    <button type="button" class="btn btn-success ml-2">Save</button>
+                    {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose']) !!}
+                    {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'onUpdate']) !!}
+
                 </div>
             </div>
 
@@ -60,5 +90,61 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/processes/index.js')}}"></script>
+    <script>
+    test = new Vue({
+        el: '#editProcess',
+        data() {
+            return {
+                formData: @json($process),
+                dataGroups: [],
+                value: [],
+                errors: {
+                    name: null,
+                    description: null,
+                    category: null,
+                    status: null,
+                    screen: null
+                }
+            }
+        },
+        methods: {
+            resetErrors() {
+                this.errors = Object.assign({}, {
+                    name: null,
+                    description: null,
+                    category: null,
+                    status: null,
+                    screen: null
+                });
+            },
+            onClose() {
+                window.location.href = '/processes';
+            },
+            onUpdate() {
+                this.resetErrors();
+                let that = this;
+
+                //if the summary screen id is not a number (e.g. null string)
+                // is set to null
+                this.formData.summary_screen_id =
+                    isNaN(this.formData.summary_screen_id)
+                        ? null
+                        : this.formData.summary_screen_id;
+
+                ProcessMaker.apiClient.put('processes/' + that.formData.id, that.formData)
+                    .then(response => {
+                        ProcessMaker.alert('{{__('Update User Successfully')}}', 'success');
+                        that.onClose();
+                    })
+                    .catch(error => {
+                    //define how display errors
+                        if (error.response.status && error.response.status === 422) {
+                            // Validation error
+                            that.errors = error.response.data.errors;
+                        }
+                    });
+            }
+        }
+    });
+</script>
 @endsection
