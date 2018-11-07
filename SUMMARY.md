@@ -58,7 +58,8 @@
 
 ## Script Central
 
-* [Write and Test Scripts](script-central-1/first-topic.md)
+* [Why is Scripting So Powerful in ProcessMaker?](script-central-1/first-topic.md)
+* [Develop and Test Scripts](script-central-1/develop-and-test-scripts.md)
 
 ## Connector Development
 

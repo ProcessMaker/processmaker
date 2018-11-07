@@ -6,9 +6,14 @@ description: Learn how this document is organized.
 
 Welcome to ProcessMaker 4 documentation.
 
-Refer to the following sections of this document based on how you use ProcessMaker.
+Refer to the topics throughout this document based on how you use ProcessMaker:
 
-## Administrator
+* [ProcessMaker Administrator](how-to-use-this-document.md#processmaker-administrator)
+* [Process Owner](how-to-use-this-document.md#process-owner)
+* [ProcessMaker Developer](how-to-use-this-document.md#processmaker-developer)
+* [ProcessMaker User](how-to-use-this-document.md#processmaker-user)
+
+## ProcessMaker Administrator
 
 An Administrator installs ProcessMaker on-premises and performs administrative tasks in ProcessMaker.
 
@@ -36,15 +41,22 @@ Also refer to the **Designing Processes** section that includes the following to
 
 Lastly, refer to the **Script Central** section that includes the following topics:
 
-* 
+* [Why is Scripting So Powerful in ProcessMaker?](../script-central-1/first-topic.md)
+* [Develop and Test Scripts](../script-central-1/develop-and-test-scripts.md)
+
 ## ProcessMaker Developer
 
 A ProcessMaker Developer extends out-of-the-box ProcessMaker functionality by developing Connectors that perform custom functions, and then packaging those Connectors for distribution.
 
-Refer to the **Connector Development** section that includes the following topics:
+Refer to the **Script Central** section that includes the following topics:
+
+* [Why is Scripting So Powerful in ProcessMaker?](../script-central-1/first-topic.md)
+* [Develop and Test Scripts](../script-central-1/develop-and-test-scripts.md)
+
+Also refer to the **Connector Development** section that includes the following topics:
 
 * 
-Also refer to the **Package Development and Distribution** section that includes the following topics:
+Lastly, refer to the **Package Development and Distribution** section that includes the following topics:
 
 * 
 ## ProcessMaker User
