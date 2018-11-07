@@ -114,8 +114,12 @@
         data: {
             user: @json($user),
             permissions: @json($all_permissions),
+            userPermissionIds: @json($permission_ids),
             selected: [],
 		    selectAll: false
+        },
+        mounted() {
+            this.hasPermission()
         },
         computed: {
             avatar() {
@@ -145,6 +149,14 @@
                     ProcessMaker.alert('{{__('Permission successfully added ')}}', 'success');
                 })
             },
+            hasPermission() {
+                if(this.userPermissionIds){
+                    for (let permission in this.permissions) {
+                        this.selected.push(this.permissions[permission].id);
+                        this.selectAll=true;
+                    }
+                }
+            }
         }
     });
 </script>
