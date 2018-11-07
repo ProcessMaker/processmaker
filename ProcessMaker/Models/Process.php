@@ -202,9 +202,12 @@ class Process extends Model implements HasMedia
     public function getNextUser(ActivityInterface $activity)
     {
         $default = $activity instanceof ScriptTaskInterface ? 'script' : 'cyclical';
-        $assignmentType = $activity->getProperty('assignment_type', $default);
+        $assignmentType = $activity->getProperty('assignment', $default);
         switch ($assignmentType) {
             case 'cyclical':
+                $user = $this->getNextUserCyclicalAssignment($activity->getId());
+                break;
+            case 'requestor':
                 $user = $this->getNextUserCyclicalAssignment($activity->getId());
                 break;
             case 'manual':

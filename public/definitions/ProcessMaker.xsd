@@ -17,7 +17,7 @@
                 <xsd:attribute name="dueDate" type="xsd:date"/>
                 <xsd:attribute name="notifyAfterRouting" type="xsd:boolean" default="false"/>
                 <xsd:attribute name="notifyToRequestCreator" type="xsd:boolean" default="false"/>
-                <xsd:attribute name="assignType" type="xsd:boolean" default="false"/>
+                <xsd:attribute name="assignment" type="xsd:string" default="false"/>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
