@@ -36,15 +36,18 @@ class RequestController extends Controller
     }
 
     /**
-     * request show
+     * Request Show
      *
-     * @return \Illuminate\View\View|\Illuminate\Contracts\View
+     * @param ProcessRequest $request
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function show(ProcessRequest $request)
     {
         $request->participants;
         $request->user;
         $request->summary = $request->summary();
+        $request->process->summaryScreen;
         return view('requests.show', compact('request'));
     }
 }
