@@ -65,23 +65,22 @@
                     </table>
                 </div>
                 <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
-                    {{ Form::open(['route' => ['profile.update', $user->id], 'method' => 'put']) }}
                     <table class="table mb-0">
-                        <tbody>
-                            @foreach ($all_permissions as $permission)
-                            @php
-                                $checked = in_array($permission->id, $users_permission_ids);
-                            @endphp
+                          <thead>
                             <tr>
-                                <td><span class="font-weight-bold">{{$permission->name}}</span><br>{{$permission->description}}</td>
-                                <td align="center">{!!Form::checkbox('permission_'.$permission->id, true, $checked)!!}</td>
+                                <th></th>
+                                <th><input type="checkbox" v-model="selectAll" @click="select"></th>
                             </tr>
-                            @endforeach
+                        </thead>
+                        <tbody>
+                            <tr v-for="permission in permissions">
+                                <td>@{{permission.name}}<br>@{{permission.description}}</td>
+                                <td><input type="checkbox" :value="permission.id" v-model="selected"></td>
+                            </tr>
                         </tbody>
                     </table>
                     <hr class="mt-0">
-                    {{ Form::submit('SUBMIT', ['class' => 'btn btn-secondary float-right']) }}
-                    {{ Form::close() }}
+                    {{ Form::button('SUBMIT', ['class' => 'btn btn-secondary float-right']) }}
                 </div>
                 <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">...vvv</div>
             </div>
@@ -113,7 +112,10 @@
     new Vue({
         el: '#profileForm',
         data: {
-            user: @json($user)
+            user: @json($user),
+            permissions: @json($all_permissions),
+            selected: [],
+		    selectAll: false
         },
         computed: {
             avatar() {
@@ -123,6 +125,16 @@
                     name: '',
                     initials: this.user.firstname.match(/./u)[0] + this.user.lastname.match(/./u)[0]
                 }];
+            }
+        },
+        methods: {
+            select() {
+                this.selected = [];
+                if (!this.selectAll) {
+                    for (let permission in this.permissions) {
+                        this.selected.push(this.permissions[permission].id);
+                    }
+                }
             }
         }
     });
