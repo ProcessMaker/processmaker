@@ -2,14 +2,17 @@
 
 namespace ProcessMaker\Managers;
 
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\Jobs\CallProcess;
 use ProcessMaker\Jobs\CompleteActivity;
 use ProcessMaker\Jobs\RunScriptTask;
+use ProcessMaker\Jobs\RunServiceTask;
 use ProcessMaker\Jobs\StartEvent;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessRequestToken as Token;
 use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
@@ -71,9 +74,23 @@ class WorkflowManager
      */
     public function runScripTask(ScriptTaskInterface $scriptTask, Token $token)
     {
+        Log::info('Dispatch a script task: ' . $scriptTask->getId());
         $instance = $token->processRequest;
         $process = $instance->process;
-        //Run the script task with a delay to allow the request response to conclude, before the script runs
         RunScriptTask::dispatch($process, $instance, $token, [])->delay(1);
+    }
+
+    /**
+     * Run a service task.
+     *
+     * @param ServiceTaskInterface $serviceTask
+     * @param Token $token
+     */
+    public function runServiceTask(ServiceTaskInterface $serviceTask, Token $token)
+    {
+        Log::info('Dispatch a service task: ' . $serviceTask->getId());
+        $instance = $token->processRequest;
+        $process = $instance->process;
+        RunServiceTask::dispatch($process, $instance, $token, []);
     }
 }

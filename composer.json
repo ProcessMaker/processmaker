@@ -24,7 +24,7 @@
     "lavary/laravel-menu": "^1.7",
     "phing/phing": "^2.16",
     "predis/predis": "^1.1",
-    "processmaker/nayra": "dev-master",
+    "processmaker/nayra": "dev-feature/115",
     "ralouphie/getallheaders": "^2.0",
     "spatie/laravel-fractal": "^5.3",
     "spatie/laravel-medialibrary": "^7.0.0",

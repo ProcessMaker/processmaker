@@ -5,11 +5,11 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\Script;
-use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 
-class RunScriptTask extends BpmnAction implements ShouldQueue
+class RunServiceTask extends BpmnAction implements ShouldQueue
 {
 
     public $definitionsId;
@@ -38,10 +38,10 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
      *
      * @return void
      */
-    public function action(TokenInterface $token, ScriptTaskInterface $element)
+    public function action(TokenInterface $token, ServiceTaskInterface $element)
     {
-        $scriptRef = $element->getProperty('scriptRef');
-        Log::info('Script started: ' . $scriptRef);
+        $implementation = $element->getImplementation();
+        Log::info('Service task started: ' . $implementation);
         $configuration = json_decode($element->getProperty('config'), true);
 
         // Check to see if we've failed parsing.  If so, let's convert to empty array.
@@ -50,13 +50,11 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
         }
         $dataStore = $token->getInstance()->getDataStore();
         $data = $dataStore->getData();
-        if (empty($scriptRef)) {
-            $script = new Script([
-                'code' => $element->getScript(),
-                'language' => Script::scriptFormat2Language($element->getProperty('scriptFormat', 'application/x-php'))
-            ]);
+        if (empty($implementation)) {
+            $element->complete($token);
+            Log::info('Service task not implemented: ' . $implementation);
         } else {
-            $script = Script::find($scriptRef);
+            $script = Script::whereKey($implementation)->firstOrFail();
         }
 
         $response = $script->runScript($data, $configuration);
@@ -65,10 +63,10 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
                 $dataStore->putData($key, $value);
             }
             $element->complete($token);
-            Log::info('Script completed: ' . $scriptRef);
+            Log::info('Service task completed: ' . $implementation);
         } else {
-            $token->setStatus(ScriptTaskInterface::TOKEN_STATE_FAILING);
-            Log::info('Script failed: ' . $scriptRef . ' - ' . $response['output']);
+            $token->setStatus(ServiceTaskInterface::TOKEN_STATE_FAILING);
+            Log::info('Service task failed: ' . $implementation . ' - ' . $response['output']);
         }
     }
 }
