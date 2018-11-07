@@ -10,6 +10,16 @@ import ConfirmationModal from "./components/Confirm";
 import NavbarProfile from "./components/NavbarProfile";
 import Multiselect from 'vue-multiselect/src/Multiselect';
 
+/******
+ * Global adjustment parameters for moment.js.
+ */
+import moment from "moment"
+import moment_timezone from "moment-timezone";
+moment.tz.setDefault(window.ProcessMaker.user.timezone);
+moment.defaultFormat= window.ProcessMaker.user.datetime_format;
+Vue.prototype.moment = moment;
+ /********/
+
 Vue.component('multiselect', Multiselect);
 
 //Event bus ProcessMaker

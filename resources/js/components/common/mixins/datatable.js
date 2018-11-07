@@ -5,8 +5,15 @@
  */
 import Vuetable from "vuetable-2/src/components/Vuetable";
 import Pagination from "../../../components/common/Pagination";
-import moment from "moment";
-import momment_timezone from "moment-timezone";
+
+/*
+ * Global adjustment parameters for moment.js.
+ */
+import moment from "moment"
+import moment_timezone from "moment-timezone";
+moment.tz.setDefault(window.ProcessMaker.user.timezone);
+moment.defaultFormat= window.ProcessMaker.user.datetime_format;
+/***********/
 
 export default {
     components: {
@@ -27,10 +34,9 @@ export default {
     methods: {
         // Handler to properly format date/time columns according to localized format
         formatDate (value, format) {
-            format = format || window.ProcessMaker.user.datetime_format;
+            format = format || '';
             if (value) {
                 return moment(value)
-                    .tz(window.ProcessMaker.user.timezone)
                     .format(format);
             }
             return "n/a";
