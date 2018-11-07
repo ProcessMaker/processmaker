@@ -15,6 +15,7 @@ use ProcessMaker\Managers\TaskAssigneeManager;
 use ProcessMaker\Managers\TaskManager;
 use ProcessMaker\Managers\TasksDelegationManager;
 use ProcessMaker\Managers\UserManager;
+use ProcessMaker\Managers\ModelerManager;
 use Laravel\Horizon\Horizon;
 use Laravel\Passport\Passport;
 use Illuminate\Support\Facades\Auth;
@@ -92,6 +93,14 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         $this->app->singleton('task_delegation.manager', function ($app) {
             return new TasksDelegationManager();
+        });
+
+        /**
+         * Maps our Modeler Manager as a singleton. The Modeler Manager is used 
+         * to manage customizations to the Process Modeler.
+         */
+        $this->app->singleton(ModelerManager::class, function($app) {
+            return new ModelerManager();
         });
 
         //Enable
