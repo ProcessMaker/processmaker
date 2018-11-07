@@ -80,7 +80,7 @@
                         </tbody>
                     </table>
                     <hr class="mt-0">
-                    {{ Form::button('SUBMIT', ['class' => 'btn btn-secondary float-right']) }}
+                    <button class="btn btn-secondary float-right" @click="onUpdate">SUBMIT</button>
                 </div>
                 <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">...vvv</div>
             </div>
@@ -135,7 +135,15 @@
                         this.selected.push(this.permissions[permission].id);
                     }
                 }
-            }
+            },
+            onUpdate() {
+                ProcessMaker.apiClient.put("/permissions", {
+                    permissionIds: this.selected
+                    })
+                .then(response => {
+                    ProcessMaker.alert('{{__('Permission successfully added ')}}', 'success');
+                })
+            },
         }
     });
 </script>
