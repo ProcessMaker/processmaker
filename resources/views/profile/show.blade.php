@@ -138,7 +138,8 @@
             },
             onUpdate() {
                 ProcessMaker.apiClient.put("/permissions", {
-                    permissionIds: this.selected
+                    permission_ids: this.selected,
+                    user_id: this.user.id
                     })
                 .then(response => {
                     ProcessMaker.alert('{{__('Permission successfully added ')}}', 'success');
