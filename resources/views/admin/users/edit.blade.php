@@ -47,6 +47,20 @@
                         <div class="invalid-feedback" v-if="errors.email">@{{errors.email[0]}}</div>
                     </div>
                     <div class="form-group">
+                        {!!Form::label('datetimeformat', 'Date Format');!!}
+                        {!!Form::select('datetimeformat',
+
+                        array_reduce(\ProcessMaker\Models\JsonData::datetimeFormats(),
+                            function ($result, $item) {
+                                $result[$item['format']] = $item['title'];
+                                return $result;
+                            }
+                        ),
+                        'formData.datetimeFormat', ['class'=> 'form-control', 'v-model'=> 'formData.datetimeFormat',
+                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.datetimeFormat}']);!!}
+                        <div class="invalid-feedback" v-if="errors.email">@{{errors.status[0]}}</div>
+                    </div>
+                    <div class="form-group">
                         {!!Form::label('password', __('Password'))!!}
                         {!!Form::password('password', ['class'=> 'form-control', 'v-model'=> 'formData.password',
                         'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}'])!!}
@@ -119,7 +133,8 @@
                         lastname: null,
                         email: null,
                         password: null,
-                        status: null
+                        status: null,
+                        datetimeFormat: null
                     }
                 }
             },
@@ -134,7 +149,8 @@
                         lastname: null,
                         email: null,
                         password: null,
-                        status: null
+                        status: null,
+                        datetimeFormat: null
                     });
                 },
                 customLabel(option) {
