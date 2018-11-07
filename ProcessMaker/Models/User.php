@@ -78,6 +78,7 @@ class User extends Authenticatable implements HasMedia
         'title',
         'birthdate',
         'timezone',
+        'datetime_format',
         'language',
         'expires_at'
 

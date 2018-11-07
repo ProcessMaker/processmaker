@@ -47,16 +47,28 @@
                         <div class="invalid-feedback" v-if="errors.email">@{{errors.email[0]}}</div>
                     </div>
                     <div class="form-group">
-                        {!!Form::label('datetimeformat', 'Date Format');!!}
-                        {!!Form::select('datetimeformat',
-
+                        {!!Form::label('datetime_format', 'Date Format');!!}
+                        {!!Form::select('datetime_format',
                         array_reduce(\ProcessMaker\Models\JsonData::datetimeFormats(),
                             function ($result, $item) {
                                 $result[$item['format']] = $item['title'];
                                 return $result;
                             }
                         ),
-                        'formData.datetimeFormat', ['class'=> 'form-control', 'v-model'=> 'formData.datetimeFormat',
+                        'formData.datetime_format', ['class'=> 'form-control', 'v-model'=> 'formData.datetime_format',
+                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.datetime_format}']);!!}
+                        <div class="invalid-feedback" v-if="errors.email">@{{errors.status[0]}}</div>
+                    </div>
+                    <div class="form-group">
+                        {!!Form::label('timezone', 'Time zone');!!}
+                        {!!Form::select('timezone',
+                        array_reduce(\ProcessMaker\Models\JsonData::timezones(),
+                            function ($result, $item) {
+                                $result[$item] = $item;
+                                return $result;
+                            }
+                        ),
+                        'formData.timezone', ['class'=> 'form-control', 'v-model'=> 'formData.timezone',
                         'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.datetimeFormat}']);!!}
                         <div class="invalid-feedback" v-if="errors.email">@{{errors.status[0]}}</div>
                     </div>
@@ -134,7 +146,7 @@
                         email: null,
                         password: null,
                         status: null,
-                        datetimeFormat: null
+                        datetime_format: null
                     }
                 }
             },
@@ -150,7 +162,7 @@
                         email: null,
                         password: null,
                         status: null,
-                        datetimeFormat: null
+                        datetime_format: null
                     });
                 },
                 customLabel(option) {

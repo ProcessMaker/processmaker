@@ -11,12 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 class JsonData extends Model
 {
      public static function timezones(){
-     $temp = json_decode(file_get_contents(resource_path(). '/js/data/timeszones.json'), true);
-      $timezones=[];
-      foreach($temp['data'] as $t){
-        $timezones[$t['value']] = $t['content'];
-      }
-      return $timezones;
+         return json_decode(file_get_contents(resource_path(). '/js/data/timeszones.json'), false);
      }
 
      public static function states(){
