@@ -51,13 +51,13 @@
                         title: "Created At",
                         name: "created_at",
                         sortField: "created_at",
-                        callback: 'formatDate|M/D/YY HH:mm'
+                        callback: 'formatDate'
                     },
                     {
                         title: "Updated At",
                         name: "updated_at",
                         sortField: "updated_at",
-                        callback: 'formatDate|M/D/YY HH:mm'
+                        callback: 'formatDate'
                     },
                     {
                         name: "__slot:actions",
