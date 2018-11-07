@@ -1,23 +1,24 @@
 ---
-description: View the status of Requests you've started.
+description: View all Requests that you've started or in which you're a participant.
 ---
 
-# View Requests You Started
+# View All Requests
 
-The **Started by Me** tab in the **Requests** page displays all Requests you started. Request information display in tabular format.
+The **All Requests** tab in the **Requests** page displays all Requests that you started or in which you are a participant. Request information display in tabular format.
 
-## View Requests You Started
+## View All Requests You Started or in Which You Are a Participant
 
-Follow these steps to view Requests you started:
+Follow these steps to view all Requests you started or in which you are a participant:
 
 1. Do one of the following:
    * [Log in](../log-in.md#log-in) to ProcessMaker. The **Started by Me** tab in the **Requests** page displays.
    * Click the **Requests** page if it is not currently displayed. The **Started by Me** tab displays.
-2. Click the Request ID value in the first column of the table to [view detailed information](request-details.md) about that Request.
+2. Click the **All Requests** tab.
+3. Click a row in the table to [view detailed information](request-details.md) about the request.
 
-![&quot;Started By Me&quot; Request tab](../../.gitbook/assets/started-by-me-request.png)
+![&quot;All Requests&quot; Request tab](../../.gitbook/assets/all-requests-request.png)
 
-The **Started by Me** tab displays the following information:
+The **All Requests** tab displays the following information:
 
 * **ID:** The **ID** column displays the Request ID. ~~What does the ID represent?~~ Click on the ID to [view detailed information](request-details.md) about that Request.
 * **Process:** The **Process** column displays the name of the process associated with the Request.
@@ -29,7 +30,7 @@ The **Started by Me** tab displays the following information:
 * **Completed:** The **Completed** column displays the date and time the Request was completed. If the Request is not completed, this field displays no value for that Request. The time is displayed according to your time zone setting.
 
 {% hint style="info" %}
-If there are no Requests you have started, the following message displays: **No Data Available**.
+If there are no Requests in which you have started or participated in, the following message displays: **No Data Available**.
 {% endhint %}
 
 ## Related Topics

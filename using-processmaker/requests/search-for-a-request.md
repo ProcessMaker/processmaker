@@ -19,23 +19,22 @@ Follow these steps to search for a Request within the displayed tab:
 1. Do one of the following:
    * [Log in](../log-in.md#log-in) to ProcessMaker. The **Started by Me** tab in the **Requests** page displays.
    * Click the **Requests** page if it is not currently displayed.
-2. Go to any of the following tabs in the **Requests** page in which to search its requests:
+2. Go to any of the following tabs in the **Requests** page in which to search its Requests:
    * **Started by Me** tab \(if it is not currently displayed\)
    * **In Progress** tab
    * **Completed** tab
-   * **Watching** tab
+   * **All Requests** tab
 3. Click the **Search** field and then enter a search using any of the following criteria:
-   * **Request number:** Search for a request number.
-   * **Process name:** Search for the process name associated with the request you seek.
-   * **Participants:** Search for a participant associated with the request you seek.
-   * **Stage:** Search for the stage associated with the request you seek.
-   * **Started date:** Search for the date in which the request started.
-   * **Completed date:** Search for the date in which the request completed.
+   * **Request ID:** Search for a Request ID.
+   * **Process name:** Search for the process name associated with the Request you seek.
+   * **Participants:** Search for a participant associated with the Request you seek.
+   * **Started date:** Search for the date in which the Request started.
+   * **Completed date:** Search for the date in which the Request completed.
 4. Press `Enter`. Search results that meet the search criteria within that tab display.
-5. Select a row in the search results, and then click the **Request Details** link to [view detailed information](request-details.md) about the selected request.
+5. Select a row in the search results, and then click the **Request Details** link to [view detailed information](request-details.md) about the selected Request.
 
 {% hint style="info" %}
-If there are no search results, the following message displays: **There are no requests in the search**. ~~Note: The word "Requests" must be capitalized in the app.~~
+If there are no search results, the following message displays: **There are no Requests in the search**.
 {% endhint %}
 
 ## Advanced Search

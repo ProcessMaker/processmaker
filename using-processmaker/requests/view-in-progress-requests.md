@@ -6,7 +6,7 @@ description: View Requests that are in progress in which you are participating.
 
 The **In Progress** tab in the **Requests** page displays all in-progress Requests in which you are participating. Request information display in tabular format.
 
-## View In-Progress Requests
+## View In-Progress Requests in Which You are a Participant
 
 Follow these steps to view in-progress Requests:
 
@@ -16,22 +16,20 @@ Follow these steps to view in-progress Requests:
 2. Click the **In Progress** tab.
 3. Click a row in the table to [view detailed information](request-details.md) about the request.
 
+![&quot;In Progress&quot; Request tab](../../.gitbook/assets/in-progress-request.png)
+
 The **In Progress** tab displays the following information:
 
-* **Row number:** The **\#** column displays the row number in the table.
+* **ID:** The **ID** column displays the Request ID. ~~What does the ID represent?~~ Click on the ID to [view detailed information](request-details.md) about that Request.
 * **Process:** The **Process** column displays the name of the process associated with the Request.
-* **Status:** The **Status** column displays the status of the process associated with the Request.
-* **Stage:** The **Stage** column displays ~~what?~~.
-* **Participants:** The **Participants** column displays thumbnails of each participant in the Request.
-* **Started:** The **Started** column displays the date and time the Request was started. The time is displayed according to your time zone setting.
-* **Completed:** The **Completed** column does not display content because the Request is in progress.
-* **Duration:** The **Duration** column displays the amount of time that transpired from when the Request started to now. The time is displayed according to your time zone setting.
-* **Actions:** Hover your cursor over this unlabeled column to display a list of actions you can use on the Request:
-  * ~~**Edit:** Select **Edit** to edit the process. Note that this action does not display if the process has Active status. To edit the process, first deactivate it.~~
-  * ~~**Activate/Deactivate:** Select **Activate/Deactivate** to activate or deactivate the process. This option displays **Activate** when the process is inactive, and vice versa.~~
-  * ~~**Export:** Select **Export** to export the process. For information how to export a process, see Export a Process.~~
-  * ~~**Archive:** Select **Archive** to archive the process. For information how to archive a process, see Archive a Process. Note that this action does not display if the process has Active status. To archive the process, first deactivate it.~~
-  * ~~**Delete:** Select **Delete** to delete the process. For information how to delete a process see Delete a Process. Note that this action does not display if the process has Active status. To delete the process, first deactivate it. You must have appropriate permissions to delete a process.~~
+* **Status:** The **Status** column displays the **In Progress** status.
+* **Participants:** The **Participants** column displays avatars of each participant in the Request.
+* **Started:** The **Started** column displays the date and time you made the Request. The time is displayed according to your time zone setting.
+* **Completed:** The **Completed** column displays the date and time the Request was completed. Since Requests in this tab are in-progress, this column is empty.
+
+{% hint style="info" %}
+If there are no Requests in progress in which you are a participant, the following message displays: **No Data Available**.
+{% endhint %}
 
 ## Related Topics
 
