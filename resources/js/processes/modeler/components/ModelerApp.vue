@@ -7,7 +7,7 @@
       </div>
     </div>
     <div class="modeler-container">
-      <modeler ref="modeler" :controls="controls" />
+      <modeler ref="modeler" />
     </div>
     <status-bar>
         <template slot="secondary">
@@ -22,7 +22,7 @@
 
 
 <script>
-import {Modeler, StatusBar, BaseControls} from "@processmaker/modeler";
+import {Modeler, StatusBar} from "@processmaker/modeler";
 import { library } from "@fortawesome/fontawesome-svg-core";
 
 import {
@@ -45,7 +45,6 @@ export default {
   data() {
     return {
       process: window.ProcessMaker.modeler.process,
-      controls: BaseControls,
       statusText: "No errors detected",
       statusIcon: faCheckCircle,
       statusColor: "green"
@@ -57,7 +56,10 @@ export default {
       }
   },
   mounted() {
-     this.$refs.modeler.loadXML(window.ProcessMaker.modeler.xml);
+    // Emit our lifecycle events to allow customizations to modify the modeler
+    // if needed
+    ProcessMaker.EventBus.$emit('modeler-init', this.$refs.modeler);
+    ProcessMaker.EventBus.$emit('modeler-start', this.$refs.modeler);
   },
   methods: {
     saveBpmn() {

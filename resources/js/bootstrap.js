@@ -29,6 +29,10 @@ window.Vue.use(VueRouter);
 
 window.ProcessMaker = {
     /**
+     * A general use global event bus that can be used
+     */
+    EventBus: new Vue(),
+    /**
      * ProcessMaker Notifications
      */
     notifications: [],
