@@ -123,6 +123,9 @@
 		    selectAll: false,
             isAdmin: false
         },
+        beforeMount() {
+            this.isSuperUser()
+        },
         mounted() {
             this.hasPermission()
         },
