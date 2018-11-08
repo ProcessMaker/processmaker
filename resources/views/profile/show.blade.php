@@ -67,8 +67,12 @@
                 <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
                     <table class="table mb-0">
                           <thead>
+                               <tr>
+                                <th>Would you like to make this user an admin?</th>
+                                <th><input type="checkbox" v-model="isSuperUser" @click="selectSuperUser"></th>
+                            </tr>
                             <tr>
-                                <th></th>
+                                <th>Permissions</th>
                                 <th><input type="checkbox" v-model="selectAll" @click="select"></th>
                             </tr>
                         </thead>
@@ -116,7 +120,8 @@
             permissions: @json($all_permissions),
             userPermissionIds: @json($permission_ids),
             selected: [],
-		    selectAll: false
+		    selectAll: false,
+            isAdmin: false
         },
         mounted() {
             this.hasPermission()
@@ -152,6 +157,14 @@
             hasPermission() {
                 if(this.userPermissionIds){
                     this.selected = this.userPermissionIds
+                }
+            },
+            selectSuperUser() {
+                console.log("SUPA")
+            },
+            isSuperUser() {
+                if(this.user.is_administrator === 1) {
+                    this.isAdmin = true
                 }
             }
         }
