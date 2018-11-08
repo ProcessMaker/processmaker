@@ -6,7 +6,7 @@ description: View your business processes.
 
 ## View Processes
 
-The **Processes** page displays the following information about processes in tabular format:
+The **Processes** page displays the following information about processes:
 
 * **Process:** The **Process** column displays the process name.
 * **Category:** The **Category** column displays in which category the process was assigned when the process was created.
