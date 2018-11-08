@@ -1,10 +1,10 @@
 ---
-description: View a tabular list of your processes.
+description: View your business processes.
 ---
 
-# View the List of Processes
+# View Processes
 
-## View the List of Processes
+## View Processes
 
 The **Processes** page displays the following information about processes in tabular format:
 

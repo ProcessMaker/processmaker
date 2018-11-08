@@ -34,10 +34,11 @@
 
 * [Process Management](designing-processes/viewing-processes/README.md)
   * [What is a Process?](designing-processes/viewing-processes/what-is-a-process.md)
+  * [View Processes](designing-processes/viewing-processes/view-the-list-of-processes.md)
+  * [Process Categories](designing-processes/viewing-processes/process-categories.md)
   * [Create a Process](designing-processes/viewing-processes/create-a-process.md)
   * [Import a Process](designing-processes/viewing-processes/import-a-process.md)
   * [Export a Process](designing-processes/viewing-processes/export-a-process.md)
-  * [View the List of Processes](designing-processes/viewing-processes/view-the-list-of-processes.md)
   * [Search for a Process](designing-processes/viewing-processes/search-for-a-process.md)
   * [Edit a Process](designing-processes/viewing-processes/edit-a-process.md)
   * [Change the Status of a Process](designing-processes/viewing-processes/change-the-status-of-a-process.md)
