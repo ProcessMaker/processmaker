@@ -11,8 +11,10 @@ import Pagination from "../../../components/common/Pagination";
  */
 import moment from "moment"
 import moment_timezone from "moment-timezone";
-moment.tz.setDefault(window.ProcessMaker.user.timezone);
-moment.defaultFormat= window.ProcessMaker.user.datetime_format;
+if (window.ProcessMaker && window.ProcessMaker.user) {
+    moment.tz.setDefault(window.ProcessMaker.user.timezone);
+    moment.defaultFormat= window.ProcessMaker.user.datetime_format;
+}
 /***********/
 
 export default {
