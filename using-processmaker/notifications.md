@@ -1,5 +1,5 @@
 ---
-description: Receive updates about requests and tasks.
+description: Receive updates about Requests and tasks.
 ---
 
 # Notifications

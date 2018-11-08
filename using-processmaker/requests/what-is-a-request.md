@@ -4,10 +4,13 @@ description: Understand what Requests are in ProcessMaker 4.
 
 # What is a Request?
 
-In ProcessMaker 4, a "Request" represents when you start a process to make a request of one or more people in your organization. A Request represents an incident or case of a process. Below are a few examples of Requests that your organization might use:
+In ProcessMaker 4, a "Request" represents when you start a process to make a request of one or more people in your organization. A Request represents an incident or case of a process.
 
-* You request approval for a budget.
-* You request a leave of absence next week.
+Below are a few examples of Requests that your organization might use:
 
-Likewise, someone can make a request of you. This occurs when someone else in your organization starts a Request that involves you. You might be the only person making the decision of someone's request, or you are member of a group involved in the decision process.
+* Request approval for a budget.
+* Request a leave of absence for next week.
+* Request information about a project.
+
+Likewise, you can participate in others' Requests. This occurs when someone else in your organization starts a Request that involves you. You might be the only person making the decision of someone's Request, or you are member of a group involved in the decision process. Furthermore, Requests can be started automatically through the ProcessMaker 4 REST API.
 

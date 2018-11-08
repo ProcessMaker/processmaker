@@ -16,12 +16,12 @@ Follow these steps to search for a Request within the displayed tab:
 
 1. Do one of the following:
    * [Log in](../log-in.md#log-in) to ProcessMaker. The **Started by Me** tab in the **Requests** page displays.
-   * Click the **Requests** page if it is not currently displayed.
+   * Click the **Requests** option from the top menu if it is not currently displayed.
 2. Go to any of the following tabs in the **Requests** page in which to search its Requests:
-   * **Started by Me** tab \(if it is not currently displayed\)
-   * **In Progress** tab
-   * **Completed** tab
-   * **All Requests** tab
+   * [Started by Me](make-a-request.md) tab \(if it is not currently displayed\)
+   * [In Progress](view-in-progress-requests.md) tab
+   * [Completed](view-completed-requests.md) tab
+   * [All Requests](view-all-requests.md) tab
 3. Click the **Search** field and then enter text to filter Requests using any of the following criteria:
    * **Request ID:** Search for a Request ID.
    * **Process name:** Search for the process name associated with the Request you seek.
@@ -42,4 +42,12 @@ Click the Request ID value in the first column of the table to [view information
 ## Related Topics
 
 {% page-ref page="what-is-a-request.md" %}
+
+{% page-ref page="view-started-requests.md" %}
+
+{% page-ref page="view-in-progress-requests.md" %}
+
+{% page-ref page="view-completed-requests.md" %}
+
+{% page-ref page="view-all-requests.md" %}
 

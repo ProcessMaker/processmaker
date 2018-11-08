@@ -2,7 +2,7 @@
 description: View information about a Request in which you started or participated.
 ---
 
-# Request Information
+# View Request Information
 
 A ProcessMaker Administrator can create a custom format and style for how Request information displays for your organization. This topic discusses how ProcessMaker 4 displays Request information by default.
 
@@ -30,7 +30,7 @@ The **Pending Tasks** tab displays the following information:
 * **Due Date:** The **Due Date** column displays the date the task is due.
 
 {% hint style="info" %}
-[Control how Request information displays](control-how-requests-display-in-a-tab.md) in this tab.
+[Control how tabular information displays.](../control-how-requests-display-in-a-tab.md)
 {% endhint %}
 
 ### Request Participants
@@ -64,7 +64,7 @@ The **Request Summary** tab displays the following information:
 * **VALUE:** The **VALUE** column displays the key value as entered by a person manually interacting with a form or specified through the ProcessMaker 4 REST API.
 
 {% hint style="info" %}
-[Control how Request information displays](control-how-requests-display-in-a-tab.md) in this tab.
+[Control how tabular information displays.](../control-how-requests-display-in-a-tab.md)
 {% endhint %}
 
 ### Summary of Tasks for the Completed Request
@@ -80,7 +80,7 @@ The **Completed** tab displays the following information:
 * **Due Date:** The **Due Date** column displays the date the task is due.
 
 {% hint style="info" %}
-[Control how Request information displays](control-how-requests-display-in-a-tab.md) in this tab.
+[Control how tabular information displays.](../control-how-requests-display-in-a-tab.md)
 {% endhint %}
 
 ### Request Participants

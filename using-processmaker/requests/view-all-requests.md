@@ -12,22 +12,22 @@ Follow these steps to view all Requests you started or in which you are a partic
 
 1. Do one of the following:
    * [Log in](../log-in.md#log-in) to ProcessMaker. The **Started by Me** tab in the **Requests** page displays.
-   * Click the **Requests** page if it is not currently displayed. The **Started by Me** tab displays.
-2. Click the **All Requests** tab or click the All icon ![](../../.gitbook/assets/all-icon-request.png) from the left sidebar.
+   * Click the **Requests** option from the top menu if it is not currently displayed. The **Started by Me** tab displays.
+2. Click the **All Requests** tab or click the All icon![](../../.gitbook/assets/all-icon-request.png)from the left sidebar.
 
 ![&quot;All Requests&quot; Request tab](../../.gitbook/assets/all-requests-request.png)
 
 {% hint style="info" %}
 Click the Request ID value in the first column of the table to [view information](request-details.md) about that Request.
+{% endhint %}
 
+{% hint style="info" %}
 Use the [Search](search-for-a-request.md) field to filter Requests that display in this tab.
-
-[Control how Request information displays](control-how-requests-display-in-a-tab.md) in this tab.
 {% endhint %}
 
 The **All Requests** tab displays the following information:
 
-* **ID:** The **ID** column displays the Request ID. ~~What does the ID represent?~~ Click on the ID to [view information](request-details.md) about that Request.
+* **ID:** The **ID** column displays the Request ID. ~~What does the ID represent?~~ Click the ID to [view information](request-details.md) about that Request.
 * **Process:** The **Process** column displays the name of the process associated with the Request.
 * **Status:** The **Status** column displays the status of the process associated with the Request. The following are possible statuses:
   * In Progress
@@ -40,11 +40,15 @@ The **All Requests** tab displays the following information:
 If there are no Requests in which you have started or participated in, the following message displays: **No Data Available**.
 {% endhint %}
 
+{% hint style="info" %}
+[Control how Request information displays.](../control-how-requests-display-in-a-tab.md)
+{% endhint %}
+
 ## Related Topics
 
 {% page-ref page="what-is-a-request.md" %}
 
 {% page-ref page="search-for-a-request.md" %}
 
-{% page-ref page="control-how-requests-display-in-a-tab.md" %}
+{% page-ref page="../control-how-requests-display-in-a-tab.md" %}
 

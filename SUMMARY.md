@@ -21,10 +21,13 @@
   * [View Completed Requests](using-processmaker/requests/view-completed-requests.md)
   * [View All Requests](using-processmaker/requests/view-all-requests.md)
   * [Search for a Request](using-processmaker/requests/search-for-a-request.md)
-  * [Request Information](using-processmaker/requests/request-details.md)
-  * [Control How Request Information Displays](using-processmaker/requests/control-how-requests-display-in-a-tab.md)
-* [Task Management](using-processmaker/task-management.md)
+  * [View Request Information](using-processmaker/requests/request-details.md)
+* [Task Management](using-processmaker/task-management/README.md)
+  * [What is a Task?](using-processmaker/task-management/what-is-a-task.md)
+  * [View Tasks You Need to Do](using-processmaker/task-management/view-tasks-you-need-to-do.md)
+  * [View Completed Tasks](using-processmaker/task-management/view-completed-tasks.md)
 * [Notifications](using-processmaker/notifications.md)
+* [Control How Tabular Information Displays](using-processmaker/control-how-requests-display-in-a-tab.md)
 * [Log Out](using-processmaker/log-out.md)
 
 ## Design Processes
