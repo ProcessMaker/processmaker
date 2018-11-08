@@ -152,7 +152,6 @@
             hasPermission() {
                 if(this.userPermissionIds){
                     this.selected = this.userPermissionIds
-                    console.log(this.userPermissionIds)
                 }
             }
         }
