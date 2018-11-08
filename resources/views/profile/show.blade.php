@@ -73,13 +73,13 @@
                             </tr>
                             <tr>
                                 <th>Permissions</th>
-                                <th><input type="checkbox" v-model="selectAll" @click="select"></th>
+                                <th><input type="checkbox" v-model="selectAll" @click="select" :disabled="isAdmin = true"></th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="permission in permissions">
                                 <td>@{{permission.name}}<br>@{{permission.description}}</td>
-                                <td><input type="checkbox" :value="permission.id" v-model="selected"></td>
+                                <td><input type="checkbox" :value="permission.id" v-model="selected" :disabled="isAdmin = true"></td>
                             </tr>
                         </tbody>
                     </table>
@@ -163,8 +163,12 @@
                 console.log("SUPA")
             },
             isSuperUser() {
-                if(this.user.is_administrator === 1) {
+                if(this.user.is_administrator === true) {
+                    console.log(this.user.is_administrator);
+
                     this.isAdmin = true
+                }else {
+                    this.isAdmin = false
                 }
             }
         }
