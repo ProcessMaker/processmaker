@@ -151,9 +151,8 @@
             },
             hasPermission() {
                 if(this.userPermissionIds){
-                    for (let permission in this.userPermissionIds) {
-                        this.selected.push(permission)
-                    }
+                    this.selected = this.userPermissionIds
+                    console.log(this.userPermissionIds)
                 }
             }
         }
