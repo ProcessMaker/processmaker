@@ -214,9 +214,6 @@
                         "COMPLETED": this.request.completed_at,
                         "ERROR": this.request.updated_at
                     };
-                    /*return moment(status[this.request.status.toUpperCase()])
-                        .tz(window.ProcessMaker.user.timezone)
-                        .format(window.ProcessMaker.user.datetime_format);*/
 
                     return status[this.request.status.toUpperCase()];
                 },

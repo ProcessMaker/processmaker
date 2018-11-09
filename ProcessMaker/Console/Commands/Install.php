@@ -69,7 +69,7 @@ class Install extends Command
             'BROADCAST_DRIVER' => 'redis',
             'BROADCASTER_KEY' => '21a795019957dde6bcd96142e05d4b10',
             'APP_TIMEZONE' => 'UTC',
-            'DATE_FORMAT' => 'MM/DD/YYYY h:i g',
+            'DATE_FORMAT' => '"MM/DD/YYYY h:i g"',
         ];
 
 

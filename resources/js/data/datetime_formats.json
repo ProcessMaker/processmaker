@@ -1,20 +1,17 @@
 [
   {
-    "format": "MM/DD/YYYY",
-    "frontEndFormat": "m/d/Y",
-    "momentFormat": "M/D/YYYY",
-    "title": "MM/DD/YYYY (12/31/2017)"
+    "format": "m/d/Y",
+    "momentFormat": "MM/DD/YYYY",
+    "title": "m/d/Y (12/31/2017)"
   },
   {
-    "format": "MM/DD/YYYY h:i g",
-    "frontEndFormat": "m/d/Y h:i A",
-    "momentFormat": "M/D/YYYY hh:mm A",
-    "title": "MM/DD/YYYY h:i (12/31/2017 11:30 pm)"
+    "format": "m/d/Y h:i A",
+    "momentFormat": "MM/DD/YYYY hh:mm A",
+    "title": "m/d/Y h:i A (12/31/2017 11:30 pm)"
   },
   {
-    "format": "MM/DD/YYYY H:i",
-    "frontEndFormat": "m/d/Y H:i A",
-    "momentFormat": "M/D/YYYY HH:mm",
-    "title": "MM/DD/YYYY H:i (12/31/2017 23:30)"
+    "format": "m/d/Y H:i",
+    "momentFormat": "MM/DD/YYYY HH:mm",
+    "title": "m/d/Y H:i (12/31/2017 23:30)"
   }
 ]

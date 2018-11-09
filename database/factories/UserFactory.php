@@ -30,7 +30,7 @@ $factory->define(User::class, function (Faker $faker) {
         'title' => $faker->jobTitle,
         'birthdate' => $faker->dateTimeThisCentury,
         'timezone' => $faker->timezone,
-        'datetime_format' => $faker->randomElement([null, 'MM/DD/YYYY', 'MM/DD/YYYY h:i g', 'MM/DD/YYYY H:i']),
+        'datetime_format' => $faker->randomElement([null, 'm/d/Y', 'm/d/Y h:i A', 'm/d/Y H:i']),
         'language' => 'us_en',
         'loggedin_at' => null,
 
