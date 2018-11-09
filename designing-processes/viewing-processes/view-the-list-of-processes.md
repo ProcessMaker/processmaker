@@ -6,6 +6,19 @@ description: View your business processes.
 
 ## View Processes
 
+ProcessMaker displays all processes in one table that Process Owners throughout your organization have designed.
+
+{% hint style="info" %}
+To view processes, your Process Administrator must add you to the Process Owner group. Otherwise, the **Processes** option in the top menu is not available.
+{% endhint %}
+
+Follow these steps to view processes:
+
+1. [Log in](../../using-processmaker/log-in.md#log-in) to ProcessMaker.
+2. Click the **Processes** option from the top menu. The **Processes** page displays.
+
+![Processes page](../../.gitbook/assets/processes.png)
+
 The **Processes** page displays the following information about processes:
 
 * **Process:** The **Process** column displays the process name.
@@ -20,7 +33,8 @@ The **Processes** page displays the following information about processes:
 For information how to change the process status, see [Change the Status of a Process](change-the-status-of-a-process.md).
 {% endhint %}
 
-* **Modified By:** The **Modified By** column displays the user name of who last modified the process.
+* **Modified By:** The **Modified By** column displays the full name of who last modified the process.
+* **Modified:** The **Modified** column displays the date the processes was last modified.
 * **Created:** The **Created** column displays the date and time the process was created. The time is displayed according to your time zone setting.
 * **Actions:** Hover your cursor over this unlabeled column to display a list of actions you can use on the process:
   * **Edit:** Select **Edit** to edit the process. Note that this action does not display if the process has Active status. To edit the process, first deactivate it.

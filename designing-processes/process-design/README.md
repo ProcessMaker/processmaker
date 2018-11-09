@@ -1,6 +1,6 @@
 ---
-description: Learn to design forms and use scripts in your process design.
+description: Learn to design forms and use scripts in your process modeling.
 ---
 
-# Process Design
+# Process Modeling
 

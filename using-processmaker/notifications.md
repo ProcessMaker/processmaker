@@ -14,7 +14,10 @@ Click the **VIEW ALL TASKS** option to [view all of your assigned tasks](task-ma
 
 ## Notifications to Process Requestors
 
+Process requestors receive notifications when the following events occur:
 
+* A task is assigned to an assignee.
+* An assignee completes a task.
 
 ## Related Topics
 

@@ -30,7 +30,7 @@
 * [Control How Tabular Information Displays](using-processmaker/control-how-requests-display-in-a-tab.md)
 * [Log Out](using-processmaker/log-out.md)
 
-## Design Processes
+## Model Processes
 
 * [Process Management](designing-processes/viewing-processes/README.md)
   * [What is a Process?](designing-processes/viewing-processes/what-is-a-process.md)
@@ -44,7 +44,7 @@
   * [Change the Status of a Process](designing-processes/viewing-processes/change-the-status-of-a-process.md)
   * [Archive a Process](designing-processes/viewing-processes/archive-a-process.md)
   * [Delete a Process](designing-processes/viewing-processes/delete-a-process.md)
-* [Process Design](designing-processes/process-design/README.md)
+* [Process Modeling](designing-processes/process-design/README.md)
   * [Design Forms](designing-processes/process-design/design-forms.md)
   * [Scripts](designing-processes/process-design/scripts.md)
 
