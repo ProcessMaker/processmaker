@@ -34,10 +34,11 @@ class ProfileController extends Controller
     public function show($id)
     {
         $user = User::findOrFail($id);
+        $current_user = \Auth::user();
         $permission_ids = $user->permissionAssignments()->pluck('permission_id')->toArray();
         $all_permissions = Permission::all();
         $users_permission_ids = $this->user_permission_ids($user);
-        return view('profile.show', compact('user', 'all_permissions', 'users_permission_ids', 'permission_ids'));
+        return view('profile.show', compact('user', 'all_permissions', 'users_permission_ids', 'permission_ids', 'current_user'));
     }
 
     private function user_permission_ids($user) 
