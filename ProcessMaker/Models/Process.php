@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
@@ -196,10 +197,11 @@ class Process extends Model implements HasMedia
      * Get the user to whom to assign a task.
      *
      * @param ActivityInterface $activity
+     * @param TokenInterface $token
      *
      * @return User
      */
-    public function getNextUser(ActivityInterface $activity)
+    public function getNextUser(ActivityInterface $activity, ProcessRequestToken $token)
     {
         $default = $activity instanceof ScriptTaskInterface ? 'script' : 'cyclical';
         $assignmentType = $activity->getProperty('assignment', $default);
@@ -208,7 +210,7 @@ class Process extends Model implements HasMedia
                 $user = $this->getNextUserCyclicalAssignment($activity->getId());
                 break;
             case 'requestor':
-                $user = $this->getNextUserCyclicalAssignment($activity->getId());
+                $user = $token->getInstance()->user_id;
                 break;
             case 'manual':
             case 'self_service':
