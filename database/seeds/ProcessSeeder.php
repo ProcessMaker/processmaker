@@ -67,27 +67,30 @@ class ProcessSeeder extends Seeder
                     WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptRef', $script->id
                 );
                 $scriptTaskNode->setAttributeNS(
-                    WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptConfiguration', '{}'
+                    WorkflowServiceProvider::PROCESS_MAKER_NS, 'config', '{}'
                 );
             }
 
             //Add screens to the process
-            $tasks = $definitions->getElementsByTagName('task');
             $admin = User::where('username', 'admin')->firstOrFail();
-            foreach($tasks as $task) {
-                $screenRef = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef');
-                $id = $task->getAttribute('id');
-                if ($screenRef) {
-                    $screen = $this->createScreen($id, $screenRef, $process);
-                    $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef', $screen->getKey());
+            $humanTasks = ['task', 'userTask'];
+            foreach($humanTasks as $humanTask) {
+                $tasks = $definitions->getElementsByTagName($humanTask);
+                foreach($tasks as $task) {
+                    $screenRef = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef');
+                    $id = $task->getAttribute('id');
+                    if ($screenRef) {
+                        $screen = $this->createScreen($id, $screenRef, $process);
+                        $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef', $screen->getKey());
+                    }
+                    //Assign "admin" to the task 
+                    factory(ProcessTaskAssignment::class)->create([
+                        'process_id' => $process->getKey(),
+                        'process_task_id' => $id,
+                        'assignment_id' => $admin->getKey(),
+                        'assignment_type' => 'user',
+                    ]);
                 }
-                //Assign "admin" to the task 
-                factory(ProcessTaskAssignment::class)->create([
-                    'process_id' => $process->getKey(),
-                    'process_task_id' => $id,
-                    'assignment_id' => $admin->getKey(),
-                    'assignment_type' => 'user',
-                ]);
             }
 
 
@@ -121,8 +124,7 @@ class ProcessSeeder extends Seeder
             $json = json_decode(file_get_contents(database_path('processes/screens/' . $screenRef . '.json')));
             return factory(Screen::class)->create([
                         'title' => $json[0]->name,
-                        'config' => $json,
-                        'process_id' => $process->id,
+                        'config' => $json
             ]);
         } elseif (file_exists(database_path('processes/screens/' . $id . '.json'))) {
             $json = json_decode(file_get_contents(database_path('processes/screens/' . $id . '.json')));
