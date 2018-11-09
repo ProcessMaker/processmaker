@@ -64,6 +64,7 @@
                         @endif
                     </table>
                 </div>
+                @if($current_user->is_administrator===true)
                 <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
                     <table class="table mb-0">
                           <thead>
@@ -86,6 +87,7 @@
                     <hr class="mt-0">
                     <button class="btn btn-secondary float-right" @click="onUpdate">SUBMIT</button>
                 </div>
+                @endif
                 <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">...vvv</div>
             </div>
         </div>
