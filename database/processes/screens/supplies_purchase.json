@@ -3,11 +3,75 @@
         "name": "Supplies Purchase Request ",
         "items": [
             {
+                "label": "Text",
+                "config": {
+                    "label": "The following items are not available in the invetory.",
+                    "fontSize": "1em",
+                    "fontWeight": "normal"
+                },
+                "component": "FormText",
+                "inspector": [
+                    {
+                        "type": "FormInput",
+                        "field": "label",
+                        "config": {
+                            "label": "Text Label",
+                            "helper": "The text to display"
+                        }
+                    },
+                    {
+                        "type": "FormSelect",
+                        "field": "fontWeight",
+                        "config": {
+                            "label": "Font Weight",
+                            "helper": "The weight of the text",
+                            "options": [
+                                {
+                                    "value": "normal",
+                                    "content": "Normal"
+                                },
+                                {
+                                    "value": "bold",
+                                    "content": "Bold"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "type": "FormSelect",
+                        "field": "fontSize",
+                        "config": {
+                            "label": "Font Size",
+                            "helper": "The size of the text in em",
+                            "options": [
+                                {
+                                    "value": "0.5em",
+                                    "content": "0.5"
+                                },
+                                {
+                                    "value": "1em",
+                                    "content": "1"
+                                },
+                                {
+                                    "value": "1.5em",
+                                    "content": "1.5"
+                                },
+                                {
+                                    "value": "2em",
+                                    "content": "2"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "editor-component": "FormText"
+            },
+            {
                 "label": "Record List",
                 "config": {
                     "form": "1",
-                    "name": "items",
-                    "label": "Items requested",
+                    "name": "purchase",
+                    "label": "Items required",
                     "fields": [
                         {
                             "value": "item",
@@ -18,7 +82,7 @@
                             "content": "Quantity"
                         }
                     ],
-                    "editable": false
+                    "editable": true
                 },
                 "component": "FormRecordList",
                 "inspector": [
@@ -70,7 +134,7 @@
             {
                 "label": "Textarea",
                 "config": {
-                    "name": "comments",
+                    "name": "purchase_comments",
                     "rows": 2,
                     "label": "Comments",
                     "helper": null,
@@ -135,7 +199,7 @@
                 "label": "Submit Button",
                 "config": {
                     "event": "submit",
-                    "label": "Close Request",
+                    "label": "Request",
                     "variant": "primary"
                 },
                 "component": "FormButton",
