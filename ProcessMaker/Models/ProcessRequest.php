@@ -272,16 +272,4 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
 
         return $result;
     }
-
-    /**
-     * Prepare a date for array / JSON serialization.
-     *
-     * @param  \DateTimeInterface  $date
-     *
-     * @return string
-     */
-    protected function serializeDate(\DateTimeInterface $date)
-    {
-        return $date->format(Carbon::ISO8601);
-    }
 }
