@@ -149,13 +149,27 @@
                 }
             },
             onUpdate() {
-                ProcessMaker.apiClient.put("/permissions", {
-                    permission_ids: this.selected,
-                    user_id: this.user.id
+                if(this.isAdmin === true) {
+                   ProcessMaker.apiClient.put("/users/" + this.user.id, {
+                       is_administrator: this.isAdmin,
+                       email: this.user.email,
+                       username: this.user.username
+                   })
+                   .then(response => {
+                       ProcessMaker.alert('{{__('Admin successfully added ')}}', 'success');
+                       location.reload();
+                   })
+                }
+                else{
+                    ProcessMaker.apiClient.put("/permissions", {
+                        permission_ids: this.selected,
+                        user_id: this.user.id
+                        })
+                    .then(response => {
+                        ProcessMaker.alert('{{__('Permission successfully added ')}}', 'success');
+                        location.reload();
                     })
-                .then(response => {
-                    ProcessMaker.alert('{{__('Permission successfully added ')}}', 'success');
-                })
+                }
             },
             hasPermission() {
                 if(this.userPermissionIds){
