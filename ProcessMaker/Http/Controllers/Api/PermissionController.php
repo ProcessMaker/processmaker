@@ -14,11 +14,49 @@ use ProcessMaker\Models\PermissionAssignment;
 class PermissionController extends Controller
 {
 
+    /**
+     * Update a user
+     *
+     * @param User $user
+     * @param Request $request
+     *
+     * @return Response
+     *
+     *     @OA\Put(
+     *     path="/users/userId",
+     *     summary="Update a user",
+     *     operationId="updateUsers",
+     *     tags={"Users"},
+     *     @OA\Parameter(
+     *         description="ID of user to return",
+     *         in="path",
+     *         name="user_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(ref="#/components/schemas/usersEditable")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/users")
+     *     ),
+     * )
+     */
     public function update(Request $request) 
     {
         // find the user
         $user = User::findOrFail($request->input('user_id'));
         $selected_permission_ids = $request->input('permission_ids');
+
+        $user->is_administrator = $request->has('is_administrator')
+                                ? $request->input('is_administrator')
+                                : false;
+        $user->update();
 
         // assign the users permissions ids
         $users_permission_ids = $this->user_permission_ids($user);
@@ -45,6 +83,8 @@ class PermissionController extends Controller
                 }
             }
         }
+
+        return response([], 204);
     }
     private function user_permission_ids($user) 
     {

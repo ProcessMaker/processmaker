@@ -46,6 +46,7 @@ class User extends Authenticatable implements HasMedia
      *   @OA\Property(property="title", type="string"),
      *   @OA\Property(property="timezone", type="string"),
      *   @OA\Property(property="language", type="string"),
+     *   @OA\Property(property="is_administrator", type="boolean"),
      *   @OA\Property(property="loggedin_at", type="string"),
      *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
      * ),
@@ -76,6 +77,7 @@ class User extends Authenticatable implements HasMedia
         'birthdate',
         'timezone',
         'language',
+        'is_administrator',
         'expires_at'
 
     ];
