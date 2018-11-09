@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "c1b89705155e37b32c57f15d6c690f03",
+    "content-hash": "ec1bec2e4564ed5f103ec5ddd9c0e924",
     "packages": [
         {
             "name": "cakephp/chronos",
@@ -2721,16 +2721,16 @@
         },
         {
             "name": "processmaker/nayra",
-            "version": "dev-feature/115",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/nayra.git",
-                "reference": "90ed240618ef4c2332e8ca1c0546f7885801798b"
+                "reference": "f880ba842a6578a47872d885de6e9e836b82aecd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/90ed240618ef4c2332e8ca1c0546f7885801798b",
-                "reference": "90ed240618ef4c2332e8ca1c0546f7885801798b",
+                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/f880ba842a6578a47872d885de6e9e836b82aecd",
+                "reference": "f880ba842a6578a47872d885de6e9e836b82aecd",
                 "shasum": ""
             },
             "require-dev": {
@@ -2747,7 +2747,7 @@
                 "Apache-2.0"
             ],
             "description": "BPMN compliant engine",
-            "time": "2018-11-07T20:12:37+00:00"
+            "time": "2018-11-09T09:15:40+00:00"
         },
         {
             "name": "psr/container",
