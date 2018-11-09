@@ -1,10 +1,13 @@
 <?php
+
 namespace Tests\Feature\Api;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Process;
-use Tests\TestCase;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\Script;
 use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 /**
  * Test the process execution with service task
@@ -13,6 +16,7 @@ use Tests\Feature\Shared\RequestHelper;
  */
 class ServiceTaskExecutionTest extends TestCase
 {
+
     use RequestHelper;
     use WithFaker;
 
@@ -39,6 +43,11 @@ class ServiceTaskExecutionTest extends TestCase
      */
     protected function withUserSetUp()
     {
+        factory(Script::class)->create([
+            'key' => 'EchoConnector',
+            'language' => 'php',
+            'code' => '<?php return ["pong" => $data["ping"]];',
+        ]);
         $this->process = $this->createTestProcess();
     }
 
@@ -53,34 +62,29 @@ class ServiceTaskExecutionTest extends TestCase
     }
 
     /**
-     * Execute a process
+     * Execute a process with service task
      */
     public function testExecuteAProcess()
     {
         //Start a process request
-        $route = route('api.process_events.trigger', [$this->process->id, 'event' => self::START_EVENT_ID]);
-        $data = [];
+        $route = route('api.process_events.trigger',
+            [$this->process->id, 'event' => self::START_EVENT_ID]);
+        $ping = '1';
+        $data = [
+            'ping' => $ping,
+        ];
         $response = $this->apiCall('POST', $route, $data);
         //Verify status
         $response->assertStatus(201);
         //Verify the structure
         $response->assertJsonStructure($this->requestStructure);
         $request = $response->json();
-        
-        //Get the active tasks of the request
-        $route = route('api.tasks.index');
-        $response = $this->apiCall('GET', $route);
-        $tasks = $response->json('data');
-        dump($tasks);
-        //Complete the task
-        $route = route('api.tasks.update', [$tasks[0]['id'], 'status' => 'COMPLETED']);
-        $response = $this->apiCall('PUT', $route, $data);
-        $task = $response->json();
-        //Check the task is closed
-        $this->assertEquals('CLOSED', $task['status']);
-        $this->assertNotNull($task['completed_at']);
-        //Check the request is completed
-        $this->assertEquals('COMPLETED', $task['process_request']['status']);
-        $this->assertNotNull($task['process_request']['completed_at']);
+
+        $requestId = $request['id'];
+
+        $request = ProcessRequest::find($requestId);
+
+        //Assertion: If the service task is executed it will return a pong
+        $this->assertEquals($request->data['pong'], $ping);
     }
 }

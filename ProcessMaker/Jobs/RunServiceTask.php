@@ -54,7 +54,7 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
             $element->complete($token);
             Log::info('Service task not implemented: ' . $implementation);
         } else {
-            $script = Script::whereKey($implementation)->firstOrFail();
+            $script = Script::where('key', $implementation)->firstOrFail();
         }
 
         $response = $script->runScript($data, $configuration);
