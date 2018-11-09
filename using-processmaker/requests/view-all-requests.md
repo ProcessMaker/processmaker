@@ -13,7 +13,7 @@ Follow these steps to view all Requests you started or in which you are a partic
 1. Do one of the following:
    * [Log in](../log-in.md#log-in) to ProcessMaker. The **Started by Me** tab in the **Requests** page displays.
    * Click the **Requests** option from the top menu if it is not currently displayed. The **Started by Me** tab displays.
-2. Click the **All Requests** tab or click the All icon![](../../.gitbook/assets/all-icon-request.png)from the left sidebar.
+2. Click the **All Requests** tab or click the **All** icon![](../../.gitbook/assets/all-icon-request.png)from the left sidebar.
 
 ![&quot;All Requests&quot; Request tab](../../.gitbook/assets/all-requests-request.png)
 

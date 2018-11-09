@@ -1,65 +1,102 @@
 ---
-description: View your business processes.
+description: Manage your business processes.
 ---
 
-# View Processes
+# Manage Processes
 
-## View Processes
+## View Your Processes
 
-ProcessMaker displays all processes in one table that Process Owners throughout your organization have designed.
+ProcessMaker displays all processes in one table that Process Owners throughout your organization have designed. This makes it easy to manage processes.
 
 {% hint style="info" %}
 To view processes, your Process Administrator must add you to the Process Owner group. Otherwise, the **Processes** option in the top menu is not available.
 {% endhint %}
 
-Follow these steps to view processes:
+Follow these guidelines to view your processes:
 
 1. [Log in](../../using-processmaker/log-in.md#log-in) to ProcessMaker.
 2. Click the **Processes** option from the top menu. The **Processes** page displays.
 
 ![Processes page](../../.gitbook/assets/processes.png)
 
-The **Processes** page displays the following information about processes:
-
-* **Process:** The **Process** column displays the process name.
-* **Category:** The **Category** column displays in which category the process was assigned when the process was created.
-* **Status:** The **Status** column displays the status of the process. Below is a description of each status:
-  * **Draft:** A process is in Draft status prior to when it is published.
-  * **Active:** A process is in Active status after it has been published. 
-  * **Inactive:** A process is in Inactive status when it is changed from Active status. 
-  * **Archived:** A process is in Archived status when it is neither in Active or Inactive statuses. Any active or inactive process can be archived.
-
 {% hint style="info" %}
-For information how to change the process status, see [Change the Status of a Process](change-the-status-of-a-process.md).
+Click the **Processes** ![](../../.gitbook/assets/processses-icon-processes.png) icon when you are in other process-related pages to view the **Processes** page.
 {% endhint %}
 
+The **Processes** page displays the following information about processes:
+
+* **Process:** The **Process** column displays the process name. ~~Click the process name to edit the process in Process Modeler.~~
+* **Category:** The **Category** column displays in which process category the process was assigned when the process was created.  For more information about categories, see [Process Categories](process-categories.md).
+* **Status:** The **Status** column displays the status of the process. For a description of possible status types, see [Edit the Name, Description, Category, or Status of a Process](view-the-list-of-processes.md#edit-the-name-description-category-or-status-of-a-process).
 * **Modified By:** The **Modified By** column displays the full name of who last modified the process.
 * **Modified:** The **Modified** column displays the date the processes was last modified.
-* **Created:** The **Created** column displays the date and time the process was created. The time is displayed according to your time zone setting.
-* **Actions:** Hover your cursor over this unlabeled column to display a list of actions you can use on the process:
-  * **Edit:** Select **Edit** to edit the process. Note that this action does not display if the process has Active status. To edit the process, first deactivate it.
-  * **Activate/Deactivate:** Select **Activate/Deactivate** to activate or deactivate the process. This option displays **Activate** when the process is inactive, and vice versa.
-  * **Export:** Select **Export** to export the process. For information how to export a process, see [Export a Process](export-a-process.md).
-  * **Archive:** Select **Archive** to archive the process. For information how to archive a process, see [Archive a Process](archive-a-process.md). Note that this action does not display if the process has Active status. To archive the process, first deactivate it.
-  * **Delete:** Select **Delete** to delete the process. For information how to delete a process see [Delete a Process](delete-a-process.md). Note that this action does not display if the process has Active status. To delete the process, first deactivate it. You must have appropriate permissions to delete a process.
+* **Created:** The **Created** column displays the date the process was created.
 
-To view the list of processes, click the **Processes** tab. The table of processes displays.
+{% hint style="warning" %}
+Removing a process from the **Processes** page cannot be undone.
+{% endhint %}
 
-Open a process by clicking its row in the table.
-
+{% hint style="info" %}
 If no processes exist, the following message displays: **You don't have any processes. Please click on '+Process' to get started.**
+{% endhint %}
 
-Use these tips to control how process information displays in the table:
+{% hint style="info" %}
+[Control how tabular information displays.](../../using-processmaker/control-how-requests-display-in-a-tab.md)
+{% endhint %}
 
-* If the tabular list is wider than the page, use the two \(2\) arrows on the upper right to vertically scroll the table. Click the right arrow to move the table left. Click the left arrow to move the table right.
-* To change the column order of the tabular list, click a header column and then drag to another position.
-* To view the next or previous page of processes, click the **Next** or **Previous** pagination buttons, respectively. If the first page of processes is displayed, the **Previous** pagination button is disabled. If the last page is displayed, the **Next** pagination button is disabled. If all records display on one page, both pagination buttons are disabled.
-* To adjust how many table rows display in each page, click the drop-down beside the pagination buttons, and then select to display 25, 50 or 100 rows per page. Ten rows per page is the default.
-* To adjust the sort order of process information, click the column header in which to sort the records. By default process information is sorted by creation date. When the sort arrow points down, sort order is in descending order. When the sort arrow points up, sort order is in ascending order.
+## Edit the Name, Description, Category, or Status of a Process
 
+Follow these steps to edit the name, description, category, or status of a process:
+
+1. [View your processes.](view-the-list-of-processes.md#view-your-processes)
+2. Hover your cursor over the process and then select the **Edit** icon![](../../.gitbook/assets/edit-icon.png). The **Edit Process** page displays.  
+
+   ![](../../.gitbook/assets/edit-process-page-processes.png)
+
+3. Change the process name in the **Process title** field if necessary.
+4. Edit or enter a description of the process in the **Description** field if necessary.
+5. Select to which category to assign the process from the **Category** drop-down. For more information about process categories and how they affect processes assigned to them, see [Process Categories](process-categories.md).
+6. Select from which step in the process ~~to display its form as an avatar~~ from the **Summary screen** drop-down.
+7. Change the status of the process from the **Status** drop-down if necessary. Below is a description of each status:
+   * **Active:** When a process is Active status, new Requests can be started using that process.
+   * **Inactive:** When a process is Inactive status, new Requests cannot be started using that process. ~~However, active Requests using that inactive process can be completed.~~
+8. Click **Update**. Otherwise, click **Cancel** to cancel any changes.
+
+## Activate or Deactivate a Process
+
+{% hint style="warning" %}
+When a process is Inactive status, new Requests cannot be started using that process. ~~However, active Requests using that inactive process can be completed.~~
+{% endhint %}
+
+Do one of the following to activate or deactivate a process:
+
+* Change the **Status** option from the [Edit Process page](view-the-list-of-processes.md#edit-the-name-description-category-or-status-of-a-process).
+* Hover your cursor over the process and then select the **Activate**/**Deactivate** icon![](../../.gitbook/assets/activate-icon-processes.png)/![](../../.gitbook/assets/deactivate-icon-processes.png).
+
+## Preview a Process
+
+Follow these steps to preview a process:
+
+1. [View your processes.](view-the-list-of-processes.md#view-your-processes)
+2. Hover your cursor over the process and then select the **See** icon![](../../.gitbook/assets/see-icon-processes.png). ~~What happens?~~
+
+## Remove a Process
+
+Follow these steps to remove a process:
+
+1. [View your processes.](view-the-list-of-processes.md#view-your-processes)
+2. 
 ## Related Topics
 
 {% page-ref page="what-is-a-process.md" %}
 
+{% page-ref page="process-categories.md" %}
 
+{% page-ref page="change-the-status-of-a-process.md" %}
+
+{% page-ref page="archive-a-process.md" %}
+
+{% page-ref page="delete-a-process.md" %}
+
+{% page-ref page="../../using-processmaker/control-how-requests-display-in-a-tab.md" %}
 
