@@ -25,9 +25,9 @@ Click the **Processes** ![](../../../.gitbook/assets/processses-icon-processes.p
 
 The **Processes** page displays the following information about processes:
 
-* **Process:** The **Process** column displays the process name. ~~Click the process name to edit the process in Process Modeler.~~
+* **Process:** The **Process** column displays the process name. Click the process name to [edit the process in Process Modeler](../../process-design/model-your-process.md).
 * **Category:** The **Category** column displays in which process category the process was assigned when the process was created.  For more information about categories, see [Process Categories](../process-categories.md).
-* **Status:** The **Status** column displays the status of the process. For a description of possible status types, see [Edit the Name, Description, Category, or Status of a Process](./#edit-the-name-description-category-or-status-of-a-process).
+* **Status:** The **Status** column displays the status of the process. For a description of possible status types, see [Edit the Name, Description, Category, or Status of a Process](edit-the-name-description-category-or-status-of-a-process.md#edit-general-information-about-a-process).
 * **Modified By:** The **Modified By** column displays the full name of who last modified the process.
 * **Modified:** The **Modified** column displays the date the processes was last modified.
 * **Created:** The **Created** column displays the date the process was created.
@@ -37,7 +37,7 @@ Removing a process from the **Processes** page cannot be undone.
 {% endhint %}
 
 {% hint style="info" %}
-For information how to search for a process, see [Search for a Process](search-for-a-process.md).
+For information how to search for a process, see [Search for a Process](../../../using-processmaker/requests/search-for-a-request.md#search-for-a-request).
 {% endhint %}
 
 {% hint style="info" %}
@@ -65,4 +65,6 @@ If no processes exist, the following message displays: **You don't have any proc
 {% page-ref page="remove-a-process.md" %}
 
 {% page-ref page="../../../using-processmaker/control-how-requests-display-in-a-tab.md" %}
+
+{% page-ref page="../../process-design/model-your-process.md" %}
 

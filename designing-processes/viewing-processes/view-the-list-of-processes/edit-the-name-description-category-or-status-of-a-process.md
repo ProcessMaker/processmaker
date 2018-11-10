@@ -21,9 +21,7 @@ Follow these steps to edit the name, description, category, or status of a proce
 4. Edit or enter a description of the process in the **Description** field if necessary.
 5. Select to which category to assign the process from the **Category** drop-down. For more information about process categories and how they affect processes assigned to them, see [Process Categories](../process-categories.md).
 6. Select from which step in the process ~~to display its form as an avatar~~ from the **Summary screen** drop-down.
-7. Change the status of the process from the **Status** drop-down if necessary. Below is a description of each status:
-   * **Active:** When a process is Active status, new Requests can be started using that process.
-   * **Inactive:** When a process is Inactive status, new Requests cannot be started using that process. ~~However, active Requests using that inactive process can be completed.~~
+7. Change the status of the process from the **Status** drop-down if necessary. For more information about process statuses, see [Process Status Descriptions](activate-or-deactivate-a-process.md#process-status-descriptions).
 8. Click **Update**. Otherwise, click **Cancel** to cancel any changes.
 
 ## Related Topics

@@ -43,13 +43,11 @@
     * [Remove a Process](designing-processes/viewing-processes/view-the-list-of-processes/remove-a-process.md)
   * [Process Categories](designing-processes/viewing-processes/process-categories.md)
   * [Create a New Process](designing-processes/viewing-processes/create-a-process.md)
-  * [Import a Process](designing-processes/viewing-processes/import-a-process.md)
-  * [Export a Process](designing-processes/viewing-processes/export-a-process.md)
-  * [Edit a Process](designing-processes/viewing-processes/edit-a-process.md)
-  * [Archive a Process](designing-processes/viewing-processes/archive-a-process.md)
+* [Scripts](designing-processes/scripts.md)
+* [Design Forms](designing-processes/design-forms.md)
 * [Process Modeling](designing-processes/process-design/README.md)
-  * [Design Forms](designing-processes/process-design/design-forms.md)
-  * [Scripts](designing-processes/process-design/scripts.md)
+  * [What is Process Modeling?](designing-processes/process-design/what-is-process-modeling.md)
+  * [Model Your Process](designing-processes/process-design/model-your-process.md)
 
 ## ProcessMaker Administration
 

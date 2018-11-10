@@ -24,7 +24,7 @@ If there are no search results, the following message displays: **No data availa
 {% endhint %}
 
 {% hint style="info" %}
-Click the process name from the **Process** column to ~~edit the process in Process Modeler~~.
+Click the process name from the **Process** column to [edit the process in Process Modeler](../../process-design/model-your-process.md).
 {% endhint %}
 
 ## Related Topics
@@ -40,4 +40,6 @@ Click the process name from the **Process** column to ~~edit the process in Proc
 {% page-ref page="preview-a-process.md" %}
 
 {% page-ref page="remove-a-process.md" %}
+
+{% page-ref page="../../process-design/model-your-process.md" %}
 

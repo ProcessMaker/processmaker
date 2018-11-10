@@ -8,6 +8,13 @@ description: Activate or deactivate a business process.
 To activate or deactivate a process, you must be a member of the Process Owner group. Otherwise, the **Processes** option is not available from the top menu that allows you to perform process management activities.
 {% endhint %}
 
+## Process Status Descriptions
+
+A process can have one of two statuses:
+
+* **Active:** An Active process is one in which Requests can be started using that process.
+* **Inactive:** An Inactive process is one in which Requests cannot be started using that process. ~~However, active Requests using that inactive process can be completed.~~
+
 ## Activate a Process
 
 Follow these steps to activate a process:

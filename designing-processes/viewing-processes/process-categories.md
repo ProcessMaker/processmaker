@@ -39,8 +39,8 @@ Follow these steps to add a new process category:
 
    ![](../../.gitbook/assets/create-new-process-category-screen-processes.png)
 
-3. Enter the name of the new process category in the **Category Name** field. The category name must be unique from all other process category names in your organization.
-4. Click **Save**. Otherwise, click **Close** to cancel any changes.
+3. Enter the name of the new process category in the **Category Name** field. The category name must be unique from all other process category names in your organization. This is a required field.
+4. Click **Save**. The **Edit Process Category** page displays. Use this page to edit the process category's name or set its status. For more information, see [Edit the Name or Status of a Process Category](process-categories.md#edit-the-name-or-status-of-a-process-category).
 
 ## Edit the Name or Status of a Process Category
 
@@ -52,7 +52,7 @@ Follow these steps to edit the name or status of a process category:
    ![](../../.gitbook/assets/edit-process-category-page-processes.png)
 
 3. Edit the name of the process category in the **Category Name** field if necessary. The process category name must be unique from all other process category names in your organization.
-4. Change the status of the process category from the **Status** drop-down if necessary. Below is a description of each status:
+4. Change the status of the process category from the **Status** drop-down if necessary. Below is a description of each process category status:
    * **Active:** A process category that is in Active status can have processes assigned to it.
    * **Inactive:** A process category that is Inactive deactivates all processes assigned to that process category. ~~A process category that is in Inactive status cannot have processes assigned to it. If a process category becomes inactive, processes assigned to that category are no longer assigned to that process category and are no longer assigned to any process category.~~
 5. Click **Update**. Otherwise, click **Cancel** to cancel any changes.
