@@ -12,9 +12,9 @@ The notifications screen displays your newly assigned tasks.
 Click the **VIEW ALL TASKS** option to [view all of your assigned tasks](task-management/view-tasks-you-need-to-do.md#view-pending-assigned-tasks).
 {% endhint %}
 
-## Notifications to Process Requestors
+## Notifications to Process Requesters
 
-Process requestors receive notifications when the following events occur:
+Process requesters receive notifications when the following events occur:
 
 * A task is assigned to an assignee.
 * An assignee completes a task.

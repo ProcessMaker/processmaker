@@ -4,7 +4,7 @@ description: Edit a process.
 
 # Edit a Process
 
-Prior to editing a process, ensure that the process is not in Active status. Otherwise, it cannot be edited. If the process is active, go to the table of processes and then change the process to Inactive status. For information how to do so, see [View the List of Processes](view-the-list-of-processes.md).
+Prior to editing a process, ensure that the process is not in Active status. Otherwise, it cannot be edited. If the process is active, go to the table of processes and then change the process to Inactive status. For information how to do so, see [View the List of Processes](view-the-list-of-processes/).
 
 ## Edit a Process
 

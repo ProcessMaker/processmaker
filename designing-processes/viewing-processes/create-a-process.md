@@ -1,10 +1,12 @@
 ---
-description: Begin your process design.
+description: Create a new process to begin your process modeling.
 ---
 
-# Create a Process
+# Create a New Process
 
-~~Introductory paragraph?~~
+{% hint style="info" %}
+To create a new process, you must be a member of the Process Owner group. Otherwise, the **Processes** option is not available from the top menu that allows you to perform process management activities.
+{% endhint %}
 
 ## Create a New Process
 
