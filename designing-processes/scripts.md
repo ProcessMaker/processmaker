@@ -4,5 +4,5 @@ description: >-
   your business processes.
 ---
 
-# Scripts
+# Manage Scripts
 
