@@ -36,7 +36,7 @@ If there are no search results, the following message displays: **No data availa
 {% endhint %}
 
 {% hint style="info" %}
-Click the Request ID value in the first column of the table to [view information](request-details.md) about that Request.
+Click the Request ID value from the **ID** column of the table to [view information](request-details.md) about that Request.
 {% endhint %}
 
 ## Related Topics

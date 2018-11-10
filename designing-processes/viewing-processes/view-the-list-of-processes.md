@@ -44,6 +44,23 @@ If no processes exist, the following message displays: **You don't have any proc
 [Control how tabular information displays.](../../using-processmaker/control-how-requests-display-in-a-tab.md)
 {% endhint %}
 
+## Search for a Process
+
+Follow these steps to search for a process:
+
+1. [View your processes.](view-the-list-of-processes.md#view-your-processes)
+2. Click the **Search** field and then enter text to filter processes.
+
+As you enter text into the **Search** field, processes display that match your entered text.
+
+{% hint style="info" %}
+If there are no search results, the following message displays: **No data available**.
+{% endhint %}
+
+{% hint style="info" %}
+Click the process name from the **Process** column to ~~edit the process in Process Modeler~~.
+{% endhint %}
+
 ## Edit the Name, Description, Category, or Status of a Process
 
 Follow these steps to edit the name, description, category, or status of a process:
@@ -92,11 +109,7 @@ Follow these steps to remove a process:
 
 {% page-ref page="process-categories.md" %}
 
-{% page-ref page="change-the-status-of-a-process.md" %}
-
 {% page-ref page="archive-a-process.md" %}
-
-{% page-ref page="delete-a-process.md" %}
 
 {% page-ref page="../../using-processmaker/control-how-requests-display-in-a-tab.md" %}
 
