@@ -30,7 +30,7 @@
 * [Control How Tabular Information Displays](using-processmaker/control-how-requests-display-in-a-tab.md)
 * [Log Out](using-processmaker/log-out.md)
 
-## Model and Manage Processes
+## Manage and Model Processes
 
 * [Process Management](designing-processes/viewing-processes/README.md)
   * [What is a Process?](designing-processes/viewing-processes/what-is-a-process.md)
