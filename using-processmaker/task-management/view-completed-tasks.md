@@ -33,7 +33,7 @@ If there are no completed tasks by anyone in your organization, the following me
 
 Follow these steps to view information about a completed task:
 
-1. [View all completed tasks.](view-completed-tasks.md#view-completed-tasks)
+1. [View all completed tasks.](view-completed-tasks.md#view-completed-tasks) The **Tasks** screen displays.
 2. Click the name of the task from the **Tasks** column. Information displays about the selected completed task.
 
 ![Information about a completed task](../../.gitbook/assets/completed-task-information-tasks.png)
@@ -47,6 +47,10 @@ The following information displays about the completed task:
 * **Requested By:** The **Requested By** field displays the avatar and full name of the person who started the Request.
 
 ## Related Topics
+
+{% page-ref page="what-is-a-task.md" %}
+
+{% page-ref page="view-tasks-you-need-to-do.md" %}
 
 {% page-ref page="../requests/request-details.md" %}
 

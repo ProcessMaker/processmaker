@@ -8,7 +8,7 @@ description: View pending tasks that are assigned to you.
 
 Follow these steps to view your pending assigned tasks:
 
-1. [Log in](../log-in.md#log-in) to ProcessMaker.
+1. [Log in](../log-in.md#log-in) to ProcessMaker. The **Tasks** screen displays.
 2. Click the **Tasks** option from the top menu. The **Tasks** page displays. Tasks that display on this page are assigned to you.
 
 {% hint style="info" %}
@@ -33,6 +33,10 @@ If there are no pending assigned tasks, the following message displays: **No dat
 {% endhint %}
 
 ## Related Topics
+
+{% page-ref page="what-is-a-task.md" %}
+
+{% page-ref page="view-completed-tasks.md" %}
 
 {% page-ref page="../requests/request-details.md" %}
 

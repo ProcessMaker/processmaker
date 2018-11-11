@@ -46,7 +46,15 @@ If there are no Requests in progress in which you are a participant, the followi
 
 {% page-ref page="what-is-a-request.md" %}
 
+{% page-ref page="make-a-request.md" %}
+
+{% page-ref page="view-started-requests.md" %}
+
+{% page-ref page="view-completed-requests.md" %}
+
+{% page-ref page="view-all-requests.md" %}
+
 {% page-ref page="search-for-a-request.md" %}
 
-{% page-ref page="../control-how-requests-display-in-a-tab.md" %}
+{% page-ref page="request-details.md" %}
 

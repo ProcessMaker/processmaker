@@ -1,6 +1,6 @@
 ---
-description: Manage your scripts as a Process Owner.
+description: Manage your ProcessMaker Screens as a Process Owner.
 ---
 
-# Manage Forms
+# Manage Screens
 

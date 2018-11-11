@@ -25,8 +25,8 @@ Click the **Processes** ![](../../../.gitbook/assets/processses-icon-processes.p
 
 The **Processes** page displays the following information about processes:
 
-* **Process:** The **Process** column displays the process name. Click the process name to [edit the process in Process Modeler](../../process-design/model-your-process.md).
-* **Category:** The **Category** column displays in which process category the process was assigned when the process was created.  For more information about categories, see [Process Categories](../process-categories.md).
+* **Process:** The **Process** column displays the process name. Click the process name to edit the process in Process Modeler. For more information about Process Modeler, see [Process Modeling](../../process-design/).
+* **Category:** The **Category** column displays in which process category the process was assigned when the process was created. For more information about categories, see [Process Categories](../process-categories.md).
 * **Status:** The **Status** column displays the status of the process. For a description of possible status types, see [Edit the Name, Description, Category, or Status of a Process](edit-the-name-description-category-or-status-of-a-process.md#edit-general-information-about-a-process).
 * **Modified By:** The **Modified By** column displays the full name of who last modified the process.
 * **Modified:** The **Modified** column displays the date the process was last modified.
@@ -61,6 +61,8 @@ If no processes exist, the following message displays: **You don't have any proc
 {% page-ref page="remove-a-process.md" %}
 
 {% page-ref page="../../../using-processmaker/control-how-requests-display-in-a-tab.md" %}
+
+{% page-ref page="../create-a-process.md" %}
 
 {% page-ref page="../../process-design/model-your-process.md" %}
 

@@ -17,8 +17,8 @@ Follow these steps to edit the name, description, category, or status of a proce
 
    ![](../../../.gitbook/assets/edit-process-page-processes.png)
 
-3. Change the process name in the **Process title** field if necessary.
-4. Edit or enter a description of the process in the **Description** field if necessary.
+3. Edit the process name in the **Process title** field if necessary.
+4. Edit the description of the process in the **Description** field if necessary.
 5. Select to which category to assign the process from the **Category** drop-down. For more information about process categories and how they affect processes assigned to them, see [Process Categories](../process-categories.md).
 6. Select from which step in the process ~~to display its form as an avatar~~ from the **Summary screen** drop-down.
 7. Change the status of the process from the **Status** drop-down if necessary. For more information about process statuses, see [Process Status Descriptions](activate-or-deactivate-a-process.md#process-status-descriptions).
@@ -39,4 +39,6 @@ Follow these steps to edit the name, description, category, or status of a proce
 {% page-ref page="preview-a-process.md" %}
 
 {% page-ref page="remove-a-process.md" %}
+
+{% page-ref page="../create-a-process.md" %}
 

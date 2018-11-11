@@ -1,23 +1,25 @@
 ---
-description: Filter all ProcessMaker scripts in your organization.
+description: >-
+  Filter all ProcessMaker Scripts in your organization to find that one you
+  need.
 ---
 
 # Search for a Script
 
-Use the **Search** function to filter all ProcessMaker scripts from the **Scripts** page based on your entered text.
+Use the **Search** function to filter all ProcessMaker Scripts from the **Scripts** page based on your entered text.
 
 {% hint style="info" %}
-To search for a ProcessMaker script, you must be a member of the Process Owner group. Otherwise, the **Processes** option is not available from the top menu that allows you to perform script management activities.
+To search for a ProcessMaker Script, you must be a member of the Process Owner group. Otherwise, the **Processes** option is not available from the top menu that allows you to perform Script management activities.
 {% endhint %}
 
-## Search for a Script
+## Search for a ProcessMaker Script
 
-Follow these steps to search for a ProcessMaker script:
+Follow these steps to search for a ProcessMaker Script:
 
-1. [View your ProcessMaker scripts](view-all-scripts.md). The **Scripts** page displays.
-2. Click the **Search** field and then enter text to filter the list of processes.
+1. [View your ProcessMaker Scripts](view-all-scripts.md). The **Scripts** page displays.
+2. Click the **Search** field and then enter text to filter the list of ProcessMaker Scripts.
 
-As you enter text into the **Search** field, ProcessMaker scripts display that match your entered text.
+As you enter text into the **Search** field, ProcessMaker Scripts display that match your entered text.
 
 {% hint style="info" %}
 If there are no search results, the following message displays: **No data available**.
@@ -36,6 +38,8 @@ If there are no search results, the following message displays: **No data availa
 {% page-ref page="preview-a-script.md" %}
 
 {% page-ref page="remove-a-script.md" %}
+
+{% page-ref page="../create-a-new-script.md" %}
 
 {% page-ref page="../scripts-editor.md" %}
 

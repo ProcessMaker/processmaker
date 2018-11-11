@@ -99,6 +99,8 @@ The following information displays about participants in a selected completed Re
 
 {% page-ref page="what-is-a-request.md" %}
 
+{% page-ref page="make-a-request.md" %}
+
 {% page-ref page="view-started-requests.md" %}
 
 {% page-ref page="view-in-progress-requests.md" %}
@@ -106,4 +108,6 @@ The following information displays about participants in a selected completed Re
 {% page-ref page="view-completed-requests.md" %}
 
 {% page-ref page="view-all-requests.md" %}
+
+{% page-ref page="search-for-a-request.md" %}
 

@@ -1,5 +1,5 @@
 ---
-description: Manage your scripts as a Process Owner.
+description: Manage your ProcessMaker Scripts as a Process Owner.
 ---
 
 # Manage Scripts

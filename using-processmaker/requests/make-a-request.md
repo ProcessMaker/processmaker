@@ -23,10 +23,22 @@ Follow these steps to start a Request:
    The process you selected starts a Request.
 
 {% hint style="info" %}
-If a Process Owner has not designed a process or you do not have authorization to start a Request in a process, the following message displays: **No Requests have been defined yet or are available to you**.
+If a Process Owner has not designed a process or you do not have authorization to start a Request in a process, the following message displays: **No Requests have been defined yet or are available to you**.Related Topics
 {% endhint %}
 
 ## Related Topics
 
 {% page-ref page="what-is-a-request.md" %}
+
+{% page-ref page="view-started-requests.md" %}
+
+{% page-ref page="view-in-progress-requests.md" %}
+
+{% page-ref page="view-completed-requests.md" %}
+
+{% page-ref page="view-all-requests.md" %}
+
+{% page-ref page="search-for-a-request.md" %}
+
+{% page-ref page="request-details.md" %}
 

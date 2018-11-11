@@ -43,6 +43,8 @@ Click the Request ID value from the **ID** column of the table to [view informat
 
 {% page-ref page="what-is-a-request.md" %}
 
+{% page-ref page="make-a-request.md" %}
+
 {% page-ref page="view-started-requests.md" %}
 
 {% page-ref page="view-in-progress-requests.md" %}
@@ -50,4 +52,6 @@ Click the Request ID value from the **ID** column of the table to [view informat
 {% page-ref page="view-completed-requests.md" %}
 
 {% page-ref page="view-all-requests.md" %}
+
+{% page-ref page="request-details.md" %}
 

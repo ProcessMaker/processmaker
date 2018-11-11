@@ -12,5 +12,9 @@ Below are a few examples of tasks that your organization might use:
 * Approve or reject a request based on entered information.
 * Run a script automatically as an authenticated user in the REST API.
 
+## Related Topics
 
+{% page-ref page="view-tasks-you-need-to-do.md" %}
+
+{% page-ref page="view-completed-tasks.md" %}
 

@@ -29,3 +29,7 @@ Follow these steps to preview a process:
 
 {% page-ref page="remove-a-process.md" %}
 
+{% page-ref page="../process-categories.md" %}
+
+{% page-ref page="../create-a-process.md" %}
+

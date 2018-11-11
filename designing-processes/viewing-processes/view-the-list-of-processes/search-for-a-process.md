@@ -1,5 +1,5 @@
 ---
-description: Filter all business processes modeled in your organization.
+description: Filter all business processes in your organization to find that one you need.
 ---
 
 # Search for a Process
@@ -40,6 +40,10 @@ Click the process name from the **Process** column to [edit the process in Proce
 {% page-ref page="preview-a-process.md" %}
 
 {% page-ref page="remove-a-process.md" %}
+
+{% page-ref page="../process-categories.md" %}
+
+{% page-ref page="../create-a-process.md" %}
 
 {% page-ref page="../../process-design/model-your-process.md" %}
 

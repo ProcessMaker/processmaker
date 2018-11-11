@@ -35,3 +35,7 @@ Follow these steps to remove a process:
 
 {% page-ref page="preview-a-process.md" %}
 
+{% page-ref page="../process-categories.md" %}
+
+{% page-ref page="../create-a-process.md" %}
+
