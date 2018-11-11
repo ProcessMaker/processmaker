@@ -41,8 +41,8 @@ Also refer to the **Designing Processes** section that includes the following to
 
 Lastly, refer to the **Script Central** section that includes the following topics:
 
-* [Why is Scripting So Powerful in ProcessMaker?](../script-central-1/first-topic.md)
-* [Develop and Test Scripts](../script-central-1/develop-and-test-scripts.md)
+* [Why is Scripting So Powerful in ProcessMaker?]()
+* [Develop and Test Scripts]()
 
 ## ProcessMaker Developer
 
@@ -50,8 +50,8 @@ A ProcessMaker Developer extends out-of-the-box ProcessMaker functionality by de
 
 Refer to the **Script Central** section that includes the following topics:
 
-* [Why is Scripting So Powerful in ProcessMaker?](../script-central-1/first-topic.md)
-* [Develop and Test Scripts](../script-central-1/develop-and-test-scripts.md)
+* [Why is Scripting So Powerful in ProcessMaker?]()
+* [Develop and Test Scripts]()
 
 Also refer to the **Connector Development** section that includes the following topics:
 

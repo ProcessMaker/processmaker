@@ -13,7 +13,7 @@ To edit general process information, you must be a member of the Process Owner g
 Follow these steps to edit the name, description, category, or status of a process:
 
 1. [View your processes.](./#view-your-processes) The **Processes** page displays.
-2. Hover your cursor over the process and then select the **Edit** icon![](../../../.gitbook/assets/edit-icon.png). The **Edit Process** page displays.  
+2. Hover your cursor over the process in which to edit its information and then select the **Edit** icon![](../../../.gitbook/assets/edit-icon.png). The **Edit Process** page displays.  
 
    ![](../../../.gitbook/assets/edit-process-page-processes.png)
 

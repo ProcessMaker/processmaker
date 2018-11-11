@@ -2,7 +2,7 @@
 description: View pending tasks that are assigned to you.
 ---
 
-# View Tasks You Need to Do
+# View Your Tasks You Need to Do
 
 ## View Pending Assigned Tasks
 

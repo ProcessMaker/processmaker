@@ -25,7 +25,7 @@ Follow these steps to activate a process:
 ## Deactivate a Process
 
 {% hint style="warning" %}
-When a process is Inactive status, new Requests cannot be started using that process throughout your organization. ~~However, active Requests using that inactive process can be completed.~~
+When a process is Inactive status, new Requests cannot be started using that process throughout your organization. ~~However, in-progress Requests using that inactive process will continue until they complete.~~
 {% endhint %}
 
 Follow these steps to deactivate a process:

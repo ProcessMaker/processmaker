@@ -4,7 +4,7 @@ description: Filter all business processes modeled in your organization.
 
 # Search for a Process
 
-Use the **Search** function to filter all business processes from the Processes page based on an entered text.
+Use the **Search** function to filter all business processes from the **Processes** page based on your entered text.
 
 {% hint style="info" %}
 To search processes, you must be a member of the Process Owner group. Otherwise, the **Processes** option is not available from the top menu that allows you to perform process management activities.

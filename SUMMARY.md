@@ -24,7 +24,7 @@
   * [View Request Information](using-processmaker/requests/request-details.md)
 * [Task Management](using-processmaker/task-management/README.md)
   * [What is a Task?](using-processmaker/task-management/what-is-a-task.md)
-  * [View Tasks You Need to Do](using-processmaker/task-management/view-tasks-you-need-to-do.md)
+  * [View Your Tasks You Need to Do](using-processmaker/task-management/view-tasks-you-need-to-do.md)
   * [View Completed Tasks](using-processmaker/task-management/view-completed-tasks.md)
 * [Notifications](using-processmaker/notifications.md)
 * [Control How Tabular Information Displays](using-processmaker/control-how-requests-display-in-a-tab.md)
@@ -35,7 +35,7 @@
 * [Process Management](designing-processes/viewing-processes/README.md)
   * [What is a Process?](designing-processes/viewing-processes/what-is-a-process.md)
   * [Manage Processes](designing-processes/viewing-processes/view-the-list-of-processes/README.md)
-    * [View Your Processes](designing-processes/viewing-processes/view-the-list-of-processes/view-your-processes.md)
+    * [View All Processes](designing-processes/viewing-processes/view-the-list-of-processes/view-your-processes.md)
     * [Search for a Process](designing-processes/viewing-processes/view-the-list-of-processes/search-for-a-process.md)
     * [Edit the Name, Description, Category, or Status of a Process](designing-processes/viewing-processes/view-the-list-of-processes/edit-the-name-description-category-or-status-of-a-process.md)
     * [Activate or Deactivate a Process](designing-processes/viewing-processes/view-the-list-of-processes/activate-or-deactivate-a-process.md)
@@ -43,8 +43,22 @@
     * [Remove a Process](designing-processes/viewing-processes/view-the-list-of-processes/remove-a-process.md)
   * [Process Categories](designing-processes/viewing-processes/process-categories.md)
   * [Create a New Process](designing-processes/viewing-processes/create-a-process.md)
-* [Manage Scripts](designing-processes/scripts.md)
-* [Manage Forms](designing-processes/design-forms.md)
+* [Script Management](designing-processes/scripts/README.md)
+  * [What is a Script?](designing-processes/scripts/what-is-a-script.md)
+  * [Manage Scripts](designing-processes/scripts/manage-scripts/README.md)
+    * [View All Scripts](designing-processes/scripts/manage-scripts/view-all-scripts.md)
+    * [Search for a Script](designing-processes/scripts/manage-scripts/search-for-a-script.md)
+    * [Edit a Script](designing-processes/scripts/manage-scripts/edit-a-script.md)
+    * [Stop a Script](designing-processes/scripts/manage-scripts/stop-a-script.md)
+    * [Preview a Script](designing-processes/scripts/manage-scripts/preview-a-script.md)
+    * [Remove a Script](designing-processes/scripts/manage-scripts/remove-a-script.md)
+  * [Create a New Script](designing-processes/scripts/create-a-new-script.md)
+  * [Scripts Editor](designing-processes/scripts/scripts-editor.md)
+* [Form Management](designing-processes/design-forms/README.md)
+  * [What is a Form?](designing-processes/design-forms/what-is-a-form.md)
+  * [Manage Forms](designing-processes/design-forms/manage-forms/README.md)
+    * [View All Forms](designing-processes/design-forms/manage-forms/view-all-forms.md)
+  * [Create a New Form](designing-processes/design-forms/create-a-new-form.md)
 * [Process Modeling](designing-processes/process-design/README.md)
   * [What is Process Modeling?](designing-processes/process-design/what-is-process-modeling.md)
   * [Model Your Process](designing-processes/process-design/model-your-process.md)
@@ -63,9 +77,6 @@
 * [Install ProcessMaker](install-processmaker/install-processmaker-on-premise.md)
 
 ## Script Central
-
-* [Why is Scripting So Powerful in ProcessMaker?](script-central-1/first-topic.md)
-* [Develop and Test Scripts](script-central-1/develop-and-test-scripts.md)
 
 ## Connector Development
 

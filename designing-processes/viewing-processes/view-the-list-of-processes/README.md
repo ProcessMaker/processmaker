@@ -1,5 +1,5 @@
 ---
-description: Manage your business processes.
+description: Manage your business processes as a Process Owner.
 ---
 
 # Manage Processes

@@ -11,13 +11,15 @@ To remove a process, you must be a member of the Process Owner group. Otherwise,
 ## Remove a Process
 
 {% hint style="warning" %}
+When a process is removed ~~describe what happens and in which conditions a process can be removed.~~
+
 Removing a process from the **Processes** page cannot be undone.
 {% endhint %}
 
 Follow these steps to remove a process:
 
 1. [View your processes.](./#view-your-processes) The **Processes** page displays.
-2. Hover your cursor over the process to preview and then select the **Remove** icon ![](../../../.gitbook/assets/remove-icon.png) . ~~What happens?~~
+2. Hover your cursor over the process to preview and then select the **Remove** icon![](../../../.gitbook/assets/remove-icon.png). ~~What happens?~~
 
 ## Related Topics
 
