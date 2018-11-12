@@ -96,7 +96,8 @@ class ProcessSeeder extends Seeder
                 }
             }
             $lanes = $definitions->getElementsByTagName('lane');
-            foreach($lanes as $lane) {
+            foreach($lanes as $nodeLane) {
+                $lane = $nodeLane->getBpmnElementInstance();
                 $user = $this->getUserOrCreate($lane->getName());
                 foreach($lane->getFlowNodes() as $node) {
                     if ($node instanceof ActivityInterface && !(node instanceof ScriptTaskInterface)) {
