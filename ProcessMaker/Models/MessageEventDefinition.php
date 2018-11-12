@@ -35,7 +35,6 @@ class MessageEventDefinition extends Base
             $data[$key] = $value;
         }
         $storage->setData($data);
-        \Illuminate\Support\Facades\Log::info('saved '.json_encode($targetRequest->getKey()).'>' . json_encode($storage->getData()));
         return $this;
     }
 }
