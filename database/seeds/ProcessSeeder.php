@@ -1,7 +1,10 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\EnvironmentVariable;
+use ProcessMaker\Models\Group;
+use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessTaskAssignment;
@@ -83,7 +86,7 @@ class ProcessSeeder extends Seeder
                         $screen = $this->createScreen($id, $screenRef, $process);
                         $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef', $screen->getKey());
                     }
-                    //Assign "admin" to the task 
+                    //Assign "admin" to the task
                     factory(ProcessTaskAssignment::class)->create([
                         'process_id' => $process->getKey(),
                         'process_task_id' => $id,
@@ -162,6 +165,18 @@ class ProcessSeeder extends Seeder
     }
 
     /**
+     * Format name without spaces and to lowercase
+     *
+     * @param $name
+     *
+     * @return string
+     */
+    private function formatName($name)
+    {
+        return strtolower(str_replace(' ', '_', $name));
+    }
+
+    /**
      * Get or create a user by full name.
      *
      * @param string $userFullName
@@ -170,6 +185,43 @@ class ProcessSeeder extends Seeder
      */
     private function getUserOrCreate($userFullName)
     {
+        $name = $this->formatName($userFullName);
+        $user = User::where('username', $name)
+            ->first();
+        if ($user) {
+            $user = factory(User::class)->create([
+                'username' => $name,
+                'password' => Hash::make('admin'),
+                'status' => 'ACTIVE',
+            ]);
+        }
 
+        return $user;
+    }
+
+    /**
+     * Get or create a group by name
+     *
+     * @param $name
+     *
+     * @return mixed
+     */
+    private function getGroupOrCreate($name)
+    {
+        $group = Group::where('name', $name)->first();
+        if ($group) {
+            $group = factory(Group::class)->create([
+                'name' => $name,
+                'status' => 'ACTIVE'
+            ]);
+        }
+        factory(GroupMember::class)->create( [
+            'member_id' => function () use ($name) {
+                return $this->getUserOrCreate($name)->getKey();
+            },
+            'member_type' => User::class,
+            'group_id' => $group->getKey()
+        ]);
+        return $group;
     }
 }
