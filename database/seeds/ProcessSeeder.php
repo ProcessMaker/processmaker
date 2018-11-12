@@ -189,7 +189,7 @@ class ProcessSeeder extends Seeder
         $name = $this->formatName($userFullName);
         $user = User::where('username', $name)
             ->first();
-        if ($user) {
+        if (!$user) {
             $user = factory(User::class)->create([
                 'username' => $name,
                 'password' => Hash::make('admin'),
@@ -210,7 +210,7 @@ class ProcessSeeder extends Seeder
     private function getGroupOrCreate($name)
     {
         $group = Group::where('name', $name)->first();
-        if ($group) {
+        if (!$group) {
             $group = factory(Group::class)->create([
                 'name' => $name,
                 'status' => 'ACTIVE'
