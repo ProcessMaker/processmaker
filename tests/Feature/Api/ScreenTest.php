@@ -211,6 +211,24 @@ class ScreenTest extends TestCase
         //Validate the answer is correct
         $response->assertStatus(204);
     }
+    /**
+     * Update Screen Type
+     */
+    public function testUpdateScreenType()
+    {
+        $faker = Faker::create();
+        $type = 'FORM';
+        $url = self::API_TEST_SCREEN . '/' . factory(Screen::class)->create([
+            'type' => $type
+        ])->id;
+        $response = $this->apiCall('PUT', $url, [
+            'title' => 'ScreenTitleTest',
+            'type' => 'DETAIL',
+            'description' => $faker->sentence(5),
+            'config' => '',
+        ]);
+        $response->assertStatus(204);
+    }
 
     /**
      * Update Screen with same title
