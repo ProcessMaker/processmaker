@@ -10,40 +10,43 @@ use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\PermissionAssignment;
 
 
-//@TODO annotate permissions
 class PermissionController extends Controller
 {
 
     /**
-     * Update a user
+     * Update permissions
      *
-     * @param User $user
      * @param Request $request
      *
      * @return Response
      *
      *     @OA\Put(
-     *     path="/users/userId",
-     *     summary="Update a user",
-     *     operationId="updateUsers",
-     *     tags={"Users"},
-     *     @OA\Parameter(
-     *         description="ID of user to return",
-     *         in="path",
-     *         name="user_id",
-     *         required=true,
-     *         @OA\Schema(
-     *           type="string",
-     *         )
-     *     ),
+     *     path="/permissions",
+     *     summary="Update the permissions of an user",
+     *     tags={"Permissions"},
+     *
      *     @OA\RequestBody(
      *       required=true,
-     *       @OA\JsonContent(ref="#/components/schemas/usersEditable")
+     *       @OA\JsonContent(
+     *          @OA\Property(
+     *              property="user_id",
+     *              type="integer",
+     *              description="Id of the user whose permissions are configured"),
+     *          @OA\Property(
+     *              property="is_administrator",
+     *              type="boolean",
+     *              description="boolean value to define if the user will be administrator"),
+     *          @OA\Property(
+     *              property="permissions_ids",
+     *              type="array",
+     *              collectionFormat="multi",
+     *              @OA\Items (type="integer"))
+     *       )
      *     ),
+     *
      *     @OA\Response(
-     *         response=200,
+     *         response=204,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/users")
      *     ),
      * )
      */
