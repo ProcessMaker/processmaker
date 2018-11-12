@@ -174,7 +174,7 @@ class ProcessSeeder extends Seeder
      */
     private function formatName($name)
     {
-        return strtolower(str_replace(' ', '_', $name));
+        return strtolower(str_replace(' ', '.', $name));
     }
 
     /**
@@ -194,6 +194,7 @@ class ProcessSeeder extends Seeder
                 'username' => $name,
                 'password' => Hash::make('admin'),
                 'status' => 'ACTIVE',
+                'is_administrator' => true
             ]);
         }
 
