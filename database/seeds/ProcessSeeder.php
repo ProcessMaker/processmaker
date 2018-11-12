@@ -11,6 +11,8 @@ use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
 use ProcessMaker\Providers\WorkflowServiceProvider;
+use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 
 class ProcessSeeder extends Seeder
 {
@@ -74,6 +76,23 @@ class ProcessSeeder extends Seeder
                 );
             }
 
+            //Create/Assign Users to tasks
+            $lanes = $definitions->getElementsByTagName('lane');
+            foreach($lanes as $nodeLane) {
+                $lane = $nodeLane->getBpmnElementInstance();
+                $user = $this->getUserOrCreate($lane->getName());
+                foreach($lane->getFlowNodes() as $node) {
+                    if ($node instanceof ActivityInterface && !($node instanceof ScriptTaskInterface)) {
+                        factory(ProcessTaskAssignment::class)->create([
+                            'process_id' => $process->getKey(),
+                            'process_task_id' => $node->getId(),
+                            'assignment_id' => $user->getKey(),
+                            'assignment_type' => 'user',
+                        ]);
+                    }
+                }
+            }
+
             //Add screens to the process
             $admin = User::where('username', 'admin')->firstOrFail();
             $humanTasks = ['task', 'userTask'];
@@ -86,31 +105,20 @@ class ProcessSeeder extends Seeder
                         $screen = $this->createScreen($id, $screenRef, $process);
                         $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef', $screen->getKey());
                     }
-                    //Assign "admin" to the task
-                    factory(ProcessTaskAssignment::class)->create([
-                        'process_id' => $process->getKey(),
-                        'process_task_id' => $id,
-                        'assignment_id' => $admin->getKey(),
-                        'assignment_type' => 'user',
-                    ]);
-                }
-            }
-            $lanes = $definitions->getElementsByTagName('lane');
-            foreach($lanes as $nodeLane) {
-                $lane = $nodeLane->getBpmnElementInstance();
-                $user = $this->getUserOrCreate($lane->getName());
-                foreach($lane->getFlowNodes() as $node) {
-                    if ($node instanceof ActivityInterface && !(node instanceof ScriptTaskInterface)) {
+                    //Assign "admin" to the task if it does not have user assigned
+                    $assignments = ProcessTaskAssignment::where('process_id', $process->getKey())
+                        ->where('process_task_id', $id)
+                        ->count();
+                    if (!$assignments) {
                         factory(ProcessTaskAssignment::class)->create([
                             'process_id' => $process->getKey(),
-                            'process_task_id' => $node->getId(),
-                            'assignment_id' => $user->getKey(),
+                            'process_task_id' => $id,
+                            'assignment_id' => $admin->getKey(),
                             'assignment_type' => 'user',
                         ]);
                     }
                 }
             }
-
 
             //Update the screen and script references in the BPMN of the process
             $process->bpmn = $definitions->saveXML();
