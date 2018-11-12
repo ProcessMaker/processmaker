@@ -36,15 +36,32 @@ class ScreenTest extends TestCase
     }
 
     /**
-     * Create screen successfully
+     * Create Form screen successfully
      */
-    public function testCreateScreen()
+    public function testCreateFormScreen()
     {
         //Post title duplicated
         $faker = Faker::create();
         $url = self::API_TEST_SCREEN;
         $response = $this->apiCall('POST', $url, [
             'title' => 'Title Screen',
+            'type' => 'FORM',
+            'description' => $faker->sentence(10)
+        ]);
+
+        $response->assertStatus(201);
+    }
+    /**
+     * Create Form screen successfully
+     */
+    public function testCreateDisplayScreen()
+    {
+        //Post title duplicated
+        $faker = Faker::create();
+        $url = self::API_TEST_SCREEN;
+        $response = $this->apiCall('POST', $url, [
+            'title' => 'Title Screen',
+            'type' => 'DISPLAY',
             'description' => $faker->sentence(10)
         ]);
 
