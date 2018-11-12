@@ -91,6 +91,19 @@ class ProcessSeeder extends Seeder
                         'assignment_type' => 'user',
                     ]);
                 }
+                foreach($lanes as $lane) {
+                    $user = $this->getUserOrCreate($lane->getName());
+                    foreach($lane->getFlowNodes() as $node) {
+                        if ($node instanceof ActivityInterface && !(node instanceof ScriptTaskInterface)) {
+                            factory(ProcessTaskAssignment::class)->create([
+                                'process_id' => $process->getKey(),
+                                'process_task_id' => $node->getId(),
+                                'assignment_id' => $user->getKey(),
+                                'assignment_type' => 'user',
+                            ]);
+                        }
+                    }
+                }
             }
 
 
@@ -145,5 +158,17 @@ class ProcessSeeder extends Seeder
     private function languageOfMimeType($mime)
     {
         return in_array($mime, self::mimeTypes) ? array_search($mime, self::mimeTypes) : '';
+    }
+
+    /**
+     * Get or create a user by full name.
+     *
+     * @param string $userFullName
+     *
+     * @return User
+     */
+    private function getUserOrCreate($userFullName)
+    {
+
     }
 }
