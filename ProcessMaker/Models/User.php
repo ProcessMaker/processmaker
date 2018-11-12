@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
@@ -176,6 +177,17 @@ class User extends Authenticatable implements HasMedia
      */
     public function getFullnameAttribute() {
         return $this->getFullName();
+    }
+
+    /**
+     * Hashes the password passed as a clear text
+     *
+     * @param $pass
+     */
+    public function setPasswordAttribute($pass){
+
+        $this->attributes['password'] = Hash::make($pass);
+
     }
 
     /**
