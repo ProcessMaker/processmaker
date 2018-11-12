@@ -91,17 +91,18 @@ class ProcessSeeder extends Seeder
                         'assignment_type' => 'user',
                     ]);
                 }
-                foreach($lanes as $lane) {
-                    $user = $this->getUserOrCreate($lane->getName());
-                    foreach($lane->getFlowNodes() as $node) {
-                        if ($node instanceof ActivityInterface && !(node instanceof ScriptTaskInterface)) {
-                            factory(ProcessTaskAssignment::class)->create([
-                                'process_id' => $process->getKey(),
-                                'process_task_id' => $node->getId(),
-                                'assignment_id' => $user->getKey(),
-                                'assignment_type' => 'user',
-                            ]);
-                        }
+            }
+            $lanes = $definitions->getElementsByTagName('lane');
+            foreach($lanes as $lane) {
+                $user = $this->getUserOrCreate($lane->getName());
+                foreach($lane->getFlowNodes() as $node) {
+                    if ($node instanceof ActivityInterface && !(node instanceof ScriptTaskInterface)) {
+                        factory(ProcessTaskAssignment::class)->create([
+                            'process_id' => $process->getKey(),
+                            'process_task_id' => $node->getId(),
+                            'assignment_id' => $user->getKey(),
+                            'assignment_type' => 'user',
+                        ]);
                     }
                 }
             }
