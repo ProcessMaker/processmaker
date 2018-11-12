@@ -111,7 +111,7 @@
                     this.resetErrors();
                     ProcessMaker.apiClient.post('screens', this.formData)
                         .then(response => {
-                            ProcessMaker.alert('Created Screen Successfully', 'success');
+                            ProcessMaker.alert('{{__('Created Screen Successfully')}}', 'success');
                             window.location = '/processes/screen-builder/' + response.data.id + '/edit';
                         })
                         .catch(error => {
