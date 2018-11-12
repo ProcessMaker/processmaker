@@ -196,16 +196,20 @@ class Process extends Model implements HasMedia
      * Get the user to whom to assign a task.
      *
      * @param ActivityInterface $activity
+     * @param TokenInterface $token
      *
      * @return User
      */
-    public function getNextUser(ActivityInterface $activity)
+    public function getNextUser(ActivityInterface $activity, ProcessRequestToken $token)
     {
-        $default = $activity instanceof ScriptTaskInterface ? 'script' : 'cyclical';
-        $assignmentType = $activity->getProperty('assignment_type', $default);
+        $default = $activity instanceof ScriptTaskInterface ? 'script' : 'requestor';
+        $assignmentType = $activity->getProperty('assignment', $default);
         switch ($assignmentType) {
             case 'cyclical':
                 $user = $this->getNextUserCyclicalAssignment($activity->getId());
+                break;
+            case 'requestor':
+                $user = $token->getInstance()->user_id;
                 break;
             case 'manual':
             case 'self_service':
