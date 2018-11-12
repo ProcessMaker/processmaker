@@ -52,6 +52,12 @@
                         <div class="invalid-feedback" v-for="title in errors.title">@{{title}}</div>
                     </div>
                     <div class="form-group">
+                        {!! Form::label('type', 'Type') !!}
+                        {!! Form::select('type', ['SUMMARY' => 'Summary', 'FORM' => 'Form'], 'null', ['id' => 'type','class'=> 'form-control', 'v-model' => 'formData.type',
+                        'v-bind:class' => '{"form-control":true, "is-invalid":errors.type}']) !!}
+                        <div class="invalid-feedback" v-for="type in errors.type">@{{type}}</div>
+                    </div>
+                    <div class="form-group">
                         {!! Form::label('description', 'Description') !!}
                         {!! Form::textarea('description', null, ['id' => 'description', 'rows' => 4, 'class'=> 'form-control',
                         'v-model' => 'formData.description', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.description}']) !!}
@@ -77,6 +83,7 @@
                     formData: {},
                     errors: {
                         'title': null,
+                        'type': null,
                         'description': null,
                     }
                 }
@@ -89,12 +96,14 @@
                 resetFormData() {
                     this.formData = Object.assign({}, {
                         title: null,
+                        type: null,
                         description: null,
                     });
                 },
                 resetErrors() {
                     this.errors = Object.assign({}, {
                         title: null,
+                        type: null,
                         description: null,
                     });
                 },
