@@ -203,7 +203,7 @@ class Process extends Model implements HasMedia
      */
     public function getNextUser(ActivityInterface $activity, ProcessRequestToken $token)
     {
-        $default = $activity instanceof ScriptTaskInterface ? 'script' : 'cyclical';
+        $default = $activity instanceof ScriptTaskInterface ? 'script' : 'requestor';
         $assignmentType = $activity->getProperty('assignment', $default);
         switch ($assignmentType) {
             case 'cyclical':
