@@ -9,13 +9,13 @@
             </template>
             <template v-else>
                 <a :href="value.id">
-                <button class="rounded-circle bg-warning border-0" :style="styleButton" :title="value.tooltip"
-                        :href="value.id">
-                    <span class="text-white text-center text-uppercase"> {{value.initials}}</span>
+                <button class="rounded-circle bg-warning border-0 align-middle text-white text-center text-uppercase text-nowrap"
+                        :style="styleButton" :title="value.tooltip" :href="value.id">
+                    {{value.initials}}
                 </button>
                 </a>
             </template>
-            <span v-if="!hideName" class="text-center text-capitalize m-1"> {{value.name}}</span>
+            <span v-if="!hideName" class="text-center text-capitalize text-nowrap m-1"> {{value.name}}</span>
         </template>
     </span>
 </template>
@@ -47,6 +47,7 @@
         },
         methods: {
             default() {
+                this.displayTitle = this.hideName === undefined ? false : this.hideName;
                 this.formatRounded(this.rounded);
                 this.formatClassImage(this.classImage);
                 this.formatInputData(this.inputData);
@@ -65,14 +66,18 @@
             formatSizeButton(size) {
                 this.styleButton = 'width: ' + size + 'px; height: ' + size + 'px; font-size:' + size / 2.5 +
                     'px; margin-right:5px;';
+                if (size <= 30) {
+                    let s = (size / 2) + 5;
+                    this.styleButton += 'padding-left:' + s + '%';
+                }
             },
-            formatValue(value)  {
+            formatValue(value) {
                 return {
                     id: value.id ? '/profile/' + value.id : '#',
                     src: value.src ? value.src : value.avatar ? value.avatar : '',
-                    tooltip: value.tooltip ? value.tooltip : value.fullname ? this.displayName ? value.title : value.fullname : '',
-                    name: value.name !== undefined ? value.name : ( value.fullname ? value.fullname : '' ),
-                    initials: value.initials ? value.initials : (value.firstname && value.lastname ) ? (value.firstname.match(/./u)[0] + value.lastname.match(/./u)[0]) : ''
+                    tooltip: value.tooltip ? value.tooltip : (!this.displayTitle ? value.title : (value.fullname ? value.fullname : '')),
+                    name: value.name !== undefined ? value.name : (value.fullname ? value.fullname : ''),
+                    initials: value.initials ? value.initials : (value.firstname && value.lastname) ? (value.firstname.match(/./u)[0] + value.lastname.match(/./u)[0]) : ''
                 }
             },
             formatInputData(data) {
