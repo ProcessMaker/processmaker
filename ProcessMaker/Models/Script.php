@@ -165,4 +165,12 @@ class Script extends Model
     {
         return static::$scriptFormats[$format];
     }
+    
+    /**
+     * Get the associated versions
+     */
+    public function versions()
+    {
+        return $this->hasMany(ScriptVersion::class);
+    }
 }

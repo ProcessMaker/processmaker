@@ -210,6 +210,7 @@ class ScriptsTest extends TestCase
         $faker = Faker::create();
         //Post saved success
         $script = factory(Script::class)->create();
+        $original_attributes = $script->getAttributes();
         $url = self::API_TEST_SCRIPT . '/' . $script->id;
         $response = $this->apiCall('PUT', $url, [
             'title' => $script->title,
@@ -218,6 +219,14 @@ class ScriptsTest extends TestCase
         ]);
         //Validate the answer is correct
         $response->assertStatus(204);
+        
+        // assert it creates a script version
+        $script->refresh();
+        $version = $script->versions()->first();
+        $this->assertEquals($version->key, $script->key);
+        $this->assertEquals($version->title, $original_attributes['title']);
+        $this->assertEquals($version->language, $original_attributes['language']);
+        $this->assertEquals($version->code, $original_attributes['code']);
     }
 
     /**

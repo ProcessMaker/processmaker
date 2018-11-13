@@ -14,6 +14,7 @@ class CreateProcessVersionsTable extends Migration
     public function up()
     {
         Schema::create('process_versions', function (Blueprint $table) {
+            // NOTE: Remember to update ProcessVersions when updating this table
             // Columns
             $table->increments('id');
             $table->unsignedInteger('process_id');
@@ -27,7 +28,7 @@ class CreateProcessVersionsTable extends Migration
             $table->timestamps();
 
             // Indexes
-            $table->index('process_id');
+            $table->foreign('process_id')->references('id')->on('processes')->onDelete('cascade');
         });
     }
 

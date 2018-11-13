@@ -225,9 +225,17 @@ class ScriptController extends Controller
     public function update(Script $script, Request $request)
     {
         $request->validate(Script::rules($script));
+        $original_attributes = $script->getAttributes();
 
         $script->fill($request->input());
         $script->saveOrFail();
+        
+        unset(
+            $original_attributes['id'],
+            $original_attributes['created_at'],
+            $original_attributes['updated_at']
+        );
+        $script->versions()->create($original_attributes);
 
         return response($request, 204);
     }
