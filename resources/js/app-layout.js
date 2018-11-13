@@ -20,7 +20,9 @@ if (window.ProcessMaker && window.ProcessMaker.user) {
     moment.defaultFormat= window.ProcessMaker.user.datetime_format;
 }
 Vue.prototype.moment = moment;
- /********/
+//initializing global instance of a moment object
+window.moment = moment;
+/********/
 
 Vue.component('multiselect', Multiselect);
 

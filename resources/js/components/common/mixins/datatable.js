@@ -6,17 +6,6 @@
 import Vuetable from "vuetable-2/src/components/Vuetable";
 import Pagination from "../../../components/common/Pagination";
 
-/*
- * Global adjustment parameters for moment.js.
- */
-import moment from "moment"
-import moment_timezone from "moment-timezone";
-if (window.ProcessMaker && window.ProcessMaker.user) {
-    moment.tz.setDefault(window.ProcessMaker.user.timezone);
-    moment.defaultFormat= window.ProcessMaker.user.datetime_format;
-}
-/***********/
-
 export default {
     components: {
         Vuetable,
@@ -38,7 +27,7 @@ export default {
         formatDate (value, format) {
             format = format || '';
             if (value) {
-                return moment(value)
+                return window.moment(value)
                     .format(format);
             }
             return "n/a";

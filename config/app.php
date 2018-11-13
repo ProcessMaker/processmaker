@@ -32,8 +32,8 @@ return [
     'timezone' => env('APP_TIMEZONE', 'America/Los_Angeles'),
 
     // The time format for the application
-    'dateformat' => env('DATE_FORMAT', 'M/D/YY h:mma'),
-    
+    'dateformat' => env('DATE_FORMAT', 'm/d/Y h:i A'),
+
     // The system locale
     'locale' => 'en',
 
