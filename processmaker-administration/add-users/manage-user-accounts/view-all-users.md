@@ -2,5 +2,5 @@
 description: View all ProcessMaker user accounts.
 ---
 
-# View All Users
+# View All Users Accounts
 

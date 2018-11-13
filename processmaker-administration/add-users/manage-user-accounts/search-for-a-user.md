@@ -4,5 +4,5 @@ description: >-
   you need.
 ---
 
-# Search for a User
+# Search for a User Account
 
