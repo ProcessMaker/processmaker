@@ -1,6 +1,6 @@
 ---
-description: Install the supported software before installing ProcessMaker.
+description: Install the required software before installing ProcessMaker.
 ---
 
-# Install Supported Software
+# Install Required Software
 

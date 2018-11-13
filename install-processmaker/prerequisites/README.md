@@ -4,5 +4,5 @@ description: >-
   requires and supports.
 ---
 
-# Prerequisites
+# Requirements
 

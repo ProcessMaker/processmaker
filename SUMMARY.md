@@ -101,10 +101,10 @@
 
 ## Install ProcessMaker
 
-* [Prerequisites](install-processmaker/prerequisites/README.md)
+* [Requirements](install-processmaker/prerequisites/README.md)
   * [Installation Requirements](install-processmaker/prerequisites/installation-requirements.md)
   * [Supported Browsers](install-processmaker/prerequisites/supported-browsers.md)
-* [Install Supported Software](install-processmaker/installing-stacks.md)
+* [Install Required Software](install-processmaker/installing-stacks.md)
 * [Install ProcessMaker](install-processmaker/install-processmaker-on-premise.md)
 
 ## Script Central
