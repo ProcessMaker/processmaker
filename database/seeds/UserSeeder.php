@@ -1,12 +1,9 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
-use ProcessMaker\Models\Permission;
-use ProcessMaker\Models\PermissionAssignment;
 
 class UserSeeder extends Seeder
 {
