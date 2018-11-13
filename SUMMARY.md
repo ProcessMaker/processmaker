@@ -77,8 +77,17 @@
 
 ## ProcessMaker Administration
 
-* [User Management](processmaker-administration/add-users.md)
-* [Group Management](processmaker-administration/assign-groups-to-users.md)
+* [User Management](processmaker-administration/add-users/README.md)
+  * [What is a User?](processmaker-administration/add-users/what-is-a-user.md)
+  * [Manage User Accounts](processmaker-administration/add-users/manage-user-accounts/README.md)
+    * [View All Users](processmaker-administration/add-users/manage-user-accounts/view-all-users.md)
+    * [Search for a User](processmaker-administration/add-users/manage-user-accounts/search-for-a-user.md)
+    * [Edit a User Account](processmaker-administration/add-users/manage-user-accounts/edit-a-user-account.md)
+    * [Remove a User Account](processmaker-administration/add-users/manage-user-accounts/remove-a-user-account.md)
+  * [Create a User Account](processmaker-administration/add-users/create-a-user-account.md)
+* [Group Management](processmaker-administration/assign-groups-to-users/README.md)
+  * [What is a Group?](processmaker-administration/assign-groups-to-users/what-is-a-group.md)
+  * [Manage Groups](processmaker-administration/assign-groups-to-users/manage-groups.md)
 
 ## Install ProcessMaker
 

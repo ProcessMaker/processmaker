@@ -25,8 +25,8 @@ Refer to the **Install ProcessMaker** section that includes the following topics
 
 Also refer to the **ProcessMaker Administration** section that includes the following topics:
 
-* [User management](../processmaker-administration/add-users.md)
-* [Group management](../processmaker-administration/assign-groups-to-users.md)
+* [User management](../processmaker-administration/add-users/)
+* [Group management](../processmaker-administration/assign-groups-to-users/)
 
 ## Process Owner
 
