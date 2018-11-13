@@ -182,6 +182,7 @@ class ProcessController extends Controller
     public function update(Request $request, Process $process)
     {
         $request->validate(Process::rules($process));
+        $original_attributes = $process->getAttributes();
 
         //bpmn validation
         libxml_use_internal_errors(true);
@@ -197,6 +198,14 @@ class ProcessController extends Controller
 
         $process->fill($request->json()->all());
         $process->saveOrFail();
+        
+        unset(
+            $original_attributes['id'],
+            $original_attributes['created_at'],
+            $original_attributes['updated_at']
+        );
+        $process->versions()->create($original_attributes);
+
         return new Resource($process->refresh());
     }
 

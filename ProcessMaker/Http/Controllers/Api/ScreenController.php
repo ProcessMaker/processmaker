@@ -176,7 +176,11 @@ class ScreenController extends Controller
         $screen->fill($request->input());
         $screen->saveOrFail();
 
-        unset($original_attributes['id'], $original_attributes['created_at'], $original_attributes['updated_at']);
+        unset(
+            $original_attributes['id'],
+            $original_attributes['created_at'],
+            $original_attributes['updated_at']
+        );
         $screen->versions()->create($original_attributes);
 
         return response([], 204);

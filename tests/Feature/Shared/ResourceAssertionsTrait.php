@@ -157,6 +157,7 @@ trait ResourceAssertionsTrait
     {
 
         $base = factory($modelClass)->create();
+        $original_attributes = $base->getAttributes();
 
         $route = route('api.' . $this->resource . '.update', [$base->id]);
         $fields = array_diff($attributes, [static::$DO_NOT_SEND]);
@@ -165,6 +166,14 @@ trait ResourceAssertionsTrait
         $this->assertStatus(200, $response);
         $response->assertJsonStructure($this->structure);
         $this->assertArraySubset($fields, $response->json());
+        
+        // assert it creates a script version
+        $base->refresh();
+        $version = $base->versions()->first();
+        $this->assertEquals($version->process_category_id, $original_attributes['process_category_id']);
+        $this->assertEquals($version->user_id, $original_attributes['user_id']);
+        $this->assertEquals($version->name, $original_attributes['name']);
+        $this->assertEquals($version->description, $original_attributes['description']);
     }
 
     /**
