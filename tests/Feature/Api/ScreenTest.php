@@ -185,14 +185,24 @@ class ScreenTest extends TestCase
     {
         //Post saved success
         $faker = Faker::create();
-        $url = self::API_TEST_SCREEN . '/' . factory(Screen::class)->create()->id;
+        $screen = factory(Screen::class)->create();
+        $original_attributes = $screen->getAttributes();
+        $url = self::API_TEST_SCREEN . '/' . $screen->id;
         $response = $this->apiCall('PUT', $url, [
             'title' => 'ScreenTitleTest',
             'description' => $faker->sentence(5),
-            'config' => '',
+            'config' => '{"foo":"bar"}',
         ]);
         //Validate the answer is correct
         $response->assertStatus(204);
+
+        // assert it creates a script version
+        $screen->refresh();
+        $version = $screen->versions()->first();
+        $this->assertEquals($version->screen_category_id, $screen->screen_category_id);
+        $this->assertEquals($version->title, $original_attributes['title']);
+        $this->assertEquals($version->description, $original_attributes['description']);
+        $this->assertEquals($version->config, null);
     }
 
     /**
