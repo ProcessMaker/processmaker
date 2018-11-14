@@ -128,6 +128,7 @@ jobs:
           command: "./vendor/bin/phpunit -d memory_limit=-1 --coverage-html coverage"
           environment:
             DB_DATABASE: "circle_test"
+            DB_USERNAME: "root"
             RUN_MSSQL_TESTS: "true"
             MSSQL_HOST: "127.0.0.1"
             MSSQL_PORT: "1433"
