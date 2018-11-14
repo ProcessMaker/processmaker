@@ -49,9 +49,12 @@ trait ScriptDockerTrait
     {
         $cidfile = tempnam(config('app.bpm_scripts_home'), 'cid');
         unlink($cidfile);
-        $cmd = config('app.bpm_scripts_docker') . sprintf(' create %s --cidfile %s %s %s &', $parameters, $cidfile, $image, $command);
+        $cmd = config('app.bpm_scripts_docker') . sprintf(' create %s --cidfile %s %s %s 2>&1', $parameters, $cidfile, $image, $command);
         $line = exec($cmd, $output, $returnCode);
         if ($returnCode) {
+            throw new RuntimeException('Unable to create a docker container: ' . implode("\n", $output));
+        }
+        if (!file_exists($cidfile)) {
             throw new RuntimeException('Unable to create a docker container: ' . implode("\n", $output));
         }
         $cid = file_get_contents($cidfile);
