@@ -13,82 +13,118 @@
         <h1>{{__('Edit User')}}</h1>
         <div class="row">
             <div class="col-8">
-                <div class="card card-body">
-                    {!! Form::open() !!}
-                    <div class="form-group">
-                        {!!Form::label('username', __('Username'))!!}
-                        {!!Form::text('username', null, ['class'=> 'form-control', 'v-model'=> 'formData.username',
-                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.username}'])!!}
-                        <div class="invalid-feedback" v-if="errors.username">@{{errors.username[0]}}</div>
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab"
+                            aria-controls="nav-home" aria-selected="true">Information</a>
+                        <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab"
+                            aria-controls="nav-profile" aria-selected="false">Permissions</a>
+                        <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab"
+                            aria-controls="nav-contact" aria-selected="false">Groups</a>
                     </div>
-                    <div class="form-group">
-                        {!!Form::label('firstname', __('First name'))!!}
-                        {!!Form::text('firstname', null, ['class'=> 'form-control', 'v-model'=> 'formData.firstname',
-                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.firstname}'])!!}
-                        <div class="invalid-feedback" v-if="errors.firstname">@{{errors.firstname[0]}}
+                </nav>
+                <div class="card card-body tab-content mt-3" id="nav-tabContent">
+                    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                        {!! Form::open() !!}
+                        <div class="form-group">
+                            {!!Form::label('username', __('Username'))!!}
+                            {!!Form::text('username', null, ['class'=> 'form-control', 'v-model'=> 'formData.username',
+                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.username}'])!!}
+                            <div class="invalid-feedback" v-if="errors.username">@{{errors.username[0]}}</div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        {!!Form::label('lastname', __('Last name'))!!}
-                        {!!Form::text('lastname', null, ['class'=> 'form-control', 'v-model'=> 'formData.lastname',
-                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.lastname}'])!!}
-                        <div class="invalid-feedback" v-if="errors.lastname">@{{errors.lastname[0]}}</div>
-                    </div>
-                    <div class="form-group">
-                        {!!Form::label('status', 'Status');!!}
-                        {!!Form::select('size', ['ACTIVE' => 'Active', 'INACTIVE' => 'Inactive'], 'formData.status', ['class'=> 'form-control', 'v-model'=> 'formData.status',
-                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.status}']);!!}
-                        <div class="invalid-feedback" v-if="errors.email">@{{errors.status[0]}}</div>
-                    </div>
-                    <div class="form-group">
-                        {!!Form::label('email', __('Email'))!!}
-                        {!!Form::email('email', null, ['class'=> 'form-control', 'v-model'=> 'formData.email',
-                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.email}'])!!}
-                        <div class="invalid-feedback" v-if="errors.email">@{{errors.email[0]}}</div>
-                    </div>
-                    <div class="form-group">
-                        {!!Form::label('password', __('Password'))!!}
-                        {!!Form::password('password', ['class'=> 'form-control', 'v-model'=> 'formData.password',
-                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}'])!!}
-                        <div class="invalid-feedback" v-if="errors.password">@{{errors.password[0]}}</div>
-                    </div>
-                    <div class="form-group">
-                        {!!Form::label('confpassword', __('Confirm Password'))!!}
-                        {!!Form::password('confpassword', ['class'=> 'form-control', 'v-model'=> 'formData.confpassword',
-                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}'])!!}
-                    </div>
-                    <div class="form-group">
-                        <label>{{__('Groups')}}</label>
-                        <multiselect v-model="value" :options="dataGroups" :multiple="true" track-by="name"
-                                     :custom-label="customLabel"
-                                     :show-labels="false" label="name">
+                        <div class="form-group">
+                            {!!Form::label('firstname', __('First name'))!!}
+                            {!!Form::text('firstname', null, ['class'=> 'form-control', 'v-model'=> 'formData.firstname',
+                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.firstname}'])!!}
+                            <div class="invalid-feedback" v-if="errors.firstname">@{{errors.firstname[0]}}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            {!!Form::label('lastname', __('Last name'))!!}
+                            {!!Form::text('lastname', null, ['class'=> 'form-control', 'v-model'=> 'formData.lastname',
+                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.lastname}'])!!}
+                            <div class="invalid-feedback" v-if="errors.lastname">@{{errors.lastname[0]}}</div>
+                        </div>
+                        <div class="form-group">
+                            {!!Form::label('status', 'Status');!!}
+                            {!!Form::select('size', ['ACTIVE' => 'Active', 'INACTIVE' => 'Inactive'], 'formData.status', ['class'=> 'form-control', 'v-model'=> 'formData.status',
+                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.status}']);!!}
+                            <div class="invalid-feedback" v-if="errors.email">@{{errors.status[0]}}</div>
+                        </div>
+                        <div class="form-group">
+                            {!!Form::label('email', __('Email'))!!}
+                            {!!Form::email('email', null, ['class'=> 'form-control', 'v-model'=> 'formData.email',
+                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.email}'])!!}
+                            <div class="invalid-feedback" v-if="errors.email">@{{errors.email[0]}}</div>
+                        </div>
+                        <div class="form-group">
+                            {!!Form::label('password', __('Password'))!!}
+                            {!!Form::password('password', ['class'=> 'form-control', 'v-model'=> 'formData.password',
+                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}'])!!}
+                            <div class="invalid-feedback" v-if="errors.password">@{{errors.password[0]}}</div>
+                        </div>
+                        <div class="form-group">
+                            {!!Form::label('confpassword', __('Confirm Password'))!!}
+                            {!!Form::password('confpassword', ['class'=> 'form-control', 'v-model'=> 'formData.confpassword',
+                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}'])!!}
+                        </div>
+                        <div class="form-group">
+                            <label>{{__('Groups')}}</label>
+                            <multiselect v-model="value" :options="dataGroups" :multiple="true" track-by="name"
+                                        :custom-label="customLabel"
+                                        :show-labels="false" label="name">
 
-                            <template slot="tag" slot-scope="props">
-                            <span class="multiselect__tag  d-flex align-items-center" style="width:max-content;">
-                                <img class="option__image mr-1" :src="props.option.img" alt="Check it">
-                                <span class="option__desc mr-1">@{{ props.option.name }}
-                                    <span class="option__title">@{{ props.option.desc }}</span>
+                                <template slot="tag" slot-scope="props">
+                                <span class="multiselect__tag  d-flex align-items-center" style="width:max-content;">
+                                    <img class="option__image mr-1" :src="props.option.img" alt="Check it">
+                                    <span class="option__desc mr-1">@{{ props.option.name }}
+                                        <span class="option__title">@{{ props.option.desc }}</span>
+                                    </span>
+                                    <i aria-hidden="true" tabindex="1" @click="props.remove(props.option)"
+                                    class="multiselect__tag-icon"></i>
                                 </span>
-                                <i aria-hidden="true" tabindex="1" @click="props.remove(props.option)"
-                                   class="multiselect__tag-icon"></i>
-                            </span>
-                            </template>
+                                </template>
 
-                            <template slot="option" slot-scope="props">
-                                <div class="option__desc d-flex align-items-center">
-                                    <img class="option__image mr-1" :src="props.option.img" alt="options">
-                                    <span class="option__title mr-1">@{{ props.option.name }}</span>
-                                    <span class="option__small">@{{ props.option.desc }}</span>
-                                </div>
-                            </template>
-                        </multiselect>
-                    </div>
+                                <template slot="option" slot-scope="props">
+                                    <div class="option__desc d-flex align-items-center">
+                                        <img class="option__image mr-1" :src="props.option.img" alt="options">
+                                        <span class="option__title mr-1">@{{ props.option.name }}</span>
+                                        <span class="option__small">@{{ props.option.desc }}</span>
+                                    </div>
+                                </template>
+                            </multiselect>
+                        </div>
 
-                    <div class="text-right">
-                        {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose']) !!}
-                        {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'onUpdate']) !!}
+                        <div class="text-right">
+                            {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose']) !!}
+                            {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'onProfileUpdate']) !!}
+                        </div>
+                        {!! Form::close() !!}
                     </div>
-                    {!! Form::close() !!}
+                    <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Would you like to make this user an admin?</th>
+                                    <th><input type="checkbox" v-model="isAdmin"></th>
+                                </tr>
+                                <tr>
+                                    <th>Permissions</th>
+                                    <th><input type="checkbox" v-model="selectAll" @click="select" :disabled="isAdmin = isAdmin"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="permission in permissions">
+                                    <td>@{{permission.name}}<br>@{{permission.description}}</td>
+                                    <td><input type="checkbox" :value="permission.id" v-model="selected" :disabled="isAdmin = isAdmin"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <hr class="mt-0">
+                        <button class="btn btn-secondary float-right" @click="onPermissionUpdate">SUBMIT</button>
+                    </div>
+                    <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+                    </div>
                 </div>
             </div>
             <div class="col-4">
@@ -120,8 +156,19 @@
                         email: null,
                         password: null,
                         status: null
-                    }
+                    },
+                    isAdmin: false,
+                    permissions: @json($all_permissions),
+                    userPermissionIds: @json($permission_ids),
+                    selected: [],
+                    selectAll: false,
                 }
+            },
+            beforeMount() {
+                this.isSuperUser()
+            },
+            created() {
+                this.hasPermission()
             },
             mounted() {
                 this.fillDataGroups(this.options);
@@ -178,7 +225,7 @@
                     }
                     return true
                 },
-                onUpdate() {
+                onProfileUpdate() {
                     this.resetErrors();
                     if (!this.validatePassword()) return false;
 
@@ -254,7 +301,48 @@
                                 that.errors = error.response.data.errors;
                             }
                         });
-                }
+                },
+                isSuperUser() {
+                    if(this.formData.is_administrator === true) {
+                        this.isAdmin = true
+                    }
+                },
+                hasPermission() {
+                    if(this.userPermissionIds){
+                        this.selected = this.userPermissionIds
+                    }
+                },
+                select() {
+                    this.selected = [];
+                    if (!this.selectAll) {
+                        for (let permission in this.permissions) {
+                            this.selected.push(this.permissions[permission].id);
+                        }
+                    }
+                },
+                onPermissionUpdate() {
+                    if(this.isAdmin === true) {
+                    ProcessMaker.apiClient.put("/users/" + this.formData.id, {
+                        is_administrator: this.isAdmin,
+                        email: this.formData.email,
+                        username: this.formData.username
+                    })
+                    .then(response => {
+                        ProcessMaker.alert('{{__('Admin successfully added ')}}', 'success');
+                        location.reload();
+                    })
+                    }
+                    else{
+                        ProcessMaker.apiClient.put("/permissions", {
+                            permission_ids: this.selected,
+                            user_id: this.user.id
+                            })
+                        .then(response => {
+                            ProcessMaker.alert('{{__('Permission successfully added ')}}', 'success');
+                            location.reload();
+                        })
+                    }
+                 },
             }
         });
     </script>
