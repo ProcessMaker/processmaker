@@ -57,10 +57,7 @@
         },
         methods: {
             remove(message) {
-                window.ProcessMaker.apiClient.put('/notifications/' + message.id)
-                    .then((response) => {
-                        this.messages.splice(this.messages.indexOf(message), 1);
-                    });
+                window.ProcessMaker.removeNotification(message.id);
             },
             formatDateTime(iso8601) {
                 return moment(iso8601).format("MM/DD/YY HH:mm");

@@ -94,7 +94,7 @@ class ActivityActivatedNotification extends Notification
             'uid' => $this->tokenUid,
             'url' => sprintf(
                 '/tasks/%s/edit',
-                $this->instanceUid
+                $token->id
             )
         ];
     }

@@ -111,6 +111,7 @@
                 this.statusCard = this.classHeaderCard(this.task.advanceStatus)
                 this.userAssigned = this.assigned
                 this.userRequested = this.requested
+                ProcessMaker.removeNotificationByUrl(document.location.pathname);
             }
         });
     </script>

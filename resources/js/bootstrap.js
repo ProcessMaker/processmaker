@@ -45,6 +45,25 @@ window.ProcessMaker = {
      */
     pushNotification (notification) {
         this.notifications.push(notification);
+    },
+
+    removeNotification (notification) {
+        window.ProcessMaker.apiClient.put('/notifications/' + notification);
+        this.notifications.splice(
+            this.notifications.findIndex(function (element) {
+                return element.id === notification;
+            }), 1
+        );
+    },
+
+    removeNotificationByUrl (url) {
+        let messageIndex = this.notifications.findIndex(function (element) {
+            return element.url === url;
+        });
+
+        if (messageIndex >= 0) {
+           ProcessMaker.removeNotification(this.notifications[messageIndex].id);
+        }
     }
 };
 

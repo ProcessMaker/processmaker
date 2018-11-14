@@ -200,7 +200,7 @@ class User extends Authenticatable implements HasMedia
     public function activeNotifications()
     {
         $tasks = DB::table('notifications')
-                        ->where('data->userName', $this->firstname . ' ' . $this->lastname)
+                        ->where('data->user_id', $this->id)
                         ->whereNull('read_at')
                         ->get();
 
