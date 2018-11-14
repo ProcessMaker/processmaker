@@ -26,7 +26,15 @@
         <xsd:complexContent>
             <xsd:extension base="bpmn:tScriptTask">
                 <xsd:attribute name="scriptRef" type="xsd:string" default=""/>
-                <xsd:attribute name="scriptConfiguration" type="xsd:string" default=""/>
+                <xsd:attribute name="config" type="xsd:string" default=""/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>    
+ 
+    <xsd:complexType name="tPmServiceTask">
+        <xsd:complexContent>
+            <xsd:extension base="bpmn:tServiceTask">
+                <xsd:attribute name="config" type="xsd:string" default=""/>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>    
