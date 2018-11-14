@@ -9,6 +9,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
 use ProcessMaker\Nayra\Bpmn\Events\ProcessInstanceCreatedEvent;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
 use ProcessMaker\Notifications\ActivityActivatedNotification;
 use ProcessMaker\Nayra\Bpmn\Events\ProcessInstanceCompletedEvent;
 use ProcessMaker\Notifications\ProcessCompletedNotification;
@@ -97,14 +98,26 @@ class BpmnSubscriber
     }
 
     /**
-     * When the activity is closed.
+     * When a script task is activated.
      *
-     * @param $event
+     * @param ScriptTaskInterface $scriptTask
+     * @param TokenInterface $token
      */
     public function onScriptTaskActivated(ScriptTaskInterface $scriptTask, TokenInterface $token)
     {
         // Log::info('ScriptTaskActivated: ' . $scriptTask->getId());
         WorkflowManager::runScripTask($scriptTask, $token);
+    }
+
+    /**
+     * When a service task is activated.
+     *
+     * @param ServiceTaskInterface $serviceTask
+     * @param TokenInterface $token
+     */
+    public function onServiceTaskActivated(ServiceTaskInterface $serviceTask, TokenInterface $token)
+    {
+        WorkflowManager::runServiceTask($serviceTask, $token);
     }
 
     /**
@@ -122,5 +135,6 @@ class BpmnSubscriber
 
         $events->listen(ActivityInterface::EVENT_ACTIVITY_ACTIVATED, static::class . '@onActivityActivated');
         $events->listen(ScriptTaskInterface::EVENT_SCRIPT_TASK_ACTIVATED, static::class . '@onScriptTaskActivated');
+        $events->listen(ServiceTaskInterface::EVENT_SERVICE_TASK_ACTIVATED, static::class . '@onServiceTaskActivated');
     }
 }
