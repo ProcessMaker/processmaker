@@ -38,7 +38,7 @@
         <xsd:complexContent>
             <xsd:extension base="bpmn:tScriptTask">
                 <xsd:attribute name="scriptRef" type="xsd:string"/>
-                <xsd:attribute name="scriptVersion" type="xsd:string"/>
+                <xsd:attribute name="scriptVersion" type="xsd:string" use="optional"/>
                 <xsd:attribute name="config" type="xsd:string" use="optional"/>
             </xsd:extension>
         </xsd:complexContent>
