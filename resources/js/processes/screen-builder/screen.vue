@@ -159,7 +159,8 @@ export default {
     saveScreen() {
       ProcessMaker.apiClient
         .put("screens/" + this.screen.id, {
-          title: this.config[0].name,
+          title: this.screen.title,
+          description: this.screen.description,
           config: this.config
         })
         .then(response => {
