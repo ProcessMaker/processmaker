@@ -99,10 +99,6 @@ export default {
             }
             return '<i class="fas fa-circle text-' + color + '"></i> <span>' + label + '</span>';
         },
-        formatDate(value) {
-            let date = moment(value);
-            return date.format('M/D/YY HH:mm');
-        },
         transform(data) {
             // Clean up fields for meta pagination so vue table pagination can understand
             data.meta.last_page = data.meta.total_pages;
