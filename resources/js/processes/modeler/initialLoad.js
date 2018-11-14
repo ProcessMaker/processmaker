@@ -49,7 +49,7 @@ let nodeTypes = [
 ProcessMaker.EventBus.$on('modeler-init', function (modeler) {
   modeler.registerBpmnExtension('pm', bpmnExtension);
   for (var node of nodeTypes) {
-    modeler.registerNode(node);
+    modeler.registerNodeType(node);
   }
 });
 
