@@ -8,6 +8,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @if(Auth::user())
     <meta name="user-id" content="{{ Auth::user()->id }}">
+    <meta name="notifications" content='@json(Auth::user()->activeNotifications())'>
     @endif
     @if(config('broadcasting.broadcaster') == 'socket.io')
     <meta name="broadcaster" content="{{config('broadcasting.broadcaster')}}">
@@ -33,6 +34,7 @@
     window.Processmaker = {
       csrfToken: "{{csrf_token()}}",
       userId: "{{\Auth::user()->id}}",
+      messages: @json(\Auth::user()->activeNotifications()),
       broadcasting: {
         broadcaster: "{{config('broadcasting.broadcaster')}}",
         host: "{{config('broadcasting.host')}}",

@@ -35,7 +35,7 @@ window.ProcessMaker = {
     /**
      * ProcessMaker Notifications
      */
-    notifications: [],
+    notifications: JSON.parse(document.head.querySelector("meta[name=\"notifications\"]").content),
     /**
      * Push a notification.
      *
