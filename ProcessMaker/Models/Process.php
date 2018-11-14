@@ -7,6 +7,7 @@ use Illuminate\Validation\Rule;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
@@ -201,8 +202,9 @@ class Process extends Model implements HasMedia
      */
     public function getNextUser(ActivityInterface $activity)
     {
-        $default = $activity instanceof ScriptTaskInterface ? 'script' : 'cyclical';
-        $assignmentType = $activity->getProperty('assignment_type', $default);
+        $default = $activity instanceof ScriptTaskInterface
+            || $activity instanceof ServiceTaskInterface ? 'script' : 'cyclical';
+        $assignmentType = $activity->getProperty('assignment', $default);
         switch ($assignmentType) {
             case 'cyclical':
                 $user = $this->getNextUserCyclicalAssignment($activity->getId());
