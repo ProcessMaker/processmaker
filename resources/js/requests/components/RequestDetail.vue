@@ -74,9 +74,6 @@
 
                 return '<span class="' + color + '">' + this.formatDate(value) + '</span>';
             },
-            formatDate(value) {
-                return moment(value).format('MM/DD/YYYY HH:MM');
-            },
             transform(data) {
                 // Clean up fields for meta pagination so vue table pagination can understand
                 data.meta.last_page = data.meta.total_pages;
@@ -115,10 +112,10 @@
                         this.loading = false;
                     });
             },
-            getSortParam: function() {
+            getSortParam: function () {
                 if (this.sortOrder instanceof Array && this.sortOrder.length > 0) {
                     return "&order_by=" + this.sortOrder[0].sortField +
-                      "&order_direction=" + this.sortOrder[0].direction;
+                        "&order_direction=" + this.sortOrder[0].direction;
                 } else {
                     return '';
                 }

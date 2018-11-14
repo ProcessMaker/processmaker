@@ -62,19 +62,19 @@
                         title: "Login",
                         name: "loggedin_at",
                         sortField: "loggedin_at",
-                        callback: this.formatDate
+                        callback: 'formatDate'
                     },
                     {
                         title: "Created At",
                         name: "created_at",
                         sortField: "created_at",
-                        callback: this.formatDate
+                        callback: 'formatDate'
                     },
                     {
                         title: "Updated At",
                         name: "updated_at",
                         sortField: "updated_at",
-                        callback: this.formatDate
+                        callback: 'formatDate'
                     },
                     {
                         name: "__slot:actions",

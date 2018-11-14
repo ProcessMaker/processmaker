@@ -52,6 +52,12 @@
                         <div class="invalid-feedback" v-for="title in errors.title">@{{title}}</div>
                     </div>
                     <div class="form-group">
+                        {!! Form::label('type', 'Type') !!}
+                        {!! Form::select('type', ['' => __('Select Type'), 'DISPLAY' => 'Display', 'FORM' => 'Form'], '', ['id' => 'type','class'=> 'form-control', 'v-model' => 'formData.type',
+                        'v-bind:class' => '{"form-control":true, "is-invalid":errors.type}']) !!}
+                        <div class="invalid-feedback" v-for="type in errors.type">@{{type}}</div>
+                    </div>
+                    <div class="form-group">
                         {!! Form::label('description', 'Description') !!}
                         {!! Form::textarea('description', null, ['id' => 'description', 'rows' => 4, 'class'=> 'form-control',
                         'v-model' => 'formData.description', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.description}']) !!}
@@ -77,6 +83,7 @@
                     formData: {},
                     errors: {
                         'title': null,
+                        'type': null,
                         'description': null,
                     }
                 }
@@ -89,12 +96,14 @@
                 resetFormData() {
                     this.formData = Object.assign({}, {
                         title: null,
+                        type: '',
                         description: null,
                     });
                 },
                 resetErrors() {
                     this.errors = Object.assign({}, {
                         title: null,
+                        type: null,
                         description: null,
                     });
                 },
@@ -102,7 +111,7 @@
                     this.resetErrors();
                     ProcessMaker.apiClient.post('screens', this.formData)
                         .then(response => {
-                            ProcessMaker.alert('Created Screen Successfully', 'success');
+                            ProcessMaker.alert('{{__('Created Screen Successfully')}}', 'success');
                             window.location = '/processes/screen-builder/' + response.data.id + '/edit';
                         })
                         .catch(error => {

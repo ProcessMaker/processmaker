@@ -37,6 +37,7 @@
     "laravel-mix": "2.1.*",
     "lodash": "^4.17.10",
     "moment": "^2.22.2",
+    "moment-timezone": "^0.5.23",
     "vue": "^2.5.17",
     "vue-jest": "^2.6.0",
     "vue-uniq-ids": "^1.0.0"
@@ -46,7 +47,8 @@
     "@fortawesome/fontawesome-free-brands": "^5.0.13",
     "@fortawesome/fontawesome-free-solid": "^5.0.13",
     "@fortawesome/fontawesome-free-webfonts": "^1.0.9",
-    "@processmaker/modeler": "^0.1.4",
+    "@processmaker/modeler": "^0.1.6",
+    "@processmaker/processmaker-bpmn-moddle": "^0.1.2",
     "@processmaker/vue-form-builder": "^0.3.1",
     "@tinymce/tinymce-vue": "^1.0.8",
     "babel-eslint": "^10.0.1",
