@@ -15,7 +15,7 @@ class ExpressionFailedException extends Exception
 {
 
     /**
-     * @param \Throwable $previous
+     * @param Throwable $previous
      */
     public function __construct(Throwable $previous)
     {

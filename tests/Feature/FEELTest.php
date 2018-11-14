@@ -1,13 +1,15 @@
 <?php
 namespace Tests\Feature;
 
-use Illuminate\Support\Facades\Cache;
-use Tests\TestCase;
-use ProcessMaker\Models\FormalExpression;
+use ProcessMaker\Exception\ExpressionFailedException;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
 use ProcessMaker\Exception\SyntaxErrorException;
-use ProcessMaker\Exception\ExpressionFailedException;
+use ProcessMaker\Models\FormalExpression;
+use Tests\TestCase;
 
+/**
+ * Test friendly enough expression language evaluator
+ */
 class FEELTest extends TestCase
 {
 

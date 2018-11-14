@@ -2,13 +2,13 @@
 
 namespace ProcessMaker\Models;
 
+use ProcessMaker\Exception\ExpressionFailedException;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
+use ProcessMaker\Exception\SyntaxErrorException;
 use ProcessMaker\Nayra\Bpmn\BaseTrait;
 use ProcessMaker\Nayra\Contracts\Bpmn\FormalExpressionInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\ExpressionLanguage\SyntaxError;
-use ProcessMaker\Exception\ExpressionFailedException;
-use ProcessMaker\Exception\SyntaxErrorException;
 use Throwable;
 
 /**
