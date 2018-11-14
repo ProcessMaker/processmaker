@@ -4,20 +4,18 @@
 	"clients": [],
 	"database": "redis",
 	"databaseConfig": {
-		"redis": {},
+		"redis": {
+			"port": "REDISPORT"
+		},
 		"sqlite": {
 			"databasePath": "/database/laravel-echo-server.sqlite"
 		}
 	},
 	"devMode": true,
 	"host": null,
-	"port": "6001",
-	"protocol": "https",
+	"port": "ECHOPORT",
+	"protocol": "http",
 	"socketio": {},
-	"sslCertPath": "/etc/nginx/ssl/bpm4.local.processmaker.com.crt",
-	"sslKeyPath": "/etc/nginx/ssl/bpm4.local.processmaker.com.key",
-	"sslCertChainPath": "",
-	"sslPassphrase": "",
 	"subscribers": {
 		"http": true,
 		"redis": true
