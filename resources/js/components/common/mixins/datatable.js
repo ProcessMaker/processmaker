@@ -5,7 +5,6 @@
  */
 import Vuetable from "vuetable-2/src/components/Vuetable";
 import Pagination from "../../../components/common/Pagination";
-import moment from "moment";
 
 export default {
     components: {
@@ -26,9 +25,10 @@ export default {
     methods: {
         // Handler to properly format date/time columns according to localized format
         formatDate (value, format) {
-            format = format || "l LTS";
+            format = format || '';
             if (value) {
-                return moment(value).format(format);
+                return window.moment(value)
+                    .format(format);
             }
             return "n/a";
         },

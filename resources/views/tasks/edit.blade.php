@@ -34,6 +34,7 @@
             </div>
             @endif
             <div class="col-4">
+                <template v-if="dateDueAt">
                 <div class="card">
                     <div :class="statusCard">
                         <h4 style="margin:0; padding:0; line-height:1">{{__($task->advanceStatus)}}</h4>
@@ -41,9 +42,9 @@
                     <ul class="list-group list-group-flush w-100">
                         <li class="list-group-item">
                             <i class='far fa-calendar-alt'></i>
-                            <small> {{__($dueLabels[$task->advanceStatus], ['day' => $task->due_at->diffForHumans()])}}</small>
+                            <small> {{__($dueLabels[$task->advanceStatus])}}  @{{ moment(dateDueAt).fromNow() }}</small>
                             <br>
-                            {{$task->due_at->format(config('app.dateformat'))}}
+                            @{{ moment(dateDueAt).format() }}
                         </li>
                         <li class="list-group-item">
                             <h5>{{__('Assigned To')}}</h5>
@@ -52,9 +53,9 @@
                         </li>
                         <li class="list-group-item">
                             <i class="far fa-calendar-alt"></i>
-                            <small> {{__('Assigned :day', ['day' => $task->created_at->diffForHumans()])}}</small>
+                            <small> {{__('Assigned') }}  @{{ moment(createdAt).fromNow() }}</small>
                             <br>
-                            {{$task->created_at->format(config('app.dateformat'))}}
+                            @{{ moment(createdAt).format() }}
                         </li>
                         <li class="list-group-item">
                             <h5>{{__('Request')}}</h5>
@@ -68,6 +69,7 @@
                         </li>
                     </ul>
                 </div>
+                </template>
             </div>
         </div>
     </div>
@@ -86,6 +88,14 @@
                 statusCard: 'card-header text-capitalize text-white bg-success',
                 userAssigned: [],
                 userRequested: []
+            },
+            computed: {
+                dateDueAt() {
+                    return this.task.due_at;
+                },
+                createdAt() {
+                    return this.task.created_at;
+                }
             },
             methods: {
                 classHeaderCard(status) {

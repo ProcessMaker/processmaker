@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
+use ProcessMaker\Traits\SerializeToIso8601;
 
 /**
  * Represents an Eloquent model of a Request which is an instance of a Process.
@@ -50,6 +51,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
 {
 
     use ExecutionInstanceTrait;
+    use SerializeToIso8601;
 
     /**
      * The attributes that aren't mass assignable.
@@ -269,17 +271,5 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
         }
 
         return $result;
-    }
-
-    /**
-     * Prepare a date for array / JSON serialization.
-     *
-     * @param  \DateTimeInterface  $date
-     *
-     * @return string
-     */
-    protected function serializeDate(\DateTimeInterface $date)
-    {
-        return $date->format(Carbon::ISO8601);
     }
 }
