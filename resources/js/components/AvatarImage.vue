@@ -65,11 +65,7 @@
             },
             formatSizeButton(size) {
                 this.styleButton = 'width: ' + size + 'px; height: ' + size + 'px; font-size:' + size / 2.5 +
-                    'px; margin-right:5px;';
-                if (size <= 30) {
-                    let s = (size / 2) + 5;
-                    this.styleButton += 'padding-left:' + s + '%';
-                }
+                    'px; margin-right:5px; padding:0; cursor: pointer;';
             },
             formatValue(value) {
                 return {
