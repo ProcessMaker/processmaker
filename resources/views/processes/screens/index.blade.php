@@ -53,7 +53,7 @@
                     </div>
                     <div class="form-group">
                         {!! Form::label('type', 'Type') !!}
-                        {!! Form::select('type', ['DISPLAY' => 'Display', 'FORM' => 'Form'], 'FORM', ['id' => 'type','class'=> 'form-control', 'v-model' => 'formData.type',
+                        {!! Form::select('type', ['' => __('Select Type'), 'DISPLAY' => 'Display', 'FORM' => 'Form'], '', ['id' => 'type','class'=> 'form-control', 'v-model' => 'formData.type',
                         'v-bind:class' => '{"form-control":true, "is-invalid":errors.type}']) !!}
                         <div class="invalid-feedback" v-for="type in errors.type">@{{type}}</div>
                     </div>
@@ -96,8 +96,7 @@
                 resetFormData() {
                     this.formData = Object.assign({}, {
                         title: null,
-                        // Default to form type
-                        type: 'FORM',
+                        type: '',
                         description: null,
                     });
                 },
