@@ -9,86 +9,49 @@
     <h1>{{__('Profile')}}</h1>
     <div class="row">
         <div class="col-8">
-            <nav>
-                <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab"
-                        aria-controls="nav-home" aria-selected="true">Information</a>
-                    <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab"
-                        aria-controls="nav-profile" aria-selected="false">Permissions</a>
-                    <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab"
-                        aria-controls="nav-contact" aria-selected="false">Groups</a>
-                </div>
-            </nav>
-            <div class="card card-body tab-content mt-3" id="nav-tabContent">
-                <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-                    <h4 class="mt-2">{{__('Contact Information')}}</h4>
-                    <table class="table">
-                        <tr>
-                            <td align="center"><i class="fas fa-envelope fa-lg text-secondary pr-1"></i></td>
-                            <td>{{__('Email')}}</td>
-                            <td width="100%"><a href="mailto:{{$user->email}}">{{$user->email}}</a></td>
-                        </tr>
-                        <tr>
-                            <td align="center"><i class="fas fa-phone fa-lg text-secondary pr-1"></i></td>
-                            <td>{{__('Phone')}}</td>
-                            <td><a href="{{'tel:' . $user->phone}}">{{$user->phone}}</a></td>
-                        </tr>
-                        @if ($user->fax)
-                        <tr>
-                            <td align="center"><i class="fas fa-fax fa-lg text-secondary pr-1"></i></td>
-                            <td>{{__('Fax')}}</td>
-                            <td><a href="{{'tel:' . $user->fax}}">{{$user->fax}}</a></td>
-                        </tr>
-                        @endif
-                        @if ($user->cell)
-                        <tr>
-                            <td align="center"><i class="fas fa-mobile-alt fa-lg text-secondary pr-1"></i></td>
-                            <td>{{__('Cell')}}</td>
-                            <td><a href="{{'tel:' . $user->cell}}">{{$user->cell}}</a></td>
-                        </tr>
-                        @endif
+            <div class="card card-body mt-3">
+                <h4 class="mt-2">{{__('Contact Information')}}</h4>
+                <table class="table">
+                    <tr>
+                        <td align="center"><i class="fas fa-envelope fa-lg text-secondary pr-1"></i></td>
+                        <td>{{__('Email')}}</td>
+                        <td width="100%"><a href="mailto:{{$user->email}}">{{$user->email}}</a></td>
+                    </tr>
+                    <tr>
+                        <td align="center"><i class="fas fa-phone fa-lg text-secondary pr-1"></i></td>
+                        <td>{{__('Phone')}}</td>
+                        <td><a href="{{'tel:' . $user->phone}}">{{$user->phone}}</a></td>
+                    </tr>
+                    @if ($user->fax)
+                    <tr>
+                        <td align="center"><i class="fas fa-fax fa-lg text-secondary pr-1"></i></td>
+                        <td>{{__('Fax')}}</td>
+                        <td><a href="{{'tel:' . $user->fax}}">{{$user->fax}}</a></td>
+                    </tr>
+                    @endif
+                    @if ($user->cell)
+                    <tr>
+                        <td align="center"><i class="fas fa-mobile-alt fa-lg text-secondary pr-1"></i></td>
+                        <td>{{__('Cell')}}</td>
+                        <td><a href="{{'tel:' . $user->cell}}">{{$user->cell}}</a></td>
+                    </tr>
+                    @endif
 
 
-                        @if($user->address)
-                        <tr>
-                            <td colspan="3">
-                                <h4 class="mb-0 mt-3">{{__('Address')}}</h4>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="3">
-                                {{$user->address}}<br>
-                                {{$user->city}}, {{$user->state}} {{$user->postal}} {{$user->country}}
-                            </td>
-                        </tr>
-                        @endif
-                    </table>
-                </div>
-                @if($current_user->is_administrator===true)
-                <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
-                    <table class="table mb-0">
-                          <thead>
-                               <tr>
-                                <th>Would you like to make this user an admin?</th>
-                                <th><input type="checkbox" v-model="isAdmin"></th>
-                            </tr>
-                            <tr>
-                                <th>Permissions</th>
-                                <th><input type="checkbox" v-model="selectAll" @click="select" :disabled="isAdmin = isAdmin"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="permission in permissions">
-                                <td>@{{permission.name}}<br>@{{permission.description}}</td>
-                                <td><input type="checkbox" :value="permission.id" v-model="selected" :disabled="isAdmin = isAdmin"></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <hr class="mt-0">
-                    <button class="btn btn-secondary float-right" @click="onUpdate">SUBMIT</button>
-                </div>
-                @endif
-                <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">...vvv</div>
+                    @if($user->address)
+                    <tr>
+                        <td colspan="3">
+                            <h4 class="mb-0 mt-3">{{__('Address')}}</h4>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            {{$user->address}}<br>
+                            {{$user->city}}, {{$user->state}} {{$user->postal}} {{$user->country}}
+                        </td>
+                    </tr>
+                    @endif
+                </table>
             </div>
         </div>
         <div class="col-4">
@@ -118,18 +81,7 @@
     new Vue({
         el: '#profileForm',
         data: {
-            user: @json($user),
-            permissions: @json($all_permissions),
-            userPermissionIds: @json($permission_ids),
-            selected: [],
-		    selectAll: false,
-            isAdmin: false
-        },
-        beforeMount() {
-            this.isSuperUser()
-        },
-        mounted() {
-            this.hasPermission()
+            user: @json($user)
         },
         computed: {
             avatar() {
@@ -139,49 +91,6 @@
                     name: '',
                     initials: this.user.firstname.match(/./u)[0] + this.user.lastname.match(/./u)[0]
                 }];
-            }
-        },
-        methods: {
-            select() {
-                this.selected = [];
-                if (!this.selectAll) {
-                    for (let permission in this.permissions) {
-                        this.selected.push(this.permissions[permission].id);
-                    }
-                }
-            },
-            onUpdate() {
-                if(this.isAdmin === true) {
-                   ProcessMaker.apiClient.put("/users/" + this.user.id, {
-                       is_administrator: this.isAdmin,
-                       email: this.user.email,
-                       username: this.user.username
-                   })
-                   .then(response => {
-                       ProcessMaker.alert('{{__('Admin successfully added ')}}', 'success');
-                       location.reload();
-                   })
-                }
-                else{
-                    ProcessMaker.apiClient.put("/permissions", {
-                        permission_ids: this.selected,
-                        user_id: this.user.id
-                        })
-                    .then(response => {
-                        ProcessMaker.alert('{{__('Permission successfully added ')}}', 'success');
-                        location.reload();
-                    })
-                }
-            },
-            hasPermission() {
-                if(this.userPermissionIds){
-                    this.selected = this.userPermissionIds
-                }
-            },
-            isSuperUser() {
-                if(this.user.is_administrator === true) {
-                    this.isAdmin = true
-                }
             }
         }
     });
