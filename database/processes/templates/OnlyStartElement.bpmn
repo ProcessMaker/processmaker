@@ -5,7 +5,7 @@
         xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
         xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
         xmlns:di="http://www.omg.org/spec/BPMN/20100524/DI"
-        xmlns:pm="http://127.0.0.1/ProcessMaker.xsd"        
+        xmlns:pm="http://processmaker.com/BPMN/2.0/Schema.xsd"        
         targetNamespace="http://bpmn.io/schema/bpmn"
         xmlns:tns="http://sourceforge.net/bpmn/definitions/_1530553328908" 
         xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
