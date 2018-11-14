@@ -20,10 +20,10 @@
                         {{task.processName}}<br>
                         {{task.userName}}
                     </div>
+                    <span class="badge badge-info float-right" style="cursor:pointer" @click="remove(task)">
+                        Dismiss
+                    </span>
                     <hr>
-                </li>
-                <li class="footer">
-                    <a href="/tasks">View All Tasks</a>
                 </li>
             </ul>
         </b-popover>
