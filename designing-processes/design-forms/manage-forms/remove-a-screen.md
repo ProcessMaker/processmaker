@@ -37,5 +37,5 @@ Follow these steps to remove a ProcessMaker Screen:
 
 {% page-ref page="../create-a-new-form.md" %}
 
-{% page-ref page="../screens-builder.md" %}
+{% page-ref page="../screens-builder/" %}
 
