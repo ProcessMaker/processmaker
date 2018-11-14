@@ -2,8 +2,10 @@
 
 namespace ProcessMaker\Models;
 
+use ProcessMaker\Exception\ScriptLanguageNotSupported;
 use ProcessMaker\Nayra\Bpmn\BaseTrait;
 use ProcessMaker\Nayra\Contracts\Bpmn\FormalExpressionInterface;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 /**
  * FormalExpression
@@ -14,6 +16,45 @@ class FormalExpression implements FormalExpressionInterface
 {
 
     use BaseTrait;
+
+    /**
+     * Languages supported for expressions
+     */
+    const languages = [
+        'FEEL' => 'feelExpression',
+    ];
+
+    const defaultLanguage = 'FEEL';
+
+    /**
+     * @var \Symfony\Component\ExpressionLanguage\ExpressionLanguage $expressionLanguage
+     */
+    private $feelExpression;
+
+    /**
+     * Initialize the expression language evaluator
+     */
+    private function initFormalExpression()
+    {
+        $this->feelExpression = new ExpressionLanguage();
+    }
+
+    /**
+     * Evaluate the format expression.
+     *
+     * @param array $data
+     *
+     * @return string
+     */
+    private function evaluate(array $data)
+    {
+        $language = $this->getLanguage() ?: self::defaultLanguage;
+        if (!in_array($language, self::languages)) {
+            throw new ScriptLanguageNotSupported($language);
+        }
+        $evaluator = self::languages[$language];
+        return $this->$evaluator->evaluate($this->getBody(), $data);
+    }
 
     /**
      * Get the body of the Expression.
@@ -54,7 +95,6 @@ class FormalExpression implements FormalExpressionInterface
      */
     public function __invoke($data)
     {
-        extract($data);
-        return eval('return ' . $this->getBody() . ';');
+        return $this->evaluate($data);
     }
 }
