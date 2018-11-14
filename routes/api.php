@@ -21,5 +21,6 @@ Route::group(
     Route::apiResource('requests', 'ProcessRequestController');
     Route::post('process_events/{process}', 'ProcessController@triggerStartEvent')->name('process_events.trigger');
     Route::apiResource('files', 'FileController');
+    Route::apiResource('notifications', 'NotificationController');
     }
 );
