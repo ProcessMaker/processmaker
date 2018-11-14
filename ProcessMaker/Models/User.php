@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
@@ -196,4 +197,20 @@ class User extends Authenticatable implements HasMedia
         return $url;
     }
 
+    public function activeNotifications()
+    {
+        $tasks = DB::table('notifications')
+                        ->where('data->userName', $this->firstname . ' ' . $this->lastname)
+                        ->whereNull('read_at')
+                        ->get();
+
+        $data = [];
+        foreach($tasks as $task) {
+            $taskData = json_decode($task->data, false);
+            $taskData->id = $task->id;
+            $data[] = $taskData;
+        }
+
+        return $data;
+    }
 }
