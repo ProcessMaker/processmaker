@@ -5,8 +5,7 @@ namespace ProcessMaker\Http\Controllers;
 use Illuminate\Http\Request;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\JsonData;
-use ProcessMaker\Models\Permission;
-use ProcessMaker\Models\PermissionAssignment;
+
 
 class ProfileController extends Controller
 {
