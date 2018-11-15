@@ -66,13 +66,13 @@
                         title: "Created At",
                         name: "created_at",
                         sortField: "created_at",
-                        callback: this.formatDate
+                        callback: 'formatDate'
                     },
                     {
                         title: "Updated At",
                         name: "updated_at",
                         sortField: "updated_at",
-                        callback: this.formatDate
+                        callback: 'formatDate'
                     },
                     {
                         name: "__slot:actions",
@@ -112,7 +112,7 @@
                         //todo
                         break;
                     case "permissions-item":
-                       //todo
+                        //todo
                         break;
                 }
             },
@@ -147,9 +147,11 @@
         width: 150px;
         text-align: center;
     }
+
     /deep/ .vuetable-th-status {
         min-width: 90px;
     }
+
     /deep/ .vuetable-th-members_count {
         min-width: 90px;
     }

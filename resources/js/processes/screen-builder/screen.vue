@@ -61,8 +61,6 @@ import VueFormRenderer from "@processmaker/vue-form-builder/src/components/vue-f
 import VueJsonPretty from "vue-json-pretty";
 import { FormTextArea } from "@processmaker/vue-form-elements/src/components";
 
-import initialControls from "@processmaker/vue-form-builder/src/form-builder-controls";
-
 export default {
   data() {
     return {
@@ -107,16 +105,9 @@ export default {
   mounted() {
     // Add our initial controls
     // Iterate through our initial config set, calling this.addControl
-    for (var i = 0; i < initialControls.length; i++) {
-      this.addControl(
-        initialControls[i].control,
-        initialControls[i].rendererComponent,
-        initialControls[i].rendererBinding,
-        initialControls[i].builderComponent,
-        initialControls[i].builderBinding
-      );
-    }
-    this.$refs.screenBuilder.config = this.screen.config
+    // Call our init lifecycle event
+    ProcessMaker.EventBus.$emit('screen-builder-init', this);
+   this.$refs.screenBuilder.config = this.screen.config
       ? this.screen.config
       : [
           {
@@ -128,6 +119,7 @@ export default {
       this.$refs.screenBuilder.config[0].name = this.screen.title;
     }
     this.updatePreview({});
+    ProcessMaker.EventBus.$emit('screen-builder-start', this);
   },
   methods: {
     addControl(
@@ -159,7 +151,8 @@ export default {
     saveScreen() {
       ProcessMaker.apiClient
         .put("screens/" + this.screen.id, {
-          title: this.config[0].name,
+          title: this.screen.title,
+          description: this.screen.description,
           config: this.config
         })
         .then(response => {
