@@ -126,41 +126,6 @@ return [
     |--------------------------------------------------------------------------
     */
     'security' => [
-        /*
-        |--------------------------------------------------------------------------
-        | Examples of Security definitions
-        |--------------------------------------------------------------------------
-        */
-        /*
-        'api_key_security_example' => [ // Unique name of security
-            'type' => 'apiKey', // The type of the security scheme. Valid values are "basic", "apiKey" or "oauth2".
-            'description' => 'A short description for security scheme',
-            'name' => 'api_key', // The name of the header or query parameter to be used.
-            'in' => 'header', // The location of the API key. Valid values are "query" or "header".
-        ],
-        'oauth2_security_example' => [ // Unique name of security
-            'type' => 'oauth2', // The type of the security scheme. Valid values are "basic", "apiKey" or "oauth2".
-            'description' => 'A short description for oauth2 security scheme.',
-            'flow' => 'implicit', // The flow used by the OAuth2 security scheme. Valid values are "implicit", "password", "application" or "accessCode".
-            'authorizationUrl' => 'http://example.com/auth', // The authorization URL to be used for (implicit/accessCode)
-            //'tokenUrl' => 'http://example.com/auth' // The authorization URL to be used for (password/application/accessCode)
-            'scopes' => [
-                'read:projects' => 'read your projects',
-                'write:projects' => 'modify projects in your account',
-            ]
-        ],
-        */
-
-        'pm_api_auth' => [ // Unique name of security
-            'type' => 'oauth2', // The type of the security scheme. Valid values are "basic", "apiKey" or "oauth2".
-            'flows' => [
-                "authorizationCode" => [
-                    "authorizationUrl" => config('app.url') . '/oauth/authorize',
-                    "tokenUrl" => config('app.url') . '/oauth/token',
-                    "scopes" => (object) null,
-                ],
-            ],
-        ],
         'pm_api_bearer' => [ // personal access token
             'type' => 'http',
             'scheme' => 'bearer',
