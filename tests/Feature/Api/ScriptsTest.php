@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use Carbon\Carbon;
 use Faker\Factory as Faker;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
@@ -126,6 +127,23 @@ class ScriptsTest extends TestCase
 
         //verify count of data
         $this->assertEquals($total, $response->json()['meta']['total']);
+    }
+
+    /**
+     * Test to verify that the list dates are in the correct format (yyyy-mm-dd H:i+GMT)
+     */
+    public function testScriptListDates()
+    {
+        $newEntity = factory(Script::class)->create();
+
+        $route = self::API_TEST_SCRIPT;
+        $response = $this->apiCall('GET', $route);
+
+        $fieldsToValidate = collect(['created_at', 'updated_at']);
+        $fieldsToValidate->map(function ($field) use ($response, $newEntity){
+            $this->assertEquals(Carbon::parse($newEntity->$field)->format('c'),
+                $response->getData()->data[0]->$field);
+        });
     }
 
     /**

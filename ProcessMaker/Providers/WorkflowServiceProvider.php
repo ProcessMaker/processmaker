@@ -14,7 +14,7 @@ class WorkflowServiceProvider extends ServiceProvider
     /**
      * ProcessMaker BPMN extension definitions.
      */
-    const PROCESS_MAKER_NS = 'https://bpm4.processmaker.local/definition/ProcessMaker.xsd';
+    const PROCESS_MAKER_NS = 'http://processmaker.com/BPMN/2.0/Schema.xsd';
 
     /**
      * The subscriber classes to register.

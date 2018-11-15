@@ -92,10 +92,7 @@ class ActivityActivatedNotification extends Notification
             'dateTime' => $token->created_at->toIso8601String(),
             'uid' => $this->tokenUid,
             'url' => sprintf(
-                '/tasks/%s/%s/%s/%s',
-                $this->tokenElement,
-                $this->processUid,
-                $this->instanceUid,
+                '/tasks/%s/edit',
                 $this->tokenUid
             )
         ];
