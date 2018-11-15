@@ -15,9 +15,13 @@ use ProcessMaker\Managers\TaskAssigneeManager;
 use ProcessMaker\Managers\TaskManager;
 use ProcessMaker\Managers\TasksDelegationManager;
 use ProcessMaker\Managers\UserManager;
+use ProcessMaker\Managers\ModelerManager;
+use ProcessMaker\Managers\ScreenBuilderManager;
+use ProcessMaker\Events\ScreenBuilderStarting;
 use Laravel\Horizon\Horizon;
 use Laravel\Passport\Passport;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Http\Resources\Json\Resource;
 
 /**
@@ -93,6 +97,34 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->app->singleton('task_delegation.manager', function ($app) {
             return new TasksDelegationManager();
         });
+
+        /**
+         * Maps our Modeler Manager as a singleton. The Modeler Manager is used 
+         * to manage customizations to the Process Modeler.
+         */
+        $this->app->singleton(ModelerManager::class, function($app) {
+            return new ModelerManager();
+        });
+
+        /**
+         * Maps our Screen Builder Manager as a singleton. The Screen Builder Manager is used 
+         * to manage customizations to the Screen Builder.
+         */
+        $this->app->singleton(ScreenBuilderManager::class, function($app) {
+            return new ScreenBuilderManager();
+        });
+        // Listen to the events for our core screen types and add our javascript
+        Event::listen(ScreenBuilderStarting::class, function($event) {
+            switch($event->type) {
+                case 'FORM':
+                    $event->manager->addScript(mix('js/processes/screen-builder/typeForm.js'));
+                    break;
+                case 'DISPLAY':
+                    $event->manager->addScript(mix('js/processes/screen-builder/typeDisplay.js'));
+                    break;
+            }
+        });
+
 
         //Enable
         Horizon::auth(function ($request) {

@@ -10,47 +10,60 @@
 
 @section('content')
     <div id="request" class="container">
-
         <h1>{{$request->name}} # {{$request->getKey()}}</h1>
         <div class="row">
             <div class="col-8">
 
                 <div class="container-fluid">
                     <ul class="nav nav-tabs" id="requestTab" role="tablist">
-                        <li class="nav-item" v-if="status !== 'Completed'">
-                            <a class="nav-link active" id="pending-tab" data-toggle="tab" href="#pending" role="tab"
-                               aria-controls="pending" aria-selected="true">{{__('Pending Tasks')}}</a>
-                        </li>
-                        <li class="nav-item">
-                            <a  id="summary-tab" data-toggle="tab" href="#summary" role="tab"
-                               aria-controls="summary" aria-selected="false" v-bind:class="{ 'nav-link':true, active: (status === 'Completed') }">{{__('Request Summary')}}</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="completed-tab" data-toggle="tab" href="#completed" role="tab"
-                               aria-controls="completed" aria-selected="false">{{__('Completed')}}</a>
-                        </li>
+                        <template v-if="status">
+                            <li class="nav-item" v-if="status !== 'Completed'">
+                                <a class="nav-link active" id="pending-tab" data-toggle="tab" href="#pending" role="tab"
+                                   aria-controls="pending" aria-selected="true">{{__('Pending Tasks')}}</a>
+                            </li>
+                            <li class="nav-item">
+                                <a id="summary-tab" data-toggle="tab" href="#summary" role="tab"
+                                   aria-controls="summary" aria-selected="false"
+                                   v-bind:class="{ 'nav-link':true, active: (status === 'Completed') }">{{__('Request Summary')}}</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="completed-tab" data-toggle="tab" href="#completed" role="tab"
+                                   aria-controls="completed" aria-selected="false">{{__('Completed')}}</a>
+                            </li>
+                        </template>
                     </ul>
                     <div class="tab-content" id="requestTabContent">
                         <div class="tab-pane fade show active" id="pending" role="tabpanel"
                              aria-labelledby="pending-tab" v-if="status !== 'Completed'">
-                            <request-detail ref="pending" :process-request-id="requestId" status="ACTIVE"></request-detail>
+                            <request-detail ref="pending" :process-request-id="requestId" status="ACTIVE">
+                            </request-detail>
                         </div>
-                        <div v-bind:class="{ 'tab-pane':true, active: (status === 'Completed') }" id="summary" role="tabpanel" aria-labelledby="summary-tab">
+                        <div v-bind:class="{ 'tab-pane':true, active: (status === 'Completed') }" id="summary"
+                             role="tabpanel" aria-labelledby="summary-tab">
                             <template v-if="showSummary">
-                                <table class="vuetable table table-hover">
-                                    <thead>
-                                    <tr>
-                                        <th scope="col">{{ __('Key') }}</th>
-                                        <th scope="col">{{ __('Value') }}</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr v-for="item in summary">
-                                        <td>@{{item.key}}</td>
-                                        <td>@{{item.value}}</td>
-                                    </tr>
-                                    </tbody>
-                                </table>
+                                <template v-if="showScreenSummary">
+                                    <div class="card m-3">
+                                        <div class="card-body">
+                                            <task-screen ref="screen" :screen="screenSummary" :data="dataSummary"/>
+                                        </div>
+                                    </div>
+                                </template>
+                                <template v-else>
+                                    <table class="vuetable table table-hover">
+                                        <thead>
+                                        <tr>
+                                            <th scope="col">{{ __('Key') }}</th>
+                                            <th scope="col">{{ __('Value') }}</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr v-for="item in summary">
+                                            <td>@{{item.key}}</td>
+                                            <td>@{{item.value}}</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </template>
                             </template>
                             <template v-else>
                                 <div class="card m-3">
@@ -70,7 +83,8 @@
                             </template>
                         </div>
                         <div class="tab-pane fade" id="completed" role="tabpanel" aria-labelledby="completed-tab">
-                            <request-detail ref="completed" :process-request-id="requestId" status="CLOSED"></request-detail>
+                            <request-detail ref="completed" :process-request-id="requestId" status="CLOSED">
+                            </request-detail>
                         </div>
                     </div>
                 </div>
@@ -90,13 +104,13 @@
                             <li class="list-group-item">
                                 <h5>{{__('Participants')}}</h5>
                                 <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
-                                              :input-data="participants"  hide-name="true"></avatar-image>
+                                              :input-data="participants" hide-name="true"></avatar-image>
                             </li>
                             <li class="list-group-item">
                                 <i class="far fa-calendar-alt"></i>
                                 <small>@{{ labelDate }} @{{ moment(statusDate).fromNow() }}</small>
                                 <br>
-                                @{{moment(statusDate).format('MM/DD/YYYY HH:MM')}}
+                                @{{ moment(statusDate).format() }}
                             </li>
                         </ul>
                     </div>
@@ -118,7 +132,7 @@
                     requestId: @json($request->getKey()),
                     request: @json($request),
                     refreshTasks: 0,
-                    status: ''
+                    status: 'ACTIVE'
                 };
             },
             computed: {
@@ -127,14 +141,6 @@
                  *
                  */
                 participants() {
-                    /*const participants = [];
-                    this.request.participants.forEach(user => {
-                        user.src = user.avatar;
-                        user.title = user.fullname;
-                        user.name = '';
-                        user.initials = user.firstname.match(/./u)[0] + user.lastname.match(/./u)[0];
-                        participants.push(user);
-                    });*/
                     return this.request.participants;
                 },
                 /**
@@ -146,11 +152,33 @@
                     return this.request.status === 'COMPLETED';
                 },
                 /**
+                 * If the screen summary is configured.
+                 **/
+                showScreenSummary() {
+                    return this.request.process.summary_screen !== null
+                },
+                /**
                  * Get the summary of the Request.
                  *
                  */
                 summary() {
                     return this.request.summary;
+                },
+                /**
+                 * Get Screen summary
+                 * */
+                screenSummary() {
+                    return this.request.process.summary_screen.config;
+                },
+                /**
+                 * prepare data screen
+                 **/
+                dataSummary() {
+                    let options = {};
+                    this.request.summary.forEach(option => {
+                        options[option.key] = option.value
+                    });
+                    return options;
                 },
                 classStatusCard() {
                     let header = {
@@ -167,8 +195,8 @@
                         "ERROR": 'Error'
                     };
 
-                    if(this.request.status.toUpperCase() === 'COMPLETED'){
-                      this.status = 'Completed'
+                    if (this.request.status.toUpperCase() === 'COMPLETED') {
+                        this.status = 'Completed'
                     }
                     return label[this.request.status.toUpperCase()];
                 },
@@ -186,6 +214,7 @@
                         "COMPLETED": this.request.completed_at,
                         "ERROR": this.request.updated_at
                     };
+
                     return status[this.request.status.toUpperCase()];
                 },
                 requestBy() {
@@ -202,7 +231,7 @@
                     this.$refs.completed.fetch();
                     ProcessMaker.apiClient.get(`requests/${this.requestId}`, {
                         params: {
-                            include: 'participants,user,summary'
+                            include: 'participants,user,summary,process.summaryScreen'
                         }
                     })
                         .then((response) => {
@@ -238,10 +267,25 @@
                                 this.refreshRequest();
                             }
                         });
+                },
+                /**
+                 * disable buttons in screen
+                 */
+                cleanScreenButtons() {
+                    if (this.showScreenSummary) {
+                        this.$refs.screen.screen[0].items.forEach(item => {
+                            item.config.disabled = true;
+                            if (item.component === 'FormButton') {
+                                item.config.event = '';
+                                item.config.variant = item.config.variant + '  disabled';
+                            }
+                        });
+                    }
                 }
             },
             mounted() {
                 this.listenRequestUpdates();
+                this.cleanScreenButtons();
             },
         });
     </script>

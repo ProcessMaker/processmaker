@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use Carbon\Carbon;
 use Faker\Factory as Faker;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
@@ -68,10 +69,30 @@ class ScriptsTest extends TestCase
         $url = self::API_TEST_SCRIPT;
         $response = $this->apiCall('POST', $url, [
             'title' => 'Script Title',
+            'language' => 'php',
             'code' => $faker->sentence($faker->randomDigitNotNull)
         ]);
         $response->assertStatus(422);
-        $this->assertArrayHasKey('message', $response->json());
+        $response->assertSeeText('The title has already been taken');
+    }
+    
+    /**
+     * Can not create a script with an existing key
+     */
+    public function testNotCreateScriptWithKeyExists()
+    {
+        factory(Script::class)->create([
+            'key' => 'some-key',
+        ]);
+
+        $response = $this->apiCall('POST', self::API_TEST_SCRIPT, [
+            'title' => 'Script Title',
+            'key' => 'some-key',
+            'code' => '123',
+            'language' => 'php',
+        ]);
+        $response->assertStatus(422);
+        $response->assertSeeText('The key has already been taken');
     }
 
     /**
@@ -85,6 +106,11 @@ class ScriptsTest extends TestCase
         $total = $faker->randomDigitNotNull;
         factory(Script::class, $total)->create([
             'code' => $faker->sentence($faker->randomDigitNotNull)
+        ]);
+        
+        // Create script with a key set. These should NOT be in the results.
+        factory(Script::class)->create([
+            'key' => 'some-key'
         ]);
 
         //List scripts
@@ -101,6 +127,23 @@ class ScriptsTest extends TestCase
 
         //verify count of data
         $this->assertEquals($total, $response->json()['meta']['total']);
+    }
+
+    /**
+     * Test to verify that the list dates are in the correct format (yyyy-mm-dd H:i+GMT)
+     */
+    public function testScriptListDates()
+    {
+        $newEntity = factory(Script::class)->create();
+
+        $route = self::API_TEST_SCRIPT;
+        $response = $this->apiCall('GET', $route);
+
+        $fieldsToValidate = collect(['created_at', 'updated_at']);
+        $fieldsToValidate->map(function ($field) use ($response, $newEntity){
+            $this->assertEquals(Carbon::parse($newEntity->$field)->format('c'),
+                $response->getData()->data[0]->$field);
+        });
     }
 
     /**

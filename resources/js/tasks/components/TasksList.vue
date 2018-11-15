@@ -119,7 +119,7 @@
                 let diff = dueDate.diff(now, "hours");
                 let color =
                     diff < 0 ? "text-danger" : diff <= 1 ? "text-warning" : "text-primary";
-                return '<span class="' + color + '">' +   dueDate.format('MM/DD/YYYY HH:MM') +
+                return '<span class="' + color + '">' + this.formatDate(dueDate) +
                     "</span>";
             },
             getTaskStatus() {
@@ -128,7 +128,7 @@
                 return ((status === null) ? 'ACTIVE' : status);
             },
 
-            getSortParam: function() {
+            getSortParam: function () {
                 if (this.sortOrder instanceof Array && this.sortOrder.length > 0) {
                     return "&order_by=" + this.sortOrder[0].sortField +
                         "&order_direction=" + this.sortOrder[0].direction;
@@ -145,7 +145,6 @@
                 }
                 const CancelToken = ProcessMaker.apiClient.CancelToken;
 
-
                 // Load from our api client
                 ProcessMaker.apiClient
                     .get(
@@ -158,7 +157,7 @@
                         "&filter=" +
                         this.filter +
                         this.getSortParam()
-                        ,{
+                        , {
                             cancelToken: new CancelToken(c => {
                                 this.cancelToken = c;
                             })

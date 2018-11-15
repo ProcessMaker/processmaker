@@ -7,8 +7,10 @@ use Illuminate\Validation\Rule;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
+use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
@@ -16,10 +18,8 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  * Represents a business process definition.
  *
  * @property string $id
- * @property string $id
  * @property string $process_category_id
- * @property string $process_category_id
- * @property string $user_id
+ * @property string $summary_screen_id
  * @property string $user_id
  * @property string $bpmn
  * @property string $description
@@ -47,6 +47,7 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 class Process extends Model implements HasMedia
 {
     use HasMediaTrait;
+    use SerializeToIso8601;
 
     /**
      * The attributes that aren't mass assignable.
@@ -86,6 +87,11 @@ class Process extends Model implements HasMedia
     public function category()
     {
         return $this->belongsTo(ProcessCategory::class, 'process_category_id');
+    }
+
+    public function summaryScreen()
+    {
+       return $this->belongsTo(Screen::class, 'summary_screen_id');
     }
 
     /**
@@ -193,16 +199,21 @@ class Process extends Model implements HasMedia
      * Get the user to whom to assign a task.
      *
      * @param ActivityInterface $activity
+     * @param TokenInterface $token
      *
      * @return User
      */
-    public function getNextUser(ActivityInterface $activity)
+    public function getNextUser(ActivityInterface $activity, ProcessRequestToken $token)
     {
-        $default = $activity instanceof ScriptTaskInterface ? 'script' : 'cyclical';
-        $assignmentType = $activity->getProperty('assignment_type', $default);
+        $default = $activity instanceof ScriptTaskInterface
+            || $activity instanceof ServiceTaskInterface ? 'script' : 'requestor';
+        $assignmentType = $activity->getProperty('assignment', $default);
         switch ($assignmentType) {
             case 'cyclical':
                 $user = $this->getNextUserCyclicalAssignment($activity->getId());
+                break;
+            case 'requestor':
+                $user = $token->getInstance()->user_id;
                 break;
             case 'manual':
             case 'self_service':

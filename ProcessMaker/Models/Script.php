@@ -6,19 +6,21 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
+use ProcessMaker\Traits\SerializeToIso8601;
 
 /**
  * Represents an Eloquent model of a Script
  *
  * @package ProcessMaker\Model
  *
- * @property string id
+ * @property integer id
+ * @property string key
  * @property string title
  * @property text description
  * @property string language
  * @property text code
  *
- *   @OA\Schema(
+ * @OA\Schema(
  *   schema="scriptsEditable",
  *   @OA\Property(property="id", type="string", format="id"),
  *   @OA\Property(property="title", type="string"),
@@ -36,6 +38,8 @@ use ProcessMaker\Exception\ScriptLanguageNotSupported;
  */
 class Script extends Model
 {
+    use SerializeToIso8601;
+    use ScriptDockerTrait;
 
     protected $guarded = [
         'id',
@@ -58,6 +62,7 @@ class Script extends Model
     public static function rules($existing = null)
     {
         $rules = [
+            'key' => 'unique:scripts,key',
             'title' => 'required|unique:scripts,title',
             'language' => 'required|in:php,lua'
         ];
@@ -82,27 +87,6 @@ class Script extends Model
     {
         $code = $this->code;
         $language = $this->language;
-        // Create the temporary files to feed into our docker container
-        $datafname = tempnam(config('app.bpm_scripts_home'), "data.json");
-        chmod($datafname, 0660);
-        $tempData = fopen($datafname, 'w');
-        fwrite($tempData, json_encode($data));
-
-        fclose($tempData);
-        $configfname = tempnam(config('app.bpm_scripts_home'), "config.json");
-        chmod($configfname, 0660);
-
-        $tempData = fopen($configfname, 'w');
-        fwrite($tempData, json_encode($config));
-        fclose($tempData);
-        $scriptfname = tempnam(config('app.bpm_scripts_home'), "script");
-        chmod($scriptfname, 0660);
-
-        $tempData = fopen($scriptfname, 'w');
-        fwrite($tempData, $code);
-        fclose($tempData);
-        $outputfname = tempnam(config('app.bpm_scripts_home'), "output.json");
-        chmod($outputfname, 0660);
 
         $variablesParameter = [];
         EnvironmentVariable::chunk(50, function ($variables) use (&$variablesParameter) {
@@ -120,34 +104,54 @@ class Script extends Model
         // So we have the files, let's execute the docker container
         switch (strtolower($language)) {
             case 'php':
-                $cmd = config('app.bpm_scripts_docker') . " run " . $variablesParameter . " -v " . $datafname . ":/opt/executor/data.json -v " . $configfname . ":/opt/executor/config.json -v " . $scriptfname . ":/opt/executor/script.php -v " . $outputfname . ":/opt/executor/output.json processmaker/executor:php php /opt/executor/bootstrap.php 2>&1";
+                $config = [
+                    'image' => 'processmaker/executor:php',
+                    'command' => 'php /opt/executor/bootstrap.php',
+                    'parameters' => $variablesParameter,
+                    'inputs' => [
+                        '/opt/executor/data.json' => json_encode($data),
+                        '/opt/executor/config.json' => json_encode($config),
+                        '/opt/executor/script.php' => $code
+                    ],
+                    'outputs' => [
+                        'response' => '/opt/executor/output.json'
+                    ]
+                ];
                 break;
             case 'lua':
-                $cmd = config('app.bpm_scripts_docker') . " run " . $variablesParameter . " -v " . $datafname . ":/opt/executor/data.json -v " . $configfname . ":/opt/executor/config.json -v " . $scriptfname . ":/opt/executor/script.lua -v " . $outputfname . ":/opt/executor/output.json processmaker/executor:lua lua5.3 /opt/executor/bootstrap.lua 2>&1";
+                $config = [
+                    'image' => 'processmaker/executor:php',
+                    'command' => 'lua5.3 /opt/executor/bootstrap.lua',
+                    'parameters' => $variablesParameter,
+                    'inputs' => [
+                        '/opt/executor/data.json' => json_encode($data),
+                        '/opt/executor/config.json' => json_encode($config),
+                        '/opt/executor/script.php' => $code
+                    ],
+                    'outputs' => [
+                        'response' => '/opt/executor/output.json'
+                    ]
+                ];
                 break;
             default:
                 throw new ScriptLanguageNotSupported($language);
         }
 
-        $response = exec($cmd, $output, $returnCode);
+        $response = $this->execute($config);
+        $returnCode = $response['returnCode'];
+        $errorContent = $response['output'];
+        $output = $response['outputs']['response'];
+
         if ($returnCode) {
             // Has an error code
-            unlink($datafname);
-            unlink($configfname);
-            unlink($scriptfname);
-            unlink($outputfname);
             return [
-                'output' => implode($output, "\n")
+                'output' => implode($errorContent, "\n")
             ];
         } else {
             // Success
-            $output = json_decode(file_get_contents($outputfname), true);
-            unlink($datafname);
-            unlink($configfname);
-            unlink($scriptfname);
-            unlink($outputfname);
+            $response = json_decode($output, true);
             return [
-                'output' => $output
+                'output' => $response
             ];
         }
     }

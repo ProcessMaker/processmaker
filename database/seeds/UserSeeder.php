@@ -4,8 +4,6 @@ use Illuminate\Database\Seeder;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
-use ProcessMaker\Models\Permission;
-use ProcessMaker\Models\PermissionAssignment;
 use Laravel\Passport\ClientRepository;
 
 class UserSeeder extends Seeder
@@ -26,10 +24,11 @@ class UserSeeder extends Seeder
         //Create admin user
         $user = factory(User::class)->create([
             'username' => 'admin',
-            'password' => Hash::make('admin'),
+            'password' => 'admin',
             'firstname' => 'admin',
             'lastname' => 'admin',
-            'timezone' => 'UTC',
+            'timezone' => null,
+            'datetime_format' => null,
             'status' => 'ACTIVE',
             'is_administrator' => true,
         ]);
