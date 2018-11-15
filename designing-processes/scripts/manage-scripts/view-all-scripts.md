@@ -26,8 +26,8 @@ The **Scripts** page displays the following information about ProcessMaker Scrip
 
 * **Title:** The **Title** column displays the name of the ProcessMaker Script.
 * **Language:** The **Language** column displays the programming language with which the ProcessMaker Script was written. Lua and PHP languages are supported out-of-the-box.
-* **Modified:** The **Modified** column displays the date the ProcessMaker Script was last modified.
-* **Created:** The **Created** column displays the date the ProcessMaker Script was created.
+* **Modified:** The **Modified** column displays the date and time the ProcessMaker Script was last modified.
+* **Created:** The **Created** column displays the date and time the ProcessMaker Script was created.
 
 {% hint style="info" %}
 For information how to search for a ProcessMaker Script, see [Search for a Script](search-for-a-script.md).

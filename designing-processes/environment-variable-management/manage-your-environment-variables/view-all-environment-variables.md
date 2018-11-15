@@ -34,7 +34,7 @@ For information how to search for a ProcessMaker Environment Variable, see [Sear
 {% endhint %}
 
 {% hint style="info" %}
-If no ProcessMaker Environment Variables exist, the following message displays: ~~**You don't have any screens. Please click on '+SCREEN' to get started**~~**.**
+If no ProcessMaker Environment Variables exist, the following message displays: ~~**You don't have any Environment Variables. Please click on '+ENVIRONMENT VARIABLE' to get started**~~**.**
 {% endhint %}
 
 {% hint style="info" %}

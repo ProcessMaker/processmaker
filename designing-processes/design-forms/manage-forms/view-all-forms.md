@@ -24,11 +24,11 @@ Follow these steps to view all ProcessMaker Screens in your organization:
 
 The **Screens** page displays the following information about ProcessMaker Screens:
 
-* **Title:** The **Title** column displays the name of the ProcessMaker Screen. Click the ProcessMaker Screen to to edit the ProcessMaker Screen in Screen Builder. For more information about Screens Builder, see [Screens Builder](../screens-builder/).
+* **Title:** The **Title** column displays the name of the ProcessMaker Screen. Click the ProcessMaker Screen to to edit the ProcessMaker Screen in Screen Builder. For more information how to set the name for a ProcessMaker Screen, see [Create a New Screen](../create-a-new-form.md). For information how to change the name for a ProcessMaker Screen, see [Rename or Close a Screen Page](../screens-builder/rename-or-close-a-screen-page.md).
 * **Description:** The **Description** column displays the description about the ProcessMaker Screen. For information how to edit the ProcessMaker Screen description, see [Edit a Screen](edit-a-screen.md).
-* **Type:** The **Type** column displays which type the ProcessMaker Screen is. For information about ProcessMaker Screen types, see [Screens Builder](../screens-builder/).
-* **Modified:** The **Modified** column displays the date the ProcessMaker Screen was last modified.
-* **Created:** The **Created** column displays the date the ProcessMaker Screen was created.
+* **Type:** The **Type** column displays which type the ProcessMaker Screen is. For information about ProcessMaker Screen types, see [Screen Types](../screens-builder/types-for-screens.md).
+* **Modified:** The **Modified** column displays the date and time the ProcessMaker Screen was last modified.
+* **Created:** The **Created** column displays the date and time the ProcessMaker Screen was created.
 
 {% hint style="info" %}
 For information how to search for a ProcessMaker Screen, see [Search for a Screen](search-for-a-screen.md).

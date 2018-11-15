@@ -9,7 +9,7 @@ In ProcessMaker 4, a "user" is any person for which a ProcessMaker account is cr
 * Log in to ProcessMaker using unique credentials.
 * ProcessMaker Administrators can track the last time each ProcessMaker user logged in.
 * Each ProcessMaker user can adjust his or her [user profile](../../using-processmaker/profile-settings.md).
-* ProcessMaker Administrators can [activate or deactivate](manage-user-accounts/activate-or-deactivate-a-user-account.md) any ProcessMaker user's account.
+* ProcessMaker Administrators can [activate or deactivate]() any ProcessMaker user's account.
 
 ## Related Topics
 
@@ -19,9 +19,9 @@ In ProcessMaker 4, a "user" is any person for which a ProcessMaker account is cr
 
 {% page-ref page="manage-user-accounts/edit-a-user-account.md" %}
 
-{% page-ref page="manage-user-accounts/activate-or-deactivate-a-user-account.md" %}
-
 {% page-ref page="manage-user-accounts/remove-a-user-account.md" %}
 
 {% page-ref page="create-a-user-account.md" %}
+
+
 
