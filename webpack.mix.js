@@ -32,7 +32,6 @@ mix.webpackConfig({
     .js('resources/js/admin/groups/index.js', 'public/js/admin/groups')
     .js('resources/js/admin/queues/index.js', 'public/js/admin/queues')
 
-    .js('resources/js/admin/preferences/index.js', 'public/js/admin/preferences')
     .js('resources/js/processes/index.js', 'public/js/processes')
     .js('resources/js/processes/categories/index.js', 'public/js/processes/categories')
     .js('resources/js/processes/scripts/index.js', 'public/js/processes/scripts')
@@ -40,6 +39,9 @@ mix.webpackConfig({
     .js('resources/js/processes/environment-variables/index.js', 'public/js/processes/environment-variables')
     .js('resources/js/processes/screens/index.js', 'public/js/processes/screens')
     .js('resources/js/processes/screen-builder/main.js', 'public/js/processes/screen-builder')
+    .js('resources/js/processes/screen-builder/typeForm.js', 'public/js/processes/screen-builder')
+    .js('resources/js/processes/screen-builder/typeDisplay.js', 'public/js/processes/screen-builder')
+
     .js('resources/js/requests/index.js', 'public/js/requests')
 
 
@@ -67,6 +69,6 @@ mix.webpackConfig({
     .copy('resources/fonts/Open_Sans/', 'public/fonts')
     .copy('resources/js/components/FilterBar.vue', 'public/js')
     // Copy files necessary for images for the designer/modeler to it's own img directory
-    .copy('node_modules/@processmaker/modeler/dist/img', 'public/modeler/img')
+    .copy('node_modules/@processmaker/modeler/dist/img', 'public/js/processes/modeler/img')
 
     .version()

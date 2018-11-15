@@ -61,6 +61,26 @@ class TasksTest extends TestCase
     }
 
     /**
+     * Test to verify that the list dates are in the correct format (yyyy-mm-dd H:i+GMT)
+     */
+    public function testTaskListDates()
+    {
+        $request = factory(ProcessRequest::class)->create();
+        // Create some tokens
+        $newEntity = factory(ProcessRequestToken::class)->create([
+            'process_request_id' => $request->id
+        ]);
+        $route = route('api.' . $this->resource . '.index', ['per_page' => 10]);
+        $response = $this->apiCall('GET', $route);
+
+        $fieldsToValidate = collect(['created_at', 'updated_at', 'due_at']);
+        $fieldsToValidate->map(function ($field) use ($response, $newEntity){
+            $this->assertEquals(Carbon::parse($newEntity->$field)->format('c'),
+                $response->getData()->data[0]->$field);
+        });
+    }
+
+    /**
      * Test the filtering getting active tokens
      */
     public function testFilteringGetActiveTasks()

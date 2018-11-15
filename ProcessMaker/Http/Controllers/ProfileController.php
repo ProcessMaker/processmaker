@@ -16,12 +16,26 @@ class ProfileController extends Controller
      */
     public function edit()
     {
-        $current_user = \Auth::user();
+        $currentUser = \Auth::user();
         $states = JsonData::states();
-        $timezones = JsonData::timezones();
         $countries = JsonData::countries();
+
+        $timezones = array_reduce(JsonData::timezones(),
+            function ($result, $item) {
+                $result[$item] = $item;
+                return $result;
+            }
+        );
+
+        $datetimeFormats = array_reduce(JsonData::datetimeFormats(),
+                                function ($result, $item) {
+                                    $result[$item['format']] = $item['title'];
+                                    return $result;
+                                }
+                            );
+
         return view('profile.edit',
-            compact('current_user', 'states', 'timezones', 'countries'));
+            compact('currentUser', 'states', 'timezones', 'countries', 'datetimeFormats'));
     }
 
     /**

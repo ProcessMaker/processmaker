@@ -23,6 +23,12 @@
                         <div class="invalid-feedback" v-if="errors.title">@{{errors.title[0]}}</div>
                     </div>
                     <div class="form-group">
+                        {!! Form::label('type', 'Type') !!}
+                        {!! Form::select('type', ['DISPLAY' => 'Display', 'FORM' => 'Form'], 'null', ['id' => 'type','class'=> 'form-control', 'v-model' => 'formData.type',
+                        'v-bind:class' => '{"form-control":true, "is-invalid":errors.type}']) !!}
+                        <div class="invalid-feedback" v-for="type in errors.type">@{{type}}</div>
+                    </div>
+                    <div class="form-group">
                         {!! Form::label('description', 'Description') !!}
                         {!! Form::textarea('description', null, ['id' => 'description', 'rows' => 4, 'class'=> 'form-control',
                         'v-model' => 'formData.description', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.description}']) !!}
@@ -49,6 +55,7 @@
                     formData: @json($screen),
                     errors: {
                         'title': null,
+                        'type': null,
                         'description': null,
                         'status': null
                     }
@@ -58,6 +65,7 @@
                 resetErrors() {
                     this.errors = Object.assign({}, {
                         title: null,
+                        type: null,
                         description: null,
                         status: null
                     });

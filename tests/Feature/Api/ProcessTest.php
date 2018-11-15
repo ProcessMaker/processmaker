@@ -1,6 +1,7 @@
 <?php
 namespace Tests\Feature\Api;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
@@ -58,6 +59,22 @@ class ProcessTest extends TestCase
                 'total_pages' => ceil(($initialCount + $countProcesses) / $perPage),
             ]
         );
+    }
+
+    /**
+     * Test to verify that the list dates are in the correct format (yyyy-mm-dd H:i+GMT)
+     */
+    public function testProcessListDates()
+    {
+        $newEntity = factory(Process::class)->create();
+        $route = route('api.' . $this->resource . '.index', ['per_page' => 10]);
+        $response = $this->apiCall('GET', $route);
+
+        $fieldsToValidate = collect(['created_at', 'updated_at']);
+        $fieldsToValidate->map(function ($field) use ($response, $newEntity){
+            $this->assertEquals(Carbon::parse($newEntity->$field)->format('c'),
+                $response->getData()->data[0]->$field);
+        });
     }
 
     /**

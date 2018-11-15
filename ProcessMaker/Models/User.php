@@ -7,6 +7,7 @@ use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
+use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use ProcessMaker\Traits\HasAuthorization;
@@ -17,6 +18,7 @@ class User extends Authenticatable implements HasMedia
     use Notifiable;
     use HasMediaTrait;
     use HasAuthorization;
+    use SerializeToIso8601;
 
     //Disk
     public const DISK_PROFILE = 'profile';
@@ -45,6 +47,7 @@ class User extends Authenticatable implements HasMedia
      *   @OA\Property(property="cell", type="string"),
      *   @OA\Property(property="title", type="string"),
      *   @OA\Property(property="timezone", type="string"),
+     *   @OA\Property(property="datetime_format", type="string"),
      *   @OA\Property(property="language", type="string"),
      *   @OA\Property(property="loggedin_at", type="string"),
      *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
@@ -75,6 +78,7 @@ class User extends Authenticatable implements HasMedia
         'title',
         'birthdate',
         'timezone',
+        'datetime_format',
         'language',
         'expires_at'
 

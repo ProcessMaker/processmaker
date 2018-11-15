@@ -39,7 +39,7 @@ class Install extends Command
 
     /**
      * The values for our .env to populate
-     * 
+     *
      * $var array
      */
     private $env;
@@ -67,7 +67,9 @@ class Install extends Command
             'APP_ENV' => 'production',
             'APP_KEY' => $this->key,
             'BROADCAST_DRIVER' => 'redis',
-            'BROADCASTER_KEY' => '21a795019957dde6bcd96142e05d4b10'
+            'BROADCASTER_KEY' => '21a795019957dde6bcd96142e05d4b10',
+            'APP_TIMEZONE' => 'UTC',
+            'DATE_FORMAT' => '"m/d/Y H:i"'
         ];
 
 
@@ -101,10 +103,10 @@ class Install extends Command
                 $this->error(__("The url you provided was invalid. Please provide the scheme, host and path and have no trailing slashes."));
             }
             $this->env['APP_URL'] = $this->ask(__('What is the url of this ProcessMaker Installation? (Ex: https://pm.example.com, no trailing slash)'));
-        } while($invalid = (!filter_var($this->env['APP_URL'], 
-                                        FILTER_VALIDATE_URL, 
-                                        FILTER_FLAG_SCHEME_REQUIRED | 
-                                        FILTER_FLAG_HOST_REQUIRED) 
+        } while($invalid = (!filter_var($this->env['APP_URL'],
+                                        FILTER_VALIDATE_URL,
+                                        FILTER_FLAG_SCHEME_REQUIRED |
+                                        FILTER_FLAG_HOST_REQUIRED)
                     || ($this->env['APP_URL'][strlen($this->env['APP_URL']) - 1] == '/'))
         );
         // Set broadcaster url

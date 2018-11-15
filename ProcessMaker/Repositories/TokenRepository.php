@@ -64,7 +64,7 @@ class TokenRepository implements TokenRepositoryInterface
     public function persistActivityActivated(ActivityInterface $activity, TokenInterface $token)
     {
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
-        $user = $token->getInstance()->process->getNextUser($activity);
+        $user = $token->getInstance()->process->getNextUser($activity, $token);
         $token->status = $token->getStatus();
         $token->element_id = $activity->getId();
         $token->element_type = $activity instanceof ScriptTaskInterface ? 'scriptTask' : 'task';
