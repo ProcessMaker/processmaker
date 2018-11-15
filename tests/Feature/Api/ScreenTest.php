@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use Carbon\Carbon;
 use Faker\Factory as Faker;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\Screen;
@@ -117,6 +118,22 @@ class ScreenTest extends TestCase
 
         //Verify the structure
         $response->assertJsonStructure(['*' => self::STRUCTURE], $json['data']);
+    }
+
+    /**
+     * Test to verify that the list dates are in the correct format (yyyy-mm-dd H:i+GMT)
+     */
+    public function testScreenListDates()
+    {
+        $newEntity = factory(Screen::class)->create();
+        $route = self::API_TEST_SCREEN;
+        $response = $this->apiCall('GET', $route);
+
+        $fieldsToValidate = collect(['created_at', 'updated_at']);
+        $fieldsToValidate->map(function ($field) use ($response, $newEntity){
+            $this->assertEquals(Carbon::parse($newEntity->$field)->format('c'),
+                $response->getData()->data[0]->$field);
+        });
     }
 
     /**

@@ -37,6 +37,7 @@ class CreateUsersTable extends Migration
             $table->string('title')->nullable();
             $table->date('birthdate')->nullable();
             $table->string('timezone')->nullable();
+            $table->string('datetime_format')->nullable();
             $table->string('language')->nullable();
 
             $table->boolean('is_administrator')->default(false);
