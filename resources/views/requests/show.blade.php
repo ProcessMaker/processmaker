@@ -110,7 +110,7 @@
                                 <i class="far fa-calendar-alt"></i>
                                 <small>@{{ labelDate }} @{{ moment(statusDate).fromNow() }}</small>
                                 <br>
-                                @{{moment(statusDate).format('MM/DD/YYYY HH:MM')}}
+                                @{{ moment(statusDate).format() }}
                             </li>
                         </ul>
                     </div>
@@ -214,6 +214,7 @@
                         "COMPLETED": this.request.completed_at,
                         "ERROR": this.request.updated_at
                     };
+
                     return status[this.request.status.toUpperCase()];
                 },
                 requestBy() {

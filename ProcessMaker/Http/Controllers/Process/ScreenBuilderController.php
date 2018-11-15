@@ -6,6 +6,8 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\View\View;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Events\ScreenBuilderStarting;
+use ProcessMaker\Managers\ScreenBuilderManager;
 
 class ScreenBuilderController extends Controller
 {
@@ -16,9 +18,16 @@ class ScreenBuilderController extends Controller
      *
      * @return Factory|View
      */
-    public function edit(Screen $screen)
+    public function edit(ScreenBuilderManager $manager, Screen $screen)
     {
-        return view('processes.screen-builder.screen', compact('screen'));
+        /**
+         * Emit the ModelerStarting event, passing in our ModelerManager instance. This will 
+         * allow packages to add additional javascript for modeler initialization which
+         * can customize the modeler controls list.
+         */
+        event(new ScreenBuilderStarting($manager, $screen->type));
+
+        return view('processes.screen-builder.screen', compact('screen', 'manager'));
     }
 
 }

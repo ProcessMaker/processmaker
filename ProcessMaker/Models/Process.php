@@ -8,8 +8,10 @@ use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
+use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
@@ -46,6 +48,7 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 class Process extends Model implements HasMedia
 {
     use HasMediaTrait;
+    use SerializeToIso8601;
 
     /**
      * The attributes that aren't mass assignable.
@@ -203,7 +206,8 @@ class Process extends Model implements HasMedia
      */
     public function getNextUser(ActivityInterface $activity, ProcessRequestToken $token)
     {
-        $default = $activity instanceof ScriptTaskInterface ? 'script' : 'requestor';
+        $default = $activity instanceof ScriptTaskInterface
+            || $activity instanceof ServiceTaskInterface ? 'script' : 'requestor';
         $assignmentType = $activity->getProperty('assignment', $default);
         switch ($assignmentType) {
             case 'cyclical':

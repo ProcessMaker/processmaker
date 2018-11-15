@@ -36,6 +36,12 @@ div.main {
     process: @json($process),
     xml: @json($process->bpmn)
   }
+  ProcessMaker.EventBus.$on('modeler-start', function(modeler) {
+    modeler.loadXML(window.ProcessMaker.modeler.xml);
+  });
   </script>
+    @foreach($manager->getScripts() as $script)
+      <script src="{{$script}}"></script>
+    @endforeach
   <script src="{{ mix('js/processes/modeler/index.js') }}"></script>
 @endsection

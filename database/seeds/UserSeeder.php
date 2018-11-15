@@ -28,7 +28,8 @@ class UserSeeder extends Seeder
             'password' => Hash::make('admin'),
             'firstname' => 'admin',
             'lastname' => 'admin',
-            'timezone' => 'UTC',
+            'timezone' => null,
+            'datetime_format' => null,
             'status' => 'ACTIVE',
             'is_administrator' => true,
         ]);

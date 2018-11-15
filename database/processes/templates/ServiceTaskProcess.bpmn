@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+             xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+             xmlns:tns="http://sourceforge.net/bpmn/definitions/_1541612237879" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:pm="http://processmaker.com/BPMN/2.0/Schema.xsd"
+             expressionLanguage="http://www.w3.org/1999/XPath" id="_1541612237879" name=""
+             targetNamespace="http://sourceforge.net/bpmn/definitions/_1541612237879"
+             typeLanguage="http://www.w3.org/2001/XMLSchema">
+    <process id="ServiceTaskProcess" isClosed="false" isExecutable="true" processType="None">
+        <serviceTask completionQuantity="1" id="_2" implementation="EchoConnector" name="Service Task">
+            <incoming>_4</incoming>
+            <outgoing>_6</outgoing>
+        </serviceTask>
+        <sequenceFlow id="_4" sourceRef="_3" targetRef="_2"/>
+        <startEvent id="_3" isInterrupting="true" name="Start Event" parallelMultiple="false">
+            <outgoing>_4</outgoing>
+            <outputSet/>
+        </startEvent>
+        <endEvent id="_5" name="End Event">
+            <incoming>_6</incoming>
+            <inputSet/>
+        </endEvent>
+        <sequenceFlow id="_6" sourceRef="_2" targetRef="_5"/>
+    </process>
+    <bpmndi:BPMNDiagram id="PM_Diagram-ServiceTaskProcess" name="Untitled Diagram" resolution="96.0">
+        <bpmndi:BPMNPlane bpmnElement="ServiceTaskProcess">
+            <bpmndi:BPMNShape bpmnElement="_2" id="PM-_2">
+                <dc:Bounds height="55.0" width="85.0" x="149.24999999999994" y="73.5"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="18.96" width="72.0" x="155.75" y="93.52"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_3" id="PM-_3">
+                <dc:Bounds height="32.0" width="32.0" x="67.0" y="85.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="18.96" width="63.0" x="51.5" y="125.52"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="_5" id="PM-_5">
+                <dc:Bounds height="32.0" width="32.0" x="280.0" y="85.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="18.96" width="58.0" x="267.0" y="125.52"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNEdge bpmnElement="_6" id="PM-_6">
+                <di:waypoint x="234.0" y="101.0"/>
+                <di:waypoint x="280.0002432976976" y="101.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="18.96" width="6.0" x="254.0" y="91.52"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="_4" id="PM-_4">
+                <di:waypoint x="98.99975670230245" y="101.0"/>
+                <di:waypoint x="149.0" y="101.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="18.96" width="6.0" x="121.0" y="91.52"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNEdge>
+        </bpmndi:BPMNPlane>
+    </bpmndi:BPMNDiagram>
+</definitions>
