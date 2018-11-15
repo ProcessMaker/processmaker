@@ -20,7 +20,7 @@
                         {{task.processName}}<br>
                         {{task.userName}}
                     </div>
-                    <span class="badge badge-info float-right" style="cursor:pointer" @click="remove(task)">
+                    <span class="badge badge-pill badge-info float-right" style="cursor:pointer" @click="remove(task)">
                         Dismiss
                     </span>
                     <hr>
@@ -55,7 +55,7 @@
         },
         methods: {
             remove(message) {
-                window.ProcessMaker.removeNotification(message.id);
+                ProcessMaker.removeNotifications([message.id]);
             },
             formatDateTime(iso8601) {
                 return moment(iso8601).format("MM/DD/YY HH:mm");
@@ -72,6 +72,14 @@
                 this.arrowStyle.left =
                     $("#navbar-request-button").offset().left + 32 + "px";
             });
+
+
+            ProcessMaker.apiClient.get('/notifications')
+                .then(function (response) {
+                    response.data.forEach(function (element) {
+                        ProcessMaker.pushNotification(element);
+                    })
+                });
         }
     };
 </script>

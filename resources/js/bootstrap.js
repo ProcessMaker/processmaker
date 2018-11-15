@@ -37,7 +37,7 @@ window.ProcessMaker = {
     /**
      * ProcessMaker Notifications
      */
-    notifications: JSON.parse(document.head.querySelector("meta[name=\"notifications\"]").content),
+    notifications: [],
     /**
      * Push a notification.
      *
@@ -46,23 +46,31 @@ window.ProcessMaker = {
      * @returns {void}
      */
     pushNotification (notification) {
-        if (this.notifications.filter(x => x.id === notification).length > 0) {
+        if (this.notifications.filter(x => x.id === notification).length === 0) {
             this.notifications.push(notification);
         }
     },
 
-    removeNotification (notification) {
-        window.ProcessMaker.apiClient.put('/notifications/' + notification);
-        this.notifications.splice(this.notifications.findIndex(x => x.id === notification), 1);
+    /**
+     * Removes notifications by message ids or urls
+     *
+     * @param {object} notification
+     *
+     * @returns {void}
+     */
+    removeNotifications (messageIds = [], urls = []) {
+        window.ProcessMaker.apiClient.put('/notifications', {message_ids: messageIds, routes: urls});
+        messageIds.forEach(function (messageId) {
+            ProcessMaker.notifications.splice(ProcessMaker.notifications.findIndex(x => x.id === messageId), 1);
+        });
+
+        urls.forEach(function (url) {
+            let messageIndex = ProcessMaker.notifications.findIndex(x => x.url === url);
+            if (messageIndex >= 0) {
+               ProcessMaker.removeNotification(ProcessMaker.notifications[messageIndex].id);
+            }
+        });
     },
-
-    removeNotificationByUrl (url) {
-        let messageIndex = this.notifications.findIndex(x => x.url === url);
-
-        if (messageIndex >= 0) {
-           ProcessMaker.removeNotification(this.notifications[messageIndex].id);
-        }
-    }
 };
 
 /**

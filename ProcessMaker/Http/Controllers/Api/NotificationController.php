@@ -13,6 +13,11 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class NotificationController extends Controller
 {
+    public function index()
+    {
+        return response(\Auth::user()->activeNotifications(), 200);
+    }
+
     /**
      * Update the specified resource in storage.
      *
@@ -21,13 +26,15 @@ class NotificationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
+        $messageIds = $request->input('message_ids');
+        $routes = $request->input('routes');
+
         DB::table('notifications')
-            ->where('id', $id)
+            ->whereIn('id', $messageIds)
+            ->orWhereIn('data->url', $routes)
             ->update(['read_at' => Carbon::now()]);
         return response([], 201);
     }
-
-
 }

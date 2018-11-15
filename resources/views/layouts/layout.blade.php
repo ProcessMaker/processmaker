@@ -8,9 +8,9 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @if(Auth::user())
     <meta name="user-id" content="{{ Auth::user()->id }}">
-    <meta name="notifications" content='@json(Auth::user()->activeNotifications())'>
     <meta name="datetime-format" content="{{ Auth::user()->datetime_format ?: config('app.dateformat') }}">
     <meta name="timezone" content="{{ Auth::user()->timezone ?: config('app.timezone') }}">
+    {{--<meta name="notifications" content='@json(Auth::user()->activeNotifications())'>--}}
     @endif
     @if(config('broadcasting.broadcaster') == 'socket.io')
     <meta name="broadcaster" content="{{config('broadcasting.broadcaster')}}">
