@@ -28,7 +28,7 @@ ProcessMaker 4 supports Lua and PHP Scripts out-of-the-box.
 
 {% page-ref page="create-a-new-script.md" %}
 
-{% page-ref page="scripts-editor.md" %}
+{% page-ref page="scripts-editor/" %}
 
-{% page-ref page="scripts-editor.md" %}
+{% page-ref page="scripts-editor/" %}
 

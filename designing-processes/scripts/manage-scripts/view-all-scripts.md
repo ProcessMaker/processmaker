@@ -57,7 +57,7 @@ If no ProcessMaker Scripts exist, the following message displays: ~~**You don't 
 
 {% page-ref page="../create-a-new-script.md" %}
 
-{% page-ref page="../scripts-editor.md" %}
+{% page-ref page="../scripts-editor/" %}
 
 {% page-ref page="../../../using-processmaker/control-how-requests-display-in-a-tab.md" %}
 

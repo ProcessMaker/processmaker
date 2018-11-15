@@ -41,5 +41,5 @@ Follow these steps to remove a ProcessMaker Script:
 
 {% page-ref page="../create-a-new-script.md" %}
 
-{% page-ref page="../scripts-editor.md" %}
+{% page-ref page="../scripts-editor/" %}
 

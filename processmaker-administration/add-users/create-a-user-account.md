@@ -37,3 +37,15 @@ Follow these steps to create a ProcessMaker user account:
 
 11. Click **Save**.
 
+## Related Topics
+
+{% page-ref page="what-is-a-user.md" %}
+
+{% page-ref page="manage-user-accounts/view-all-users.md" %}
+
+{% page-ref page="manage-user-accounts/search-for-a-user.md" %}
+
+{% page-ref page="manage-user-accounts/edit-a-user-account.md" %}
+
+{% page-ref page="manage-user-accounts/remove-a-user-account.md" %}
+
