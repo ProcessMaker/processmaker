@@ -2,6 +2,8 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 import BootstrapVue from "bootstrap-vue";
 import Echo from "laravel-echo";
 import VueRouter from "vue-router";
+import datetime_format from "../js/data/datetime_formats.json"
+
 
 window._ = require("lodash");
 window.Popper = require("popper.js").default;
@@ -96,11 +98,20 @@ window.ProcessMaker.alert = function (text, variant) {
 };
 
 let userID = document.head.querySelector("meta[name=\"user-id\"]");
+let formatDate = document.head.querySelector("meta[name=\"datetime-format\"]");
+let timezone = document.head.querySelector("meta[name=\"timezone\"]");
 
 if (userID) {
     window.ProcessMaker.user = {
-        id: userID.content
+        id: userID.content,
+        datetime_format: formatDate.content,
+        timezone: timezone.content
     };
+    datetime_format.forEach(value => {
+        if (formatDate.content === value.format) {
+            window.ProcessMaker.user.datetime_format = value.momentFormat
+        }
+    });
 }
 
 let broadcaster = document.head.querySelector("meta[name=\"broadcaster\"]");

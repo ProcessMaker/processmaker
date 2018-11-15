@@ -74,13 +74,13 @@
                         title: "Modified",
                         name: "updated_at",
                         sortField: "updated_at",
-                        callback: this.formatDate
+                        callback: 'formatDate'
                     },
                     {
                         title: "Created",
                         name: "created_at",
                         sortField: "created_at",
-                        callback: this.formatDate
+                        callback: 'formatDate'
                     },
                     {
                         name: "__slot:actions",

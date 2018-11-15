@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use Carbon\Carbon;
 use Faker\Factory as Faker;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
@@ -120,6 +121,22 @@ class UsersTest extends TestCase
       $this->assertEquals(10, $response->json()['meta']['total']);
 
   }
+
+    /**
+     * Test to verify that the list dates are in the correct format (yyyy-mm-dd H:i+GMT)
+     */
+    public function testUserListDates()
+    {
+        $newEntity = factory(User::class)->create();
+        $route = self::API_TEST_URL;
+        $response = $this->apiCall('GET', $route);
+
+        $fieldsToValidate = collect(['created_at', 'updated_at']);
+        $fieldsToValidate->map(function ($field) use ($response, $newEntity){
+            $this->assertEquals(Carbon::parse($newEntity->$field)->format('c'),
+                $response->getData()->data[0]->$field);
+        });
+    }
 
   /**
    * Get a list of User with parameters

@@ -14,7 +14,7 @@
                     <hr>
                 </li>
                 <li v-for="task in messages">
-                    <small class="float-right muted">{{formatDateTime(task.dateTime)}}</small>
+                    <small class="float-right muted">{{ moment(task.dateTime).format() }}</small>
                     <h3><a v-bind:href="task.url" @click.stop="remove(task)">{{task.name}}</a></h3>
                     <div class="muted">
                         {{task.processName}}<br>
@@ -27,8 +27,6 @@
                 </li>
             </ul>
         </b-popover>
-
-
     </div>
 </template>
 

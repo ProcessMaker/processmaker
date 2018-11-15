@@ -47,6 +47,32 @@
                         <div class="invalid-feedback" v-if="errors.email">@{{errors.email[0]}}</div>
                     </div>
                     <div class="form-group">
+                        {!!Form::label('datetime_format', 'Date format');!!}
+                        {!!Form::select('datetime_format',
+                        array_reduce(\ProcessMaker\Models\JsonData::datetimeFormats(),
+                            function ($result, $item) {
+                                $result[$item['format']] = $item['title'];
+                                return $result;
+                            }
+                        ),
+                        'formData.datetime_format', ['class'=> 'form-control', 'v-model'=> 'formData.datetime_format',
+                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.datetime_format}']);!!}
+                        <div class="invalid-feedback" v-if="errors.email">@{{errors.datetime_format[0]}}</div>
+                    </div>
+                    <div class="form-group">
+                        {!!Form::label('timezone', 'Time zone');!!}
+                        {!!Form::select('timezone',
+                        array_reduce(\ProcessMaker\Models\JsonData::timezones(),
+                            function ($result, $item) {
+                                $result[$item] = $item;
+                                return $result;
+                            }
+                        ),
+                        'formData.timezone', ['class'=> 'form-control', 'v-model'=> 'formData.timezone',
+                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.datetimeFormat}']);!!}
+                        <div class="invalid-feedback" v-if="errors.email">@{{errors.timezone[0]}}</div>
+                    </div>
+                    <div class="form-group">
                         {!!Form::label('password', __('Password'))!!}
                         {!!Form::password('password', ['class'=> 'form-control', 'v-model'=> 'formData.password',
                         'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}'])!!}
@@ -119,7 +145,8 @@
                         lastname: null,
                         email: null,
                         password: null,
-                        status: null
+                        status: null,
+                        datetime_format: null
                     }
                 }
             },
@@ -134,7 +161,8 @@
                         lastname: null,
                         email: null,
                         password: null,
-                        status: null
+                        status: null,
+                        datetime_format: null
                     });
                 },
                 customLabel(option) {

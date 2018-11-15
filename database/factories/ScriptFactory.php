@@ -9,6 +9,6 @@ $factory->define(Script::class, function (Faker $faker) {
         'title' => $faker->sentence,
         'language' => $faker->randomElement(['php', 'lua']),
         'code' => $faker->sentence($faker->randomDigitNotNull),
-        'description' => $faker->sentence,
+        'description' => $faker->sentence
     ];
 });

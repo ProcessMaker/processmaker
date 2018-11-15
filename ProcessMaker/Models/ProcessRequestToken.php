@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use ProcessMaker\Nayra\Bpmn\TokenTrait;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
+use ProcessMaker\Traits\SerializeToIso8601;
 
 /**
  * ProcessRequestToken is used to store the state of a token of the
@@ -29,6 +30,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 class ProcessRequestToken extends Model implements TokenInterface
 {
     use TokenTrait;
+    use SerializeToIso8601;
 
     /**
      * Attributes that are not mass assignable.
@@ -172,17 +174,5 @@ class ProcessRequestToken extends Model implements TokenInterface
         }
 
         return $result;
-    }
-
-    /**
-     * Prepare a date for array / JSON serialization.
-     *
-     * @param  \DateTimeInterface  $date
-     *
-     * @return string
-     */
-    protected function serializeDate(\DateTimeInterface $date)
-    {
-        return $date->format(Carbon::ISO8601);
     }
 }

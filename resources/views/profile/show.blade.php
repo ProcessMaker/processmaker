@@ -76,8 +76,8 @@
                     <h4>{{$user->title}}</h4>
                     <hr>
                     <h5 class="mt-2">{{__('Current Local Time')}}</h5>
-                    <div><i class="far fa-calendar-alt fa-lg text-secondary pr-1"></i>{{
-                        Carbon\Carbon::now()->setTimezone($user->timezone)->format(config('app.dateformat')) }}</div>
+                    <div><i class="far fa-calendar-alt fa-lg text-secondary pr-1"></i>
+                        @{{moment().format() }}</div>
                 </div>
             </div>
         </div>
