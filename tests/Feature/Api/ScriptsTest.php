@@ -227,7 +227,10 @@ class ScriptsTest extends TestCase
     {
         $faker = Faker::create();
         //Post saved success
-        $script = factory(Script::class)->create();
+        $yesterday = \Carbon\Carbon::now()->subDay();
+        $script = factory(Script::class)->create([
+            "created_at" => $yesterday,
+        ]);
         $original_attributes = $script->getAttributes();
         $url = self::API_TEST_SCRIPT . '/' . $script->id;
         $response = $this->apiCall('PUT', $url, [
@@ -245,6 +248,8 @@ class ScriptsTest extends TestCase
         $this->assertEquals($version->title, $original_attributes['title']);
         $this->assertEquals($version->language, $original_attributes['language']);
         $this->assertEquals($version->code, $original_attributes['code']);
+        $this->assertEquals((string) $version->created_at, (string) $yesterday);
+        $this->assertEquals($version->updated_at, $script->updated_at);
     }
 
     /**

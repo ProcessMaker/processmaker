@@ -6,18 +6,23 @@ use Illuminate\Database\Eloquent\Model;
 
 class ScreenVersion extends Model
 {
+    /**
+     * Do not automatically set created_at
+     */
+    const CREATED_AT = null;
+    
+    /**
+     * Attributes that are not mass assignable.
+     *
+     * @var array $fillable
+     */
+    protected $guarded = [
+        'id',
+        'updated_at',
+    ];
+
     protected $casts = [
         'config' => 'array'
     ];
     
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
-    protected $guarded = [
-        'id',
-        'created_at',
-        'updated_at',
-    ];
 }

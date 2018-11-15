@@ -219,7 +219,10 @@ class ScreenTest extends TestCase
     {
         //Post saved success
         $faker = Faker::create();
-        $screen = factory(Screen::class)->create();
+        $yesterday = \Carbon\Carbon::now()->subDay();
+        $screen = factory(Screen::class)->create([
+            "created_at" => $yesterday,
+        ]);
         $original_attributes = $screen->getAttributes();
         $url = self::API_TEST_SCREEN . '/' . $screen->id;
         $response = $this->apiCall('PUT', $url, [
@@ -237,6 +240,8 @@ class ScreenTest extends TestCase
         $this->assertEquals($version->title, $original_attributes['title']);
         $this->assertEquals($version->description, $original_attributes['description']);
         $this->assertEquals($version->config, null);
+        $this->assertEquals((string) $version->created_at, (string) $yesterday);
+        $this->assertEquals($version->updated_at, $screen->updated_at);
     }
     /**
      * Update Screen Type

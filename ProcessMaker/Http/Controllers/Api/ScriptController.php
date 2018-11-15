@@ -232,7 +232,6 @@ class ScriptController extends Controller
         
         unset(
             $original_attributes['id'],
-            $original_attributes['created_at'],
             $original_attributes['updated_at']
         );
         $script->versions()->create($original_attributes);

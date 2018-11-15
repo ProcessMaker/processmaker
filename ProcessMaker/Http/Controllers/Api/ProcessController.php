@@ -201,7 +201,6 @@ class ProcessController extends Controller
         
         unset(
             $original_attributes['id'],
-            $original_attributes['created_at'],
             $original_attributes['updated_at']
         );
         $process->versions()->create($original_attributes);
