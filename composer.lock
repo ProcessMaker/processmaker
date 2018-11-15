@@ -2747,11 +2747,7 @@
                 "Apache-2.0"
             ],
             "description": "BPMN compliant engine",
-<<<<<<< HEAD
             "time": "2018-11-09T22:16:07+00:00"
-=======
-            "time": "2018-11-09T09:15:40+00:00"
->>>>>>> origin/develop
         },
         {
             "name": "psr/container",
