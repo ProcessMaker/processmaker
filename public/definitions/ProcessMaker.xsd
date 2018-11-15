@@ -13,7 +13,7 @@
             <xsd:extension base="bpmn:tTask">
                 <xsd:attribute name="screenRef" type="xsd:string"/>
                 <xsd:attribute name="screenVersion" type="xsd:string" use="optional"/>
-                <xsd:attribute name="dueIn" type="xsd:date"/>
+                <xsd:attribute name="dueIn" type="xsd:decimal"/>
                 <xsd:attribute name="notifyAfterRouting" type="xsd:boolean" default="false"/>
                 <xsd:attribute name="notifyToRequestCreator" type="xsd:boolean" default="false"/>
                 <xsd:attribute name="assignment" type="xsd:string" default="requestor"/>
