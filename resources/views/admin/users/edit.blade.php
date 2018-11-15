@@ -141,7 +141,7 @@
                             </thead>
                             <tbody>
                                 <tr v-for="permission in permissions">
-                                    <td>@{{permission.name}}<br>@{{permission.description}}</td>
+                                    <td>@{{permission.name}}</td>
                                     <td><input type="checkbox" :value="permission.id" v-model="selected" :disabled="isAdmin = isAdmin"></td>
                                 </tr>
                             </tbody>
@@ -363,7 +363,7 @@
                     else{
                         ProcessMaker.apiClient.put("/permissions", {
                             permission_ids: this.selected,
-                            user_id: this.user.id
+                            user_id: this.formData.id
                             })
                         .then(response => {
                             ProcessMaker.alert('{{__('Permission successfully added ')}}', 'success');
