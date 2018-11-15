@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\ScreenVersion;
+use ProcessMaker\Traits\SerializeToIso8601;
 
 /**
  * Class Screen
@@ -38,6 +39,7 @@ use ProcessMaker\Models\ScreenVersion;
  */
 class Screen extends Model
 {
+    use SerializeToIso8601;
 
     protected $casts = [
         'config' => 'array'
@@ -63,15 +65,18 @@ class Screen extends Model
      */
     public static function rules($existing = null)
     {
-        $rules = [
-            'title' => 'required|unique:screens,title',
-            'description' => 'required'
-        ];
+        $rules = [];
         if ($existing) {
             // ignore the unique rule for this id
             $rules['title'] = [
                 'required',
                 Rule::unique('screens')->ignore($existing->id, 'id')
+            ];
+        } else {
+            $rules = [
+                'title' => 'required|unique:screens,title',
+                'description' => 'required',
+                'type' => 'required'
             ];
         }
         return $rules;

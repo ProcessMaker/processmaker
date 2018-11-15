@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Facade;
  * 
  * @method mixed callProcess($filename, $processId)
  * @method mixed triggerStartEvent($definitions, $event, array $data)
+ * @method mixed runScripTask(\ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface $scriptTask, Token $token)
+ * @method mixed runServiceTask(\ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface $serviceTask, Token $token)
  */
 class WorkflowManager extends Facade
 {

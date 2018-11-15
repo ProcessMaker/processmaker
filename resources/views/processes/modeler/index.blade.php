@@ -44,7 +44,4 @@ div.main {
       <script src="{{$script}}"></script>
     @endforeach
   <script src="{{ mix('js/processes/modeler/index.js') }}"></script>
-
-  <script>
-  </script>
 @endsection

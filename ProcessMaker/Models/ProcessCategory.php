@@ -5,6 +5,7 @@ namespace ProcessMaker\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Traits\SerializeToIso8601;
 
 /**
  * Represents a business process category definition.
@@ -30,6 +31,7 @@ use ProcessMaker\Models\Process;
  */
 class ProcessCategory extends Model
 {
+    use SerializeToIso8601;
 
     protected $fillable = [
         'name',

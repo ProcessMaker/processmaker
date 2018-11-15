@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
+use ProcessMaker\Traits\SerializeToIso8601;
 
 /**
  * Represents an Eloquent model of a Script
@@ -19,7 +20,7 @@ use ProcessMaker\Exception\ScriptLanguageNotSupported;
  * @property string language
  * @property text code
  *
- *   @OA\Schema(
+ * @OA\Schema(
  *   schema="scriptsEditable",
  *   @OA\Property(property="id", type="string", format="id"),
  *   @OA\Property(property="title", type="string"),
@@ -37,6 +38,7 @@ use ProcessMaker\Exception\ScriptLanguageNotSupported;
  */
 class Script extends Model
 {
+    use SerializeToIso8601;
     use ScriptDockerTrait;
 
     protected $guarded = [
@@ -134,7 +136,7 @@ class Script extends Model
             default:
                 throw new ScriptLanguageNotSupported($language);
         }
-        
+
         $response = $this->execute($config);
         $returnCode = $response['returnCode'];
         $errorContent = $response['output'];

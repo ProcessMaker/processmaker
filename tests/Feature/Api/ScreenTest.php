@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use Carbon\Carbon;
 use Faker\Factory as Faker;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\Screen;
@@ -36,15 +37,32 @@ class ScreenTest extends TestCase
     }
 
     /**
-     * Create screen successfully
+     * Create Form screen successfully
      */
-    public function testCreateScreen()
+    public function testCreateFormScreen()
     {
         //Post title duplicated
         $faker = Faker::create();
         $url = self::API_TEST_SCREEN;
         $response = $this->apiCall('POST', $url, [
             'title' => 'Title Screen',
+            'type' => 'FORM',
+            'description' => $faker->sentence(10)
+        ]);
+
+        $response->assertStatus(201);
+    }
+    /**
+     * Create Form screen successfully
+     */
+    public function testCreateDisplayScreen()
+    {
+        //Post title duplicated
+        $faker = Faker::create();
+        $url = self::API_TEST_SCREEN;
+        $response = $this->apiCall('POST', $url, [
+            'title' => 'Title Screen',
+            'type' => 'DISPLAY',
             'description' => $faker->sentence(10)
         ]);
 
@@ -100,6 +118,22 @@ class ScreenTest extends TestCase
 
         //Verify the structure
         $response->assertJsonStructure(['*' => self::STRUCTURE], $json['data']);
+    }
+
+    /**
+     * Test to verify that the list dates are in the correct format (yyyy-mm-dd H:i+GMT)
+     */
+    public function testScreenListDates()
+    {
+        $newEntity = factory(Screen::class)->create();
+        $route = self::API_TEST_SCREEN;
+        $response = $this->apiCall('GET', $route);
+
+        $fieldsToValidate = collect(['created_at', 'updated_at']);
+        $fieldsToValidate->map(function ($field) use ($response, $newEntity){
+            $this->assertEquals(Carbon::parse($newEntity->$field)->format('c'),
+                $response->getData()->data[0]->$field);
+        });
     }
 
     /**
@@ -203,6 +237,24 @@ class ScreenTest extends TestCase
         $this->assertEquals($version->title, $original_attributes['title']);
         $this->assertEquals($version->description, $original_attributes['description']);
         $this->assertEquals($version->config, null);
+    }
+    /**
+     * Update Screen Type
+     */
+    public function testUpdateScreenType()
+    {
+        $faker = Faker::create();
+        $type = 'FORM';
+        $url = self::API_TEST_SCREEN . '/' . factory(Screen::class)->create([
+            'type' => $type
+        ])->id;
+        $response = $this->apiCall('PUT', $url, [
+            'title' => 'ScreenTitleTest',
+            'type' => 'DETAIL',
+            'description' => $faker->sentence(5),
+            'config' => '',
+        ]);
+        $response->assertStatus(204);
     }
 
     /**
