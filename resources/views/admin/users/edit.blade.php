@@ -140,9 +140,26 @@
                                 </tr>
                             </thead>
                             <tbody>
+                              @php
+                               $header = '';
+                               @endphp
+                              @foreach ($all_permissions as $key => $value)
+
+                              @php
+
+                              if($header !== current(explode('.',$value['name']))) {
+                                $header = current(explode('.',$value['name']));
+                                echo '<tr><td><h4>'.title_case($header).'</h4></td></tr>';
+
+                              }
+
+                              @endphp
+                                <tr>
+                                  <td><input type="checkbox" :value="{{$value['id']}}" v-model="selected" :disabled="isAdmin = isAdmin"> {{$value['name']}}</td>
+                                </tr>
+                              @endforeach
                                 <tr v-for="permission in permissions">
-                                    <td>@{{permission.name}}<br>@{{permission.description}}</td>
-                                    <td><input type="checkbox" :value="permission.id" v-model="selected" :disabled="isAdmin = isAdmin"></td>
+                                    <td>@{{permission.name}}</td>
                                 </tr>
                             </tbody>
                         </table>
