@@ -64,31 +64,6 @@
             <small id="emailHelp" class="form-text text-muted">Authentication protocol user to login to the SMTP server</small>
           </div>
         </div>
-        <h3 class="mt-3">Logo Customization</h3>
-        <div id="uicustomize">
-          {{ Form::open() }}
-            <div class="form-group row">
-              <div class="col-6">
-                {{ Form::label('icon', 'Logo size must be 400x100. File format .jpg or .png ') }}
-                <div class="custom-file">
-                  <input @change="onImgUpload1(this)" type="file" class="custom-file-input" id="customFile" accept="image/jpeg, image/png" v-model="file1" placeholder="Choose a file...">
-                  <label class="custom-file-label" for="customFile">Choose file</label>
-                </div>
-              </div>
-              <div class="col-6"><img class="img-1" src="#" id="file1Img"></div>
-            </div>
-            <div class="form-group row">
-              <div class="col-6">
-                {{ Form::label('icon', 'Logo size must be 100x100. File format .jpg or .png ') }}
-                <div class="custom-file">
-                  <input @change="onImgUpload2(this)" type="file" class="custom-file-input" id="customFile" accept="image/jpeg, image/png" v-model="file2" placeholder="Choose a file...">
-                  <label class="custom-file-label" for="customFile">Choose file</label>
-                </div>
-              </div>
-              <div class="col-6"><img class="img-2" src="#" id="file2Img"></div>
-            </div>
-          {{ Form::close() }}
-        </div>
         <div class="row mt-4" align="right">
           <div class="form-group col">
             <button class="btn btn-outline-success">Cancel</button>
@@ -102,65 +77,4 @@
 @section('sidebar')
     @include('layouts.sidebar', ['sidebar' => Menu::get('sidebar_admin')])
 @endsection
-
-@section('js')
-  <script>
-  new Vue({
-    el: '#uicustomize',
-    data: {
-      file1: null,
-      file2: null,
-    },
-    methods: {
-      onImgUpload1(input) {
-        let file = event.target.files[0];
-        let reader = new FileReader();
-        reader.onload = function (input) {
-          $('#file1Img')
-            .attr('src', reader.result);
-        };
-        reader.readAsDataURL(file);
-      },
-      onImgUpload2(input) {
-        let file = event.target.files[0];
-        let reader = new FileReader();
-        reader.onload = function (input) {
-          $('#file2Img')
-            .attr('src', reader.result);
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-  })
-</script>
-@endsection
-@section('css')
-    <style lang="scss" scoped>
-.color-select {
-  border: 1px solid rgba(0, 0, 0, 0.125);
-  width: 100%;
-  border-radius: 0.125em;
-  height: calc(1.875rem + 2px);
-  display: flex;
-}
-.color-preview {
-  height: calc(1.875rem + 2px);
-  width: 20%;
-   display: inline-block;
-}
-span {
-  width: 50%;
-  border-radius: 0.125em;
-  height: calc(1.875rem + 2px);
-}
-.img-1 {
-  max-width: 400px;
-}
-.img-2 {
-  max-width: 100px;
-}
-.new-bg {
-  background-color: #000;
-}
-</style>
-@endsection
+ 
