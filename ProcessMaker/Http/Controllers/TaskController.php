@@ -8,9 +8,9 @@ use ProcessMaker\Models\ProcessRequestToken;
 class TaskController extends Controller
 {
     private static $dueLabels = [
-        'open' => 'Due in :day',
-        'completed' => 'Completed on',
-        'overdue' => 'Due :day',
+        'open' => 'Due ',
+        'completed' => 'Completed ',
+        'overdue' => 'Due ',
     ];
 
     public function index()
