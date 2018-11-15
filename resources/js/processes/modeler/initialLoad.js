@@ -20,9 +20,11 @@ let moddle = new BpmnModdle({
 });
 
 // Bring in our screen selector
-import ModelerScreenSelect from './components/inspector/ScreenSelect'
+import ModelerScreenSelect from './components/inspector/ScreenSelect';
+import ExpressionEditor from './components/inspector/ExpressionEditor';
 
 Vue.component('ModelerScreenSelect', ModelerScreenSelect);
+Vue.component('ExpressionEditor', ExpressionEditor);
 
 // Append to the inspector config of task
 task.inspectorConfig[0].items.push({
@@ -32,6 +34,32 @@ task.inspectorConfig[0].items.push({
     helper: 'What Screen Should Be Used For Rendering This Task',
     name: 'screenRef'
   }
+});
+
+// Watcher:
+// Add custom properties of sequenceFlow
+sequenceFlow.inspectorHandler = (value, definition, component) => {
+    // Go through each property and rebind it to our data
+    Object.keys(value).forEach((key) => {
+        console.log(key, value[key]);
+        if (definition[key] !== value[key]) {
+            definition[key] = value[key];
+        }
+        if (key === "conditionExpression") {
+            definition[key].$type = "bpmn:Expression";
+        }
+    });
+    component.updateShape();
+};
+// Add inspector for conditionExpression
+sequenceFlow.inspectorConfig[0].items.push({
+    component: "ExpressionEditor",
+    config: {
+        label: "Condition",
+        helper: "An optional boolean Expression that acts as a gating condition",
+        name: "id",
+        property: "conditionExpression.body"
+    }
 });
 
 let nodeTypes = [
