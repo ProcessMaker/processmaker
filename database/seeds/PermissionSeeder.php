@@ -55,8 +55,6 @@ class PermissionSeeder extends Seeder
         'scripts.destroy',
         'scripts.edit',
         'scripts.show',
-        'tasks.show',
-        'tasks.update',
         'users.create',
         'users.destroy',
         'users.edit',
