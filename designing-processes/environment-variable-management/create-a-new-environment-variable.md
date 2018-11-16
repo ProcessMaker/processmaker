@@ -19,9 +19,9 @@ Follow these steps to create a new ProcessMaker Environment Variable:
 
    ![](../../.gitbook/assets/create-environment-variable-screen-processes.png)
 
-3. Enter the name of the ProcessMaker Environment Variable in the **Variable Name** field. The ProcessMaker Environment Variable name can only contain letters, numbers, and dashes. ~~Character length limitation?~~ This is a required field.
-4. Enter a description for the ProcessMaker Environment Variable in the **Description** field. This is a required field. ~~Character length limitation and/or unsupported characters?~~
-5. Enter the value for the ProcessMaker Environment Variable in the **Value** field. Entering a value is optional since ProcessMaker Environment Variables are secure, abstract proxies for sensitive information you assign to contain a value that can be determined during an in-progress Request.
+3. Enter in the **Variable Name** field the name of the ProcessMaker Environment Variable. The ProcessMaker Environment Variable name can only contain letters, numbers, and dashes. ~~Character length limitation?~~ This is a required field.
+4. Enter in the **Description** field a description for the ProcessMaker Environment Variable. This is a required field. ~~Character length limitation and/or unsupported characters?~~
+5. Enter in the **Value** field the value for the ProcessMaker Environment Variable. Entering a value is optional since ProcessMaker Environment Variables are secure, abstract proxies for sensitive information you assign to contain a value that can be determined during an in-progress Request.
 6. Click **Save**. The screen closes and the **Environment Variables** page displays with your new Environment Variable.
 
 ## Related Topics

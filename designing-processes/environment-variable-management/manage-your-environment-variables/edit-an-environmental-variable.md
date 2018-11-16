@@ -17,9 +17,9 @@ Follow these steps to edit a ProcessMaker Environment Variable:
 
    ![](../../../.gitbook/assets/edit-environment-variable-page-processes.png)
 
-3. Edit the name of the ProcessMaker Environment Variable in the **Variable Name** field if necessary.
-4. Edit the description of the ProcessMaker Environment Variable in the **Description** field if necessary.
-5. Edit or enter the ProcessMaker Environment Variable value if necessary in the **Value** field. Entering or editing a value is optional since ProcessMaker Environment Variables are secure, abstract proxies for sensitive information you assign to contain a value that can be determined during an in-progress Request.
+3. Edit in the **Variable Name** field the name of the ProcessMaker Environment Variable if necessary.
+4. Edit in the **Description** field the description of the ProcessMaker Environment Variable if necessary.
+5. Edit or enter in the **Value** field the ProcessMaker Environment Variable value if necessary. Entering or editing a value is optional since ProcessMaker Environment Variables are secure, abstract proxies for sensitive information you assign to contain a value that can be determined during an in-progress Request.
 6. Click **Update**. Otherwise, click **Cancel** to cancel any changes.
 
 ## Related Topics

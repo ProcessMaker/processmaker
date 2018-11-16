@@ -25,9 +25,9 @@ Follow these steps to view all ProcessMaker Environment Variables in your organi
 The **Environment Variables** page displays the following information about ProcessMaker Environment Variables:
 
 * **Name:** The **Name** column displays the name of the ProcessMaker Environment Variable.
-* Description: The **Description** column displays the description about the ProcessMaker Environment Variable. For information how to edit the ProcessMaker Environment Variable description, see [Edit an Environmental Variable](edit-an-environmental-variable.md).
-* **Created At:** The **Created At** column displays the date the ProcessMaker Environment Variable was created. ~~Change this label to "Created". Switch the order with "Updated At/Modified" column.~~
-* **Updated At:** The **Updated At** column displays the date the ProcessMaker Environment Variable was last modified. ~~Change this column label to "Modified".~~
+* **Description:** The **Description** column displays the description about the ProcessMaker Environment Variable. For information how to edit the ProcessMaker Environment Variable description, see [Edit an Environmental Variable](edit-an-environmental-variable.md).
+* **Created At:** The **Created At** column displays the date and time the ProcessMaker Environment Variable was created. ~~Change this label to "Created". Switch the order with "Updated At/Modified" column.~~
+* **Updated At:** The **Updated At** column displays the date and time the ProcessMaker Environment Variable was last modified. ~~Change this column label to "Modified".~~
 
 {% hint style="info" %}
 For information how to search for a ProcessMaker Environment Variable, see [Search for an Environment Variable](search-for-an-environment-variable.md).

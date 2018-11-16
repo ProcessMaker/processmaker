@@ -12,7 +12,7 @@ Below are a few examples how to use ProcessMaker Environment Variables:
 
 * A person's username and password may be entered into a ProcessMaker Screen as part of a [task](../../using-processmaker/task-management/what-is-a-task.md) that passes each ProcessMaker Environment Variable's value securely to a third-party service.
 * A person's credit card information securely interacts with Stripe online payment processing service through multiple ProcessMaker Environment Variables.
-* A person's banking information securely interacts with a bank to make transactions securely, while following compliance protocols.
+* A person's banking information securely interacts with a bank to make transactions securely while following compliance protocols.
 
 ## Related Topics
 
