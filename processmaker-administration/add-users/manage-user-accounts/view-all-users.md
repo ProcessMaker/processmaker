@@ -26,7 +26,7 @@ Click the **Users** ![](../../../.gitbook/assets/users-icon-admin.png) icon when
 The **Users** page displays the following information about ProcessMaker user accounts:
 
 * **Username:** The **Username** column displays the username associated with the ProcessMaker user account.
-* **Full Name:** The **Full Name** column displays the full name associated with ProcessMaker user account. The person's first name displays before the last name.
+* **Full Name:** The **Full Name** column displays the full name associated with ProcessMaker user account.
 * **Status:** The **Status** column displays the status of the ProcessMaker user account. For a description of possible status types, see [Edit a User Account](edit-a-user-account.md).
 * **Email:** The **Email** column displays the email address associated with the ProcessMaker user account.
 * **Login:** The **Login** column displays the last date and time the ProcessMaker user account logged in to ProcessMaker.

@@ -124,7 +124,7 @@
     * [Remove a Group](processmaker-administration/assign-groups-to-users/manage-groups/remove-a-group.md)
   * [Create a Group](processmaker-administration/assign-groups-to-users/create-a-group.md)
 * [ProcessMaker Preferences](processmaker-administration/processmaker-preferences.md)
-* [Application Version Details](processmaker-administration/application-version-details.md)
+* [View ProcessMaker Version Information](processmaker-administration/application-version-details.md)
 * [Queue Management](processmaker-administration/queue-management.md)
 
 ## Install ProcessMaker
