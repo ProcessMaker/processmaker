@@ -11,9 +11,6 @@ class PermissionSeeder extends Seeder
 {
     private $permissions = [
         'home',
-        'about.index',
-        'about.menu',
-        'admin.menu',
         'documents.create',
         'documents.destroy',
         'documents.edit',
@@ -63,7 +60,6 @@ class PermissionSeeder extends Seeder
         'processes.show',
         'processes.store',
         'processes.update',
-        'processes.menu',
         'profile.edit',
         'profile.show',
         'requests.destroy',
@@ -72,8 +68,6 @@ class PermissionSeeder extends Seeder
         'requests.store',
         'requests.update',
         'requests.watch',
-        'requests.menu',
-        'requests.menu_search',
         'script.preview',
         'scripts.create',
         'scripts.destroy',
@@ -89,7 +83,6 @@ class PermissionSeeder extends Seeder
         'users.show',
         'users.store',
         'users.update',
-        'users.menu',
     ];
 
     public function run($user = null)
