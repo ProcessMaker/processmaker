@@ -39,7 +39,6 @@ class PermissionSeeder extends Seeder
         'process_categories.show',
         'process_categories.create',
         'process_categories.edit',
-        'process_events.trigger',
         'processes.create',
         'processes.destroy',
         'processes.edit',
