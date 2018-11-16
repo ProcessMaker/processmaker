@@ -17,13 +17,13 @@ Follow these steps to create a ProcessMaker user account:
 
    ![](../../.gitbook/assets/add-a-user-screen-admin.png)
 
-3. Enter in the **Username** field the username associated with the ProcessMaker user account.
+3. Enter in the **Username** field the username associated with the ProcessMaker user account. This is a required field.
 4. Enter in the **First name** field the first name of the person associated with the ProcessMaker user account.
 5. Enter in the **Last name** field the last name of the person associated with the ProcessMaker user account.
 6. Select from the **Status** drop-down the status of the ProcessMaker user account using one of the following options:
    * **Active:** An Active ProcessMaker user account is one in which a person can use it to log in to ProcessMaker.
    * **Inactive:** An Inactive ProcessMaker user account is one in which a person cannot use it to log in to ProcessMaker.
-7. Enter in the **Email** field the email address associated with the ProcessMaker user account.
+7. Enter in the **Email** field the email address associated with the ProcessMaker user account. This is a required field.
 8. Enter in the **Password** field the password associated with the ProcessMaker user account.
 9. Confirm in the **Confirm Password** field that its value matches that of the **Password** field.
 10. Select from the **Groups** drop-down the ProcessMaker group to which the ProcessMaker user account belongs if necessary. At least one ProcessMaker group must be created to assign a ProcessMaker group to any ProcessMaker user account. For information about ProcessMaker groups, see [Group Management](../assign-groups-to-users/).
