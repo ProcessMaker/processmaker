@@ -19,8 +19,6 @@ class PermissionSeeder extends Seeder
         'environment_variables.destroy',
         'environment_variables.edit',
         'environment_variables.show',
-        'files.destroy',
-        'files.show',
         'forms.create',
         'forms.destroy',
         'forms.edit',
