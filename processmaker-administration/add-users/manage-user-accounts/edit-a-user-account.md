@@ -31,7 +31,7 @@ Follow these steps to edit a ProcessMaker user account:
 9. Change from the **Time zone** drop-down the time zone associated with the person using the ProcessMaker user account if necessary.
 10. Edit in the **Password** field the password associated with the ProcessMaker user account if necessary.
 11. Confirm in the **Confirm Password** field that its value matches that of the **Password** field.
-12. Change from the **Groups** drop-down the ProcessMaker group to which the ProcessMaker user account belongs if necessary. At least one ProcessMaker group must be created to assign a ProcessMaker group to any ProcessMaker user account. ~~A ProcessMaker user account may only have one ProcessMaker group assigned to it.~~ For information about ProcessMaker groups, see [Group Management](../../assign-groups-to-users/).
+12. Change from the **Groups** drop-down the ProcessMaker group to which the ProcessMaker user account belongs if necessary. At least one ProcessMaker group must be created to assign a ProcessMaker group to any ProcessMaker user account. For information about ProcessMaker groups, see [Group Management](../../assign-groups-to-users/).
 
     To change the ProcessMaker group for that user account, follow these guidelines:
 

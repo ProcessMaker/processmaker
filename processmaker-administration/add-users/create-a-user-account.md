@@ -26,7 +26,7 @@ Follow these steps to create a ProcessMaker user account:
 7. Enter in the **Email** field the email address associated with the ProcessMaker user account.
 8. Enter in the **Password** field the password associated with the ProcessMaker user account.
 9. Confirm in the **Confirm Password** field that its value matches that of the **Password** field.
-10. Select from the **Groups** drop-down the ProcessMaker group to which the ProcessMaker user account belongs if necessary. At least one ProcessMaker group must be created to assign a ProcessMaker group to any ProcessMaker user account. ~~A ProcessMaker user account may only have one ProcessMaker group assigned to it.~~ For information about ProcessMaker groups, see [Group Management](../assign-groups-to-users/).
+10. Select from the **Groups** drop-down the ProcessMaker group to which the ProcessMaker user account belongs if necessary. At least one ProcessMaker group must be created to assign a ProcessMaker group to any ProcessMaker user account. For information about ProcessMaker groups, see [Group Management](../assign-groups-to-users/).
 
     To change the ProcessMaker group, follow these guidelines:
 
