@@ -4,6 +4,10 @@ description: Add a text box field where you can enter or paste text.
 
 # Text Control Settings
 
+## Control Description
+
+The Text control adds a text box field where you can enter or paste text.
+
 ## Add the Control to a ProcessMaker Screen
 
 Follow these steps to add this control to the ProcessMaker Screen:
