@@ -6,7 +6,7 @@ description: This control adds a text box field where users can input text or pa
 
 Follow these steps to add this control to the ProcessMaker Screen:
 
-* Go to the horizontal menu on the left side called **Controls**.
+* Go to the **Controls** menu on the left side.
 * Drag the icon **Text** from the **Controls** panel. 
 
   ![](../../../../.gitbook/assets/text-control.png)
