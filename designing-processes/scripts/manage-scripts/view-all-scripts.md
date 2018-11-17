@@ -34,6 +34,10 @@ For information how to search for a ProcessMaker Script, see [Search for a Scrip
 {% endhint %}
 
 {% hint style="info" %}
+For information how to edit a ProcessMaker Script, see [Edit a Script](edit-a-script.md).
+{% endhint %}
+
+{% hint style="info" %}
 If no ProcessMaker Scripts exist, the following message displays: ~~**You don't have any scripts. Please click on '+SCRIPT' to get started**~~**.**
 {% endhint %}
 
