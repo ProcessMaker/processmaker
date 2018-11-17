@@ -14,7 +14,7 @@ These are Inspector settings for the Text Control:
 * **Font Weight:** Set by default as "Normal". You can change to "Bold".
 * **Font Size:** Set by default as "1". You can change the size between 0.5, 1, 1.5 and 2.
 
-For information how to add the Text Control, see [Text Control Settings](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/~/drafts/-LRYYfRctvhtTJsJ395J/primary/designing-processes/design-forms/screens-builder/view-the-inspector-pane).
+For information how to add the Text Control, see [Text Control Settings](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/~/edit/drafts/-LRYqWWIxgZmRWpD_gy2/designing-processes/design-forms/screens-builder/control-descriptions/text-control-settings).
 
 
 
