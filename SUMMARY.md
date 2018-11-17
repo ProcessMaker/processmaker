@@ -72,7 +72,7 @@
   * [Screens Builder](designing-processes/design-forms/screens-builder/README.md)
     * [What is Screens Builder?](designing-processes/design-forms/screens-builder/what-is-screens-builder.md)
     * [Screen Types](designing-processes/design-forms/screens-builder/types-for-screens.md)
-    * [View the Inspector Pane](designing-processes/design-forms/screens-builder/view-the-inspector-pane.md)
+    * [View the Inspector Panel](designing-processes/design-forms/screens-builder/view-the-inspector-pane.md)
     * [Control Descriptions and Inspector Settings](designing-processes/design-forms/screens-builder/control-descriptions/README.md)
       * [Text Control Settings](designing-processes/design-forms/screens-builder/control-descriptions/text-control-settings.md)
       * [Line Input Control Settings](designing-processes/design-forms/screens-builder/control-descriptions/line-input-control-settings.md)

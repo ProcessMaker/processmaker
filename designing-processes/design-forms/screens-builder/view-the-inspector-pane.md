@@ -2,21 +2,22 @@
 description: View the Inspector pane where you set control settings.
 ---
 
-# View the Inspector Pane
+# View the Inspector Panel
 
-The **Text Control Settings**.  
+The **Inspector** panel in Screens Builder displays settings for a selected control. The **Inspector** panel displays to the right of a displayed ProcessMaker Screen.
 
-![](../../../.gitbook/assets/screensbuildercontroldescriptionandinspectorsettingstext-control-settings3.png)
+## View the Inspector Panel
 
-These are Inspector settings for the Text Control:
+Follow these steps to view the **Inspector** panel:
 
-* **Text Label:** Set by default as "New Text". You can change the name.
-* **Font Weight:** Set by default as "Normal". You can change to "Bold".
-* **Font Size:** Set by default as "1". You can change the size between 0.5, 1, 1.5 and 2.
+1. Ensure you are in Editor mode in the ProcessMaker Screen page for which you want to view the settings of a control. To be in Editor mode, click the **Editor** option from Screen Builder's top menu.
+2. Select the control in which to view its settings. The **Inspector** panel displays the settings for that control.
 
-{% hint style="info" %}
-For information how to add a **Text** into a ProcessMaker Screen, see [Text Control Settings](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/~/edit/drafts/-LRYqWWIxgZmRWpD_gy2/designing-processes/design-forms/screens-builder/control-descriptions/text-control-settings).
-{% endhint %}
+![Inspector panel displaying settings for a selected control](../../../.gitbook/assets/screensbuildercontroldescriptionandinspectorsettingstext-control-settings3.png)
+
+## Related Topics
+
+{% page-ref page="control-descriptions/" %}
 
 
 
