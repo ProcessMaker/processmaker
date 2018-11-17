@@ -23,14 +23,21 @@ Below is Scripts Editor displaying a ProcessMaker Script written in Lua. Scripts
 
 ![Scripts Editor](../../../.gitbook/assets/scripts-editor-processes.png)
 
-Scripts Editor has the following panes to write and test your ProcessMaker Script:
-
-* Develop the ProcessMaker Script below the script's name and language. Use the scroll pane to the right of the ProcessMaker script to scroll to different sections of the script. This is useful especially when you are editing a long ProcessMaker Script. For more information about Script Editor's authoring environment, see [Enter Your Script](enter-your-script.md).
-* Use a JSON data model that contains Request variables.
-
 {% hint style="info" %}
 ProcessMaker offers many open-source Lua scripts that function as-is with many third-party services. Use any of them for your own ProcessMaker Scripts. [View them here.](https://github.com/ProcessMaker/pmio-lua-connectors)
 {% endhint %}
+
+## Guidelines to Use Scripts Editor
+
+Follow these guidelines to develop and test ProcessMaker Scripts in Scripts Editor.
+
+### Develop Your ProcessMaker Script
+
+Develop the ProcessMaker Script below the script's name and language. Use the scroll pane to the right of the ProcessMaker script to scroll to different sections of the script. This is useful especially when you are editing a long ProcessMaker Script.
+
+### Enter JSON Data Model Variables as Input to Your ProcessMaker Script
+
+Use the **Input Data JSON** pane include JSON data model variables from Requests.
 
 ## Related Topics
 
