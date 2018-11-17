@@ -30,9 +30,15 @@ For information how to view the **Inspector** panel, see [View the Inspector Pan
 
 These are Inspector settings for the Text control:
 
-* **Text Label:** Set by default as "New Text". You can change the name.
-* **Font Weight:** Set by default as "Normal". You can change to "Bold".
-* **Font Size:** Set by default as "1". You can change the size between 0.5, 1, 1.5 and 2.
+* **Text Label:** Set by default as **New Text**. You can change the name.
+* **Font Weight:** Set by default as **Normal**. You can change to **Bold**.
+* **Font Size:** Set by default as **1**. You can change the font size to the following options:
+  * 0.5
+  * 1
+  * 1.5
+  * 2
 
+## Related Topics
 
+{% page-ref page="../view-the-inspector-pane.md" %}
 
