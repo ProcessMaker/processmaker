@@ -16,3 +16,5 @@ These are Inspector settings for the Text Control:
 
 For information how to add the Text Control, see [Text Control Settings](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/~/drafts/-LRYYfRctvhtTJsJ395J/primary/designing-processes/design-forms/screens-builder/view-the-inspector-pane).
 
+
+
