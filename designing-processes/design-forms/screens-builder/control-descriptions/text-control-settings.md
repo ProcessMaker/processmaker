@@ -30,9 +30,10 @@ For information how to view the **Inspector** pane, see [View the Inspector Pane
 
 These are Inspector settings for the Text control:
 
-* **Text Label:** 
+* **Text Label:** Set by default as "New Text". You can change the name.
 * **Font Weight:** 
-* 
+* **Font Size:**
+
 
 
 
