@@ -8,3 +8,9 @@ The **Text Control Settings**.
 
 ![](../../../.gitbook/assets/screensbuildercontroldescriptionandinspectorsettingstext-control-settings3.png)
 
+These are Inspector settings for the Text Control:
+
+* **Text Label:** Set by default as "New Text". You can change the name.
+* **Font Weight:** Set by default as "Normal". You can change to "Bold".
+* **Font Size:** Set by default as "1". You can change the size between 0.5, 1, 1.5 and 2.
+
