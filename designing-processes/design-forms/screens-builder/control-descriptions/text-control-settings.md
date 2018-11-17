@@ -12,22 +12,20 @@ The Text control adds a text box field where you can enter or paste text.
 
 Follow these steps to add this control to the ProcessMaker Screen:
 
-1. Go to the **Controls** panel on the left side.
-2. Drag the **Text** icon from the **Controls** panel. 
+1. View the ProcessMaker Screen page to which to add the control.
+2. Go to the **Controls** panel on the left side of the ProcessMaker Screen.
+3. Drag the **Text** icon from the **Controls** panel to the ProcessMaker Screen page. 
 
    ![](../../../../.gitbook/assets/screensbuildercontroldescriptionandinspectorsettingstext-control-settings.png)
 
-3. Drop into the ProcessMaker Screen where you want the control to display.  
+4. Drop into the ProcessMaker Screen where you want the control to display on the page.  
 
    ![](../../../../.gitbook/assets/screensbuildercontroldescriptionandinspectorsettingstext-control-settings2.png)
 
 ## Inspector Settings
 
 {% hint style="info" %}
-Follow these steps to view Inspector settings for a control:
-
-1. Ensure you are in Edit mode. To enter Edit mode, click the **Editor** option from the Screens Builder mode options.
-2. Click the Text control to view its Inspector settings. The **Inspector** pane displays to the right of the ProcessMaker Screen.
+For information how to view the **Inspector** pane, see [View the Inspector Pane](../view-the-inspector-pane.md).
 {% endhint %}
 
 These are Inspector settings for the Text control:
