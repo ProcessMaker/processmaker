@@ -25,7 +25,7 @@ Follow these steps to add this control to the ProcessMaker Screen:
 ## Inspector Settings
 
 {% hint style="info" %}
-For information how to view the **Inspector** pane, see [View the Inspector Pane](../view-the-inspector-pane.md).
+For information how to view the **Inspector** panel, see [View the Inspector Panel](../view-the-inspector-pane.md).
 {% endhint %}
 
 These are Inspector settings for the Text control:
