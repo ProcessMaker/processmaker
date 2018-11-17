@@ -20,7 +20,7 @@ Follow these steps to add this control to the ProcessMaker Screen:
 ## Inspector Settings
 
 {% hint style="info" %}
-To view Inspector settings for a control, follow these steps:
+Follow these steps to view Inspector settings for a control:
 
 1. Ensure you are in Edit mode. To enter Edit mode, click the **Editor** option from the Screens Builder mode options.
 2. Click the Text control to view its Inspector settings. The **Inspector** pane displays to the right of the ProcessMaker Screen.
