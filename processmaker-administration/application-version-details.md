@@ -18,6 +18,11 @@ Follow these steps to view ProcessMaker version information:
 
    ![](../.gitbook/assets/about-processmaker-page-admin.png)
 
-4. Click **Report an issue** to report a ProcessMaker issue. After clicking this link, ProcessMaker's **bpm** GitHub repository displays for you to report an issue.
-5. Click **Get Help** to display ProcessMaker's **bpm** GitHub repository page.
+{% hint style="info" %}
+Click **Report an issue** to [report a ProcessMaker issue](https://github.com/ProcessMaker/bpm/issues).
+
+Click **Get Help** to display [ProcessMaker's **bpm** GitHub repository page](https://github.com/ProcessMaker/bpm).
+{% endhint %}
+
+
 
