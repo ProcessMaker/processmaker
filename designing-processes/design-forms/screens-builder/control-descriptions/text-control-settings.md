@@ -28,11 +28,11 @@ Follow these steps to add this control to the ProcessMaker Screen:
 For information how to view the **Inspector** panel, see [View the Inspector Panel](../view-the-inspector-pane.md).
 {% endhint %}
 
-These are Inspector settings for the Text control:
+Below are Inspector settings for the Text control:
 
-* **Text Label:** Set by default as **New Text**. You can change the name.
-* **Font Weight:** Set by default as **Normal**. You can change to **Bold**.
-* **Font Size:** Set by default as **1**. You can change the font size to the following options:
+* **Text Label:** Specify what text displays for the Text control. Set by default as **New Text**. You can change what text will display.
+* **Font Weight:** Sets the weight of the **Text Label** text. Set by default as **Normal**. You can change to **Bold**.
+* **Font Size:** Sets the size of the **Text Label** text in em units. Set by default as **1**. You can change the font size to the following options:
   * 0.5
   * 1
   * 1.5

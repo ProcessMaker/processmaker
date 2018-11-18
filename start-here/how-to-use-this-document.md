@@ -64,12 +64,12 @@ A ProcessMaker user is a person whose only interaction with ProcessMaker is to s
 
 Refer to the **Using ProcessMaker** section that includes the following topics:
 
-* [Log in to ProcessMaker](../using-processmaker/log-in.md)
+* [Log In to ProcessMaker](../using-processmaker/log-in.md)
 * [Requests](../using-processmaker/requests/)
 * [Task Management](../using-processmaker/task-management/)
 * [Notifications](../using-processmaker/notifications.md)
 * [Control How Tabular Information Displays](../using-processmaker/control-how-requests-display-in-a-tab.md)
-* [Log out of ProcessMaker](../using-processmaker/log-out.md)
+* [Log Out of ProcessMaker](../using-processmaker/log-out.md)
 
 
 

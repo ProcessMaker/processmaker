@@ -2,7 +2,7 @@
 description: Log out of ProcessMaker.
 ---
 
-# Log out of ProcessMaker
+# Log Out of ProcessMaker
 
 To log out of ProcessMaker, click your user avatar, and then select **Log Out**.
 

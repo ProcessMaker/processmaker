@@ -2,7 +2,7 @@
 description: Log in to ProcessMaker using your ProcessMaker credentials.
 ---
 
-# Log in to ProcessMaker
+# Log In to ProcessMaker
 
 
 
