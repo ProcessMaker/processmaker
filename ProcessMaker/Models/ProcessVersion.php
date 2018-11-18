@@ -2,7 +2,9 @@
 
 namespace ProcessMaker\Models;
 
+use BenSampo\Enum\Rules\EnumValue;
 use Illuminate\Database\Eloquent\Model;
+use ProcessMaker\Enums\ActiveType;
 
 /**
  * ProcessVersion is used to store the historical version of a process.
@@ -19,6 +21,15 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ProcessVersion extends Model
 {
+    /**
+     * The model's attributes and default values
+     *
+     * @var array
+     */
+    protected $attributes = [
+        'status' => ActiveType::ACTIVE
+    ];
+
     /**
      * Attributes that are not mass assignable.
      *
@@ -61,7 +72,7 @@ class ProcessVersion extends Model
     {
         return [
             'name' => 'required',
-            'status' => 'in:ACTIVE,INACTIVE',
+            'status' => [new EnumValue(ActiveType::class)],
             'process_category_id' => 'exists:process_categories,id',
             'process_id' => 'exists:processes,id',
         ];

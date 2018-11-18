@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use ProcessMaker\Enums\ActiveType;
 
 class CreateProcessVersionsTable extends Migration
 {
@@ -20,8 +21,7 @@ class CreateProcessVersionsTable extends Migration
             $table->string('name');
             $table->unsignedInteger('process_category_id');
             $table->unsignedInteger('process_id');
-            $table->enum('status', ['ACTIVE', 'INACTIVE'])
-                    ->default('ACTIVE');
+            $table->enum('status', ActiveType::getValues())->default(ActiveType::ACTIVE);
             $table->timestamps();
 
             // Indexes
