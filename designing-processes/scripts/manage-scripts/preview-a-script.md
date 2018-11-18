@@ -31,5 +31,5 @@ Follow these steps to preview a ProcessMaker Script:
 
 {% page-ref page="../create-a-new-script.md" %}
 
-{% page-ref page="../scripts-editor/" %}
+{% page-ref page="../scripts-editor.md" %}
 

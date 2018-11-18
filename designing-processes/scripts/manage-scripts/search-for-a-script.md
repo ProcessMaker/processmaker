@@ -41,5 +41,5 @@ If there are no search results, the following message displays: **No data availa
 
 {% page-ref page="../create-a-new-script.md" %}
 
-{% page-ref page="../scripts-editor/" %}
+{% page-ref page="../scripts-editor.md" %}
 

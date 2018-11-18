@@ -24,7 +24,7 @@ Follow these steps to create a new ProcessMaker Script:
 5. Select from the **Language** drop-down one of the following programming languages to specify with which the ProcessMaker Script is written:
    * PHP
    * Lua
-6. Click **Save**. Scripts Editor displays. For information how to develop and test your ProcessMaker Script, see [Scripts Editor](scripts-editor/).
+6. Click **Save**. Scripts Editor displays. For information how to develop and test your ProcessMaker Script, see [Scripts Editor](scripts-editor.md).
 
 ## Related Topics
 
@@ -40,5 +40,5 @@ Follow these steps to create a new ProcessMaker Script:
 
 {% page-ref page="manage-scripts/remove-a-script.md" %}
 
-{% page-ref page="scripts-editor/" %}
+{% page-ref page="scripts-editor.md" %}
 
