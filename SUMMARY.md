@@ -10,7 +10,7 @@
 
 ## Use ProcessMaker
 
-* [Log In](using-processmaker/log-in.md)
+* [Log in to ProcessMaker](using-processmaker/log-in.md)
 * [Profile Settings](using-processmaker/profile-settings.md)
 * [Requests](using-processmaker/requests/README.md)
   * [What is a Request?](using-processmaker/requests/what-is-a-request.md)
@@ -28,7 +28,7 @@
   * [View Completed Tasks](using-processmaker/task-management/view-completed-tasks.md)
 * [Notifications](using-processmaker/notifications.md)
 * [Control How Tabular Information Displays](using-processmaker/control-how-requests-display-in-a-tab.md)
-* [Log Out](using-processmaker/log-out.md)
+* [Log out of ProcessMaker](using-processmaker/log-out.md)
 
 ## Manage and Model Processes
 
@@ -137,4 +137,5 @@
 ## Package Development and Distribution
 
 * [What is a Package?](package-development-distribution/first-topic.md)
+* [Package a Connector](package-development-distribution/package-a-connector.md)
 
