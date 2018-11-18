@@ -30,7 +30,7 @@ Screens Builder provides an Editor and Preview mode.
 
 ### Editor Mode
 
-Use Editor mode to build your ProcessMaker Screen. While in Editor mode, use the Inspector panel to configure [controls](control-descriptions/) that you place into your ProcessMaker Screen.
+Use Editor mode to build your ProcessMaker Screen. While in Editor mode, use the **Inspector** panel to configure [controls](control-descriptions/) that you place into your ProcessMaker Screen.
 
 {% hint style="info" %}
 See [View the Inspector Panel](view-the-inspector-pane.md) for more information.
@@ -48,9 +48,15 @@ Use Preview mode to view how your ProcessMaker Screen displays. Furthermore, Pre
 See [Preview a Screen and Its JSON Data Model](preview-a-screen.md) for more information.
 {% endhint %}
 
-The JSON data model uses key-value pairs: the key names are those you set when you configured your ProcessMaker Screen controls, while the values are those that you entered while previewing the Screen. During an actual Request in a ProcessMaker process, these values would be those entered by a Request participant.
-
 ## Related Topics
 
+{% page-ref page="types-for-screens.md" %}
 
+{% page-ref page="view-the-inspector-pane.md" %}
+
+{% page-ref page="control-descriptions/" %}
+
+{% page-ref page="add-a-new-page-to-a-screen.md" %}
+
+{% page-ref page="preview-a-screen.md" %}
 
