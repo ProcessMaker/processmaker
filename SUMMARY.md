@@ -78,7 +78,7 @@
       * [Page Navigation Button Control Settings](designing-processes/design-forms/screens-builder/control-descriptions/page-navigation-button-control-settings.md)
       * [Multi Column Button Control Settings](designing-processes/design-forms/screens-builder/control-descriptions/multi-column-button-control-settings.md)
       * [Record List Control Settings](designing-processes/design-forms/screens-builder/control-descriptions/record-list-control-settings.md)
-    * [Add a New Page to a Screen](designing-processes/design-forms/screens-builder/add-a-new-page-to-a-screen.md)
+    * [Add or Remove a Page to a Screen](designing-processes/design-forms/screens-builder/add-a-new-page-to-a-screen.md)
     * [Preview a Screen and Its JSON Data Model](designing-processes/design-forms/screens-builder/preview-a-screen.md)
     * [Save a Screen](designing-processes/design-forms/screens-builder/save-a-screen.md)
     * [Rename or Close a Screen Page](designing-processes/design-forms/screens-builder/rename-or-close-a-screen-page.md)

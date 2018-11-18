@@ -26,7 +26,7 @@ Are you a ProcessMaker Developer developing ProcessMaker Scripts? See [Scripts E
 
 Follow these guidelines to preview a ProcessMaker Screen and view its JSON data model:
 
-1. [Open the ProcessMaker Screen.](../manage-forms/edit-a-screen.md)
+1. [Open the ProcessMaker Screen from the **Screens** page.](../manage-forms/view-all-forms.md)
 2. Click the **Preview** option from Screen Builder's top menu.
 3. Enter values into the control fields as if you were using the ProcessMaker Screen in a Request. In the **Data Preview** panel to the right of the ProcessMaker Screen, the JSON data model displays the key-value pairs. The key's values are those you enter in the ProcessMaker Screen preview.
 
@@ -42,5 +42,5 @@ Follow these guidelines to preview a ProcessMaker Screen and view its JSON data 
 
 {% page-ref page="../../scripts/scripts-editor.md" %}
 
-{% page-ref page="../manage-forms/edit-a-screen.md" %}
+{% page-ref page="../manage-forms/view-all-forms.md" %}
 
