@@ -54,7 +54,7 @@ Define the variables in a ProcessMaker Screen in the **Inspector** panel when yo
 Follow these guidelines to use the JSON data model variables from a ProcessMaker Screen as input to your ProcessMaker Script:
 
 1. [Open the ProcessMaker Screen](../design-forms/manage-forms/edit-a-screen.md) in which to view its JSON data model.
-2. Enter Preview mode on the ProcessMaker Screen page to view its JSON data model. To be in Preview mode, click the **Preview** option from Screen Builder's top menu.
+2. Enter Preview mode on the ProcessMaker Screen page to view its JSON data model. Click the **Preview** option from Screen Builder's top menu to be in Preview mode.
 3. Enter values into the control fields as if you were using the ProcessMaker Screen in a Request. In the **Data Preview** panel to the right of the ProcessMaker Screen, the JSON data model displays the key-value pairs. The key's values are those you enter in the ProcessMaker Screen preview. Understand what the key names are. You may use these key names as variables in your ProcessMaker Script.
 4. After you have entered values into the ProcessMaker Script in Preview mode, the entire JSON data model displays in the **Data Preview** panel. Copy the JSON data model.
 5. Paste the JSON data model into the **Input Data JSON** panel in Scripts Editor. If you use any variables as defined in the JSON data model in your ProcessMaker Script, Scripts Editor uses those variable values during script testing.
