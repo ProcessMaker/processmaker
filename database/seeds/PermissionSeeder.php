@@ -55,7 +55,7 @@ class PermissionSeeder extends Seeder
         'users.destroy',
         'users.edit',
         'users.show',
-        'queues.index'
+        'horizon.index'
     ];
 
     public function run($user = null)
