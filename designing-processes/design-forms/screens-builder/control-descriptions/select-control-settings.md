@@ -37,6 +37,9 @@ Below are Inspector settings for the Line Input control:
 
 ## Related Topics <a id="related-topics"></a>
 
-[View the Inspector Panel/designing-processes/design-forms/screens-builder/view-the-inspector-pane](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/designing-processes/design-forms/screens-builder/view-the-inspector-pane)[Control Descriptions and Inspector Settings  
-](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/designing-processes/design-forms/screens-builder/control-descriptions)
+{% page-ref page="select-control-settings.md" %}
+
+[Control Descriptions and Inspector Settings/designing-processes/design-forms/screens-builder/control-descriptions](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/designing-processes/design-forms/screens-builder/control-descriptions)
+
+​
 
