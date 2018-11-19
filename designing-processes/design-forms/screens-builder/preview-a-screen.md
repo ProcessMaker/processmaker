@@ -14,9 +14,9 @@ The JSON data model displays in the **Data Preview** panel when in Preview mode.
 
 ![Screens Builder displaying the Data Preview panel in Preview mode](../../../.gitbook/assets/preview-mode-screens-builder-processes.png)
 
-The JSON data model uses key-value pairs: the key names are those you set when you [configured your ProcessMaker Screen controls](control-descriptions/), while the values are those that you entered while previewing the Screen. During an actual Request in a ProcessMaker process, these values would be those entered by a Request participant.
+The JSON data model uses key-value pairs: the key names are those you set when you [configured your ProcessMaker Screen controls](control-descriptions/), while the values are those that you entered while previewing the ProcessMaker Screen. During an actual Request in a ProcessMaker process, these values would be entered by a Request participant.
 
-Why is this important? ProcessMaker Developers can use a ProcessMaker Screen's JSON data model as variable input to a ProcessMaker Script.
+Why is this important? ProcessMaker Developers can use a ProcessMaker Screen's JSON data model as variable input to a ProcessMaker Script. ProcessMaker Screens are independent of business processes. Any ProcessMaker Screen can be used in any process throughout your organization. The JSON data model within a ProcessMaker Screen becomes the variables used in any process that uses that Screen. ProcessMaker Developers can use these variables to capture what Request participants enter into a Screen and use this data in a ProcessMaker Script.
 
 {% hint style="info" %}
 Are you a ProcessMaker Developer developing ProcessMaker Scripts? See [Scripts Editor](../../scripts/scripts-editor.md) for more information.
