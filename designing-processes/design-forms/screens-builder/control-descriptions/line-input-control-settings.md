@@ -29,11 +29,11 @@ For information how to view the **Inspector** panel, see [View the Inspector Pan
 
 Below are Inspector settings for the Line Input control:
 
-* **Field Name:** Specify the internal name of the control that only the Process Owner views in design time. This is a required setting.
+* **Field Name:** Specify the internal data name of the control that only the Process Owner views at design time. This is a required setting.
 * **Field Type:** Select one of the following options:
   * **Text:** The form user enters a single line of plain text into the Line Input control. If the entered text is longer than the field width, the form user's text is clipped.
   * **Password:** The form user enters a password into the Line Input control. Entered text is masked. If the entered text is longer than the field width, the form user's text is clipped.
-* **Field Label:** Specify the field label text.
+* **Field Label:** Specify the field label text displayed to the form user.  Set by default as **New Input**.
 * **Validation:** Specify the validation rules the form user must comply with to properly enter a valid value into this field.
 * **Placeholder:** Specify the placeholder text that displays in the field when no value has been provided.
 * **Help Text:** Specify text that provides additional guidance on the field's use.

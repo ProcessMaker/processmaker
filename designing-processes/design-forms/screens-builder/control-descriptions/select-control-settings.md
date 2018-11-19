@@ -28,10 +28,26 @@ For information how to view the **Inspector** panel, see [View the Inspector Pan
 Below are Inspector settings for the Line Input control:
 
 * **Field Name:** Specify the data name for this field.
-* **Field Label:** Sets the description the field name. Set by default as **New select**. You can change it.
+* **Field Label:** Sets the description the field name. Set by default as **New Select**.
 * **Validation:** Sets the validation rules needed for this field. 
 * **Help Text:**  Help text is meant to provide additional guidance on the field's value.
-* **Add option:** Sets the list of options available in the select boxes.
+* **Option List:** Specify the list of options available in the select boxes. Options must be added in the order they are to display from top to bottom. Each option has the following settings:
+
+  * **Value:** **Value** is the internal data name for the option that only the Process Owner views at design time.
+  * **Content:** **Content** is the option label displayed to the form user. 
+  * **Actions:** Click the Remove ![](../../../../.gitbook/assets/remove-page-screens-editor-processes.png) icon to remove the option.
+
+    A default option is called **new** with the content **New Option**.
+
+  Follow these steps to add an option: 
+
+  1. Click **Add Option** from below the **Option List** setting. The **Add New Option** screen displays.  
+
+     ![](../../../../.gitbook/assets/add-new-option-screen-screen-builder-processes.png)
+
+  2. Enter in the **Option Value** field the **Value** option value \(as described above\).
+  3. Enter in the **Option Label** field the **Content** option value \(as described above\).
+  4. Click **OK**. Otherwise, click **Cancel** to not add a new option.
 
 ​
 
