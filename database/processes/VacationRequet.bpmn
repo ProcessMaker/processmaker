@@ -58,10 +58,10 @@
       <extensionElements>
         <yaoqiang:label offset-x="0.0" offset-y="-2.0" x="0.0" y="41.0"/>
       </extensionElements>
-      <conditionExpression><![CDATA[!$approved]]></conditionExpression>
+      <conditionExpression><![CDATA[not approved]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="_17" sourceRef="_14" targetRef="validate">
-      <conditionExpression><![CDATA[$approved]]></conditionExpression>
+      <conditionExpression><![CDATA[approved]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="_15" sourceRef="approve" targetRef="_14"/>
     <sequenceFlow id="_2" sourceRef="request" targetRef="approve"/>
