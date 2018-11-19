@@ -8,9 +8,9 @@ description: >-
 
 ## Control Description
 
-Though this control displays a vertical scroll bar if more than three lines are inserted, the input box can be expanded according to the necessity. To do this, simply click on the lower right-hand corner of the input box of the **Textarea** control and without releasing the button of the mouse, enlarge or shrink it until the desired size.
+Though this control displays a vertical scroll bar if more than three lines are inserted, the input box can be expanded as necessary. To do this, click the lower right-hand corner of the input box of the Textarea control, hold, and then drag to enlarge or shrink the control size as necessary. Release when you have adjusted the input box to your required size.
 
-##  Add the Control to a ProcessMaker Screen <a id="add-the-control-to-a-processmaker-screen"></a>
+## Add the Control to a ProcessMaker Screen <a id="add-the-control-to-a-processmaker-screen"></a>
 
 Follow these steps to add this control to the ProcessMaker Screen:
 
@@ -19,7 +19,7 @@ Follow these steps to add this control to the ProcessMaker Screen:
 3. Drag the **Textarea** icon ![](../../../../.gitbook/assets/textarea-control-screens-builder-processes.png)  from the **Controls** panel to the ProcessMaker Screen page.
 4. Drop into the ProcessMaker Screen where you want the control to display on the page.
 
-   ​ ![](../../../../.gitbook/assets/textarea-control-placed-screens-builder-processes.png) ​
+   ![](../../../../.gitbook/assets/textarea-control-placed-screens-builder-processes.png)
 
 ## Inspector Settings <a id="inspector-settings"></a>
 
@@ -29,10 +29,10 @@ For information how to view the **Inspector** panel, see [View the Inspector Pan
 
 Below are Inspector settings for the Textarea control:
 
-* **Field Name:** Specify the internal data name of the control that only the Process Owner views at design time. It is required.
+* **Field Name:** Specify the internal data name of the control that only the Process Owner views at design time. This is a required setting.
 * **Field Label:** Specify the field label text displayed to the form user. Set by default as **New TextArea**.
 * **Validation:** Specify the validation rules the form user must comply with to properly enter a valid value into this field.
-* **Rows:** The number of rows to provide for input. Set by default as 2.
+* **Rows:** The number of rows to provide for input. Set by default as **2**.
 * **Placeholder:** The placeholder is what is shown in the field when no value is provided yet.
 * **Help Text:** Specify text that provides additional guidance on the field's use.
 
