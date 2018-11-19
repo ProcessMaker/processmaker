@@ -1,12 +1,12 @@
 ---
-description: Add a text box field where you can enter or paste text.
+description: Add a field that displays text for the form user.
 ---
 
 # Text Control Settings
 
 ## Control Description
 
-The Text control adds a text box field where you can enter or paste text.
+The Text control adds a text field that displays text to the form user.
 
 ## Add the Control to a ProcessMaker Screen
 
