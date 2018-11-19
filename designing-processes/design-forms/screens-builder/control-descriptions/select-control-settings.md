@@ -1,12 +1,12 @@
 ---
-description: Add select boxes to displays several options.
+description: Add a drop-down control from which the form user selects a single option.
 ---
 
 # Select Control Settings
 
 ## Control Description
 
-Select boxes are used because they save space compared to list-boxes, but the user just only can select an option of the list of options.
+The Select control provides a drop-down menu from which the form user selects a single option.
 
 ##  Add the Control to a ProcessMaker Screen
 
@@ -35,11 +35,11 @@ Below are Inspector settings for the Line Input control:
   * 1.5
   * 2
 
+​
+
 ## Related Topics
 
 {% page-ref page="../view-the-inspector-pane.md" %}
 
 {% page-ref page="./" %}
-
-​
 
