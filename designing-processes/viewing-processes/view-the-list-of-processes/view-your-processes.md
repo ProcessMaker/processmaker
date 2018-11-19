@@ -64,5 +64,5 @@ If no processes exist, the following message displays: **You don't have any proc
 
 {% page-ref page="../create-a-process.md" %}
 
-{% page-ref page="../../process-design/model-your-process.md" %}
+{% page-ref page="../../process-design/model-your-process/" %}
 

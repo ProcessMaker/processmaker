@@ -21,7 +21,7 @@ Follow these steps to create a new process:
 4. Enter a description of the process in the **Description** field. ~~Character length limitation and/or unsupported characters?~~ This is a required field.
 5. Select a category to associate with the process from the **Category** drop-down. This is a required field. For more information about process categories, see [Process Categories](process-categories.md).
 6. Select the status of the new process. This is a required field. For more information about process statuses, see [Process Status Descriptions](view-the-list-of-processes/activate-or-deactivate-a-process.md#process-status-descriptions).
-7. Click the **Save** button. The screen closes and the **Processes** page displays with your new process. Click the process name from the **Process** column to [edit the process in Process Modeler](../process-design/model-your-process.md).
+7. Click the **Save** button. The screen closes and the **Processes** page displays with your new process. Click the process name from the **Process** column to [edit the process in Process Modeler](../process-design/model-your-process/).
 
 ## Related Topics
 
@@ -33,7 +33,7 @@ Follow these steps to create a new process:
 
 {% page-ref page="view-the-list-of-processes/activate-or-deactivate-a-process.md" %}
 
-{% page-ref page="../process-design/model-your-process.md" %}
+{% page-ref page="../process-design/model-your-process/" %}
 
 
 

@@ -24,7 +24,7 @@ If there are no search results, the following message displays: **No data availa
 {% endhint %}
 
 {% hint style="info" %}
-Click the process name from the **Process** column to [edit the process in Process Modeler](../../process-design/model-your-process.md).
+Click the process name from the **Process** column to [edit the process in Process Modeler](../../process-design/model-your-process/).
 {% endhint %}
 
 ## Related Topics
@@ -45,5 +45,5 @@ Click the process name from the **Process** column to [edit the process in Proce
 
 {% page-ref page="../create-a-process.md" %}
 
-{% page-ref page="../../process-design/model-your-process.md" %}
+{% page-ref page="../../process-design/model-your-process/" %}
 
