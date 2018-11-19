@@ -1,12 +1,14 @@
 ---
-description: Add a Radio Group control from which the user has only a binary on/off option.
+description: >-
+  Add a Radio Group control from which the user can only select one option among
+  many.
 ---
 
 # Radio Group Control Settings
 
 ##  Control Description
 
-A radio group control is used instead of a checkbox or check-group control, when the user must select only one option from a domain of choices.
+The radio Group control provides a set of options from which the user can only select one.
 
 ##  Add the Control to a ProcessMaker Screen
 
@@ -21,11 +23,13 @@ Follow these steps to add this control to the ProcessMaker Screen:
 
 ## Inspector Settings <a id="inspector-settings"></a>
 
-For information how to view the **Inspector** panel, see [View the Inspector Panel](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/designing-processes/design-forms/screens-builder/view-the-inspector-pane).
+{% hint style="info" %}
+For information how to view the **Inspector** panel, see [View the Inspector Panel](../view-the-inspector-pane.md).
+{% endhint %}
 
-Below are Inspector settings for the Line Input control:
+Below are Inspector settings for the Radio Group control:
 
-* **Field Name:** Specify the internal data name of the control that only the Process Owner views at design time. Set by default as **New Radio Button Group.**
+* **Field Label:** Specify the field label text displayed to the form user. Set by default as **New Radio Button Group**.
 * **Help Text:** Specify text that provides additional guidance on the field's use.
 * **Option List:** Specify the list of options available in the radio group. Each option has the following settings:
 
@@ -37,7 +41,7 @@ Below are Inspector settings for the Line Input control:
 
   Follow these steps to add an option:
 
-  1. Click **Add Option** from below the **Option List** setting. The **Add New Option** screen displays.
+  1. Click **Add Option** from below the **Options List** setting. The **Add New Option** screen displays.
 
      ​![](https://firebasestorage.googleapis.com/v0/b/gitbook-28427.appspot.com/o/assets%2F-LJ0aNaVW1m7sNsxVJLV%2F-LRh9g3GQGcB5CtncSF-%2F-LRhGwUGe2CECm6rxBfP%2FAdd%20New%20Option%20Screen%20Screen%20Builder%20-%20Processes.png?alt=media&token=3f36252b-6f82-44b7-aef3-bab793d1e6e2)​
 

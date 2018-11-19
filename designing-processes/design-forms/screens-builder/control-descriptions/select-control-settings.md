@@ -41,7 +41,7 @@ Below are Inspector settings for the Line Input control:
 
   Follow these steps to add an option: 
 
-  1. Click **Add Option** from below the **Option List** setting. The **Add New Option** screen displays.  
+  1. Click **Add Option** from below the **Options List** setting. The **Add New Option** screen displays.  
 
      ![](../../../../.gitbook/assets/add-new-option-screen-screen-builder-processes.png)
 
