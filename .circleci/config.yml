@@ -14,7 +14,6 @@ jobs:
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
       - image: circleci/mysql:5.7
-      - image: openapitools/openapi-generator-cli:v3.3.1
 
       # Add support for Microsoft SQL Server Testing
       - image: microsoft/mssql-server-linux:2017-GA
@@ -127,17 +126,7 @@ jobs:
       # TODO: Replace with php script. Bash == Brittle
       - run:
           name: "Generate SDK"
-          command: |
-            php artisan l5-swagger:generate
-            CID=$(docker run -d -p 8888:8080 -e GENERATOR_HOST=http://localhost:8888 openapitools/openapi-generator-online)
-            i=0; while [ $(docker inspect -f {{.State.Running}} $CID) != "true" ]; do if (($i > 10)); then exit 1; fi; sleep 1; ((i=$i+1)); done
-            FILE=${PWD}/storage/api-docs/api-docs.json
-            SPEC=$(php -r "echo json_encode(file_get_contents('$FILE'));")
-            DATA="{\"spec\":$(cat $FILE)}"
-            RESP=`curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d $DATA "http://localhost:8888/api/gen/clients/php"`
-            LINK=`echo $RESP | jq -r '.link'`
-            wget -O /tmp/pmsdk.zip $LINK
-            unzip /tmp/pmsdk.zip -d {$PWD}/storage/sdk
+          command: php artisan bpm:generate-sdk
 
       # run tests!
       - run:
