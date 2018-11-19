@@ -35,11 +35,11 @@ Below are Inspector settings for the Line Input control:
   * 1.5
   * 2
 
-## Related Topics <a id="related-topics"></a>
+## Related Topics
 
-{% page-ref page="select-control-settings.md" %}
+{% page-ref page="../view-the-inspector-pane.md" %}
 
-[Control Descriptions and Inspector Settings/designing-processes/design-forms/screens-builder/control-descriptions](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/designing-processes/design-forms/screens-builder/control-descriptions)
+{% page-ref page="./" %}
 
 ​
 
