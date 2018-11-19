@@ -47,7 +47,6 @@ class PermissionSeeder extends Seeder
         'screens.destroy',
         'screens.edit',
         'screen.show',
-        'script.preview',
         'scripts.create',
         'scripts.destroy',
         'scripts.edit',
