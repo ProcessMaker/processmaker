@@ -42,3 +42,5 @@ Below are Inspector settings for the Text control:
 
 {% page-ref page="../view-the-inspector-pane.md" %}
 
+{% page-ref page="./" %}
+
