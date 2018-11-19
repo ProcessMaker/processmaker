@@ -29,11 +29,13 @@ For information how to view the **Inspector** panel, see [View the Inspector Pan
 
 Below are Inspector settings for the Text control:
 
-* **Text Label:** Specify what text displays for the Text control. Set by default as **New Text**. You can change what text will display.
-* **Font Weight:** Sets the weight of the **Text Label** text. Set by default as **Normal**. You can change to **Bold**.
-* **Font Size:** Sets the size of the **Text Label** text in em units. Set by default as **1**. You can change the font size to the following options:
-  * 0.5
-  * 1
-  * 1.5
-  * 2
+* **Field Name:** Specify the internal data name of the control that only the Process Owner views at design time. This is a required setting.
+* **Field Label:** Specify the field label text displayed to the form user. Set by default as **New Date Picker**
+* **Placeholder:** Specify the placeholder text that displays in the field when no value has been provided.
+
+## Related Topics <a id="related-topics"></a>
+
+{% page-ref page="../view-the-inspector-pane.md" %}
+
+{% page-ref page="./" %}
 
