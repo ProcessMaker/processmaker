@@ -38,5 +38,7 @@ Below are Inspector settings for the Textarea control:
 
 ## Related Topics <a id="related-topics"></a>
 
-[View the Inspector Panel/designing-processes/design-forms/screens-builder/view-the-inspector-pane](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/designing-processes/design-forms/screens-builder/view-the-inspector-pane)[Control Descriptions and Inspector Settings/designing-pr](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/designing-processes/design-forms/screens-builder/control-descriptions)
+{% page-ref page="../view-the-inspector-pane.md" %}
+
+{% page-ref page="./" %}
 
