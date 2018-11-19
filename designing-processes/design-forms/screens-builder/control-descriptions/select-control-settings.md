@@ -8,7 +8,7 @@ description: Add a drop-down control from which the form user selects a single o
 
 The Select control provides a drop-down menu from which the form user selects a single option.
 
-##  Add the Control to a ProcessMaker Screen
+## Add the Control to a ProcessMaker Screen
 
 Follow these steps to add this control to the ProcessMaker Screen:
 

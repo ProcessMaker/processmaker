@@ -1,16 +1,16 @@
 ---
 description: >-
-  Add a Radio Group control from which the user can only select one option among
-  many.
+  Add a Radio Group control from which the form user can select only one option
+  among two or more.
 ---
 
 # Radio Group Control Settings
 
-##  Control Description
+## Control Description
 
-The radio Group control provides a set of options from which the user can only select one.
+The Radio Group control provides a set of options from which the user can only select one.
 
-##  Add the Control to a ProcessMaker Screen
+## Add the Control to a ProcessMaker Screen
 
 Follow these steps to add this control to the ProcessMaker Screen:
 
