@@ -8,7 +8,7 @@ description: >-
 
 ## Control Description
 
-Though this control displays a vertical scroll bar if more than three lines are inserted, the input box can be expanded according to the necessity. To do this, simply click on ![](https://wiki.processmaker.com/sites/default/files/TextAreaHolderIcon.png) at the lower right-hand corner of the input box of the **Textarea** control and without releasing the button of the mouse, enlarge or shrink it until the desired size.
+Though this control displays a vertical scroll bar if more than three lines are inserted, the input box can be expanded according to the necessity. To do this, simply click on the lower right-hand corner of the input box of the **Textarea** control and without releasing the button of the mouse, enlarge or shrink it until the desired size.
 
 ##  Add the Control to a ProcessMaker Screen <a id="add-the-control-to-a-processmaker-screen"></a>
 
