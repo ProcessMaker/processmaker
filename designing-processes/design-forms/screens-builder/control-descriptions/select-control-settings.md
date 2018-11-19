@@ -27,13 +27,11 @@ For information how to view the **Inspector** panel, see [View the Inspector Pan
 
 Below are Inspector settings for the Line Input control:
 
-* **Field Name:** Specify what text displays for the Text control. Set by default as **New Text**. You can change what text will display.
-* **Font Weight:** Sets the weight of the **Text Label** text. Set by default as **Normal**. You can change to **Bold**.
-* **Font Size:** Sets the size of the **Text Label** text in em units. Set by default as **1**. You can change the font size to the following options:
-  * 0.5
-  * 1
-  * 1.5
-  * 2
+* **Field Name:** Specify the data name for this field.
+* **Field Label:** Sets the description the field name. Set by default as **New select**. You can change it.
+* **Validation:** Sets the validation rules needed for this field. 
+* **Help Text:**  Help text is meant to provide additional guidance on the field's value.
+* **Add option:** Sets the list of options available in the select boxes.
 
 ​
 
