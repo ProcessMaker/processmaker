@@ -29,13 +29,14 @@ For information how to view the **Inspector** panel, see [View the Inspector Pan
 
 Below are Inspector settings for the Line Input control:
 
-* **Field Name:** Specify what text displays for the Text control. Set by default as **New Text**. You can change what text will display.
-* **Font Weight:** Sets the weight of the **Text Label** text. Set by default as **Normal**. You can change to **Bold**.
-* **Font Size:** Sets the size of the **Text Label** text in em units. Set by default as **1**. You can change the font size to the following options:
-  * 0.5
-  * 1
-  * 1.5
-  * 2
+* **Field Name:** Specify the internal name of the control that only the Process Owner views in design time. This is a required setting.
+* **Field Type:** Select one of the following options:
+  * **Text:** The form user enters a single line of plain text into the Line Input control. If the entered text is longer than the field width, the form user's text is clipped.
+  * **Password:** The form user enters a password into the Line Input control. Entered text is masked. If the entered text is longer than the field width, the form user's text is clipped.
+* **Field Label:** Specify the field label text.
+* **Validation:** Specify the validation rules the form user must comply with to properly enter a valid value into this field.
+* **Placeholder:** Specify the placeholder text that displays in the field when no value has been provided.
+* **Help Text:** Specify text that provides additional guidance on the field's use.
 
 ## Related Topics
 
