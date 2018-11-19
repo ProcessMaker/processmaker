@@ -1,14 +1,14 @@
 ---
 description: >-
-  Add a Page Navigation button from which the form user can go the destination
-  page selected.
+  Add a Page Navigation button control from which the form user can go to
+  another page in a multi-page ProcessMaker Screen.
 ---
 
 # Page Navigation Button Control Settings
 
 ## Control Description <a id="control-description"></a>
 
-The Page Navigation Button control adds a button from which the form user can go the form as part of a destination page to navigate to. 
+The Page Navigation Button control adds a button from which the form user can go to another page in a multi-page ProcessMaker Screen. 
 
 ## Add the Control to a ProcessMaker Screen <a id="add-the-control-to-a-processmaker-screen"></a>
 
@@ -31,7 +31,6 @@ Below are Inspector settings for the Page Navigation Button control:
 
 * **Field Label:** Specify the field label text displayed to the form user. Set by default as **New** **Page Navigation**.
 * **Variant:** Specify the style for the Page Navigation Button control. The style changes the control's appearance but otherwise has no functional difference. Select from the following options:
-
   * **Primary:** Blue-colored background with white-colored **Field Label** text. Set as the default.
   * **Secondary:** Gray-colored background with white-colored **Field Label** text.
   * **Success:** Green-colored background with white-colored **Field Label** text.
@@ -41,8 +40,7 @@ Below are Inspector settings for the Page Navigation Button control:
   * **Light:** White-colored background with black-colored **Field Label** text.
   * **Dark:** Black-colored background with white-colored **Field Label** text.
   * **Link:** White-colored background with blue-colored **Field Label** text.
-
-  **Destination:** Sets the destination page to navigate to. Set by default as **test1**.
+* **Destination:** Sets the destination page to which to navigate in a multi-page ProcessMaker Screen. Set by default as the first page of the ProcessMaker Screen by that page's name.
 
 ## Related Topics <a id="related-topics"></a>
 
