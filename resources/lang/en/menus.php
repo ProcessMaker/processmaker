@@ -33,6 +33,7 @@ return[
     'colors_and_logos' => 'Colors and Logos',
     'app_version_details' => 'App Version Details',
     'queue_management' => 'Queue Management',
+    'installed_packages' => 'Installed ProcessMaker Packages',
     'configuration' => 'Configuration',
     'appearance' => 'Appearance',
     'customize' => 'Customize',

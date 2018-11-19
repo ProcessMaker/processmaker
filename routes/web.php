@@ -11,6 +11,7 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
         Route::resource('groups', 'GroupController')->only(['index', 'edit', 'show']);
         Route::resource('preferences', 'PreferenceController');
         Route::resource('users', 'UserController');
+        Route::get('packages', 'PackageController@index')->name('packages.index');
     });
 
     Route::namespace('Process')->prefix('processes')->group(function () {

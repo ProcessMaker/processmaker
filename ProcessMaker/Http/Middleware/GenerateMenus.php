@@ -66,6 +66,11 @@ class GenerateMenus
                 'route' => 'horizon.index',
                 'icon' => 'fa-infinity',
           ]);
+            $submenu->add(__('menus.sidebar_admin.installed_packages'), [
+                'route' => 'packages.index',
+                'icon' => 'fa-boxes',
+            ]);
+
 
         });
         Menu::make('sidebar_task', function ($menu) {

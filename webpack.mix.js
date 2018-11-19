@@ -30,6 +30,7 @@ mix.webpackConfig({
     .js('resources/js/processes/modeler/initialLoad.js', 'public/js/processes/modeler')
     .js('resources/js/admin/users/index.js', 'public/js/admin/users')
     .js('resources/js/admin/groups/index.js', 'public/js/admin/groups')
+    .js('resources/js/admin/packages/index.js', 'public/js/admin/packages')
     .js('resources/js/admin/queues/index.js', 'public/js/admin/queues')
 
     .js('resources/js/processes/index.js', 'public/js/processes')
