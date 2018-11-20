@@ -41,4 +41,23 @@ class RequestTest extends TestCase
       // check the correct view is called
       $response->assertViewIs('requests.show');
     }
+
+    /**
+     * Test to make sure the controller and route work with the view
+     *
+     * @return void
+     */
+    public function testShowCancelRoute()
+    {
+
+        $Request_id = factory(ProcessRequest::class)->create()->id;
+        // get the URL
+        $response = $this->webCall('GET', '/requests/'. $Request_id);
+
+        $response->assertStatus(200);
+        // check the correct view is called
+        $response->assertViewIs('requests.show');
+        $response->assertSee('Cancel Request');
+
+    }
 }

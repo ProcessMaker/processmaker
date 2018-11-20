@@ -92,6 +92,10 @@ export default {
                     color = 'danger';
                     label = 'Draft';
                     break;
+                case 'CANCELED':
+                    color = 'danger';
+                    label = 'Canceled';
+                    break;
                 case 'COMPLETED':
                     color = 'primary';
                     label = 'Completed';

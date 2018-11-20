@@ -260,7 +260,7 @@ class ProcessRequestController extends Controller
         $request->status = 'CANCELED';
         $request->saveOrFail();
 
-        //Completed tokens
-        $request->tokens()->update(['status' => 'COMPLETED']);
+        //Closed tokens
+        $request->tokens()->update(['status' => 'CLOSED']);
     }
 }
