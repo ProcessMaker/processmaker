@@ -21,6 +21,10 @@ Follow these steps to add this control to the ProcessMaker Screen:
 
    ![](../../../../.gitbook/assets/submit-button-control-placed-screens-builder-processes.png)
 
+Below is a Submit Button control in Preview mode.
+
+![Submit Button control in Preview mode using Primary Variant option](../../../../.gitbook/assets/submit-button-control-preview-screens-builder-processes.png)
+
 ## Inspector Settings <a id="inspector-settings"></a>
 
 {% hint style="info" %}

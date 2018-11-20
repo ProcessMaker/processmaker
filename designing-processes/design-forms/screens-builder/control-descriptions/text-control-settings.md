@@ -19,6 +19,10 @@ Follow these steps to add this control to the ProcessMaker Screen:
 
    ![](../../../../.gitbook/assets/text-control-placed-screens-builder-processes.png)
 
+Below is a Text control in Preview mode.
+
+![Text control in Preview mode](../../../../.gitbook/assets/text-control-preview-screens-builder-processes.png)
+
 ## Inspector Settings
 
 {% hint style="info" %}

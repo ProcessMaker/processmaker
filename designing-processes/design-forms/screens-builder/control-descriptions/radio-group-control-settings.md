@@ -21,6 +21,10 @@ Follow these steps to add this control to the ProcessMaker Screen:
 
    ![](../../../../.gitbook/assets/radio-group-control-placed-screens-builder-processes.png)
 
+Below is a Radio Group control in Preview mode.
+
+![Radio Group control in Preview mode](../../../../.gitbook/assets/radio-group-control-preview-screens-builder-processes.png)
+
 ## Inspector Settings <a id="inspector-settings"></a>
 
 {% hint style="info" %}

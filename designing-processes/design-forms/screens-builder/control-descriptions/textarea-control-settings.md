@@ -21,6 +21,10 @@ Follow these steps to add this control to the ProcessMaker Screen:
 
    ![](../../../../.gitbook/assets/textarea-control-placed-screens-builder-processes.png)
 
+Below is a Textarea control in Preview mode.
+
+![Textarea control in Preview mode](../../../../.gitbook/assets/textarea-control-placed-screens-builder-processes%20%281%29.png)
+
 ## Inspector Settings <a id="inspector-settings"></a>
 
 {% hint style="info" %}

@@ -19,6 +19,10 @@ Follow these steps to add this control to the ProcessMaker Screen:
 
    ![](../../../../.gitbook/assets/select-control-placed-screens-builder-processes.png)
 
+Below is a Select control in Preview mode.
+
+![Select control in Preview mode](../../../../.gitbook/assets/select-control-preview-screen-builder-processes.png)
+
 ## Inspector Settings <a id="inspector-settings"></a>
 
 {% hint style="info" %}

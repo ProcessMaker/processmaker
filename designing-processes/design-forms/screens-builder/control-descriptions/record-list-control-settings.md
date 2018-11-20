@@ -21,6 +21,8 @@ Follow these steps to add this control to the ProcessMaker Screen:
 
    ![](../../../../.gitbook/assets/record-list-control-placed-screens-builder-processes.png)
 
+~~I don't understand how to make a Record List Control display in Preview mode.~~
+
 ## Inspector Settings <a id="inspector-settings"></a>
 
 {% hint style="info" %}
@@ -35,13 +37,16 @@ Below are Inspector settings for the Record List control:
   **New Record List.**
 
 * **Editable?:** Select to indicate that records in the list can be added upon, edited, or removed. Otherwise, deselect to indicate that records in the list cannot be changed. The default setting is unchecked.
+
+  Note that if this setting is selected and the **Record Form** option is selected as the same page that the Record List control displays, the following message displays in Preview mode: **The add/edit form referencing our own form is not allowed**. Change the **Record Form** option to a different page than the one the Record List control displays.
+
 * **Fields List:** Specify the list of options available in the Record List. Each option has the following settings:
 
   * **Value:** **Value** is the internal data name for the option that only the Process Owner views at design time.
   * **Content:** **Content** is the option label displayed to the form user.
   * **Actions:** Click the Remove ![](https://firebasestorage.googleapis.com/v0/b/gitbook-28427.appspot.com/o/assets%2F-LJ0aNaVW1m7sNsxVJLV%2F-LRd_ECXdNI2bEak7VEt%2F-LRdb7nEk9dSH8ZO3LOs%2FRemove%20Page%20Screens%20Editor%20-%20Processes.png?alt=media&token=1045667a-c7bd-4431-8bca-556e389e6d11) icon to remove the option.
 
-    A default option is called **new** with the content **New Option**.
+  A default option is called **new** with the content **New Option**.
 
   Follow these steps to add an option:
 

@@ -21,6 +21,10 @@ Follow these steps to add this control to the ProcessMaker Screen:
 
    ![](../../../../.gitbook/assets/page-navigation-control-placed-screens-builder-processes.png)
 
+Below is a Page Navigation Button control in Preview mode.
+
+![Page Navigation Button control in Preview mode using Secondary Variant option](../../../../.gitbook/assets/page-navigation-button-control-preview-screens-builder-processes.png)
+
 ## Inspector Settings <a id="inspector-settings"></a>
 
 {% hint style="info" %}

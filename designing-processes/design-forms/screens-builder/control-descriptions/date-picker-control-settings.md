@@ -21,6 +21,10 @@ Follow these steps to add this control to the ProcessMaker Screen:
 
    ![](../../../../.gitbook/assets/date-picker-control-placed-screens-builder-processes.png)
 
+Below is a Date control in Preview mode.
+
+![Date control in Preview mode](../../../../.gitbook/assets/date-control-preview-screens-builder-processes.png)
+
 ## Inspector Settings <a id="inspector-settings"></a>
 
 {% hint style="info" %}

@@ -21,6 +21,10 @@ Follow these steps to add this control to the ProcessMaker Screen:
 
    ![](../../../../.gitbook/assets/line-input-screens-builder-processes.png)
 
+Below is a Line Input control in Preview mode.
+
+![Line Input control in Preview mode](../../../../.gitbook/assets/line-input-control-preview-screens-builder-processes.png)
+
 ## Inspector Settings
 
 {% hint style="info" %}

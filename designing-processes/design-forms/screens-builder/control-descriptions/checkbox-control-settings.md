@@ -21,6 +21,10 @@ Follow these steps to add this control to the ProcessMaker Screen:
 
    ![](../../../../.gitbook/assets/checkbox-control-placed-screens-builder-processes.png)
 
+Below are two Checkbox controls in Preview mode.
+
+![Checkbox control in Preview mode](../../../../.gitbook/assets/checkbox-control-preview-screens-builder-processes.png)
+
 ## Inspector Settings <a id="inspector-settings"></a>
 
 {% hint style="info" %}
