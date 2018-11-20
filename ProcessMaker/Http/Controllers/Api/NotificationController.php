@@ -5,11 +5,10 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Laravel\Horizon\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
-use ProcessMaker\Models\Media;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use ProcessMaker\Models\Notification;
+use ProcessMaker\Http\Resources\Notifications as NotificationResource;
 
 class NotificationController extends Controller
 {
@@ -60,6 +59,42 @@ class NotificationController extends Controller
     {
         return response(\Auth::user()->activeNotifications(), 200);
     }
+
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param Request $request
+     *
+     * @return NotificationResource
+     * @throws \Throwable
+     *
+     * @OA\Post(
+     *     path="/notifications",
+     *     summary="Save a new notifications",
+     *     operationId="createNotification",
+     *     tags={"Notifications"},
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(ref="#/components/schemas/notificationsEditable")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/notifications")
+     *     ),
+     * )
+     */
+    public function store(Request $request)
+    {
+        $request->validate(Notification::rules());
+        $notification = new Notification();
+        $notification->fill($request->input());
+        $notification->saveOrFail();
+        return new NotificationResource($notification);
+    }
+
+
 
     /**
      * Update notifications
