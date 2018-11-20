@@ -8,19 +8,21 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
-use ProcessMaker\Http\Resources\ProcessRequests;
 use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Http\Resources\ProcessRequests as ProcessRequestResource;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+
+use Illuminate\Http\Resources\Json\ResourceCollection;
 
 
 class ProcessRequestFileController extends Controller
 {
     use HasMediaTrait;
-    
-    public function index(Request $request, ProcessRequest $process_request, $file_id)
+    /*
+    * return list of Process Request files
+    */
+    public function index(ProcessRequest $request)
      {
-        
+        return new ResourceCollection($request->getMedia());
      }
 }
