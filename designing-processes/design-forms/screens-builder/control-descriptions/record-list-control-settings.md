@@ -57,6 +57,8 @@ Below are Inspector settings for the Record List control:
   3. Enter in the **Option Label** field the **Content** option value \(as described above\).
   4. Click **OK**. Otherwise, click **Cancel** to not add a new option.
 
+  **Record Form:** The form to use for adding/editing records.
+
 ## Related Topics <a id="related-topics"></a>
 
 {% page-ref page="../view-the-inspector-pane.md" %}
