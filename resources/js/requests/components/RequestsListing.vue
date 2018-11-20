@@ -13,7 +13,6 @@
                               :key="participant.id"
                               class="d-inline-flex pull-left align-items-center"
                               size="25"
-                              class-image="m-1"
                               hide-name="true"
                               :input-data="participant"></avatar-image>
             </template>
@@ -163,5 +162,9 @@ export default {
     /deep/ .vuetable-th-slot-ids {
         min-width: 100px;
         white-space: nowrap;
+    }
+
+    /deep/ tr td:nth-child(4) {
+        padding: 6px 10px;
     }
 </style>

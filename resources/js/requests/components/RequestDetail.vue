@@ -11,7 +11,7 @@
             </template>
 
             <template slot="participants" slot-scope="props">
-                <avatar-image class="d-inline-flex pull-left align-items-center" size="25" class-image="m-1"
+                <avatar-image class="d-inline-flex pull-left align-items-center" size="25"
                               :input-data="props.rowData.participants"></avatar-image>
             </template>
         </vuetable>
@@ -124,6 +124,8 @@
     };
 </script>
 
-<style lang="scss">
-
+<style lang="scss" scoped>
+    /deep/ tr td:nth-child(2) {
+        padding: 6px 10px;
+    }
 </style>
