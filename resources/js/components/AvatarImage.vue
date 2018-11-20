@@ -1,20 +1,18 @@
 <template>
     <span :class="classContainer">
         <template v-for="(value, key) in options">
+            <a :href="value.id" style="margin: 0 2px;">
             <template v-if="value.src" class="align-center">
-                <a :href="value.id">
                 <b-img center :src="value.src" :rounded="round" :width="sizeImage" :height="sizeImage"
                        blank-color="bg-secondary" :class="image" :title="value.tooltip"/>
-                </a>
             </template>
             <template v-else>
-                <a :href="value.id">
                 <button class="rounded-circle bg-warning border-0 align-middle text-white text-center text-uppercase text-nowrap"
                         :style="styleButton" :title="value.tooltip" :href="value.id">
                     {{value.initials}}
                 </button>
-                </a>
             </template>
+            </a>
             <span v-if="!hideName" class="text-center text-capitalize text-nowrap m-1"> {{value.name}}</span>
         </template>
     </span>
@@ -54,7 +52,7 @@
                 this.formatSize(this.size);
             },
             formatClassImage(value) {
-                this.image = value ? value : 'm-1';
+                this.image = value;
             },
             formatRounded(value) {
                 this.round = value ? value : 'circle';
@@ -65,7 +63,7 @@
             },
             formatSizeButton(size) {
                 this.styleButton = 'width: ' + size + 'px; height: ' + size + 'px; font-size:' + size / 2.5 +
-                    'px; margin-right:5px; padding:0; cursor: pointer;';
+                    'px; padding:0; cursor: pointer;';
             },
             formatValue(value) {
                 return {
