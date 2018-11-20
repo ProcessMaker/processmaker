@@ -40,7 +40,7 @@ Below are Inspector settings for the Page Navigation Button control:
   * **Light:** White-colored background with black-colored **Field Label** text.
   * **Dark:** Black-colored background with white-colored **Field Label** text.
   * **Link:** White-colored background with blue-colored **Field Label** text.
-* **Destination:** Sets the destination page to which to navigate in a multi-page ProcessMaker Screen. Set by default as the first page of the ProcessMaker Screen by that page's name.
+* **Destination:** Select the destination page to which to navigate in a multi-page ProcessMaker Screen. The default is the first page of the ProcessMaker Screen by that page's name.
 
 ## Related Topics <a id="related-topics"></a>
 

@@ -32,7 +32,7 @@ Below are Inspector settings for the Radio Group control:
 * **Field Name:** Specify the internal data name of the control that only the Process Owner views at design time. Use the same **Field Name** value in multiple Checkbox controls to group Checkbox controls with the same **Field Name** value together such that when one in the group is selected, all others are automatically deselected. ~~This is a required setting.~~
 * **Field Label:** Specify the field label text displayed to the form user.  Set by default as **New Checkbox**.
 * **Help Text:** Specify text that provides additional guidance on the field's use.
-* **Initially Checked?:** Select to indicate that the Checkbox control should be checked \(selected\) by default. Otherwise, deselect to indicate that the Checkbox control is not checked.
+* **Initially Checked?:** Select to indicate that the Checkbox control should be checked \(selected\) by default. Otherwise, deselect to indicate that the Checkbox control is not checked. The default setting is unchecked.
 
 ## Related Topics <a id="related-topics"></a>
 

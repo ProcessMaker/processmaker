@@ -1,14 +1,14 @@
 ---
-description: Learn how to configure Record List control settings.
+description: >-
+  Add a Record List control from which the form user can insert several values
+  in a list.
 ---
 
 # Record List Control Settings
 
-Add a Record List control from which the form user can insert several values in a list. \(\*\*\*revision\*\*\*\*\)
-
 ## Control Description <a id="control-description"></a>
 
-The Record List control adds the values to a list of the ProcessMaker Screen.\(\*\*\*revision\*\*\*\*\)
+The Record List control allows the form user to add several values in a list.
 
 ## Add the Control to a ProcessMaker Screen <a id="add-the-control-to-a-processmaker-screen"></a>
 
@@ -18,8 +18,6 @@ Follow these steps to add this control to the ProcessMaker Screen:
 2. Go to the **Controls** panel on the left side of the ProcessMaker Screen.
 3. Drag the **Record List** icon ![](../../../../.gitbook/assets/record-list-control-screens-builder-processes.png) from the **Controls** panel to the ProcessMaker Screen page.
 4. Drop into the ProcessMaker Screen where you want the control to display on the page.
-
-   ​  ​
 
    ![](../../../../.gitbook/assets/record-list-control-placed-screens-builder-processes.png)
 
@@ -31,14 +29,12 @@ For information how to view the **Inspector** panel, see [View the Inspector Pan
 
 Below are Inspector settings for the Record List control:
 
-* **List Name:** Specify the data name for this list
-* **List Label:** Specify the label describes this record list. Set by default as 
+* **List Name:** Specify the internal data name for this list that only the Process Owner views at design time. This is a required setting.
+* **List Label:** Specify the field label text displayed to the form user. Set by default as 
 
   **New Record List.**
 
-  * **Editable?:** Should records be editable/removable and can new records be added.
-
-* **Record Form:** The form to use for adding/editing records.
+* **Editable?:** Select to indicate that records in the list can be added upon, edited, or removed. Otherwise, deselect to indicate that records in the list cannot be changed. The default setting is unchecked.
 * **Fields List:** Specify the list of options available in the Record List. Each option has the following settings:
 
   * **Value:** **Value** is the internal data name for the option that only the Process Owner views at design time.
@@ -57,7 +53,7 @@ Below are Inspector settings for the Record List control:
   3. Enter in the **Option Label** field the **Content** option value \(as described above\).
   4. Click **OK**. Otherwise, click **Cancel** to not add a new option.
 
-  **Record Form:** The form to use for adding/editing records.
+* **Record Form:** Select from which page in the ProcessMaker Screen to add/edit records. The default is the first page of the ProcessMaker Screen by that page's name.
 
 ## Related Topics <a id="related-topics"></a>
 
