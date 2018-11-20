@@ -15,6 +15,10 @@ class Authorize
             return $next($request);
         }
 
+        if ($this->isPublic($request)) {
+            return $next($request);
+        }
+
         // Get the action that the user is requesting
         $permission = $request->route()->action['as'];
 
@@ -57,5 +61,23 @@ class Authorize
             ['.edit', '.create'],
             $permission
         );
+    }
+
+    // Check if the controller allows the method publicly
+    private function isPublic($request)
+    {
+        $controller = $request->route()->getController();
+        if (empty($controller->skipPermissionCheckFor)) {
+            return false;
+        }
+        if (in_array(
+            $request->route()->getActionMethod(),
+            $controller->skipPermissionCheckFor
+        )) {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 }
