@@ -24,7 +24,7 @@ class PermissionsTest extends TestCase
 
         $create_process_perm = Permission::byGuardName('processes.create');
         $show_process_perm   = Permission::byGuardName('processes.show');
-        $update_process_perm = Permission::byGuardName('processes.update');
+        $edit_process_perm = Permission::byGuardName('processes.edit');
 
         $admin_group = $this->admin_group =
             factory(Group::class)->create(['name' => 'Admin']);
@@ -52,14 +52,9 @@ class PermissionsTest extends TestCase
         factory(PermissionAssignment::class)->create([
             'assignable_type' => Group::class,
             'assignable_id' => $super_admin_group->id,
-            'permission_id' => $update_process_perm->id,
+            'permission_id' => $edit_process_perm->id,
         ]);
 
-        factory(PermissionAssignment::class)->create([
-            'assignable_type' => get_class($this->user),
-            'assignable_id' => $this->user->id,
-            'permission_id' => $show_process_perm->id,
-        ]);
         $this->user->giveDirectPermission($show_process_perm->guard_name);
 
         $this->process = factory(\ProcessMaker\Models\Process::class)->create([
@@ -100,5 +95,22 @@ class PermissionsTest extends TestCase
 
         $response = $this->apiCall('DELETE', '/processes/' . $this->process->id);
         $response->assertStatus(204);
+    }
+
+    public function testRoutePermissionAliases()
+    {
+        // update route is an alias for edit permission
+        $response = $this->apiCall('PUT', '/processes/' . $this->process->id, [
+            'name' => 'foo',
+            'description' => 'foo',
+        ]);
+        $response->assertStatus(200);
+        
+        // store route is an alias for create permission
+        $response = $this->apiCall('POST', '/processes', [
+            'name' => 'foo2',
+            'description' => 'foo',
+        ]);
+        $response->assertStatus(201);
     }
 }

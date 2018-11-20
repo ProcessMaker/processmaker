@@ -22,6 +22,8 @@ class Authorize
         // same permissions as the web routes.
         $permission = preg_replace('/^api\./', '', $permission);
 
+        $permission = $this->forAlias($permission);
+
         // At this point we should have already checked if the
         // user is logged in so we can assume $request->user()
         if ($request->user()->hasPermission($permission)) {
@@ -43,5 +45,17 @@ class Authorize
             return $request->user()->hasPermission($match[1] . '.show');
         }
         return false;
+    }
+
+    /**
+     * Some route actions are aliases to permissions
+     */
+    private function forAlias($permission)
+    {
+        return preg_replace(
+            ['/\.update$/', '/\.store$/'],
+            ['.edit', '.create'],
+            $permission
+        );
     }
 }
