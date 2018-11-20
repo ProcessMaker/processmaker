@@ -27,9 +27,14 @@
                 }],
                 fields: [
                     {
-                    title: "Name",
-                    name: "name",
-                    sortField: "name"
+                        title: "Name",
+                        name: "friendly_name",
+                        sortField: "friendly_name"
+                    },
+                    {
+                        title: "Composer Name",
+                        name: "name",
+                        sortField: "name"
                     },
                     {
                         title: "Description",
@@ -45,22 +50,12 @@
                         title: "Expire in",
                         name: "expire_in",
                         sortField: "expire_in",
-                        callback: this.formatDate
-                    },
-                    {
-                        name: "__slot:actions",
-                        title: ""
+                        callback: 'formatDate'
                     }
                 ]
             };
         },
         methods: {
-            formatDate(value) {
-                let display_date = "Without Expiry";
-                if (value)
-                    display_date = moment.unix(value).format("YYYY-MM-DD HH:mm");
-                return display_date;
-            },
             fetch() {
                 this.loading = true;
                 //change method sort by package
