@@ -91,6 +91,9 @@
             </div>
             <div class="col-4">
                 <template v-if="statusLabel">
+                    <button type="button" class="btn btn-danger m-2" @click="cancelRequest">
+                        {{__('Cancel Request')}}
+                    </button>
                     <div class="card">
                         <div :class="classStatusCard">
                             <h4 style="margin:0; padding:0; line-height:1">@{{ statusLabel }}</h4>
@@ -281,6 +284,21 @@
                             }
                         });
                     }
+                },
+                cancelRequest() {
+                    ProcessMaker.confirmModal(
+                        "Caution!",
+                        "<b>Are you sure you want cancel this request ?</b>",
+                        "",
+                        () => {
+                            ProcessMaker.apiClient.put(`requests/${this.requestId}`, {
+                                status: 'CANCELED'
+                            })
+                                .then(response => {
+                                    ProcessMaker.alert('Request Canceled Successfully', 'success');
+                                });
+                        }
+                    );
                 }
             },
             mounted() {

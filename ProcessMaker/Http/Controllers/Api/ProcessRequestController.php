@@ -60,7 +60,7 @@ class ProcessRequestController extends Controller
      * )
      */
     public function index(Request $request)
-    {   
+    {
         $query = ProcessRequest::query();
 
         $includes = $request->input('include', '');
@@ -203,6 +203,11 @@ class ProcessRequestController extends Controller
      */
     public function update(ProcessRequest $request, Request $httpRequest)
     {
+        if ($httpRequest->status === 'CANCELED') {
+            $this->cancelRequestToken($request);
+            return response([], 204);
+        }
+
         $httpRequest->validate(ProcessRequest::rules($request));
         $request->fill($httpRequest->json()->all());
         $request->saveOrFail();
@@ -241,5 +246,21 @@ class ProcessRequestController extends Controller
     {
         $request->delete();
         return response([], 204);
+    }
+
+    /**
+     * Cancel all tokens of request.
+     *
+     * @param ProcessRequest $request
+     * @throws \Throwable
+     */
+    private function cancelRequestToken(ProcessRequest $request)
+    {
+        //cancel request
+        $request->status = 'CANCELED';
+        $request->saveOrFail();
+
+        //Completed tokens
+        $request->tokens()->update(['status' => 'COMPLETED']);
     }
 }
