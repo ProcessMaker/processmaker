@@ -16,11 +16,11 @@ class TaskAssignmentController extends Controller
      * @return ApiResource
      * @throws \Throwable
      *
-     * @OA\Get(
-     *     path="/task_assignments,
+     * @OA\Post(
+     *     path="/task_assignments",
      *     summary="Save a new task assignments",
      *     operationId="createTaskAssignments",
-     *     tags={"TaskAssignments"},
+     *     tags={"Task Assignments"},
      *     @OA\RequestBody(
      *       required=true,
      *       @OA\JsonContent(ref="#/components/schemas/taskAssignmentsEditable")
@@ -54,7 +54,7 @@ class TaskAssignmentController extends Controller
      *     path="/task_assignments/{task_assignments_id}",
      *     summary="Update a task assignments",
      *     operationId="updateTaskAssignments",
-     *     tags={"TaskAssignments"},
+     *     tags={"Task Assignments"},
      *     @OA\Parameter(
      *         description="ID of task assignment to return",
      *         in="path",

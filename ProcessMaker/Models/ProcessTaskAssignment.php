@@ -14,9 +14,23 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
  *
+ * @OA\Schema(
+ *   schema="taskAssignmentsEditable",
+ *   @OA\Property(property="id", type="string", format="id"),
+ *   @OA\Property(property="process_id", type="string", format="id"),
+ *   @OA\Property(property="process_task_id", type="string", format="id"),
+ *   @OA\Property(property="assignment_id", type="string", format="id"),
+ *   @OA\Property(property="assignment_type", type="string", enum={"USER", "GROUP"})
+ * ),
+ * @OA\Schema(
+ *   schema="taskAssignments",
+ *   allOf={@OA\Schema(ref="#/components/schemas/taskAssignmentsEditable")},
+ *   @OA\Property(property="created_at", type="string", format="date-time"),
+ *   @OA\Property(property="updated_at", type="string", format="date-time"),
+ * )
  */
 class ProcessTaskAssignment extends Model
-{    
+{
 
     protected $fillable = [
         'process_id',
