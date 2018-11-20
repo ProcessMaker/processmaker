@@ -10,7 +10,7 @@ To select permissions for a ProcessMaker group, you must be a member of the Proc
 
 ## Select Permissions for a ProcessMaker Group
 
-
+~~The PM4 Engineering build did not have this feature available for the internal beta.~~
 
 ## Related Topics
 

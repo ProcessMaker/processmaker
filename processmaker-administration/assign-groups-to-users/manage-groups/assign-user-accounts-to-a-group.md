@@ -10,7 +10,7 @@ To assign ProcessMaker user accounts to a ProcessMaker group, you must be a memb
 
 ## Assign ProcessMaker User Accounts to a ProcessMaker Group
 
-
+~~This function is not working yet in the PM4 Engineering build for the internal beta release.~~
 
 ## Related Topics
 
