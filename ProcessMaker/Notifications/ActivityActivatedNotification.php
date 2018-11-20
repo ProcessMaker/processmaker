@@ -89,11 +89,12 @@ class ActivityActivatedNotification extends Notification
             'processName' => $process->name,
             'request_id' => $request->getKey(),
             'userName' => $token->user->getFullName(),
+            'user_id' => $token->user->id,
             'dateTime' => $token->created_at->toIso8601String(),
             'uid' => $this->tokenUid,
             'url' => sprintf(
                 '/tasks/%s/edit',
-                $this->tokenUid
+                $token->id
             )
         ];
     }

@@ -4,7 +4,10 @@
             <i class="fas fa-bell fa-lg font-size-23"></i>
             <b-badge pill variant="danger" v-show="messages.length>0">{{messages.length}}</b-badge>
         </a>
-        <b-popover :target="'exPopover1-bottom'" :placement="'bottomleft'">
+        <b-popover :target="'exPopover1-bottom'"
+                   :placement="'bottomleft'"
+                   triggers="click blur"
+        >
             <h3 class="popover-header">New Tasks</h3>
             <ul class="list-unstyled tasklist">
                 <li v-if="messages.length == 0">No Tasks Found
@@ -17,10 +20,10 @@
                         {{task.processName}}<br>
                         {{task.userName}}
                     </div>
+                    <span class="badge badge-pill badge-info float-right" style="cursor:pointer" @click="remove(task)">
+                        Dismiss
+                    </span>
                     <hr>
-                </li>
-                <li class="footer">
-                    <a href="/tasks">View All Tasks</a>
                 </li>
             </ul>
         </b-popover>
@@ -28,8 +31,8 @@
 </template>
 
 <script>
+    import moment from "moment";
     import {Popover} from 'bootstrap-vue/es/components';
-
     Vue.use(Popover);
     export default {
         props: {
@@ -52,7 +55,10 @@
         },
         methods: {
             remove(message) {
-                this.messages.splice(this.messages.indexOf(message), 1);
+                ProcessMaker.removeNotifications([message.id]);
+            },
+            formatDateTime(iso8601) {
+                return moment(iso8601).format("MM/DD/YY HH:mm");
             }
         },
         mounted() {
@@ -66,6 +72,14 @@
                 this.arrowStyle.left =
                     $("#navbar-request-button").offset().left + 32 + "px";
             });
+
+
+            ProcessMaker.apiClient.get('/notifications')
+                .then(function (response) {
+                    response.data.forEach(function (element) {
+                        ProcessMaker.pushNotification(element);
+                    })
+                });
         }
     };
 </script>
