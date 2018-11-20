@@ -39,7 +39,7 @@ Below are Inspector settings for the Record List control:
   * **Editable?:** Should records be editable/removable and can new records be added.
 
 * **Record Form:** The form to use for adding/editing records.
-* **Option List:** Specify the list of options available in the Record List. Each option has the following settings:
+* **Fields List:** Specify the list of options available in the Record List. Each option has the following settings:
 
   * **Value:** **Value** is the internal data name for the option that only the Process Owner views at design time.
   * **Content:** **Content** is the option label displayed to the form user.
