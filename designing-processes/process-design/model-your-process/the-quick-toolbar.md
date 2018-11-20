@@ -13,7 +13,7 @@ Follow these steps to connect an element to other one:
 5. Then click the element that needs connect.  The elements will be connected.
 
 {% hint style="info" %}
-Take into account that the connector flow is not available in an end event and also in the same flow connector.
+Take into account that the flow connector is not available in an end event and also in the same flow connector. 
 {% endhint %}
 
 ## Delete an Element

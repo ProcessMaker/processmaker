@@ -97,9 +97,8 @@
     * [Use the Top Bar](designing-processes/process-design/model-your-process/toolboxes.md)
     * [Interact With an Element](designing-processes/process-design/model-your-process/bpmn-side-bar/README.md)
       * [Use a Task Element](designing-processes/process-design/model-your-process/bpmn-side-bar/task.md)
-      * [Use Gateway Elements](designing-processes/process-design/model-your-process/bpmn-side-bar/gateways.md)
-      * [Use Event Elements](designing-processes/process-design/model-your-process/bpmn-side-bar/events.md)
-      * [Use Pool and Lane Elements](designing-processes/process-design/model-your-process/bpmn-side-bar/pool-and-lane.md)
+      * [Use an Exclusive Gateway Element](designing-processes/process-design/model-your-process/bpmn-side-bar/gateways.md)
+      * [Use Event Element](designing-processes/process-design/model-your-process/bpmn-side-bar/events.md)
       * [Use a Text Annotation Element](designing-processes/process-design/model-your-process/bpmn-side-bar/text-annotation.md)
 
 ## ProcessMaker Administration
