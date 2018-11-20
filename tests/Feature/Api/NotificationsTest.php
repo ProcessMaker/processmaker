@@ -16,12 +16,14 @@ class NotificationsTest extends TestCase
     const API_TEST_URL = '/notifications';
 
     const STRUCTURE = [
-        'id',
-        'name',
-        'description',
-        'status',
-        'updated_at',
-        'created_at'
+         'id',
+         'type',
+         'notifiable_type',
+         'notifiable_id',
+         'data',
+         'read_at',
+         'updated_at',
+         'created_at'
     ];
 
 

@@ -13,6 +13,58 @@ use ProcessMaker\Http\Resources\Notifications as NotificationResource;
 class NotificationController extends Controller
 {
     /**
+     * Display a listing of the resource.
+     *
+     * @param Request $request
+     *
+     * @return ApiCollection
+     *
+     * @OA\Get(
+     *     path="/notifications",
+     *     summary="Returns all notifications that the user has access to",
+     *     operationId="getNotifications",
+     *     tags={"Notifications"},
+     *     @OA\Parameter(ref="#/components/parameters/filter"),
+     *     @OA\Parameter(ref="#/components/parameters/order_by"),
+     *     @OA\Parameter(ref="#/components/parameters/order_direction"),
+     *     @OA\Parameter(ref="#/components/parameters/per_page"),
+     *     @OA\Parameter(ref="#/components/parameters/include"),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="list of notifications",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/notifications"),
+     *             ),
+     *             @OA\Property(
+     *                 property="meta",
+     *                 type="object",
+     *                 allOf={@OA\Schema(ref="#/components/schemas/metadata")},
+     *             ),
+     *         ),
+     *     ),
+     * )
+     */
+    public function index(Request $request)
+    {
+        $query = Notification::query();
+
+        $response =
+            $query->orderBy(
+                $request->input('order_by', 'id'),
+                $request->input('order_direction', 'ASC')
+            )
+                ->paginate($request->input('per_page', 10));
+
+        return new ApiCollection($response);
+    }
+
+
+    /**
      * Returns a list of notifications not read by the authenticated user
      *
      * @param Request $request
@@ -55,7 +107,7 @@ class NotificationController extends Controller
      *         ),
      *     )
      */
-    public function index()
+    public function activeNotifications()
     {
         return response(\Auth::user()->activeNotifications(), 200);
     }
@@ -129,7 +181,7 @@ class NotificationController extends Controller
      *     ),
      * )
      */
-    public function update(Request $request)
+    public function updateAsRead(Request $request)
     {
         $messageIds = $request->input('message_ids');
         $routes = $request->input('routes');
