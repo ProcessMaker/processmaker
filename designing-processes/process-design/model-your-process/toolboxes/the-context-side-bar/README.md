@@ -1,2 +1,0 @@
-# The Context Side Bar
-
