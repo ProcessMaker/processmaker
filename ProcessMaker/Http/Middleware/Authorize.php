@@ -14,7 +14,7 @@ class Authorize
         if ($user->is_administrator) {
             return $next($request);
         }
-
+        
         if ($this->isPublic($request)) {
             return $next($request);
         }

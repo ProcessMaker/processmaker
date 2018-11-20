@@ -35,12 +35,8 @@ class RequestTest extends TestCase
      */
     public function testRequestAllRouteWithShowAllRequestsPermission()
     {
-      (new PermissionSeeder)->run($this->user);
-      factory(PermissionAssignment::class)->create([
-            'assignable_type' => get_class($this->user),
-            'assignable_id' => $this->user->id,
-            'permission_id' => Permission::byGuardName('show_all_requests')
-        ]);
+      factory(Permission::class)->create(['guard_name' => 'show_all_requests']);
+      $this->user = factory(User::class)->create();
       $this->user->giveDirectPermission('show_all_requests');
       // get the URL
       $response = $this->webCall('GET', '/requests/all');
@@ -50,20 +46,47 @@ class RequestTest extends TestCase
 
     }
 
-    /**
-     * Test to make sure the controller and route work with the view
-     *
-     * @return void
-     */
-    public function testShowRoute()
+    public function testShowRouteWithShowAllPermission()
     {
+      $this->user = factory(User::class)->create();
 
-      $Request_id = factory(ProcessRequest::class)->create()->id;
-      // get the URL
-      $response = $this->webCall('GET', '/requests/'. $Request_id);
+      factory(Permission::class)->create(['guard_name' => 'show_all_requests']);
+      $request_id = factory(ProcessRequest::class)->create()->id;
 
+      $response = $this->webCall('GET', '/requests/'. $request_id);
+      $response->assertStatus(403);
+
+      $this->user->giveDirectPermission('show_all_requests');
+      $this->user->refresh();
+
+      $response = $this->webCall('GET', '/requests/'. $request_id);
       $response->assertStatus(200);
+
       // check the correct view is called
       $response->assertViewIs('requests.show');
+    }
+    
+    public function testShowRouteWithAssignedUser()
+    {
+      $this->user = factory(User::class)->create();
+
+      $request_id = factory(ProcessRequest::class)->create([
+        'user_id' => $this->user->id
+      ])->id;
+
+      $response = $this->webCall('GET', '/requests/'. $request_id);
+      $response->assertStatus(200);
+    }
+    
+    public function testShowRouteWithAdministrator()
+    {
+      $this->user = factory(User::class)->create([
+        'is_administrator' => true,
+      ]);
+
+      $request_id = factory(ProcessRequest::class)->create()->id;
+
+      $response = $this->webCall('GET', '/requests/'. $request_id);
+      $response->assertStatus(200);
     }
 }
