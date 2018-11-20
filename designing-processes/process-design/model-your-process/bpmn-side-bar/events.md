@@ -1,4 +1,4 @@
-# Use Event Element
+# Use an Event Element
 
 ## Adding an Event Element
 

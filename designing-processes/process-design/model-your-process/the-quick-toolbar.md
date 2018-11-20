@@ -1,6 +1,6 @@
 # Use the Quick Toolbar
 
-Modelers have the ability to easily connect one element to other element using the **Quick Toolbar** option. The Quick Toolbar also counts with the Delete option.
+Modelers have the ability to easily [connect one element to other element](the-quick-toolbar.md#connect-an-element-to-other) using the **Quick Toolbar** option. You can also [delete an element](the-quick-toolbar.md#delete-an-element) with the Quick Toolbar.
 
 ## Connect an Element to Other
 

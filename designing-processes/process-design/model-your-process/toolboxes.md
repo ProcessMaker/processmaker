@@ -1,6 +1,6 @@
 # Use the Top Bar
 
-You can see the title of your project at left side of the top bar. In the top bar, you can also save all changes made in your process.
+You can see the title of your project at left side of the top bar. In the top bar, you can also [save all changes made in your process](toolboxes.md#save-changes-in-your-process).
 
 ![](../../../.gitbook/assets/pm4_thetopbar.png)
 
