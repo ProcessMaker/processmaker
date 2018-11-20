@@ -5,6 +5,7 @@ namespace ProcessMaker\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Traits\SerializeToIso8601;
+use Ramsey\Uuid\Uuid;
 
 /**
  * Represents a group definition.
@@ -38,15 +39,28 @@ class Notification extends Model
     use SerializeToIso8601;
 
     protected $fillable = [
-        'name',
-        'description',
-        'status',
+        'type',
+        'notifiable_type',
+        'notifiable_id',
+        'data',
+        'read_at',
     ];
+
+    /**
+     * Boot function from laravel.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->{$model->getKeyName()} = Uuid::uuid4();
+        });
+    }
 
     public static function rules($existing = null)
     {
         $rules = [
-            'id' => 'required|string',
             'notifiable_id' => 'required|integer',
             'notifiable_type' => 'required|string',
             'type' => 'required|string',
