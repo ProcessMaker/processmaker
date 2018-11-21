@@ -118,6 +118,11 @@ class TaskAssignmentTest extends TestCase
         $data['id'] = $processTaskAssignment->id;
         $this->assertDatabaseHas('process_task_assignments', $data);
 
+        //evaluate response
+        $this->assertEquals($group->id, $response->json(['assignment_id']));
+        $this->assertEquals($task_uid, $response->json(['process_task_id']));
+        $this->assertEquals('GROUP', $response->json(['assignment_type']));
+
         $assignment = ProcessTaskAssignment::where('process_id', $process->id)->first();
         $this->assertEquals($group->id, $assignment->assignment_id);
         $this->assertEquals($task_uid, $assignment->process_task_id);
