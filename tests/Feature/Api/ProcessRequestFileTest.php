@@ -7,19 +7,19 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use ProcessMaker\Models\ProcessRequest;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Http\UploadedFile;
 use Tests\Feature\Shared\RequestHelper;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Testing\File;
 
 
 class ProcessRequestFileTest extends TestCase
 {
     use RequestHelper;
     /**
-     * 
+     * test process request files index
      */
     public function testIndex()
     {
@@ -27,13 +27,14 @@ class ProcessRequestFileTest extends TestCase
         $process_request = factory(ProcessRequest::class)->create();
 
         //upload a fake document with id of the request
-        $fileUpload = UploadedFile::fake()->create('my_test_file123.pdf');
+        $fileUpload = File::image('photo.jpg');
 
         //save the file with media lib
         $process_request->addMedia($fileUpload)->toMediaCollection();
+
         $response = $this->apiCall('GET', '/requests/' . $process_request->id . '/files');
-        dd($response->json());
         $response->assertStatus(200);
+        $this->assertEquals($response->json()['data'][0]['file_name'], 'photo.jpg');
     }
 
     
@@ -42,23 +43,17 @@ class ProcessRequestFileTest extends TestCase
      *
      * 
      */ 
-    // public function testFileUploadWithProcessRequestID()
-    // {
-    //     //create a request
-    //     $process_request = factory(ProcessRequest::class)->create();
+    public function testFileUploadWithProcessRequestID()
+    {
+        //create a request
+        $process_request = factory(ProcessRequest::class)->create();
 
-    //     //upload a fake document with id of the request
-    //     $fileUpload = UploadedFile::fake()->create('my_test_file123.pdf');
+        //post photo id with the request 
+        $response = $this->apiCall('POST', '/requests/' . $process_request->id . '/files', [
+            'file' => File::image('photo.jpg')
+        ]);
+        $response->assertStatus(200);
+        $this->assertEquals($process_request->getMedia()[0]->file_name, 'photo.jpg');
 
-    //     //save the file with media lib
-    //     $process_request->addMedia($fileUpload)->toMediaCollection('local');
-    //     //post photo id with the request 
-    //     $response = $this->apiCall('POST', '/request' . $process_request->id . '/files', [
-    //         'file' => $fileUpload
-    //     ]);
-
-    //     $response->assertStatus(200);
-    //     $response = $this->apiCall('GET', '/request' . $process_request->id . '/files');
-    //     $response->assertStatus(200);
-    // }
+    }
 }
