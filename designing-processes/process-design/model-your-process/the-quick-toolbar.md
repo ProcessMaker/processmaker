@@ -13,11 +13,11 @@ Follow these steps to connect one element to another:
 1. ​[View your processes](../../viewing-processes/view-the-list-of-processes/view-your-processes.md#view-all-processes). The **Processes** page displays.
 2. Click a process to open it. Process Modeler displays.
 3. Select the element from which you want to connect to another element. Available options display in the Quick toolbar. \[Image\]
-4. Click the row icon.
+4. Click the flow connector \(row\) icon.
 5. Click the connecting element. The elements are connected.
 
 {% hint style="info" %}
-Take into account that the Flow connector is not available in an End event in the same Flow connector. ~~Louis note: In a previous section, we'll need to briefly describe what a Flow connector is. While we won't write extensively about BPMN 2 components, we'll need to write enough so that a reader who doesn't look at the official BPMN site can use Process Modeler. You can delete this crossed-out text after you read/revise this.~~
+Take into account that the flow connector is not available in an End event in the same flow connector. ~~Louis note: In a previous section, we'll need to briefly describe what a Flow connector is. While we won't write extensively about BPMN 2 components, we'll need to write enough so that a reader who doesn't look at the official BPMN site can use Process Modeler. You can delete this crossed-out text after you read/revise this.~~
 {% endhint %}
 
 ## Delete an Element
