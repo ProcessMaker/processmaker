@@ -64,53 +64,6 @@ class NotificationController extends Controller
     }
 
 
-    /**
-     * Returns a list of notifications not read by the authenticated user
-     *
-     * @param Request $request
-     *
-     * @return ApiCollection
-     *
-     * @OA\Get(
-     *     path="/notifications",
-     *     summary="Returns a list of notifications not read by the authenticated user",
-     *     tags={"Notifications"},
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="list of notifications",
-     *         @OA\JsonContent(
-     *             type="array",
-     *              @OA\Items (
-     *                      @OA\Property(
-     *                          property="dateTime",
-     *                          type="date",
-     *                          description="date when the notification has been created"
-     *                      ),
-     *                      @OA\Property(
-     *                          property="id",
-     *                          type="string",
-     *                          description="message id"
-     *                      ),
-     *                      @OA\Property(
-     *                          property="message",
-     *                          type="string",
-     *                          description="message text"
-     *                      ),
-     *                      @OA\Property(
-     *                          property="url",
-     *                          type="string",
-     *                          description="associated url of the message"
-     *                      ),
-     *              )
-     *             ),
-     *         ),
-     *     )
-     */
-    public function activeNotifications()
-    {
-        return response(\Auth::user()->activeNotifications(), 200);
-    }
 
 
     /**
@@ -267,7 +220,7 @@ class NotificationController extends Controller
      * @return Response
      *
      *     @OA\Put(
-     *     path="/notification",
+     *     path="/notification-read",
      *     summary="Update notifications",
      *     tags={"Notifications"},
      *
@@ -303,4 +256,54 @@ class NotificationController extends Controller
             ->update(['read_at' => Carbon::now()]);
         return response([], 201);
     }
+
+
+    /**
+     * Returns a list of notifications not read by the authenticated user
+     *
+     * @param Request $request
+     *
+     * @return ApiCollection
+     *
+     * @OA\Get(
+     *     path="/notifications-list",
+     *     summary="Returns a list of notifications not read by the authenticated user",
+     *     tags={"Notifications"},
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="list of notifications",
+     *         @OA\JsonContent(
+     *             type="array",
+     *              @OA\Items (
+     *                      @OA\Property(
+     *                          property="dateTime",
+     *                          type="date",
+     *                          description="date when the notification has been created"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="id",
+     *                          type="string",
+     *                          description="message id"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="message",
+     *                          type="string",
+     *                          description="message text"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="url",
+     *                          type="string",
+     *                          description="associated url of the message"
+     *                      ),
+     *              )
+     *             ),
+     *         ),
+     *     )
+     */
+    public function activeNotifications()
+    {
+        return response(\Auth::user()->activeNotifications(), 200);
+    }
+
 }

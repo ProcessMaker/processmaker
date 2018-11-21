@@ -70,14 +70,6 @@ class Notification extends Model
             'data' => 'required|string',
         ];
 
-        if ($existing) {
-//            $rules['name'] = [
-//                'required',
-//                'string',
-//                Rule::unique('groups')->ignore($existing->id, 'id')
-//            ];
-        }
-
         return $rules;
     }
 }
