@@ -11,13 +11,13 @@ Process Modeler can easily [connect one element to other element](the-quick-tool
 Follow these steps to connect one element to another:
 
 1. ​[View your processes](../../viewing-processes/view-the-list-of-processes/view-your-processes.md#view-all-processes). The **Processes** page displays.
-2. Click a process to open it. The process modeler displays.
-3. Select one element, then you can see the available options for the Quick Toolbar. \[Image\]
+2. Click a process to open it. Process Modeler displays.
+3. Select the element from which you want to connect to another element. Available options display in the Quick toolbar. \[Image\]
 4. Click the row icon.
-5. Then click the element that needs connect.  The elements will be connected.
+5. Click the connecting element. The elements are connected.
 
 {% hint style="info" %}
-Take into account that the flow connector is not available in an end event and also in the same flow connector. 
+Take into account that the Flow connector is not available in an End event in the same Flow connector. ~~Louis note: In a previous section, we'll need to briefly describe what a Flow connector is. While we won't write extensively about BPMN 2 components, we'll need to write enough so that a reader who doesn't look at the official BPMN site can use Process Modeler. You can delete this crossed-out text after you read/revise this.~~
 {% endhint %}
 
 ## Delete an Element
@@ -26,6 +26,6 @@ Follow these steps to delete an element:
 
 1. ​[View your processes](../../viewing-processes/view-the-list-of-processes/view-your-processes.md#view-all-processes). The **Processes** page displays.
 2. Click a process to open it. The process modeler displays.
-3. Select one element, then you can see the available options for the Quick Toolbar. \[Image\]
-4. Click the trash icon and the element has been deleted. \[Image\]
+3. Select the element to be deleted. Available options display in the Quick toolbar. \[Image\]
+4. Click the **Trash** icon \[Image\]. The element is deleted.
 
