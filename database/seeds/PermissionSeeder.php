@@ -64,6 +64,7 @@ class PermissionSeeder extends Seeder
         'processes.store',
         'processes.update',
         'processes.menu',
+        'processes.cancel',
         'profile.edit',
         'profile.show',
         'requests.destroy',
