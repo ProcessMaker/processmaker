@@ -1,15 +1,17 @@
 <?php
 
 use Faker\Generator as Faker;
-use ProcessMaker\Models\Group;
+use ProcessMaker\Models\Notification;
+use Ramsey\Uuid\Uuid;
 
 /**
- * Model factory for a Group
+ * Model factory for a Notification
  */
-$factory->define(Group::class, function (Faker $faker) {
+$factory->define(Notification::class, function (Faker $faker) {
     return [
-        'name' => $faker->sentence(3),
-        'description' => $faker->sentence,
-        'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
+        'type' => $faker->word(),
+        'notifiable_type' => $faker->word(),
+        'notifiable_id' => $faker->numberBetween(1),
+        'data' => '[]',
     ];
 });

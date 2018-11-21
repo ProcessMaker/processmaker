@@ -146,6 +146,117 @@ class NotificationController extends Controller
         return new NotificationResource($notification);
     }
 
+    /**
+     * Display the specified resource.
+     *
+     * @param Notification $notification
+     *
+     * @return \Illuminate\Http\Response
+     *
+     * @internal param id $id
+     *
+     * @OA\Get(
+     *     path="/notifications/notificationId",
+     *     summary="Get single notification by ID",
+     *     operationId="getNotificationById",
+     *     tags={"Notifications"},
+     *     @OA\Parameter(
+     *         description="ID of notification to return",
+     *         in="path",
+     *         name="notification_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successfully found the notification",
+     *         @OA\JsonContent(ref="#/components/schemas/notifications")
+     *     ),
+     * )
+     */
+    public function show(Notification $notification)
+    {
+        return new NotificationResource($notification);
+    }
+
+
+    /**
+     * Update a user
+     *
+     * @param Notification $notification
+     * @param Request $request
+     *
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     * @throws \Throwable
+     *
+     * @OA\Put(
+     *     path="/notifications/notificationId",
+     *     summary="Update a notification",
+     *     operationId="updateNotification",
+     *     tags={"Notifications"},
+     *     @OA\Parameter(
+     *         description="ID of notification to return",
+     *         in="path",
+     *         name="notification_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(ref="#/components/schemas/notificationsEditable")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/notifications")
+     *     ),
+     * )
+     */
+    public function update(Notification $notification, Request $request)
+    {
+        $request->validate(Notification::rules($notification));
+        $notification->fill($request->input());
+        $notification->saveOrFail();
+        return response([], 204);
+    }
+
+    /**
+     * Delete a notification
+     *
+     * @param Notification $notification
+     *
+     * @return ResponseFactory|Response
+     *
+     * @OA\Delete(
+     *     path="/notifications/notificationId",
+     *     summary="Delete a notification",
+     *     operationId="deleteNotification",
+     *     tags={"Notifications"},
+     *     @OA\Parameter(
+     *         description="ID of notification to return",
+     *         in="path",
+     *         name="notification_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/notifications")
+     *     ),
+     * )
+     */
+    public function destroy(Notification $notification)
+    {
+        $notification->delete();
+        return response([], 204);
+    }
 
 
     /**

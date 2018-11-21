@@ -5,6 +5,7 @@ namespace Tests\Feature\Api;
 use Carbon\Carbon;
 use Faker\Factory as Faker;
 use ProcessMaker\Models\Notification;
+use Ramsey\Uuid\Uuid;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
 
@@ -117,7 +118,10 @@ class NotificationsTest extends TestCase
 
         //Post saved success
         $response = $this->apiCall('PUT', $url, [
-            'name' => 'updatemytestname',
+            'type' => 'MODIFIED',
+            'notifiable_type' => 'MOD_TYPE',
+            'notifiable_id' => 2,
+            'data' => '["test":1]',
         ]);
 
         //Validate the header status code

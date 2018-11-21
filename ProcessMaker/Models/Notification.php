@@ -21,10 +21,11 @@ use Ramsey\Uuid\Uuid;
  *
  *   @OA\Schema(
  *   schema="groupsEditable",
- *   @OA\Property(property="id", type="string", format="id"),
- *   @OA\Property(property="name", type="string"),
- *   @OA\Property(property="description", type="string"),
- *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
+ *   @OA\Property(property="id", type="string"),
+ *   @OA\Property(property="type", type="string"),
+ *   @OA\Property(property="notifiable_type", type="string"),
+ *   @OA\Property(property="notifiable_id", type="integer"),
+ *   @OA\Property(property="data", type="string"),
  * ),
  * @OA\Schema(
  *   schema="groups",
@@ -37,6 +38,8 @@ use Ramsey\Uuid\Uuid;
 class Notification extends Model
 {
     use SerializeToIso8601;
+
+    public $incrementing = false;
 
     protected $fillable = [
         'type',
@@ -54,7 +57,7 @@ class Notification extends Model
         parent::boot();
 
         static::creating(function ($model) {
-            $model->{$model->getKeyName()} = Uuid::uuid4();
+            $model->{$model->getKeyName()} = Uuid::uuid4()->toString();
         });
     }
 
