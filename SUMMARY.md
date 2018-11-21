@@ -130,7 +130,6 @@
 * [Requirements](install-processmaker/prerequisites/README.md)
   * [Installation Requirements](install-processmaker/prerequisites/installation-requirements.md)
   * [Supported Browsers](install-processmaker/prerequisites/supported-browsers.md)
-* [Install Required Software](install-processmaker/installing-stacks.md)
 * [Install ProcessMaker](install-processmaker/install-processmaker-on-premise.md)
 
 ## Script Central

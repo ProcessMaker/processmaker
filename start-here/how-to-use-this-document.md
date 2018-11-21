@@ -20,7 +20,6 @@ A ProcessMaker Administrator installs ProcessMaker on-premises and performs admi
 Refer to the **Install ProcessMaker** section that includes the following topics:
 
 * [Requirements](../install-processmaker/prerequisites/)
-* [Install Required Software](../install-processmaker/installing-stacks.md)
 * [Install ProcessMaker](../install-processmaker/install-processmaker-on-premise.md)
 
 Refer to the **ProcessMaker Administration** section that includes the following topics:
