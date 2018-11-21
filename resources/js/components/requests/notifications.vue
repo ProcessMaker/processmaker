@@ -74,7 +74,7 @@
             });
 
 
-            ProcessMaker.apiClient.get('/notifications')
+            ProcessMaker.apiClient.get('/user_notifications')
                 .then(function (response) {
                     response.data.forEach(function (element) {
                         ProcessMaker.pushNotification(element);

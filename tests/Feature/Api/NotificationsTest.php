@@ -118,9 +118,6 @@ class NotificationsTest extends TestCase
 
         //Post saved success
         $response = $this->apiCall('PUT', $url, [
-            'type' => 'MODIFIED',
-            'notifiable_type' => 'MOD_TYPE',
-            'notifiable_id' => 2,
             'data' => '["test":1]',
         ]);
 

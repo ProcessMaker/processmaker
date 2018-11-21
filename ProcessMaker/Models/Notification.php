@@ -8,7 +8,7 @@ use ProcessMaker\Traits\SerializeToIso8601;
 use Ramsey\Uuid\Uuid;
 
 /**
- * Represents a group definition.
+ * Represents a notification definition.
  *
  * @property string $id
  * @property string $type
@@ -20,7 +20,7 @@ use Ramsey\Uuid\Uuid;
  * @property \Carbon\Carbon $created_at
  *
  *   @OA\Schema(
- *   schema="groupsEditable",
+ *   schema="notificationsEditable",
  *   @OA\Property(property="id", type="string"),
  *   @OA\Property(property="type", type="string"),
  *   @OA\Property(property="notifiable_type", type="string"),
@@ -28,8 +28,8 @@ use Ramsey\Uuid\Uuid;
  *   @OA\Property(property="data", type="string"),
  * ),
  * @OA\Schema(
- *   schema="groups",
- *   allOf={@OA\Schema(ref="#/components/schemas/groupsEditable")},
+ *   schema="notifications",
+ *   allOf={@OA\Schema(ref="#/components/schemas/notificationsEditable")},
  *   @OA\Property(property="created_at", type="string", format="date-time"),
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
  * )
@@ -63,11 +63,13 @@ class Notification extends Model
 
     public static function rules($existing = null)
     {
+        $required = Rule::requiredIf(function () use ($existing) { return $existing === null; });
+
         $rules = [
-            'notifiable_id' => 'required|integer',
-            'notifiable_type' => 'required|string',
-            'type' => 'required|string',
-            'data' => 'required|string',
+            'notifiable_id' => [$required, 'integer'],
+            'notifiable_type' => [$required, 'string'],
+            'type' => [$required, 'string'],
+            'data' => [$required, 'string'],
         ];
 
         return $rules;

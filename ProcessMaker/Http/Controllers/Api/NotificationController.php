@@ -64,8 +64,6 @@ class NotificationController extends Controller
     }
 
 
-
-
     /**
      * Store a newly created resource in storage.
      *
@@ -98,6 +96,7 @@ class NotificationController extends Controller
         $notification->saveOrFail();
         return new NotificationResource($notification);
     }
+
 
     /**
      * Display the specified resource.
@@ -177,6 +176,7 @@ class NotificationController extends Controller
         return response([], 204);
     }
 
+
     /**
      * Delete a notification
      *
@@ -220,8 +220,8 @@ class NotificationController extends Controller
      * @return Response
      *
      *     @OA\Put(
-     *     path="/notification-read",
-     *     summary="Update notifications",
+     *     path="/read_notifications",
+     *     summary="Mark notifications as read by the user",
      *     tags={"Notifications"},
      *
      *     @OA\RequestBody(
@@ -266,7 +266,7 @@ class NotificationController extends Controller
      * @return ApiCollection
      *
      * @OA\Get(
-     *     path="/notifications-list",
+     *     path="/user_notifications",
      *     summary="Returns a list of notifications not read by the authenticated user",
      *     tags={"Notifications"},
      *
@@ -301,7 +301,7 @@ class NotificationController extends Controller
      *         ),
      *     )
      */
-    public function activeNotifications()
+    public function userNotifications()
     {
         return response(\Auth::user()->activeNotifications(), 200);
     }
