@@ -57,7 +57,7 @@ class ProcessTaskAssignment extends Model
     public static function rules()
     {
         return [
-            'process_task_id' => 'required|exists:processes,id',
+            'process_id' => 'required|exists:processes,id',
             'assignment_id' => 'required',
             'assignment_type' => 'required|in:USER,GROUP',
         ];

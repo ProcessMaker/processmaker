@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
+use ProcessMaker\Http\Resources\TaskAssignmentResource;
 use ProcessMaker\Models\ProcessTaskAssignment;
 
 class TaskAssignmentController extends Controller
@@ -44,7 +45,7 @@ class TaskAssignmentController extends Controller
     /**
      * Update a task assignment
      *
-     * @param ProcessTaskAssignment $processTaskAssignment
+     * @param ProcessTaskAssignment $task_assignment
      * @param Request $request
      *
      * @return ApiResource
@@ -75,11 +76,11 @@ class TaskAssignmentController extends Controller
      *     ),
      * )
      */
-    public function update(ProcessTaskAssignment $processTaskAssignment, Request $request)
+    public function update(ProcessTaskAssignment $task_assignment, Request $request)
     {
         $request->validate(ProcessTaskAssignment::rules());
-        $processTaskAssignment->fill($request->input());
-        $processTaskAssignment->saveOrFail();
-        return new ApiResource($processTaskAssignment->refresh());
+        $task_assignment->fill($request->input());
+        $task_assignment->save();
+        return new TaskAssignmentResource($task_assignment);
     }
 }
