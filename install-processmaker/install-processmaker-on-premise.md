@@ -9,11 +9,9 @@ The following installation instructions are for the ProcessMaker Community editi
 
 The installation procedure described below installs prerequisite applications and then installs the internal beta for ProcessMaker 4 Community edition.
 
-Ensure you meet [installation requirements](../prerequisites.md) prior to starting this installation procedure.
-{% endhint %}
+Ensure you meet [installation requirements](prerequisites.md) prior to starting this installation procedure.
 
-{% hint style="info" %}
-The installation instructions below apply to Debian Linux.
+The internal beta has been successfully installed on Debian Linux.
 {% endhint %}
 
 ## Install Prerequisites
@@ -114,4 +112,104 @@ php -v
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
+
+### Install Composer
+
+{% code-tabs %}
+{% code-tabs-item title="Download Composer and edit." %}
+```text
+wget https://getcomposer.org/composer.phar
+mv composer.phar composer
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+{% code-tabs %}
+{% code-tabs-item title="Give permissions." %}
+```text
+Chmod +x composer
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+{% code-tabs %}
+{% code-tabs-item title="Move the file to the local directory." %}
+```text
+mv composer /usr/local/bin
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+{% code-tabs %}
+{% code-tabs-item title="Verify the functionality." %}
+```text
+composer
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+### Install Node.js 10.13.0
+
+{% code-tabs %}
+{% code-tabs-item title="Set \"Version\" and \"Distro\" variables." %}
+```text
+VERSION=v10.13.0
+DISTRO=linux-x64
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+{% code-tabs %}
+{% code-tabs-item title="Download the program." %}
+```text
+cd /opt/
+wget https://nodejs.org/download/release/v10.13.0/node-v10.13.0-linux-x64.tar.xz
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+{% code-tabs %}
+{% code-tabs-item title="Decompress the program." %}
+```text
+mkdir /usr/local/lib/nodejs
+tar -xJvf node-$VERSION-$DISTRO.tar.xz -C /usr/local/lib/nodejs
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+{% code-tabs %}
+{% code-tabs-item title="Rename the directory." %}
+```text
+mv /usr/local/lib/nodejs/node-$VERSION-$DISTRO /usr/local/lib/nodejs/node-$VERSION
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+{% code-tabs %}
+{% code-tabs-item title="Configure the program." %}
+```text
+echo "VERSION=v10.13.0" >> ~/.bashrc
+echo "DISTRO=linux-x64" >> ~/.bashrc
+echo 'export NODEJS_HOME=/usr/local/lib/nodejs/node-$VERSION/bin' >> ~/.bashrc
+echo 'export PATH=$NODEJS_HOME:$PATH' >> ~/.bashrc
+. ~/.bashrc
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+{% code-tabs %}
+{% code-tabs-item title="Verify the installation." %}
+```text
+node -v
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+## Install ProcessMaker
+
+
+
+## Related Topics
+
+{% page-ref page="prerequisites.md" %}
 
