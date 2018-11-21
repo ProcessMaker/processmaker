@@ -1,10 +1,14 @@
-# Use the Quick Toolbar
+---
+description: Learn how to connect and delete process elements.
+---
 
-Modelers have the ability to easily [connect one element to other element](the-quick-toolbar.md#connect-an-element-to-other) using the **Quick Toolbar** option. You can also [delete an element](the-quick-toolbar.md#delete-an-element) with the Quick Toolbar.
+# Connect and Delete Elements
 
-## Connect an Element to Other
+Process Modeler can easily [connect one element to other element](the-quick-toolbar.md#connect-an-element-to-other) using the **Quick Toolbar** option. You can also [delete an element](the-quick-toolbar.md#delete-an-element) with the Quick Toolbar.
 
-Follow these steps to connect an element to other one:
+## Connect One Element to Another
+
+Follow these steps to connect one element to another:
 
 1. ​[View your processes](../../viewing-processes/view-the-list-of-processes/view-your-processes.md#view-all-processes). The **Processes** page displays.
 2. Click a process to open it. The process modeler displays.
