@@ -7,6 +7,12 @@ description: >-
 
 # Use a Text Annotation Element
 
+See the following sections for information how to use this element in a process model:
+
+* [Adding a Text Annotation](text-annotation.md#adding-a-text-annotation)
+* [Set a Text Annotation Identifier](text-annotation.md#set-a-text-annotation-identifier)
+* [Set a Text Annotation Description](text-annotation.md#set-a-text-annotation-description)
+
 ## Adding a Text Annotation
 
 Follow these steps to add an event to the process modeler:

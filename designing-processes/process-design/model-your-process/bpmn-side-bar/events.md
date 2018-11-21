@@ -15,6 +15,12 @@ The following events are supported by ProcessMaker 4:
 
 ![End Event](../../../../.gitbook/assets/image.png)
 
+See the following sections for information how to use this element in a process model:
+
+* [Adding an Event Element](events.md#adding-an-event-element)
+* [Set an Event Identifier](events.md#set-an-event-identifier)
+* [Set an Event Name](events.md#set-an-event-name)
+
 ## Adding an Event Element
 
 Follow these steps to add an event to the process modeler:

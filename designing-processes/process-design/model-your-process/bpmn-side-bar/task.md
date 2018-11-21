@@ -4,6 +4,13 @@ description: 'Use tasks as a logical group of sequential steps, sharing a common
 
 # Use a Task Element
 
+See the following sections for information how to use this element in a process model:
+
+* [Adding a task](task.md#adding-a-task)
+* [Set a task identifier](task.md#set-a-task-identifier)
+* [Set a task name](task.md#set-a-task-name)
+* [Select a screen to display in a task](task.md#select-a-screen-to-display-in-a-task)
+
 ## Adding a Task
 
 Follow these steps to add a task to the process modeler:
