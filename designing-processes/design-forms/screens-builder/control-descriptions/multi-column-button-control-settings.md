@@ -24,7 +24,5 @@ Below is a Multi Control button control in Preview mode.![](../../../../.gitbook
 
 ## Related Topics <a id="related-topics"></a>
 
-{% page-ref page="../view-the-inspector-pane.md" %}
-
 {% page-ref page="./" %}
 
