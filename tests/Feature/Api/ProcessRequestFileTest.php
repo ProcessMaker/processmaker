@@ -72,10 +72,11 @@ class ProcessRequestFileTest extends TestCase
         //update
         $file = $process_request->getMedia()[0]->id;
 
-        $response = $this->apiCall('PUT', '/requests/' . $process_request->id . '/files' . $file, [
+        $response = $this->apiCall('PUT', '/requests/' . $process_request->id . '/files/' . $file, [
             'file' => $fileUploadUpdate
         ]);
         $response->assertStatus(200);
-        
+
+        $this->assertEquals($process_request->getMedia()[0]->file_name, 'updatedFile.jpg');
     }
 }

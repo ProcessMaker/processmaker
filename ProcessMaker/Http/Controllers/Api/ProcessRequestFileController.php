@@ -12,6 +12,7 @@ use ProcessMaker\Models\ProcessRequest;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use ProcessMaker\Http\Resources\ApiResource;
+use ProcessMaker\Models\Media;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\JsonResponse;
@@ -40,8 +41,10 @@ class ProcessRequestFileController extends Controller
     /**
      * update existing file
      */
-    public function update(Request $laravel_request, ProcessRequest $request, $file)
+    public function update(Request $laravel_request, ProcessRequest $request)
     {
-        eval(\Psy\sh());
+        $newFile = $laravel_request->file;
+        $request->addMedia($newFile)->toMediaCollection();
+        return new JsonResponse(['message' => 'file successfully uploaded'], 200);
     }
 }
