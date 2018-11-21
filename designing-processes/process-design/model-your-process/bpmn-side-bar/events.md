@@ -37,7 +37,7 @@ Follow these steps to set an event identifier:
 \[Image\]
 
 {% hint style="info" %}
-Take into account that you can save an identifier just in end events, NOT in start events.
+Take into account that the process modeler can save automatically an identifier just in end events, NOT in start events.
 {% endhint %}
 
 ## Set an Event Name
@@ -52,6 +52,6 @@ Follow these steps to set an event name:
 \[Image\]
 
 {% hint style="info" %}
-Take into account that you can save a name just in end events, NOT in start events.
+Take into account that the process modeler can save automatically a name just in end events, NOT in start events.
 {% endhint %}
 
