@@ -39,6 +39,15 @@ Below are Inspector settings for the Text control:
   * 1.5
   * 2
 
+{% hint style="info" %}
+Below are some ways to render Request data to display as text in a Text control:
+
+* Use mustache template syntax to reference the Request data. Example: `Customer First Order Name: {{customer.orders.0.name}}`
+* \`\`
+
+  Include your own HTML into the text control along with template references. Example: `Customer First Name: <strong>{{customer.firstname}}</strong>`
+{% endhint %}
+
 ## Related Topics
 
 {% page-ref page="../view-the-inspector-pane.md" %}
