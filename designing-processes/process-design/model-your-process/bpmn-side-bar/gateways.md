@@ -23,7 +23,11 @@ Follow these steps to set a gateway identifier:
 1. [Add an exclusive gateway](gateways.md#adding-an-exclusive-gateway-element) to the process modeler.
 2. Click the new exclusive gateway.
 3. The default exclusive gateway identifier displays in the context right side bar.
-4. In the **Identifier** field, enter an exclusive gateway identifier. Process Modeler automatically saves the new value.
+4. In the **Identifier** field, enter an exclusive gateway ID identifier. Process Modeler automatically saves the new value.
+
+{% hint style="info" %}
+The ID identifier should be unique across all elements in the diagram.
+{% endhint %}
 
 \[Image\]
 

@@ -32,9 +32,13 @@ Follow these steps to set an event identifier:
 1. [Add an event](events.md#adding-an-event-element) to the process modeler.
 2. Click the new event.
 3. The default event identifier displays in the context right side bar.
-4. In the **Identifier** field, enter an event identifier. Process Modeler automatically saves the new value.
+4. In the **Identifier** field, enter an event ID identifier. Process Modeler automatically saves the new value.
 
 \[Image\]
+
+{% hint style="info" %}
+The ID identifier should be unique across all elements in the diagram.
+{% endhint %}
 
 {% hint style="info" %}
 Take into account that the process modeler can save automatically an identifier just in end events, NOT in start events.

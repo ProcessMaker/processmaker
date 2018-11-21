@@ -21,7 +21,11 @@ Follow these steps to set a task identifier:
 1. [Add a task](task.md#adding-a-task) to the process modeler.
 2. Click the new task.
 3. The default task identifier displays in the context right side bar.
-4. In the **Identifier** field, enter a task identifier. Process Modeler automatically saves the new value.
+4. In the **Identifier** field, enter a task ID identifier. Process Modeler automatically saves the new value.
+
+{% hint style="info" %}
+The ID identifier should be unique across all elements in the diagram.
+{% endhint %}
 
 \[Image\]
 
