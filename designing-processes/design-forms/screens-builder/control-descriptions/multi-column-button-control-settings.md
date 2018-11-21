@@ -1,14 +1,14 @@
 ---
 description: >-
-  Add a Multi Column button control from which the form user can view several
-  columns on the same ProcessMaker Screen.
+  Add a Multi Column button control from which the form user adds a layout
+  element with two columns on the ProcessMaker Screen.
 ---
 
 # Multi Column Button Control Settings
 
 ## Control Description <a id="control-description"></a>
 
-The Multi Column button control adds a button from which the form user can view several columns on the same ProcessMaker Screen. ~~Is this correct?~~
+The Multi Column button control adds a layout element with two columns. You can then drop in elements into either column.
 
 ## Add the Control to a ProcessMaker Screen <a id="add-the-control-to-a-processmaker-screen"></a>
 
@@ -18,18 +18,7 @@ Follow these steps to add this control to the ProcessMaker Screen:
 2. Go to the **Controls** panel on the left side of the ProcessMaker Screen.
 3. Drag the **Multi Column Button** icon ![](../../../../.gitbook/assets/multi-column-control-screens-builder-processes.png) from the **Controls** panel to the ProcessMaker Screen page.
 4. Drop into the ProcessMaker Screen where you want the control to display on the page.​![](../../../../.gitbook/assets/multi-column-control-placed-screens-builder-processes.png)
-
-~~I don't understand how to make a Multi Column Button Control display in Preview mode.~~
-
-## Inspector Settings <a id="inspector-settings"></a>
-
-{% hint style="info" %}
-For information how to view the **Inspector** panel, see [View the Inspector Panel](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/designing-processes/design-forms/screens-builder/view-the-inspector-pane).
-{% endhint %}
-
-Below are Inspector settings for the Multi Column Button control:
-
-* ~~What are the Inspector settings for the Multi Column control?~~
+5. Add others controls into either column. And in Preview mode a Multi-Column Button Control displays:![](../../../../.gitbook/assets/multi-column-control-display-screens-builder-processes.png) 
 
 ## Related Topics <a id="related-topics"></a>
 
