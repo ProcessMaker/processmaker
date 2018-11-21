@@ -36,7 +36,7 @@ In order to install ProcessMaker 4 in Debian you will need the following:
 
 ### **Install VirtualBox 5.2**
 
-Download VirtualBox for Debian from [https://www.virtualbox.org/wiki/Linux\_Downloads](https://www.virtualbox.org/wiki/Linux_Downloads). It will download a file with the `.deb` extension.
+[Download VirtualBox](https://www.virtualbox.org/wiki/Linux_Downloads) for Debian. It will download a file with the `.deb` extension.
 
 {% code-tabs %}
 {% code-tabs-item title="Install VirtualBox" %}
@@ -58,7 +58,7 @@ Verify that VirtualBox works correctly.
 
 ### Install Vagrant 2.2.1
 
-Download Vagrant for Debian from [https://www.vagrantup.com/downloads.html](https://www.vagrantup.com/downloads.html). It will download a file with the `.deb` extension.
+[Download Vagrant](https://www.vagrantup.com/downloads.html) for Debian. It will download a file with the `.deb` extension.
 
 {% code-tabs %}
 {% code-tabs-item title="Install Vagrant." %}
@@ -115,6 +115,8 @@ php -v
 
 ### Install Composer
 
+Follow these steps to install Composer:
+
 {% code-tabs %}
 {% code-tabs-item title="Download Composer and edit." %}
 ```text
@@ -149,6 +151,8 @@ composer
 {% endcode-tabs %}
 
 ### Install Node.js 10.13.0
+
+Follow these steps to install Node.js 10.13.0:
 
 {% code-tabs %}
 {% code-tabs-item title="Set \"Version\" and \"Distro\" variables." %}
