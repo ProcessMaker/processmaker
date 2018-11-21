@@ -20,7 +20,7 @@ Did you forget your password? See [Reset Your Password](log-in.md#reset-your-pas
 
 Follow these steps to log in to ProcessMaker:
 
-1. Enter the IP address \(or domain name\) and port number for the server or instance hosting ProcessMaker in a [supported web browser](../install-processmaker/prerequisites/supported-browsers.md#browser-support-policy). Follow these guidelines:
+1. Enter the IP address \(or domain name\) and port number for the server or instance hosting ProcessMaker in a [supported web browser](). Follow these guidelines:
 
    `http://<IP-Address>:<Port-Number>`
 

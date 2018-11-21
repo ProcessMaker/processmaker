@@ -1,14 +1,18 @@
-# Prerequisites
+---
+description: Install ProcessMaker prerequisites.
+---
 
-## Start here
+# Install Prerequisites
 
-Before start you must update your packages system running the following command:
+## Update Packages
+
+Update your packages system running the following command:
 
 ```text
 apt-get update && apt-get upgrade
 ```
 
-In order to install ProcessMaker 4 in Debian you will need:
+In order to install ProcessMaker 4 on Debian you will need:
 
 * VirtualBox 5.2
 * Vagrant 2.2.1
