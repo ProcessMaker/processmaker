@@ -11,7 +11,6 @@ use Tests\Feature\Shared\RequestHelper;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\User;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Testing\File;
 
 
@@ -55,5 +54,28 @@ class ProcessRequestFileTest extends TestCase
         $response->assertStatus(200);
         $this->assertEquals($process_request->getMedia()[0]->file_name, 'photo.jpg');
 
+    }
+
+    /**
+     * test update of an existing file 
+     */
+    public function testFileUpdate()
+    {
+        //create a request
+        $process_request = factory(ProcessRequest::class)->create();
+        // upload file 
+        $fileUpload = File::image('photo.jpg');
+
+        $fileUploadUpdate= File::image('updatedFile.jpg');
+        //save the file with media lib
+        $process_request->addMedia($fileUpload)->toMediaCollection();
+        //update
+        $file = $process_request->getMedia()[0]->id;
+
+        $response = $this->apiCall('PUT', '/requests/' . $process_request->id . '/files' . $file, [
+            'file' => $fileUploadUpdate
+        ]);
+        $response->assertStatus(200);
+        
     }
 }

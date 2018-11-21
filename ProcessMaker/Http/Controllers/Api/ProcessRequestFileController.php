@@ -36,4 +36,12 @@ class ProcessRequestFileController extends Controller
         $file = $request->addMedia($laravel_request->file)->toMediaCollection();
         return new JsonResponse(['message' => 'file successfully uploaded'], 200);
     }
+
+    /**
+     * update existing file
+     */
+    public function update(Request $laravel_request, ProcessRequest $request, $file)
+    {
+        eval(\Psy\sh());
+    }
 }
