@@ -28,11 +28,11 @@ dpks -i [file name].deb
 
 In order to install ProcessMaker 4 in Debian you will need the following:
 
-* VirtualBox 5.2
-* Vagrant 2.2.1
-* PHP 7.2
-* Composer
-* Node.js 10.13.0
+* [VirtualBox 5.2](install-processmaker-on-premise.md#install-virtualbox-5-2)
+* [Vagrant 2.2.1](install-processmaker-on-premise.md#install-vagrant-2-2-1)
+* [PHP 7.2](install-processmaker-on-premise.md#install-php-7-2)
+* [Composer](install-processmaker-on-premise.md#install-composer)
+* [Node.js 10.13.0](install-processmaker-on-premise.md#install-node-js-10-13-0)
 
 ### **Install VirtualBox 5.2**
 
