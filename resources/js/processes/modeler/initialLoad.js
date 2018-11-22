@@ -12,14 +12,6 @@ import {
 } from '@processmaker/modeler'
 
 import bpmnExtension from '@processmaker/processmaker-bpmn-moddle/resources/processmaker.json';
-
-import BpmnModdle from 'bpmn-moddle';
-
-let moddle = new BpmnModdle({
-    pm: bpmnExtension
-});
-
-// Bring in our screen selector
 import ModelerScreenSelect from './components/inspector/ScreenSelect';
 import ExpressionEditor from './components/inspector/ExpressionEditor';
 import TaskAssignment from './components/inspector/TaskAssignment';
@@ -53,31 +45,6 @@ task.inspectorConfig[0].items.push({
         label: "Task Assignment",
         helper: "",
         name: "id"
-    }
-});
-
-// Watcher:
-// Add custom properties of sequenceFlow
-sequenceFlow.inspectorHandler = (value, definition, component) => {
-    // Go through each property and rebind it to our data
-    Object.keys(value).forEach((key) => {
-        if (definition[key] !== value[key]) {
-            definition[key] = value[key];
-        }
-        if (key === "conditionExpression") {
-            definition[key].$type = "bpmn:Expression";
-        }
-    });
-    component.updateShape();
-};
-// Add inspector for conditionExpression
-sequenceFlow.inspectorConfig[0].items.push({
-    component: "ExpressionEditor",
-    config: {
-        label: "Condition",
-        helper: "An optional boolean Expression that acts as a gating condition",
-        name: "id",
-        property: "conditionExpression.body"
     }
 });
 
