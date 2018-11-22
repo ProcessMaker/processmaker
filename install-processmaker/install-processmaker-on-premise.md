@@ -79,6 +79,8 @@ Verify that VirtualBox works correctly.
 
 [Download Vagrant](https://www.vagrantup.com/downloads.html) for Debian. It will download a file with the `.deb` extension.
 
+![](../.gitbook/assets/selection_282.png)
+
 {% code-tabs %}
 {% code-tabs-item title="Install Vagrant." %}
 ```text
@@ -90,6 +92,10 @@ dpkg -i [file name].deb
 Verify if it is installed correctly.
 
 ### Install PHP 7.2
+
+{% hint style="info" %}
+If your Linux distribution already has PHP 7.2 you do not need to add the repository and go direct to the step 4.
+{% endhint %}
 
 Perform the following commands to install PHP 7.2:
 
@@ -116,10 +122,6 @@ apt-get update
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
-
-{% hint style="info" %}
-If your Linux distribution already has PHP 7.2 you do not need to add the repository.
-{% endhint %}
 
 {% code-tabs %}
 {% code-tabs-item title="4. Install the PHP 7.2 version and its modules." %}
