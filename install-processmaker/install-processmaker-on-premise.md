@@ -12,7 +12,7 @@ The installation procedure described below installs prerequisite applications an
 
 Ensure you meet [installation requirements](prerequisites.md) prior to starting this installation procedure.
 
-The internal beta has been successfully installed on Debian Linux.
+The following installation procedure instructs how to install the internal beta on Debian Linux. However, notes how to install the internal beta on Ubuntu Linux 18.04 are included that vary from Debian Linux instructions.
 {% endhint %}
 
 ## Install Prerequisites
@@ -29,42 +29,44 @@ apt-get update && apt-get upgrade
 
 In order to install ProcessMaker 4 in Debian you will need the following:
 
-* [VirtualBox 5.2](install-processmaker-on-premise.md#install-virtualbox-5-2)
+* [VirtualBox 5.2.22](install-processmaker-on-premise.md#install-virtualbox-5-2-22)
 * [Vagrant 2.2.1](install-processmaker-on-premise.md#install-vagrant-2-2-1)
 * [PHP 7.2](install-processmaker-on-premise.md#install-php-7-2)
 * [Composer](install-processmaker-on-premise.md#install-composer)
 * [Node.js 10.13.0](install-processmaker-on-premise.md#install-node-js-10-13-0)
 
-### **Install VirtualBox 5.2**
+### **Install VirtualBox 5.2.22**
 
 [Download VirtualBox](https://www.virtualbox.org/wiki/Linux_Downloads) for Debian. It will download a file with the `.deb` extension.
 
 ![It is important that you download the correct version of VirtualBox for your OS](../.gitbook/assets/selection_281.png)
 
 {% code-tabs %}
-{% code-tabs-item title="Install the package of VirtualBox" %}
+{% code-tabs-item title="1. Install the VirtualBox package." %}
 ```text
 dpkg -i [file name].deb
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-After the installation finishes, it possible that VirtualBox will not work, and it will ask you to install the following libraries 
+After the installation finishes, VirtualBox may not work. VirtualBox will ask you to install the gcc, make, perl libraries as well as the kernel "header."
 
 {% code-tabs %}
-{% code-tabs-item title="Install the libraries for gcc, make, perl, and the kernel \"header\"" %}
+{% code-tabs-item title="Install the libraries for gcc, make, perl, and the kernel \"header.\"" %}
 ```text
 apt-get install gcc make perl kernel-devel
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-> In Ubuntu 18.04 instead of `kernel-devel` use `linux-headers-generic`
+{% hint style="info" %}
+In Ubuntu 18.04, instead of `kernel-devel` use `linux-headers-generic`.
+{% endhint %}
 
-Then you will need to run the following command to finish the installation of VirtualBox
+Then you will need to run the following command to finish the installation of VirtualBox.
 
 {% code-tabs %}
-{% code-tabs-item title="Recompile the kernel module" %}
+{% code-tabs-item title="Recompile the kernel module." %}
 ```text
 sudo /sbin/vboxconfig
 ```
@@ -85,14 +87,14 @@ dpkg -i [file name].deb
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-Verify if it is installed correctly
+Verify if it is installed correctly.
 
 ### Install PHP 7.2
 
 Perform the following commands to install PHP 7.2:
 
 {% code-tabs %}
-{% code-tabs-item title="1. Install the program to add repositories" %}
+{% code-tabs-item title="1. Install the program to add repositories." %}
 ```text
 apt-get install software-properties-common
 ```
@@ -115,7 +117,9 @@ apt-get update
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-> If your distribution already have the version 7.2 you do not need to add the repository
+{% hint style="info" %}
+If your Linux distribution already has PHP 7.2 you do not need to add the repository.
+{% endhint %}
 
 {% code-tabs %}
 {% code-tabs-item title="4. Install the PHP 7.2 version and its modules." %}
@@ -267,7 +271,7 @@ composer install
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="5. Install the package manager" %}
+{% code-tabs-item title="5. Install the package manager." %}
 ```text
 apt-get install npm
 ```
@@ -275,7 +279,7 @@ apt-get install npm
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="6. Run the manager inside the project" %}
+{% code-tabs-item title="6. Run the manager inside the project." %}
 ```text
 npm install
 npm run dev
@@ -299,7 +303,9 @@ nano /etc/hosts
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-> You can change the IP or the URL to one you prefer, but if you do so, you would need to make the change also in the `Homestead.yaml`file.
+{% hint style="info" %}
+You can change the IP or the URL to one you prefer. But if you do so, you must make the change also in the `Homestead.yaml`file.
+{% endhint %}
 
 {% code-tabs %}
 {% code-tabs-item title="9. Create a public key." %}
@@ -310,7 +316,7 @@ ssh-keygen
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="10. Gets up the server" %}
+{% code-tabs-item title="10. Gets the server up." %}
 ```text
 vagrant up
 ```
@@ -318,7 +324,7 @@ vagrant up
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="11. Enter the server" %}
+{% code-tabs-item title="11. Enter the server." %}
 ```text
 vagrant ssh
 ```
@@ -334,7 +340,7 @@ cd /home/vagrant/processmaker
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="13. Start the isntallation and ask for parameters" %}
+{% code-tabs-item title="13. Start the installation and ask for parameters." %}
 ```text
 php artisan bpm:install
 ```
@@ -350,7 +356,9 @@ Enter the following parameters:
 * Specify `secret` as your local database password.
 * Specify `https://bpm4.local.processmaker.com` as your application URL.
 
-> Or the new URL that you assign in the `hosts` and `Homestead.yaml` files
+{% hint style="info" %}
+Alternatively, use the new URL that you assigned in the `hosts` and `Homestead.yaml` files.
+{% endhint %}
 
 In a browser go to [https://bpm4.local.processmaker.com](https://bpm4.local.processmaker.com) and use the following credentials to [log in](../using-processmaker/log-in.md):
 
