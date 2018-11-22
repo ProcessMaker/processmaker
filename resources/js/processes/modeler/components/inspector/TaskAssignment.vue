@@ -11,17 +11,18 @@
             <label>Assigned Users/Groups</label>
             <button @click="showUserOrGroup=true;" class="btn-sm float-right">+</button>
             <button @click="removeUserOrGroup" :disabled="!selectedAssignee" class="btn-sm float-right">-</button>
-            <div class="list-users-groups">
-                <span v-for="(row, index) in usersAndGroups"
+            <div class="list-users-groups small">
+                <span v-for="(row, index) in assignedUsersGroups"
                       class="list-group-item list-group-item-action pt-0 pb-0"
-                      :class="{'bg-primary': selectedUserGroupIndex == index}"
-                      @click="selectUserGroup(row, index)">
+                      :class="{'bg-primary': selectedAssigneeIndex == index}"
+                      @click="selectAssignee(row, index)">
                       <avatar-image v-if="row.fullname"
                               class-container=""
-                              size="10" class-image=""
+                              size="12" class-image=""
                               :input-data="row"></avatar-image>
                     <template v-else>
-                        <i class="fa fa-users" aria-hidden="true"></i> {{row.name}}
+                        <i class="fa fa-users" aria-hidden="true"></i>
+                        <span class="text-center text-capitalize text-nowrap m-1">{{row.name}}</span>
                     </template>
                 </span>
             </div>
@@ -37,20 +38,24 @@
             </div>
             <div class="list-users-groups">
                 <span v-for="(row, index) in usersAndGroups"
-                      class="list-group-item list-group-item-action"
+                      class="list-group-item list-group-item-action pt-1 pb-1"
                       :class="{'bg-primary': selectedUserGroupIndex == index}"
-                      @click="selectUserGroup(row, index)">
+                      @click="selectUserGroup(row, index)"
+                      @dblclick="selectUserGroup(row, index);addUserOrGroup();"
+                      >
                       <avatar-image v-if="row.fullname"
-                              class-container="d-flex m-1"
-                              size="14" class-image="m-1"
+                              class-container=""
+                              size="12" class-image=""
                               :input-data="row"></avatar-image>
                     <template v-else>
-                        <i class="fa fa-users" aria-hidden="true"></i> {{row.name}}
+                        <i class="fa fa-users" aria-hidden="true"></i>
+                        <span class="text-center text-capitalize text-nowrap m-1">{{row.name}}</span>
                     </template>
                 </span>
             </div>
             <div slot="modal-footer">
-                <b-button :disabled="selectedUserGroupIndex < 0" @click="addUserOrGroup" class="btn btn-outline-success btn-sm text-uppercase">
+                <b-button :disabled="selectedUserGroupIndex < 0" @click="addUserOrGroup"
+                    class="btn btn-outline-success btn-sm text-uppercase">
                     ADD
             </b-button>
             <b-button @click="cancelAddUserOrGroup" class="btn btn-success btn-sm text-uppercase">
@@ -68,7 +73,8 @@
         props: ["value", "label", "helper", "property"],
         data() {
             return {
-                selectedAssignee: '',
+                selectedAssigneeIndex: -1,
+                selectedAssignee: null,
                 assignedUsersGroups: [],
                 usersAndGroups: [],
                 showUserOrGroup: false,
@@ -92,14 +98,22 @@
         },
         methods: {
             /**
+             * Select an assigned user or group
+             * 
+             * @param {object} assignee
+             * @param {number} index
+             */
+            selectAssignee(assignee, index) {
+                this.selectedAssigneeIndex = index;
+                this.selectedAssignee = assignee;
+            },
+            /**
              * Remove a user or group from assigned list
              */
             removeUserOrGroup() {
-                const index = this.assignedUsersGroups.findIndex((item) => {
-                    return item.id == this.selectedAssignee;
-                });
-                if (index > -1) {
-                    this.assignedUsersGroups.splice(index, 1);
+                if (this.selectedAssigneeIndex > -1) {
+                    this.assignedUsersGroups.splice(this.selectedAssigneeIndex, 1);
+                    this.selectedAssigneeIndex = -1;
                 }
             },
             /**
@@ -177,5 +191,9 @@
         height: 24em;
         overflow-y: auto;
         font-size: 0.75rem;
+        background: white;
+    }
+    .list-users-groups.small {
+        height: 8em;
     }
 </style>
