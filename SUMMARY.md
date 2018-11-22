@@ -93,6 +93,7 @@
 * [Process Modeling](designing-processes/process-design/README.md)
   * [What is Process Modeling?](designing-processes/process-design/what-is-process-modeling.md)
   * [Model Your Process](designing-processes/process-design/model-your-process/README.md)
+    * [Process Modeling Element Descriptions](designing-processes/process-design/model-your-process/process-modeling-element-descriptions.md)
     * [Use the Top Bar](designing-processes/process-design/model-your-process/toolboxes.md)
     * [Interact With an Element](designing-processes/process-design/model-your-process/bpmn-side-bar/README.md)
       * [Use a Task Element](designing-processes/process-design/model-your-process/bpmn-side-bar/task.md)
