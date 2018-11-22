@@ -115,6 +115,8 @@ apt-get update
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
+> If your distribution already have the version 7.2 you do not need to add the repository
+
 {% code-tabs %}
 {% code-tabs-item title="4. Install the PHP 7.2 version and its modules." %}
 ```text
@@ -297,6 +299,8 @@ nano /etc/hosts
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
+> You can change the IP or the URL to one you prefer, but if you do so, you would need to make the change also in the `Homestead.yaml`file.
+
 {% code-tabs %}
 {% code-tabs-item title="9. Create a public key." %}
 ```text
@@ -345,6 +349,8 @@ Enter the following parameters:
 * Specify `homestead` as your local database username.
 * Specify `secret` as your local database password.
 * Specify `https://bpm4.local.processmaker.com` as your application URL.
+
+> Or the new URL that you assign in the `hosts` and `Homestead.yaml` files
 
 In a browser go to [https://bpm4.local.processmaker.com](https://bpm4.local.processmaker.com) and use the following credentials to [log in](../using-processmaker/log-in.md):
 
