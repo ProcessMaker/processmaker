@@ -39,7 +39,7 @@ In order to install ProcessMaker 4 in Debian you will need the following:
 [Download VirtualBox](https://www.virtualbox.org/wiki/Linux_Downloads) for Debian. It will download a file with the `.deb` extension.
 
 {% code-tabs %}
-{% code-tabs-item title="1. Install VirtualBox" %}
+{% code-tabs-item title="1. Install VirtualBox after you have downloaded the installer." %}
 ```text
 dpks -i [file name].deb
 ```
@@ -61,7 +61,7 @@ Verify that VirtualBox works correctly.
 [Download Vagrant](https://www.vagrantup.com/downloads.html) for Debian. It will download a file with the `.deb` extension.
 
 {% code-tabs %}
-{% code-tabs-item title="Install Vagrant." %}
+{% code-tabs-item title="Install Vagrant after you have downloaded the installer." %}
 ```text
 dpks -i [file name].deb
 ```
@@ -70,7 +70,7 @@ dpks -i [file name].deb
 
 ### Install PHP 7.2
 
-Follow these steps to install PHP 7.2:
+Perform the following commands to install PHP 7.2:
 
 {% code-tabs %}
 {% code-tabs-item title="1. Add repositories." %}
@@ -115,7 +115,7 @@ php -v
 
 ### Install Composer
 
-Follow these steps to install Composer:
+Perform the following commands to install Composer:
 
 {% code-tabs %}
 {% code-tabs-item title="1. Download Composer and edit." %}
@@ -152,7 +152,7 @@ composer
 
 ### Install Node.js 10.13.0
 
-Follow these steps to install Node.js 10.13.0:
+Perform the following commands to install Node.js 10.13.0:
 
 {% code-tabs %}
 {% code-tabs-item title="1. Set \"Version\" and \"Distro\" variables." %}
@@ -211,7 +211,7 @@ node -v
 
 ## Install ProcessMaker
 
-Follow these steps to install ProcessMaker 4:
+Perform the following commands to install ProcessMaker 4 internal beta:
 
 {% code-tabs %}
 {% code-tabs-item title="1. Install Git." %}
