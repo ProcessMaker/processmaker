@@ -211,7 +211,125 @@ node -v
 
 ## Install ProcessMaker
 
+Follow these steps to install ProcessMaker 4:
 
+{% code-tabs %}
+{% code-tabs-item title="Install Git." %}
+```text
+apt-get install git
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+{% code-tabs %}
+{% code-tabs-item title="Clone the project." %}
+```text
+git clone https://github.com/ProcessMaker/bpm.git
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+{% code-tabs %}
+{% code-tabs-item title="Enter the project." %}
+```text
+cd bpm/
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+{% code-tabs %}
+{% code-tabs-item title="Run Composer." %}
+```text
+composer install
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+{% code-tabs %}
+{% code-tabs-item title="RICARDO, WHAT DOES THIS COMMAND DO?" %}
+```text
+npm install
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+{% code-tabs %}
+{% code-tabs-item title="RICARDO, WHAT DOES THIS COMMAND DO?" %}
+```text
+npm run dev
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+{% code-tabs %}
+{% code-tabs-item title="Edit the file." %}
+```text
+nano /etc/hosts
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+{% code-tabs %}
+{% code-tabs-item title="Add the following line at the bottom of the file." %}
+```text
+192.168.10.10 bpm4.local.processmaker.com
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+{% code-tabs %}
+{% code-tabs-item title="Create a public key." %}
+```text
+ssh-keygen
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+{% code-tabs %}
+{% code-tabs-item title="RICARDO, WHAT DOES THIS COMMAND DO?" %}
+```text
+vagrant up
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+{% code-tabs %}
+{% code-tabs-item title="RICARDO, WHAT DOES THIS COMMAND DO?" %}
+```text
+vagrant ssh
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+{% code-tabs %}
+{% code-tabs-item title="Go to the following path:" %}
+```text
+cd /home/vagrant/processmaker
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+{% code-tabs %}
+{% code-tabs-item title="RICARDO, WHAT DOES THIS COMMAND DO?" %}
+```text
+php artisan bpm:install
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+Enter the following parameters:
+
+* Specify `localhost` as your local database server.
+* Specify `3306` as your local database port.
+* Specify `workflow` as your local database name.
+* Specify `homestead` as your local database username.
+* Specify `secret` as your local database password.
+* Specify `https://bpm4.local.processmaker.com` as your application URL.
+
+In a browser go to [https://bpm4.local.processmaker.com](https://bpm4.local.processmaker.com) and use the following credentials to [log in](../using-processmaker/log-in.md):
+
+* Username: `admin`
+* Password: `admin`
 
 ## Related Topics
 
