@@ -28,18 +28,18 @@ $factory->define(ProcessTaskAssignment::class, function (Faker $faker) {
     ];
 });
 
-$factory->defineAs(ProcessTaskAssignment::class, 'user', function (Faker $faker) use ($factory) {
+$factory->defineAs(ProcessTaskAssignment::class, 'user', function () use ($factory) {
     $follow = $factory->raw(ProcessTaskAssignment::class);
     $extras = [
         'id' => function () {
             return factory(User::class)->create()->getKey();
         },
-        'assignment_type' => User::class 
+        'assignment_type' => User::class
     ];
     return array_merge($follow, $extras);
 });
 
-$factory->defineAs(ProcessTaskAssignment::class, 'group', function (Faker $faker) use ($factory) {
+$factory->defineAs(ProcessTaskAssignment::class, 'group', function () use ($factory) {
     $follow = $factory->raw(ProcessTaskAssignment::class);
     $extras = [
         'id' => function () {
