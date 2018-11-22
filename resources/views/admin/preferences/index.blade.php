@@ -12,10 +12,7 @@
     <div class="container mt-4">
       <h3>Preferences</h3>
       <div class="card card-body">
-        <div class="d-flex mb-2">
           <h3 class="mt-1">Localization</h3>
-          <button class="btn btn-secondary ml-2 mt-1" style="height:22px; padding-bottom: 21px;"><i class="fas fa-undo-alt"></i>  Reset</button>
-        </div>
         <div class="row">
           <div class="form-group col">
             {!!Form::label('fullName', 'Full Name Format');!!}
@@ -30,10 +27,7 @@
             <small id="emailHelp" class="form-text text-muted">Default Language to be used across all applications</small>
           </div>
         </div>
-        <div class="d-flex mt-5 mb-2">
-          <h3 class="mt-1">Email Notifications</h3>
-          <button class="btn btn-secondary ml-2 mt-1" style="height:22px; padding-bottom: 21px;"><i class="fas fa-check"></i>  Test</button>
-        </div>
+          <h3 class="mt-3">Email Notifications</h3>
         <div class="row">
           <div class="form-group col">
             {!!Form::label('hostName', 'Host Name');!!}
@@ -83,4 +77,4 @@
 @section('sidebar')
     @include('layouts.sidebar', ['sidebar' => Menu::get('sidebar_admin')])
 @endsection
-
+ 

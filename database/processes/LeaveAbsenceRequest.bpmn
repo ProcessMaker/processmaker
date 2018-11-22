@@ -17,7 +17,7 @@
     <sequenceFlow id="_5" sourceRef="approve" targetRef="_4"/>
     <sequenceFlow id="_6" sourceRef="request" targetRef="approve"/>
     <sequenceFlow id="_7" sourceRef="_4" targetRef="validate">
-      <conditionExpression><![CDATA[$approved]]></conditionExpression>
+      <conditionExpression><![CDATA[approved]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="_9" sourceRef="validate" targetRef="_8"/>
     <endEvent id="_8" name="End Event">
@@ -37,18 +37,18 @@
       <inputSet/>
     </endEvent>
     <sequenceFlow id="_11" sourceRef="_4" targetRef="_10">
-      <conditionExpression><![CDATA[!$approved]]></conditionExpression>
+      <conditionExpression><![CDATA[not approved]]></conditionExpression>
     </sequenceFlow>
     <startEvent id="_2" isInterrupting="true" name="Start Event" parallelMultiple="false">
       <outgoing>_3</outgoing>
       <outputSet/>
     </startEvent>
-    <scriptTask completionQuantity="1" id="_12" isForCompensation="false" name="Get available days" scriptFormat="application/x-php" startQuantity="1">
+    <scriptTask completionQuantity="1" id="_12" isForCompensation="false" name="Get available days" scriptFormat="application/x-php" startQuantity="1" pm:config='{}'>
       <incoming>_3</incoming>
       <outgoing>_14</outgoing>
       <script><![CDATA[<?php
 $credits = rand(0, 50);
-$hoursOfWork = getenv('hours_of_work');
+$hoursOfWork = getenv('hours_of_work') ?: 8;
 $availableDays = round($credits / $hoursOfWork);
 sleep(3);
 return [
@@ -61,7 +61,7 @@ return [
       <extensionElements>
         <yaoqiang:label offset-x="-1.0" offset-y="0.0" x="0.0" y="10.0"/>
       </extensionElements>
-      <conditionExpression><![CDATA[$availableDays>0]]></conditionExpression>
+      <conditionExpression><![CDATA[availableDays > 0]]></conditionExpression>
     </sequenceFlow>
     <exclusiveGateway gatewayDirection="Diverging" id="_13">
       <incoming>_14</incoming>
