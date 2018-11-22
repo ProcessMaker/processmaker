@@ -5,6 +5,7 @@ description: Install ProcessMaker on premises.
 # Install ProcessMaker
 
 {% hint style="warning" %}
+  
 The following installation instructions are for the ProcessMaker Community edition internal beta. The internal beta is a developer-oriented installation procedure.
 
 The installation procedure described below installs prerequisite applications and then installs the internal beta for ProcessMaker 4 Community edition.
@@ -21,7 +22,7 @@ The internal beta has been successfully installed on Debian Linux.
 {% code-tabs %}
 {% code-tabs-item title="Update your packages system." %}
 ```text
-dpks -i [file name].deb
+apt-get update && apt-get upgrade
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
@@ -38,18 +39,34 @@ In order to install ProcessMaker 4 in Debian you will need the following:
 
 [Download VirtualBox](https://www.virtualbox.org/wiki/Linux_Downloads) for Debian. It will download a file with the `.deb` extension.
 
+![It is important that you download the correct version of VirtualBox for your OS](../.gitbook/assets/selection_281.png)
+
 {% code-tabs %}
-{% code-tabs-item title="1. Install VirtualBox after you have downloaded the installer." %}
+{% code-tabs-item title="Install the package of VirtualBox" %}
 ```text
-dpks -i [file name].deb
+dpkg -i [file name].deb
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
+After the installation finishes, it possible that VirtualBox will not work, and it will ask you to install the following libraries 
+
 {% code-tabs %}
-{% code-tabs-item title="2. After the installation finishes, install the libraries for gcc, make, perl, and the kernel \"header\" for VirtualBox." %}
+{% code-tabs-item title="Install the libraries for gcc, make, perl, and the kernel \"header\"" %}
 ```text
 apt-get install gcc make perl kernel-devel
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+> In Ubuntu 18.04 instead of `kernel-devel` use `linux-headers-generic`
+
+Then you will need to run the following command to finish the installation of VirtualBox
+
+{% code-tabs %}
+{% code-tabs-item title="Recompile the kernel module" %}
+```text
+sudo /sbin/vboxconfig
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
@@ -61,19 +78,21 @@ Verify that VirtualBox works correctly.
 [Download Vagrant](https://www.vagrantup.com/downloads.html) for Debian. It will download a file with the `.deb` extension.
 
 {% code-tabs %}
-{% code-tabs-item title="Install Vagrant after you have downloaded the installer." %}
+{% code-tabs-item title="Install Vagrant." %}
 ```text
-dpks -i [file name].deb
+dpkg -i [file name].deb
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
+
+Verify if it is installed correctly
 
 ### Install PHP 7.2
 
 Perform the following commands to install PHP 7.2:
 
 {% code-tabs %}
-{% code-tabs-item title="1. Add repositories." %}
+{% code-tabs-item title="1. Install the program to add repositories" %}
 ```text
 apt-get install software-properties-common
 ```
@@ -106,7 +125,7 @@ apt-get install php-pear php7.2-curl php7.2-dev php7.2-gd php7.2-mbstring php7.2
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="Verify the installation." %}
+{% code-tabs-item title="5. Verify the installation." %}
 ```text
 php -v
 ```
@@ -129,7 +148,7 @@ mv composer.phar composer
 {% code-tabs %}
 {% code-tabs-item title="2. Give permissions." %}
 ```text
-Chmod +x composer
+chmod +x composer
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
@@ -246,16 +265,17 @@ composer install
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="5. RICARDO, WHAT DOES THIS COMMAND DO?" %}
+{% code-tabs-item title="5. Install the package manager" %}
 ```text
-npm install
+apt-get install npm
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="6. RICARDO, WHAT DOES THIS COMMAND DO?" %}
+{% code-tabs-item title="6. Run the manager inside the project" %}
 ```text
+npm install
 npm run dev
 ```
 {% endcode-tabs-item %}
@@ -286,7 +306,7 @@ ssh-keygen
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="10. RICARDO, WHAT DOES THIS COMMAND DO?" %}
+{% code-tabs-item title="10. Gets up the server" %}
 ```text
 vagrant up
 ```
@@ -294,7 +314,7 @@ vagrant up
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="11. RICARDO, WHAT DOES THIS COMMAND DO?" %}
+{% code-tabs-item title="11. Enter the server" %}
 ```text
 vagrant ssh
 ```
@@ -310,7 +330,7 @@ cd /home/vagrant/processmaker
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="13. RICARDO, WHAT DOES THIS COMMAND DO?" %}
+{% code-tabs-item title="13. Start the isntallation and ask for parameters" %}
 ```text
 php artisan bpm:install
 ```
