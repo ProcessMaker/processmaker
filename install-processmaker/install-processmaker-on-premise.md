@@ -39,7 +39,7 @@ In order to install ProcessMaker 4 in Debian you will need the following:
 [Download VirtualBox](https://www.virtualbox.org/wiki/Linux_Downloads) for Debian. It will download a file with the `.deb` extension.
 
 {% code-tabs %}
-{% code-tabs-item title="Install VirtualBox" %}
+{% code-tabs-item title="1. Install VirtualBox" %}
 ```text
 dpks -i [file name].deb
 ```
@@ -47,7 +47,7 @@ dpks -i [file name].deb
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="After the installation finishes, install the libraries for gcc, make, perl, and the kernel \"header\" for VirtualBox." %}
+{% code-tabs-item title="2. After the installation finishes, install the libraries for gcc, make, perl, and the kernel \"header\" for VirtualBox." %}
 ```text
 apt-get install gcc make perl kernel-devel
 ```
@@ -73,7 +73,7 @@ dpks -i [file name].deb
 Follow these steps to install PHP 7.2:
 
 {% code-tabs %}
-{% code-tabs-item title="Add repositories." %}
+{% code-tabs-item title="1. Add repositories." %}
 ```text
 apt-get install software-properties-common
 ```
@@ -81,7 +81,7 @@ apt-get install software-properties-common
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="Add the repository." %}
+{% code-tabs-item title="2. Add the repository." %}
 ```text
 add-apt-repository ppa:ondrej/php
 ```
@@ -89,7 +89,7 @@ add-apt-repository ppa:ondrej/php
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="Update the packages." %}
+{% code-tabs-item title="3. Update the packages." %}
 ```text
 apt-get update
 ```
@@ -97,7 +97,7 @@ apt-get update
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="Install the PHP 7.2 version and its modules." %}
+{% code-tabs-item title="4. Install the PHP 7.2 version and its modules." %}
 ```text
 apt-get install php7.2
 apt-get install php-pear php7.2-curl php7.2-dev php7.2-gd php7.2-mbstring php7.2-zip php7.2-mysql php7.2-xml
@@ -118,7 +118,7 @@ php -v
 Follow these steps to install Composer:
 
 {% code-tabs %}
-{% code-tabs-item title="Download Composer and edit." %}
+{% code-tabs-item title="1. Download Composer and edit." %}
 ```text
 wget https://getcomposer.org/composer.phar
 mv composer.phar composer
@@ -127,7 +127,7 @@ mv composer.phar composer
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="Give permissions." %}
+{% code-tabs-item title="2. Give permissions." %}
 ```text
 Chmod +x composer
 ```
@@ -135,7 +135,7 @@ Chmod +x composer
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="Move the file to the local directory." %}
+{% code-tabs-item title="3. Move the file to the local directory." %}
 ```text
 mv composer /usr/local/bin
 ```
@@ -143,7 +143,7 @@ mv composer /usr/local/bin
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="Verify the functionality." %}
+{% code-tabs-item title="4. Verify the functionality." %}
 ```text
 composer
 ```
@@ -155,7 +155,7 @@ composer
 Follow these steps to install Node.js 10.13.0:
 
 {% code-tabs %}
-{% code-tabs-item title="Set \"Version\" and \"Distro\" variables." %}
+{% code-tabs-item title="1. Set \"Version\" and \"Distro\" variables." %}
 ```text
 VERSION=v10.13.0
 DISTRO=linux-x64
@@ -164,7 +164,7 @@ DISTRO=linux-x64
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="Download the program." %}
+{% code-tabs-item title="2. Download the program." %}
 ```text
 cd /opt/
 wget https://nodejs.org/download/release/v10.13.0/node-v10.13.0-linux-x64.tar.xz
@@ -173,7 +173,7 @@ wget https://nodejs.org/download/release/v10.13.0/node-v10.13.0-linux-x64.tar.xz
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="Decompress the program." %}
+{% code-tabs-item title="3. Decompress the program." %}
 ```text
 mkdir /usr/local/lib/nodejs
 tar -xJvf node-$VERSION-$DISTRO.tar.xz -C /usr/local/lib/nodejs
@@ -182,7 +182,7 @@ tar -xJvf node-$VERSION-$DISTRO.tar.xz -C /usr/local/lib/nodejs
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="Rename the directory." %}
+{% code-tabs-item title="4. Rename the directory." %}
 ```text
 mv /usr/local/lib/nodejs/node-$VERSION-$DISTRO /usr/local/lib/nodejs/node-$VERSION
 ```
@@ -190,7 +190,7 @@ mv /usr/local/lib/nodejs/node-$VERSION-$DISTRO /usr/local/lib/nodejs/node-$VERSI
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="Configure the program." %}
+{% code-tabs-item title="5. Configure the program." %}
 ```text
 echo "VERSION=v10.13.0" >> ~/.bashrc
 echo "DISTRO=linux-x64" >> ~/.bashrc
@@ -202,7 +202,7 @@ echo 'export PATH=$NODEJS_HOME:$PATH' >> ~/.bashrc
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="Verify the installation." %}
+{% code-tabs-item title="6. Verify the installation." %}
 ```text
 node -v
 ```
@@ -214,7 +214,7 @@ node -v
 Follow these steps to install ProcessMaker 4:
 
 {% code-tabs %}
-{% code-tabs-item title="Install Git." %}
+{% code-tabs-item title="1. Install Git." %}
 ```text
 apt-get install git
 ```
@@ -222,7 +222,7 @@ apt-get install git
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="Clone the project." %}
+{% code-tabs-item title="2. Clone the project." %}
 ```text
 git clone https://github.com/ProcessMaker/bpm.git
 ```
@@ -230,7 +230,7 @@ git clone https://github.com/ProcessMaker/bpm.git
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="Enter the project." %}
+{% code-tabs-item title="3. Enter the project." %}
 ```text
 cd bpm/
 ```
@@ -238,7 +238,7 @@ cd bpm/
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="Run Composer." %}
+{% code-tabs-item title="4. Run Composer." %}
 ```text
 composer install
 ```
@@ -246,7 +246,7 @@ composer install
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="RICARDO, WHAT DOES THIS COMMAND DO?" %}
+{% code-tabs-item title="5. RICARDO, WHAT DOES THIS COMMAND DO?" %}
 ```text
 npm install
 ```
@@ -254,7 +254,7 @@ npm install
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="RICARDO, WHAT DOES THIS COMMAND DO?" %}
+{% code-tabs-item title="6. RICARDO, WHAT DOES THIS COMMAND DO?" %}
 ```text
 npm run dev
 ```
@@ -262,7 +262,7 @@ npm run dev
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="Edit the file." %}
+{% code-tabs-item title="7. Edit the file." %}
 ```text
 nano /etc/hosts
 ```
@@ -270,7 +270,7 @@ nano /etc/hosts
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="Add the following line at the bottom of the file." %}
+{% code-tabs-item title="8. Add the following line at the bottom of the file." %}
 ```text
 192.168.10.10 bpm4.local.processmaker.com
 ```
@@ -278,7 +278,7 @@ nano /etc/hosts
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="Create a public key." %}
+{% code-tabs-item title="9. Create a public key." %}
 ```text
 ssh-keygen
 ```
@@ -286,7 +286,7 @@ ssh-keygen
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="RICARDO, WHAT DOES THIS COMMAND DO?" %}
+{% code-tabs-item title="10. RICARDO, WHAT DOES THIS COMMAND DO?" %}
 ```text
 vagrant up
 ```
@@ -294,7 +294,7 @@ vagrant up
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="RICARDO, WHAT DOES THIS COMMAND DO?" %}
+{% code-tabs-item title="11. RICARDO, WHAT DOES THIS COMMAND DO?" %}
 ```text
 vagrant ssh
 ```
@@ -302,7 +302,7 @@ vagrant ssh
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="Go to the following path:" %}
+{% code-tabs-item title="12. Go to the following path:" %}
 ```text
 cd /home/vagrant/processmaker
 ```
@@ -310,7 +310,7 @@ cd /home/vagrant/processmaker
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="RICARDO, WHAT DOES THIS COMMAND DO?" %}
+{% code-tabs-item title="13. RICARDO, WHAT DOES THIS COMMAND DO?" %}
 ```text
 php artisan bpm:install
 ```
