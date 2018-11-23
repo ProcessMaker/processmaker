@@ -29,7 +29,7 @@
                     <div class="invalid-feedback" v-if="errors.processTitle">@{{errors.name[0]}}</div>
                 </div>
                 <div class="form-group">
-                    {!! Form::label('description', 'Description') !!}
+                    {!! Form::label('description', __('Description')) !!}
                     {!! Form::textarea('description', null,
                         ['id' => 'description',
                             'rows' => 4,
@@ -63,7 +63,7 @@
                 </div>
                 <div class="form-group p-0">
                     {!! Form::label('cancelRequest', __('Cancel Request')) !!}
-                    {!! Form::select('cancelRequest', $assignments, null, [
+                    {!! Form::select('cancelRequest', $listCancel, null, [
                             'class' => 'form-control',
                             'v-model' => 'formData.cancel_request_id',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.screen}'
@@ -71,7 +71,16 @@
                     !!}
                 </div>
                 <div class="form-group p-0">
-                    {!! Form::label('status', 'Status') !!}
+                    {!! Form::label('startRequest', __('Start Request')) !!}
+                    {!! Form::select('startRequest', $listStart, null, [
+                            'class' => 'form-control',
+                            'v-model' => 'formData.cancel_request_id',
+                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.screen}'
+                        ])
+                    !!}
+                </div>
+                <div class="form-group p-0">
+                    {!! Form::label('status', __('Status')) !!}
                     {!! Form::select('status', ['ACTIVE' => 'Active', 'INACTIVE' => 'Inactive'], null,
                         ['id' => 'status',
                         'class' => 'form-control',
@@ -133,6 +142,9 @@
                 },
                 onClose() {
                     window.location.href = '/processes';
+                },
+                onUpdateUserCancel() {
+
                 },
                 onUpdate() {
                     this.resetErrors();

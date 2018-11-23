@@ -25,6 +25,11 @@ class ProcessController extends Controller
         return view('processes.index', ["processes" => $processes, "processCategories" => $processCategoryArray]);
     }
 
+    /**
+     * @param Process $process
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function edit(Process $process)
     {
         $categories = ProcessCategory::orderBy('name')
@@ -37,30 +42,40 @@ class ProcessController extends Controller
             ->pluck('title', 'id')
             ->toArray();
 
-        //list users and group with permissions processes.cancel
-        $assignments = [
-            'Users' => [],
-            'Groups' => [],
+        //list users and groups with permissions requests.cancel
+        $listCancel = [
+            'Users' => $this->assignee('requests.cancel', User::class),
+            'Groups' => $this->assignee('requests.cancel', Group::class)
         ];
 
-        $groups = PermissionAssignment::where('permission_id', Permission::byGuardName('processes.cancel')->id)
-            ->where('assignable_type', Group::class)
+        //list users and groups with permission requests.store
+        $listStart = [
+            'Users' => $this->assignee('requests.store', User::class),
+            'Groups' => $this->assignee('requests.store', Group::class)
+        ];
+
+        return view('processes.edit', compact(['process', 'categories', 'screens', 'listCancel', 'listStart']));
+    }
+
+    /**
+     * Load users or groups assigned with the permission
+     *
+     * @param $permission
+     * @param $type
+     *
+     * @return array Users|Groups assigned
+     */
+    private function assignee($permission, $type)
+    {
+        $items = PermissionAssignment::where('permission_id', Permission::byGuardName($permission)->id)
+            ->where('assignable_type', $type)
             ->get();
-
-        $users = PermissionAssignment::where('permission_id', Permission::byGuardName('processes.cancel')->id)
-            ->where('assignable_type', User::class)
-            ->get();
-
-        foreach ($groups as $assigned) {
-            $group = Group::find($assigned->assignable_id);
-            $assignments['Groups'][$group->id] = $group->name;
+        $data = [];
+        foreach ($items as $assigned) {
+            $item = $type::find($assigned->assignable_id);
+            $data[($item->fullname ? 'user-' : 'group-') . $item->id] = $item->fullname ?: $item->name;
         }
-        foreach ($users as $assigned) {
-            $user = User::find($assigned->assignable_id);
-            $assignments['Users'][$user->id] = $user->fullname;
-        }
-
-        return view('processes.edit', compact('process', 'categories', 'screens', 'assignments'));
+        return $data;
     }
 
     public function create() // create new process
