@@ -118,11 +118,11 @@ vagrant -v
 
 ### Install PHP 7.2
 
-{% hint style="info" %}
-If your Linux distribution already has PHP 7.2 you do not need to add the repository and go direct to the step 4.
-{% endhint %}
-
 Perform the following commands to install PHP 7.2:
+
+{% hint style="info" %}
+If your Linux distribution already has PHP 7.2 you do not need to add the repository. Go directly to command 4.
+{% endhint %}
 
 {% code-tabs %}
 {% code-tabs-item title="1. Install the program to add repositories." %}
