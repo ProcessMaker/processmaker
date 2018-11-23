@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Http\Controllers;
 
-use ProcessMaker\Http\Resources\Groups;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\PermissionAssignment;

@@ -144,13 +144,27 @@
                 onClose() {
                     window.location.href = '/processes';
                 },
+                formatAssigneePermissions(data) {
+                    let response = {};
+                    response['users'] = [];
+                    response['groups'] = [];
+
+                    data.forEach(value => {
+                        let option = value.split('-');
+                        if (option[0] === 'user') {
+                            response['users'].push(parseInt(option[1]));
+                        }
+                        if (option[0] === 'group') {
+                            response['groups'].push(parseInt(option[1]));
+                        }
+                    });
+                    return response;
+                },
                 onUpdate() {
                     this.resetErrors();
                     let that = this;
-                    let start = this.formData.start_request_id ? this.formData.start_request_id.split('-')[1] : null;
-                    let cancel = this.formData.cancel_request_id ? this.formData.cancel_request_id.split('-')[1] : null;
-                    this.formData.start_request = start? [start] : [];
-                    this.formData.cancel_request = cancel? [cancel] : [];
+                    this.formData.start_request = this.formatAssigneePermissions([this.formData.start_request_id]);
+                    this.formData.cancel_request = this.formatAssigneePermissions([this.formData.cancel_request_id]);
 
                     //if the summary screen id is not a number (e.g. null string)
                     // is set to null
