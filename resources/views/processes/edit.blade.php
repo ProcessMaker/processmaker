@@ -62,6 +62,15 @@
                     !!}
                 </div>
                 <div class="form-group p-0">
+                    {!! Form::label('startRequest', __('Start Request')) !!}
+                    {!! Form::select('startRequest', $listStart, null, [
+                            'class' => 'form-control',
+                            'v-model' => 'formData.start_request_id',
+                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.screen}'
+                        ])
+                    !!}
+                </div>
+                <div class="form-group p-0">
                     {!! Form::label('cancelRequest', __('Cancel Request')) !!}
                     {!! Form::select('cancelRequest', $listCancel, null, [
                             'class' => 'form-control',
@@ -70,15 +79,7 @@
                         ])
                     !!}
                 </div>
-                <div class="form-group p-0">
-                    {!! Form::label('startRequest', __('Start Request')) !!}
-                    {!! Form::select('startRequest', $listStart, null, [
-                            'class' => 'form-control',
-                            'v-model' => 'formData.cancel_request_id',
-                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.screen}'
-                        ])
-                    !!}
-                </div>
+
                 <div class="form-group p-0">
                     {!! Form::label('status', __('Status')) !!}
                     {!! Form::select('status', ['ACTIVE' => 'Active', 'INACTIVE' => 'Inactive'], null,
@@ -143,12 +144,13 @@
                 onClose() {
                     window.location.href = '/processes';
                 },
-                onUpdateUserCancel() {
-
-                },
                 onUpdate() {
                     this.resetErrors();
                     let that = this;
+                    let start = this.formData.start_request_id ? this.formData.start_request_id.split('-')[1] : null;
+                    let cancel = this.formData.cancel_request_id ? this.formData.cancel_request_id.split('-')[1] : null;
+                    this.formData.start_request = start? [start] : [];
+                    this.formData.cancel_request = cancel? [cancel] : [];
 
                     //if the summary screen id is not a number (e.g. null string)
                     // is set to null
