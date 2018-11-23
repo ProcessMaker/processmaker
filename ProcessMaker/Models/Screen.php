@@ -69,7 +69,7 @@ class Screen extends Model
         return [
             'title' => ['required', $unique],
             'description' => 'required',
-            'type' => 'required'
+            'type' => $existing ? '' : 'required'
         ];
     }
 }
