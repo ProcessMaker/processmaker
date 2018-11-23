@@ -13,6 +13,7 @@ use ProcessMaker\Http\Resources\Process as Resource;
 use ProcessMaker\Http\Resources\ProcessRequests;
 use ProcessMaker\Http\Resources\Users;
 use ProcessMaker\Models\Group;
+use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessPermission;
 use ProcessMaker\Models\User;
@@ -201,27 +202,29 @@ class ProcessController extends Controller
         }
 
         //$process->fill($request->except('cancelRequest', 'startRequest')->json()->all());
-        $process->fill($request->except('cancelRequest', 'startRequest'));
+        $process->fill($request->except('cancel_request', 'start_request','cancel_request_id', 'start_request_id'));
         $process->saveOrFail();
 
         ProcessPermission::where('process_id', $process->id)->delete();
-        if($request->has('cancelRequest')) {
-            foreach($request->input('cancelRequest')['users'] as $id) {
-                $this->savePermission($process, User::class, $id, 64);
+        $cancelId = Permission::byGuardName('requests.cancel')->id;
+        $startId = Permission::byGuardName('requests.store')->id;
+        if($request->has('cancel_request')) {
+            foreach($request->input('cancel_request')['users'] as $id) {
+                $this->savePermission($process, User::class, $id, $cancelId);
             }
 
-            foreach($request->input('cancelRequest')['groups'] as $id) {
-                $this->savePermission($process, Group::class, $id, 64);
+            foreach($request->input('cancel_request')['groups'] as $id) {
+                $this->savePermission($process, Group::class, $id, $cancelId);
             }
         }
 
-        if($request->has('startRequest')) {
-            foreach($request->input('startRequest')['users'] as $id) {
-                $this->savePermission($process, Users::class, $id, 64);
+        if($request->has('start_request')) {
+            foreach($request->input('start_request')['users'] as $id) {
+                $this->savePermission($process, Users::class, $id, $startId);
             }
 
-            foreach($request->input('startRequest')['groups'] as $id) {
-                $this->savePermission($process, Groups::class, $id, 64);
+            foreach($request->input('start_request')['groups'] as $id) {
+                $this->savePermission($process, Groups::class, $id, $startId);
             }
         }
 
