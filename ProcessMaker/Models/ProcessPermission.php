@@ -16,6 +16,11 @@ class ProcessPermission extends Model
         'assignable_type'
     ];
 
+    public function assignable()
+    {
+        return $this->morphTo(null, null, 'assignable_id');
+    }
+
     /**
      * Validation rules.
      *

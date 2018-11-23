@@ -8,9 +8,14 @@ use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
+use ProcessMaker\Http\Resources\Groups;
 use ProcessMaker\Http\Resources\Process as Resource;
 use ProcessMaker\Http\Resources\ProcessRequests;
+use ProcessMaker\Http\Resources\Users;
+use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessPermission;
+use ProcessMaker\Models\User;
 
 class ProcessController extends Controller
 {
@@ -195,9 +200,42 @@ class ProcessController extends Controller
                 422);
         }
 
-        $process->fill($request->json()->all());
+        //$process->fill($request->except('cancelRequest', 'startRequest')->json()->all());
+        $process->fill($request->except('cancelRequest', 'startRequest'));
         $process->saveOrFail();
+
+        ProcessPermission::where('process_id', $process->id)->delete();
+        if($request->has('cancelRequest')) {
+            foreach($request->input('cancelRequest')['users'] as $id) {
+                $this->savePermission($process, User::class, $id, 64);
+            }
+
+            foreach($request->input('cancelRequest')['groups'] as $id) {
+                $this->savePermission($process, Group::class, $id, 64);
+            }
+        }
+
+        if($request->has('startRequest')) {
+            foreach($request->input('startRequest')['users'] as $id) {
+                $this->savePermission($process, Users::class, $id, 64);
+            }
+
+            foreach($request->input('startRequest')['groups'] as $id) {
+                $this->savePermission($process, Groups::class, $id, 64);
+            }
+        }
+
         return new Resource($process->refresh());
+    }
+
+    private function savePermission($process, $assignableType, $assignableId, $permissionId)
+    {
+        $processPerm = new ProcessPermission();
+        $processPerm->process_id = $process->id;
+        $processPerm->permission_id = $permissionId;
+        $processPerm->assignable_type = $assignableType;
+        $processPerm->assignable_id = $assignableId;
+        $processPerm->saveOrFail();
     }
 
     /**
