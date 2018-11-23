@@ -49,10 +49,10 @@ dpkg -i [file name].deb
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-After the installation finishes, VirtualBox may not work. VirtualBox will ask you to install the gcc, make, perl libraries as well as the kernel "header."
+After the installation finishes, VirtualBox sometimes not work. VirtualBox will ask you to install the gcc, make, perl libraries as well as the kernel "header" in order to rebuild a missing module, if that happens do the following:
 
 {% code-tabs %}
-{% code-tabs-item title="Install the libraries for gcc, make, perl, and the kernel \"header.\"" %}
+{% code-tabs-item title="1. Install the libraries for gcc, make, perl, and the kernel \"header.\"" %}
 ```text
 apt-get install gcc make perl kernel-devel
 ```
@@ -66,9 +66,26 @@ In Ubuntu 18.04, instead of `kernel-devel` use `linux-headers-generic`.
 Then you will need to run the following command to finish the installation of VirtualBox.
 
 {% code-tabs %}
-{% code-tabs-item title="Recompile the kernel module." %}
+{% code-tabs-item title="2. Recompile the kernel module." %}
 ```text
 sudo /sbin/vboxconfig
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+If you have an error message like this:
+
+```text
+VirtualBox: Error -10 in SUPR3HardenedMain!
+VirtualBox: Effective UID is not root (euid=1000 egid=1000 uid=1000 gid=1000)
+```
+
+then try running the following command:
+
+{% code-tabs %}
+{% code-tabs-item title="Re-install the missing dependencies." %}
+```text
+sudo apt-get -f install 
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
@@ -90,6 +107,14 @@ dpkg -i [file name].deb
 {% endcode-tabs %}
 
 Verify if it is installed correctly.
+
+{% code-tabs %}
+{% code-tabs-item title="Verify it is the correct version." %}
+```text
+vagrant -v
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
 
 ### Install PHP 7.2
 
