@@ -8,6 +8,7 @@ use ProcessMaker\Models\PermissionAssignment;
 use ProcessMaker\Models\Process;
 use Illuminate\Http\Request;
 use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\ProcessPermission;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
 
@@ -52,6 +53,8 @@ class ProcessController extends Controller
             'Users' => $this->assignee('requests.store', User::class),
             'Groups' => $this->assignee('requests.store', Group::class)
         ];
+        $process->cancel_request_id = $this->loadAssigneeProcess('requests.cancel',  $process->id);
+        $process->start_request_id = $this->loadAssigneeProcess('requests.store',  $process->id);
 
         return view('processes.edit', compact(['process', 'categories', 'screens', 'listCancel', 'listStart']));
     }
@@ -75,6 +78,25 @@ class ProcessController extends Controller
             $data[($item->fullname ? 'user-' : 'group-') . $item->id] = $item->fullname ?: $item->name;
         }
         return $data;
+    }
+
+    /**
+     * Load users and groups assigned to process
+     *
+     * @param $permission
+     * @param $processId
+     *
+     * @return string|null
+     */
+    private function loadAssigneeProcess($permission, $processId)
+    {
+        $assignee = ProcessPermission::where('permission_id', Permission::byGuardName($permission)->id)
+            ->where('process_id', $processId)
+            ->first();
+        if ($assignee) {
+            $assignee = ($assignee->assignable_type === User::class ? 'user-' : 'group-') . $assignee->assignable_id;
+        }
+        return $assignee;
     }
 
     public function create() // create new process

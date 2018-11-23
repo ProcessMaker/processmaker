@@ -64,6 +64,7 @@
                 <div class="form-group p-0">
                     {!! Form::label('startRequest', __('Start Request')) !!}
                     {!! Form::select('startRequest', $listStart, null, [
+                            'id' => 'start_request_id',
                             'class' => 'form-control',
                             'v-model' => 'formData.start_request_id',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.screen}'
@@ -73,6 +74,7 @@
                 <div class="form-group p-0">
                     {!! Form::label('cancelRequest', __('Cancel Request')) !!}
                     {!! Form::select('cancelRequest', $listCancel, null, [
+                            'id' => 'cancel_request_id',
                             'class' => 'form-control',
                             'v-model' => 'formData.cancel_request_id',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.screen}'
@@ -93,10 +95,8 @@
                 <div class="d-flex justify-content-end mt-2">
                     {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose']) !!}
                     {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'onUpdate']) !!}
-
                 </div>
             </div>
-
 
         </div>
         <div class="col-4">

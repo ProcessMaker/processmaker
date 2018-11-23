@@ -1,4 +1,5 @@
 <?php
+
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Contracts\Routing\ResponseFactory;
@@ -8,10 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
-use ProcessMaker\Http\Resources\Groups;
 use ProcessMaker\Http\Resources\Process as Resource;
 use ProcessMaker\Http\Resources\ProcessRequests;
-use ProcessMaker\Http\Resources\Users;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
@@ -60,7 +59,7 @@ class ProcessController extends Controller
      */
     public function index(Request $request)
     {
-        $where = $this->getRequestFilterBy($request, ['processes.name', 'processes.description','processes.status', 'category.name', 'user.firstname', 'user.lastname']);
+        $where = $this->getRequestFilterBy($request, ['processes.name', 'processes.description', 'processes.status', 'category.name', 'user.firstname', 'user.lastname']);
         $orderBy = $this->getRequestSortBy($request, 'name');
         $perPage = $this->getPerPage($request);
         $include = $this->getRequestInclude($request);
@@ -144,8 +143,7 @@ class ProcessController extends Controller
 
         if (isset($data['bpmn'])) {
             $process->bpmn = $data['bpmn'];
-        }
-        else {
+        } else {
             $process->bpmn = Process::getProcessTemplate('OnlyStartElement.bpmn');
         }
         $process->saveOrFail();
@@ -192,39 +190,39 @@ class ProcessController extends Controller
         //bpmn validation
         libxml_use_internal_errors(true);
         $definitions = $process->getDefinitions();
-        $res= $definitions->validateBPMNSchema(public_path('definitions/ProcessMaker.xsd'));
+        $res = $definitions->validateBPMNSchema(public_path('definitions/ProcessMaker.xsd'));
         if (!$res) {
             $schemaErrors = $definitions->getValidationErrors();
-            return response (
-                ['message'=>'The bpm definition is not valid',
-                    'errors'=> ['bpmn' => $schemaErrors]],
+            return response(
+                ['message' => 'The bpm definition is not valid',
+                    'errors' => ['bpmn' => $schemaErrors]],
                 422);
         }
 
         //$process->fill($request->except('cancelRequest', 'startRequest')->json()->all());
-        $process->fill($request->except('cancel_request', 'start_request','cancel_request_id', 'start_request_id'));
+        $process->fill($request->except('cancel_request', 'start_request', 'cancel_request_id', 'start_request_id'));
         $process->saveOrFail();
 
         ProcessPermission::where('process_id', $process->id)->delete();
         $cancelId = Permission::byGuardName('requests.cancel')->id;
         $startId = Permission::byGuardName('requests.store')->id;
-        if($request->has('cancel_request')) {
-            foreach($request->input('cancel_request')['users'] as $id) {
+        if ($request->has('cancel_request')) {
+            foreach ($request->input('cancel_request')['users'] as $id) {
                 $this->savePermission($process, User::class, $id, $cancelId);
             }
 
-            foreach($request->input('cancel_request')['groups'] as $id) {
+            foreach ($request->input('cancel_request')['groups'] as $id) {
                 $this->savePermission($process, Group::class, $id, $cancelId);
             }
         }
 
-        if($request->has('start_request')) {
-            foreach($request->input('start_request')['users'] as $id) {
-                $this->savePermission($process, Users::class, $id, $startId);
+        if ($request->has('start_request')) {
+            foreach ($request->input('start_request')['users'] as $id) {
+                $this->savePermission($process, User::class, $id, $startId);
             }
 
-            foreach($request->input('start_request')['groups'] as $id) {
-                $this->savePermission($process, Groups::class, $id, $startId);
+            foreach ($request->input('start_request')['groups'] as $id) {
+                $this->savePermission($process, Group::class, $id, $startId);
             }
         }
 
@@ -273,16 +271,16 @@ class ProcessController extends Controller
     public function destroy(Process $process)
     {
         if ($process->collaborations->count() !== 0) {
-            return response (
-                ['message'=>'The item should not have associated collaboration',
-                    'errors'=> ['collaborations' => $process->collaborations->count()]],
+            return response(
+                ['message' => 'The item should not have associated collaboration',
+                    'errors' => ['collaborations' => $process->collaborations->count()]],
                 422);
         }
 
         if ($process->requests->count() !== 0) {
-            return response (
-                ['message'=>'The item should not have associated requests',
-                    'errors'=> ['requests' => $process->requests->count()]],
+            return response(
+                ['message' => 'The item should not have associated requests',
+                    'errors' => ['requests' => $process->requests->count()]],
                 422);
         }
 
@@ -317,7 +315,6 @@ class ProcessController extends Controller
     }
 
 
-
     /**
      * Get the where array to filter the resources.
      *
@@ -334,7 +331,7 @@ class ProcessController extends Controller
             foreach ($searchableColumns as $column) {
                 // for other columns, it can match a substring
                 $sub_search = '%';
-                if (array_search('status', explode('.', $column), true) !== false ) {
+                if (array_search('status', explode('.', $column), true) !== false) {
                     // filtering by status must match the entire string
                     $sub_search = '';
                 }
