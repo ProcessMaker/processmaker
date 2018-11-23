@@ -331,7 +331,7 @@ nano /etc/hosts
 {% endcode-tabs %}
 
 {% hint style="info" %}
-You can change the IP or the URL to one you prefer. But if you do so, you must make the change also in the `Homestead.yaml`file.
+You can change the IP or the URL to one you prefer. But if you do so, you must make the change also in the `Homestead.yaml`file which is inside the project.
 {% endhint %}
 
 {% code-tabs %}
@@ -387,7 +387,7 @@ Enter the following parameters:
 Alternatively, use the new URL that you assigned in the `hosts` and `Homestead.yaml` files.
 {% endhint %}
 
-In a browser go to [https://bpm4.local.processmaker.com](https://bpm4.local.processmaker.com) and use the following credentials to [log in](../using-processmaker/log-in.md):
+In a browser go to [https://bpm4.local.processmaker.com](https://bpm4.local.processmaker.com) or the new URL if you created one and use the following credentials to [log in](../using-processmaker/log-in.md):
 
 * Username: `admin`
 * Password: `admin`
