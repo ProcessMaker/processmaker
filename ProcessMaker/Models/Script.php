@@ -61,20 +61,13 @@ class Script extends Model
      */
     public static function rules($existing = null)
     {
-        $rules = [
+        $unique = Rule::unique('scripts')->ignore($existing);
+
+        return [
             'key' => 'unique:scripts,key',
-            'title' => 'required|unique:scripts,title',
+            'title' => ['required', 'string', $unique],
             'language' => 'required|in:php,lua'
         ];
-        if ($existing) {
-            // ignore the unique rule for this id
-            $rules['title'] = [
-                'required',
-                'string',
-                Rule::unique('scripts')->ignore($existing->id, 'id')
-            ];
-        }
-        return $rules;
     }
 
     /**
