@@ -15,24 +15,19 @@ initialControls[initialControls.length] = {
         config: {
             label: 'New File Upload'
         },
-        inspector: [
-                {
-                    type: "FormInput",
-                    field: "label",
-                    config: {
-                        label: "Text Label",
-                        helper: "The text to display",
-                    }
-                },
-        ]
+        inspector: [{
+            type: "FormInput",
+            field: "label",
+            config: {
+                label: "Text Label",
+                helper: "The text to display",
+            }
+        }, ]
     }
 }
 
 ProcessMaker.EventBus.$on('screen-builder-init', (manager) => {
     for (var i = 0; i < initialControls.length; i++) {
-        console.log("Adding:");
-        console.log(initialControls[i].builderComponent);
-        console.log(initialControls[i].builderBinding);
         manager.addControl(
             initialControls[i].control,
             initialControls[i].rendererComponent,
