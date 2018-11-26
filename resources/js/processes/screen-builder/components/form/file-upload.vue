@@ -8,7 +8,6 @@
         <uploader-btn>select files</uploader-btn>
       </uploader-drop>
       <uploader-list></uploader-list>
-
     </uploader>
     <div class="invalid-feedback" v-if="error">{{error}}</div>
     <small v-if="helper" class="form-text text-muted">{{helper}}</small>
@@ -48,9 +47,11 @@ export default {
   },
   data() {
     return {
+      content: '',
+      validator: null,
+      requestID: document.head.querySelector("meta[name=\"request-id\"]"),
       options: {
-        // @todo Replace 123 with the current request id, maybe populated via meta tag?
-        target: '/api/1.0/requests/123/files',
+        target: '/api/1.0/requests/' + this.requestID + '/files',
         query: {
           chunk: true
         },
@@ -61,8 +62,6 @@ export default {
         },
         singleFile: true
       },
-      content: '',
-      validator: null
     }
   },
   methods: {
