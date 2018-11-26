@@ -22,7 +22,9 @@ use Laravel\Horizon\Horizon;
 use Laravel\Passport\Passport;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Http\Resources\Json\Resource;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use ProcessMaker\Models\User;
+use ProcessMaker\Models\Group;
 
 /**
  * Provide our ProcessMaker specific services
@@ -133,5 +135,14 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         // we are using custom passport migrations
         Passport::ignoreMigrations();
+
+        /**
+         * Mapping of shape and elements used in BPMN_BOUND.BOU_ELEMENT_TYPE
+         *
+         */
+        Relation::morphMap([
+            'USER' => User::class,
+            'GROUP' => Group::class,
+        ]);
     }
 }

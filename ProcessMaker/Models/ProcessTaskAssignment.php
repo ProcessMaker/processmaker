@@ -63,4 +63,13 @@ class ProcessTaskAssignment extends Model
         ];
     }
 
+    /**
+     * Assigned user or group.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphOne
+     */
+    public function assigned()
+    {
+        return $this->morphTo('assigned', 'assignment_type', 'assignment_id');
+    }
 }

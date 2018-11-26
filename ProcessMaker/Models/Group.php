@@ -32,6 +32,7 @@ use ProcessMaker\Traits\SerializeToIso8601;
 class Group extends Model
 {
     use SerializeToIso8601;
+    use AssignedTrait;
 
     protected $fillable = [
         'name',
@@ -84,5 +85,15 @@ class Group extends Model
             $permissions[] = $pa->permission;
         }
         return $permissions;
+    }
+
+    /**
+     * User as assigned.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function assigned()
+    {
+        return $this->morphMany(ProcessTaskAssignment::class, 'assigned', 'assignment_type', 'assignment_id');
     }
 }
