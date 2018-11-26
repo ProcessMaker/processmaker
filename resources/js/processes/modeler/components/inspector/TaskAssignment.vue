@@ -5,6 +5,7 @@
             <select class="form-control" :value="assignmentGetter" @input="assignmentSetter">
                 <option value=""></option>
                 <option value="requestor">To requestor</option>
+                <option value="cyclical">Cyclical</option>
             </select>
         </div>
         <div class="form-group">
@@ -16,13 +17,13 @@
                       class="list-group-item list-group-item-action pt-0 pb-0"
                       :class="{'bg-primary': selectedAssigneeIndex == index}"
                       @click="selectAssignee(row, index)">
-                      <avatar-image v-if="row.fullname"
+                    <avatar-image v-if="row.assigned.fullname"
                               class-container=""
                               size="12" class-image=""
-                              :input-data="row"></avatar-image>
+                              :input-data="row.assigned"></avatar-image>
                     <template v-else>
                         <i class="fa fa-users" aria-hidden="true"></i>
-                        <span class="text-center text-capitalize text-nowrap m-1">{{row.name}}</span>
+                        <span class="text-center text-capitalize text-nowrap m-1">{{row.assigned.name}}</span>
                     </template>
                 </span>
             </div>
@@ -84,6 +85,9 @@
             };
         },
         computed: {
+            process() {
+                return this.$parent.$parent.$parent.process;
+            },
             /**
              * Get the value of the edited property
              */
@@ -130,9 +134,19 @@
              * Add an user or group.
              */
             addUserOrGroup() {
-                this.assignedUsersGroups.push(this.selectedUserGroup);
-                this.selectUserGroup(null, -1);
-                this.showUserOrGroup = false;
+                ProcessMaker.apiClient
+                        .post("/task_assignments", {
+                            'process_id': this.process.id,
+                            'process_task_id': this.value,
+                            'assignment_id': this.selectedUserGroup.id,
+                            'assignment_type': this.selectedUserGroup.fullname ? 'USER' : 'GROUP'
+                        })
+                        .then(assignment => {
+                            assignment.assigned = this.selectedUserGroup;
+                            this.assignedUsersGroups.push(assignment);
+                            this.selectUserGroup(null, -1);
+                            this.showUserOrGroup = false;
+                        });
             },
             /**
              * Cancel the add user or group action.
@@ -170,6 +184,18 @@
              * Load the list of assigned users
              */
             loadAssignedUsers() {
+                ProcessMaker.apiClient
+                        .get("/task_assignments", {
+                            params: {
+                                process_id: this.process.id,
+                                process_task_id: this.value,
+                                include: 'assigned',
+                            }
+                        })
+                        .then(response => {
+                            this.assignedUsersGroups.splice(0);
+                            this.assignedUsersGroups.push(...response.data.data);
+                        });
             },
             /**
              * Update the event of the editer property
@@ -179,8 +205,14 @@
                 this.$emit('input', this.value);
             },
         },
+        watch: {
+            value() {
+                this.loadAssignedUsers();
+            }
+        },
         mounted() {
             this.loadUsersAndGroups();
+            this.loadAssignedUsers();
         }
     };
 </script>
