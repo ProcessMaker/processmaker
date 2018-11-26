@@ -37,7 +37,7 @@ In order to install ProcessMaker 4 in Debian you will need the following:
 
 ### **Install VirtualBox 5.2.22**
 
-[Download VirtualBox](https://www.virtualbox.org/wiki/Linux_Downloads) for Debian. It will download a file with the `.deb` extension.
+[Download VirtualBox](https://www.virtualbox.org/wiki/Linux_Downloads) for Debian Linux. It will download a file with the `.deb` extension.
 
 ![It is important that you download the correct version of VirtualBox for your OS](../.gitbook/assets/selection_281.png)
 
@@ -49,7 +49,7 @@ dpkg -i [file name].deb
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-After the installation finishes, VirtualBox sometimes not work. VirtualBox will ask you to install the gcc, make, perl libraries as well as the kernel "header" in order to rebuild a missing module, if that happens do the following:
+After the installation finishes, VirtualBox sometimes not work. VirtualBox will ask you to install the gcc, make, and perl libraries as well as the kernel "header" in order to rebuild a missing module. If this happens run the following command:
 
 {% code-tabs %}
 {% code-tabs-item title="1. Install the libraries for gcc, make, perl, and the kernel \"header.\"" %}
@@ -60,14 +60,14 @@ apt-get install gcc make perl kernel-devel
 {% endcode-tabs %}
 
 {% hint style="info" %}
-In Ubuntu 18.04, instead of `kernel-devel` use `linux-headers-generic`.
+In Ubuntu Linux 18.04, instead of `kernel-devel` use `linux-headers-generic`.
 
-For Debian 9 use linux-headers-4.9.0-4-amd64
+For Debian Linux 9 use `linux-headers-4.9.0-4-amd64`.
 
-In any case it will tell you which version it needs
+In any case it will tell you which version it needs.
 {% endhint %}
 
-Then you will need to run the following command to finish the installation of VirtualBox.
+Then you will need to run the following command to finish the VirtualBox installation:
 
 {% code-tabs %}
 {% code-tabs-item title="2. Recompile the kernel module." %}
@@ -115,7 +115,7 @@ vagrant -v
 
 ### Install PHP 7.2
 
-Perform the following commands to install PHP 7.2 on Debian:
+Perform the following commands to install PHP 7.2 on Debian Linux:
 
 {% code-tabs %}
 {% code-tabs-item title="1. Download and add the repository" %}
@@ -134,7 +134,7 @@ sudo apt-get update && apt-get upgrade
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-If an error is displayed like follows:
+If an error displays as follows:
 
 ```text
 Reading package lists... Done
@@ -150,7 +150,7 @@ Install the following program:
 sudo apt-get install ca-certificates apt-transport-https
 ```
 
-Then run again the update and upgrade command.
+Then run again the update and upgrade command:
 
 {% code-tabs %}
 {% code-tabs-item title="3. Install PHP 7.2 and modules" %}
@@ -168,7 +168,7 @@ php -v
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-Perform the following commands to install PHP 7.2 on Ubuntu:
+Perform the following commands to install PHP 7.2 on Ubuntu Linux:
 
 {% hint style="info" %}
 If your Linux distribution already has PHP 7.2 you do not need to add the repository. Go directly to command 4.
