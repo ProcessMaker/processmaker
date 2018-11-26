@@ -73,14 +73,7 @@ sudo /sbin/vboxconfig
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-If you have an error message like this:
-
-```text
-VirtualBox: Error -10 in SUPR3HardenedMain!
-VirtualBox: Effective UID is not root (euid=1000 egid=1000 uid=1000 gid=1000)
-```
-
-then try running the following command:
+As an alternative try running the following command:
 
 {% code-tabs %}
 {% code-tabs-item title="Re-install the missing dependencies." %}
