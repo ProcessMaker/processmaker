@@ -10,6 +10,7 @@
     <meta name="user-id" content="{{ Auth::user()->id }}">
     <meta name="datetime-format" content="{{ Auth::user()->datetime_format ?: config('app.dateformat') }}">
     <meta name="timezone" content="{{ Auth::user()->timezone ?: config('app.timezone') }}">
+    {{--<meta name="notifications" content='@json(Auth::user()->activeNotifications())'>--}}
     @endif
     @if(config('broadcasting.broadcaster') == 'socket.io')
     <meta name="broadcaster" content="{{config('broadcasting.broadcaster')}}">
@@ -35,6 +36,7 @@
     window.Processmaker = {
       csrfToken: "{{csrf_token()}}",
       userId: "{{\Auth::user()->id}}",
+      messages: @json(\Auth::user()->activeNotifications()),
       broadcasting: {
         broadcaster: "{{config('broadcasting.broadcaster')}}",
         host: "{{config('broadcasting.host')}}",
