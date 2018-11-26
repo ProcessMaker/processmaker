@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Feature\Api;
 
 use Carbon\Carbon;
@@ -71,7 +72,7 @@ class ProcessTest extends TestCase
         $response = $this->apiCall('GET', $route);
 
         $fieldsToValidate = collect(['created_at', 'updated_at']);
-        $fieldsToValidate->map(function ($field) use ($response, $newEntity){
+        $fieldsToValidate->map(function ($field) use ($response, $newEntity) {
             $this->assertEquals(Carbon::parse($newEntity->$field)->format('c'),
                 $response->getData()->data[0]->$field);
         });
@@ -83,8 +84,8 @@ class ProcessTest extends TestCase
     public function testFiltering()
     {
         $perPage = 10;
-        $initialActiveCount = Process::where('status','ACTIVE')->count();
-        $initialInactiveCount = Process::where('status','INACTIVE')->count();
+        $initialActiveCount = Process::where('status', 'ACTIVE')->count();
+        $initialInactiveCount = Process::where('status', 'INACTIVE')->count();
 
         // Create some processes
         $processActive = [
@@ -120,7 +121,7 @@ class ProcessTest extends TestCase
             ]
         );
         //verify include
-        $response->assertJsonStructure(['*' => ['category','user']], $response->json('data'));
+        $response->assertJsonStructure(['*' => ['category', 'user']], $response->json('data'));
     }
 
     /**
@@ -217,9 +218,9 @@ class ProcessTest extends TestCase
     {
         $route = route('api.' . $this->resource . '.store');
         $base = factory(Process::class)->make([
-                'user_id' => static::$DO_NOT_SEND,
-                'process_category_id' => static::$DO_NOT_SEND,
-            ]);
+            'user_id' => static::$DO_NOT_SEND,
+            'process_category_id' => static::$DO_NOT_SEND,
+        ]);
         $array = array_diff($base->toArray(), [static::$DO_NOT_SEND]);
         //Add a bpmn content
         $array['bpmn'] = trim(Process::getProcessTemplate('OnlyStartElement.bpmn'));
@@ -302,7 +303,7 @@ class ProcessTest extends TestCase
         $process = factory(Process::class)->create();
 
         //Test that is correctly displayed including category and user
-        $this->assertModelShow($process->id, ['category','user']);
+        $this->assertModelShow($process->id, ['category', 'user']);
     }
 
     /**
@@ -348,6 +349,9 @@ class ProcessTest extends TestCase
      */
     public function testUpdateProcess()
     {
+        //Seeder Permissions
+        (new \PermissionSeeder())->run($this->user);
+
         //Test to update name process
         $name = $this->faker->name;
         $this->assertModelUpdate(
@@ -366,6 +370,9 @@ class ProcessTest extends TestCase
      */
     public function testUpdateProcessWithCategoryNull()
     {
+        //Seeder Permissions
+        (new \PermissionSeeder())->run($this->user);
+
         //Test update process category to null
         $this->assertModelUpdate(
             Process::class,
@@ -383,6 +390,9 @@ class ProcessTest extends TestCase
      */
     public function testUpdateProcessWithCategory()
     {
+        //Seeder Permissions
+        (new \PermissionSeeder())->run($this->user);
+
         //Test update process category
         $this->assertModelUpdate(
             Process::class,
@@ -448,6 +458,9 @@ class ProcessTest extends TestCase
      */
     public function testUpdateBPMN()
     {
+        //Seeder Permissions
+        (new \PermissionSeeder())->run($this->user);
+
         $process = factory(Process::class)->create([
             'bpmn' => Process::getProcessTemplate('OnlyStartElement.bpmn')
         ]);
