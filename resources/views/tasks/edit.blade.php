@@ -1,5 +1,9 @@
 @extends('layouts.layout')
 
+@section('meta')
+<meta name="request-id" content="{{ $task->processRequest->id }}">
+@endsection
+
 @section('title')
     {{__('Edit Task')}}
 @endsection
