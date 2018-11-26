@@ -3,6 +3,7 @@
 namespace Tests\Feature\Api;
 
 use ProcessMaker\Models\Group;
+use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\PermissionAssignment;
@@ -58,6 +59,9 @@ class ProcessPermissionsTest extends TestCase
         //The user does not have process permission
         $response->assertStatus(200, $response);
 
+        //Verify if user has a permission requests cancel
+        $this->assertTrue($user->hasProcessPermission($process, 'requests.cancel'));
+
         //Verify Process Permission
         $response = ProcessPermission::where('permission_id', Permission::byGuardName('requests.cancel')->id)
             ->where('process_id', $process->id)
@@ -76,6 +80,14 @@ class ProcessPermissionsTest extends TestCase
         $process = factory(Process::class)->create();
         $group = factory(Group::class)->create();
 
+        //assign user to group
+        $user = factory(User::class)->create();
+        factory(GroupMember::class)->create([
+            'member_id' => $user->id,
+            'member_type' => User::class,
+            'group_id' => $group->id
+        ]);
+
         $route = route('api.processes.update', [$process->id]);
         $response = $this->apiCall('PUT', $route, [
             'name' => 'Update Process',
@@ -84,6 +96,9 @@ class ProcessPermissionsTest extends TestCase
         ]);
         //The user does not have process permission
         $response->assertStatus(200, $response);
+
+        //Verify if user has a permission requests cancel
+        $this->assertTrue($user->hasProcessPermission($process, 'requests.cancel'));
 
         //Verify Process Permission
         $response = ProcessPermission::where('permission_id', Permission::byGuardName('requests.cancel')->id)
