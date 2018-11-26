@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -9,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ProcessRequests;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Http\Resources\ProcessRequests as ProcessRequestResource;
 
@@ -204,6 +206,9 @@ class ProcessRequestController extends Controller
     public function update(ProcessRequest $request, Request $httpRequest)
     {
         if ($httpRequest->status === 'CANCELED') {
+            if (!Auth::user()->hasProcessPermission(Process::find($request->process_id), 'requests.cancel')) {
+                throw new AuthorizationException('Not authorized: requests.cancel');
+            }
             $this->cancelRequestToken($request);
             return response([], 204);
         }
