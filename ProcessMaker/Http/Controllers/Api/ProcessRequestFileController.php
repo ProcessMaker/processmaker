@@ -43,7 +43,7 @@ class ProcessRequestFileController extends Controller
      */
     public function update(Request $laravel_request, ProcessRequest $request)
     {
-        $request->getMedia()[0]->file_name->delete();
+        $request->getMedia()[0]->delete();
         $newFile = $laravel_request->file;
         $request->addMedia($newFile)->toMediaCollection();
         return new JsonResponse(['message' => 'file successfully updated'], 200);
@@ -54,7 +54,6 @@ class ProcessRequestFileController extends Controller
     public function destroy(Request $laravel_request, ProcessRequest $request)
     {
         $request->getMedia()[0]->delete();
-
         return response([], 204);
     }
 }
