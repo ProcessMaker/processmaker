@@ -75,8 +75,27 @@ class ProcessRequestFileTest extends TestCase
         $response = $this->apiCall('PUT', '/requests/' . $process_request->id . '/files/' . $file, [
             'file' => $fileUploadUpdate
         ]);
+        $process_request->refresh();
         $response->assertStatus(200);
 
         $this->assertEquals($process_request->getMedia()[0]->file_name, 'updatedFile.jpg');
+    }
+
+    /**
+     * test delete of Media attached to a request 
+     */
+    public function testDeleteFile() 
+    {
+        //create a request
+        $process_request = factory(ProcessRequest::class)->create();
+        // upload file 
+        $fileUpload = File::image('HEEEEy.jpg');
+        $process_request->addMedia($fileUpload)->toMediaCollection();
+        //delete the file
+        $process_request->refresh();
+        $process_request->getMedia()[0]->delete();
+        $process_request->refresh();
+        //confirm the file was deleted
+        $this->assertEquals($process_request->getMedia()->count(),0);
     }
 }
