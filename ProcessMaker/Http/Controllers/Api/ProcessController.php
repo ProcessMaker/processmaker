@@ -65,12 +65,33 @@ class ProcessController extends Controller
         $include = $this->getRequestInclude($request);
         $processes = Process::with($include)
             ->select('processes.*')
-            ->where($where)
             ->leftJoin('process_categories as category', 'processes.process_category_id', '=', 'category.id')
             ->leftJoin('users as user', 'processes.user_id', '=', 'user.id')
-            ->orderBy(...$orderBy)
-            ->paginate($perPage);
-        return new ApiCollection($processes);
+            ->where($where)
+            ->orderBy(...$orderBy);
+
+        if (!Auth::user()->is_administrator) {
+            $startPermission = Permission::byGuardName('requests.store')->id;
+            $processes->whereExists(function($query) use ($startPermission){
+                $query->select(\DB::raw(1))
+                    ->from((new ProcessPermission)->getTable())
+                    ->whereRaw("process_permissions.process_id = processes.id " .
+                                " AND permission_id=" . $startPermission  .
+                                " AND assignable_type = '" . str_replace('\\', '\\\\', User::class) . "'" .
+                                " AND assignable_id = " . Auth::user()->id);
+            });
+
+            $processes->orWhereExists(function($query) use ($startPermission){
+                $query->select(\DB::raw(1))
+                    ->from((new ProcessPermission)->getTable())
+                    ->whereRaw("process_permissions.process_id = processes.id " .
+                        " AND permission_id=" . $startPermission  .
+                        " AND assignable_type = '" . str_replace('\\', '\\\\', Group::class) . "'" .
+                        " AND assignable_id IN (select group_id from group_members where member_id = " .
+                        Auth::user() ->id . " )");
+            });
+        }
+        return new ApiCollection($processes->paginate($perPage));
     }
 
     /**

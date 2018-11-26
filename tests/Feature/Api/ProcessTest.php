@@ -3,9 +3,14 @@ namespace Tests\Feature\Api;
 
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\WithFaker;
+use ProcessMaker\Models\Group;
+use ProcessMaker\Models\GroupMember;
+use ProcessMaker\Models\Permission;
+use ProcessMaker\Models\PermissionAssignment;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessCollaboration;
+use ProcessMaker\Models\ProcessPermission;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
@@ -36,7 +41,6 @@ class ProcessTest extends TestCase
         'updated_at'
     ];
 
-
     /**
      * Test to verify our processes listing api endpoint works without any filters
      */
@@ -57,6 +61,118 @@ class ProcessTest extends TestCase
                 'per_page' => $perPage,
                 'current_page' => $page,
                 'total_pages' => ceil(($initialCount + $countProcesses) / $perPage),
+            ]
+        );
+    }
+
+    /**
+     * Test to verify our processes listing api endpoint works without any filters
+     */
+    public function testProcessesListingWithNoAdminUser()
+    {
+        // We create an user that isn't administrator
+        $this->user = factory(User::class)->create([
+            'password' => 'password',
+            'is_administrator' => false,
+        ]);
+
+        // Create create process permission for the user
+        $userId = $this->user->id;
+        factory(Permission::class)->create(['guard_name' => 'requests.store']);
+        factory(Permission::class)->create(['guard_name' => 'processes.index']);
+        factory(ProcessPermission::class)
+            ->create(
+                [
+                    'permission_id' => Permission::byGuardName('requests.store'),
+                    'assignable_type' => User::class,
+                    'assignable_id' => $userId,
+                ]);
+
+        factory(PermissionAssignment::class)
+            ->create(
+                [
+                    'permission_id' => Permission::byGuardName('processes.index'),
+                    'assignable_type' => User::class,
+                    'assignable_id' => $userId,
+                ]);
+
+
+        $initialCount = Process::count();
+        // Create some processes
+        $countProcesses = 1;
+        factory(Process::class, $countProcesses)->create();
+        //Get a page of processes
+        $page = 1;
+        $perPage = 10;
+        $this->assertCorrectModelListing(
+            '?page=' . $page . '&per_page=' . $perPage,
+            [
+                'total' => 1,
+                'count' => 1,
+                'per_page' => $perPage,
+                'current_page' => $page,
+                'total_pages' => (int) ceil(($initialCount + 1) / $perPage),
+            ]
+        );
+    }
+
+    /**
+     * Test to verify our processes listing api endpoint works without any filters
+     */
+    public function testProcessesListingWithNoAdminGroup()
+    {
+        // We create an user that isn't administrator
+        $this->user = factory(User::class)->create([
+            'password' => 'password',
+            'is_administrator' => false,
+        ]);
+
+        //Create default All Users group
+        $groupId = factory(Group::class)->create([
+            'name' => 'Test Group',
+            'status' => 'ACTIVE'
+        ])->id;
+
+        factory(GroupMember::class)->create([
+            'member_id' => $this->user->id,
+            'member_type' => User::class,
+            'group_id' => $groupId,
+        ]);
+
+        // Create process permissions for the group
+        factory(Permission::class)->create(['guard_name' => 'requests.store']);
+        factory(Permission::class)->create(['guard_name' => 'processes.index']);
+        factory(ProcessPermission::class)
+            ->create(
+                [
+                    'permission_id' => Permission::byGuardName('requests.store'),
+                    'assignable_type' => Group::class,
+                    'assignable_id' => $groupId,
+                ]);
+
+        factory(PermissionAssignment::class)
+            ->create(
+                [
+                    'permission_id' => Permission::byGuardName('processes.index'),
+                    'assignable_type' => Group::class,
+                    'assignable_id' => $groupId,
+                ]);
+
+        $initialCount = Process::count();
+        // Create some processes
+        $countProcesses = 1;
+        factory(Process::class, $countProcesses)->create();
+        //Get a page of processes
+        $page = 1;
+        $perPage = 10;
+        $this->assertCorrectModelListing(
+            '?page=' . $page . '&per_page=' . $perPage,
+            [
+                'total' => 1,
+                'count' => 1,
+                'per_page' => $perPage,
+                'current_page' => $page,
+                'total_pages' => (int) ceil(($initialCount + 1) / $perPage),
             ]
         );
     }
@@ -88,11 +204,11 @@ class ProcessTest extends TestCase
 
         // Create some processes
         $processActive = [
-            'num' => 10,
+            'num' => 1,
             'status' => 'ACTIVE'
         ];
         $processInactive = [
-            'num' => 15,
+            'num' => 0,
             'status' => 'INACTIVE'
         ];
         factory(Process::class, $processActive['num'])->create(['status' => $processActive['status']]);
