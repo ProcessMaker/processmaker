@@ -68,32 +68,6 @@
                             {!!Form::password('confpassword', ['class'=> 'form-control', 'v-model'=> 'formData.confpassword',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}'])!!}
                         </div>
-                                                <div class="form-group">
-                        {!!Form::label('datetime_format', 'Date format');!!}
-                        {!!Form::select('datetime_format',
-                        array_reduce(\ProcessMaker\Models\JsonData::datetimeFormats(),
-                            function ($result, $item) {
-                                $result[$item['format']] = $item['title'];
-                                return $result;
-                            }
-                        ),
-                        'formData.datetime_format', ['class'=> 'form-control', 'v-model'=> 'formData.datetime_format',
-                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.datetime_format}']);!!}
-                        <div class="invalid-feedback" v-if="errors.email">@{{errors.datetime_format[0]}}</div>
-                    </div>
-                    <div class="form-group">
-                        {!!Form::label('timezone', 'Time zone');!!}
-                        {!!Form::select('timezone',
-                        array_reduce(\ProcessMaker\Models\JsonData::timezones(),
-                            function ($result, $item) {
-                                $result[$item] = $item;
-                                return $result;
-                            }
-                        ),
-                        'formData.timezone', ['class'=> 'form-control', 'v-model'=> 'formData.timezone',
-                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.datetimeFormat}']);!!}
-                        <div class="invalid-feedback" v-if="errors.email">@{{errors.timezone[0]}}</div>
-                    </div>
                         <div class="form-group">
                             <label>{{__('Groups')}}</label>
                             <multiselect v-model="value" :options="dataGroups" :multiple="true" track-by="name"
@@ -140,24 +114,10 @@
                                 </tr>
                             </thead>
                             <tbody>
-                              @php
-                               $header = '';
-                               @endphp
-                              @foreach ($all_permissions as $key => $value)
-
-                              @php
-
-                              if($header !== current(explode('.',$value['name']))) {
-                                $header = current(explode('.',$value['name']));
-                                echo '<tr><td><h4>'.title_case($header).'</h4></td></tr>';
-
-                              }
-
-                              @endphp
-                                <tr>
-                                  <td><input type="checkbox" :value="{{$value['id']}}" v-model="selected" :disabled="isAdmin = isAdmin"> {{$value['name']}}</td>
+                                <tr v-for="permission in permissions">
+                                    <td>@{{permission.name}}</td>
+                                    <td><input type="checkbox" :value="permission.id" v-model="selected" :disabled="isAdmin = isAdmin"></td>
                                 </tr>
-                              @endforeach
                             </tbody>
                         </table>
                         <hr class="mt-0">
@@ -195,8 +155,7 @@
                         lastname: null,
                         email: null,
                         password: null,
-                        status: null,
-                        datetime_format: null
+                        status: null
                     },
                     isAdmin: false,
                     permissions: @json($all_permissions),
@@ -222,8 +181,7 @@
                         lastname: null,
                         email: null,
                         password: null,
-                        status: null,
-                        datetime_format: null
+                        status: null
                     });
                 },
                 customLabel(option) {
@@ -270,12 +228,9 @@
                 onProfileUpdate() {
                     this.resetErrors();
                     if (!this.validatePassword()) return false;
-
                     let that = this;
-
                     ProcessMaker.apiClient.put('users/' + that.formData.id, that.formData)
                         .then(response => {
-
                             //Remove member that has previously registered and is not in the post data.
                             if (that.formData && that.formData.hasOwnProperty('memberships') && that.formData.memberships) {
                                 that.formData.memberships.forEach(dataMember => {
@@ -326,7 +281,6 @@
                                     )
                                 }
                             });
-
                             Promise.all(promises)
                                 .then(() => {
                                     ProcessMaker.alert('{{__('Update User Successfully')}}', 'success');
@@ -377,7 +331,7 @@
                     else{
                         ProcessMaker.apiClient.put("/permissions", {
                             permission_ids: this.selected,
-                            user_id: this.formData.id
+                            user_id: this.user.id
                             })
                         .then(response => {
                             ProcessMaker.alert('{{__('Permission successfully added ')}}', 'success');
@@ -395,52 +349,41 @@
         .inline-input {
             margin-right: 6px;
         }
-
         .inline-button {
             background-color: rgb(109, 124, 136);
             font-weight: 100;
         }
-
         .input-and-select {
             width: 212px;
         }
-
         .multiselect__element span img {
             border-radius: 50%;
             height: 20px;
         }
-
         .multiselect__tags-wrap {
             display: flex !important;
         }
-
         .multiselect__tags-wrap img {
             height: 15px;
             border-radius: 50%;
         }
-
         .multiselect__tag-icon:after {
             color: white !important;
         }
-
         .multiselect__option--highlight {
             background: #00bf9c !important;
         }
-
         .multiselect__option--selected.multiselect__option--highlight {
             background: #00bf9c !important;
         }
-
         .multiselect__tags {
             border: 1px solid #b6bfc6 !important;
             border-radius: 0.125em !important;
             height: calc(1.875rem + 2px) !important;
         }
-
         .multiselect__tag {
             background: #788793 !important;
         }
-
         .multiselect__tag-icon:after {
             color: white !important;
         }
