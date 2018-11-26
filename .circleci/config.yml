@@ -167,9 +167,9 @@ jobs:
             echo "SAUCELABS_ACCESS_KEY=${SAUCELABS_ACCESS_KEY}" >> .env
             # Put in configuration file for Braoodcaster
             echo "BROADCAST_DRIVER=redis" >> .env
-            echo "BROADCASTER_HOST=https://" >> .env
+            echo "BROADCASTER_HOST=%%BROADCASTER_HOST%%" >> .env
             echo "BROADCASTER_KEY=21a795019957dde6bcd96142e05d4b10" >> .env
-            echo "REDIS_PORT=REDISPORT" >> .env
+            echo "REDIS_PORT=%%REDISPORT%%" >> .env
             echo "BPM_SCRIPTS_HOME=/home/circleci/tmp" >> .env
 
             # Generate unique app key
