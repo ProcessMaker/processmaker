@@ -2,7 +2,9 @@
 
 namespace ProcessMaker\Http\Controllers\Admin;
 
+use Illuminate\Support\Facades\Session;
 use ProcessMaker\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 /**
  * Package's controller
@@ -11,8 +13,9 @@ use ProcessMaker\Http\Controllers\Controller;
  */
 class PackageController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        //dd(Session::all());
         return view('admin.packages.index');
     }
 }

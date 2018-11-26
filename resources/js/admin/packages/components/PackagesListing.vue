@@ -18,11 +18,11 @@
         props: ["filter"],
         data() {
             return {
-                orderBy: "name",
+                orderBy: "friendly_name",
                 // Our listing of packages
                 sortOrder: [{
-                    field: "name",
-                    sortField: "name",
+                    field: "friendly_name",
+                    sortField: "friendly_name",
                     direction: "asc"
                 }],
                 fields: [
@@ -39,17 +39,14 @@
                     {
                         title: "Description",
                         name: "description",
-                        sortField: "description"
                     },
                     {
                         title: "Version",
                         name: "version",
-                        sortField: "version",
                     },
                     {
                         title: "Expire in",
                         name: "expire_in",
-                        sortField: "expire_in",
                         callback: 'formatDate'
                     }
                 ]
