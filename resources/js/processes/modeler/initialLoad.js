@@ -60,10 +60,14 @@ let nodeTypes = [
   association,
 ]
 
-ProcessMaker.EventBus.$on('modeler-init', function (modeler) {
-  modeler.registerBpmnExtension('pm', bpmnExtension);
-  for (var node of nodeTypes) {
-    modeler.registerNodeType(node);
+ProcessMaker.EventBus.$on('modeler-init', ({ registerNode, registerBpmnExtension })  => {
+  /* Register basic node types */
+  for (const node of nodeTypes) {
+    registerNode(node, () => node.id);
   }
+
+  /* Add a BPMN extension */
+  registerBpmnExtension('pm', bpmnExtension);
 });
+
 
