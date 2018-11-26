@@ -32,7 +32,6 @@ use ProcessMaker\Traits\SerializeToIso8601;
 class Group extends Model
 {
     use SerializeToIso8601;
-    use AssignedTrait;
 
     protected $fillable = [
         'name',
@@ -88,7 +87,7 @@ class Group extends Model
     }
 
     /**
-     * User as assigned.
+     * Group as assigned.
      *
      * @return \Illuminate\Database\Eloquent\Relations\MorphMany
      */
