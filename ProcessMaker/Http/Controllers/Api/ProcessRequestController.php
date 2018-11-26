@@ -206,8 +206,9 @@ class ProcessRequestController extends Controller
     public function update(ProcessRequest $request, Request $httpRequest)
     {
         if ($httpRequest->status === 'CANCELED') {
-            if (!Auth::user()->hasProcessPermission(Process::find($request->process_id), 'requests.cancel')) {
-                throw new AuthorizationException('Not authorized: requests.cancel');
+            $permission = 'requests.cancel';
+            if (!Auth::user()->hasProcessPermission(Process::find($request->process_id), $permission)) {
+                throw new AuthorizationException('Not authorized: ' . $permission);
             }
             $this->cancelRequestToken($request);
             return response([], 204);

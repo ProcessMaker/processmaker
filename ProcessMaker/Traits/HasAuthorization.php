@@ -67,20 +67,24 @@ trait HasAuthorization
      */
     public function hasProcessPermission(Process $process, $permission)
     {
+        $user = Auth::user();
+        if ($user->is_administrator) {
+            return true;
+        }
         $response = $this->hasPermission($permission);
         if ($response) {
             $permission = Permission::byGuardName($permission);
             //Check permission type user
             $response = ProcessPermission::where('permission_id', $permission->id)
                 ->where('process_id', $process->id)
-                ->where('assignable_id', Auth::user()->id)
+                ->where('assignable_id', $user->id)
                 ->where('assignable_type', User::class)
                 ->exists();
             if (!$response) {
                 //check permission type group only in one level
                 $response = ProcessPermission::where('permission_id', $permission->id)
                     ->where('process_id', $process->id)
-                    ->whereIn('assignable_id', Auth::user()->groupMembersFromMemberable()->pluck('id'))
+                    ->whereIn('assignable_id', $user->groupMembersFromMemberable()->pluck('id'))
                     ->where('assignable_type', Group::class)
                     ->exists();
             }
