@@ -61,6 +61,10 @@ apt-get install gcc make perl kernel-devel
 
 {% hint style="info" %}
 In Ubuntu 18.04, instead of `kernel-devel` use `linux-headers-generic`.
+
+For Debian 9 use linux-headers-4.9.0-4-amd64
+
+In any case it will tell you which version it needs
 {% endhint %}
 
 Then you will need to run the following command to finish the installation of VirtualBox.
@@ -111,7 +115,60 @@ vagrant -v
 
 ### Install PHP 7.2
 
-Perform the following commands to install PHP 7.2:
+Perform the following commands to install PHP 7.2 on Debian:
+
+{% code-tabs %}
+{% code-tabs-item title="1. Download and add the repository" %}
+```text
+wget -q https://packages.sury.org/php/apt.gpg -O- | sudo apt-key add -
+echo "deb https://packages.sury.org/php/ stretch main" | sudo tee /etc/apt/sources.list.d/php.list
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+{% code-tabs %}
+{% code-tabs-item title="2. apdate and apgrade the package system" %}
+```text
+sudo apt-get update && apt-get upgrade
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+If an error is displayed like follows:
+
+```text
+Reading package lists... Done
+E: The method driver /usr/lib/apt/methods/https could not be found.
+N: Is the package apt-transport-https installed?
+E: Failed to fetch https://packages.sury.org/php/dists/stretch/InRelease
+E: Some index files failed to download. They have been ignored, or old ones used instead.
+```
+
+Install the following program:
+
+```text
+sudo apt-get install ca-certificates apt-transport-https
+```
+
+Then run again the update and upgrade command.
+
+{% code-tabs %}
+{% code-tabs-item title="3. Install PHP 7.2 and modules" %}
+```text
+sudo apt-get install php7.2 php7.2-cli php7.2-common php7.2-opcache php7.2-curl php7.2-mbstring php7.2-mysql php7.2-zip php7.2-xml
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+{% code-tabs %}
+{% code-tabs-item title="4. Verify the installation" %}
+```text
+php -v
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+Perform the following commands to install PHP 7.2 on Ubuntu:
 
 {% hint style="info" %}
 If your Linux distribution already has PHP 7.2 you do not need to add the repository. Go directly to command 4.
