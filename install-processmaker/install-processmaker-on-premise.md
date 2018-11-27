@@ -37,7 +37,7 @@ In order to install ProcessMaker 4 in Debian you will need the following:
 
 ### **Install VirtualBox 5.2.22**
 
-[Download VirtualBox](https://www.virtualbox.org/wiki/Linux_Downloads) for Debian Linux. It will download a file with the `.deb` extension.
+[Download VirtualBox](https://www.virtualbox.org/wiki/Linux_Downloads) for Debian, Kali or Ubuntu. It will download a file with the `.deb` extension.
 
 ![It is important that you download the correct version of VirtualBox for your OS](../.gitbook/assets/selection_281.png)
 
@@ -49,7 +49,7 @@ dpkg -i [file name].deb
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-After the installation finishes, VirtualBox sometimes not work. VirtualBox will ask you to install the gcc, make, and perl libraries as well as the kernel "header" in order to rebuild a missing module. If this happens run the following command:
+After the installation finishes, VirtualBox sometimes does not work. VirtualBox will ask you to install the gcc, make, and perl libraries as well as the kernel "header" in order to rebuild a missing module. If this happens run the following command:
 
 {% code-tabs %}
 {% code-tabs-item title="1. Install the libraries for gcc, make, perl, and the kernel \"header.\"" %}
@@ -117,7 +117,7 @@ vagrant -v
 
 Install on:
 
-* [Debian](install-processmaker-on-premise.md#install-on-debian)
+* [Debian or Kali](install-processmaker-on-premise.md#install-on-debian)
 * [Ubuntu](install-processmaker-on-premise.md#install-on-ubuntu)
 
 #### Install on Debian
