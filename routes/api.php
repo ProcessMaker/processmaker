@@ -20,6 +20,7 @@ Route::group(
     Route::put('permissions', 'PermissionController@update');
     Route::apiResource('tasks', 'TaskController')->only(['index', 'show', 'update']);
     Route::apiResource('requests', 'ProcessRequestController');
+    Route::apiResource('requests.files', 'ProcessRequestFileController');
     Route::post('process_events/{process}', 'ProcessController@triggerStartEvent')->name('process_events.trigger');
     Route::apiResource('files', 'FileController');
     Route::get('notifications', 'NotificationController@index');

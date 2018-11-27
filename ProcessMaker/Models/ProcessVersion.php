@@ -20,15 +20,18 @@ use Illuminate\Database\Eloquent\Model;
 class ProcessVersion extends Model
 {
     /**
+     * Do not automatically set created_at
+     */
+    const CREATED_AT = null;
+    
+    /**
      * Attributes that are not mass assignable.
      *
      * @var array $fillable
      */
     protected $guarded = [
         'id',
-        'bpmn',
         'updated_at',
-        'created_at',
     ];
 
     /**
@@ -41,48 +44,4 @@ class ProcessVersion extends Model
     protected $hidden = [
         'bpmn'
     ];
-
-    /**
-     * The binary UUID attributes that should be converted to text.
-     *
-     * @var array
-     */
-    protected $ids = [
-        'process_category_id',
-        'process_id',
-    ];
-
-    /**
-     * Validation rules.
-     *
-     * @return array
-     */
-    public static function rules()
-    {
-        return [
-            'name' => 'required',
-            'status' => 'in:ACTIVE,INACTIVE',
-            'process_category_id' => 'exists:process_categories,id',
-            'process_id' => 'exists:processes,id',
-        ];
-    }
-
-    /**
-     * Get the process to which this version points to.
-     *
-     */
-    public function process()
-    {
-        return $this->belongsTo(Process::class, 'process_id');
-    }
-
-    /**
-     * Get the process to which this version points to.
-     *
-     */
-    public function processCategory()
-    {
-        return $this->belongsTo(ProcessCategory::class, 'process_category_id');
-    }
-
 }
