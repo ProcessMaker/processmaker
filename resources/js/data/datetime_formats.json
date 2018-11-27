@@ -6,7 +6,7 @@
   },
   {
     "format": "m/d/Y h:i A",
-    "momentFormat": "MM/DD/YYYY hh:mm A",
+    "momentFormat": "MM/DD/YYYY h:mm A",
     "title": "m/d/Y h:i A (12/31/2017 11:30 pm)"
   },
   {
