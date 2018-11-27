@@ -1,27 +1,21 @@
 {
-	"authHost": "https://bpm4.processmaker.local",
+	"authHost": "%%AUTHHOST%%",
 	"authEndpoint": "/broadcasting/auth",
-	"clients": [
-		{
-			"appId": "0fd1f7a0ce0d527c",
-			"key": "21a795019957dde6bcd96142e05d4b10"
-		}
-	],
+	"clients": [],
 	"database": "redis",
 	"databaseConfig": {
+		"redis": {
+			"port": "%%REDISPORT%%"
+		},
 		"sqlite": {
 			"databasePath": "/database/laravel-echo-server.sqlite"
 		}
 	},
 	"devMode": true,
 	"host": null,
-	"port": "6001",
-	"protocol": "https",
+	"port": "%%ECHOPORT%%",
+	"protocol": "http",
 	"socketio": {},
-	"sslCertPath": "/etc/nginx/ssl/bpm4.local.processmaker.com.crt",
-	"sslKeyPath": "/etc/nginx/ssl/bpm4.local.processmaker.com.key",
-	"sslCertChainPath": "",
-	"sslPassphrase": "",
 	"subscribers": {
 		"http": true,
 		"redis": true
