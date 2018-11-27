@@ -29,7 +29,7 @@ class ProcessPermissionsTest extends TestCase
 
         //Permission to use api
         factory(PermissionAssignment::class)->create([
-            'permission_id' => Permission::byGuardName('requests.update')->id,
+            'permission_id' => Permission::byGuardName('requests.edit')->id,
             'assignable_type' => User::class,
             'assignable_id' => $this->user->id
         ]);

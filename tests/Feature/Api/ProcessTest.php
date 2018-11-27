@@ -79,12 +79,12 @@ class ProcessTest extends TestCase
 
         // Create create process permission for the user
         $userId = $this->user->id;
-        factory(Permission::class)->create(['guard_name' => 'requests.store']);
+        factory(Permission::class)->create(['guard_name' => 'requests.create']);
         factory(Permission::class)->create(['guard_name' => 'processes.index']);
         factory(ProcessPermission::class)
             ->create(
                 [
-                    'permission_id' => Permission::byGuardName('requests.store'),
+                    'permission_id' => Permission::byGuardName('requests.create'),
                     'assignable_type' => User::class,
                     'assignable_id' => $userId,
                 ]);
@@ -141,12 +141,12 @@ class ProcessTest extends TestCase
         ]);
 
         // Create process permissions for the group
-        factory(Permission::class)->create(['guard_name' => 'requests.store']);
+        factory(Permission::class)->create(['guard_name' => 'requests.create']);
         factory(Permission::class)->create(['guard_name' => 'processes.index']);
         factory(ProcessPermission::class)
             ->create(
                 [
-                    'permission_id' => Permission::byGuardName('requests.store'),
+                    'permission_id' => Permission::byGuardName('requests.create'),
                     'assignable_type' => Group::class,
                     'assignable_id' => $groupId,
                 ]);

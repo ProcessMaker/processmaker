@@ -71,7 +71,7 @@ class ProcessController extends Controller
             ->orderBy(...$orderBy);
 
         if (!Auth::user()->is_administrator) {
-            $startPermission = Permission::byGuardName('requests.store')->id;
+            $startPermission = Permission::byGuardName('requests.create')->id;
             $processes->whereExists(function($query) use ($startPermission){
                 $query->select(\DB::raw(1))
                     ->from((new ProcessPermission)->getTable())
@@ -234,7 +234,7 @@ class ProcessController extends Controller
 
         ProcessPermission::where('process_id', $process->id)->delete();
         $cancelId = Permission::byGuardName('requests.cancel')->id;
-        $startId = Permission::byGuardName('requests.store')->id;
+        $startId = Permission::byGuardName('requests.create')->id;
         if ($request->has('cancel_request')) {
             foreach ($request->input('cancel_request')['users'] as $id) {
                 $this->savePermission($process, User::class, $id, $cancelId);
