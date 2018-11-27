@@ -9,12 +9,6 @@
   "license": "GNU Affero General Public License version 3",
   "minimum-stability": "dev",
   "prefer-stable": true,
-  "repositories": [
-    {
-      "type": "vcs",
-      "url":  "https://github.com/ProcessMaker/bpm-package-social-connectors.git"
-    }
-  ],
   "require": {
     "php": ">=7.2.0",
     "TYPO3/class-alias-loader": "^1.0",
@@ -30,7 +24,6 @@
     "lavary/laravel-menu": "^1.7",
     "phing/phing": "^2.16",
     "predis/predis": "^1.1",
-    "processmaker/bpm-package-social-connectors": "dev-master",
     "processmaker/nayra": "dev-master",
     "ralouphie/getallheaders": "^2.0",
     "spatie/laravel-fractal": "^5.3",

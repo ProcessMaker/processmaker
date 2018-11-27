@@ -2720,49 +2720,6 @@
             "time": "2016-06-16T16:22:20+00:00"
         },
         {
-            "name": "processmaker/bpm-package-social-connectors",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ProcessMaker/bpm-package-social-connectors.git",
-                "reference": "90d54d983d3fad8f9739b840d0b959cb5dad16c0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/bpm-package-social-connectors/zipball/90d54d983d3fad8f9739b840d0b959cb5dad16c0",
-                "reference": "90d54d983d3fad8f9739b840d0b959cb5dad16c0",
-                "shasum": ""
-            },
-            "require": {
-                "processmaker/bpm": "4.0.*"
-            },
-            "type": "project",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "ProcessMaker\\Packages\\Connectors\\Social\\PluginServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "ProcessMaker\\Packages\\Connectors\\Social\\": "src"
-                }
-            },
-            "authors": [
-                {
-                    "name": "Taylor Dondich",
-                    "email": "taylor@processmaker.com"
-                }
-            ],
-            "description": "ProcessMaker BPM Connectors that provide Social Media connectivity",
-            "support": {
-                "source": "https://github.com/ProcessMaker/bpm-package-social-connectors/tree/master",
-                "issues": "https://github.com/ProcessMaker/bpm-package-social-connectors/issues"
-            },
-            "time": "2018-11-26T23:08:12+00:00"
-        },
-        {
             "name": "processmaker/nayra",
             "version": "dev-master",
             "source": {
