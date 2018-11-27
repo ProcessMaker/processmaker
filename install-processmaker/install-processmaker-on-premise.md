@@ -37,7 +37,7 @@ In order to install ProcessMaker 4 in Debian you will need the following:
 
 ### **Install VirtualBox 5.2.22**
 
-[Download VirtualBox](https://www.virtualbox.org/wiki/Linux_Downloads) for Debian, Kali or Ubuntu. It will download a file with the `.deb` extension.
+[Download VirtualBox](https://www.virtualbox.org/wiki/Linux_Downloads) for Linux. It will download a file with the `.deb` extension.
 
 ![It is important that you download the correct version of VirtualBox for your OS](../.gitbook/assets/selection_281.png)
 
@@ -91,7 +91,7 @@ Verify that VirtualBox works correctly.
 
 ### Install Vagrant 2.2.1
 
-[Download Vagrant](https://www.vagrantup.com/downloads.html) for Debian. It will download a file with the `.deb` extension.
+[Download Vagrant](https://www.vagrantup.com/downloads.html) for Linux. It will download a file with the `.deb` extension.
 
 ![](../.gitbook/assets/selection_282.png)
 
@@ -118,7 +118,7 @@ vagrant -v
 Install on:
 
 * [Debian or Kali](install-processmaker-on-premise.md#install-on-debian)
-* [Ubuntu](install-processmaker-on-premise.md#install-on-ubuntu)
+* [Ubuntu or Mint](install-processmaker-on-premise.md#install-on-ubuntu)
 
 #### Install on Debian
 
