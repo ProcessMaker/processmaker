@@ -66,11 +66,11 @@ class Screen extends Model
     {
         $rules = [];
         if ($existing) {
-            // ignore the unique rule for this id
-            // $rules['title'] = [
-            //     'required',
-            //     Rule::unique('screens')->ignore($existing->id, 'id')
-            // ];
+            //ignore the unique rule for this id
+            $rules['title'] = [
+                'required',
+                Rule::unique('screens')->ignore($existing->id, 'id')
+            ];
         } else {
             $rules = [
                 'title' => 'required|unique:screens,title',
