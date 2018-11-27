@@ -80,6 +80,12 @@ Click the **Save** icon ![](../../.gitbook/assets/save-icon-processes.png) from 
 
 Click the **Close** icon ![](../../.gitbook/assets/close-icon-processes.png) from Script Editor's top menu to close Scripts Editor and return to the **Scripts** page.
 
+## Best Practices
+
+Follow these best practices when designing ProcessMaker Scripts.
+
+
+
 ## Related Topics
 
 {% page-ref page="what-is-a-script.md" %}
