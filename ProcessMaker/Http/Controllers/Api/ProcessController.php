@@ -207,6 +207,7 @@ class ProcessController extends Controller
     public function update(Request $request, Process $process)
     {
         $request->validate(Process::rules($process));
+        $original_attributes = $process->getAttributes();
 
         //bpmn validation
         libxml_use_internal_errors(true);
@@ -223,6 +224,13 @@ class ProcessController extends Controller
         //$process->fill($request->except('cancelRequest', 'startRequest')->json()->all());
         $process->fill($request->except('cancel_request', 'start_request', 'cancel_request_id', 'start_request_id'));
         $process->saveOrFail();
+
+
+        unset(
+            $original_attributes['id'],
+            $original_attributes['updated_at']
+        );
+        $process->versions()->create($original_attributes);
 
         ProcessPermission::where('process_id', $process->id)->delete();
         $cancelId = Permission::byGuardName('requests.cancel')->id;
