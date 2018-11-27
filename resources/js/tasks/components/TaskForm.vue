@@ -1,5 +1,5 @@
 <template>
-  <vue-form-renderer @submit="submit" v-model="formData" :config="screen" />
+  <vue-form-renderer @submit="submit" v-model="formData" :config="screen"/>
 </template>
 
 <script>
@@ -11,6 +11,7 @@
   import MultiColumn from "@processmaker/vue-form-builder/src/components/editor/multi-column";
   import FormText from "@processmaker/vue-form-builder/src/components/renderer/form-text";
   import FormButton from "@processmaker/vue-form-builder/src/components/renderer/form-button";
+  import FileUpload from "../../processes/screen-builder/components/form/file-upload";
   import {
     FormInput,
     FormSelect,
@@ -20,6 +21,7 @@
     FormDatePicker
   } from "@processmaker/vue-form-elements/src/components";
   Vue.component('FormInput',FormInput);
+  Vue.component('FileUpload',FileUpload);
   Vue.component('FormSelect',FormSelect);
   Vue.component('OptionsList',OptionsList);
   Vue.component('FormCheckbox',FormCheckbox);

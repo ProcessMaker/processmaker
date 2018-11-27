@@ -9,6 +9,8 @@ use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
 use \Illuminate\Auth\Access\AuthorizationException;
+use Spatie\MediaLibrary\HasMedia\HasMedia;
+use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
 /**
  * Represents an Eloquent model of a Request which is an instance of a Process.
@@ -49,11 +51,12 @@ use \Illuminate\Auth\Access\AuthorizationException;
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
  * )
  */
-class ProcessRequest extends Model implements ExecutionInstanceInterface
+class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMedia
 {
 
     use ExecutionInstanceTrait;
     use SerializeToIso8601;
+    use HasMediaTrait;
 
     /**
      * The attributes that aren't mass assignable.
