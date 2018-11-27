@@ -49,7 +49,7 @@ export default {
     return {
       content: '',
       validator: null,
-      requestID: document.head.querySelector("meta[name=\"request-id\"]"),
+      requestID: document.head.querySelector("meta[name=\"request-id\"]").content,
       options: {
         target: '/api/1.0/requests/' + this.requestID + '/files',
         query: {
