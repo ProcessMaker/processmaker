@@ -20,7 +20,7 @@ Despite that PHP, MySQL database, NGINX web server and other applications are re
 
 The following is the software requirement for ProcessMaker 4 Community edition internal beta:
 
-* **Linux:** Use any Linux distribution that supports PHP 7.2 or greater. The internal beta was successfully installed on Debian.
+* **Linux:** Use any Linux distribution that supports PHP 7.2 or greater. The internal beta was successfully installed on Debian, Mint and Ubuntu.
 
 ### Supported Browsers
 
