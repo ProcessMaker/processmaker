@@ -13,7 +13,8 @@
             <button @click="showUserOrGroup=true;" class="btn-sm float-right">+</button>
             <button @click="removeUserOrGroup" :disabled="!selectedAssignee" class="btn-sm float-right">-</button>
             <div class="list-users-groups small">
-                <span v-for="(row, index) in assignedUsersGroups"
+                <small v-if="loadingAssigned">loading...</small>
+                <span v-else v-for="(row, index) in assignedUsersGroups"
                       class="list-group-item list-group-item-action pt-0 pb-0"
                       :class="{'bg-primary': selectedAssigneeIndex == index}"
                       @click="selectAssignee(row, index)">
@@ -82,6 +83,7 @@
                 filter: '',
                 selectedUserGroupIndex: -1,
                 selectedUserGroup: null,
+                loadingAssigned: true,
             };
         },
         computed: {
@@ -188,6 +190,7 @@
              * Load the list of assigned users
              */
             loadAssignedUsers() {
+                this.loadingAssigned = true;
                 ProcessMaker.apiClient
                         .get("/task_assignments", {
                             params: {
@@ -199,6 +202,7 @@
                         .then(response => {
                             this.assignedUsersGroups.splice(0);
                             this.assignedUsersGroups.push(...response.data.data);
+                            this.loadingAssigned = false;
                         });
             },
             /**
