@@ -1,4 +1,5 @@
 <?php
+
 namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
@@ -7,6 +8,8 @@ use Illuminate\Validation\Rule;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
+use Spatie\MediaLibrary\HasMedia\HasMedia;
+use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
 /**
  * Represents an Eloquent model of a Request which is an instance of a Process.
@@ -47,11 +50,12 @@ use ProcessMaker\Traits\SerializeToIso8601;
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
  * )
  */
-class ProcessRequest extends Model implements ExecutionInstanceInterface
+class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMedia
 {
 
     use ExecutionInstanceTrait;
     use SerializeToIso8601;
+    use HasMediaTrait;
 
     /**
      * The attributes that aren't mass assignable.
@@ -113,7 +117,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
      *
      * @param array $argument
      */
-    public function __construct(array $argument=[])
+    public function __construct(array $argument = [])
     {
         parent::__construct($argument);
         $this->bootElement([]);
@@ -128,26 +132,16 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
      */
     public static function rules($existing = null)
     {
-        $rules = [
-            'name' => 'required|unique:process_requests,name',
+        $unique = Rule::unique('process_requests')->ignore($existing);
+
+        return [
+            'name' => ['required', 'string', 'max:100', $unique],
             'data' => 'required',
             'status' => 'in:ACTIVE,COMPLETED,ERROR',
             'process_id' => 'required|exists:processes,id',
             'process_collaboration_id' => 'nullable|exists:process_collaborations,id',
             'user_id' => 'exists:users,id',
         ];
-
-        if ($existing) {
-            // ignore the unique rule for this id
-            $rules['name'] = [
-                'required',
-                'string',
-                'max:100',
-                Rule::unique('process_requests')->ignore($existing->id, 'id')
-            ];
-        }
-
-        return $rules;
     }
 
     /**
@@ -209,7 +203,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
     {
         return $this->hasMany(ProcessRequestToken::class)
             ->with('user')
-            ->whereNotIn('element_type' , ['scriptTask']);
+            ->whereNotIn('element_type', ['scriptTask']);
     }
 
     /**
@@ -231,7 +225,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
      */
     public function scopeInProgress($query)
     {
-        $query->where('status' , '=', 'ACTIVE');
+        $query->where('status', '=', 'ACTIVE');
     }
 
     /**
@@ -241,7 +235,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
      */
     public function scopeCompleted($query)
     {
-        $query->where('status' , '=', 'COMPLETED');
+        $query->where('status', '=', 'COMPLETED');
     }
 
     /**
@@ -262,7 +256,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
     {
         $result = [];
         if (is_array($this->data)) {
-            foreach($this->data as $key => $value) {
+            foreach ($this->data as $key => $value) {
                 $result[] = [
                     'key' => $key,
                     'value' => $value

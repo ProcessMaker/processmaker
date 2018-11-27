@@ -49,6 +49,6 @@
  *             @OA\Schema(type="string", default=""),
  *         ),
  *     ),
- *     security={{"pm-api": {}}},
+ *     security={{"pm_api_bearer": {}}},
  * )
  */
