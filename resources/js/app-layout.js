@@ -17,7 +17,8 @@ import moment from "moment"
 import moment_timezone from "moment-timezone";
 if (window.ProcessMaker && window.ProcessMaker.user) {
     moment.tz.setDefault(window.ProcessMaker.user.timezone);
-    moment.defaultFormat= window.ProcessMaker.user.datetime_format;
+    moment.defaultFormat = window.ProcessMaker.user.datetime_format;
+    moment.defaultFormatUtc = window.ProcessMaker.user.datetime_format;
 }
 Vue.prototype.moment = moment;
 //initializing global instance of a moment object
