@@ -51,10 +51,11 @@ export default {
       validator: null,
       requestID: null,
       options: {
-        target: null,
+        target: this.getTargetUrl,
         query: {
           chunk: true
         },
+        testChunks: false,
         // Setup our headers to deal with API calls
         headers: {
           "X-Requested-With": "XMLHttpRequest",
@@ -64,17 +65,14 @@ export default {
       },
     }
   },
-  mounted() {
-    this.getrequestID()
-  },
   methods: {
    updateValue(e) {
       this.content = e.target.value;
       this.$emit('input', this.content)
     },
-    getrequestID() {
+    getTargetUrl() {
       this.requestID = document.head.querySelector("meta[name=\"request-id\"]").content
-      this.options.target = '/api/1.0/requests/' + this.requestID + '/files'
+      return '/api/1.0/requests/' + this.requestID + '/files'
     }
   }
 }
