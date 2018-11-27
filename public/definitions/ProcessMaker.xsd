@@ -1,42 +1,63 @@
 <?xml version="1.0"?>
 <xsd:schema version="1.0" id="ProcessMaker"
-            targetNamespace="http://processmaker.com/Schema.xsd"
-            elementFormDefault="qualified"            
-            xmlns="http://processmaker.com/Schema.xsd"
-            xmlns:mstns="http://processmaker.com/Schema.xsd"
-            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL">
-       
-    <xsd:import namespace="http://www.omg.org/spec/BPMN/20100524/MODEL" schemaLocation="BPMN20.xsd" />    
+    targetNamespace="http://processmaker.com/BPMN/2.0/Schema.xsd" elementFormDefault="qualified"
+    xmlns="http://processmaker.com/BPMN/2.0/Schema.xsd"
+    xmlns:mstns="http://processmaker.com/BPMN/2.0/Schema.xsd"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL">
+
+    <xsd:import namespace="http://www.omg.org/spec/BPMN/20100524/MODEL" schemaLocation="BPMN20.xsd"/>
+
+    <xsd:complexType name="tPmTask">
+        <xsd:complexContent>
+            <xsd:extension base="bpmn:tTask">
+                <xsd:attribute name="screenRef" type="xsd:string"/>
+                <xsd:attribute name="screenVersion" type="xsd:string" use="optional"/>
+                <xsd:attribute name="dueIn" type="xsd:decimal"/>
+                <xsd:attribute name="notifyAfterRouting" type="xsd:boolean" default="false"/>
+                <xsd:attribute name="notifyToRequestCreator" type="xsd:boolean" default="false"/>
+                <xsd:attribute name="assignment" type="xsd:string" default="requestor"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
 
     <xsd:complexType name="tPmUserTask">
         <xsd:complexContent>
             <xsd:extension base="bpmn:tUserTask">
-                <xsd:attribute name="screenRef" type="xsd:string" default=""/>
-                <xsd:attribute name="type" type="xsd:string" default=""/>
-                <xsd:attribute name="dueDate" type="xsd:date"/>
+                <xsd:attribute name="screenRef" type="xsd:string"/>
+                <xsd:attribute name="screenVersion" type="xsd:string" use="optional"/>
+                <xsd:attribute name="dueIn" type="xsd:decimal"/>
                 <xsd:attribute name="notifyAfterRouting" type="xsd:boolean" default="false"/>
                 <xsd:attribute name="notifyToRequestCreator" type="xsd:boolean" default="false"/>
-                <xsd:attribute name="assignType" type="xsd:boolean" default="false"/>
+                <xsd:attribute name="assignment" type="xsd:string" default="requestor"/>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
- 
+
     <xsd:complexType name="tPmScriptTask">
         <xsd:complexContent>
             <xsd:extension base="bpmn:tScriptTask">
-                <xsd:attribute name="scriptRef" type="xsd:string" default=""/>
-                <xsd:attribute name="config" type="xsd:string" default=""/>
+                <xsd:attribute name="scriptRef" type="xsd:string"/>
+                <xsd:attribute name="scriptVersion" type="xsd:string" use="optional"/>
+                <xsd:attribute name="config" type="xsd:string" use="optional"/>
             </xsd:extension>
         </xsd:complexContent>
-    </xsd:complexType>    
- 
+    </xsd:complexType>
+
     <xsd:complexType name="tPmServiceTask">
         <xsd:complexContent>
             <xsd:extension base="bpmn:tServiceTask">
-                <xsd:attribute name="config" type="xsd:string" default=""/>
+                <xsd:attribute name="config" type="xsd:string" use="optional"/>
             </xsd:extension>
         </xsd:complexContent>
-    </xsd:complexType>    
- 
+    </xsd:complexType>
+
+    <xsd:complexType name="tPmMessage">
+        <xsd:complexContent>
+            <xsd:extension base="bpmn:tMessage">
+                <xsd:attribute name="payload" type="xsd:string" use="optional"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
 </xsd:schema>

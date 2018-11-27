@@ -17,7 +17,7 @@
             </template>
 
             <template slot="assignee" slot-scope="props">
-                <avatar-image class="d-inline-flex pull-left align-items-center" size="25" class-image="m-1"
+                <avatar-image class="d-inline-flex pull-left align-items-center" size="25"
                               :input-data="props.rowData.user" display-name="true"></avatar-image>
             </template>
 
@@ -172,7 +172,7 @@
     };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
     /deep/ th#_total_users {
         width: 150px;
         text-align: center;
@@ -189,6 +189,10 @@
         &.inactive {
             color: red;
         }
+    }
+
+    /deep/ tr td:nth-child(4) {
+        padding: 6px 10px;
     }
 </style>
 
