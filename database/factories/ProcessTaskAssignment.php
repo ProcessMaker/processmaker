@@ -1,5 +1,6 @@
 <?php
 
+use Faker\Generator as Faker;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessTaskAssignment;
@@ -8,30 +9,29 @@ use ProcessMaker\Models\User;
 /**
  * Model factory for a Process Task Assignment
  */
-
-use Faker\Generator as Faker;
-
 $factory->define(ProcessTaskAssignment::class, function (Faker $faker) {
 
-    $model = factory($faker->randomElement([
+    $model = $faker->randomElement([
         User::class,
         Group::class,
-    ]))->create();
+    ]);
 
     return [
         'process_id' => function () {
             return factory(Process::class)->create()->getKey();
         },
         'process_task_id' => $faker->randomDigit,
-        'assignment_id' => $model->getKey(),
-        'assignment_type' => get_class($model)
+        'assignment_id' => function () use ($model) {
+            return factory($model)->create()->getKey();
+        },
+        'assignment_type' => $model
     ];
 });
 
 $factory->defineAs(ProcessTaskAssignment::class, 'user', function () use ($factory) {
     $follow = $factory->raw(ProcessTaskAssignment::class);
     $extras = [
-        'id' => function () {
+        'assignment_id' => function () {
             return factory(User::class)->create()->getKey();
         },
         'assignment_type' => User::class
@@ -42,7 +42,7 @@ $factory->defineAs(ProcessTaskAssignment::class, 'user', function () use ($facto
 $factory->defineAs(ProcessTaskAssignment::class, 'group', function () use ($factory) {
     $follow = $factory->raw(ProcessTaskAssignment::class);
     $extras = [
-        'id' => function () {
+        'assignment_id' => function () {
             return factory(Group::class)->create()->getKey();
         },
         'assignment_type' => Group::class

@@ -101,7 +101,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
         });
 
         /**
-         * Maps our Modeler Manager as a singleton. The Modeler Manager is used 
+         * Maps our Modeler Manager as a singleton. The Modeler Manager is used
          * to manage customizations to the Process Modeler.
          */
         $this->app->singleton(ModelerManager::class, function($app) {
@@ -109,7 +109,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
         });
 
         /**
-         * Maps our Screen Builder Manager as a singleton. The Screen Builder Manager is used 
+         * Maps our Screen Builder Manager as a singleton. The Screen Builder Manager is used
          * to manage customizations to the Screen Builder.
          */
         $this->app->singleton(ScreenBuilderManager::class, function($app) {
@@ -135,14 +135,5 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         // we are using custom passport migrations
         Passport::ignoreMigrations();
-
-        /**
-         * Mapping of shape and elements used in BPMN_BOUND.BOU_ELEMENT_TYPE
-         *
-         */
-        Relation::morphMap([
-            'USER' => User::class,
-            'GROUP' => Group::class,
-        ]);
     }
 }

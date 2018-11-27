@@ -270,7 +270,7 @@ class Process extends Model implements HasMedia
                 ->get();
         $users = [];
         foreach ($assignments as $assignment) {
-            if ($assignment->assignment_type === 'user') {
+            if ($assignment->assignment_type === User::class) {
                 $users[$assignment->assignment_id] = $assignment->assignment_id;
             } else {
                 $this->getConsolidatedUsers($assignment->assignment_id, $users);
@@ -291,7 +291,7 @@ class Process extends Model implements HasMedia
     {
         $groupMembers = GroupMember::where('group_id', $group_id)->get();
         foreach ($groupMembers as $groupMember) {
-            if ($groupMember->member_type === 'user') {
+            if ($groupMember->member_type === User::class) {
                 $users[$groupMember->member_id] = $groupMember->member_id;
             } else {
                 $this->getConsolidatedUsers($groupMember->member_id, $users);
