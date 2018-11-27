@@ -16,10 +16,12 @@ class CreateScriptVersionsTable extends Migration
         Schema::create('script_versions', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('script_id');
+
+            $table->string('key')->unique()->nullable();
             $table->text('title');
             $table->text('description')->nullable();
-            $table->string('type', 20)->default('FORM');
-            $table->text('content')->nullable();
+            $table->string('language', 20)->default('PHP');
+            $table->text('code')->nullable();
             $table->timestamps();
 
             $table->foreign('script_id')->references('id')->on('scripts')->onDelete('cascade');

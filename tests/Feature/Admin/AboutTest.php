@@ -18,6 +18,8 @@ class AboutTest extends TestCase
      */
     public function testIndexRoute()
     {
+      // user without any permissions
+      $this->user = factory(User::class)->create();
 
       // get the URL
       $response = $this->webCall('GET', '/admin/about');

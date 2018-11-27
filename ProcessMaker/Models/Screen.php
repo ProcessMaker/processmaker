@@ -5,6 +5,7 @@ namespace ProcessMaker\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
+use ProcessMaker\Models\ScreenVersion;
 use ProcessMaker\Traits\SerializeToIso8601;
 
 /**
@@ -19,7 +20,7 @@ use ProcessMaker\Traits\SerializeToIso8601;
  * @property string label
  * @property Carbon type
  *
- *   @OA\Schema(
+ * @OA\Schema(
  *   schema="screensEditable",
  *   @OA\Property(property="id", type="string", format="id"),
  *   @OA\Property(property="name", type="string"),
@@ -66,7 +67,7 @@ class Screen extends Model
     {
         $rules = [];
         if ($existing) {
-            // ignore the unique rule for this id
+            //ignore the unique rule for this id
             $rules['title'] = [
                 'required',
                 Rule::unique('screens')->ignore($existing->id, 'id')
@@ -79,5 +80,13 @@ class Screen extends Model
             ];
         }
         return $rules;
+    }
+
+    /**
+     * Get the associated versions
+     */
+    public function versions()
+    {
+        return $this->hasMany(ScreenVersion::class);
     }
 }

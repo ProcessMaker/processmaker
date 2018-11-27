@@ -11,6 +11,7 @@
     <meta name="datetime-format" content="{{ Auth::user()->datetime_format ?: config('app.dateformat') }}">
     <meta name="timezone" content="{{ Auth::user()->timezone ?: config('app.timezone') }}">
     {{--<meta name="notifications" content='@json(Auth::user()->activeNotifications())'>--}}
+    @yield('meta')
     @endif
     @if(config('broadcasting.broadcaster') == 'socket.io')
     <meta name="broadcaster" content="{{config('broadcasting.broadcaster')}}">
