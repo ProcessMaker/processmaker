@@ -16,10 +16,11 @@ class CreateScreenVersionsTable extends Migration
         Schema::create('screen_versions', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('screen_id');
+            $table->unsignedInteger('screen_category_id')->nullable();
             $table->text('title');
-            $table->text('description')->nullable();
+            $table->text('description');
             $table->string('type', 20)->default('FORM');
-            $table->text('content')->nullable();
+            $table->json('config')->nullable();
             $table->timestamps();
 
             $table->foreign('screen_id')->references('id')->on('screens')->onDelete('cascade');
