@@ -28,7 +28,7 @@ class TaskAssignmentTest extends TestCase
     ];
 
     /**
-     * Test verify the parameter required for create form
+     * Test to verify the parameters that are required to create an assignment
      */
     public function testNotCreatedForParameterRequired()
     {
