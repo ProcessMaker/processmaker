@@ -5,6 +5,7 @@ namespace ProcessMaker\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
+use ProcessMaker\Models\ScreenVersion;
 use ProcessMaker\Traits\SerializeToIso8601;
 
 /**
@@ -79,5 +80,13 @@ class Screen extends Model
             ];
         }
         return $rules;
+    }
+
+    /**
+     * Get the associated versions
+     */
+    public function versions()
+    {
+        return $this->hasMany(ScreenVersion::class);
     }
 }

@@ -319,4 +319,12 @@ class Process extends Model implements HasMedia
         $query->where('id', $this->id);
         return new ProcessEvents($query, $this);
     }
+    
+    /**
+     * Get the associated versions
+     */
+    public function versions()
+    {
+        return $this->hasMany(ProcessVersion::class);
+    }
 }
