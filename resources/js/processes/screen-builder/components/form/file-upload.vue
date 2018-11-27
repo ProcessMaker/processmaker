@@ -49,9 +49,9 @@ export default {
     return {
       content: '',
       validator: null,
-      requestID: document.head.querySelector("meta[name=\"request-id\"]").content,
+      requestID: null,
       options: {
-        target: '/api/1.0/requests/' + this.requestID + '/files',
+        target: null,
         query: {
           chunk: true
         },
@@ -64,10 +64,17 @@ export default {
       },
     }
   },
+  mounted() {
+    this.getrequestID()
+  },
   methods: {
    updateValue(e) {
       this.content = e.target.value;
       this.$emit('input', this.content)
+    },
+    getrequestID() {
+      this.requestID = document.head.querySelector("meta[name=\"request-id\"]").content
+      this.options.target = '/api/1.0/requests/' + this.requestID + '/files'
     }
   }
 }
