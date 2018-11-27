@@ -331,7 +331,7 @@
                     else{
                         ProcessMaker.apiClient.put("/permissions", {
                             permission_ids: this.selected,
-                            user_id: this.user.id
+                            user_id: this.formData.id
                             })
                         .then(response => {
                             ProcessMaker.alert('{{__('Permission successfully added ')}}', 'success');
