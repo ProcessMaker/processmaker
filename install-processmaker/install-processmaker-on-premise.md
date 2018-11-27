@@ -115,7 +115,14 @@ vagrant -v
 
 ### Install PHP 7.2
 
-Perform the following commands to install PHP 7.2 on Debian Linux:
+Install on:
+
+* [Debian](install-processmaker-on-premise.md#install-on-debian)
+* [Ubuntu](install-processmaker-on-premise.md#install-on-ubuntu)
+
+#### Install on Debian
+
+Perform the following commands to install PHP 7.2 on Debian:
 
 {% code-tabs %}
 {% code-tabs-item title="1. Download and add the repository" %}
@@ -168,7 +175,9 @@ php -v
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-Perform the following commands to install PHP 7.2 on Ubuntu Linux:
+#### Install on Ubuntu
+
+Perform the following commands to install PHP 7.2 on Ubuntu:
 
 {% hint style="info" %}
 If your Linux distribution already has PHP 7.2 you do not need to add the repository. Go directly to command 4.
