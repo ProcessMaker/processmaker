@@ -40,12 +40,10 @@ class ScreenCategory extends Model
 
     public static function rules()
     {
-        $rules = [
+        return [
             'name' => 'required|string|max:100|unique:screen_categories,name',
             'status' => 'required|string|in:ACTIVE,INACTIVE'
         ];
-
-        return $rules;
     }
 
     /**
