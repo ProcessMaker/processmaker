@@ -56,12 +56,12 @@
                 </span>
             </div>
             <div slot="modal-footer">
+                <b-button @click="cancelAddUserOrGroup" class="btn btn-outline-secondary btn-sm text-uppercase">
+                    CLOSE
+                </b-button>
                 <b-button :disabled="selectedUserGroupIndex < 0" @click="addUserOrGroup"
-                    class="btn btn-outline-success btn-sm text-uppercase">
-                    ADD
-            </b-button>
-            <b-button @click="cancelAddUserOrGroup" class="btn btn-success btn-sm text-uppercase">
-                CANCEL
+                    class="btn btn-secondary btn-sm text-uppercase">
+                    ASSIGN
             </b-button>
         </div>
 

@@ -9,13 +9,13 @@
                 language="json" class="editor"></monaco-editor>
         </div>
         <small class="form-text text-muted">{{helper}}</small>
-        <b-modal v-model="showPopup" size="lg" centered title="Script Editor" v-cloak>
+        <b-modal v-model="showPopup" size="lg" centered title="Script Config Editor" v-cloak>
             <div class="editor-container">
                 <monaco-editor :options="monacoLargeOptions" v-model="code"
                     language="json" class="editor"></monaco-editor>
             </div>
             <div slot="modal-footer">
-                <b-button @click="closePopup" class="btn btn-success btn-sm text-uppercase">
+                <b-button @click="closePopup" class="btn btn-outline-secondary btn-sm text-uppercase">
                     CLOSE
                 </b-button>
             </div>
