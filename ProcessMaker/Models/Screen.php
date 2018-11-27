@@ -19,7 +19,7 @@ use ProcessMaker\Traits\SerializeToIso8601;
  * @property string label
  * @property Carbon type
  *
- *   @OA\Schema(
+ * @OA\Schema(
  *   schema="screensEditable",
  *   @OA\Property(property="id", type="string", format="id"),
  *   @OA\Property(property="name", type="string"),
@@ -64,20 +64,12 @@ class Screen extends Model
      */
     public static function rules($existing = null)
     {
-        $rules = [];
-        if ($existing) {
-            // ignore the unique rule for this id
-            $rules['title'] = [
-                'required',
-                Rule::unique('screens')->ignore($existing->id, 'id')
-            ];
-        } else {
-            $rules = [
-                'title' => 'required|unique:screens,title',
-                'description' => 'required',
-                'type' => 'required'
-            ];
-        }
-        return $rules;
+        $unique = Rule::unique('screens')->ignore($existing);
+
+        return [
+            'title' => ['required', $unique],
+            'description' => 'required',
+            'type' => $existing ? '' : 'required'
+        ];
     }
 }
