@@ -8,6 +8,7 @@ use Illuminate\Validation\Rule;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
+use \Illuminate\Auth\Access\AuthorizationException;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
@@ -265,5 +266,21 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         }
 
         return $result;
+    }
+
+    /**
+     * Check if the user has access to this request
+     *
+     * @param User $user
+     * @return void
+     */
+    public function authorize(User $user)
+    {
+        if ($this->user_id === $user->id || $user->is_administrator) {
+            return true;
+        } elseif ($user->hasPermission('show_all_requests')) {
+            return true;
+        }
+        throw new AuthorizationException("Not authorized to view this request");
     }
 }

@@ -10,6 +10,14 @@ use ProcessMaker\Models\ProcessRequest;
 class RequestController extends Controller
 {
     /**
+     * A user should always be able to see their
+     * started requests.
+     * 
+     * @var array
+     */
+    public $skipPermissionCheckFor = ['index', 'show'];
+
+    /**
      * Get the list of requests.
      *
      * @return \Illuminate\View\View|\Illuminate\Contracts\View
@@ -44,6 +52,7 @@ class RequestController extends Controller
      */
     public function show(ProcessRequest $request)
     {
+        $request->authorize(Auth::user());
         $request->participants;
         $request->user;
         $request->summary = $request->summary();
