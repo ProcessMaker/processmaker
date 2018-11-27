@@ -71,6 +71,8 @@
 
 
 <script>
+    const USER_TYPE = "ProcessMaker\\Models\\User";
+    const GROUP_TYPE = "ProcessMaker\\Models\\Group";
     export default {
         props: ["value", "label", "helper", "property"],
         data() {
@@ -145,7 +147,7 @@
                             'process_id': this.process.id,
                             'process_task_id': this.value,
                             'assignment_id': this.selectedUserGroup.id,
-                            'assignment_type': this.selectedUserGroup.fullname ? 'USER' : 'GROUP'
+                            'assignment_type': this.selectedUserGroup.fullname ? USER_TYPE : GROUP_TYPE
                         })
                         .then(assignment => {
                             assignment.assigned = this.selectedUserGroup;
