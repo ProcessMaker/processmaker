@@ -116,8 +116,12 @@
              */
             removeUserOrGroup() {
                 if (this.selectedAssigneeIndex > -1) {
-                    this.assignedUsersGroups.splice(this.selectedAssigneeIndex, 1);
-                    this.selectedAssigneeIndex = -1;
+                    ProcessMaker.apiClient
+                            .delete(`task_assignments/${this.selectedAssignee.id}`)
+                            .then(() => {
+                                this.assignedUsersGroups.splice(this.selectedAssigneeIndex, 1);
+                                this.selectedAssigneeIndex = -1;
+                            });
                 }
             },
             /**

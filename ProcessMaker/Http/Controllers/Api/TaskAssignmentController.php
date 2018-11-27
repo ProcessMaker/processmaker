@@ -111,4 +111,17 @@ class TaskAssignmentController extends Controller
         $task_assignment->save();
         return new TaskAssignmentResource($task_assignment);
     }
+
+    /**
+     * Remove an assignment
+     *
+     * @param ProcessTaskAssignment $task_assignment
+     *
+     * @return ResponseFactory|Response
+     */
+    public function destroy(ProcessTaskAssignment $task_assignment)
+    {
+        $task_assignment->delete();
+        return response('', 204);
+    }
 }
