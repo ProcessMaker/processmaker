@@ -19,7 +19,7 @@ use ProcessMaker\Traits\SerializeToIso8601;
  * @property string label
  * @property Carbon type
  *
- *   @OA\Schema(
+ * @OA\Schema(
  *   schema="screensEditable",
  *   @OA\Property(property="id", type="string", format="id"),
  *   @OA\Property(property="name", type="string"),
