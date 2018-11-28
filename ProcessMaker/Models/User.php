@@ -32,7 +32,7 @@ class User extends Authenticatable implements HasMedia
      *
      * @var array
      *
-     *   @OA\Schema(
+     * @OA\Schema(
      *   schema="usersEditable",
      *   @OA\Property(property="email", type="string", format="email"),
      *   @OA\Property(property="password", type="string"),
@@ -51,6 +51,7 @@ class User extends Authenticatable implements HasMedia
      *   @OA\Property(property="timezone", type="string"),
      *   @OA\Property(property="datetime_format", type="string"),
      *   @OA\Property(property="language", type="string"),
+     *   @OA\Property(property="is_administrator", type="boolean"),
      *   @OA\Property(property="loggedin_at", type="string"),
      *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
      * ),
@@ -82,6 +83,7 @@ class User extends Authenticatable implements HasMedia
         'timezone',
         'datetime_format',
         'language',
+        'is_administrator',
         'expires_at'
 
     ];
@@ -105,7 +107,7 @@ class User extends Authenticatable implements HasMedia
         'is_administrator' => 'bool'
     ];
 
-/**
+    /**
      * Validation rules
      *
      * @param $existing
@@ -114,24 +116,12 @@ class User extends Authenticatable implements HasMedia
      */
     public static function rules($existing = null)
     {
-        $rules = [
-            'username' => 'required|unique:users,username',
-            'email' => 'required|email|unique:users,email'
-        ];
-        if ($existing) {
-            // ignore the unique rule for this id
-            $rules['username'] = [
-                'required',
-                Rule::unique('users')->ignore($existing->id, 'id')
-            ];
+        $unique = Rule::unique('users')->ignore($existing);
 
-            $rules['email'] = [
-                'required',
-                'email',
-                Rule::unique('users')->ignore($existing->id, 'id')
-            ];
-        }
-        return $rules;
+        return [
+            'username' => ['required', $unique],
+            'email' => ['required', 'email', $unique]
+        ];
     }
 
     /**
@@ -174,7 +164,8 @@ class User extends Authenticatable implements HasMedia
      *
      * @return string
      */
-    public function getFullnameAttribute() {
+    public function getFullnameAttribute()
+    {
         return $this->getFullName();
     }
 
@@ -183,7 +174,8 @@ class User extends Authenticatable implements HasMedia
      *
      * @param $pass
      */
-    public function setPasswordAttribute($pass){
+    public function setPasswordAttribute($pass)
+    {
 
         $this->attributes['password'] = Hash::make($pass);
 
@@ -194,7 +186,8 @@ class User extends Authenticatable implements HasMedia
      *
      * @return string
      */
-    public function getAvatarAttribute() {
+    public function getAvatarAttribute()
+    {
         return $this->getAvatar();
     }
 
@@ -228,5 +221,15 @@ class User extends Authenticatable implements HasMedia
         }
 
         return $data;
+    }
+
+    /**
+     * User as assigned.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function assigned()
+    {
+        return $this->morphMany(ProcessTaskAssignment::class, 'assigned', 'assignment_type', 'assignment_id');
     }
 }

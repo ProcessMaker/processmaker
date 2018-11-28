@@ -22,7 +22,9 @@ use Laravel\Horizon\Horizon;
 use Laravel\Passport\Passport;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Http\Resources\Json\Resource;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use ProcessMaker\Models\User;
+use ProcessMaker\Models\Group;
 
 /**
  * Provide our ProcessMaker specific services
@@ -99,7 +101,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
         });
 
         /**
-         * Maps our Modeler Manager as a singleton. The Modeler Manager is used 
+         * Maps our Modeler Manager as a singleton. The Modeler Manager is used
          * to manage customizations to the Process Modeler.
          */
         $this->app->singleton(ModelerManager::class, function($app) {
@@ -107,7 +109,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
         });
 
         /**
-         * Maps our Screen Builder Manager as a singleton. The Screen Builder Manager is used 
+         * Maps our Screen Builder Manager as a singleton. The Screen Builder Manager is used
          * to manage customizations to the Screen Builder.
          */
         $this->app->singleton(ScreenBuilderManager::class, function($app) {

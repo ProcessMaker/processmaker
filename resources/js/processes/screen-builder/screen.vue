@@ -134,7 +134,10 @@ export default {
         rendererBinding
       ] = rendererComponent;
       // Add it to the screen builder
-      this.$refs.screenBuilder.addControl(control, builderComponent, builderBinding);
+      this.$refs.screenBuilder.addControl(control);
+      this.$refs.screenBuilder.$options.components[
+        builderBinding
+      ] = builderComponent;
     },
     updateConfig(newConfig) {
       this.config = newConfig;
@@ -180,7 +183,6 @@ div.main {
   flex-direction: column;
 
   .dynaform-builder {
-    min-height: auto;
     height: auto;
     flex-grow: 1;
 
