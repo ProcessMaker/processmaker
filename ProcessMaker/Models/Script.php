@@ -37,7 +37,8 @@ use ProcessMaker\Exception\ScriptLanguageNotSupported;
  */
 class Script extends Model
 {
-    use ScriptDockerTrait;
+    use ScriptDockerCopyingFilesTrait;
+    use ScriptDockerBindingFilesTrait;
 
     protected $guarded = [
         'id',
@@ -134,16 +135,18 @@ class Script extends Model
             default:
                 throw new ScriptLanguageNotSupported($language);
         }
-        
-        $response = $this->execute($config);
+
+        $executeMethod = config('app.bpm_scripts_docker_mode')==='binding'
+            ? 'executeBinding' : 'executeCopying';
+        $response = $this->$executeMethod($config);
         $returnCode = $response['returnCode'];
-        $errorContent = $response['output'];
+        $stdOutput = $response['output'];
         $output = $response['outputs']['response'];
 
         if ($returnCode) {
             // Has an error code
             return [
-                'output' => implode($errorContent, "\n")
+                'output' => implode($stdOutput, "\n")
             ];
         } else {
             // Success
