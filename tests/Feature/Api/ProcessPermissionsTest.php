@@ -42,30 +42,28 @@ class ProcessPermissionsTest extends TestCase
 
     public function testUpdateProcessPermissionRequestCancelTypeUser()
     {
-        $this->user->is_administrator = true;
-        $this->user->save();
-
         $process = factory(Process::class)->create();
-        $user = factory(User::class)->create([
+        $normal_user = factory(User::class)->create([
             'password' => 'password'
         ]);
+        // User needs the 'global' requests.cancel first
+        $normal_user->giveDirectPermission('requests.cancel');
 
         $route = route('api.processes.update', [$process->id]);
         $response = $this->apiCall('PUT', $route, [
             'name' => 'Update Process',
             'description' => 'Update Test',
-            'cancel_request' => ['users' => [$user->id], 'groups' => []]
+            'cancel_request' => ['users' => [$normal_user->id], 'groups' => []]
         ]);
-        //The user does not have process permission
         $response->assertStatus(200, $response);
 
         //Verify if user has a permission requests cancel
-        $this->assertTrue($user->hasProcessPermission($process, 'requests.cancel'));
+        $this->assertTrue($normal_user->hasProcessPermission($process, 'requests.cancel'));
 
         //Verify Process Permission
         $response = ProcessPermission::where('permission_id', Permission::byGuardName('requests.cancel')->id)
             ->where('process_id', $process->id)
-            ->where('assignable_id', $user->id)
+            ->where('assignable_id', $normal_user->id)
             ->where('assignable_type', User::class)
             ->exists();
 
@@ -75,7 +73,11 @@ class ProcessPermissionsTest extends TestCase
     public function testUpdateProcessPermissionRequestCancelTypeGroup()
     {
         $this->user->is_administrator = true;
-        $this->user->save();
+        $normal_user = factory(User::class)->create([
+            'password' => 'password'
+        ]);
+        // User needs the 'global' requests.cancel first
+        $normal_user->giveDirectPermission('requests.cancel');
 
         $process = factory(Process::class)->create();
         $group = factory(Group::class)->create();
@@ -83,7 +85,7 @@ class ProcessPermissionsTest extends TestCase
         //assign user to group
         $user = factory(User::class)->create();
         factory(GroupMember::class)->create([
-            'member_id' => $user->id,
+            'member_id' => $normal_user->id,
             'member_type' => User::class,
             'group_id' => $group->id
         ]);
@@ -98,7 +100,7 @@ class ProcessPermissionsTest extends TestCase
         $response->assertStatus(200, $response);
 
         //Verify if user has a permission requests cancel
-        $this->assertTrue($user->hasProcessPermission($process, 'requests.cancel'));
+        $this->assertTrue($normal_user->hasProcessPermission($process, 'requests.cancel'));
 
         //Verify Process Permission
         $response = ProcessPermission::where('permission_id', Permission::byGuardName('requests.cancel')->id)
