@@ -183,7 +183,6 @@ div.main {
   flex-direction: column;
 
   .dynaform-builder {
-    min-height: auto;
     height: auto;
     flex-grow: 1;
 

@@ -24,5 +24,6 @@ Route::group(
     Route::apiResource('files', 'FileController');
     Route::get('notifications', 'NotificationController@index');
     Route::put('notifications', 'NotificationController@update');
+    Route::apiResource('task_assignments', 'TaskAssignmentController')->only(['index', 'store', 'update', 'destroy']);
     }
 );

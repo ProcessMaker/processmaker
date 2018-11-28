@@ -14,6 +14,10 @@ class Authorize
         if ($user->is_administrator) {
             return $next($request);
         }
+        
+        if ($this->isPublic($request)) {
+            return $next($request);
+        }
 
         // Get the action that the user is requesting
         $permission = $request->route()->action['as'];
@@ -21,6 +25,8 @@ class Authorize
         // Remove the api route prefix since they will have the
         // same permissions as the web routes.
         $permission = preg_replace('/^api\./', '', $permission);
+
+        $permission = $this->forAlias($permission);
 
         // At this point we should have already checked if the
         // user is logged in so we can assume $request->user()
@@ -43,5 +49,35 @@ class Authorize
             return $request->user()->hasPermission($match[1] . '.show');
         }
         return false;
+    }
+
+    /**
+     * Some route actions are aliases to permissions
+     */
+    private function forAlias($permission)
+    {
+        return preg_replace(
+            ['/\.update$/', '/\.store$/'],
+            ['.edit', '.create'],
+            $permission
+        );
+    }
+
+    // Check if the controller allows the method publicly
+    private function isPublic($request)
+    {
+        $controller = $request->route()->getController();
+        if (empty($controller->skipPermissionCheckFor)) {
+            return false;
+        }
+        if (in_array(
+            $request->route()->getActionMethod(),
+            $controller->skipPermissionCheckFor
+        )) {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 }

@@ -27,9 +27,9 @@ class ProcessController extends Controller
 
         $screens = Screen::orderBy('title')
                     ->get()
+                    ->where('type', 'DISPLAY')
                     ->pluck('title', 'id')
                     ->toArray();
-
         return view('processes.edit', compact('process', 'categories', 'screens'));
     }
 
