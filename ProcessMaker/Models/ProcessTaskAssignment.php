@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  *   @OA\Property(property="process_id", type="string", format="id"),
  *   @OA\Property(property="process_task_id", type="string", format="id"),
  *   @OA\Property(property="assignment_id", type="string", format="id"),
- *   @OA\Property(property="assignment_type", type="string", enum={"USER", "GROUP"})
+ *   @OA\Property(property="assignment_type", type="string", enum={"ProcessMaker\Models\User", "ProcessMaker\Models\Group"})
  * ),
  * @OA\Schema(
  *   schema="taskAssignments",
