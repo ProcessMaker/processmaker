@@ -17,6 +17,7 @@ Route::group(
     Route::apiResource('scripts', 'ScriptController');
     Route::apiResource('processes', 'ProcessController');
     Route::apiResource('process_categories', 'ProcessCategoryController');
+    Route::put('permissions', 'PermissionController@update');
     Route::apiResource('tasks', 'TaskController')->only(['index', 'show', 'update']);
     Route::apiResource('requests', 'ProcessRequestController');
     Route::apiResource('requests.files', 'ProcessRequestFileController');
@@ -24,6 +25,6 @@ Route::group(
     Route::apiResource('files', 'FileController');
     Route::get('notifications', 'NotificationController@index');
     Route::put('notifications', 'NotificationController@update');
-    Route::apiResource('task_assignments', 'TaskAssignmentController')->only(['store', 'update']);
+    Route::apiResource('task_assignments', 'TaskAssignmentController')->only(['index', 'store', 'update', 'destroy']);
     }
 );

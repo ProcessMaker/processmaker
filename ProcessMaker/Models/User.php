@@ -51,6 +51,7 @@ class User extends Authenticatable implements HasMedia
      *   @OA\Property(property="timezone", type="string"),
      *   @OA\Property(property="datetime_format", type="string"),
      *   @OA\Property(property="language", type="string"),
+     *   @OA\Property(property="is_administrator", type="boolean"),
      *   @OA\Property(property="loggedin_at", type="string"),
      *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
      * ),
@@ -82,6 +83,7 @@ class User extends Authenticatable implements HasMedia
         'timezone',
         'datetime_format',
         'language',
+        'is_administrator',
         'expires_at'
 
     ];
@@ -219,5 +221,15 @@ class User extends Authenticatable implements HasMedia
         }
 
         return $data;
+    }
+
+    /**
+     * User as assigned.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function assigned()
+    {
+        return $this->morphMany(ProcessTaskAssignment::class, 'assigned', 'assignment_type', 'assignment_id');
     }
 }

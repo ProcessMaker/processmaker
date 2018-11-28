@@ -3,12 +3,40 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Http\Resources\TaskAssignmentResource;
 use ProcessMaker\Models\ProcessTaskAssignment;
 
 class TaskAssignmentController extends Controller
 {
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function index(Request $request)
+    {
+        $query = ProcessTaskAssignment::select();
+        $include  = $request->input('include') ? explode(',',$request->input('include')) : [];
+        $query->with($include);
+        $filterByFields = ['process_id', 'process_task_id', 'assignment_id', 'assignment_type'];
+        $parameters = $request->all();
+        foreach ($parameters as $column => $filter) {
+            if (in_array($column, $filterByFields)) {
+                $key = array_search($column, $filterByFields);
+                $query->where(is_string($key) ? $key : $column, 'like', $filter);
+            }
+        }
+        $query->orderBy(
+            $request->input('order_by', 'updated_at'), $request->input('order_direction', 'asc')
+        );
+        $response = $query->paginate($request->input('per_page', 10));
+        return new ApiCollection($response);
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -82,5 +110,18 @@ class TaskAssignmentController extends Controller
         $task_assignment->fill($request->input());
         $task_assignment->save();
         return new TaskAssignmentResource($task_assignment);
+    }
+
+    /**
+     * Remove an assignment
+     *
+     * @param ProcessTaskAssignment $task_assignment
+     *
+     * @return ResponseFactory|Response
+     */
+    public function destroy(ProcessTaskAssignment $task_assignment)
+    {
+        $task_assignment->delete();
+        return response('', 204);
     }
 }

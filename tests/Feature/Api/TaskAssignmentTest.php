@@ -53,7 +53,7 @@ class TaskAssignmentTest extends TestCase
             'process_id' => $process->id,
             'process_task_id' => $task_uid,
             'assignment_id' => $user->id,
-            'assignment_type' => 'USER'
+            'assignment_type' => 'ProcessMaker\Models\User'
         ]);
 
         //Validate the header status code
@@ -64,7 +64,7 @@ class TaskAssignmentTest extends TestCase
 
         $this->assertEquals($user->id, $assignment->assignment_id);
         $this->assertEquals($task_uid, $assignment->process_task_id);
-        $this->assertEquals('USER', $assignment->assignment_type);
+        $this->assertEquals('ProcessMaker\Models\User', $assignment->assignment_type);
     }
 
     /**
@@ -80,7 +80,7 @@ class TaskAssignmentTest extends TestCase
             'process_id' => $process->id,
             'process_task_id' => $task_uid,
             'assignment_id' => $group->id,
-            'assignment_type' => 'GROUP'
+            'assignment_type' => 'ProcessMaker\Models\Group'
         ]);
 
         //Validate the header status code
@@ -91,7 +91,7 @@ class TaskAssignmentTest extends TestCase
 
         $this->assertEquals($group->id, $assignment->assignment_id);
         $this->assertEquals($task_uid, $assignment->process_task_id);
-        $this->assertEquals('GROUP', $assignment->assignment_type);
+        $this->assertEquals('ProcessMaker\Models\Group', $assignment->assignment_type);
     }
 
     /**
@@ -110,7 +110,7 @@ class TaskAssignmentTest extends TestCase
             'process_id' => $process->id,
             'process_task_id' => $task_uid,
             'assignment_id' => $group->id,
-            'assignment_type' => 'GROUP'
+            'assignment_type' => 'ProcessMaker\Models\Group'
         ]);
 
         $response->assertStatus(200);
@@ -121,11 +121,11 @@ class TaskAssignmentTest extends TestCase
         //evaluate response
         $this->assertEquals($group->id, $response->json(['assignment_id']));
         $this->assertEquals($task_uid, $response->json(['process_task_id']));
-        $this->assertEquals('GROUP', $response->json(['assignment_type']));
+        $this->assertEquals('ProcessMaker\Models\Group', $response->json(['assignment_type']));
 
         $assignment = ProcessTaskAssignment::where('process_id', $process->id)->first();
         $this->assertEquals($group->id, $assignment->assignment_id);
         $this->assertEquals($task_uid, $assignment->process_task_id);
-        $this->assertEquals('GROUP', $assignment->assignment_type);
+        $this->assertEquals('ProcessMaker\Models\Group', $assignment->assignment_type);
     }
 }

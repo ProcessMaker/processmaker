@@ -77,4 +77,14 @@ class Group extends Model
         }
         return $permissions;
     }
+
+    /**
+     * Group as assigned.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function assigned()
+    {
+        return $this->morphMany(ProcessTaskAssignment::class, 'assigned', 'assignment_type', 'assignment_id');
+    }
 }

@@ -56,7 +56,7 @@ export default {
         load() {
             this.loading = true;
             ProcessMaker.apiClient
-                .get("/screens")
+                .get("/scripts")
                 .then(response => {
                     this.screens = response.data.data;
                     this.loading = false;
