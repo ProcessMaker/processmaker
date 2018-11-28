@@ -181,20 +181,17 @@ And for a show method
 
 **Testing with Swagger UI**
 
-Reload the swagger UI at `api/documentation` page in your browser to see the
-results and debug any errors with the annotations.
+Reload the swagger UI at `api/documentation` page in your browser to see the results and debug any errors with the annotations.
 
-By default, Swagger UI will use your bpm4 app auth. So as long as you're logged
-into the app you should be able to run API Commands from Swagger UI as your
-logged in user.
+By default, Swagger UI will use your bpm4 app auth. So as long as you're logged into the app you should be able to run API Commands from Swagger UI as your logged in user.
 
-You can also create a personal access token to see the API results as a
-specific user would.
-```
+You can also create a personal access token to see the API results as a specific user would.
+
+```text
 $user->createToken('Name it here')->accessToken;
 ```
-Copy the token. In api/documentation, click on the Authenticate button on the
-top right and enter it in the `pm_api_bearer` value field.
+
+Copy the token. In api/documentation, click on the Authenticate button on the top right and enter it in the `pm_api_bearer` value field.
 
 **More Info**
 
