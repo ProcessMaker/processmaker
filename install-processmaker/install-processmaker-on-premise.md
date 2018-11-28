@@ -356,10 +356,18 @@ composer install
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
+Before you go to the next step, verify if you do not have already installed npm in order to check use the command:
+
+```text
+npm -v
+```
+
+If not you can continue with the step 5, If you do have it installed jump to the step 6.
+
 {% code-tabs %}
 {% code-tabs-item title="5. Install the package manager." %}
 ```text
-apt-get install npm
+apt-get install npm@latest -g
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
