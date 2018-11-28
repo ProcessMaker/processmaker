@@ -74,7 +74,7 @@ dpkg -i [file name].deb
 {% endtab %}
 {% endtabs %}
 
-After the installation finishes, VirtualBox sometimes does not work. VirtualBox will ask you to install the gcc, make, and perl libraries as well as the kernel "header" in order to rebuild a missing module. If this happens run the following command:
+After the installation finishes, VirtualBox sometimes does not work. VirtualBox may require the gcc, make, and perl libraries as well as the kernel "header" in order to rebuild a missing module. If this happens run the following command:
 
 {% code-tabs %}
 {% code-tabs-item title="2. Install the libraries for gcc, make, perl, and the kernel \"header.\"" %}
