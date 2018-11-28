@@ -26,7 +26,7 @@ apt-get update && apt-get upgrade
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-In order to install ProcessMaker 4 in Debian Linux you will need the following:
+In order to install ProcessMaker 4 you will need the following:
 
 * [VirtualBox 5.2.22](install-processmaker-on-premise.md#install-virtualbox-5-2-22)
 * [Vagrant 2.2.2](install-processmaker-on-premise.md#install-vagrant-2-2-1)
@@ -53,21 +53,21 @@ dpkg -i [file name].deb
 {% endcode-tabs %}
 {% endtab %}
 
-{% tab title="Ubuntu Linux" %}
-{% code-tabs %}
-{% code-tabs-item title="1. Install the VirtualBox package on Ubuntu Linux" %}
-```text
-dpkg -i [file name].deb
-```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
-{% endtab %}
-
 {% tab title="CentOS Linux" %}
 {% code-tabs %}
 {% code-tabs-item title="1. Install the VirtualBox package on CentOS Linux." %}
 ```text
 rpm -Uvh [file name].rpm
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+{% endtab %}
+
+{% tab title="Ubuntu Linux" %}
+{% code-tabs %}
+{% code-tabs-item title="1. Install the VirtualBox package on Ubuntu Linux." %}
+```text
+dpkg -i [file name].deb
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
@@ -92,7 +92,7 @@ For Debian Linux 9 use `linux-headers-4.9.0-4-amd64`.
 In any case it will tell you which version it needs.
 {% endhint %}
 
-Then you will need to run the following command to finish the VirtualBox installation:
+Then run the following command to finish the VirtualBox installation:
 
 {% code-tabs %}
 {% code-tabs-item title="3a. Recompile the kernel module." %}
@@ -145,12 +145,12 @@ Install on:
 * [Debian or Kali](install-processmaker-on-premise.md#install-on-debian)
 * [Ubuntu or Mint](install-processmaker-on-premise.md#install-on-ubuntu)
 
-#### Install on Debian
+#### Install on Debian Linux
 
-Perform the following commands to install PHP 7.2 on Debian:
+Perform the following commands to install PHP 7.2 on Debian Linux:
 
 {% code-tabs %}
-{% code-tabs-item title="1. Download and add the repository" %}
+{% code-tabs-item title="1. Download and add the repository." %}
 ```text
 wget -q https://packages.sury.org/php/apt.gpg -O- | sudo apt-key add -
 echo "deb https://packages.sury.org/php/ stretch main" | sudo tee /etc/apt/sources.list.d/php.list
@@ -159,7 +159,7 @@ echo "deb https://packages.sury.org/php/ stretch main" | sudo tee /etc/apt/sourc
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="2. apdate and apgrade the package system" %}
+{% code-tabs-item title="2. Update and upgrade the package system." %}
 ```text
 sudo apt-get update && apt-get upgrade
 ```
@@ -182,10 +182,10 @@ Install the following program:
 sudo apt-get install ca-certificates apt-transport-https
 ```
 
-Then run again the update and upgrade command:
+Then run again the `update` and `upgrade` command:
 
 {% code-tabs %}
-{% code-tabs-item title="3. Install PHP 7.2 and modules" %}
+{% code-tabs-item title="3. Install PHP 7.2 and modules." %}
 ```text
 sudo apt-get install php7.2 php7.2-cli php7.2-common php7.2-opcache php7.2-curl php7.2-mbstring php7.2-mysql php7.2-zip php7.2-xml
 ```
@@ -193,16 +193,16 @@ sudo apt-get install php7.2 php7.2-cli php7.2-common php7.2-opcache php7.2-curl 
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="4. Verify the installation" %}
+{% code-tabs-item title="4. Verify the installation." %}
 ```text
 php -v
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-#### Install on Ubuntu
+#### Install on Ubuntu Linux
 
-Perform the following commands to install PHP 7.2 on Ubuntu:
+Perform the following commands to install PHP 7.2 on Ubuntu Linux:
 
 {% hint style="info" %}
 If your Linux distribution already has PHP 7.2 you do not need to add the repository. Go directly to command 4.
@@ -381,13 +381,13 @@ composer install
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-Before you go to the next step, verify if you do not have already installed npm in order to check use the command:
+Before you go to the next step, verify if npm is already installed:
 
 ```text
 npm -v
 ```
 
-If not you can continue with the step 5, If you do have it installed jump to the step 6.
+If you not have npm installed, continue with command 5 \(install the package manager\). If you do have npm installed, skip to command 6 \(run the manager inside the project\).
 
 {% code-tabs %}
 {% code-tabs-item title="5. Install the package manager." %}
@@ -423,7 +423,7 @@ nano /etc/hosts
 {% endcode-tabs %}
 
 {% hint style="info" %}
-You can change the IP or the URL to one you prefer. But if you do so, you must make the change also in the `Homestead.yaml`file which is inside the project.
+You can change the IP address or the URL to one you prefer. But if you do so, you must make the change also in the `Homestead.yaml`file which is inside the project.
 {% endhint %}
 
 {% code-tabs %}
@@ -479,7 +479,7 @@ Enter the following parameters:
 Alternatively, use the new URL that you assigned in the `hosts` and `Homestead.yaml` files.
 {% endhint %}
 
-In a browser go to [https://bpm4.local.processmaker.com](https://bpm4.local.processmaker.com) or the new URL if you created one and use the following credentials to [log in](../using-processmaker/log-in.md):
+In a browser go to [https://bpm4.local.processmaker.com](https://bpm4.local.processmaker.com) or the new URL if you created one. Use the following credentials to [log in](../using-processmaker/log-in.md):
 
 * Username: `admin`
 * Password: `admin`
