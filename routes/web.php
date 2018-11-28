@@ -29,6 +29,7 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
     Route::resource('processes', 'ProcessController');
     Route::get('profile/edit', 'ProfileController@edit')->name('profile.edit');
     Route::get('profile/{id}', 'ProfileController@show');
+    Route::put('profile/{id}', 'ProfileController@update')->name('profile.update');
     // Ensure our modeler loads at a distinct url
     Route::get('modeler/{process}', 'Process\ModelerController')->name('modeler');
 

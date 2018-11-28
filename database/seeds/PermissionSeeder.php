@@ -81,7 +81,7 @@ class PermissionSeeder extends Seeder
 
         foreach($this->permissions as $permissionString) {
             $permission = factory(Permission::class)->create([
-                'name' => $permissionString,
+                'name' => ucwords(preg_replace('/(\.|_)/', ' ', $permissionString)),
                 'guard_name' => $permissionString,
             ]);
             factory(PermissionAssignment::class)->create([
