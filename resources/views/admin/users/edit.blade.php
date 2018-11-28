@@ -109,7 +109,7 @@
                                     <th><input type="checkbox" v-model="isAdmin"></th>
                                 </tr>
                                 <tr>
-                                    <th>Permissions</th>
+                                    <th>Select All Permissions</th>
                                     <th><input type="checkbox" v-model="selectAll" @click="select" :disabled="isAdmin = isAdmin"></th>
                                 </tr>
                             </thead>
