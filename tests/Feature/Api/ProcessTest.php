@@ -196,6 +196,50 @@ class ProcessTest extends TestCase
         );
     }
 
+    public function testProcessEventsTrigger()
+    {
+        $process = factory(Process::class)->create([
+            'bpmn' => Process::getProcessTemplate('SingleTask.bpmn')
+        ]);
+
+        $this->user = factory(User::class)->create([
+            'password' => 'password',
+            'is_administrator' => false,
+        ]);
+        
+        $permission= factory(Permission::class)
+            ->create(['guard_name' => 'requests.create']);
+        
+        factory(PermissionAssignment::class)
+            ->create(
+                [
+                    'permission_id' => $permission->id,
+                    'assignable_type' => User::class,
+                    'assignable_id' => $this->user->id
+                ]);
+
+        $route = route('api.process_events.trigger', $process);
+        
+        $response = $this->apiCall('POST', $route . '?event=StartEventUID');
+        $this->assertStatus(403, $response);
+        $this->assertEquals(
+            $response->json()['message'],
+            'Not authorized to start this process'
+        );
+
+        factory(ProcessPermission::class)
+            ->create(
+                [
+                    'process_id' => $process->id,
+                    'permission_id' => $permission->id,
+                    'assignable_type' => User::class,
+                    'assignable_id' => $this->user->id,
+                ]);
+        
+        $response = $this->apiCall('POST', $route . '?event=StartEventUID');
+        $this->assertStatus(201, $response);
+    }
+
     /**
      * Test to verify that the list dates are in the correct format (yyyy-mm-dd H:i+GMT)
      */

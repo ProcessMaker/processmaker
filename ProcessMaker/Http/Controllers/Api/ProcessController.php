@@ -6,6 +6,7 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Auth\Access\AuthorizationException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
@@ -319,6 +320,11 @@ class ProcessController extends Controller
         if (!$id) {
             return abort(404);
         }
+
+        if (!\Auth::user()->hasProcessPermission($process, 'requests.create')) {
+            throw new AuthorizationException("Not authorized to start this process");
+        }
+
         $definitions = $process->getDefinitions();
         if (!$definitions->findElementById($id)) {
             return abort(404);
