@@ -29,29 +29,55 @@ apt-get update && apt-get upgrade
 In order to install ProcessMaker 4 in Debian Linux you will need the following:
 
 * [VirtualBox 5.2.22](install-processmaker-on-premise.md#install-virtualbox-5-2-22)
-* [Vagrant 2.2.1](install-processmaker-on-premise.md#install-vagrant-2-2-1)
+* [Vagrant 2.2.2](install-processmaker-on-premise.md#install-vagrant-2-2-1)
 * [PHP 7.2](install-processmaker-on-premise.md#install-php-7-2)
 * [Composer](install-processmaker-on-premise.md#install-composer)
 * [Node.js 10.13.0](install-processmaker-on-premise.md#install-node-js-10-13-0)
 
 ### **Install VirtualBox 5.2.22**
 
-[Download VirtualBox](https://www.virtualbox.org/wiki/Linux_Downloads) for Linux. It will download a file with the `.deb` extension.
+[Download VirtualBox](https://www.virtualbox.org/wiki/Linux_Downloads) for your Linux distribution.
 
-![Download the correct version of VirtualBox for your Linux distribution](../.gitbook/assets/selection_281.png)
+![Download the VirtualBox installer for your Linux distribution](../.gitbook/assets/vitualbox-download.png)
 
+Install the VirtualBox package using one of the following commands depending on your Linux distribution to which you are installing VirtualBox.
+
+{% tabs %}
+{% tab title="Debian Linux" %}
 {% code-tabs %}
-{% code-tabs-item title="1. Install the VirtualBox package." %}
+{% code-tabs-item title="1. Install the VirtualBox package on Debian Linux." %}
 ```text
 dpkg -i [file name].deb
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
+{% endtab %}
+
+{% tab title="Ubuntu Linux" %}
+{% code-tabs %}
+{% code-tabs-item title="1. Install the VirtualBox package on Ubuntu Linux" %}
+```text
+dpkg -i [file name].deb
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+{% endtab %}
+
+{% tab title="CentOS Linux" %}
+{% code-tabs %}
+{% code-tabs-item title="1. Install the VirtualBox package on CentOS Linux." %}
+```text
+rpm -Uvh [file name].rpm
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+{% endtab %}
+{% endtabs %}
 
 After the installation finishes, VirtualBox sometimes does not work. VirtualBox will ask you to install the gcc, make, and perl libraries as well as the kernel "header" in order to rebuild a missing module. If this happens run the following command:
 
 {% code-tabs %}
-{% code-tabs-item title="1. Install the libraries for gcc, make, perl, and the kernel \"header.\"" %}
+{% code-tabs-item title="2. Install the libraries for gcc, make, perl, and the kernel \"header.\"" %}
 ```text
 apt-get install gcc make perl kernel-devel
 ```
@@ -69,7 +95,7 @@ In any case it will tell you which version it needs.
 Then you will need to run the following command to finish the VirtualBox installation:
 
 {% code-tabs %}
-{% code-tabs-item title="2. Recompile the kernel module." %}
+{% code-tabs-item title="3a. Recompile the kernel module." %}
 ```text
 sudo /sbin/vboxconfig
 ```
@@ -79,7 +105,7 @@ sudo /sbin/vboxconfig
 As an alternative try running the following command:
 
 {% code-tabs %}
-{% code-tabs-item title="Re-install the missing dependencies." %}
+{% code-tabs-item title="3b. Re-install the missing dependencies." %}
 ```text
 sudo apt-get -f install 
 ```
@@ -88,11 +114,11 @@ sudo apt-get -f install
 
 Verify that VirtualBox works correctly.
 
-### Install Vagrant 2.2.1
+### Install Vagrant 2.2.2
 
 [Download Vagrant](https://www.vagrantup.com/downloads.html) for Linux. It will download a file with the `.deb` extension.
 
-![](../.gitbook/assets/selection_282.png)
+![](../.gitbook/assets/vagrant-download.png)
 
 {% code-tabs %}
 {% code-tabs-item title="Install Vagrant." %}
