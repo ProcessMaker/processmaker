@@ -17,6 +17,7 @@ Route::group(
     Route::apiResource('scripts', 'ScriptController');
     Route::apiResource('processes', 'ProcessController');
     Route::apiResource('process_categories', 'ProcessCategoryController');
+    Route::put('permissions', 'PermissionController@update');
     Route::apiResource('tasks', 'TaskController')->only(['index', 'show', 'update']);
     Route::apiResource('requests', 'ProcessRequestController');
     Route::apiResource('requests.files', 'ProcessRequestFileController');

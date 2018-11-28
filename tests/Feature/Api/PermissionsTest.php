@@ -97,6 +97,32 @@ class PermissionsTest extends TestCase
         $response->assertStatus(204);
     }
 
+    public function testSetPermissionsForUser()
+    {
+        $this->user = factory(User::class)->create([
+            'password' => 'password',
+            'is_administrator' => true,
+        ]);
+
+        $testUser = factory(User::class)->create();
+        $testPermission = factory(Permission::class)->create();
+        $response = $this->apiCall('PUT', '/permissions', [
+            'user_id' => $testUser->id,
+            'permission_ids' => [$testPermission->id]
+        ]);
+
+        $response->assertStatus(204);
+
+        $updatedAssignments = PermissionAssignment::where('assignable_id', $testUser->id)
+                                ->where('assignable_type', User::class)
+                                ->get();
+
+        //Assert that the permissions has benn set
+        $this->assertEquals($updatedAssignments->count(), 1);
+        $this->assertEquals($updatedAssignments->first()->permission_id, $testPermission->id);
+    }
+
+
     public function testRoutePermissionAliases()
     {
         // update route is an alias for edit permission
