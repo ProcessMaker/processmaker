@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Support\Facades\Log;
 use RuntimeException;
 
 /**
@@ -115,10 +114,6 @@ trait ScriptDockerCopyingFilesTrait
     {
         $cmd = config('app.bpm_scripts_docker') . sprintf(' start %s -a 2>&1', $container);
         $line = exec($cmd, $output, $returnCode);
-        $returnCode = $output ? 1 : $returnCode;
-        if ($returnCode || $output) {
-            Log::error('Unexpected script output: ' . implode(' ', $output));
-        }
         return compact('line', 'output', 'returnCode');
     }
 }

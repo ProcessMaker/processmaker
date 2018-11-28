@@ -3,9 +3,10 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
-use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
+use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Traits\SerializeToIso8601;
 
 /**
@@ -114,13 +115,13 @@ class Script extends Model
                 break;
             case 'lua':
                 $config = [
-                    'image' => 'processmaker/executor:php',
+                    'image' => 'processmaker/executor:lua',
                     'command' => 'lua5.3 /opt/executor/bootstrap.lua',
                     'parameters' => $variablesParameter,
                     'inputs' => [
                         '/opt/executor/data.json' => json_encode($data),
                         '/opt/executor/config.json' => json_encode($config),
-                        '/opt/executor/script.php' => $code
+                        '/opt/executor/script.lua' => $code
                     ],
                     'outputs' => [
                         'response' => '/opt/executor/output.json'
@@ -137,8 +138,7 @@ class Script extends Model
         $returnCode = $response['returnCode'];
         $stdOutput = $response['output'];
         $output = $response['outputs']['response'];
-
-        if ($returnCode) {
+        if ($returnCode || $stdOutput) {
             // Has an error code
             return [
                 'output' => implode($stdOutput, "\n")

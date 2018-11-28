@@ -25,13 +25,14 @@ trait ScriptDockerBindingFilesTrait
     protected function executeBinding(array $options)
     {
         $bindings = '';
-        foreach($options['inputs'] as $guestFile => $content) {
+        foreach ($options['inputs'] as $guestFile => $content) {
             $bindings .= $this->bindInput($guestFile, $content);
         }
-        foreach($options['outputs'] as $name => $guestFile) {
+        foreach ($options['outputs'] as $name => $guestFile) {
             $bindings .= $this->bindOutput($guestFile, $name);
         }
-        $response = $this->runContainer($options['image'], $options['command'], $options['parameters'], $bindings);
+        $response = $this->runContainer($options['image'], $options['command'],
+            $options['parameters'], $bindings);
         return $response;
     }
 
@@ -52,8 +53,8 @@ trait ScriptDockerBindingFilesTrait
                 $parameters, $bindings, $image, $command);
         $line = exec($cmd, $output, $returnCode);
         if ($returnCode) {
-            throw new RuntimeException('Unable to create a docker container: ' . implode("\n",
-                $output));
+            throw new RuntimeException('Unable to run a docker container: '
+            . implode("\n", $output));
         }
         $outputs = $this->getOutputFilesContent();
         $this->removeTemporalFiles();
@@ -116,5 +117,16 @@ trait ScriptDockerBindingFilesTrait
             $outputs[$name] = file_get_contents($filename);
         }
         return $outputs;
+    }
+
+    /**
+     * Remove the temporal files.
+     *
+     */
+    private function removeTemporalFiles()
+    {
+        foreach ($this->temporalFiles as $filename) {
+            unlink($filename);
+        }
     }
 }
