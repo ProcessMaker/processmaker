@@ -5,7 +5,6 @@ description: Install ProcessMaker on premises.
 # Install ProcessMaker
 
 {% hint style="warning" %}
-  
 The following installation instructions are for the ProcessMaker Community edition internal beta. The internal beta is a developer-oriented installation procedure.
 
 The installation procedure described below installs prerequisite applications and then installs the internal beta for ProcessMaker 4 Community edition.
@@ -27,7 +26,7 @@ apt-get update && apt-get upgrade
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-In order to install ProcessMaker 4 in Debian you will need the following:
+In order to install ProcessMaker 4 in Debian Linux you will need the following:
 
 * [VirtualBox 5.2.22](install-processmaker-on-premise.md#install-virtualbox-5-2-22)
 * [Vagrant 2.2.1](install-processmaker-on-premise.md#install-vagrant-2-2-1)
@@ -39,7 +38,7 @@ In order to install ProcessMaker 4 in Debian you will need the following:
 
 [Download VirtualBox](https://www.virtualbox.org/wiki/Linux_Downloads) for Linux. It will download a file with the `.deb` extension.
 
-![It is important that you download the correct version of VirtualBox for your OS](../.gitbook/assets/selection_281.png)
+![Download the correct version of VirtualBox for your Linux distribution](../.gitbook/assets/selection_281.png)
 
 {% code-tabs %}
 {% code-tabs-item title="1. Install the VirtualBox package." %}
