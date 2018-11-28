@@ -172,12 +172,15 @@ class ProcessRequestsTest extends TestCase
     public function testListRequestWithType()
     {
         $in_progress = factory(ProcessRequest::class)->create([
-            'status' => 'ACTIVE',
-        ]);
+           'status' => 'ACTIVE',
+           'user_id' => $this->user->id
+       ]);
+
+       $completed = factory(ProcessRequest::class)->create([
+           'status' => 'COMPLETED',
+           'user_id' => $this->user->id
+       ]);
         
-        $completed = factory(ProcessRequest::class)->create([
-            'status' => 'COMPLETED',
-        ]);
         $response = $this->apiCall('GET', self::API_TEST_URL . '/?type=completed');
         $json = $response->json();
         $this->assertCount(1, $json['data']);

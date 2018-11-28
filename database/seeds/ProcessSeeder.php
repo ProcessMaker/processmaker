@@ -33,10 +33,14 @@ class ProcessSeeder extends Seeder
      */
     public function run()
     {
+        //load user admin
+        $admin = User::where('username', 'admin')->firstOrFail();
+
         foreach (glob(database_path('processes') . '/*.bpmn') as $filename) {
             echo 'Creating: ', $filename, "\n";
             $process = factory(Process::class)->make([
                 'bpmn' => file_get_contents($filename),
+                'user_id' => $admin->getKey()
             ]);
             //Load the process title from the the main process of the BPMN definition
             $processes = $process->getDefinitions()->getElementsByTagName('process');
