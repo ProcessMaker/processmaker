@@ -51,7 +51,7 @@ class ProcessRequestFileController extends Controller
             if ($save->isFinished()) {
                 // save the file and return any response you need
                 $file = $request->addMedia($save->getFile())->toMediaCollection();
-                return new JsonResponse(['message' => 'file successfully uploaded'], 200);
+                return new JsonResponse(['message' => 'file successfully uploaded','fileId' => $file->id], 200);
             }
             // we are in chunk mode, lets send the current progress
             /** @var AbstractHandler $handler */
