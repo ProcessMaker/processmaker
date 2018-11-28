@@ -81,12 +81,26 @@ class ProcessTest extends TestCase
         $userId = $this->user->id;
         factory(Permission::class)->create(['guard_name' => 'requests.create']);
         factory(Permission::class)->create(['guard_name' => 'processes.index']);
+
+        $initialCount = Process::count();
+        // Create some processes
+        $process = factory(Process::class)->create();
+
         factory(ProcessPermission::class)
+            ->create(
+                [
+                    'process_id' => $process->id,
+                    'permission_id' => Permission::byGuardName('requests.create'),
+                    'assignable_type' => User::class,
+                    'assignable_id' => $userId
+                ]);
+
+        factory(PermissionAssignment::class)
             ->create(
                 [
                     'permission_id' => Permission::byGuardName('requests.create'),
                     'assignable_type' => User::class,
-                    'assignable_id' => $userId,
+                    'assignable_id' => $userId
                 ]);
 
         factory(PermissionAssignment::class)
@@ -94,14 +108,9 @@ class ProcessTest extends TestCase
                 [
                     'permission_id' => Permission::byGuardName('processes.index'),
                     'assignable_type' => User::class,
-                    'assignable_id' => $userId,
+                    'assignable_id' => $userId
                 ]);
 
-
-        $initialCount = Process::count();
-        // Create some processes
-        $countProcesses = 1;
-        factory(Process::class, $countProcesses)->create();
         //Get a page of processes
         $page = 1;
         $perPage = 10;
@@ -143,12 +152,25 @@ class ProcessTest extends TestCase
         // Create process permissions for the group
         factory(Permission::class)->create(['guard_name' => 'requests.create']);
         factory(Permission::class)->create(['guard_name' => 'processes.index']);
+
+        $initialCount = Process::count();
+        // Create some processes
+        $process = factory(Process::class)->create();
         factory(ProcessPermission::class)
             ->create(
                 [
+                    'process_id' => $process->id,
                     'permission_id' => Permission::byGuardName('requests.create'),
                     'assignable_type' => Group::class,
-                    'assignable_id' => $groupId,
+                    'assignable_id' => $groupId
+                ]);
+
+        factory(PermissionAssignment::class)
+            ->create(
+                [
+                    'permission_id' => Permission::byGuardName('requests.create'),
+                    'assignable_type' => User::class,
+                    'assignable_id' => $this->user->id
                 ]);
 
         factory(PermissionAssignment::class)
@@ -156,13 +178,9 @@ class ProcessTest extends TestCase
                 [
                     'permission_id' => Permission::byGuardName('processes.index'),
                     'assignable_type' => Group::class,
-                    'assignable_id' => $groupId,
+                    'assignable_id' => $groupId
                 ]);
 
-        $initialCount = Process::count();
-        // Create some processes
-        $countProcesses = 1;
-        factory(Process::class, $countProcesses)->create();
         //Get a page of processes
         $page = 1;
         $perPage = 10;

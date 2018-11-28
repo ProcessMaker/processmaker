@@ -84,7 +84,7 @@ trait HasAuthorization
                 //check permission type group only in one level
                 $response = ProcessPermission::where('permission_id', $permission->id)
                     ->where('process_id', $process->id)
-                    ->whereIn('assignable_id', $user->groupMembersFromMemberable()->pluck('id'))
+                    ->whereIn('assignable_id', $user->groupMembersFromMemberable()->pluck('group_id')->toArray())
                     ->where('assignable_type', Group::class)
                     ->exists();
             }

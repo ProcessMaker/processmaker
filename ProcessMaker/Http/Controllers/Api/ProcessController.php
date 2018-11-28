@@ -63,34 +63,20 @@ class ProcessController extends Controller
         $orderBy = $this->getRequestSortBy($request, 'name');
         $perPage = $this->getPerPage($request);
         $include = $this->getRequestInclude($request);
+
         $processes = Process::with($include)
             ->select('processes.*')
             ->leftJoin('process_categories as category', 'processes.process_category_id', '=', 'category.id')
             ->leftJoin('users as user', 'processes.user_id', '=', 'user.id')
-            ->where($where)
-            ->orderBy(...$orderBy);
+            ->where($where);
 
+        //Verify what processes the current user can initiate, user Administrator can start everything.
         if (!Auth::user()->is_administrator) {
-            $startPermission = Permission::byGuardName('requests.create')->id;
-            $processes->whereExists(function($query) use ($startPermission){
-                $query->select(\DB::raw(1))
-                    ->from((new ProcessPermission)->getTable())
-                    ->whereRaw("process_permissions.process_id = processes.id " .
-                                " AND permission_id=" . $startPermission  .
-                                " AND assignable_type = '" . str_replace('\\', '\\\\', User::class) . "'" .
-                                " AND assignable_id = " . Auth::user()->id);
-            });
-
-            $processes->orWhereExists(function($query) use ($startPermission){
-                $query->select(\DB::raw(1))
-                    ->from((new ProcessPermission)->getTable())
-                    ->whereRaw("process_permissions.process_id = processes.id " .
-                        " AND permission_id=" . $startPermission  .
-                        " AND assignable_type = '" . str_replace('\\', '\\\\', Group::class) . "'" .
-                        " AND assignable_id IN (select group_id from group_members where member_id = " .
-                        Auth::user() ->id . " )");
-            });
+            $processId = Auth::user()->startProcesses();
+            $processes->whereIn('processes.id', $processId);
         }
+        $processes->orderBy(...$orderBy);
+
         return new ApiCollection($processes->paginate($perPage));
     }
 

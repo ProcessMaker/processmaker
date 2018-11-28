@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -209,12 +210,12 @@ class User extends Authenticatable implements HasMedia
     public function activeNotifications()
     {
         $tasks = DB::table('notifications')
-                        ->where('data->user_id', $this->id)
-                        ->whereNull('read_at')
-                        ->get();
+            ->where('data->user_id', $this->id)
+            ->whereNull('read_at')
+            ->get();
 
         $data = [];
-        foreach($tasks as $task) {
+        foreach ($tasks as $task) {
             $taskData = json_decode($task->data, false);
             $taskData->id = $task->id;
             $data[] = $taskData;
@@ -232,4 +233,28 @@ class User extends Authenticatable implements HasMedia
     {
         return $this->morphMany(ProcessTaskAssignment::class, 'assigned', 'assignment_type', 'assignment_id');
     }
+
+    public function startProcesses()
+    {
+        $user = Auth::user();
+        if (!$user->hasPermission('requests.create')) {
+            return [];
+        }
+        $permission = Permission::byGuardName('requests.create');
+
+        $processUser = ProcessPermission::where('permission_id', $permission->id)
+            ->where('assignable_id', $user->id)
+            ->where('assignable_type', User::class)
+            ->pluck('process_id');
+
+        $processGroup = ProcessPermission::where('permission_id', $permission->id)
+            ->whereIn('assignable_id', $user->groupMembersFromMemberable()->pluck('group_id')->toArray())
+            ->where('assignable_type', Group::class)
+            ->pluck('process_id');
+
+        return array_values(array_unique(array_merge(
+            $processUser->toArray(), $processGroup->toArray()
+        ), SORT_REGULAR));
+    }
+
 }
