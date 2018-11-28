@@ -52,6 +52,8 @@ export default {
       requestID: null,
       options: {
         target: this.getTargetUrl,
+        // We cannot increase this until laravel chunk uploader handles this gracefully
+        simultaneousUploads: 1,
         query: {
           chunk: true
         },

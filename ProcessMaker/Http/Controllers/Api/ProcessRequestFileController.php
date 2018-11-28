@@ -13,6 +13,7 @@ use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Models\Media;
+
 use Pion\Laravel\ChunkUpload\Exceptions\UploadMissingFileException;
 use Pion\Laravel\ChunkUpload\Handler\AbstractHandler;
 use Pion\Laravel\ChunkUpload\Handler\HandlerFactory;
@@ -38,9 +39,9 @@ class ProcessRequestFileController extends Controller
       * @param FileReceiver $receiver The Chunk FileReceiver
       * @return JsonResponse
       */
-    public function chunk(FileReceiver $receiver)
+    public function chunk(FileReceiver $receiver, ProcessRequest $request)
     {
-                    // Perform a chunk upload
+            // Perform a chunk upload
             if ($receiver->isUploaded() === false) {
                 throw new UploadMissingFileException();
             }
@@ -55,7 +56,6 @@ class ProcessRequestFileController extends Controller
             // we are in chunk mode, lets send the current progress
             /** @var AbstractHandler $handler */
             $handler = $save->handler();
-            dd($handler);
             return response()->json([
                 "done" => $handler->getPercentageDone()
             ]);
@@ -68,7 +68,7 @@ class ProcessRequestFileController extends Controller
     {
         if($laravel_request->input('chunk')) {
             // Perform a chunk upload
-            return $this->chunk($receiver);
+            return $this->chunk($receiver, $request);
         } else {
             $file = $request->addMedia($laravel_request->file)->toMediaCollection();
             return new JsonResponse(['message' => 'file successfully uploaded'], 200);
@@ -84,10 +84,6 @@ class ProcessRequestFileController extends Controller
         $newFile = $laravel_request->file;
         $request->addMedia($newFile)->toMediaCollection();
         return new JsonResponse(['message' => 'file successfully updated'], 200);
-// **************** merge these two **************
-
-//         // check if the upload is success, throw exception or return response you need
-
     }
 
     /**
