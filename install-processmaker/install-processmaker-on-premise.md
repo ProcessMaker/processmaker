@@ -43,21 +43,21 @@ In order to install ProcessMaker 4 you will need the following:
 Install the VirtualBox package using one of the following commands depending on your Linux distribution to which you are installing VirtualBox.
 
 {% tabs %}
-{% tab title="Debian Linux" %}
-{% code-tabs %}
-{% code-tabs-item title="1. Install the VirtualBox package on Debian Linux." %}
-```text
-dpkg -i [file name].deb
-```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
-{% endtab %}
-
 {% tab title="CentOS Linux" %}
 {% code-tabs %}
 {% code-tabs-item title="1. Install the VirtualBox package on CentOS Linux." %}
 ```text
 rpm -Uvh [file name].rpm
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+{% endtab %}
+
+{% tab title="Debian Linux" %}
+{% code-tabs %}
+{% code-tabs-item title="1. Install the VirtualBox package on Debian Linux." %}
+```text
+dpkg -i [file name].deb
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
