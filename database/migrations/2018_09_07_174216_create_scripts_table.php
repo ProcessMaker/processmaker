@@ -14,6 +14,7 @@ class CreateScriptsTable extends Migration
     public function up()
     {
         Schema::create('scripts', function (Blueprint $table) {
+            // NOTE: Remember to update ScriptVersions when updating this table
             $table->increments('id');
             $table->string('key')->unique()->nullable();
             $table->text('title');

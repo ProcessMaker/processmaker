@@ -3,12 +3,12 @@
     <div>
       <li class="logo">
         <a href="#" >
-            <img src="/img/processmaker-logo-white-sm.png">
+            <img src={{asset(env('MAIN_LOGO_PATH', '/img/processmaker_logo.png'))}}>
         </a>
       </li>
       <li class="logo-closed" id="menu-toggle">
         <a href="#">
-            <img src="/img/processmaker_icon_logo-md.png">
+            <img src={{asset(env('ICON_PATH_PATH', '/img/processmaker_icon.png'))}}>
         </a>
       </li>
     </ul>

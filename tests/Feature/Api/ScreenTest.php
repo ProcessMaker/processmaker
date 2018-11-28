@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use Carbon\Carbon;
 use Faker\Factory as Faker;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\Screen;
@@ -36,15 +37,32 @@ class ScreenTest extends TestCase
     }
 
     /**
-     * Create screen successfully
+     * Create Form screen successfully
      */
-    public function testCreateScreen()
+    public function testCreateFormScreen()
     {
         //Post title duplicated
         $faker = Faker::create();
         $url = self::API_TEST_SCREEN;
         $response = $this->apiCall('POST', $url, [
             'title' => 'Title Screen',
+            'type' => 'FORM',
+            'description' => $faker->sentence(10)
+        ]);
+
+        $response->assertStatus(201);
+    }
+    /**
+     * Create Form screen successfully
+     */
+    public function testCreateDisplayScreen()
+    {
+        //Post title duplicated
+        $faker = Faker::create();
+        $url = self::API_TEST_SCREEN;
+        $response = $this->apiCall('POST', $url, [
+            'title' => 'Title Screen',
+            'type' => 'DISPLAY',
             'description' => $faker->sentence(10)
         ]);
 
@@ -100,6 +118,22 @@ class ScreenTest extends TestCase
 
         //Verify the structure
         $response->assertJsonStructure(['*' => self::STRUCTURE], $json['data']);
+    }
+
+    /**
+     * Test to verify that the list dates are in the correct format (yyyy-mm-dd H:i+GMT)
+     */
+    public function testScreenListDates()
+    {
+        $newEntity = factory(Screen::class)->create();
+        $route = self::API_TEST_SCREEN;
+        $response = $this->apiCall('GET', $route);
+
+        $fieldsToValidate = collect(['created_at', 'updated_at']);
+        $fieldsToValidate->map(function ($field) use ($response, $newEntity){
+            $this->assertEquals(Carbon::parse($newEntity->$field)->format('c'),
+                $response->getData()->data[0]->$field);
+        });
     }
 
     /**
@@ -185,13 +219,46 @@ class ScreenTest extends TestCase
     {
         //Post saved success
         $faker = Faker::create();
-        $url = self::API_TEST_SCREEN . '/' . factory(Screen::class)->create()->id;
+        $yesterday = \Carbon\Carbon::now()->subDay();
+        $screen = factory(Screen::class)->create([
+            "created_at" => $yesterday,
+        ]);
+        $original_attributes = $screen->getAttributes();
+        $url = self::API_TEST_SCREEN . '/' . $screen->id;
         $response = $this->apiCall('PUT', $url, [
             'title' => 'ScreenTitleTest',
             'description' => $faker->sentence(5),
-            'config' => '',
+            'config' => '{"foo":"bar"}',
         ]);
         //Validate the answer is correct
+        $response->assertStatus(204);
+
+        // assert it creates a script version
+        $screen->refresh();
+        $version = $screen->versions()->first();
+        $this->assertEquals($version->screen_category_id, $screen->screen_category_id);
+        $this->assertEquals($version->title, $original_attributes['title']);
+        $this->assertEquals($version->description, $original_attributes['description']);
+        $this->assertEquals($version->config, null);
+        $this->assertEquals((string) $version->created_at, (string) $yesterday);
+        $this->assertEquals($version->updated_at, $screen->updated_at);
+    }
+    /**
+     * Update Screen Type
+     */
+    public function testUpdateScreenType()
+    {
+        $faker = Faker::create();
+        $type = 'FORM';
+        $url = self::API_TEST_SCREEN . '/' . factory(Screen::class)->create([
+            'type' => $type
+        ])->id;
+        $response = $this->apiCall('PUT', $url, [
+            'title' => 'ScreenTitleTest',
+            'type' => 'DETAIL',
+            'description' => $faker->sentence(5),
+            'config' => '',
+        ]);
         $response->assertStatus(204);
     }
 

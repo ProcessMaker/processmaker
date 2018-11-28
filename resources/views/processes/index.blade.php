@@ -96,7 +96,7 @@
                 })
                 .then(response => {
 					ProcessMaker.alert('{{__('Process successfully added')}}', 'success')
-                    window.location = "/processes/" + response.data.id
+                    window.location = "/modeler/" + response.data.id 
                 })
                 .catch(error => {
                     if (error.response.status === 422) {

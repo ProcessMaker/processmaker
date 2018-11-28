@@ -1,6 +1,7 @@
 <?php
 namespace Tests\Feature\Api;
 
+use Carbon\Carbon;
 use Faker\Factory as Faker;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Process;
@@ -118,6 +119,23 @@ class ProcessRequestsTest extends TestCase
     }
 
     /**
+     * Test to verify that the list dates are in the correct format (yyyy-mm-dd H:i+GMT)
+     */
+    public function testScreenListDates()
+    {
+        $newEntity = factory(ProcessRequest::class)->create();
+        $route = self::API_TEST_URL;
+        $response = $this->apiCall('GET', $route);
+
+        $fieldsToValidate = collect(['created_at', 'updated_at']);
+        $fieldsToValidate->map(function ($field) use ($response, $newEntity){
+            $this->assertEquals(Carbon::parse($newEntity->$field)->format('c'),
+                $response->getData()->data[0]->$field);
+        });
+    }
+
+
+    /**
      * Get a list of Request with parameters
      */
     public function testListRequestWithQueryParameter()
@@ -154,12 +172,15 @@ class ProcessRequestsTest extends TestCase
     public function testListRequestWithType()
     {
         $in_progress = factory(ProcessRequest::class)->create([
-            'status' => 'ACTIVE',
-        ]);
+           'status' => 'ACTIVE',
+           'user_id' => $this->user->id
+       ]);
+
+       $completed = factory(ProcessRequest::class)->create([
+           'status' => 'COMPLETED',
+           'user_id' => $this->user->id
+       ]);
         
-        $completed = factory(ProcessRequest::class)->create([
-            'status' => 'COMPLETED',
-        ]);
         $response = $this->apiCall('GET', self::API_TEST_URL . '/?type=completed');
         $json = $response->json();
         $this->assertCount(1, $json['data']);

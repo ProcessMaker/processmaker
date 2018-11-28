@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
+use ProcessMaker\Traits\SerializeToIso8601;
 
 /**
  * Represents an Eloquent model of a Script
@@ -19,7 +20,7 @@ use ProcessMaker\Exception\ScriptLanguageNotSupported;
  * @property string language
  * @property text code
  *
- *   @OA\Schema(
+ * @OA\Schema(
  *   schema="scriptsEditable",
  *   @OA\Property(property="id", type="string", format="id"),
  *   @OA\Property(property="title", type="string"),
@@ -37,6 +38,7 @@ use ProcessMaker\Exception\ScriptLanguageNotSupported;
  */
 class Script extends Model
 {
+    use SerializeToIso8601;
     use ScriptDockerCopyingFilesTrait;
     use ScriptDockerBindingFilesTrait;
 
@@ -60,20 +62,13 @@ class Script extends Model
      */
     public static function rules($existing = null)
     {
-        $rules = [
+        $unique = Rule::unique('scripts')->ignore($existing);
+
+        return [
             'key' => 'unique:scripts,key',
-            'title' => 'required|unique:scripts,title',
+            'title' => ['required', 'string', $unique],
             'language' => 'required|in:php,lua'
         ];
-        if ($existing) {
-            // ignore the unique rule for this id
-            $rules['title'] = [
-                'required',
-                'string',
-                Rule::unique('scripts')->ignore($existing->id, 'id')
-            ];
-        }
-        return $rules;
     }
 
     /**
@@ -167,5 +162,13 @@ class Script extends Model
     public static function scriptFormat2Language($format)
     {
         return static::$scriptFormats[$format];
+    }
+    
+    /**
+     * Get the associated versions
+     */
+    public function versions()
+    {
+        return $this->hasMany(ScriptVersion::class);
     }
 }

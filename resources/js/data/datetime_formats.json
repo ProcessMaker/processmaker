@@ -1,0 +1,17 @@
+[
+  {
+    "format": "m/d/Y",
+    "momentFormat": "MM/DD/YYYY",
+    "title": "m/d/Y (12/31/2017)"
+  },
+  {
+    "format": "m/d/Y h:i A",
+    "momentFormat": "MM/DD/YYYY h:mm A",
+    "title": "m/d/Y h:i A (12/31/2017 11:30 pm)"
+  },
+  {
+    "format": "m/d/Y H:i",
+    "momentFormat": "MM/DD/YYYY HH:mm",
+    "title": "m/d/Y H:i (12/31/2017 23:30)"
+  }
+]

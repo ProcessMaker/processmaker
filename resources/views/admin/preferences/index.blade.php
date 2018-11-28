@@ -12,15 +12,8 @@
     <div class="container mt-4">
       <h3>Preferences</h3>
       <div class="card card-body">
-        <div class="d-flex mb-2">
           <h3 class="mt-1">Localization</h3>
-          <button class="btn btn-secondary ml-2 mt-1" style="height:22px; padding-bottom: 21px;"><i class="fas fa-undo-alt"></i>  Reset</button>
-        </div>
         <div class="row">
-          <div class="form-group col">
-            {!!Form::label('timeZone', 'Time Zone');!!}
-            {!!Form::select('timezone', $timezones, null, ['class'=> 'form-control']);!!}
-          </div>
           <div class="form-group col">
             {!!Form::label('fullName', 'Full Name Format');!!}
             {!!Form::select('size', ['firstName' => 'First Name', 'lastName' => 'Last Name'], null, ['class'=> 'form-control']);!!}
@@ -29,20 +22,12 @@
         </div>
         <div class="row">
           <div class="form-group col">
-            {!!Form::label('dateFormat', 'Global Date Format');!!}
-            {!!Form::select('size', ['YY-DD-MM' => 'YY-DD-MM', 'MM-DD-YY' => 'MM-DD-YY', 'MM-DD-YYYY'=> 'MM-DD-YYYY', 'YYYY-DD-MM'=> 'YYYY-DD-MM'],null, ['class'=> 'form-control']);!!}
-            <small id="emailHelp" class="form-text text-muted">Default Date Format. Dates across all applications will be displayed using this format</small>
-          </div>
-          <div class="form-group col">
             {!!Form::label('defaultLang', 'Default Language');!!}
             {!!Form::select('size', ['english' => 'English'], null, ['class'=> 'form-control']);!!}
             <small id="emailHelp" class="form-text text-muted">Default Language to be used across all applications</small>
           </div>
         </div>
-        <div class="d-flex mt-5 mb-2">
-          <h3 class="mt-1">Email Notifications</h3>
-          <button class="btn btn-secondary ml-2 mt-1" style="height:22px; padding-bottom: 21px;"><i class="fas fa-check"></i>  Test</button>
-        </div>
+          <h3 class="mt-3">Email Notifications</h3>
         <div class="row">
           <div class="form-group col">
             {!!Form::label('hostName', 'Host Name');!!}
@@ -92,7 +77,4 @@
 @section('sidebar')
     @include('layouts.sidebar', ['sidebar' => Menu::get('sidebar_admin')])
 @endsection
-
-@section('js')
-  <script src="{{mix('js/admin/preferences/index.js')}}"></script>
-@endsection
+ 

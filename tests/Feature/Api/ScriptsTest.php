@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use Carbon\Carbon;
 use Faker\Factory as Faker;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
@@ -129,6 +130,23 @@ class ScriptsTest extends TestCase
     }
 
     /**
+     * Test to verify that the list dates are in the correct format (yyyy-mm-dd H:i+GMT)
+     */
+    public function testScriptListDates()
+    {
+        $newEntity = factory(Script::class)->create();
+
+        $route = self::API_TEST_SCRIPT;
+        $response = $this->apiCall('GET', $route);
+
+        $fieldsToValidate = collect(['created_at', 'updated_at']);
+        $fieldsToValidate->map(function ($field) use ($response, $newEntity){
+            $this->assertEquals(Carbon::parse($newEntity->$field)->format('c'),
+                $response->getData()->data[0]->$field);
+        });
+    }
+
+    /**
      * Get a list of Scripts with parameters
      */
     public function testListScriptsWithQueryParameter()
@@ -209,7 +227,11 @@ class ScriptsTest extends TestCase
     {
         $faker = Faker::create();
         //Post saved success
-        $script = factory(Script::class)->create();
+        $yesterday = \Carbon\Carbon::now()->subDay();
+        $script = factory(Script::class)->create([
+            "created_at" => $yesterday,
+        ]);
+        $original_attributes = $script->getAttributes();
         $url = self::API_TEST_SCRIPT . '/' . $script->id;
         $response = $this->apiCall('PUT', $url, [
             'title' => $script->title,
@@ -218,6 +240,16 @@ class ScriptsTest extends TestCase
         ]);
         //Validate the answer is correct
         $response->assertStatus(204);
+        
+        // assert it creates a script version
+        $script->refresh();
+        $version = $script->versions()->first();
+        $this->assertEquals($version->key, $script->key);
+        $this->assertEquals($version->title, $original_attributes['title']);
+        $this->assertEquals($version->language, $original_attributes['language']);
+        $this->assertEquals($version->code, $original_attributes['code']);
+        $this->assertEquals((string) $version->created_at, (string) $yesterday);
+        $this->assertEquals($version->updated_at, $script->updated_at);
     }
 
     /**

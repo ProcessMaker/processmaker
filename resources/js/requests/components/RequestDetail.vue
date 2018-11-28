@@ -11,7 +11,7 @@
             </template>
 
             <template slot="participants" slot-scope="props">
-                <avatar-image class="d-inline-flex pull-left align-items-center" size="25" class-image="m-1"
+                <avatar-image class="d-inline-flex pull-left align-items-center" size="25"
                               :input-data="props.rowData.participants"></avatar-image>
             </template>
         </vuetable>
@@ -74,9 +74,6 @@
 
                 return '<span class="' + color + '">' + this.formatDate(value) + '</span>';
             },
-            formatDate(value) {
-                return moment(value).format('MM/DD/YYYY HH:MM');
-            },
             transform(data) {
                 // Clean up fields for meta pagination so vue table pagination can understand
                 data.meta.last_page = data.meta.total_pages;
@@ -115,10 +112,10 @@
                         this.loading = false;
                     });
             },
-            getSortParam: function() {
+            getSortParam: function () {
                 if (this.sortOrder instanceof Array && this.sortOrder.length > 0) {
                     return "&order_by=" + this.sortOrder[0].sortField +
-                      "&order_direction=" + this.sortOrder[0].direction;
+                        "&order_direction=" + this.sortOrder[0].direction;
                 } else {
                     return '';
                 }
@@ -127,6 +124,8 @@
     };
 </script>
 
-<style lang="scss">
-
+<style lang="scss" scoped>
+    /deep/ tr td:nth-child(2) {
+        padding: 6px 10px;
+    }
 </style>

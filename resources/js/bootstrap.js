@@ -2,6 +2,8 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 import BootstrapVue from "bootstrap-vue";
 import Echo from "laravel-echo";
 import VueRouter from "vue-router";
+import datetime_format from "../js/data/datetime_formats.json"
+
 
 window._ = require("lodash");
 window.Popper = require("popper.js").default;
@@ -44,8 +46,31 @@ window.ProcessMaker = {
      * @returns {void}
      */
     pushNotification (notification) {
-        this.notifications.push(notification);
-    }
+        if (this.notifications.filter(x => x.id === notification).length === 0) {
+            this.notifications.push(notification);
+        }
+    },
+
+    /**
+     * Removes notifications by message ids or urls
+     *
+     * @param {object} notification
+     *
+     * @returns {void}
+     */
+    removeNotifications (messageIds = [], urls = []) {
+        window.ProcessMaker.apiClient.put('/notifications', {message_ids: messageIds, routes: urls});
+        messageIds.forEach(function (messageId) {
+            ProcessMaker.notifications.splice(ProcessMaker.notifications.findIndex(x => x.id === messageId), 1);
+        });
+
+        urls.forEach(function (url) {
+            let messageIndex = ProcessMaker.notifications.findIndex(x => x.url === url);
+            if (messageIndex >= 0) {
+               ProcessMaker.removeNotification(ProcessMaker.notifications[messageIndex].id);
+            }
+        });
+    },
 };
 
 /**
@@ -81,11 +106,20 @@ window.ProcessMaker.alert = function (text, variant) {
 };
 
 let userID = document.head.querySelector("meta[name=\"user-id\"]");
+let formatDate = document.head.querySelector("meta[name=\"datetime-format\"]");
+let timezone = document.head.querySelector("meta[name=\"timezone\"]");
 
 if (userID) {
     window.ProcessMaker.user = {
-        id: userID.content
+        id: userID.content,
+        datetime_format: formatDate.content,
+        timezone: timezone.content
     };
+    datetime_format.forEach(value => {
+        if (formatDate.content === value.format) {
+            window.ProcessMaker.user.datetime_format = value.momentFormat
+        }
+    });
 }
 
 let broadcaster = document.head.querySelector("meta[name=\"broadcaster\"]");

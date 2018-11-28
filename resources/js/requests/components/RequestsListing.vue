@@ -13,7 +13,6 @@
                               :key="participant.id"
                               class="d-inline-flex pull-left align-items-center"
                               size="25"
-                              class-image="m-1"
                               hide-name="true"
                               :input-data="participant"></avatar-image>
             </template>
@@ -99,10 +98,6 @@ export default {
             }
             return '<i class="fas fa-circle text-' + color + '"></i> <span>' + label + '</span>';
         },
-        formatDate(value) {
-            let date = moment(value);
-            return date.format('M/D/YY HH:mm');
-        },
         transform(data) {
             // Clean up fields for meta pagination so vue table pagination can understand
             data.meta.last_page = data.meta.total_pages;
@@ -163,5 +158,9 @@ export default {
     /deep/ .vuetable-th-slot-ids {
         min-width: 100px;
         white-space: nowrap;
+    }
+
+    /deep/ tr td:nth-child(4) {
+        padding: 6px 10px;
     }
 </style>

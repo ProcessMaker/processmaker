@@ -5,6 +5,7 @@ namespace ProcessMaker\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Traits\SerializeToIso8601;
 
 /**
  * Represents a business screen category definition.
@@ -29,7 +30,8 @@ use ProcessMaker\Models\Screen;
  * )
  */
 class ScreenCategory extends Model
-{    
+{
+    use SerializeToIso8601;
 
     protected $fillable = [
         'name',
@@ -38,12 +40,10 @@ class ScreenCategory extends Model
 
     public static function rules()
     {
-        $rules = [
+        return [
             'name' => 'required|string|max:100|unique:screen_categories,name',
             'status' => 'required|string|in:ACTIVE,INACTIVE'
         ];
-
-        return $rules;
     }
 
     /**

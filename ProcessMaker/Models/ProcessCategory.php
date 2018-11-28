@@ -5,6 +5,7 @@ namespace ProcessMaker\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Traits\SerializeToIso8601;
 
 /**
  * Represents a business process category definition.
@@ -30,26 +31,21 @@ use ProcessMaker\Models\Process;
  */
 class ProcessCategory extends Model
 {
+    use SerializeToIso8601;
 
     protected $fillable = [
         'name',
         'status'
     ];
 
-    public static function rules($existing=null)
+    public static function rules($existing = null)
     {
-        $rules = [
-            'name' => 'required|string|max:100|unique:process_categories,name',
+        $unique = Rule::unique('process_categories')->ignore($existing);
+
+        return [
+            'name' => ['required', 'string', 'max:100', $unique],
             'status' => 'required|string|in:ACTIVE,INACTIVE'
         ];
-        if ($existing) {
-            $rules['name'] = [
-                'required','max:100','string',
-                Rule::unique('process_categories')->ignore($existing->id, 'id')
-            ];
-        }
-
-        return $rules;
     }
 
     /**

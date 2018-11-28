@@ -14,6 +14,9 @@ jobs:
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
       - image: circleci/mysql:5.7
+        environment:
+          - MYSQL_ROOT_PASSWORD: P4ssW0rd1!
+          - MYSQL_DATABASE: circle_test
 
       # Add support for Microsoft SQL Server Testing
       - image: microsoft/mssql-server-linux:2017-GA
@@ -128,6 +131,7 @@ jobs:
           command: "./vendor/bin/phpunit -d memory_limit=-1 --coverage-html coverage"
           environment:
             DB_DATABASE: "circle_test"
+            DB_PASSWORD: "P4ssW0rd1!"
             DB_USERNAME: "root"
             RUN_MSSQL_TESTS: "true"
             MSSQL_HOST: "127.0.0.1"
@@ -168,9 +172,11 @@ jobs:
             echo "SAUCELABS_ACCESS_KEY=${SAUCELABS_ACCESS_KEY}" >> .env
             # Put in configuration file for Braoodcaster
             echo "BROADCAST_DRIVER=redis" >> .env
-            echo "BROADCASTER_HOST=https://" >> .env
+            echo "BROADCASTER_HOST=%%BROADCASTER_HOST%%" >> .env
             echo "BROADCASTER_KEY=21a795019957dde6bcd96142e05d4b10" >> .env
-
+            echo "REDIS_PORT=%%REDISPORT%%" >> .env
+            echo "BPM_SCRIPTS_HOME=/home/circleci/tmp" >> .env
+            
             # Generate unique app key
             php artisan key:generate --force
             # Copy over our test oauth keys. Regular install will create new ones
@@ -202,7 +208,7 @@ jobs:
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "rm -Rf ~/builds/$BUILD_NAME/public/storage"
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "php ~/builds/$BUILD_NAME/artisan storage:link"
             echo "Deployed to https://${BUILD_NAME}.bpm4.qa.processmaker.net/"
-            # Run containerDeploy.sh script to spin up Redis docker container, laravel-echo-server, and horizon
+            # Run containerDeploy.sh script to spin up Redis docker container, laravel-echo-server, and horizon. Excluding QUEUE for now.
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "sudo /bin/bash /root/cloudops/containerDeploy.sh $BUILD_NAME"
             # Generate Passport Keys
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "cd ~/builds/$BUILD_NAME && php artisan passport:keys"

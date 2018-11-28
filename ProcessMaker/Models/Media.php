@@ -56,7 +56,7 @@ class Media extends Model
      */
     public static function rules($existing = null)
     {
-        $rules = [
+        return [
             'model_id' => 'required',
             'model_type' => 'required',
             'collection_name' => 'required',
@@ -70,8 +70,6 @@ class Media extends Model
             'responsive_images' => 'required',
             'order_column' => 'required'
         ];
-
-        return $rules;
     }
 
 
