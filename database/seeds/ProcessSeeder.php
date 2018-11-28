@@ -28,10 +28,14 @@ class ProcessSeeder extends Seeder
      */
     public function run()
     {
+        //load user admin
+        $admin = User::where('username', 'admin')->firstOrFail();
+
         foreach (glob(database_path('processes') . '/*.bpmn') as $filename) {
             echo 'Creating: ', $filename, "\n";
             $process = factory(Process::class)->make([
                 'bpmn' => file_get_contents($filename),
+                'user_id' => $admin->getKey()
             ]);
             //Load the process title from the the main process of the BPMN definition
             $processes = $process->getDefinitions()->getElementsByTagName('process');
@@ -73,7 +77,7 @@ class ProcessSeeder extends Seeder
 
             //Add screens to the process
             $tasks = $definitions->getElementsByTagName('task');
-            $admin = User::where('username', 'admin')->firstOrFail();
+
             foreach($tasks as $task) {
                 $screenRef = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef');
                 $id = $task->getAttribute('id');
@@ -81,15 +85,13 @@ class ProcessSeeder extends Seeder
                     $screen = $this->createScreen($id, $screenRef, $process);
                     $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef', $screen->getKey());
                 }
-                //Assign "admin" to the task 
-                factory(ProcessTaskAssignment::class)->create([
+                //Assign "admin" to the task
+                factory(ProcessTaskAssignment::class, 'user')->create([
                     'process_id' => $process->getKey(),
                     'process_task_id' => $id,
-                    'assignment_id' => $admin->getKey(),
-                    'assignment_type' => 'user',
+                    'assignment_id' => $admin->getKey()
                 ]);
             }
-
 
             //Update the screen and script references in the BPMN of the process
             $process->bpmn = $definitions->saveXML();
