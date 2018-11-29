@@ -1,12 +1,14 @@
 <?php
 
 use Faker\Generator as Faker;
+
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Permission;
-use ProcessMaker\Models\PermissionAssignment;
+use ProcessMaker\Models\ProcessPermission;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\User;
 
-$factory->define(PermissionAssignment::class, function (Faker $faker) {
+$factory->define(ProcessPermission::class, function (Faker $faker) {
 
     $model = factory($faker->randomElement([
         User::class,
@@ -14,16 +16,21 @@ $factory->define(PermissionAssignment::class, function (Faker $faker) {
     ]))->create();
 
     return [
+        'process_id' => function () {
+            return factory(Process::class)->create()->getKey();
+        },
         'permission_id' => function () {
             return factory(Permission::class)->create()->getKey();
         },
-        'assignable_id' => $model->getKey(),
-        'assignable_type' => get_class($model)
+        'assignable_type' => User::class,
+        'assignable_id' => function () {
+            return factory(User::class)->create()->getKey();
+        }
     ];
 });
 
-$factory->defineAs(PermissionAssignment::class, 'user', function () use ($factory) {
-    $follow = $factory->raw(PermissionAssignment::class);
+$factory->defineAs(ProcessPermission::class, 'user', function () use ($factory) {
+    $follow = $factory->raw(ProcessPermission::class);
     $extras = [
         'id' => function () {
             return factory(User::class)->create()->getKey();
@@ -33,8 +40,8 @@ $factory->defineAs(PermissionAssignment::class, 'user', function () use ($factor
     return array_merge($follow, $extras);
 });
 
-$factory->defineAs(PermissionAssignment::class, 'group', function () use ($factory) {
-    $follow = $factory->raw(PermissionAssignment::class);
+$factory->defineAs(ProcessPermission::class, 'group', function () use ($factory) {
+    $follow = $factory->raw(ProcessPermission::class);
     $extras = [
         'id' => function () {
             return factory(Group::class)->create()->getKey();
