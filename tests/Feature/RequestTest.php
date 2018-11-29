@@ -21,13 +21,13 @@ class RequestTest extends TestCase
      */
     public function testIndexRoute()
     {
-      // get the URL
-      $response = $this->webCall('GET', '/requests');
-      $response->assertStatus(200);
-      // check the correct view is called
-      $response->assertViewIs('requests.index');
-
+        // get the URL
+        $response = $this->webCall('GET', '/requests');
+        $response->assertStatus(200);
+        // check the correct view is called
+        $response->assertViewIs('requests.index');
     }
+
     /**
      * Test to make sure the controller and route work with the view and show_all_requests permissions
      *
@@ -35,61 +35,35 @@ class RequestTest extends TestCase
      */
     public function testRequestAllRouteWithShowAllRequestsPermission()
     {
-      factory(Permission::class)->create(['guard_name' => 'show_all_requests']);
-      $this->user = factory(User::class)->create();
-      $this->user->giveDirectPermission('show_all_requests');
-      // get the URL
-      $response = $this->webCall('GET', '/requests/all');
-      $response->assertStatus(200);
-      // check the correct view is called
-      $response->assertViewIs('requests.index');
-
+        factory(Permission::class)->create(['guard_name' => 'show_all_requests']);
+        $this->user = factory(User::class)->create();
+        $this->user->giveDirectPermission('show_all_requests');
+        // get the URL
+        $response = $this->webCall('GET', '/requests/all');
+        $response->assertStatus(200);
+        // check the correct view is called
+        $response->assertViewIs('requests.index');
     }
 
     public function testShowRouteWithShowAllPermission()
     {
-      $this->user = factory(User::class)->create();
+        $this->user = factory(User::class)->create();
 
-      factory(Permission::class)->create(['guard_name' => 'show_all_requests']);
-      $request_id = factory(ProcessRequest::class)->create()->id;
+        factory(Permission::class)->create(['guard_name' => 'show_all_requests']);
+        $request_id = factory(ProcessRequest::class)->create()->id;
 
-      $response = $this->webCall('GET', '/requests/'. $request_id);
-      $response->assertStatus(403);
+        $response = $this->webCall('GET', '/requests/' . $request_id);
+        $response->assertStatus(403);
 
-      $this->user->giveDirectPermission('show_all_requests');
-      $this->user->refresh();
+        $this->user->giveDirectPermission('show_all_requests');
+        $this->user->refresh();
 
-      $response = $this->webCall('GET', '/requests/'. $request_id);
-      $response->assertStatus(200);
+        $response = $this->webCall('GET', '/requests/' . $request_id);
+        $response->assertStatus(200);
 
-      // check the correct view is called
-      $response->assertViewIs('requests.show');
+        // check the correct view is called
+        $response->assertViewIs('requests.show');
     }
-
-    public function testShowRouteWithAssignedUser()
-    {
-      $this->user = factory(User::class)->create();
-
-      $request_id = factory(ProcessRequest::class)->create([
-        'user_id' => $this->user->id
-      ])->id;
-
-      $response = $this->webCall('GET', '/requests/'. $request_id);
-      $response->assertStatus(200);
-    }
-    
-    public function testShowRouteWithAdministrator()
-    {
-      $this->user = factory(User::class)->create([
-        'is_administrator' => true,
-      ]);
-
-      $request_id = factory(ProcessRequest::class)->create()->id;
-
-      $response = $this->webCall('GET', '/requests/'. $request_id);
-      $response->assertStatus(200);
-    }
-
 
     /**
      * Test to make sure the controller and route work with the view
@@ -98,15 +72,37 @@ class RequestTest extends TestCase
      */
     public function testShowCancelRoute()
     {
-
         $Request_id = factory(ProcessRequest::class)->create()->id;
         // get the URL
-        $response = $this->webCall('GET', '/requests/'. $Request_id);
+        $response = $this->webCall('GET', '/requests/' . $Request_id);
 
         $response->assertStatus(200);
         // check the correct view is called
         $response->assertViewIs('requests.show');
         $response->assertSee('Cancel Request');
+    }
 
+    public function testShowRouteWithAssignedUser()
+    {
+        $this->user = factory(User::class)->create();
+
+        $request_id = factory(ProcessRequest::class)->create([
+            'user_id' => $this->user->id
+        ])->id;
+
+        $response = $this->webCall('GET', '/requests/' . $request_id);
+        $response->assertStatus(200);
+    }
+
+    public function testShowRouteWithAdministrator()
+    {
+        $this->user = factory(User::class)->create([
+            'is_administrator' => true,
+        ]);
+
+        $request_id = factory(ProcessRequest::class)->create()->id;
+
+        $response = $this->webCall('GET', '/requests/' . $request_id);
+        $response->assertStatus(200);
     }
 }
