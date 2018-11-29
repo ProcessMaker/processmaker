@@ -59,7 +59,7 @@ window.ProcessMaker = {
      * @returns {void}
      */
     removeNotifications (messageIds = [], urls = []) {
-        window.ProcessMaker.apiClient.put('/notifications', {message_ids: messageIds, routes: urls});
+        window.ProcessMaker.apiClient.put('/read_notifications', {message_ids: messageIds, routes: urls});
         messageIds.forEach(function (messageId) {
             ProcessMaker.notifications.splice(ProcessMaker.notifications.findIndex(x => x.id === messageId), 1);
         });
