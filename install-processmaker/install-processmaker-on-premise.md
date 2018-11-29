@@ -156,7 +156,7 @@ dpkg -i [file name].deb
 {% endtab %}
 {% endtabs %}
 
-Verify if it is installed correctly.
+Verify that Vagrant is installed correctly.
 
 {% code-tabs %}
 {% code-tabs-item title="Verify it is the correct version." %}
