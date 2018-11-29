@@ -94,20 +94,25 @@
                         </div>
                         <div class="tab-pane fade" id="files" role="tabpanel" aria-labelledby="files-tab">
                         <div class="mt-3">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h3>Files</h3>
-                                    <div>
+                            <div>
+                                <table class="vuetable table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>File Name</th>
+                                            <th>Mime Type</th>
+                                            <th>Created At</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
                                         @foreach ($files as $file)
-                                           <div>
-                                               <i class="fas fa-paperclip fa-lg text-secondary"></i> 
-                                               <a href="{{url('request/' .$request->id .'/files/' . $file->id)}}">
-                                                <strong>{{__('File name:')}}</strong> {{$file->file_name}} <strong>{{__('Uploaded:')}}</strong> {{ $file->created_at->format('m/d/y h:i:s')}}
-                                                </a>
-                                            </div>
+                                        <tr>
+                                            <td><a href="{{url('request/' .$request->id .'/files/' . $file->id)}}">{{$file->file_name}}</a></td>
+                                            <td>{{$file->mime_type}}</td>
+                                            <td>{{ $file->created_at->format('m/d/y h:i a')}}</td>
+                                        </tr>
                                         @endforeach
-                                    </div>
-                                </div>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
