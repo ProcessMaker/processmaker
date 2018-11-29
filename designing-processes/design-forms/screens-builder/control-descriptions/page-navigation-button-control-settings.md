@@ -10,6 +10,10 @@ description: >-
 
 The Page Navigation Button control adds a button from which the form user can go to another page in a multi-page ProcessMaker Screen. 
 
+{% hint style="info" %}
+This control is not available for [Display](../types-for-screens.md#display)-type ProcessMaker Screens. See [Screen Types](../types-for-screens.md) for more information.
+{% endhint %}
+
 ## Add the Control to a ProcessMaker Screen <a id="add-the-control-to-a-processmaker-screen"></a>
 
 Follow these steps to add this control to the ProcessMaker Screen:
@@ -47,6 +51,8 @@ Below are Inspector settings for the Page Navigation Button control:
 * **Destination:** Select the destination page to which to navigate in a multi-page ProcessMaker Screen. The default is the first page of the ProcessMaker Screen by that page's name.
 
 ## Related Topics <a id="related-topics"></a>
+
+{% page-ref page="../types-for-screens.md" %}
 
 {% page-ref page="../view-the-inspector-pane.md" %}
 

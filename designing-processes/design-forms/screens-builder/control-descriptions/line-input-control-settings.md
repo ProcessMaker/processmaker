@@ -10,6 +10,10 @@ description: >-
 
 The Line Input control adds a text box that the form user can enter plain text or a password.
 
+{% hint style="info" %}
+This control is not available for [Display](../types-for-screens.md#display)-type ProcessMaker Screens. See [Screen Types](../types-for-screens.md) for more information.
+{% endhint %}
+
 ## Add the Control to a ProcessMaker Screen
 
 Follow these steps to add this control to the ProcessMaker Screen:
@@ -43,6 +47,8 @@ Below are Inspector settings for the Line Input control:
 * **Help Text:** Specify text that provides additional guidance on the field's use.
 
 ## Related Topics
+
+{% page-ref page="../types-for-screens.md" %}
 
 {% page-ref page="../view-the-inspector-pane.md" %}
 

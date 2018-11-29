@@ -10,6 +10,10 @@ description: >-
 
 The Radio Group control provides a set of options from which the user can only select one.
 
+{% hint style="info" %}
+This control is not available for [Display](../types-for-screens.md#display)-type ProcessMaker Screens. See [Screen Types](../types-for-screens.md) for more information.
+{% endhint %}
+
 ## Add the Control to a ProcessMaker Screen
 
 Follow these steps to add this control to the ProcessMaker Screen:
@@ -54,6 +58,8 @@ Below are Inspector settings for the Radio Group control:
   4. Click **OK**. Otherwise, click **Cancel** to not add a new option.
 
 ## Related Topics <a id="related-topics"></a>
+
+{% page-ref page="../types-for-screens.md" %}
 
 {% page-ref page="../view-the-inspector-pane.md" %}
 

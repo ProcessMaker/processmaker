@@ -10,6 +10,10 @@ description: >-
 
 The Checkbox control adds a checkbox from which the form user can select or deselect an option. Multiple Checkbox controls can be grouped together.
 
+{% hint style="info" %}
+This control is not available for [Display](../types-for-screens.md#display)-type ProcessMaker Screens. See [Screen Types](../types-for-screens.md) for more information.
+{% endhint %}
+
 ## Add the Control to a ProcessMaker Screen
 
 Follow these steps to add this control to the ProcessMaker Screen:
@@ -39,6 +43,8 @@ Below are Inspector settings for the Radio Group control:
 * **Initially Checked?:** Select to indicate that the Checkbox control should be checked \(selected\) by default. Otherwise, deselect to indicate that the Checkbox control is not checked. The default setting is unchecked.
 
 ## Related Topics <a id="related-topics"></a>
+
+{% page-ref page="../types-for-screens.md" %}
 
 {% page-ref page="../view-the-inspector-pane.md" %}
 

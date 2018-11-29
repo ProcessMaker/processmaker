@@ -8,6 +8,10 @@ description: Add a drop-down control from which the form user selects a single o
 
 The Select control provides a drop-down menu from which the form user selects a single option.
 
+{% hint style="info" %}
+This control is not available for [Display](../types-for-screens.md#display)-type ProcessMaker Screens. See [Screen Types](../types-for-screens.md) for more information.
+{% endhint %}
+
 ## Add the Control to a ProcessMaker Screen
 
 Follow these steps to add this control to the ProcessMaker Screen:
@@ -56,6 +60,8 @@ Below are Inspector settings for the Line Input control:
 ​
 
 ## Related Topics
+
+{% page-ref page="../types-for-screens.md" %}
 
 {% page-ref page="../view-the-inspector-pane.md" %}
 

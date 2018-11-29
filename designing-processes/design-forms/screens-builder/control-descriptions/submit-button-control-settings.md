@@ -10,6 +10,10 @@ description: >-
 
 The Submit Button control adds a button from which the form user can submit the form as part of a Request. After using the Submit Button control, the form user cannot revise that form because the information included in the ProcessMaker Screen is sent to the next task in the Request.
 
+{% hint style="info" %}
+This control is not available for [Display](../types-for-screens.md#display)-type ProcessMaker Screens. See [Screen Types](../types-for-screens.md) for more information.
+{% endhint %}
+
 ## Add the Control to a ProcessMaker Screen <a id="add-the-control-to-a-processmaker-screen"></a>
 
 Follow these steps to add this control to the ProcessMaker Screen:
@@ -46,6 +50,8 @@ Below are Inspector settings for the Submit Button control:
   * **Link:** White-colored background with blue-colored **Field Label** text.
 
 ## Related Topics <a id="related-topics"></a>
+
+{% page-ref page="../types-for-screens.md" %}
 
 {% page-ref page="../view-the-inspector-pane.md" %}
 

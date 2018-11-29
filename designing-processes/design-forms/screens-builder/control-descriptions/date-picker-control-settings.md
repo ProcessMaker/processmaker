@@ -10,6 +10,10 @@ description: >-
 
 The Date Picker control allows the form user to click the control and select a date from a calendar pop-up. After the user selects a date from the control, the calendar hides and the control shows the selected date using the `mm/dd/yyyy` text format.
 
+{% hint style="info" %}
+This control is not available for [Display](../types-for-screens.md#display)-type ProcessMaker Screens. See [Screen Types](../types-for-screens.md) for more information.
+{% endhint %}
+
 ## Add the Control to a ProcessMaker Screen <a id="add-the-control-to-a-processmaker-screen"></a>
 
 Follow these steps to add this control to the ProcessMaker Screen:
@@ -38,6 +42,8 @@ Below are Inspector settings for the Date Picker control:
 * **Placeholder:** Specify the placeholder text that displays in the field when no value has been provided.
 
 ## Related Topics <a id="related-topics"></a>
+
+{% page-ref page="../types-for-screens.md" %}
 
 {% page-ref page="../view-the-inspector-pane.md" %}
 
