@@ -16,13 +16,22 @@ initialControls[initialControls.length] = {
             label: 'New File Upload'
         },
         inspector: [{
-            type: "FormInput",
-            field: "label",
-            config: {
-                label: "Text Label",
-                helper: "The text to display",
+                type: "FormInput",
+                field: "label",
+                config: {
+                    label: "Text Label",
+                    helper: "The text to display",
+                }
+            },
+            {
+                type: "FormInput",
+                field: "name",
+                config: {
+                    label: 'Upload Name',
+                    helper: "The name of the upload",
+                }
             }
-        }, ]
+        ]
     }
 }
 
