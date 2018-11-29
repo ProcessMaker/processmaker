@@ -99,7 +99,12 @@
                                     <h3>Files</h3>
                                     <div>
                                         @foreach ($files as $file)
-                                           <i class="fas fa-paperclip fa-lg text-secondary"></i> <a href="{{url('request/' .$request->id .'/files/' . $file->id)}}"><strong>File name:</strong> {{$file->file_name}} <strong>Uploaded:</strong> {{$file->created_at}}</a>
+                                           <div>
+                                               <i class="fas fa-paperclip fa-lg text-secondary"></i> 
+                                               <a href="{{url('request/' .$request->id .'/files/' . $file->id)}}">
+                                                <strong>{{__('File name:')}}</strong> {{$file->file_name}} <strong>{{__('Uploaded:')}}</strong> @{{ moment(files.created_at).format() }}
+                                                </a>
+                                            </div>
                                         @endforeach
                                     </div>
                                 </div>
