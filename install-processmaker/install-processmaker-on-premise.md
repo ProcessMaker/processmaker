@@ -18,6 +18,8 @@ The following installation procedure instructs how to install the internal beta 
 
 ### Update Packages
 
+{% tabs %}
+{% tab title="Debian / Kali / Mint / Ubuntu" %}
 {% code-tabs %}
 {% code-tabs-item title="Update your packages system." %}
 ```text
@@ -25,6 +27,8 @@ apt-get update && apt-get upgrade
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
+{% endtab %}
+{% endtabs %}
 
 In order to install ProcessMaker 4 you will need the following:
 
@@ -43,29 +47,9 @@ In order to install ProcessMaker 4 you will need the following:
 Install the VirtualBox package using one of the following commands depending on your Linux distribution to which you are installing VirtualBox.
 
 {% tabs %}
-{% tab title="CentOS Linux" %}
+{% tab title="Debian / Kali / Mint / Ubuntu" %}
 {% code-tabs %}
-{% code-tabs-item title="1. Install the VirtualBox package on CentOS Linux." %}
-```text
-rpm -Uvh [file name].rpm
-```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
-{% endtab %}
-
-{% tab title="Debian Linux" %}
-{% code-tabs %}
-{% code-tabs-item title="1. Install the VirtualBox package on Debian Linux." %}
-```text
-dpkg -i [file name].deb
-```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
-{% endtab %}
-
-{% tab title="Ubuntu Linux" %}
-{% code-tabs %}
-{% code-tabs-item title="1. Install the VirtualBox package on Ubuntu Linux." %}
+{% code-tabs-item title="1. Install the VirtualBox package." %}
 ```text
 dpkg -i [file name].deb
 ```
@@ -74,52 +58,94 @@ dpkg -i [file name].deb
 {% endtab %}
 {% endtabs %}
 
-After the installation finishes, VirtualBox sometimes does not work. VirtualBox may require the gcc, make, and perl libraries as well as the kernel "header" in order to rebuild a missing module. If this happens run the following command:
-
 {% code-tabs %}
-{% code-tabs-item title="2. Install the libraries for gcc, make, perl, and the kernel \"header.\"" %}
+{% code-tabs-item title="2. Verify if installed correctly" %}
 ```text
-apt-get install gcc make perl kernel-devel
+virtualbox -v
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-{% hint style="info" %}
-In Ubuntu Linux 18.04, instead of `kernel-devel` use `linux-headers-generic`.
-
-For Debian Linux 9 use `linux-headers-4.9.0-4-amd64`.
-
-In any case it will tell you which version it needs.
-{% endhint %}
-
-Then run the following command to finish the VirtualBox installation:
+After the installation finishes, VirtualBox sometimes does not work. VirtualBox is going to tell you what is missing. If this happens run the following command:
 
 {% code-tabs %}
-{% code-tabs-item title="3a. Recompile the kernel module." %}
-```text
-sudo /sbin/vboxconfig
-```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
-
-As an alternative try running the following command:
-
-{% code-tabs %}
-{% code-tabs-item title="3b. Re-install the missing dependencies." %}
+{% code-tabs-item title="Re-install the missing dependencies." %}
 ```text
 sudo apt-get -f install 
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
+After the installation is finished compile in order to complete re restoration:
+
+{% code-tabs %}
+{% code-tabs-item title="Recompile the kernel module." %}
+```text
+sudo /sbin/vboxconfig
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+If VirtualBox still giving you the error try installing the following libraries:
+
+{% code-tabs %}
+{% code-tabs-item title="Install the libraries for gcc, make and perl." %}
+```text
+apt-get install gcc make perl
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+After you installed the libraries recompile the kernel module, If the error persist Install the corresponding Kernel module that the error suggests you and recompile the kernel module.
+
+For example:
+
+{% tabs %}
+{% tab title="Debian 9" %}
+{% code-tabs %}
+{% code-tabs-item title="Install kernel module." %}
+```text
+apt-get install linux-headers-4.9.0-4-amd64
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+{% endtab %}
+
+{% tab title="Ubuntu 16.04" %}
+{% code-tabs %}
+{% code-tabs-item title="Install kernel module." %}
+```text
+apt-get install kernel-devel
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+{% endtab %}
+
+{% tab title="Ubuntu 18.04" %}
+{% code-tabs %}
+{% code-tabs-item title="Install kernel module." %}
+```text
+apt-get install linux-headers-generic
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+{% endtab %}
+{% endtabs %}
+
+In any case the error will tell you which steps do.
+
 Verify that VirtualBox works correctly.
 
 ### Install Vagrant 2.2.2
 
-[Download Vagrant](https://www.vagrantup.com/downloads.html) for Linux. It will download a file with the `.deb` extension.
+[Download Vagrant](https://www.vagrantup.com/downloads.html) for your Linux.
 
 ![](../.gitbook/assets/vagrant-download.png)
 
+In order to install use the following command:
+
+{% tabs %}
+{% tab title="Debian / Kali / Mint / Ubuntu" %}
 {% code-tabs %}
 {% code-tabs-item title="Install Vagrant." %}
 ```text
@@ -127,6 +153,8 @@ dpkg -i [file name].deb
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
+{% endtab %}
+{% endtabs %}
 
 Verify if it is installed correctly.
 
