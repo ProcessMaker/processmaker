@@ -121,7 +121,7 @@ class ProcessTest extends TestCase
                 'count' => 1,
                 'per_page' => $perPage,
                 'current_page' => $page,
-                'total_pages' => (int) ceil(($initialCount + 1) / $perPage),
+                'total_pages' => (int)ceil(($initialCount + 1) / $perPage),
             ]
         );
     }
@@ -191,7 +191,7 @@ class ProcessTest extends TestCase
                 'count' => 1,
                 'per_page' => $perPage,
                 'current_page' => $page,
-                'total_pages' => (int) ceil(($initialCount + 1) / $perPage),
+                'total_pages' => (int)ceil(($initialCount + 1) / $perPage),
             ]
         );
     }
@@ -206,10 +206,10 @@ class ProcessTest extends TestCase
             'password' => 'password',
             'is_administrator' => false,
         ]);
-        
-        $permission= factory(Permission::class)
+
+        $permission = factory(Permission::class)
             ->create(['guard_name' => 'requests.create']);
-        
+
         factory(PermissionAssignment::class)
             ->create(
                 [
@@ -219,7 +219,7 @@ class ProcessTest extends TestCase
                 ]);
 
         $route = route('api.process_events.trigger', $process);
-        
+
         $response = $this->apiCall('POST', $route . '?event=StartEventUID');
         $this->assertStatus(403, $response);
         $this->assertEquals(
@@ -235,7 +235,7 @@ class ProcessTest extends TestCase
                     'assignable_type' => User::class,
                     'assignable_id' => $this->user->id,
                 ]);
-        
+
         $response = $this->apiCall('POST', $route . '?event=StartEventUID');
         $this->assertStatus(201, $response);
     }
@@ -245,15 +245,20 @@ class ProcessTest extends TestCase
      */
     public function testProcessListDates()
     {
-        $newEntity = factory(Process::class)->create();
-        $route = route('api.' . $this->resource . '.index', ['per_page' => 10]);
+        $processName = 'processTestTimezone';
+        $newEntity = factory(Process::class)->create(['name' => $processName]);
+        $route = route('api.' . $this->resource . '.index', ['filter' => $processName]);
         $response = $this->apiCall('GET', $route);
 
-        $fieldsToValidate = collect(['created_at', 'updated_at']);
-        $fieldsToValidate->map(function ($field) use ($response, $newEntity) {
-            $this->assertEquals(Carbon::parse($newEntity->$field)->format('c'),
-                $response->getData()->data[0]->$field);
-        });
+        $this->assertEquals(
+            $newEntity->updated_at->format('c'),
+            $response->getData()->data[0]->updated_at
+        );
+
+        $this->assertEquals(
+            $newEntity->created_at->format('c'),
+            $response->getData()->data[0]->created_at
+        );
     }
 
     /**

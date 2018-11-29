@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Feature\Api;
 
 use Carbon\Carbon;
@@ -65,19 +66,29 @@ class TasksTest extends TestCase
      */
     public function testTaskListDates()
     {
-        $request = factory(ProcessRequest::class)->create();
+        $name = 'testTaskTimezone';
+        $request = factory(ProcessRequest::class)->create(['name' => $name]);
         // Create some tokens
         $newEntity = factory(ProcessRequestToken::class)->create([
             'process_request_id' => $request->id
         ]);
-        $route = route('api.' . $this->resource . '.index', ['per_page' => 10]);
+        $route = route('api.' . $this->resource . '.index', ['filter' => $name]);
         $response = $this->apiCall('GET', $route);
 
-        $fieldsToValidate = collect(['created_at', 'updated_at', 'due_at']);
-        $fieldsToValidate->map(function ($field) use ($response, $newEntity){
-            $this->assertEquals(Carbon::parse($newEntity->$field)->format('c'),
-                $response->getData()->data[0]->$field);
-        });
+        $this->assertEquals(
+            $newEntity->created_at->format('c'),
+            $response->getData()->data[0]->created_at
+        );
+
+        $this->assertEquals(
+            $newEntity->updated_at->format('c'),
+            $response->getData()->data[0]->updated_at
+        );
+
+        $this->assertEquals(
+            $newEntity->due_at->format('c'),
+            $response->getData()->data[0]->due_at
+        );
     }
 
     /**
@@ -130,7 +141,7 @@ class TasksTest extends TestCase
         $response->assertJsonStructure(['data' => ['*' => $this->structure]]);
         //Verify the first row
         $firstRow = $response->json('data')[0];
-        $this->assertArraySubset(['completed_at'=>null], $firstRow);
+        $this->assertArraySubset(['completed_at' => null], $firstRow);
     }
 
     /**
@@ -209,6 +220,6 @@ class TasksTest extends TestCase
         $this->assertStatus(200, $response);
         //Check the structure
         $response->assertJsonStructure($this->structure);
-        $response->assertJsonStructure(['user'=>['id', 'email'],'definition'=>[]]);
+        $response->assertJsonStructure(['user' => ['id', 'email'], 'definition' => []]);
     }
 }

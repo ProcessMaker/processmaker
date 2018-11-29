@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Feature\Api;
 
 use Carbon\Carbon;
@@ -123,15 +124,20 @@ class ProcessRequestsTest extends TestCase
      */
     public function testScreenListDates()
     {
-        $newEntity = factory(ProcessRequest::class)->create();
-        $route = self::API_TEST_URL;
+        $name = 'testRequestTimezone';
+        $newEntity = factory(ProcessRequest::class)->create(['name' => $name]);
+        $route = self::API_TEST_URL . '?filter=' . $name;
         $response = $this->apiCall('GET', $route);
 
-        $fieldsToValidate = collect(['created_at', 'updated_at']);
-        $fieldsToValidate->map(function ($field) use ($response, $newEntity){
-            $this->assertEquals(Carbon::parse($newEntity->$field)->format('c'),
-                $response->getData()->data[0]->$field);
-        });
+        $this->assertEquals(
+            $newEntity->updated_at->format('c'),
+            $response->getData()->data[0]->updated_at
+        );
+
+        $this->assertEquals(
+            $newEntity->created_at->format('c'),
+            $response->getData()->data[0]->created_at
+        );
     }
 
 
@@ -167,31 +173,31 @@ class ProcessRequestsTest extends TestCase
     }
 
     /**
-     * Get a list of Request by type 
+     * Get a list of Request by type
      */
     public function testListRequestWithType()
     {
         $in_progress = factory(ProcessRequest::class)->create([
-           'status' => 'ACTIVE',
-           'user_id' => $this->user->id
-       ]);
+            'status' => 'ACTIVE',
+            'user_id' => $this->user->id
+        ]);
 
-       $completed = factory(ProcessRequest::class)->create([
-           'status' => 'COMPLETED',
-           'user_id' => $this->user->id
-       ]);
-        
+        $completed = factory(ProcessRequest::class)->create([
+            'status' => 'COMPLETED',
+            'user_id' => $this->user->id
+        ]);
+
         $response = $this->apiCall('GET', self::API_TEST_URL . '/?type=completed');
         $json = $response->json();
         $this->assertCount(1, $json['data']);
         $this->assertEquals($completed->id, $json['data'][0]['id']);
-        
+
         $response = $this->apiCall('GET', self::API_TEST_URL . '/?type=in_progress');
         $json = $response->json();
         $this->assertCount(1, $json['data']);
         $this->assertEquals($in_progress->id, $json['data'][0]['id']);
     }
-    
+
     /**
      * Get a list of Request with assocations included
      */
@@ -217,7 +223,7 @@ class ProcessRequestsTest extends TestCase
         $request = factory(ProcessRequest::class)->create()->id;
 
         //load api
-        $response = $this->apiCall('GET', self::API_TEST_URL. '/' . $request);
+        $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $request);
 
         //Validate the status is correct
         $response->assertStatus(200);
@@ -233,7 +239,7 @@ class ProcessRequestsTest extends TestCase
     {
         $id = factory(ProcessRequest::class)->create(['name' => 'mytestrequestname'])->id;
         //The post must have the required parameters
-        $url = self::API_TEST_URL . '/' .$id;
+        $url = self::API_TEST_URL . '/' . $id;
 
         $response = $this->apiCall('PUT', $url, [
             'name' => null
@@ -270,7 +276,7 @@ class ProcessRequestsTest extends TestCase
         $verify_new = $this->apiCall('GET', $url);
 
         //Check that it has changed
-        $this->assertNotEquals($verify,$verify_new);
+        $this->assertNotEquals($verify, $verify_new);
     }
 
     /**
