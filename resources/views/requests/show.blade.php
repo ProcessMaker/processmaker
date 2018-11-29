@@ -33,8 +33,8 @@
                                    aria-controls="completed" aria-selected="false">{{__('Completed')}}</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" id="completed-tab" data-toggle="tab" href="#completed" role="tab"
-                                   aria-controls="completed" aria-selected="false">{{__('Files')}}</a>
+                                <a class="nav-link" id="files-tab" data-toggle="tab" href="#files" role="tab"
+                                   aria-controls="files" aria-selected="false">{{__('Attached Files')}}</a>
                             </li>
                         </template>
                     </ul>
@@ -92,6 +92,18 @@
                             <request-detail ref="completed" :process-request-id="requestId" status="CLOSED">
                             </request-detail>
                         </div>
+                        <div class="tab-pane fade" id="files" role="tabpanel" aria-labelledby="files-tab">
+                        <div class="mt-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h3>Files</h3>
+                                    <div v-for="file in files">
+                                        <a href="{{url('request/' .$request->id .'/files/' . $files[0]->id)}}"><strong>File name:</strong> @{{file.file_name}} <strong>Uploaded:</strong> @{{file.created_at}}</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -147,6 +159,7 @@
                 return {
                     requestId: @json($request->getKey()),
                     request: @json($request),
+                    files: @json($files),
                     refreshTasks: 0,
                     status: 'ACTIVE'
                 };
