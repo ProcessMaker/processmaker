@@ -1,11 +1,11 @@
 <template>
-  <div class="form-group">
+  <div>
     <label v-uni-for="name">{{label}}</label>
     <uploader :options="options" ref="uploader">
       <uploader-unsupport></uploader-unsupport>
-      <uploader-drop>
+      <uploader-drop id="uploaderMain" class="form-control-file">
         <p>Drop files here to upload or</p>
-        <uploader-btn>select files</uploader-btn>
+        <uploader-btn id="submitFile" class="btn btn-secondary">select files</uploader-btn>
       </uploader-drop>
       <uploader-list></uploader-list>
     </uploader>
@@ -27,6 +27,14 @@ export default {
   mixins: [uniqIdsMixin],
   props: ["label", "error", "helper", "name", "value", "controlClass"],
   mounted() {
+    // we need to be able to remove the classes from the npm package
+    var element = document.getElementById("submitFile");
+    element.classList.remove("uploader-btn");
+
+    var element = document.getElementById("uploaderMain");
+    element.classList.remove("uploader-drop");
+
+    //emit message when upload happens
     const uploaderInstance = this.$refs.uploader.uploader;
     uploaderInstance.on("fileSuccess", (rootFile, file, message, chunk) => {
       message = JSON.parse(message).fileUploadId;
