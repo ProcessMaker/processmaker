@@ -13,267 +13,272 @@ use Illuminate\Support\Facades\Hash;
 class GroupsTest extends TestCase
 {
 
-  use RequestHelper;
+    use RequestHelper;
 
-  const API_TEST_URL = '/groups';
+    const API_TEST_URL = '/groups';
 
-  const STRUCTURE = [
-      'id',
-      'name',
-      'description',
-      'status',
-      'updated_at',
-      'created_at'
-  ];
+    const STRUCTURE = [
+        'id',
+        'name',
+        'description',
+        'status',
+        'updated_at',
+        'created_at'
+    ];
 
 
-  /**
-   * Test verify the parameter required for create form
-   */
-  public function testNotCreatedForParameterRequired()
-  {
-      //Post should have the parameter required
-      $response = $this->apiCall('POST', self::API_TEST_URL, []);
+    /**
+     * Test verify the parameter required for create form
+     */
+    public function testNotCreatedForParameterRequired()
+    {
+        //Post should have the parameter required
+        $response = $this->apiCall('POST', self::API_TEST_URL, []);
 
-      //Validate the header status code
-      $response->assertStatus(422);
-      $this->assertArrayHasKey('message', $response->json());
-  }
+        //Validate the header status code
+        $response->assertStatus(422);
+        $this->assertArrayHasKey('message', $response->json());
+    }
 
-  /**
-   * Create new group successfully
-   */
-  public function testCreateGroup()
-  {
-      //Post title duplicated
-      $url = self::API_TEST_URL;
-      $response = $this->apiCall('POST', $url, [
-          'name' => 'newgroup',
-          'status' => 'ACTIVE'
-      ]);
+    /**
+     * Create new group successfully
+     */
+    public function testCreateGroup()
+    {
+        //Post title duplicated
+        $url = self::API_TEST_URL;
+        $response = $this->apiCall('POST', $url, [
+            'name' => 'newgroup',
+            'status' => 'ACTIVE'
+        ]);
 
-      //Validate the header status code
-      $response->assertStatus(201);
-  }
+        //Validate the header status code
+        $response->assertStatus(201);
+    }
 
-  /**
-   * Can not create a group with an existing name
-   */
-  public function testNotCreateGroupWithGroupnameExists()
-  {
-      factory(Group::class)->create([
-          'name' => 'mytestname',
-      ]);
+    /**
+     * Can not create a group with an existing name
+     */
+    public function testNotCreateGroupWithGroupnameExists()
+    {
+        factory(Group::class)->create([
+            'name' => 'mytestname',
+        ]);
 
-      //Post name duplicated
-      $faker = Faker::create();
-      $response = $this->apiCall('POST', self::API_TEST_URL, [
-          'name' => 'mytestname'
-      ]);
+        //Post name duplicated
+        $faker = Faker::create();
+        $response = $this->apiCall('POST', self::API_TEST_URL, [
+            'name' => 'mytestname'
+        ]);
 
-      //Validate the header status code
-      $response->assertStatus(422);
-      $this->assertArrayHasKey('message', $response->json());
-  }
+        //Validate the header status code
+        $response->assertStatus(422);
+        $this->assertArrayHasKey('message', $response->json());
+    }
 
-  /**
-   * Get a list of Groups without query parameters.
-   */
-  public function testListGroup()
-  {
-      $existing = Group::count();
-      $faker = Faker::create();
+    /**
+     * Get a list of Groups without query parameters.
+     */
+    public function testListGroup()
+    {
+        $existing = Group::count();
+        $faker = Faker::create();
 
-      factory(Group::class, 10)->create();
+        factory(Group::class, 10)->create();
 
-      $response = $this->apiCall('GET', self::API_TEST_URL);
+        $response = $this->apiCall('GET', self::API_TEST_URL);
 
-      //Validate the header status code
-      $response->assertStatus(200);
+        //Validate the header status code
+        $response->assertStatus(200);
 
-      // Verify structure
-      $response->assertJsonStructure([
-          'data' => ['*' => self::STRUCTURE],
-          'meta',
-      ]);
+        // Verify structure
+        $response->assertJsonStructure([
+            'data' => ['*' => self::STRUCTURE],
+            'meta',
+        ]);
 
-      // Verify count
-      $this->assertEquals(10 + $existing, $response->json()['meta']['total']);
+        // Verify count
+        $this->assertEquals(10 + $existing, $response->json()['meta']['total']);
 
-  }
+    }
 
     /**
      * Test to verify that the list dates are in the correct format (yyyy-mm-dd H:i+GMT)
      */
     public function testGroupListDates()
     {
-        $newEntity = factory(Group::class)->create();
-        $route = self::API_TEST_URL;
+        $name = 'tetGroupTimezone';
+        $newEntity = factory(Group::class)->create(['name' => $name]);
+        $route = self::API_TEST_URL . '?filter=' . $name;
         $response = $this->apiCall('GET', $route);
 
-        $fieldsToValidate = collect(['created_at', 'updated_at']);
-        $fieldsToValidate->map(function ($field) use ($response, $newEntity){
-            $this->assertEquals(Carbon::parse($newEntity->$field)->format('c'),
-                $response->getData()->data[0]->$field);
-        });
+        $this->assertEquals(
+            $newEntity->created_at->format('c'),
+            $response->getData()->data[0]->created_at
+        );
+
+        $this->assertEquals(
+            $newEntity->updated_at->format('c'),
+            $response->getData()->data[0]->updated_at
+        );
     }
 
-  /**
-   * Get a list of Group with parameters
-   */
-  public function testListGroupWithQueryParameter()
-  {
-      $name = 'mytestname';
+    /**
+     * Get a list of Group with parameters
+     */
+    public function testListGroupWithQueryParameter()
+    {
+        $name = 'mytestname';
 
-      factory(Group::class)->create([
-          'name' => $name,
-      ]);
+        factory(Group::class)->create([
+            'name' => $name,
+        ]);
 
-      //List Group with filter option
-      $perPage = Faker::create()->randomDigitNotNull;
-      $query = '?page=1&per_page=' . $perPage . '&order_by=name&order_direction=DESC&filter=' . $name;
-      $response = $this->apiCall('GET', self::API_TEST_URL . $query);
+        //List Group with filter option
+        $perPage = Faker::create()->randomDigitNotNull;
+        $query = '?page=1&per_page=' . $perPage . '&order_by=name&order_direction=DESC&filter=' . $name;
+        $response = $this->apiCall('GET', self::API_TEST_URL . $query);
 
-      //Validate the header status code
-      $response->assertStatus(200);
+        //Validate the header status code
+        $response->assertStatus(200);
 
-      //verify structure paginate
-      $response->assertJsonStructure([
-          'data',
-          'meta',
-      ]);
+        //verify structure paginate
+        $response->assertJsonStructure([
+            'data',
+            'meta',
+        ]);
 
-      // Verify return data
-      $this->assertEquals(1, $response->json()['meta']['total']);
-      $this->assertEquals('name', $response->json()['meta']['sort_by']);
-      $this->assertEquals('DESC', $response->json()['meta']['sort_order']);
+        // Verify return data
+        $this->assertEquals(1, $response->json()['meta']['total']);
+        $this->assertEquals('name', $response->json()['meta']['sort_by']);
+        $this->assertEquals('DESC', $response->json()['meta']['sort_order']);
 
-  }
+    }
 
-  /**
-   * Get a group
-   */
-  public function testGetGroup()
-  {
-      //get the id from the factory
-      $group = factory(Group::class)->create()->id;
+    /**
+     * Get a group
+     */
+    public function testGetGroup()
+    {
+        //get the id from the factory
+        $group = factory(Group::class)->create()->id;
 
-      //load api
-      $response = $this->apiCall('GET', self::API_TEST_URL. '/' . $group);
+        //load api
+        $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $group);
 
-      //Validate the status is correct
-      $response->assertStatus(200);
+        //Validate the status is correct
+        $response->assertStatus(200);
 
-      //verify structure
-      $response->assertJsonStructure(self::STRUCTURE);
-  }
+        //verify structure
+        $response->assertJsonStructure(self::STRUCTURE);
+    }
 
-  /**
-   * Get a group with the memberships
-   */
-  // public function testGetGroupIncludeMembership()
-  // {
-  //     //get the id from the factory
-  //     $group = factory(Group::class)->create()->id;
-  //
-  //     //load api
-  //     $response = $this->apiCall('GET', self::API_TEST_URL. '/' . $group . '?include=memberships');
-  //
-  //     //Validate the status is correct
-  //     $response->assertStatus(200);
-  //
-  //     //verify structure
-  //     $response->assertJsonFragment(['memberships']);
-  // }
+    /**
+     * Get a group with the memberships
+     */
+    // public function testGetGroupIncludeMembership()
+    // {
+    //     //get the id from the factory
+    //     $group = factory(Group::class)->create()->id;
+    //
+    //     //load api
+    //     $response = $this->apiCall('GET', self::API_TEST_URL. '/' . $group . '?include=memberships');
+    //
+    //     //Validate the status is correct
+    //     $response->assertStatus(200);
+    //
+    //     //verify structure
+    //     $response->assertJsonFragment(['memberships']);
+    // }
 
-  /**
-   * Parameters required for update of group
-   */
-  public function testUpdateGroupParametersRequired()
-  {
-      $id = factory(Group::class)->create(['name' => 'mytestname'])->id;
-      //The post must have the required parameters
-      $url = self::API_TEST_URL . '/' .$id;
+    /**
+     * Parameters required for update of group
+     */
+    public function testUpdateGroupParametersRequired()
+    {
+        $id = factory(Group::class)->create(['name' => 'mytestname'])->id;
+        //The post must have the required parameters
+        $url = self::API_TEST_URL . '/' . $id;
 
-      $response = $this->apiCall('PUT', $url, [
-          'name' => ''
-      ]);
+        $response = $this->apiCall('PUT', $url, [
+            'name' => ''
+        ]);
 
-      //Validate the header status code
-      $response->assertStatus(422);
-  }
+        //Validate the header status code
+        $response->assertStatus(422);
+    }
 
-  /**
-   * Update group in process
-   */
-  public function testUpdateGroup()
-  {
-      $url = self::API_TEST_URL . '/' . factory(Group::class)->create()->id;
+    /**
+     * Update group in process
+     */
+    public function testUpdateGroup()
+    {
+        $url = self::API_TEST_URL . '/' . factory(Group::class)->create()->id;
 
-      //Load the starting group data
-      $verify = $this->apiCall('GET', $url);
+        //Load the starting group data
+        $verify = $this->apiCall('GET', $url);
 
-      //Post saved success
-      $response = $this->apiCall('PUT', $url, [
-        'name' => 'updatemytestname',
-      ]);
+        //Post saved success
+        $response = $this->apiCall('PUT', $url, [
+            'name' => 'updatemytestname',
+        ]);
 
-      //Validate the header status code
-      $response->assertStatus(204);
+        //Validate the header status code
+        $response->assertStatus(204);
 
-      //Load the updated group data
-      $verify_new = $this->apiCall('GET', $url);
+        //Load the updated group data
+        $verify_new = $this->apiCall('GET', $url);
 
-      //Check that it has changed
-      $this->assertNotEquals($verify,$verify_new);
+        //Check that it has changed
+        $this->assertNotEquals($verify, $verify_new);
 
-  }
+    }
 
-  /**
-   * Check that the validation wont allow duplicate names
-   */
-  public function testUpdateGroupTitleExists()
-  {
-      $group1 = factory(Group::class)->create([
-          'name' => 'MyGroupName',
-      ]);
+    /**
+     * Check that the validation wont allow duplicate names
+     */
+    public function testUpdateGroupTitleExists()
+    {
+        $group1 = factory(Group::class)->create([
+            'name' => 'MyGroupName',
+        ]);
 
-      $group2 = factory(Group::class)->create();
+        $group2 = factory(Group::class)->create();
 
-      $url = self::API_TEST_URL . '/' . $group2->id;
+        $url = self::API_TEST_URL . '/' . $group2->id;
 
-      $response = $this->apiCall('PUT', $url, [
-          'name' => 'MyGroupName',
-      ]);
-      //Validate the header status code
-      $response->assertStatus(422);
-      $response->assertSeeText('The name has already been taken');
-  }
+        $response = $this->apiCall('PUT', $url, [
+            'name' => 'MyGroupName',
+        ]);
+        //Validate the header status code
+        $response->assertStatus(422);
+        $response->assertSeeText('The name has already been taken');
+    }
 
-  /**
-   * Delete group in process
-   */
-  public function testDeleteGroup()
-  {
-      //Remove group
-      $url = self::API_TEST_URL . '/' . factory(Group::class)->create()->id;
-      $response = $this->apiCall('DELETE', $url);
+    /**
+     * Delete group in process
+     */
+    public function testDeleteGroup()
+    {
+        //Remove group
+        $url = self::API_TEST_URL . '/' . factory(Group::class)->create()->id;
+        $response = $this->apiCall('DELETE', $url);
 
-      //Validate the header status code
-      $response->assertStatus(204);
-  }
+        //Validate the header status code
+        $response->assertStatus(204);
+    }
 
-  /**
-   * The group does not exist in process
-   */
-  public function testDeleteGroupNotExist()
-  {
-      //Group not exist
-      $url = self::API_TEST_URL . '/' . factory(Group::class)->make()->id;
-      $response = $this->apiCall('DELETE', $url);
+    /**
+     * The group does not exist in process
+     */
+    public function testDeleteGroupNotExist()
+    {
+        //Group not exist
+        $url = self::API_TEST_URL . '/' . factory(Group::class)->make()->id;
+        $response = $this->apiCall('DELETE', $url);
 
-      //Validate the header status code
-      $response->assertStatus(405);
-  }
+        //Validate the header status code
+        $response->assertStatus(405);
+    }
 
 }
