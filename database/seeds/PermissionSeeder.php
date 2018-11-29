@@ -43,10 +43,16 @@ class PermissionSeeder extends Seeder
         'processes.show',
         'profile.edit',
         'profile.show',
-        'screens.create',
-        'screens.destroy',
-        'screens.edit',
-        'screen.show',
+        'requests.create',
+        'requests.destroy',
+        'requests.edit',
+        'requests.show',
+        'requests.exit',
+        'requests.watch',
+        'requests.menu',
+        'requests.cancel',
+        'requests.menu_search',
+        'script.preview',
         'scripts.create',
         'scripts.destroy',
         'scripts.edit',
@@ -56,7 +62,6 @@ class PermissionSeeder extends Seeder
         'users.edit',
         'users.show',
         'horizon.index',
-        'requests.show',
         'show_all_requests'
     ];
 
@@ -76,7 +81,7 @@ class PermissionSeeder extends Seeder
             'member_id' => User::first()->id,
         ]);
 
-        foreach($this->permissions as $permissionString) {
+        foreach ($this->permissions as $permissionString) {
             $permission = factory(Permission::class)->create([
                 'name' => ucwords(preg_replace('/(\.|_)/', ' ', $permissionString)),
                 'guard_name' => $permissionString,

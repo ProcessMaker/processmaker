@@ -1,11 +1,17 @@
 <?php
+
 namespace Tests\Feature\Api;
 
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\WithFaker;
+use ProcessMaker\Models\Group;
+use ProcessMaker\Models\GroupMember;
+use ProcessMaker\Models\Permission;
+use ProcessMaker\Models\PermissionAssignment;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessCollaboration;
+use ProcessMaker\Models\ProcessPermission;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
@@ -36,7 +42,6 @@ class ProcessTest extends TestCase
         'updated_at'
     ];
 
-
     /**
      * Test to verify our processes listing api endpoint works without any filters
      */
@@ -62,6 +67,180 @@ class ProcessTest extends TestCase
     }
 
     /**
+     * Test to verify our processes listing api endpoint works without any filters
+     */
+    public function testProcessesListingWithNoAdminUser()
+    {
+        // We create an user that isn't administrator
+        $this->user = factory(User::class)->create([
+            'password' => 'password',
+            'is_administrator' => false,
+        ]);
+
+        // Create create process permission for the user
+        $userId = $this->user->id;
+        factory(Permission::class)->create(['guard_name' => 'requests.create']);
+        factory(Permission::class)->create(['guard_name' => 'processes.index']);
+
+        $initialCount = Process::count();
+        // Create some processes
+        $process = factory(Process::class)->create();
+
+        factory(ProcessPermission::class)
+            ->create(
+                [
+                    'process_id' => $process->id,
+                    'permission_id' => Permission::byGuardName('requests.create'),
+                    'assignable_type' => User::class,
+                    'assignable_id' => $userId
+                ]);
+
+        factory(PermissionAssignment::class)
+            ->create(
+                [
+                    'permission_id' => Permission::byGuardName('requests.create'),
+                    'assignable_type' => User::class,
+                    'assignable_id' => $userId
+                ]);
+
+        factory(PermissionAssignment::class)
+            ->create(
+                [
+                    'permission_id' => Permission::byGuardName('processes.index'),
+                    'assignable_type' => User::class,
+                    'assignable_id' => $userId
+                ]);
+
+        //Get a page of processes
+        $page = 1;
+        $perPage = 10;
+        $this->assertCorrectModelListing(
+            '?page=' . $page . '&per_page=' . $perPage,
+            [
+                'total' => 1,
+                'count' => 1,
+                'per_page' => $perPage,
+                'current_page' => $page,
+                'total_pages' => (int) ceil(($initialCount + 1) / $perPage),
+            ]
+        );
+    }
+
+    /**
+     * Test to verify our processes listing api endpoint works without any filters
+     */
+    public function testProcessesListingWithNoAdminGroup()
+    {
+        // We create an user that isn't administrator
+        $this->user = factory(User::class)->create([
+            'password' => 'password',
+            'is_administrator' => false,
+        ]);
+
+        //Create default All Users group
+        $groupId = factory(Group::class)->create([
+            'name' => 'Test Group',
+            'status' => 'ACTIVE'
+        ])->id;
+
+        factory(GroupMember::class)->create([
+            'member_id' => $this->user->id,
+            'member_type' => User::class,
+            'group_id' => $groupId,
+        ]);
+
+        // Create process permissions for the group
+        factory(Permission::class)->create(['guard_name' => 'requests.create']);
+        factory(Permission::class)->create(['guard_name' => 'processes.index']);
+
+        $initialCount = Process::count();
+        // Create some processes
+        $process = factory(Process::class)->create();
+        factory(ProcessPermission::class)
+            ->create(
+                [
+                    'process_id' => $process->id,
+                    'permission_id' => Permission::byGuardName('requests.create'),
+                    'assignable_type' => Group::class,
+                    'assignable_id' => $groupId
+                ]);
+
+        factory(PermissionAssignment::class)
+            ->create(
+                [
+                    'permission_id' => Permission::byGuardName('requests.create'),
+                    'assignable_type' => User::class,
+                    'assignable_id' => $this->user->id
+                ]);
+
+        factory(PermissionAssignment::class)
+            ->create(
+                [
+                    'permission_id' => Permission::byGuardName('processes.index'),
+                    'assignable_type' => Group::class,
+                    'assignable_id' => $groupId
+                ]);
+
+        //Get a page of processes
+        $page = 1;
+        $perPage = 10;
+        $this->assertCorrectModelListing(
+            '?page=' . $page . '&per_page=' . $perPage,
+            [
+                'total' => 1,
+                'count' => 1,
+                'per_page' => $perPage,
+                'current_page' => $page,
+                'total_pages' => (int) ceil(($initialCount + 1) / $perPage),
+            ]
+        );
+    }
+
+    public function testProcessEventsTrigger()
+    {
+        $process = factory(Process::class)->create([
+            'bpmn' => Process::getProcessTemplate('SingleTask.bpmn')
+        ]);
+
+        $this->user = factory(User::class)->create([
+            'password' => 'password',
+            'is_administrator' => false,
+        ]);
+        
+        $permission= factory(Permission::class)
+            ->create(['guard_name' => 'requests.create']);
+        
+        factory(PermissionAssignment::class)
+            ->create(
+                [
+                    'permission_id' => $permission->id,
+                    'assignable_type' => User::class,
+                    'assignable_id' => $this->user->id
+                ]);
+
+        $route = route('api.process_events.trigger', $process);
+        
+        $response = $this->apiCall('POST', $route . '?event=StartEventUID');
+        $this->assertStatus(403, $response);
+        $this->assertEquals(
+            $response->json()['message'],
+            'Not authorized to start this process'
+        );
+
+        factory(ProcessPermission::class)
+            ->create(
+                [
+                    'process_id' => $process->id,
+                    'permission_id' => $permission->id,
+                    'assignable_type' => User::class,
+                    'assignable_id' => $this->user->id,
+                ]);
+        
+        $response = $this->apiCall('POST', $route . '?event=StartEventUID');
+        $this->assertStatus(201, $response);
+    }
+
+    /**
      * Test to verify that the list dates are in the correct format (yyyy-mm-dd H:i+GMT)
      */
     public function testProcessListDates()
@@ -71,7 +250,7 @@ class ProcessTest extends TestCase
         $response = $this->apiCall('GET', $route);
 
         $fieldsToValidate = collect(['created_at', 'updated_at']);
-        $fieldsToValidate->map(function ($field) use ($response, $newEntity){
+        $fieldsToValidate->map(function ($field) use ($response, $newEntity) {
             $this->assertEquals(Carbon::parse($newEntity->$field)->format('c'),
                 $response->getData()->data[0]->$field);
         });
@@ -83,8 +262,8 @@ class ProcessTest extends TestCase
     public function testFiltering()
     {
         $perPage = 10;
-        $initialActiveCount = Process::where('status','ACTIVE')->count();
-        $initialInactiveCount = Process::where('status','INACTIVE')->count();
+        $initialActiveCount = Process::where('status', 'ACTIVE')->count();
+        $initialInactiveCount = Process::where('status', 'INACTIVE')->count();
 
         // Create some processes
         $processActive = [
@@ -120,7 +299,7 @@ class ProcessTest extends TestCase
             ]
         );
         //verify include
-        $response->assertJsonStructure(['*' => ['category','user']], $response->json('data'));
+        $response->assertJsonStructure(['*' => ['category', 'user']], $response->json('data'));
     }
 
     /**
@@ -217,9 +396,9 @@ class ProcessTest extends TestCase
     {
         $route = route('api.' . $this->resource . '.store');
         $base = factory(Process::class)->make([
-                'user_id' => static::$DO_NOT_SEND,
-                'process_category_id' => static::$DO_NOT_SEND,
-            ]);
+            'user_id' => static::$DO_NOT_SEND,
+            'process_category_id' => static::$DO_NOT_SEND,
+        ]);
         $array = array_diff($base->toArray(), [static::$DO_NOT_SEND]);
         //Add a bpmn content
         $array['bpmn'] = trim(Process::getProcessTemplate('OnlyStartElement.bpmn'));
@@ -302,7 +481,7 @@ class ProcessTest extends TestCase
         $process = factory(Process::class)->create();
 
         //Test that is correctly displayed including category and user
-        $this->assertModelShow($process->id, ['category','user']);
+        $this->assertModelShow($process->id, ['category', 'user']);
     }
 
     /**
@@ -348,6 +527,9 @@ class ProcessTest extends TestCase
      */
     public function testUpdateProcess()
     {
+        //Seeder Permissions
+        (new \PermissionSeeder())->run($this->user);
+
         //Test to update name process
         $name = $this->faker->name;
         $this->assertModelUpdate(
@@ -366,6 +548,9 @@ class ProcessTest extends TestCase
      */
     public function testUpdateProcessWithCategoryNull()
     {
+        //Seeder Permissions
+        (new \PermissionSeeder())->run($this->user);
+
         //Test update process category to null
         $this->assertModelUpdate(
             Process::class,
@@ -383,6 +568,9 @@ class ProcessTest extends TestCase
      */
     public function testUpdateProcessWithCategory()
     {
+        //Seeder Permissions
+        (new \PermissionSeeder())->run($this->user);
+
         //Test update process category
         $this->assertModelUpdate(
             Process::class,
@@ -448,6 +636,9 @@ class ProcessTest extends TestCase
      */
     public function testUpdateBPMN()
     {
+        //Seeder Permissions
+        (new \PermissionSeeder())->run($this->user);
+
         $process = factory(Process::class)->create([
             'bpmn' => Process::getProcessTemplate('OnlyStartElement.bpmn')
         ]);
