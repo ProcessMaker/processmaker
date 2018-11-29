@@ -30,6 +30,10 @@
                                 <a class="nav-link" id="completed-tab" data-toggle="tab" href="#completed" role="tab"
                                    aria-controls="completed" aria-selected="false">{{__('Completed')}}</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="completed-tab" data-toggle="tab" href="#completed" role="tab"
+                                   aria-controls="completed" aria-selected="false">{{__('Files')}}</a>
+                            </li>
                         </template>
                     </ul>
                     <div class="tab-content" id="requestTabContent">
