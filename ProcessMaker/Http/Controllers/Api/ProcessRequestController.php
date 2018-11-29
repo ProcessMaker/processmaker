@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -9,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ProcessRequests;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Http\Resources\ProcessRequests as ProcessRequestResource;
 
@@ -60,7 +62,7 @@ class ProcessRequestController extends Controller
      * )
      */
     public function index(Request $request)
-    {   
+    {
         $query = ProcessRequest::query();
 
         $includes = $request->input('include', '');
@@ -76,9 +78,15 @@ class ProcessRequestController extends Controller
                 $query->startedMe(Auth::user()->id);
                 break;
             case 'in_progress':
+                if (!Auth::user()->hasPermission('show_all_requests')) {
+                    $query->startedMe(Auth::user()->id);
+                }
                 $query->inProgress();
                 break;
             case 'completed':
+                if (!Auth::user()->hasPermission('show_all_requests')) {
+                        $query->startedMe(Auth::user()->id);
+                    }
                 $query->completed();
                 break;
         }
@@ -203,6 +211,15 @@ class ProcessRequestController extends Controller
      */
     public function update(ProcessRequest $request, Request $httpRequest)
     {
+        if ($httpRequest->status === 'CANCELED') {
+            $permission = 'requests.cancel';
+            if (!Auth::user()->hasProcessPermission(Process::find($request->process_id), $permission)) {
+                throw new AuthorizationException('Not authorized: ' . $permission);
+            }
+            $this->cancelRequestToken($request);
+            return response([], 204);
+        }
+
         $httpRequest->validate(ProcessRequest::rules($request));
         $request->fill($httpRequest->json()->all());
         $request->saveOrFail();
@@ -241,5 +258,21 @@ class ProcessRequestController extends Controller
     {
         $request->delete();
         return response([], 204);
+    }
+
+    /**
+     * Cancel all tokens of request.
+     *
+     * @param ProcessRequest $request
+     * @throws \Throwable
+     */
+    private function cancelRequestToken(ProcessRequest $request)
+    {
+        //cancel request
+        $request->status = 'CANCELED';
+        $request->saveOrFail();
+
+        //Closed tokens
+        $request->tokens()->update(['status' => 'CLOSED']);
     }
 }

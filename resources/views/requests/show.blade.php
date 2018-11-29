@@ -17,14 +17,16 @@
                 <div class="container-fluid">
                     <ul class="nav nav-tabs" id="requestTab" role="tablist">
                         <template v-if="status">
-                            <li class="nav-item" v-if="status !== 'Completed'">
+                            <li class="nav-item" v-if="!showSummary">
                                 <a class="nav-link active" id="pending-tab" data-toggle="tab" href="#pending" role="tab"
                                    aria-controls="pending" aria-selected="true">{{__('Pending Tasks')}}</a>
                             </li>
                             <li class="nav-item">
                                 <a id="summary-tab" data-toggle="tab" href="#summary" role="tab"
                                    aria-controls="summary" aria-selected="false"
-                                   v-bind:class="{ 'nav-link':true, active: (status === 'Completed') }">{{__('Request Summary')}}</a>
+                                   v-bind:class="{ 'nav-link':true, active: showSummary }">
+                                    {{__('Request Summary')}}
+                                </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="completed-tab" data-toggle="tab" href="#completed" role="tab"
@@ -34,11 +36,11 @@
                     </ul>
                     <div class="tab-content" id="requestTabContent">
                         <div class="tab-pane fade show active" id="pending" role="tabpanel"
-                             aria-labelledby="pending-tab" v-if="status !== 'Completed'">
+                             aria-labelledby="pending-tab" v-if="!showSummary">
                             <request-detail ref="pending" :process-request-id="requestId" status="ACTIVE">
                             </request-detail>
                         </div>
-                        <div v-bind:class="{ 'tab-pane':true, active: (status === 'Completed') }" id="summary"
+                        <div v-bind:class="{ 'tab-pane':true, active: showSummary }" id="summary"
                              role="tabpanel" aria-labelledby="summary-tab">
                             <template v-if="showSummary">
                                 <template v-if="showScreenSummary">
@@ -101,6 +103,16 @@
                                 <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
                                               :input-data="requestBy" display-name="true"></avatar-image>
                             </li>
+                            <template v-if="statusLabel !== 'Canceled'">
+                            <li class="list-group-item">
+                                <h5>{{__('Cancel Request')}}</h5>
+                                <button type="button" class="btn btn-outline-danger btn-block"
+                                        @click="cancelRequest">
+                                    <i class="fas fa-stop-circle"></i> {{__('Cancel')}}
+                                </button>
+                            </li>
+                            </template>
+
                             <li class="list-group-item">
                                 <h5>{{__('Participants')}}</h5>
                                 <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
@@ -149,7 +161,7 @@
                  *
                  */
                 showSummary() {
-                    return this.request.status === 'COMPLETED';
+                    return this.request.status === 'COMPLETED' || this.request.status === 'CANCELED';
                 },
                 /**
                  * If the screen summary is configured.
@@ -184,6 +196,7 @@
                     let header = {
                         "ACTIVE": "bg-success",
                         "COMPLETED": "bg-secondary",
+                        "CANCELED": 'bg-danger',
                         "ERROR": "bg-danger"
                     };
                     return 'card-header text-capitalize text-white ' + header[this.request.status.toUpperCase()];
@@ -192,18 +205,24 @@
                     let label = {
                         "ACTIVE": 'In Progress',
                         "COMPLETED": 'Completed',
+                        "CANCELED": 'Canceled',
                         "ERROR": 'Error'
                     };
 
                     if (this.request.status.toUpperCase() === 'COMPLETED') {
                         this.status = 'Completed'
                     }
+                    if (this.request.status.toUpperCase() === 'CANCELED') {
+                        this.status = 'Canceled'
+                    }
+
                     return label[this.request.status.toUpperCase()];
                 },
                 labelDate() {
                     let label = {
                         "ACTIVE": 'Created',
                         "COMPLETED": 'Completed On',
+                        "CANCELED": 'Canceled ',
                         "ERROR": 'Failed On'
                     };
                     return label[this.request.status.toUpperCase()];
@@ -212,6 +231,7 @@
                     let status = {
                         "ACTIVE": this.request.created_at,
                         "COMPLETED": this.request.completed_at,
+                        "CANCELED": this.request.updated_at,
                         "ERROR": this.request.updated_at
                     };
 
@@ -281,6 +301,22 @@
                             }
                         });
                     }
+                },
+                cancelRequest() {
+                    ProcessMaker.confirmModal(
+                        "Caution!",
+                        "<b>Are you sure you want cancel this request ?</b>",
+                        "",
+                        () => {
+                            ProcessMaker.apiClient.put(`requests/${this.requestId}`, {
+                                status: 'CANCELED'
+                            })
+                                .then(response => {
+                                    ProcessMaker.alert('Request Canceled Successfully', 'success');
+                                    window.location.reload();
+                                });
+                        }
+                    );
                 }
             },
             mounted() {

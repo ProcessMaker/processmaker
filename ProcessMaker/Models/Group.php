@@ -14,7 +14,7 @@ use ProcessMaker\Traits\SerializeToIso8601;
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
  *
- *   @OA\Schema(
+ * @OA\Schema(
  *   schema="groupsEditable",
  *   @OA\Property(property="id", type="string", format="id"),
  *   @OA\Property(property="name", type="string"),
@@ -41,20 +41,12 @@ class Group extends Model
 
     public static function rules($existing = null)
     {
-        $rules = [
-            'name' => 'required|string|unique:groups,name',
+        $unique = Rule::unique('groups')->ignore($existing);
+
+        return [
+            'name' => ['required', 'string', $unique],
             'status' => 'in:ACTIVE,INACTIVE'
         ];
-
-        if ($existing) {
-            $rules['name'] = [
-                'required',
-                'string',
-                Rule::unique('groups')->ignore($existing->id, 'id')
-            ];
-        }
-
-        return $rules;
     }
 
     public function permissionAssignments()
@@ -84,5 +76,15 @@ class Group extends Model
             $permissions[] = $pa->permission;
         }
         return $permissions;
+    }
+
+    /**
+     * Group as assigned.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function assigned()
+    {
+        return $this->morphMany(ProcessTaskAssignment::class, 'assigned', 'assignment_type', 'assignment_id');
     }
 }

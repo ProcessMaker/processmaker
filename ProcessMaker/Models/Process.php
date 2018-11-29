@@ -1,4 +1,5 @@
 <?php
+
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -91,7 +92,7 @@ class Process extends Model implements HasMedia
 
     public function summaryScreen()
     {
-       return $this->belongsTo(Screen::class, 'summary_screen_id');
+        return $this->belongsTo(Screen::class, 'summary_screen_id');
     }
 
     /**
@@ -103,24 +104,15 @@ class Process extends Model implements HasMedia
      */
     public static function rules($existing = null)
     {
-        $rules = [
-            'name' => 'required|unique:processes,name',
+        $unique = Rule::unique('processes')->ignore($existing);
+
+        return [
+            'name' => ['required', $unique],
             'description' => 'required',
             'status' => 'in:ACTIVE,INACTIVE',
             'process_category_id' => 'nullable|exists:process_categories,id',
             'bpmn' => 'nullable',
         ];
-
-        if ($existing) {
-            // ignore the unique rule for this id
-            $rules['name'] = [
-                'required',
-                'string',
-                Rule::unique('processes')->ignore($existing->id, 'id')
-            ];
-        }
-
-        return $rules;
     }
 
     /**
@@ -145,7 +137,7 @@ class Process extends Model implements HasMedia
                 $this->bpmnDefinitions->loadXML($this->bpmn);
                 //Load the collaborations if exists
                 $collaborations = $this->bpmnDefinitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'collaboration');
-                foreach($collaborations as $collaboration) {
+                foreach ($collaborations as $collaboration) {
                     $collaboration->getBpmnElementInstance();
                 }
             }
@@ -206,7 +198,7 @@ class Process extends Model implements HasMedia
     public function getNextUser(ActivityInterface $activity, ProcessRequestToken $token)
     {
         $default = $activity instanceof ScriptTaskInterface
-            || $activity instanceof ServiceTaskInterface ? 'script' : 'requestor';
+        || $activity instanceof ServiceTaskInterface ? 'script' : 'requestor';
         $assignmentType = $activity->getProperty('assignment', $default);
         switch ($assignmentType) {
             case 'cyclical':
@@ -265,12 +257,12 @@ class Process extends Model implements HasMedia
     public function getAssignableUsers($processTaskUuid)
     {
         $assignments = ProcessTaskAssignment::select(['assignment_id', 'assignment_type'])
-                ->where('process_id', $this->id)
-                ->where('process_task_id', $processTaskUuid)
-                ->get();
+            ->where('process_id', $this->id)
+            ->where('process_task_id', $processTaskUuid)
+            ->get();
         $users = [];
         foreach ($assignments as $assignment) {
-            if ($assignment->assignment_type === 'user') {
+            if ($assignment->assignment_type === User::class) {
                 $users[$assignment->assignment_id] = $assignment->assignment_id;
             } else {
                 $this->getConsolidatedUsers($assignment->assignment_id, $users);
@@ -291,7 +283,7 @@ class Process extends Model implements HasMedia
     {
         $groupMembers = GroupMember::where('group_id', $group_id)->get();
         foreach ($groupMembers as $groupMember) {
-            if ($groupMember->member_type === 'user') {
+            if ($groupMember->member_type === User::class) {
                 $users[$groupMember->member_id] = $groupMember->member_id;
             } else {
                 $this->getConsolidatedUsers($groupMember->member_id, $users);
@@ -326,5 +318,13 @@ class Process extends Model implements HasMedia
         $query = $this->newQuery();
         $query->where('id', $this->id);
         return new ProcessEvents($query, $this);
+    }
+    
+    /**
+     * Get the associated versions
+     */
+    public function versions()
+    {
+        return $this->hasMany(ProcessVersion::class);
     }
 }
