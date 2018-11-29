@@ -2,14 +2,13 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Support\Facades\Log;
 use RuntimeException;
 
 /**
- * Description of ScriptDockerTrait
+ * Execute a docker container copying files to interchange information.
  *
  */
-trait ScriptDockerTrait
+trait ScriptDockerCopyingFilesTrait
 {
 
     /**
@@ -20,9 +19,9 @@ trait ScriptDockerTrait
      * @return array
      * @throws \RuntimeException
      */
-    protected function execute(array $options)
+    protected function executeCopying(array $options)
     {
-        $container = $this->createContainer($options['image'], $options['command']);
+        $container = $this->createContainer($options['image'], $options['command'], $options['parameters']);
         foreach ($options['inputs'] as $path => $data) {
             $this->putInContainer($container, $path, $data);
         }
@@ -50,9 +49,12 @@ trait ScriptDockerTrait
     {
         $cidfile = tempnam(config('app.bpm_scripts_home'), 'cid');
         unlink($cidfile);
-        $cmd = config('app.bpm_scripts_docker') . sprintf(' create %s --cidfile %s %s %s &', $parameters, $cidfile, $image, $command);
+        $cmd = config('app.bpm_scripts_docker') . sprintf(' create %s --cidfile %s %s %s 2>&1', $parameters, $cidfile, $image, $command);
         $line = exec($cmd, $output, $returnCode);
         if ($returnCode) {
+            throw new RuntimeException('Unable to create a docker container: ' . implode("\n", $output));
+        }
+        if (!file_exists($cidfile)) {
             throw new RuntimeException('Unable to create a docker container: ' . implode("\n", $output));
         }
         $cid = file_get_contents($cidfile);
@@ -112,10 +114,6 @@ trait ScriptDockerTrait
     {
         $cmd = config('app.bpm_scripts_docker') . sprintf(' start %s -a 2>&1', $container);
         $line = exec($cmd, $output, $returnCode);
-        $returnCode = $output ? 1 : $returnCode;
-        if ($returnCode || $output) {
-            Log::error('Unexpected script output: ' . implode(' ', $output));
-        }
         return compact('line', 'output', 'returnCode');
     }
 }
