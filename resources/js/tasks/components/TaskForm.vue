@@ -11,6 +11,7 @@
   import MultiColumn from "@processmaker/vue-form-builder/src/components/editor/multi-column";
   import FormText from "@processmaker/vue-form-builder/src/components/renderer/form-text";
   import FormButton from "@processmaker/vue-form-builder/src/components/renderer/form-button";
+  import FormRecordList from '@processmaker/vue-form-builder/src/components/renderer/form-record-list'
   import FileUpload from "../../processes/screen-builder/components/form/file-upload";
   import {
     FormInput,
@@ -33,6 +34,7 @@
   Vue.component('MultiColumn',MultiColumn);
   Vue.component('FormMultiColumn',FormMultiColumn);
   Vue.component('FormDatePicker',FormDatePicker);
+  Vue.component('FormRecordList',FormRecordList);
 
 export default {
   components: {

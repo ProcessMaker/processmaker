@@ -6,7 +6,7 @@
     xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:pm="https://bpm4.processmaker.local/definitions/ProcessMaker.xsd"
+    xmlns:pm="http://processmaker.com/BPMN/2.0/Schema.xsd"
     targetNamespace="http://sourceforge.net/bpmn/definitions/_1537370422571"
     xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
   <process id="PROCESS_1" isClosed="false" isExecutable="true" processType="None">

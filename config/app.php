@@ -54,6 +54,7 @@ return [
     // The processmaker BPM scripts configuration
     'bpm_scripts_home' => env('BPM_SCRIPTS_HOME', '/home/vagrant'),
     'bpm_scripts_docker' => env('BPM_SCRIPTS_DOCKER', '/usr/bin/docker'),
+    'bpm_scripts_docker_mode' => env('BPM_SCRIPTS_DOCKER_MODE', 'binding'),
 
     'providers' => [
         Illuminate\Auth\AuthServiceProvider::class,
