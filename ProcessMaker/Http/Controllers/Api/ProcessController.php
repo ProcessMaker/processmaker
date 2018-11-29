@@ -6,6 +6,7 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Auth\Access\AuthorizationException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
@@ -19,6 +20,7 @@ use ProcessMaker\Models\User;
 
 class ProcessController extends Controller
 {
+    public $skipPermissionCheckFor = ['triggerStartEvent'];
 
     /**
      * Get list Process
@@ -63,34 +65,20 @@ class ProcessController extends Controller
         $orderBy = $this->getRequestSortBy($request, 'name');
         $perPage = $this->getPerPage($request);
         $include = $this->getRequestInclude($request);
+
         $processes = Process::with($include)
             ->select('processes.*')
             ->leftJoin('process_categories as category', 'processes.process_category_id', '=', 'category.id')
             ->leftJoin('users as user', 'processes.user_id', '=', 'user.id')
-            ->where($where)
-            ->orderBy(...$orderBy);
+            ->where($where);
 
+        //Verify what processes the current user can initiate, user Administrator can start everything.
         if (!Auth::user()->is_administrator) {
-            $startPermission = Permission::byGuardName('requests.store')->id;
-            $processes->whereExists(function($query) use ($startPermission){
-                $query->select(\DB::raw(1))
-                    ->from((new ProcessPermission)->getTable())
-                    ->whereRaw("process_permissions.process_id = processes.id " .
-                                " AND permission_id=" . $startPermission  .
-                                " AND assignable_type = '" . str_replace('\\', '\\\\', User::class) . "'" .
-                                " AND assignable_id = " . Auth::user()->id);
-            });
-
-            $processes->orWhereExists(function($query) use ($startPermission){
-                $query->select(\DB::raw(1))
-                    ->from((new ProcessPermission)->getTable())
-                    ->whereRaw("process_permissions.process_id = processes.id " .
-                        " AND permission_id=" . $startPermission  .
-                        " AND assignable_type = '" . str_replace('\\', '\\\\', Group::class) . "'" .
-                        " AND assignable_id IN (select group_id from group_members where member_id = " .
-                        Auth::user() ->id . " )");
-            });
+            $processId = Auth::user()->startProcesses();
+            $processes->whereIn('processes.id', $processId);
         }
+        $processes->orderBy(...$orderBy);
+
         return new ApiCollection($processes->paginate($perPage));
     }
 
@@ -234,7 +222,7 @@ class ProcessController extends Controller
 
         ProcessPermission::where('process_id', $process->id)->delete();
         $cancelId = Permission::byGuardName('requests.cancel')->id;
-        $startId = Permission::byGuardName('requests.store')->id;
+        $startId = Permission::byGuardName('requests.create')->id;
         if ($request->has('cancel_request')) {
             foreach ($request->input('cancel_request')['users'] as $id) {
                 $this->savePermission($process, User::class, $id, $cancelId);
@@ -332,6 +320,11 @@ class ProcessController extends Controller
         if (!$id) {
             return abort(404);
         }
+
+        if (!\Auth::user()->hasProcessPermission($process, 'requests.create')) {
+            throw new AuthorizationException("Not authorized to start this process");
+        }
+
         $definitions = $process->getDefinitions();
         if (!$definitions->findElementById($id)) {
             return abort(404);

@@ -48,13 +48,13 @@ class ProcessController extends Controller
             'Groups' => $this->assignee('requests.cancel', Group::class)
         ];
 
-        //list users and groups with permission requests.store
+        //list users and groups with permission requests.create
         $listStart = [
-            'Users' => $this->assignee('requests.store', User::class),
-            'Groups' => $this->assignee('requests.store', Group::class)
+            'Users' => $this->assignee('requests.create', User::class),
+            'Groups' => $this->assignee('requests.create', Group::class)
         ];
         $process->cancel_request_id = $this->loadAssigneeProcess('requests.cancel',  $process->id);
-        $process->start_request_id = $this->loadAssigneeProcess('requests.store',  $process->id);
+        $process->start_request_id = $this->loadAssigneeProcess('requests.create',  $process->id);
 
         return view('processes.edit', compact(['process', 'categories', 'screens', 'listCancel', 'listStart']));
     }

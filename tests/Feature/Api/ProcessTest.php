@@ -79,14 +79,28 @@ class ProcessTest extends TestCase
 
         // Create create process permission for the user
         $userId = $this->user->id;
-        factory(Permission::class)->create(['guard_name' => 'requests.store']);
+        factory(Permission::class)->create(['guard_name' => 'requests.create']);
         factory(Permission::class)->create(['guard_name' => 'processes.index']);
+
+        $initialCount = Process::count();
+        // Create some processes
+        $process = factory(Process::class)->create();
+
         factory(ProcessPermission::class)
             ->create(
                 [
-                    'permission_id' => Permission::byGuardName('requests.store'),
+                    'process_id' => $process->id,
+                    'permission_id' => Permission::byGuardName('requests.create'),
                     'assignable_type' => User::class,
-                    'assignable_id' => $userId,
+                    'assignable_id' => $userId
+                ]);
+
+        factory(PermissionAssignment::class)
+            ->create(
+                [
+                    'permission_id' => Permission::byGuardName('requests.create'),
+                    'assignable_type' => User::class,
+                    'assignable_id' => $userId
                 ]);
 
         factory(PermissionAssignment::class)
@@ -94,14 +108,9 @@ class ProcessTest extends TestCase
                 [
                     'permission_id' => Permission::byGuardName('processes.index'),
                     'assignable_type' => User::class,
-                    'assignable_id' => $userId,
+                    'assignable_id' => $userId
                 ]);
 
-
-        $initialCount = Process::count();
-        // Create some processes
-        $countProcesses = 1;
-        factory(Process::class, $countProcesses)->create();
         //Get a page of processes
         $page = 1;
         $perPage = 10;
@@ -141,14 +150,27 @@ class ProcessTest extends TestCase
         ]);
 
         // Create process permissions for the group
-        factory(Permission::class)->create(['guard_name' => 'requests.store']);
+        factory(Permission::class)->create(['guard_name' => 'requests.create']);
         factory(Permission::class)->create(['guard_name' => 'processes.index']);
+
+        $initialCount = Process::count();
+        // Create some processes
+        $process = factory(Process::class)->create();
         factory(ProcessPermission::class)
             ->create(
                 [
-                    'permission_id' => Permission::byGuardName('requests.store'),
+                    'process_id' => $process->id,
+                    'permission_id' => Permission::byGuardName('requests.create'),
                     'assignable_type' => Group::class,
-                    'assignable_id' => $groupId,
+                    'assignable_id' => $groupId
+                ]);
+
+        factory(PermissionAssignment::class)
+            ->create(
+                [
+                    'permission_id' => Permission::byGuardName('requests.create'),
+                    'assignable_type' => User::class,
+                    'assignable_id' => $this->user->id
                 ]);
 
         factory(PermissionAssignment::class)
@@ -156,13 +178,9 @@ class ProcessTest extends TestCase
                 [
                     'permission_id' => Permission::byGuardName('processes.index'),
                     'assignable_type' => Group::class,
-                    'assignable_id' => $groupId,
+                    'assignable_id' => $groupId
                 ]);
 
-        $initialCount = Process::count();
-        // Create some processes
-        $countProcesses = 1;
-        factory(Process::class, $countProcesses)->create();
         //Get a page of processes
         $page = 1;
         $perPage = 10;
@@ -176,6 +194,50 @@ class ProcessTest extends TestCase
                 'total_pages' => (int) ceil(($initialCount + 1) / $perPage),
             ]
         );
+    }
+
+    public function testProcessEventsTrigger()
+    {
+        $process = factory(Process::class)->create([
+            'bpmn' => Process::getProcessTemplate('SingleTask.bpmn')
+        ]);
+
+        $this->user = factory(User::class)->create([
+            'password' => 'password',
+            'is_administrator' => false,
+        ]);
+        
+        $permission= factory(Permission::class)
+            ->create(['guard_name' => 'requests.create']);
+        
+        factory(PermissionAssignment::class)
+            ->create(
+                [
+                    'permission_id' => $permission->id,
+                    'assignable_type' => User::class,
+                    'assignable_id' => $this->user->id
+                ]);
+
+        $route = route('api.process_events.trigger', $process);
+        
+        $response = $this->apiCall('POST', $route . '?event=StartEventUID');
+        $this->assertStatus(403, $response);
+        $this->assertEquals(
+            $response->json()['message'],
+            'Not authorized to start this process'
+        );
+
+        factory(ProcessPermission::class)
+            ->create(
+                [
+                    'process_id' => $process->id,
+                    'permission_id' => $permission->id,
+                    'assignable_type' => User::class,
+                    'assignable_id' => $this->user->id,
+                ]);
+        
+        $response = $this->apiCall('POST', $route . '?event=StartEventUID');
+        $this->assertStatus(201, $response);
     }
 
     /**
