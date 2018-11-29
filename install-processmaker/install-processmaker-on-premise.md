@@ -59,44 +59,44 @@ dpkg -i [file name].deb
 {% endtabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="2. Verify if installed correctly" %}
+{% code-tabs-item title="2. Verify VirtualBox installed correctly." %}
 ```text
 virtualbox -v
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-After the installation finishes, VirtualBox sometimes does not work. VirtualBox is going to tell you what is missing. If this happens run the following command:
+After the installation finishes, VirtualBox sometimes does not work because of missing dependencies. If this happens run the following command:
 
 {% code-tabs %}
-{% code-tabs-item title="Re-install the missing dependencies." %}
+{% code-tabs-item title="2a. Install the missing dependencies." %}
 ```text
 sudo apt-get -f install 
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-After the installation is finished compile in order to complete re restoration:
+After installing missing dependencies, recompile the kernel module:
 
 {% code-tabs %}
-{% code-tabs-item title="Recompile the kernel module." %}
+{% code-tabs-item title="2b. Recompile the kernel module after installing missing dependencies." %}
 ```text
 sudo /sbin/vboxconfig
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-If VirtualBox still giving you the error try installing the following libraries:
+If VirtualBox notifies you again of missing dependencies, install the libraries for gcc, make, and perl:
 
 {% code-tabs %}
-{% code-tabs-item title="Install the libraries for gcc, make and perl." %}
+{% code-tabs-item title="2c. Install the libraries for gcc, make and perl." %}
 ```text
 apt-get install gcc make perl
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-After you installed the libraries recompile the kernel module, If the error persist Install the corresponding Kernel module that the error suggests you and recompile the kernel module.
+After you install the libraries recompile the kernel module \(command 2b above\). If VirtualBox continues to notify you of missing dependencies, install the Kernel module that corresponds with the error and then recompile the kernel module.
 
 For example:
 
@@ -132,9 +132,9 @@ apt-get install linux-headers-generic
 {% endtab %}
 {% endtabs %}
 
-In any case the error will tell you which steps do.
+The error will notify you which steps to perform.
 
-Verify that VirtualBox works correctly.
+Verify that VirtualBox works correctly after you successfully install it.
 
 ### Install Vagrant 2.2.2
 
