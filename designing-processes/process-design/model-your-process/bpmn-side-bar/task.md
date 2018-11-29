@@ -2,9 +2,9 @@
 description: 'Use tasks as a logical group of sequential steps, sharing a common goal.'
 ---
 
-# Use a Task Event
+# Use a Task Element
 
-See the following sections for information how to use this event in a process model:
+See the following sections for information how to use this element in a process model:
 
 * [Adding a task](task.md#adding-a-task)
 * [Set a task identifier](task.md#set-a-task-identifier)

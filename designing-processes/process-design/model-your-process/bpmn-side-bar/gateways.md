@@ -4,16 +4,16 @@ description: >-
   process workflow.
 ---
 
-# Use an Exclusive Gateway Event
+# Use an Exclusive Gateway Element
 
-See the following sections for information how to use this event in a process model:
+See the following sections for information how to use this element in a process model:
 
 * [Adding an exclusive gateway element](gateways.md#adding-an-exclusive-gateway-element)
 * [Set an exclusive gateway identifier](gateways.md#set-an-exclusive-gateway-identifier)
 * [Set an exclusive gateway name](gateways.md#set-an-exclusive-gateway-name)
 * [Defining an exclusive gateway direction](gateways.md#defining-an-exclusive-gateway-direction)
 
-## Adding an Exclusive Gateway Event
+## Adding an Exclusive Gateway Element
 
 Follow these steps to add an exclusive gateway to the process modeler:
 
