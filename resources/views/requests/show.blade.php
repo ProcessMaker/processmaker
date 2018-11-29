@@ -102,7 +102,7 @@
                                            <div>
                                                <i class="fas fa-paperclip fa-lg text-secondary"></i> 
                                                <a href="{{url('request/' .$request->id .'/files/' . $file->id)}}">
-                                                <strong>{{__('File name:')}}</strong> {{$file->file_name}} <strong>{{__('Uploaded:')}}</strong> @{{ moment(files.created_at).format() }}
+                                                <strong>{{__('File name:')}}</strong> {{$file->file_name}} <strong>{{__('Uploaded:')}}</strong> {{ $file->created_at->format('m/d/y h:i:s')}}
                                                 </a>
                                             </div>
                                         @endforeach
