@@ -19,8 +19,6 @@
                             aria-controls="nav-home" aria-selected="true">Information</a>
                         <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab"
                             aria-controls="nav-profile" aria-selected="false">Permissions</a>
-                        <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab"
-                            aria-controls="nav-contact" aria-selected="false">Groups</a>
                     </div>
                 </nav>
                 <div class="card card-body tab-content mt-3" id="nav-tabContent">
@@ -122,8 +120,6 @@
                         </table>
                         <hr class="mt-0">
                         <button class="btn btn-secondary float-right" @click="onPermissionUpdate">SUBMIT</button>
-                    </div>
-                    <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
                     </div>
                 </div>
             </div>
