@@ -141,7 +141,10 @@
                 this.selectedAssigneeIndex = index;
                 this.selectedAssignee = assignee;
             },
-
+            /**
+             * Updates in the backend the user assigned when it is changed
+             *
+             */
             changedUser() {
                 let assignToDelete = this.assignedUsersGroups.pop();
                 if (assignToDelete !== null && assignToDelete !== undefined) {
