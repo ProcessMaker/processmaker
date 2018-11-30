@@ -143,14 +143,6 @@ class GenerateMenus
             'id' => 'dropdownItem'
           ],
           [
-            'label' => __('Help'),
-            'header' => false,
-            'route' => 'home',
-            'icon' => 'fa-info',
-            'img' => '',
-            'id' => 'dropdownItem'
-          ],
-          [
             'label' => __('Log Out'),
             'header' => false,
             'route' => 'logout',
