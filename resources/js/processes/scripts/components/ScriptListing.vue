@@ -15,10 +15,6 @@
                     <div class="popout">
                         <b-btn variant="action" @click="onAction('edit-item', props.rowData, props.rowIndex)"
                                v-b-tooltip.hover title="Edit"><i class="fas fa-edit"></i></b-btn>
-                        <b-btn variant="action" @click="onAction('stop-item', props.rowData, props.rowIndex)"
-                               v-b-tooltip.hover title="Stop"><i class="fas fa-stop-circle"></i></b-btn>
-                        <b-btn variant="action" @click="onAction('view-item', props.rowData, props.rowIndex)"
-                               v-b-tooltip.hover title="View"><i class="fas fa-eye"></i></b-btn>
                         <b-btn variant="action" @click="onAction('remove-item', props.rowData, props.rowIndex)"
                                v-b-tooltip.hover title="Remove"><i class="fas fa-trash-alt"></i></b-btn>
                     </div>
