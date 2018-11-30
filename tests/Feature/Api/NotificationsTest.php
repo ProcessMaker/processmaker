@@ -4,6 +4,7 @@ namespace Tests\Feature\Api;
 
 use Carbon\Carbon;
 use Faker\Factory as Faker;
+use Illuminate\Support\Facades\DB;
 use ProcessMaker\Models\Notification;
 use Ramsey\Uuid\Uuid;
 use Tests\TestCase;
@@ -77,15 +78,20 @@ class NotificationsTest extends TestCase
      */
     public function testNotificationListDates()
     {
+        DB::table('users')->delete();
         $newEntity = factory(Notification::class)->create();
         $route = self::API_TEST_URL;
         $response = $this->apiCall('GET', $route);
 
-        $fieldsToValidate = collect(['created_at', 'updated_at']);
-        $fieldsToValidate->map(function ($field) use ($response, $newEntity) {
-            $this->assertEquals(Carbon::parse($newEntity->$field)->format('c'),
-                $response->getData()->data[0]->$field);
-        });
+        $this->assertEquals(
+            $newEntity->created_at->format('c'),
+            $response->getData()->data[0]->created_at
+        );
+
+        $this->assertEquals(
+            $newEntity->updated_at->format('c'),
+            $response->getData()->data[0]->updated_at
+        );
     }
 
     /**

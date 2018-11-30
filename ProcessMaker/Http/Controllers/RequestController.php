@@ -6,9 +6,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\ProcessRequest;
+use Spatie\MediaLibrary\Models\Media;
+use Spatie\MediaLibrary\HasMedia\HasMedia;
+use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
 class RequestController extends Controller
 {
+    use HasMediaTrait;
     /**
      * A user should always be able to see their
      * started requests.
@@ -50,13 +54,20 @@ class RequestController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function show(ProcessRequest $request)
+    public function show(ProcessRequest $request, Media $mediaItems)
     {
         $request->authorize(Auth::user());
         $request->participants;
         $request->user;
         $request->summary = $request->summary();
         $request->process->summaryScreen;
-        return view('requests.show', compact('request'));
+        $files = $request->getMedia();
+        return view('requests.show', compact('request', 'files'));
+    }
+
+    public function downloadFiles(ProcessRequest $requestID, Media $fileID)
+    {
+        $requestID->getMedia();
+        return response()->download($fileID->getPath(), $fileID->name);
     }
 }

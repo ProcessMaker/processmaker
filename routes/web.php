@@ -38,6 +38,7 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
     Route::get('requests/{type}', 'RequestController@index')
         ->where('type', 'all|in_progress|completed')
         ->name('requests_by_type');
+    Route::get('request/{requestID}/files/{fileID}', 'RequestController@downloadFiles');
     Route::resource('requests', 'RequestController')->only([
         'index', 'show'
     ]);

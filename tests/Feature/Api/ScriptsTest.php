@@ -75,7 +75,7 @@ class ScriptsTest extends TestCase
         $response->assertStatus(422);
         $response->assertSeeText('The title has already been taken');
     }
-    
+
     /**
      * Can not create a script with an existing key
      */
@@ -107,7 +107,7 @@ class ScriptsTest extends TestCase
         factory(Script::class, $total)->create([
             'code' => $faker->sentence($faker->randomDigitNotNull)
         ]);
-        
+
         // Create script with a key set. These should NOT be in the results.
         factory(Script::class)->create([
             'key' => 'some-key'
@@ -134,16 +134,21 @@ class ScriptsTest extends TestCase
      */
     public function testScriptListDates()
     {
-        $newEntity = factory(Script::class)->create();
+        $name = 'tetScriptTimezone';
+        $newEntity = factory(Script::class)->create(['title' => $name]);
 
-        $route = self::API_TEST_SCRIPT;
+        $route = self::API_TEST_SCRIPT . '?filter=' . $name;
         $response = $this->apiCall('GET', $route);
 
-        $fieldsToValidate = collect(['created_at', 'updated_at']);
-        $fieldsToValidate->map(function ($field) use ($response, $newEntity){
-            $this->assertEquals(Carbon::parse($newEntity->$field)->format('c'),
-                $response->getData()->data[0]->$field);
-        });
+        $this->assertEquals(
+            $newEntity->created_at->format('c'),
+            $response->getData()->data[0]->created_at
+        );
+
+        $this->assertEquals(
+            $newEntity->updated_at->format('c'),
+            $response->getData()->data[0]->updated_at
+        );
     }
 
     /**
@@ -240,7 +245,7 @@ class ScriptsTest extends TestCase
         ]);
         //Validate the answer is correct
         $response->assertStatus(204);
-        
+
         // assert it creates a script version
         $script->refresh();
         $version = $script->versions()->first();
@@ -248,7 +253,7 @@ class ScriptsTest extends TestCase
         $this->assertEquals($version->title, $original_attributes['title']);
         $this->assertEquals($version->language, $original_attributes['language']);
         $this->assertEquals($version->code, $original_attributes['code']);
-        $this->assertEquals((string) $version->created_at, (string) $yesterday);
+        $this->assertEquals((string)$version->created_at, (string)$yesterday);
         $this->assertEquals($version->updated_at, $script->updated_at);
     }
 
@@ -273,8 +278,8 @@ class ScriptsTest extends TestCase
     }
 
     /**
-    * Test the preview function
-    */
+     * Test the preview function
+     */
     public function testPreviewScript()
     {
         if (!file_exists(config('app.bpm_scripts_home')) || !file_exists(config('app.bpm_scripts_docker'))) {
@@ -282,24 +287,24 @@ class ScriptsTest extends TestCase
                 'This test requires docker'
             );
         }
-        $url = route('api.script.preview', ['data'=>'{}','code'=>'return {response=1}', 'language'=>'lua']);
+        $url = route('api.script.preview', ['data' => '{}', 'code' => 'return {response=1}', 'language' => 'lua']);
         $response = $this->apiCall('POST', $url, []);
         $response->assertStatus(200);
 
-        $url = route('api.script.preview', ['data'=>'{}','code'=>'<?php return ["response"=>1];', 'language'=>'php']);
+        $url = route('api.script.preview', ['data' => '{}', 'code' => '<?php return ["response"=>1];', 'language' => 'php']);
         $response = $this->apiCall('POST', $url, []);
         $response->assertStatus(200);
 
-        $response->assertJsonStructure(['output'=>['response']]);
+        $response->assertJsonStructure(['output' => ['response']]);
 
     }
 
     /**
-    * Test the preview function
-    */
+     * Test the preview function
+     */
     public function testPreviewScriptFail()
     {
-        $url = self::API_TEST_SCRIPT.'/preview/?data=adkasdlasj&config=&code=adkasdlasj&language=JAVA';
+        $url = self::API_TEST_SCRIPT . '/preview/?data=adkasdlasj&config=&code=adkasdlasj&language=JAVA';
         $response = $this->apiCall('POST', $url, []);
         $response->assertStatus(500);
     }

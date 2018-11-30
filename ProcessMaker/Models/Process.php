@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
@@ -204,6 +205,9 @@ class Process extends Model implements HasMedia
             case 'cyclical':
                 $user = $this->getNextUserCyclicalAssignment($activity->getId());
                 break;
+            case 'user':
+                $user = $this->getNextUserAssignment($activity->getId());
+                break;
             case 'requestor':
                 $user = $token->getInstance()->user_id;
                 break;
@@ -243,6 +247,28 @@ class Process extends Model implements HasMedia
                     return $user;
                 }
             }
+        }
+        return $users[0];
+    }
+
+
+    /**
+     * Get the next user in a user assignment.
+     *
+     * @param string $processTaskUuid
+     *
+     * @return binary
+     * @throws TaskDoesNotHaveUsersException
+     */
+    private function getNextUserAssignment($processTaskUuid)
+    {
+        $last = ProcessRequestToken::where('process_id', $this->id)
+            ->where('element_id', $processTaskUuid)
+            ->orderBy('created_at', 'desc')
+            ->first();
+        $users = $this->getAssignableUsers($processTaskUuid);
+        if (empty($users)) {
+            throw new TaskDoesNotHaveUsersException($processTaskUuid);
         }
         return $users[0];
     }

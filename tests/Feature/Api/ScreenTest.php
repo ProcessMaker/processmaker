@@ -52,6 +52,7 @@ class ScreenTest extends TestCase
 
         $response->assertStatus(201);
     }
+
     /**
      * Create Form screen successfully
      */
@@ -125,15 +126,20 @@ class ScreenTest extends TestCase
      */
     public function testScreenListDates()
     {
-        $newEntity = factory(Screen::class)->create();
-        $route = self::API_TEST_SCREEN;
+        $title = 'testScreenTimezone';
+        $newEntity = factory(Screen::class)->create(['title' => $title]);
+        $route = self::API_TEST_SCREEN . '?filter=' . $title;
         $response = $this->apiCall('GET', $route);
 
-        $fieldsToValidate = collect(['created_at', 'updated_at']);
-        $fieldsToValidate->map(function ($field) use ($response, $newEntity){
-            $this->assertEquals(Carbon::parse($newEntity->$field)->format('c'),
-                $response->getData()->data[0]->$field);
-        });
+        $this->assertEquals(
+            $newEntity->created_at->format('c'),
+            $response->getData()->data[0]->created_at
+        );
+
+        $this->assertEquals(
+            $newEntity->updated_at->format('c'),
+            $response->getData()->data[0]->updated_at
+        );
     }
 
     /**
@@ -240,9 +246,10 @@ class ScreenTest extends TestCase
         $this->assertEquals($version->title, $original_attributes['title']);
         $this->assertEquals($version->description, $original_attributes['description']);
         $this->assertEquals($version->config, null);
-        $this->assertEquals((string) $version->created_at, (string) $yesterday);
+        $this->assertEquals((string)$version->created_at, (string)$yesterday);
         $this->assertEquals($version->updated_at, $screen->updated_at);
     }
+
     /**
      * Update Screen Type
      */
@@ -251,8 +258,8 @@ class ScreenTest extends TestCase
         $faker = Faker::create();
         $type = 'FORM';
         $url = self::API_TEST_SCREEN . '/' . factory(Screen::class)->create([
-            'type' => $type
-        ])->id;
+                'type' => $type
+            ])->id;
         $response = $this->apiCall('PUT', $url, [
             'title' => 'ScreenTitleTest',
             'type' => 'DETAIL',
@@ -271,8 +278,8 @@ class ScreenTest extends TestCase
         $faker = Faker::create();
         $title = 'Some title';
         $url = self::API_TEST_SCREEN . '/' . factory(Screen::class)->create([
-            'title' => $title,
-        ])->id;
+                'title' => $title,
+            ])->id;
         $response = $this->apiCall('PUT', $url, [
             'title' => $title,
             'description' => $faker->sentence(5),
