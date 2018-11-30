@@ -55,13 +55,6 @@ class GenerateMenus
                 'icon' => 'fa-globe',
                 'id' => 'homeid'
           ]);
-
-          $submenu = $menu->add(__('menus.sidebar_admin.system_information'));
-          $submenu->add(__('menus.sidebar_admin.app_version_details'), [
-                'route' => 'about.index',
-                'icon' => 'fa-desktop',
-                'id' => 'homeid'
-          ]);
           $submenu->add(__('menus.sidebar_admin.queue_management'), [
                 'route' => 'horizon.index',
                 'icon' => 'fa-infinity',
@@ -143,10 +136,10 @@ class GenerateMenus
             'id' => 'dropdownItem'
           ],
           [
-            'label' => __('Help'),
+            'label' => __('About'),
             'header' => false,
-            'route' => 'home',
-            'icon' => 'fa-info',
+            'route' => 'about.index',
+            'icon' => 'fa-info-circle',
             'img' => '',
             'id' => 'dropdownItem'
           ],
