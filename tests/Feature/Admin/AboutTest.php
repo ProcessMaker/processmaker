@@ -10,7 +10,7 @@ use Tests\Feature\Shared\RequestHelper;
 class AboutTest extends TestCase
 {
     use RequestHelper;
-    
+
     /**
      * Test to make sure the controller and route work with the view
      *
@@ -22,10 +22,10 @@ class AboutTest extends TestCase
       $this->user = factory(User::class)->create();
 
       // get the URL
-      $response = $this->webCall('GET', '/admin/about');
+      $response = $this->webCall('GET', '/about');
       // check the correct view is called
       $response->assertStatus(200);
-      $response->assertViewIs('admin.about.index');
+      $response->assertViewIs('about.index');
 
 
     }
