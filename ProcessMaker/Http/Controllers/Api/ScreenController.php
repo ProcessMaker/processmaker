@@ -8,6 +8,8 @@ use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenVersion;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Http\Resources\ApiCollection;
+use Spatie\Ssr\Renderer;
+use Spatie\Ssr\Engines\Node;
 
 class ScreenController extends Controller
 {
@@ -216,6 +218,55 @@ class ScreenController extends Controller
     {
         $screen->delete();
         return response([], 204);
+    }
+
+    /**
+     * Server-side render a screen.
+     *
+     * @param Screen $screen
+     * @param Request $request
+     *
+     * @return ResponseFactory|Response
+     *
+     *     @OA\Post(
+     *     path="/screens/screensId/render",
+     *     summary="Server-side render a screen",
+     *     operationId="renderScreen",
+     *     tags={"Screens"},
+     *     @OA\Parameter(
+     *         description="ID of screen to render",
+     *         in="path",
+     *         name="screens_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(ref="#/components/schemas/screensEditable")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/screens")
+     *     ),
+     * )
+     */
+    public function render(Screen $screen)
+    {
+        # need to run
+        # node node_modules/webpack/bin/webpack.js --config=resources/js/ssr/webpack.config.js
+
+        $engine = new Node('/usr/bin/node', '/tmp');
+        $renderer = new Renderer($engine);
+
+        $output = $renderer
+            ->entry('./resources/js/ssr/ssr-renderer.js')
+            ->debug()
+            ->render();
+
+        return response(['html' => $output]);
     }
 
 }

@@ -305,5 +305,23 @@ class ScreenTest extends TestCase
         //Validate the answer is correct
         $response->assertStatus(405);
     }
+    
+    /**
+     * Server side rendering of email screens
+     */
+    public function testScreenRender()
+    {
+        $screen = factory(Screen::class)->create([
+            'type' => 'EMAIL',
+            'config' => ''
+        ]);
+        $url = self::API_TEST_SCREEN . '/' . $screen->id . '/render';
+        $data = [
+            'foo' => 'bar'
+        ];
+        $response = $this->apiCall('POST', $url, $data);
+        $json = $response->json();
+        $this->assertEquals($json['html'], '<div data-server-rendered="true">Test SSR</div>');
+    }
 
 }
