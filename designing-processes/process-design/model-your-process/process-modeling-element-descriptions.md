@@ -1,5 +1,5 @@
 ---
-description: These are brief descriptions about each process modeling element.
+description: These are brief descriptions about commonly used process modeling elements.
 ---
 
 # Process Modeling Element Descriptions
@@ -69,6 +69,26 @@ Below is a Text Annotation element in Process Modeler.
 ## Sequence Flow
 
 Sequence Flow represents intended workflow in a modeled process. As a best practice indicate a consistent direction of Sequence Flows, either left to right or top to bottom, to make modeled processes easier to understand.
+
+## Organize Process Participants
+
+BPMN 2.0 provides graphical representations to organize participants in a modeled process.
+
+### Pool
+
+A Pool represents a participant or role in a modeled process. Examples of process participants can be a specific role \("Human Resources"\), entity \(such as a company\) or a general relationship \(such as a buyer, seller, or manufacturer\). A Pool can even reference another modeled process.
+
+Below is a Pool element in Process Modeler.
+
+
+
+### Lane
+
+A Lane represents a partition within a [Pool](process-modeling-element-descriptions.md#pool) element. Text within the Lane indicates the participant in the process model. Any elements within the Lane indicate that the participant is the actor or is responsible for performing activities in the process. Furthermore, [Sequence Flows](process-modeling-element-descriptions.md#sequence-flow) between elements in other Lanes indicate with which other process participants that Lane interacts.
+
+Below is a Lane element in Process Modeler.
+
+
 
 ## Related Topics
 
