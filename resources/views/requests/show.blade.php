@@ -32,6 +32,10 @@
                                 <a class="nav-link" id="completed-tab" data-toggle="tab" href="#completed" role="tab"
                                    aria-controls="completed" aria-selected="false">{{__('Completed')}}</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="files-tab" data-toggle="tab" href="#files" role="tab"
+                                   aria-controls="files" aria-selected="false">{{__('Attached Files')}}</a>
+                            </li>
                         </template>
                     </ul>
                     <div class="tab-content" id="requestTabContent">
@@ -77,8 +81,8 @@
 
                                     <div class="card-body">
                                         <p class="card-text">
-                                            This request is currently in progress.
-                                            This screen will be populated once the request is completed.
+                                            {{__('This request is currently in progress.')}}
+                                            {{__('This screen will be populated once the request is completed.')}}
                                         </p>
                                     </div>
                                 </div>
@@ -88,6 +92,30 @@
                             <request-detail ref="completed" :process-request-id="requestId" status="CLOSED">
                             </request-detail>
                         </div>
+                        <div class="tab-pane fade" id="files" role="tabpanel" aria-labelledby="files-tab">
+                        <div class="mt-3">
+                            <div>
+                                <table class="vuetable table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>{{__('File Name')}}</th>
+                                            <th>{{__('Mime Type')}}</th>
+                                            <th>{{__('Created At')}}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($files as $file)
+                                        <tr>
+                                            <td><a href="{{url('request/' .$request->id .'/files/' . $file->id)}}">{{$file->file_name}}</a></td>
+                                            <td>{{$file->mime_type}}</td>
+                                            <td>{{ $file->created_at->format('m/d/y h:i a')}}</td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -143,6 +171,7 @@
                 return {
                     requestId: @json($request->getKey()),
                     request: @json($request),
+                    files: @json($files),
                     refreshTasks: 0,
                     status: 'ACTIVE'
                 };

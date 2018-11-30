@@ -1,11 +1,11 @@
 <template>
-  <div class="form-group">
+  <div>
     <label v-uni-for="name">{{label}}</label>
-    <uploader :options="options">
+    <uploader :options="options" ref="uploader">
       <uploader-unsupport></uploader-unsupport>
-      <uploader-drop>
+      <uploader-drop id="uploaderMain" class="form-control-file">
         <p>Drop files here to upload or</p>
-        <uploader-btn>select files</uploader-btn>
+        <uploader-btn id="submitFile" class="btn btn-secondary">select files</uploader-btn>
       </uploader-drop>
       <uploader-list></uploader-list>
     </uploader>
@@ -16,61 +16,81 @@
 
 
 <script>
-import { createUniqIdsMixin } from 'vue-uniq-ids'
-import uploader from 'vue-simple-uploader'
-
+import { createUniqIdsMixin } from "vue-uniq-ids";
+import uploader from "vue-simple-uploader";
 
 // Create the mixin
-const uniqIdsMixin = createUniqIdsMixin()
+const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
-    components: uploader,
+  components: uploader,
   mixins: [uniqIdsMixin],
-  props: [
-    'label',
-    'error',
-    'helper',
-    'name',
-    'value',
-    'controlClass',
-  ],
-  computed:{
-    classList(){
+  props: ["label", "error", "helper", "name", "value", "controlClass"],
+  mounted() {
+    // we need to be able to remove the classes from the npm package
+    var element = document.getElementById("submitFile");
+    element.classList.remove("uploader-btn");
+
+    var element = document.getElementById("uploaderMain");
+    element.classList.remove("uploader-drop");
+
+    //emit message when upload happens
+    const uploaderInstance = this.$refs.uploader.uploader;
+    uploaderInstance.on("fileSuccess", (rootFile, file, message, chunk) => {
+      message = JSON.parse(message).fileUploadId;
+      this.$emit("input", message);
+    });
+  },
+  computed: {
+    classList() {
       let classList = {
-        'is-invalid': (this.validator && this.validator.errorCount) || this.error, 
+        "is-invalid":
+          (this.validator && this.validator.errorCount) || this.error
+      };
+      if (this.controlClass) {
+        classList[this.controlClass] = true;
       }
-      if(this.controlClass) {
-        classList[this.controlClass] = true
-      }
-      return classList
+      return classList;
     }
   },
   data() {
     return {
-      content: '',
+      content: "",
       validator: null,
-      requestID: document.head.querySelector("meta[name=\"request-id\"]").content,
+      requestID: null,
       options: {
-        target: '/api/1.0/requests/' + this.requestID + '/files',
+        target: this.getTargetUrl,
+        // We cannot increase this until laravel chunk uploader handles this gracefully
+        simultaneousUploads: 1,
         query: {
           chunk: true
         },
+        testChunks: false,
         // Setup our headers to deal with API calls
         headers: {
           "X-Requested-With": "XMLHttpRequest",
-          "X-CSRF-TOKEN": window.ProcessMaker.apiClient.defaults.headers.common['X-CSRF-TOKEN']
+          "X-CSRF-TOKEN":
+            window.ProcessMaker.apiClient.defaults.headers.common[
+              "X-CSRF-TOKEN"
+            ]
         },
         singleFile: true
-      },
-    }
+      }
+    };
   },
   methods: {
-   updateValue(e) {
+    updateValue(e) {
       this.content = e.target.value;
-      this.$emit('input', this.content)
+      this.$emit("input", this.content);
+    },
+    getTargetUrl() {
+      this.requestID = document.head.querySelector(
+        'meta[name="request-id"]'
+      ).content;
+      return "/api/1.0/requests/" + this.requestID + "/files";
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

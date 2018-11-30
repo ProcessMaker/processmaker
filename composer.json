@@ -9,6 +9,12 @@
   "license": "GNU Affero General Public License version 3",
   "minimum-stability": "dev",
   "prefer-stable": true,
+  "repositories": [
+    {
+        "type": "vcs",
+        "url": "https://github.com/ProcessMaker/laravel-chunk-upload"
+    }
+  ],
   "require": {
     "php": ">=7.2.0",
     "TYPO3/class-alias-loader": "^1.0",
@@ -23,6 +29,7 @@
     "laravelcollective/html": "^5.4.0",
     "lavary/laravel-menu": "^1.7",
     "phing/phing": "^2.16",
+    "pion/laravel-chunk-upload": "dev-bugfix",
     "predis/predis": "^1.1",
     "processmaker/nayra": "dev-master",
     "ralouphie/getallheaders": "^2.0",

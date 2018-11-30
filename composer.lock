@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "af42e56b4f15d6d88bf1d34cad53c529",
+    "content-hash": "8f1bf9cf5ae798662e3d62ff7cc135d8",
     "packages": [
         {
             "name": "cakephp/chronos",
@@ -2681,6 +2681,80 @@
                 "x509"
             ],
             "time": "2018-11-04T05:45:48+00:00"
+        },
+        {
+            "name": "pion/laravel-chunk-upload",
+            "version": "dev-bugfix",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/laravel-chunk-upload.git",
+                "reference": "388df281c1da2dcd2908fb7e0f763c678d7f1e92"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/laravel-chunk-upload/zipball/388df281c1da2dcd2908fb7e0f763c678d7f1e92",
+                "reference": "388df281c1da2dcd2908fb7e0f763c678d7f1e92",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/console": "5.1.* || 5.2.* || 5.3.* || 5.4.* || 5.5.* || 5.6.* || 5.7.*",
+                "illuminate/filesystem": "5.1.* || 5.2.* || 5.3.* || 5.4.* || 5.5.* || 5.6.* || 5.7.*",
+                "illuminate/http": "5.1.* || 5.2.* || 5.3.* || 5.4.* || 5.5.* || 5.6.* || 5.7.*",
+                "illuminate/support": "5.1.* || 5.2.* || 5.3.* || 5.4.* || 5.5.* || 5.6.* || 5.7.*"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.12",
+                "laravel/laravel": "5.1.* || 5.2.* || 5.3.* || 5.4.* || 5.5.* || 5.6.* || 5.7.*",
+                "mockery/mockery": "^1.1.0",
+                "overtrue/phplint": "^1.1",
+                "phpunit/phpunit": "5.7 || 6.0 || 7.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Pion\\Laravel\\ChunkUpload\\Providers\\ChunkUploadServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Pion\\Laravel\\ChunkUpload\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "lint:fix": [
+                    "./vendor/bin/php-cs-fixer fix --config=.php_cs --using-cache false"
+                ],
+                "lint:check": [
+                    "./vendor/bin/phplint"
+                ],
+                "lint": [
+                    "composer run-script lint:fix && composer run-script lint:check"
+                ],
+                "test": [
+                    "./vendor/bin/phpunit"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Kluska",
+                    "email": "martin@kluska.cz"
+                }
+            ],
+            "description": "Service for chunked upload with several js providers",
+            "support": {
+                "source": "https://github.com/ProcessMaker/laravel-chunk-upload/tree/bugfix"
+            },
+            "time": "2018-11-28T19:48:49+00:00"
         },
         {
             "name": "predis/predis",
@@ -7211,6 +7285,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
+        "pion/laravel-chunk-upload": 20,
         "processmaker/nayra": 20
     },
     "prefer-stable": true,
