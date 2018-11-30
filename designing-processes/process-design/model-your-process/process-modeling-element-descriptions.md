@@ -14,17 +14,21 @@ An Event represents a "milestone" in the process model.
 
 A Start Event indicates where a modeled process starts. A Start Event begins the flow of a Request for that process. Therefore, a Sequence Flow cannot connect into a Start Event. A process can have multiple Start Events.
 
+Since modeled processes are generally interpreted from left to right, a Start Event generally is placed on the left side of a modeled process.
+
 Below is a Start Event element in Process Modeler.
 
-![Start Event](../../../.gitbook/assets/start-event-element-process-modeler-processes.png)
+![Start Event element](../../../.gitbook/assets/start-event-element-process-modeler-processes.png)
 
 ### End Event
 
-An End Event indicates where a modeled process normally ends when abnormal events do not terminate a Request for that process \(such as a canceled Request\). An End Event terminates the flow of of a Request for that process. Therefore, a Sequence Flow cannot exit from an End Event. A process can have multiple End Events.
+An End Event indicates where a modeled process normally ends when abnormal events do not terminate a [Request](../../../using-processmaker/requests/) for that process \(such as a canceled Request\). An End Event terminates the flow of of a Request for that process. Therefore, a Sequence Flow cannot exit from an End Event. A process can have multiple End Events.
+
+Since modeled processes are generally interpreted from left to right, an End Event generally is placed on the right side of a modeled process.
 
 Below is an End Event element in Process Modeler.
 
-![End Event](../../../.gitbook/assets/end-event-element-process-modeler-processes.png)
+![End Event element](../../../.gitbook/assets/end-event-element-process-modeler-processes.png)
 
 ## Tasks
 
@@ -34,21 +38,49 @@ A task represents an activity to be performed either by a person or a script.
 
 A User Task is an activity to be performed by a person. The person assigned the perform that task might be assigned or determined by the Request routing. In Process Modeler, a User Task is labeled as "Task."
 
+People perform User Task activities through ProcessMaker Screens as digital [forms](../../design-forms/screens-builder/types-for-screens.md#forms) and [displays](../../design-forms/screens-builder/types-for-screens.md#display). ProcessMaker Screens are designed in [Screens Builder](../../design-forms/screens-builder/). ProcessMaker Screens are independent of modeled processes: any ProcessMaker Screen can be used in any modeled process in your organization. This architecture allows Process Owners to re-use the same ProcessMaker Screen in multiple processes.
+
 Below is a User Task element in Process Modeler.
 
-![User Task](../../../.gitbook/assets/task-element-process-modeler-processes.png)
+![User Task element](../../../.gitbook/assets/task-element-process-modeler-processes.png)
 
 ### Script Task
 
+A Script Task is an activity to be performed by a ProcessMaker Script.
 
+ProcessMaker Scripts are designed in [Scripts Editor](../../scripts/scripts-editor.md). ProcessMaker Scripts are independent of modeled processes: any ProcessMaker Script can be reused in any modeled process in your organization. This architecture allows Process Owners to focus on process modeling in a no-code environment while ProcessMaker Developers develop reusable ProcessMaker Scripts. ProcessMaker Scripts can leverage Request-level variable data as well as variable data designed in ProcessMaker Screens from [Screens Builder](../../design-forms/screens-builder/).
 
+Below is a Script Task element in Process Modeler.
 
+![Script Task element](../../../.gitbook/assets/script-task-element-process-modeler-processes.png)
 
 ## Exclusive Gateway
 
+An Exclusive Gateway represents a decision that creates alternative paths within a [Request's](../../../using-processmaker/requests/) workflow. During a Request's workflow for that process, only one path from the Exclusive Gateway can be taken. An Exclusive Gateway can have two or more Sequence Flows from it.
 
+Below is an Exclusive Gateway element in Process Modeler.
+
+![Exclusive Gateway element](../../../.gitbook/assets/exclusive-gateway-element-process-modeler-processes.png)
+
+## Text Annotation
+
+Text annotation is human-readable text in a modeled process provides description regarding the process. Text annotation performs no functional role in process Requests or routing.
+
+Below is a Text Annotation element in Process Modeler.
+
+![Text Annotation element](../../../.gitbook/assets/text-control-screens-builder-processes%20%281%29.png)
 
 ## Sequence Flow
 
 
+
+## Related Topics
+
+{% page-ref page="../../../using-processmaker/requests/" %}
+
+{% page-ref page="../../design-forms/screens-builder/types-for-screens.md" %}
+
+{% page-ref page="../../design-forms/screens-builder/" %}
+
+{% page-ref page="../../scripts/scripts-editor.md" %}
 
