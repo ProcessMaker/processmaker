@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+  xmlns:pm="http://processmaker.com/BPMN/2.0/Schema.xsd"
+  xmlns:tns="http://sourceforge.net/bpmn/definitions/_1530553328908"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bpmn.io/schema/bpmn"
+  exporter="ProcessMaker Modeler" exporterVersion="1.0"
+  xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+  <bpmn:process id="ProcessId" name="Leave Absence Request" isExecutable="true">
+    <bpmn:startEvent id="node_2" name="">
+      <bpmn:outgoing>node_10</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:scriptTask id="node_3" name="Get available days" scriptFormat="application/x-php">
+      <bpmn:incoming>node_10</bpmn:incoming>
+      <bpmn:outgoing>node_11</bpmn:outgoing>
+      <bpmn:script><![CDATA[<?php
+$credits = rand(0, 50);
+$hoursOfWork = 8;
+$availableDays = round($credits / $hoursOfWork);
+return [
+    'availableDays' => $availableDays
+];]]></bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:exclusiveGateway id="node_4" name="">
+      <bpmn:incoming>node_11</bpmn:incoming>
+      <bpmn:outgoing>node_12</bpmn:outgoing>
+      <bpmn:outgoing>node_13</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="node_5" name="Fill Request" pm:screenRef="request">
+      <bpmn:incoming>node_12</bpmn:incoming>
+      <bpmn:outgoing>node_16</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="node_6" name="Approval" pm:screenRef="approve">
+      <bpmn:incoming>node_16</bpmn:incoming>
+      <bpmn:outgoing>node_17</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="node_7" name="Not available days" pm:screenRef="notavailable">
+      <bpmn:incoming>node_13</bpmn:incoming>
+      <bpmn:outgoing>node_15</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="node_8" name="approved?">
+      <bpmn:incoming>node_17</bpmn:incoming>
+      <bpmn:outgoing>node_18</bpmn:outgoing>
+      <bpmn:outgoing>node_22</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="node_9" name="HR" pm:screenRef="validate">
+      <bpmn:incoming>node_18</bpmn:incoming>
+      <bpmn:outgoing>node_20</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="node_10" sourceRef="node_2" targetRef="node_3"/>
+    <bpmn:sequenceFlow id="node_11" sourceRef="node_3" targetRef="node_4"/>
+    <bpmn:sequenceFlow id="node_12" sourceRef="node_4" targetRef="node_5">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">availableDays &gt;
+        0</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="node_13" sourceRef="node_4" targetRef="node_7">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">availableDays &lt;=
+        0</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent id="node_14" name="Not available days">
+      <bpmn:incoming>node_15</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="node_15" sourceRef="node_7" targetRef="node_14"/>
+    <bpmn:sequenceFlow id="node_16" sourceRef="node_5" targetRef="node_6"/>
+    <bpmn:sequenceFlow id="node_17" sourceRef="node_6" targetRef="node_8"/>
+    <bpmn:sequenceFlow id="node_18" sourceRef="node_8" targetRef="node_9">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression"
+        >approved</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent id="node_19" name="Request Approved">
+      <bpmn:incoming>node_20</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="node_20" sourceRef="node_9" targetRef="node_19"/>
+    <bpmn:endEvent id="node_21" name="Request rejected">
+      <bpmn:incoming>node_22</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="node_22" sourceRef="node_8" targetRef="node_21">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">not
+        approved</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagramId">
+    <bpmndi:BPMNPlane id="BPMNPlaneId" bpmnElement="ProcessId">
+      <bpmndi:BPMNShape id="node_2_di" bpmnElement="node_2">
+        <dc:Bounds x="108" y="110" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_3_di" bpmnElement="node_3">
+        <dc:Bounds x="260" y="90" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_4_di" bpmnElement="node_4">
+        <dc:Bounds x="430" y="110" width="42" height="42"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_5_di" bpmnElement="node_5">
+        <dc:Bounds x="550" y="90" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_6_di" bpmnElement="node_6">
+        <dc:Bounds x="730" y="90" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_7_di" bpmnElement="node_7">
+        <dc:Bounds x="400" y="250" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_8_di" bpmnElement="node_8">
+        <dc:Bounds x="760" y="230" width="42" height="42"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_9_di" bpmnElement="node_9">
+        <dc:Bounds x="730" y="350" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_10_di" bpmnElement="node_10">
+        <di:waypoint x="144" y="128"/>
+        <di:waypoint x="260" y="128"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="node_11_di" bpmnElement="node_11">
+        <di:waypoint x="360" y="130"/>
+        <di:waypoint x="395" y="130"/>
+        <di:waypoint x="395" y="131"/>
+        <di:waypoint x="430" y="131"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="node_12_di" bpmnElement="node_12">
+        <di:waypoint x="472" y="131"/>
+        <di:waypoint x="550" y="131"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="node_13_di" bpmnElement="node_13">
+        <di:waypoint x="451" y="152"/>
+        <di:waypoint x="451" y="250"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_14_di" bpmnElement="node_14">
+        <dc:Bounds x="430" y="390" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_15_di" bpmnElement="node_15">
+        <di:waypoint x="450" y="330"/>
+        <di:waypoint x="450" y="354.4992218017578"/>
+        <di:waypoint x="448" y="354.4992218017578"/>
+        <di:waypoint x="448" y="390"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="node_16_di" bpmnElement="node_16">
+        <di:waypoint x="650" y="130"/>
+        <di:waypoint x="730" y="130"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="node_17_di" bpmnElement="node_17">
+        <di:waypoint x="780" y="170"/>
+        <di:waypoint x="780" y="193.44921875"/>
+        <di:waypoint x="781" y="193.44921875"/>
+        <di:waypoint x="781" y="230"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="node_18_di" bpmnElement="node_18">
+        <di:waypoint x="781" y="272"/>
+        <di:waypoint x="781" y="350"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_19_di" bpmnElement="node_19">
+        <dc:Bounds x="760" y="490" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_20_di" bpmnElement="node_20">
+        <di:waypoint x="780" y="430"/>
+        <di:waypoint x="780" y="454.4992218017578"/>
+        <di:waypoint x="778" y="454.4992218017578"/>
+        <di:waypoint x="778" y="490"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_21_di" bpmnElement="node_21">
+        <dc:Bounds x="940" y="230" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_22_di" bpmnElement="node_22">
+        <di:waypoint x="802" y="251"/>
+        <di:waypoint x="870.4453125" y="251"/>
+        <di:waypoint x="870.4453125" y="248"/>
+        <di:waypoint x="940" y="248"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

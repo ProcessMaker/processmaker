@@ -68,20 +68,6 @@
             },
             {
                 "config": {
-                    "label": "Credits",
-                    "name": "credits",
-                    "placeholder": "",
-                    "validation": "",
-                    "helper": null,
-                    "type": "text",
-                    "disabled": true
-                },
-                "component": "FormInput",
-                "editor-component": "FormInput",
-                "label": "Line Input"
-            },
-            {
-                "config": {
                     "label": "Available days",
                     "name": "availableDays",
                     "placeholder": "",
