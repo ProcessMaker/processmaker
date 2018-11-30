@@ -10,8 +10,6 @@ The following installation instructions are for the ProcessMaker Community editi
 The installation procedure described below installs prerequisite applications and then installs the internal beta for ProcessMaker 4 Community edition.
 
 Ensure you meet [installation requirements](prerequisites.md) prior to starting this installation procedure.
-
-The following installation procedure instructs how to install the internal beta on Debian Linux. However, notes how to install the internal beta on Ubuntu Linux 18.04 are included that vary from Debian Linux instructions.
 {% endhint %}
 
 ## Install Prerequisites
@@ -168,14 +166,13 @@ vagrant -v
 
 ### Install PHP 7.2
 
-Install on:
+{% hint style="info" %}
+If your Linux distribution already has PHP 7.2 you do not need to add the repository. Go directly to "Install PHP 7.2 and modules" step.
+{% endhint %}
 
-* [Debian or Kali](install-processmaker-on-premise.md#install-on-debian)
-* [Ubuntu or Mint](install-processmaker-on-premise.md#install-on-ubuntu)
-
-#### Install on Debian Linux
-
-Perform the following commands to install PHP 7.2 on Debian Linux:
+{% tabs %}
+{% tab title="Debian / Kali" %}
+Perform the following commands to install PHP 7.2 on Debian:
 
 {% code-tabs %}
 {% code-tabs-item title="1. Download and add the repository." %}
@@ -227,14 +224,10 @@ php -v
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
+{% endtab %}
 
-#### Install on Ubuntu Linux
-
-Perform the following commands to install PHP 7.2 on Ubuntu Linux:
-
-{% hint style="info" %}
-If your Linux distribution already has PHP 7.2 you do not need to add the repository. Go directly to command 4.
-{% endhint %}
+{% tab title="Mint / Ubuntu" %}
+Perform the following commands to install PHP 7.2 on Ubuntu:
 
 {% code-tabs %}
 {% code-tabs-item title="1. Install the program to add repositories." %}
@@ -276,6 +269,8 @@ php -v
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
+{% endtab %}
+{% endtabs %}
 
 ### Install Composer
 
@@ -442,6 +437,10 @@ nano /etc/hosts
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
+{% hint style="info" %}
+You can change the IP address or the URL to one you prefer. But if you do so, you must make the change also in the `Homestead.yaml`file which is inside the project.
+{% endhint %}
+
 {% code-tabs %}
 {% code-tabs-item title="8. Add the following line at the bottom of the file." %}
 ```text
@@ -449,10 +448,6 @@ nano /etc/hosts
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
-
-{% hint style="info" %}
-You can change the IP address or the URL to one you prefer. But if you do so, you must make the change also in the `Homestead.yaml`file which is inside the project.
-{% endhint %}
 
 {% code-tabs %}
 {% code-tabs-item title="9. Create a public key." %}
