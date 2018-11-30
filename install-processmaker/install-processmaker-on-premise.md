@@ -66,6 +66,8 @@ virtualbox -v
 
 After the installation finishes, VirtualBox sometimes does not work because of missing dependencies. If this happens run the following command:
 
+{% tabs %}
+{% tab title="Debian / Kali / Mint / Ubuntu" %}
 {% code-tabs %}
 {% code-tabs-item title="2a. Install the missing dependencies." %}
 ```text
@@ -73,6 +75,8 @@ sudo apt-get -f install
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
+{% endtab %}
+{% endtabs %}
 
 After installing missing dependencies, recompile the kernel module:
 
@@ -86,6 +90,8 @@ sudo /sbin/vboxconfig
 
 If VirtualBox notifies you again of missing dependencies, install the libraries for gcc, make, and perl:
 
+{% tabs %}
+{% tab title="Debian / Kali / Mint / Ubuntu" %}
 {% code-tabs %}
 {% code-tabs-item title="2c. Install the libraries for gcc, make and perl." %}
 ```text
@@ -93,8 +99,10 @@ apt-get install gcc make perl
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
+{% endtab %}
+{% endtabs %}
 
-After you install the libraries recompile the kernel module \(command 2b above\). If VirtualBox continues to notify you of missing dependencies, install the Kernel module that corresponds with the error and then recompile the kernel module.
+After you install the libraries recompile the kernel module \(step 2b above\). If VirtualBox continues to notify you of missing dependencies, install the Kernel module that corresponds with the error and then recompile the kernel module.
 
 For example:
 
@@ -130,7 +138,9 @@ apt-get install linux-headers-generic
 {% endtab %}
 {% endtabs %}
 
-The error will notify you which steps to perform.
+{% hint style="info" %}
+The error message will notify you which steps to perform if non of the steps above worked.
+{% endhint %}
 
 Verify that VirtualBox works correctly after you successfully install it.
 
@@ -372,6 +382,8 @@ node -v
 
 Perform the following commands to install ProcessMaker 4 internal beta:
 
+{% tabs %}
+{% tab title="Debian / Kali / Mint / Ubuntu" %}
 {% code-tabs %}
 {% code-tabs-item title="1. Install Git." %}
 ```text
@@ -379,6 +391,8 @@ apt-get install git
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
+{% endtab %}
+{% endtabs %}
 
 {% code-tabs %}
 {% code-tabs-item title="2. Clone the project." %}
@@ -412,6 +426,8 @@ npm -v
 
 If you not have npm installed, continue with command 5 \(install the package manager\). If you do have npm installed, skip to command 6 \(run the manager inside the project\).
 
+{% tabs %}
+{% tab title="Debian / Kali / Mint / Ubuntu" %}
 {% code-tabs %}
 {% code-tabs-item title="5. Install the package manager." %}
 ```text
@@ -419,6 +435,8 @@ apt-get install npm@latest -g
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
+{% endtab %}
+{% endtabs %}
 
 {% code-tabs %}
 {% code-tabs-item title="6. Run the manager inside the project." %}
