@@ -26,7 +26,7 @@
           class="dropdown-item item"
           target="_blank"
         >
-          <i data-v-2eb90a9e class="fas fa-info fa-fw fa-lg"></i>
+          <i data-v-2eb90a9e class="fas fa-question-circle fa-lg"></i>
           Help
         </a>
         <template v-for="item in items">
