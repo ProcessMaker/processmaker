@@ -26,7 +26,7 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
     });
 
     Route::resource('processes', 'ProcessController');
-    Route::resource('about', 'AboutController');
+    Route::get('about', 'AboutController@index');
     Route::get('profile/edit', 'ProfileController@edit')->name('profile.edit');
     Route::get('profile/{id}', 'ProfileController@show');
     Route::put('profile/{id}', 'ProfileController@update')->name('profile.update');
