@@ -1,10 +1,10 @@
 [
     {
-        "name": "Request",
+        "name": "Request Time Off",
         "items": [
             {
                 "config": {
-                    "label": "Request",
+                    "label": "Request Time Off",
                     "fontSize": "2em",
                     "fontWeight": "bold"
                 },
@@ -65,34 +65,6 @@
                 "component": "FormText",
                 "editor-component": "FormText",
                 "label": "Text"
-            },
-            {
-                "config": {
-                    "label": "Credits",
-                    "name": "credits",
-                    "placeholder": "",
-                    "validation": "",
-                    "helper": null,
-                    "type": "text",
-                    "disabled": true
-                },
-                "component": "FormInput",
-                "editor-component": "FormInput",
-                "label": "Line Input"
-            },
-            {
-                "config": {
-                    "label": "Available days",
-                    "name": "availableDays",
-                    "placeholder": "",
-                    "validation": "",
-                    "helper": null,
-                    "type": "text",
-                    "disabled": true
-                },
-                "component": "FormInput",
-                "editor-component": "FormInput",
-                "label": "Line Input"
             },
             {
                 "config": {
