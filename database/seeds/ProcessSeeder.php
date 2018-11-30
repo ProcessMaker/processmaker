@@ -40,7 +40,8 @@ class ProcessSeeder extends Seeder
             echo 'Creating: ', $filename, "\n";
             $process = factory(Process::class)->make([
                 'bpmn' => file_get_contents($filename),
-                'user_id' => $admin->getKey()
+                'user_id' => $admin->getKey(),
+                'status' => 'ACTIVE',
             ]);
             //Load the process title from the the main process of the BPMN definition
             $processes = $process->getDefinitions()->getElementsByTagName('process');
