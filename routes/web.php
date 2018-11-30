@@ -7,7 +7,6 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
 // Routes related to Authentication (password reset, etc)
 // Auth::routes();
     Route::namespace('Admin')->prefix('admin')->group(function () {
-        Route::resource('about', 'AboutController');
         Route::resource('groups', 'GroupController')->only(['index', 'edit', 'show']);
         Route::resource('preferences', 'PreferenceController');
         Route::resource('users', 'UserController');
@@ -27,6 +26,7 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
     });
 
     Route::resource('processes', 'ProcessController');
+    Route::resource('about', 'AboutController');
     Route::get('profile/edit', 'ProfileController@edit')->name('profile.edit');
     Route::get('profile/{id}', 'ProfileController@show');
     Route::put('profile/{id}', 'ProfileController@update')->name('profile.update');
