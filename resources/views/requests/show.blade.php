@@ -81,8 +81,8 @@
 
                                     <div class="card-body">
                                         <p class="card-text">
-                                            This request is currently in progress.
-                                            This screen will be populated once the request is completed.
+                                            {{__('This request is currently in progress.')}}
+                                            {{__('This screen will be populated once the request is completed.')}}
                                         </p>
                                     </div>
                                 </div>
@@ -98,9 +98,9 @@
                                 <table class="vuetable table table-hover">
                                     <thead>
                                         <tr>
-                                            <th>File Name</th>
-                                            <th>Mime Type</th>
-                                            <th>Created At</th>
+                                            <th>{{__('File Name')}}</th>
+                                            <th>{{__('Mime Type')}}</th>
+                                            <th>{{__('Created At')}}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
