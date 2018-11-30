@@ -12,9 +12,7 @@ An Event represents a "milestone" in the process model.
 
 ### Start Event
 
-A Start Event indicates where a modeled process starts. A Start Event begins the flow of a Request for that process. Therefore, a Sequence Flow cannot connect into a Start Event. A process can have multiple Start Events.
-
-Since modeled processes are generally interpreted from left to right, a Start Event generally is placed on the left side of a modeled process.
+A Start Event indicates where a modeled process starts. A Start Event begins the flow of a Request for that process. Therefore, a Start Event cannot have an incoming [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow). A process can have multiple Start Events.
 
 Below is a Start Event element in Process Modeler.
 
@@ -22,9 +20,7 @@ Below is a Start Event element in Process Modeler.
 
 ### End Event
 
-An End Event indicates where a modeled process normally ends when abnormal events do not terminate a [Request](../../../using-processmaker/requests/) for that process \(such as a canceled Request\). An End Event terminates the flow of of a Request for that process. Therefore, a Sequence Flow cannot exit from an End Event. A process can have multiple End Events.
-
-Since modeled processes are generally interpreted from left to right, an End Event generally is placed on the right side of a modeled process.
+An End Event indicates where a modeled process normally ends when abnormal events do not terminate a [Request](../../../using-processmaker/requests/) for that process \(such as a canceled Request\). An End Event terminates the flow of of a Request for that process. Therefore, an End Event cannot have an outgoing [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow). A process can have multiple End Events.
 
 Below is an End Event element in Process Modeler.
 
@@ -56,7 +52,7 @@ Below is a Script Task element in Process Modeler.
 
 ## Exclusive Gateway
 
-An Exclusive Gateway represents a decision that creates alternative paths within a [Request's](../../../using-processmaker/requests/) workflow. During a Request's workflow for that process, only one path from the Exclusive Gateway can be taken. An Exclusive Gateway can have two or more Sequence Flows from it.
+An Exclusive Gateway represents a decision that creates alternative paths within a [Request's](../../../using-processmaker/requests/) workflow. During a Request's workflow for that process, only one outgoing path from the Exclusive Gateway can be taken. An Exclusive Gateway can have two or more outgoing Sequence Flows.
 
 Below is an Exclusive Gateway element in Process Modeler.
 
@@ -72,7 +68,7 @@ Below is a Text Annotation element in Process Modeler.
 
 ## Sequence Flow
 
-
+Sequence Flow represents intended workflow in a modeled process. As a best practice indicate a consistent direction of Sequence Flows, either left to right or top to bottom, to make modeled processes easier to understand.
 
 ## Related Topics
 
