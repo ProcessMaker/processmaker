@@ -65,7 +65,7 @@ export default {
     saveBpmn() {
       this.$refs.modeler.toXML((err, xml) => {
         if(err) {
-          alert("There was an error saving: " + err);
+          ProcessMaker.alert("There was an error saving: " + err, 'danger');
         } else {
           // lets save
           // Call process update
@@ -80,7 +80,10 @@ export default {
             ProcessMaker.alert('Process Successfully Updated', 'success');
           })
           .catch((err) => {
-            alert('ERROR: ' + err);
+            const message = err.response.data.message;
+            const errors = err.response.data.errors;
+            ProcessMaker.alert(message, 'danger');
+            console.log(errors);
           })
         }
 
