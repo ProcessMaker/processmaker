@@ -42,7 +42,7 @@ In order to install ProcessMaker 4 you will need the following:
 
 ![Download the VirtualBox installer for your Linux distribution](../.gitbook/assets/vitualbox-download.png)
 
-Install the VirtualBox package using one of the following commands depending on your Linux distribution to which you are installing VirtualBox.
+Install the VirtualBox package using one of the following commands depending on your Linux distribution to which you are installing VirtualBox:
 
 {% tabs %}
 {% tab title="Debian / Kali / Mint / Ubuntu" %}
@@ -64,7 +64,7 @@ virtualbox -v
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-After the installation finishes, VirtualBox sometimes does not work because of missing dependencies. If this happens run the following command:
+After the installation finishes, VirtualBox sometimes does not work because of missing dependencies. If this happens, run the following command:
 
 {% tabs %}
 {% tab title="Debian / Kali / Mint / Ubuntu" %}
@@ -102,7 +102,7 @@ apt-get install gcc make perl
 {% endtab %}
 {% endtabs %}
 
-After you install the libraries recompile the kernel module \(step 2b above\). If VirtualBox continues to notify you of missing dependencies, install the Kernel module that corresponds with the error and then recompile the kernel module.
+After you install the libraries, recompile the kernel module \(step 2b above\). If VirtualBox continues to notify you of missing dependencies, install the kernel module that corresponds with the error and then recompile the kernel module.
 
 For example:
 
@@ -139,7 +139,7 @@ apt-get install linux-headers-generic
 {% endtabs %}
 
 {% hint style="info" %}
-The error message will notify you which steps to perform if non of the steps above worked.
+The error message notifies you which steps to perform if none of the commands above worked.
 {% endhint %}
 
 Verify that VirtualBox works correctly after you successfully install it.
@@ -150,7 +150,7 @@ Verify that VirtualBox works correctly after you successfully install it.
 
 ![](../.gitbook/assets/vagrant-download.png)
 
-In order to install use the following command:
+Use the following command to install Vagrant:
 
 {% tabs %}
 {% tab title="Debian / Kali / Mint / Ubuntu" %}
@@ -164,7 +164,7 @@ dpkg -i [file name].deb
 {% endtab %}
 {% endtabs %}
 
-Verify that Vagrant is installed correctly.
+Verify that Vagrant is installed correctly:
 
 {% code-tabs %}
 {% code-tabs-item title="Verify it is the correct version." %}
@@ -176,13 +176,13 @@ vagrant -v
 
 ### Install PHP 7.2
 
-{% hint style="info" %}
-If your Linux distribution already has PHP 7.2 you do not need to add the repository. Go directly to "Install PHP 7.2 and modules" step.
-{% endhint %}
-
 {% tabs %}
 {% tab title="Debian / Kali" %}
-Perform the following commands to install PHP 7.2 on Debian:
+{% hint style="info" %}
+If your Linux distribution already has PHP 7.2 you do not need to add the repository. Go directly to the "Install PHP 7.2 and modules" command below \(command 3\).
+{% endhint %}
+
+Perform the following commands to install PHP 7.2:
 
 {% code-tabs %}
 {% code-tabs-item title="1. Download and add the repository." %}
@@ -201,7 +201,8 @@ sudo apt-get update && apt-get upgrade
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-If an error displays as follows:
+{% hint style="info" %}
+If the following error displays:
 
 ```text
 Reading package lists... Done
@@ -216,13 +217,14 @@ Install the following program:
 ```text
 sudo apt-get install ca-certificates apt-transport-https
 ```
+{% endhint %}
 
-Then run again the `update` and `upgrade` command:
+Run the `update` and `upgrade` command:
 
 {% code-tabs %}
 {% code-tabs-item title="3. Install PHP 7.2 and modules." %}
 ```text
-sudo apt-get install php7.2 php7.2-cli php7.2-common php7.2-opcache php7.2-curl php7.2-mbstring php7.2-mysql php7.2-zip php7.2-xml
+sudo apt-get install php7.2 php7.2-cli php7.2-common php7.2-opcache php7.2-curl php7.2-mbstring
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
@@ -237,7 +239,7 @@ php -v
 {% endtab %}
 
 {% tab title="Mint / Ubuntu" %}
-Perform the following commands to install PHP 7.2 on Ubuntu:
+Perform the following commands to install PHP 7.2:
 
 {% code-tabs %}
 {% code-tabs-item title="1. Install the program to add repositories." %}
@@ -418,13 +420,19 @@ composer install
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-Before you go to the next step, verify if npm is already installed:
+{% hint style="info" %}
+Before you go to the next command, verify if npm is already installed:
 
+{% code-tabs %}
+{% code-tabs-item title="Verify if npm is already installed." %}
 ```text
 npm -v
 ```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
 
-If you not have npm installed, continue with command 5 \(install the package manager\). If you do have npm installed, skip to command 6 \(run the manager inside the project\).
+If you do not have npm installed, continue to command 5 \(install the package manager\). If you do have npm installed, skip to command 6 \(run the manager inside the project\).
+{% endhint %}
 
 {% tabs %}
 {% tab title="Debian / Kali / Mint / Ubuntu" %}
@@ -520,7 +528,9 @@ Enter the following parameters:
 Alternatively, use the new URL that you assigned in the `hosts` and `Homestead.yaml` files.
 {% endhint %}
 
-In a browser go to [https://bpm4.local.processmaker.com](https://bpm4.local.processmaker.com) or the new URL if you created one. Use the following credentials to [log in](../using-processmaker/log-in.md):
+## Log in to ProcessMaker
+
+After ProcessMaker is installed, go to [https://bpm4.local.processmaker.com](https://bpm4.local.processmaker.com) or the new URL if you created one. Use the following credentials to [log in](../using-processmaker/log-in.md):
 
 * Username: `admin`
 * Password: `admin`
@@ -528,4 +538,6 @@ In a browser go to [https://bpm4.local.processmaker.com](https://bpm4.local.proc
 ## Related Topics
 
 {% page-ref page="prerequisites.md" %}
+
+{% page-ref page="../using-processmaker/log-in.md" %}
 
