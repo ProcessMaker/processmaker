@@ -9,7 +9,7 @@
                 <option value=""></option>
                 <option value="requestor">To requestor</option>
                 <option value="cyclical" v-if="false">Cyclical</option>
-                <option value="user">User</option>
+                <option value="user">To user</option>
             </select>
         </div>
         <div class="form-group" v-if="showMultiassignment">
