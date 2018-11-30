@@ -15,6 +15,9 @@
                         {{item.title}}
                     </a>
                 </template>
+                <a data-v-2eb90a9e="" href="https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/" class="dropdown-item item" target="_blank"><i data-v-2eb90a9e="" class="fas fa-info fa-fw fa-lg"></i>
+                    Help
+                </a>
             </template>
         </b-popover>
     </div>

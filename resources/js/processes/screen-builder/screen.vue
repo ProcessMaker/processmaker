@@ -258,4 +258,18 @@ div.main {
     font-size: 10px;
   }
 }
+
+.dynaform-builder {
+    .palette-container {
+        #controls {
+            .control {
+                .icon {
+                    width: 42px;
+                    margin: 0 8px;
+                    display: flex;
+                }
+            }
+        }
+    }
+}
 </style>
