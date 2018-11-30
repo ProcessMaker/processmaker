@@ -2,13 +2,17 @@
     <div>
         <div class="form-group">
             <label>Task Assignment</label>
-            <select class="form-control" :value="assignmentGetter" @input="assignmentSetter">
+            <select ref="assignmentsDropDownList"
+                    class="form-control"
+                    :value="assignmentGetter"
+                    @input="assignmentSetter">
                 <option value=""></option>
                 <option value="requestor">To requestor</option>
-                <option value="cyclical">Cyclical</option>
+                <option value="cyclical" v-if="false">Cyclical</option>
+                <option value="user">To user</option>
             </select>
         </div>
-        <div class="form-group">
+        <div class="form-group" v-if="showMultiassignment">
             <label>Assigned Users/Groups</label>
             <button @click="showUserOrGroup=true;" class="btn-sm float-right">+</button>
             <button @click="removeUserOrGroup" :disabled="!selectedAssignee" class="btn-sm float-right">-</button>
@@ -19,9 +23,9 @@
                       :class="{'bg-primary': selectedAssigneeIndex == index}"
                       @click="selectAssignee(row, index)">
                     <avatar-image v-if="row.assigned.fullname"
-                              class-container=""
-                              size="12" class-image=""
-                              :input-data="row.assigned"></avatar-image>
+                                  class-container=""
+                                  size="12" class-image=""
+                                  :input-data="row.assigned"></avatar-image>
                     <template v-else>
                         <i class="fa fa-users" aria-hidden="true"></i>
                         <span class="text-center text-capitalize text-nowrap m-1">{{row.assigned.name}}</span>
@@ -29,6 +33,16 @@
                 </span>
             </div>
         </div>
+
+        <div class="form-group" v-if="showAssignOneUser">
+            <label>Assigned User</label>
+            <select class="form-control" @click="changedUser" v-model="selectedUser">
+                <option v-for="(row, index) in activeUsers" v-bind:value="row.id">
+                    {{row.fullname}}
+                </option>
+            </select>
+        </div>
+
         <b-modal v-model="showUserOrGroup" size="md" centered title="Assign User or Group" v-cloak>
             <div class="input-group mb-3">
                 <input type="text" class="form-control" placeholder="search user or group" v-model="filter">
@@ -44,11 +58,11 @@
                       :class="{'bg-primary': selectedUserGroupIndex == index}"
                       @click="selectUserGroup(row, index)"
                       @dblclick="selectUserGroup(row, index);addUserOrGroup();"
-                      >
+                >
                       <avatar-image v-if="row.fullname"
-                              class-container=""
-                              size="12" class-image=""
-                              :input-data="row"></avatar-image>
+                                    class-container=""
+                                    size="12" class-image=""
+                                    :input-data="row"></avatar-image>
                     <template v-else>
                         <i class="fa fa-users" aria-hidden="true"></i>
                         <span class="text-center text-capitalize text-nowrap m-1">{{row.name}}</span>
@@ -60,13 +74,13 @@
                     CLOSE
                 </b-button>
                 <b-button :disabled="selectedUserGroupIndex < 0" @click="addUserOrGroup"
-                    class="btn btn-secondary btn-sm text-uppercase">
+                          class="btn btn-secondary btn-sm text-uppercase">
                     ASSIGN
-            </b-button>
-        </div>
+                </b-button>
+            </div>
 
-    </b-modal>
-</div>
+        </b-modal>
+    </div>
 </template>
 
 
@@ -86,6 +100,7 @@
                 selectedUserGroupIndex: -1,
                 selectedUserGroup: null,
                 loadingAssigned: true,
+                selectedUser: ''
             };
         },
         computed: {
@@ -102,12 +117,23 @@
             },
             node() {
                 return this.$parent.$parent.inspectorNode;
+            },
+            activeUsers: function () {
+               return this.usersAndGroups.filter(function (u) {
+                  return u.fullname !== undefined;
+               })
+            },
+            showAssignOneUser() {
+                return this.assignmentGetter === 'user';
+            },
+            showMultiassignment() {
+                return this.assignmentGetter === 'cyclical';
             }
         },
         methods: {
             /**
              * Select an assigned user or group
-             * 
+             *
              * @param {object} assignee
              * @param {number} index
              */
@@ -116,21 +142,45 @@
                 this.selectedAssignee = assignee;
             },
             /**
+             * Updates in the backend the user assigned when it is changed
+             *
+             */
+            changedUser() {
+                let assignToDelete = this.assignedUsersGroups.pop();
+                if (assignToDelete !== null && assignToDelete !== undefined) {
+                    let idToDelete = assignToDelete.data === undefined ? assignToDelete.id : assignToDelete.data.id;
+                    ProcessMaker.apiClient
+                        .delete(`task_assignments/${idToDelete}`)
+                        .then(() => {
+                            this.selectedUserGroupIndex = -1;
+                            this.selectedUserGroup = this.usersAndGroups
+                                .filter(usr => usr.id === this.selectedUser && usr.fullname)[0];
+                            this.addUserOrGroup();
+                        });
+                }
+                else {
+                    this.selectedUserGroupIndex = -1;
+                    this.selectedUserGroup = this.usersAndGroups
+                        .filter(usr => usr.id === this.selectedUser && usr.fullname)[0];
+                    this.addUserOrGroup();
+                }
+            },
+            /**
              * Remove a user or group from assigned list
              */
             removeUserOrGroup() {
                 if (this.selectedAssigneeIndex > -1) {
                     ProcessMaker.apiClient
-                            .delete(`task_assignments/${this.selectedAssignee.id}`)
-                            .then(() => {
-                                this.assignedUsersGroups.splice(this.selectedAssigneeIndex, 1);
-                                this.selectedAssigneeIndex = -1;
-                            });
+                        .delete(`task_assignments/${this.selectedAssignee.id}`)
+                        .then(() => {
+                            this.assignedUsersGroups.splice(this.selectedAssigneeIndex, 1);
+                            this.selectedAssigneeIndex = -1;
+                        });
                 }
             },
             /**
              * Select an user or group
-             * 
+             *
              * @param {object} userGroup
              * @param {number} index
              */
@@ -143,18 +193,18 @@
              */
             addUserOrGroup() {
                 ProcessMaker.apiClient
-                        .post("/task_assignments", {
-                            'process_id': this.process.id,
-                            'process_task_id': this.value,
-                            'assignment_id': this.selectedUserGroup.id,
-                            'assignment_type': this.selectedUserGroup.fullname ? USER_TYPE : GROUP_TYPE
-                        })
-                        .then(assignment => {
-                            assignment.assigned = this.selectedUserGroup;
-                            this.assignedUsersGroups.push(assignment);
-                            this.selectUserGroup(null, -1);
-                            this.showUserOrGroup = false;
-                        });
+                    .post("/task_assignments", {
+                        'process_id': this.process.id,
+                        'process_task_id': this.value,
+                        'assignment_id': this.selectedUserGroup.id,
+                        'assignment_type': this.selectedUserGroup.fullname ? USER_TYPE : GROUP_TYPE
+                    })
+                    .then(assignment => {
+                        assignment.assigned = this.selectedUserGroup;
+                        this.assignedUsersGroups.push(assignment);
+                        this.selectUserGroup(null, -1);
+                        this.showUserOrGroup = false;
+                    });
             },
             /**
              * Cancel the add user or group action.
@@ -168,25 +218,25 @@
             loadUsersAndGroups() {
                 this.usersAndGroups.splice(0);
                 ProcessMaker.apiClient
-                        .get("/users", {
-                            params: {
-                                filter: this.filter,
-                                per_page: 5,
-                            }
-                        })
-                        .then(response => {
-                            this.usersAndGroups.push(...response.data.data);
-                        });
+                    .get("/users", {
+                        params: {
+                            filter: this.filter,
+                            per_page: 5,
+                        }
+                    })
+                    .then(response => {
+                        this.usersAndGroups.push(...response.data.data);
+                    });
                 ProcessMaker.apiClient
-                        .get("/groups", {
-                            params: {
-                                filter: this.filter,
-                                per_page: 5,
-                            }
-                        })
-                        .then(response => {
-                            this.usersAndGroups.push(...response.data.data);
-                        });
+                    .get("/groups", {
+                        params: {
+                            filter: this.filter,
+                            per_page: 5,
+                        }
+                    })
+                    .then(response => {
+                        this.usersAndGroups.push(...response.data.data);
+                    });
             },
             /**
              * Load the list of assigned users
@@ -194,18 +244,23 @@
             loadAssignedUsers() {
                 this.loadingAssigned = true;
                 ProcessMaker.apiClient
-                        .get("/task_assignments", {
-                            params: {
-                                process_id: this.process.id,
-                                process_task_id: this.value,
-                                include: 'assigned',
-                            }
-                        })
-                        .then(response => {
-                            this.assignedUsersGroups.splice(0);
-                            this.assignedUsersGroups.push(...response.data.data);
-                            this.loadingAssigned = false;
-                        });
+                    .get("/task_assignments", {
+                        params: {
+                            process_id: this.process.id,
+                            process_task_id: this.value,
+                            include: 'assigned',
+                        }
+                    })
+                    .then(response => {
+                        this.assignedUsersGroups.splice(0);
+                        this.assignedUsersGroups.push(...response.data.data);
+                        this.loadingAssigned = false;
+
+
+                        if (this.assignedUsersGroups.length > 0) {
+                            this.selectedUser = this.assignedUsersGroups[0].assigned.id;
+                        }
+                    });
             },
             /**
              * Update the event of the editer property
