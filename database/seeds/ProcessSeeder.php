@@ -91,7 +91,7 @@ class ProcessSeeder extends Seeder
                             'process_id' => $process->getKey(),
                             'process_task_id' => $node->getId(),
                             'assignment_id' => $user->getKey(),
-                            'assignment_type' => 'user',
+                            'assignment_type' => User::class,
                         ]);
                     }
                 }
@@ -118,7 +118,7 @@ class ProcessSeeder extends Seeder
                             'process_id' => $process->getKey(),
                             'process_task_id' => $id,
                             'assignment_id' => $admin->getKey(),
-                            'assignment_type' => 'user',
+                            'assignment_type' => User::class,
                         ]);
                     }
                 }
