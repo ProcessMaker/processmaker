@@ -52,6 +52,10 @@ class FormalExpression implements FormalExpressionInterface
      */
     private function evaluate(array $data)
     {
+        if (!trim($this->getBody())) {
+            return true;
+        }
+
         $language = $this->getLanguage() ?: self::defaultLanguage;
         if (!isset(self::languages[$language])) {
             throw new ScriptLanguageNotSupported($language);

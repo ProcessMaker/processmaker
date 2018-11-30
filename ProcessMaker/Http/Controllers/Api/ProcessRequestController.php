@@ -78,13 +78,13 @@ class ProcessRequestController extends Controller
                 $query->startedMe(Auth::user()->id);
                 break;
             case 'in_progress':
-                if (!Auth::user()->hasPermission('show_all_requests')) {
+                if (!Auth::user()->is_administrator) {
                     $query->startedMe(Auth::user()->id);
                 }
                 $query->inProgress();
                 break;
             case 'completed':
-                if (!Auth::user()->hasPermission('show_all_requests')) {
+                if (!Auth::user()->is_administrator) {
                         $query->startedMe(Auth::user()->id);
                     }
                 $query->completed();
