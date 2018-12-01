@@ -188,6 +188,17 @@ class Process extends Model implements HasMedia
         return $this->hasMany(ProcessCollaboration::class);
     }
 
+
+    /**
+     * Get only the active processes
+     * @param $query
+     * @return mixed
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('processes.status','ACTIVE');
+    }
+
     /**
      * Get the user to whom to assign a task.
      *
@@ -345,7 +356,7 @@ class Process extends Model implements HasMedia
         $query->where('id', $this->id);
         return new ProcessEvents($query, $this);
     }
-    
+
     /**
      * Get the associated versions
      */

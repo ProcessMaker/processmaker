@@ -67,6 +67,7 @@ class ProcessController extends Controller
         $include = $this->getRequestInclude($request);
 
         $processes = Process::with($include)
+            ->active()
             ->select('processes.*')
             ->leftJoin('process_categories as category', 'processes.process_category_id', '=', 'category.id')
             ->leftJoin('users as user', 'processes.user_id', '=', 'user.id')

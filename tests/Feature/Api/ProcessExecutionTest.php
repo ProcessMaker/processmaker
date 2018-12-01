@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Feature\Api;
 
 use Illuminate\Foundation\Testing\WithFaker;
@@ -190,15 +191,20 @@ class ProcessExecutionTest extends TestCase
     {
         //Create two additional processes
         $this->createTestProcess();
+        $this->createTestProcess(['status' => 'INACTIVE']);
         $uncProcess = $this->createTestProcess(['process_category_id' => null]);
         //Get the start event id
         $uncProcessEvents = $uncProcess->events;
         //Get the list of processes (with and without category) and its start events
         $route = route('api.processes.index', ['include' => 'events,category', 'order_by' => 'name']);
         $response = $this->apiCall('GET', $route);
+
         //Check the inclusion of events
         $response->assertJsonStructure(['data' => ['*' => ['events' => [['id', 'name']], 'category']]]);
         $data = $response->json('data');
+
+        $this->assertEquals(0, collect($data)->where('status', 'INACTIVE')->count());
+
         $list = ['Uncategorized' => []];
         foreach ($data as $process) {
             $categoryName = $process['category'] ? $process['category']['name'] : 'Uncategorized';
@@ -206,14 +212,14 @@ class ProcessExecutionTest extends TestCase
         }
         $this->assertArraySubset(
             [
-            'Uncategorized' => [
-                [
-                    'name' => $uncProcess->name,
-                    'events' => [
-                        ['id' => $uncProcessEvents[0]['id']]
+                'Uncategorized' => [
+                    [
+                        'name' => $uncProcess->name,
+                        'events' => [
+                            ['id' => $uncProcessEvents[0]['id']]
+                        ]
                     ]
                 ]
-            ]
             ], $list);
     }
 
