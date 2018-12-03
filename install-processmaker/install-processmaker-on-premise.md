@@ -204,7 +204,7 @@ sudo apt-get update && apt-get upgrade
 {% endcode-tabs %}
 
 {% hint style="info" %}
-Some times after adding the repositories, they can not access or use the HTTPS. If the following error displays:
+Occasionally after adding the repositories, they can not access or use HTTPS protocols. If that occurs, the following error displays:
 
 ```text
 Reading package lists... Done
