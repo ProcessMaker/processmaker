@@ -102,7 +102,7 @@ apt-get install gcc make perl
 {% endtab %}
 {% endtabs %}
 
-After you install the libraries, recompile the kernel module \(step 2b above\). If VirtualBox continues to notify you of missing dependencies, install the kernel module that corresponds with the error and then recompile the kernel module.
+After you install the libraries, recompile the kernel module \(command 2b above\). If VirtualBox continues to notify you of missing dependencies, install the kernel module that corresponds with the error and then recompile the kernel module.
 
 For example:
 
@@ -433,7 +433,10 @@ npm -v
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-If you do not have npm installed, continue to command 5 \(install the package manager\). If you do have npm installed, skip to command 6 \(run the manager inside the project\).
+After you verify if npm is installed, do one of the following:
+
+* **npm is not installed:** Continue to command 5 \(install the package manager\).
+* **npm is installed:** Skip to command 6 \(run the manager inside the project\).
 {% endhint %}
 
 {% tabs %}
