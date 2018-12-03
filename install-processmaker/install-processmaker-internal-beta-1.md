@@ -4,7 +4,7 @@ description: Install ProcessMaker Community edition internal beta 1.
 
 # Install ProcessMaker Internal Beta 1
 
-## Downloading the Internal Beta 1
+## Download the Internal Beta 1
 
 Follow these steps to install ProcessMaker 4 Community edition internal beta 1:
 
@@ -56,7 +56,7 @@ php artisan serve
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-## Log in to ProcessMaker
+## Log In to ProcessMaker
 
 After ProcessMaker is installed, go to [https://localhost](https://localhost). Use the following credentials to [log in](../using-processmaker/log-in.md):
 
