@@ -193,6 +193,8 @@ echo "deb https://packages.sury.org/php/ stretch main" | sudo tee /etc/apt/sourc
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
+Run the `update` and `upgrade` command:
+
 {% code-tabs %}
 {% code-tabs-item title="2. Update and upgrade the package system." %}
 ```text
@@ -220,8 +222,6 @@ sudo apt-get install ca-certificates apt-transport-https
 
 This command install the certificates and protocols for HTTPS, these overwrites the symlink with the correct files.
 {% endhint %}
-
-Run the `update` and `upgrade` command:
 
 {% code-tabs %}
 {% code-tabs-item title="3. Install PHP 7.2 and modules." %}
