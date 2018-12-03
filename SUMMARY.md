@@ -130,6 +130,7 @@
 ## Install ProcessMaker
 
 * [Requirements](install-processmaker/prerequisites.md)
+* [Install ProcessMaker Internal Beta 1](install-processmaker/install-processmaker-internal-beta-1.md)
 * [Install ProcessMaker](install-processmaker/install-processmaker-on-premise.md)
 
 ## Script Central
