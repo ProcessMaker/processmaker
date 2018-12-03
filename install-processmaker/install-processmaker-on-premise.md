@@ -217,6 +217,8 @@ Install the following program:
 ```text
 sudo apt-get install ca-certificates apt-transport-https
 ```
+
+This command install the certificates and protocols for HTTPS, these overwrites the symlink with the correct files.
 {% endhint %}
 
 Run the `update` and `upgrade` command:
