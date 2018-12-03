@@ -214,13 +214,17 @@ E: Failed to fetch https://packages.sury.org/php/dists/stretch/InRelease
 E: Some index files failed to download. They have been ignored, or old ones used instead.
 ```
 
-Install the following program:
+Install the following program to install HTTPS certificates and protocols:
 
+{% code-tabs %}
+{% code-tabs-item title="Install HTTPS certificates and protocols." %}
 ```text
 sudo apt-get install ca-certificates apt-transport-https
 ```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
 
-This command install the certificates and protocols for HTTPS, these overwrites the symlink with the correct files.
+Note that using this command overwrites the symlink with the correct files.
 {% endhint %}
 
 {% code-tabs %}
