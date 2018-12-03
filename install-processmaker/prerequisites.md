@@ -12,15 +12,19 @@ The ProcessMaker Community edition supports any computer with a modern CPU, an I
 
 ## Software Requirements
 
-{% hint style="warning" %}
-The software requirements outlined below are all required for the ProcessMaker Community edition internal beta. The internal beta is a developer-oriented installation procedure that only those who are familiar with the technologies below should perform.
+The following are software requirements for ProcessMaker 4 Community edition internal beta 1:
 
-Despite that PHP, MySQL database, NGINX web server and other applications are required for ProcessMaker 4 Community edition, these applications are installed by the internal beta installation procedure. Furthermore, if either MySQL or NGINX are already installed on the computer to which ProcessMaker 4 will be installed, an error occurs. Therefore, do not have these applications pre-installed.
+* **Linux:** Use any Linux distribution that supports PHP 7.2 or greater.
+* **Database:** MySQL 5.7.
+* **Laravel framework:** ProcessMaker 4 Community edition uses Laravel 5.7 framework and must meet its [server requirements](https://laravel.com/docs/5.7/installation#server-requirements). ProcessMaker 4 Community edition internal beta 1 runs through a Laravel self server.
+
+### Web Server Configuration
+
+{% hint style="info" %}
+Presently ProcessMaker 4 Community edition internal beta 1 only functions with Apache web server. NGINX support is forthcoming.
 {% endhint %}
 
-The following is the software requirement for ProcessMaker 4 Community edition internal beta:
-
-* **Linux:** Use any Linux distribution that supports PHP 7.2 or greater. The internal beta was successfully installed on Debian, Mint, kali and Ubuntu.
+Configure your web server following [Laravel 5.7's recommendations](https://laravel.com/docs/5.7/installation#web-server-configuration).
 
 ### Supported Browsers
 
