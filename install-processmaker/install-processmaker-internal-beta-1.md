@@ -1,5 +1,5 @@
 ---
-description: Install ProcessMaker internal beta 1.
+description: Install ProcessMaker Community edition internal beta 1.
 ---
 
 # Install ProcessMaker Internal Beta 1
@@ -19,29 +19,30 @@ Run the following script from the ProcessMaker 4 Community edition internal beta
 
 {% code-tabs %}
 {% code-tabs-item title="Install the ProcessMaker 4 Community edition internal 1 database with pre-populated demo data." %}
-```php
-Execute php artisan bpm:install in the folder you un tar the installer to start the PorcessMaker Installation
+```text
+Execute php artisan bpm:install in the folder you un tar the installer to start the ProcessMaker Installation
 Specify localhost as your local database server
 Specify 3306 as your local database port
-Specify workflow as your local database name (Or whatever name you have previously define for the DB, the DB must be empty)
-Specify username as your local database username (choose your user name, it needs to have access to the previously defined database)
+Specify workflow as your local database name (or whatever name you have previously define for the DB, the DB must be empty)
+Specify username as your local database username (choose your username, it needs to have access to the previously defined database)
 Specify <password> as your local database password (set your password)
 Specify https://localhost as your application url
-run php artisan serve
 Visit https://localhost in your browser to access the application
 Login with the username of admin and password of admin
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-After you run this script, the batch script asks you for the following information:
+The batch script asks you for the following information to create the ProcessMaker database:
 
 * Database credentials
-* Database port
+* Database port number
 * Database name
 * Database username
 * Database password
 * Where to install the database \(`https://localhost` is the recommended default\)
+
+After you provide the batch script with this information, the script installs the ProcessMaker database with pre-populated demo data.
 
 ## Run the Internal Beta 1
 
@@ -61,4 +62,10 @@ After ProcessMaker is installed, go to [https://localhost](https://localhost). U
 
 * Username: `admin`
 * Password: `admin`
+
+## Related Topics
+
+{% page-ref page="prerequisites.md" %}
+
+{% page-ref page="../using-processmaker/log-in.md" %}
 
