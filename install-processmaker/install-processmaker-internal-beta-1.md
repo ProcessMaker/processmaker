@@ -10,8 +10,8 @@ Follow these steps to install ProcessMaker 4 Community edition internal beta 1:
 
 1. Ensure that your server [meets requirements](prerequisites.md#software-requirements) and is [properly configured](prerequisites.md#web-server-configuration).
 2. Create a directory on your web server in which to install ProcessMaker 4 Community edition internal beta 1.
-3. [Download](https://github.com/ProcessMaker/bpm/archive/beta1.zip) the `.zip` file of ProcessMaker 4 Community edition internal beta 1.
-4. Extract the `.zip` file to the directory in which to install ProcessMaker 4 Community edition internal beta 1.
+3. [Download](https://github.com/ProcessMaker/bpm/releases/download/beta1/bpm-beta1.tar.gz) the `bpm-beta1.tar.gz` file.
+4. Extract the `bpm-beta1.tar.gz` file to the directory in which to install ProcessMaker 4 Community edition internal beta 1.
 
 ## Install the Demo Database
 
@@ -23,15 +23,25 @@ Run the following script from the ProcessMaker 4 Community edition internal beta
 Execute php artisan bpm:install in the folder you un tar the installer to start the PorcessMaker Installation
 Specify localhost as your local database server
 Specify 3306 as your local database port
-Specify workflow as your local database name
-Specify homestead as your local database username
-Specify secret as your local database password
+Specify workflow as your local database name (Or whatever name you have previously define for the DB, the DB must be empty)
+Specify username as your local database username (choose your user name, it needs to have access to the previously defined database)
+Specify <password> as your local database password (set your password)
 Specify https://localhost as your application url
+run php artisan serve
 Visit https://localhost in your browser to access the application
 Login with the username of admin and password of admin
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
+
+After you run this script, the batch script asks you for the following information:
+
+* Database credentials
+* Database port
+* Database name
+* Database username
+* Database password
+* Where to install the database \(`https://localhost` is the recommended default\)
 
 ## Run the Internal Beta 1
 
