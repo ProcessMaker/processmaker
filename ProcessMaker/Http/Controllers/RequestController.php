@@ -61,8 +61,9 @@ class RequestController extends Controller
         $request->user;
         $request->summary = $request->summary();
         $request->process->summaryScreen;
+        $canCancel = Auth::user()->hasProcessPermission($request->process, 'requests.cancel');
         $files = $request->getMedia();
-        return view('requests.show', compact('request', 'files'));
+        return view('requests.show', compact('request', 'files', 'canCancel'));
     }
 
     public function downloadFiles(ProcessRequest $requestID, Media $fileID)
