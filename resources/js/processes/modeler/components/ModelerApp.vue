@@ -60,6 +60,7 @@ export default {
     // if needed
     //ProcessMaker.EventBus.$emit('modeler-init', this.$refs.modeler);
     //ProcessMaker.EventBus.$emit('modeler-start', this.$refs.modeler);
+    ProcessMaker.$modeler = this.$refs.modeler;
   },
   methods: {
     saveBpmn() {

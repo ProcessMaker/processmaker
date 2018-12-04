@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8f1bf9cf5ae798662e3d62ff7cc135d8",
+    "content-hash": "89af836dc9cdd216d80bea4485e169fb",
     "packages": [
         {
             "name": "cakephp/chronos",
@@ -2805,6 +2805,43 @@
                 "redis"
             ],
             "time": "2016-06-16T16:22:20+00:00"
+        },
+        {
+            "name": "processmaker/bpm-package-email-connector",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/caleeli/bpm-package-email-connector.git",
+                "reference": "b1b5e5d302551b0401332da2ae9ddb2f7db158b8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/caleeli/bpm-package-email-connector/zipball/b1b5e5d302551b0401332da2ae9ddb2f7db158b8",
+                "reference": "b1b5e5d302551b0401332da2ae9ddb2f7db158b8",
+                "shasum": ""
+            },
+            "require": {
+                "processmaker/bpm": "4.0.*"
+            },
+            "type": "project",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "ProcessMaker\\Packages\\Connectors\\Email\\PluginServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ProcessMaker\\Packages\\Connectors\\Email\\": "src/"
+                }
+            },
+            "description": "ProcessMaker BPM Connectors that provide Email service",
+            "support": {
+                "source": "https://github.com/caleeli/bpm-package-email-connector/tree/master",
+                "issues": "https://github.com/caleeli/bpm-package-email-connector/issues"
+            },
+            "time": "2018-12-04T18:13:55+00:00"
         },
         {
             "name": "processmaker/nayra",
@@ -7286,6 +7323,7 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "pion/laravel-chunk-upload": 20,
+        "processmaker/bpm-package-email-connector": 20,
         "processmaker/nayra": 20
     },
     "prefer-stable": true,
