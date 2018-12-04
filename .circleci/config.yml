@@ -177,6 +177,7 @@ jobs:
             echo "BROADCASTER_KEY=21a795019957dde6bcd96142e05d4b10" >> .env
             echo "REDIS_PORT=%%REDISPORT%%" >> .env
             echo "BPM_SCRIPTS_HOME=/home/circleci/tmp" >> .env
+            echo "HOME=/home/circleci" >> .env
             
             # Generate unique app key
             php artisan key:generate --force
