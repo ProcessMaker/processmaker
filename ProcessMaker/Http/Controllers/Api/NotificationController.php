@@ -276,24 +276,14 @@ class NotificationController extends Controller
      *             type="array",
      *              @OA\Items (
      *                      @OA\Property(
-     *                          property="dateTime",
-     *                          type="date",
-     *                          description="date when the notification has been created"
+     *                          property="count",
+     *                          type="integer",
+     *                          description="Total number of notifications "
      *                      ),
      *                      @OA\Property(
-     *                          property="id",
-     *                          type="string",
-     *                          description="message id"
-     *                      ),
-     *                      @OA\Property(
-     *                          property="message",
-     *                          type="string",
-     *                          description="message text"
-     *                      ),
-     *                      @OA\Property(
-     *                          property="url",
-     *                          type="string",
-     *                          description="associated url of the message"
+     *                          property="notifications",
+     *                          type="array",
+     *                          description="List of the first notifications"
      *                      ),
      *              )
      *             ),
@@ -302,7 +292,11 @@ class NotificationController extends Controller
      */
     public function userNotifications()
     {
-        return response(\Auth::user()->activeNotifications()->take(5), 200);
+        $list = \Auth::user()->activeNotifications();
+        return response([
+            'total' => $list->count(),
+            'notifications' => $list->take(5)
+        ], 200);
     }
 
 }
