@@ -15,7 +15,9 @@ The ProcessMaker Community edition supports any computer with a modern CPU, an I
 The following are software requirements for ProcessMaker 4 Community edition internal beta 1:
 
 * **Linux:** Use any Linux distribution that supports PHP 7.2 or greater.
-* **Database:** MySQL 5.7.
+* **Database:** MySQL Community Server edition 5.7.
+* **Web Server:** Apache or NGINX.
+* **Container:** Docker CE for CentOS.
 * **Laravel framework:** ProcessMaker 4 Community edition uses Laravel 5.7 framework and must meet its [server requirements](https://laravel.com/docs/5.7/installation#server-requirements). ProcessMaker 4 Community edition internal beta 1 runs through a Laravel self server.
 
 ### Web Server Configuration
