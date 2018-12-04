@@ -2,7 +2,7 @@
     <div class="notifications">
         <a class="count-info" data-toggle="dropdown" href="#" aria-expanded="false" id="exPopover1-bottom">
             <i class="fas fa-bell fa-lg font-size-23"></i>
-            <b-badge pill variant="danger" v-show="messages.length>0">{{messages.length}}</b-badge>
+            <b-badge pill variant="danger" v-show="messages.length>0">{{totalMessages}}</b-badge>
         </a>
         <b-popover :target="'exPopover1-bottom'"
                    :placement="'bottomleft'"
@@ -36,7 +36,7 @@
     Vue.use(Popover);
     export default {
         props: {
-            messages: Array
+            messages: Array,
         },
         watch: {
             messages(value, mutation) {
@@ -47,6 +47,7 @@
         },
         data() {
             return {
+                totalMessages: 0,
                 arrowStyle: {
                     top: "0px",
                     left: "0px"
@@ -73,12 +74,13 @@
                     $("#navbar-request-button").offset().left + 32 + "px";
             });
 
-
+            let self = this;
             ProcessMaker.apiClient.get('/user_notifications')
                 .then(function (response) {
-                    response.data.forEach(function (element) {
+                    response.data.notifications.forEach(function (element) {
                         ProcessMaker.pushNotification(element);
-                    })
+                    });
+                    self.totalMessages = response.data.total
                 });
         }
     };
