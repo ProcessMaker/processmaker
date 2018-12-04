@@ -44,7 +44,6 @@ systemctl enable mysqld
 {% code-tabs %}
 {% code-tabs-item title="Get the root password." %}
 ```text
-
 grep "temporary password" /var/log/mysqld.log
 ```
 {% endcode-tabs-item %}
@@ -58,13 +57,13 @@ mysql_secure_installation
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-Document how to set up the password that will be used in the ProcessMaker installation.
+~~Document how to set up the password that will be used in the ProcessMaker installation.~~
 
 ## Install the Web Server Application
 
 Install one of the following web server applications:
 
-* Apache
+* [Apache](install-required-software.md#apache)
 * [NGINX + PHP-FPM](install-required-software.md#install-nginx-php-fpm)
 
 ### Apache
@@ -335,9 +334,13 @@ firewall-cmd --reload
 
 After installing the above software successfully, reboot the server.
 
-Continue to [Install ProcessMaker](install-processmaker-internal-beta-1.md).
+Continue to [Install ProcessMaker](install-processmaker.md).
 
 ## Related Topics
 
 {% page-ref page="prerequisites.md" %}
+
+{% page-ref page="install-processmaker.md" %}
+
+
 

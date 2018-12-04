@@ -2,7 +2,7 @@
 description: Install ProcessMaker on premises.
 ---
 
-# Install ProcessMaker - old
+# Install ProcessMaker - older
 
 
 
