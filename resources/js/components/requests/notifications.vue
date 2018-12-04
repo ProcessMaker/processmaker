@@ -25,6 +25,9 @@
                     </span>
                     <hr>
                 </li>
+                <li class="footer">
+                    <a href="/notifications">View All {{totalMessages}} Notifications</a>
+                </li>
             </ul>
         </b-popover>
     </div>
