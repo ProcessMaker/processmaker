@@ -257,7 +257,6 @@ class NotificationController extends Controller
         return response([], 201);
     }
 
-
     /**
      * Returns a list of notifications not read by the authenticated user
      *
@@ -303,7 +302,7 @@ class NotificationController extends Controller
      */
     public function userNotifications()
     {
-        return response(\Auth::user()->activeNotifications(), 200);
+        return response(\Auth::user()->activeNotifications()->take(5), 200);
     }
 
 }
