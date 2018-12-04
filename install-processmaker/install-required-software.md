@@ -157,12 +157,185 @@ sed -i '/;opcache.fast_shutdown=0/c\opcache.fast_shutdown=1' /etc/php.d/opcache.
 {% hint style="info" %}
 If you use the Enhanced Login plugin, set the `session.save_path` variable in the `/etc/php.ini` file:
 
-`session.save_path = /var/lib/php/7.1/session`
+{% code-tabs %}
+{% code-tabs-item title="Set the session.save\_path variable in the /etc/php.ini file." %}
+```text
+session.save_path = /var/lib/php/7.1/session
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
 {% endhint %}
 
 #### PHP-FPM Configuration File
 
+{% code-tabs %}
+{% code-tabs-item title="Create the configuration file for /etc/php-fpm.d/processmaker.conf." %}
+```text
+vi /etc/php-fpm.d/processmaker.conf
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
 
+{% code-tabs %}
+{% code-tabs-item title="Below is the contents of the configuration file for /etc/php-fpm.d/processmaker.conf." %}
+```text
+[processmaker]
+user = nginx
+group = nginx
+listen = /var/run/php-fpm/processmaker.sock
+listen.mode = 0664
+listen.owner = nginx
+listen.group = nginx
+pm = dynamic
+pm.max_children = 100 
+pm.start_servers = 20
+pm.min_spare_servers = 20
+pm.max_spare_servers = 50
+pm.max_requests = 500
+php_admin_value[error_log] = /var/log/php-fpm/processmaker-error.log
+php_admin_flag[log_errors] = on
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+{% code-tabs %}
+{% code-tabs-item title="Create the NGINX configuration to work with ProcessMaker." %}
+```text
+mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bk
+vi /etc/nginx/nginx.conf
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+{% code-tabs %}
+{% code-tabs-item title="Below is the contents of the configuration file for /etc/nginx/nginx.conf." %}
+```text
+user nginx;
+ 
+worker_processes auto;
+ 
+error_log  /var/log/nginx/error.log warn;
+ 
+pid       /var/run/nginx.pid;
+ 
+# Load dynamic modules. See /usr/share/nginx/README.dynamic.
+ 
+include /usr/share/nginx/modules/*.conf;
+ 
+events {
+  worker_connections 1024;
+}
+ 
+http {
+  include        /etc/nginx/mime.types;
+  default_type   application/octet-stream;
+  log_format     main '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+  access_log  /var/log/nginx/access.log  main;
+  log_format combined_ssl '$remote_addr - $remote_user [$time_local] '
+                          '$ssl_protocol/$ssl_cipher '
+                          '"$request" $status $body_bytes_sent '
+                          '"$http_referer" "$http_user_agent"';
+  sendfile            on;
+  tcp_nopush          on;
+  tcp_nodelay         on;
+  keepalive_timeout   120;
+  keepalive_requests  100;
+  types_hash_max_size 2048;
+ 
+  #Enable Compression
+  gzip on;
+  gzip_disable "msie6";
+  gzip_vary on;
+  gzip_proxied any;
+  gzip_comp_level 6;
+  gzip_buffers 16 8k;
+  gzip_http_version 1.1;
+  gzip_types text/css text/plain text/xml text/x-component text/javascript application/x-javascript application/javascript application/json application/xml application/xhtml+xml application/x-font-ttf application/x-font-opentype application/x-font-truetype image/svg+xml image/x-icon image/vnd.microsoft.icon font/ttf font/eot font/otf font/opentype;
+ 
+  include /etc/nginx/conf.d/*.conf;
+  
+ 
+#Comment out ServerTokens OS
+  server_tokens off;
+ 
+  #Prevent ClickJacking Attacks
+  add_header X-Frame-Options SAMEORIGIN;
+ 
+  #Load Balancer/Reverse Proxy Header
+  real_ip_header X-Forwarded-For;
+  set_real_ip_from 0.0.0.0/0;
+}
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+## Install Docker Community Edition
+
+Follow Docker's guide to [install Docker Community Edition \(CE\) for CentOS](https://docs.docker.com/install/linux/docker-ce/centos/). Ensure that you meet [Docker CE requirements](https://docs.docker.com/install/linux/docker-ce/centos/#os-requirements).
+
+{% hint style="info" %}
+## Disable SELinux
+
+Disable SELinux if you intend to install ProcessMaker at `/opt`. If you intend to install ProcessMaker at `/etc/www/` then skip to [Install Firewall](install-required-software.md#install-firewall).
+
+{% code-tabs %}
+{% code-tabs-item title="Disable SELinux." %}
+```text
+nano /etc/selinux/config
+ 
+#### Change the value
+ 
+SELINUX=enforcing to disabled
+ 
+#then reboot the whole server
+ 
+reboot -h 0
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+{% endhint %}
+
+## Install Firewall
+
+{% hint style="info" %}
+CentOS 7 requires a firewall.
+{% endhint %}
+
+{% code-tabs %}
+{% code-tabs-item title="Install the firewall." %}
+```text
+yum -y install firewalld
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+{% code-tabs %}
+{% code-tabs-item title="Set the firewall to auto-start." %}
+```text
+systemctl start firewalld
+systemctl enable firewalld
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+{% code-tabs %}
+{% code-tabs-item title="Open the port through which ProcessMaker will run. By default use port 80." %}
+```text
+firewall-cmd --zone=public --add-port=3306/tcp --permanent
+firewall-cmd --zone=public --add-port=6001/tcp --permanent
+firewall-cmd --zone=public --add-port=80/tcp --permanent
+firewall-cmd --reload
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+## Reboot the Server
+
+After installing the above software successfully, reboot the server.
+
+Continue to [Install ProcessMaker](install-processmaker-internal-beta-1.md).
 
 ## Related Topics
 

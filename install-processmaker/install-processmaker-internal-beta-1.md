@@ -1,8 +1,8 @@
 ---
-description: Install ProcessMaker Community edition internal beta 1.
+description: Install ProcessMaker Community edition.
 ---
 
-# Install ProcessMaker Internal Beta 1
+# Install ProcessMaker
 
 ## Download the Internal Beta 1
 
