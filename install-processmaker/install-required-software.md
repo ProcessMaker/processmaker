@@ -532,7 +532,7 @@ yum -y install composer
 ## Disable SELinux
 
 {% hint style="info" %}
-Disable SELinux if you intend to install ProcessMaker at `/opt`. If you intend to install ProcessMaker at `/etc/www/` then skip to [Install Firewall](install-required-software.md#install-firewall).
+Disable SELinux if you intend to install ProcessMaker at `/opt`. If you intend to install ProcessMaker at `/etc/www/` then skip to [Install the Firewall](install-required-software.md#install-the-firewall).
 
 {% code-tabs %}
 {% code-tabs-item title="Disable SELinux." %}
