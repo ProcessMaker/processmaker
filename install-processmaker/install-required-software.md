@@ -103,7 +103,7 @@ nano /etc/yum.repos.d/nginx.repo
 After you create the file, add the following lines and save:
 
 {% code-tabs %}
-{% code-tabs-item title="2. Add the following lines in the /etc.yum.repos.d/nginx.repo file." %}
+{% code-tabs-item title="2. Add the following lines in the /etc/yum.repos.d/nginx.repo file." %}
 ```text
 [nginx]
 name=nginx repo
@@ -115,6 +115,8 @@ enabled=1
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
+Make sure that the file is in the path `/etc/yum.repos.d/` other way it will not work and you can not install NGINX:
+
 {% code-tabs %}
 {% code-tabs-item title="3. Install NGINX and start the service." %}
 ```text
@@ -125,20 +127,33 @@ systemctl enable nginx
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
+### Install PHP, PHP-FPM and OpCache
+
+To install PHP 7.x you need to add the following repositories unless your linux distribution has that version to install, if that is the case go to step 2.
+
 {% code-tabs %}
-{% code-tabs-item title="4. Add the EPEL \(CentOS 7.x\) or Red Hat repositories to install php. The following commands add EPEL repos." %}
+{% code-tabs-item title="1. Add the EPEL \(CentOS 7.x\) or Red Hat repositories to install php." %}
 ```text
 rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+After the repositories are added you can install PHP with the following command:
+
+{% code-tabs %}
+{% code-tabs-item title="2. Install PHP and its modules." %}
+```text
 yum -y install php72w php72w-cli php72w-opcache php72w-fpm php72w-gd php72w-mysqlnd php72w-soap php72w-mbstring php72w-ldap php72w-mcrypt php72w-xml
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-### Install PHP-FPM
+To start the PHP-FPM module use the following commands:
 
 {% code-tabs %}
-{% code-tabs-item title="1. Start the service and configuration." %}
+{% code-tabs-item title="3. Start the service and configuration." %}
 ```text
 systemctl start php-fpm
 systemctl enable php-fpm
@@ -146,8 +161,10 @@ systemctl enable php-fpm
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
+The following commands set PHP ready for ProcessMaker installation:
+
 {% code-tabs %}
-{% code-tabs-item title="2. Configure PHP-FPM using standard ProcessMaker settings for validation." %}
+{% code-tabs-item title="4. Configure PHP-FPM using standard ProcessMaker settings for validation." %}
 ```text
 sed -i '/short_open_tag = Off/c\short_open_tag = On' /etc/php.ini
 sed -i '/post_max_size = 8M/c\post_max_size = 24M' /etc/php.ini
@@ -158,7 +175,7 @@ sed -i '/expose_php = On/c\expose_php = Off' /etc/php.ini
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-### OpCache
+### OpCache Configuration
 
 {% code-tabs %}
 {% code-tabs-item title="Configure OpCache." %}
