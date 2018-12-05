@@ -579,7 +579,7 @@ firewall-cmd --reload
 
 ## Virtual Host Configuration
 
-Create the virtual host that corresponds with the [web server application you installed](install-required-software.md#install-the-web-server-application).
+Create the virtual host that corresponds with the [web server application you installed](install-required-software.md#install-the-web-server-php-and-php-fpm).
 
 {% tabs %}
 {% tab title="Apache 2.4.x" %}
@@ -719,7 +719,7 @@ wget https://github.com/ProcessMaker/bpm/releases/download/beta1/bpm-beta1.tar.g
 
 ## Untar the ProcessMaker 4 Installer
 
-Follow the procedure to untar the ProcessMaker 4 installer based on which [web server application you installed](install-required-software.md#install-the-web-server-application).
+Follow the procedure to untar the ProcessMaker 4 installer based on which [web server application you installed](install-required-software.md#install-the-web-server-php-and-php-fpm).
 
 {% tabs %}
 {% tab title="Apache 2.4.x" %}
@@ -917,7 +917,7 @@ After installing the above software successfully, reboot the server.
 
 ## Log In for the First Time
 
-After rebooting the server, go to [https://localhost](https://localhost) or the IP address/domain name you specified. Use the following credentials to [log in](../using-processmaker/log-in.md):
+After rebooting the server, go to [https://localhost](https://localhost) or the IP address/domain name you specified. Use the following credentials to [log in](../using-processmaker/log-in.md#log-in):
 
 * Username: `admin`
 * Password: `admin`
