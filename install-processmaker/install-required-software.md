@@ -90,13 +90,17 @@ Install one of the following web server applications.
 {% tab title="NGINX + PHP-FPM" %}
 ### Install NGINX
 
+To install NGINX you need to create the repository, for this you need to create a `.repo` file 
+
 {% code-tabs %}
 {% code-tabs-item title="1. Add the NGINX repository file." %}
 ```text
-vi /etc/yum.repos.d/nginx.repo
+nano /etc/yum.repos.d/nginx.repo
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
+
+After you create the file, add the following lines and save:
 
 {% code-tabs %}
 {% code-tabs-item title="2. Add the following lines in the /etc.yum.repos.d/nginx.repo file." %}
