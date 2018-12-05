@@ -36,5 +36,3 @@ ProcessMaker supports the current and previous major releases of Firefox, Google
 
 {% page-ref page="install-required-software.md" %}
 
-{% page-ref page="install-processmaker.md" %}
-
