@@ -24,18 +24,18 @@ yum -y remove mariadb*
 
 ### Install MySQL Community Server
 
-In order to install the version of MySQL that ProcessMaker 4 you need to install the program `yum-utils` that allow us to use repositories and add the following repository:
+Install the program `yum-utils` to use repositories and add the following repository:
 
 {% code-tabs %}
 {% code-tabs-item title="1. Add the repository." %}
 ```text
 yum install -y yum-utils
-yum localinstall -y https://repo.mysql.com//mysql57-community-release-el7-11.noarch.rpm 
+yum localinstall -y https://repo.mysql.com//mysql57-community-release-el7-11.noarch.rpm
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-Once the repository was added you can install the MySQL server with the following command:
+After installing the repository, install the MySQL server using the following command:
 
 {% code-tabs %}
 {% code-tabs-item title="2. Install MySQL Community Server." %}
@@ -45,7 +45,7 @@ yum install -y mysql-community-server
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-After the installation is complete it is important to start and enable the server to be active in any moment.
+After the installation is complete, start and enable the server to be active in any moment:
 
 {% code-tabs %}
 {% code-tabs-item title="3. Start the MySQL service and set it to start when the server starts." %}
@@ -56,7 +56,7 @@ systemctl enable mysqld
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-Sometimes MySQL comes with a default password already set, to get that password you have to use the command:
+Sometimes MySQL comes with a default password already set. Use the following command to get the default password:
 
 {% code-tabs %}
 {% code-tabs-item title="4. Get the root password." %}
@@ -66,7 +66,7 @@ grep "temporary password" /var/log/mysqld.log
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-In order to configure MySQL run the following command and complete the requests:
+Run the following command to configure MySQL and complete the requests:
 
 {% code-tabs %}
 {% code-tabs-item title="5. Change the root password." %}
