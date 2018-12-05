@@ -129,7 +129,7 @@ systemctl enable nginx
 
 ### Install PHP, PHP-FPM and OpCache
 
-To install PHP 7.x you need to add the following repositories unless your linux distribution has that version to install, if that is the case go to step 2.
+To install PHP 7.2 you need to add the following repositories unless your linux distribution has that version to install, if that is the case go to step 2.
 
 {% code-tabs %}
 {% code-tabs-item title="1. Add the EPEL \(CentOS 7.x\) or Red Hat repositories to install php." %}
@@ -176,6 +176,8 @@ sed -i '/expose_php = On/c\expose_php = Off' /etc/php.ini
 {% endcode-tabs %}
 
 ### OpCache Configuration
+
+To configure the OpCache module use the following command:
 
 {% code-tabs %}
 {% code-tabs-item title="Configure OpCache." %}
