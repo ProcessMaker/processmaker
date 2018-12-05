@@ -179,10 +179,9 @@ class NotificationsTest extends TestCase
         $response->assertStatus(200);
 
         // Verify structure
-        $response->assertJsonStructure(['total', 'notifications']);
+        $response->assertJsonStructure(['data', 'meta']);
 
         // Verify count
-        $this->assertEquals(10, $response->json()['total']);
-
+        $this->assertEquals(10, $response->json()['meta']['total']);
     }
 }
