@@ -86,9 +86,12 @@ class Script extends Model
         $variablesParameter = [];
         EnvironmentVariable::chunk(50, function ($variables) use (&$variablesParameter) {
             foreach ($variables as $variable) {
-                $variablesParameter[] = $variable['name'] . '=' . $variable['value'];
+                $variablesParameter[] = escapeshellarg($variable['name']) . '=' . escapeshellarg($variable['value']);
             }
         });
+
+        // Add the url to the host
+        $variablesParameter[] = 'HOST_URL=' . escapeshellarg(config('app.docker_host_url'));
 
         if ($variablesParameter) {
             $variablesParameter = "-e " . implode(" -e ", $variablesParameter);
