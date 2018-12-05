@@ -45,7 +45,7 @@ yum install -y mysql-community-server
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-After the installation is complete, start and enable the server to be active in any moment:
+After the installation is complete, start and enable the server to be active:
 
 {% code-tabs %}
 {% code-tabs-item title="3. Start the MySQL service and set it to start when the server starts." %}
@@ -66,7 +66,7 @@ grep "temporary password" /var/log/mysqld.log
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-Run the following command to configure MySQL and complete the steps:
+Configure MySQL and complete the requests:
 
 {% code-tabs %}
 {% code-tabs-item title="5. Change the root password." %}
@@ -75,18 +75,6 @@ mysql_secure_installation
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
-
-At the moment you run the previous command a wizard shows with the following information:
-
-![](../.gitbook/assets/3.1centos68mysqlsecure0.png)
-
-If there was a password set you need to enter that password, otherwise press \[Enter\] to continue: 
-
-![](../.gitbook/assets/3.1centos68mysqlsecure01.png)
-
-The wizard asks you if you want to change the current password, choose yes and change the password:
-
-![](../.gitbook/assets/3.1centos68mysqlsecure1.png)
 
 {% code-tabs %}
 {% code-tabs-item title="1. Install Docker CE." %}
@@ -107,6 +95,18 @@ systemctl enable docker
 
 ## Install Composer
 
+At the moment you run the previous command a wizard shows with the following information:
+
+![](../.gitbook/assets/3.1centos68mysqlsecure0.png)
+
+If there was a password set you need to enter that password, otherwise press \[Enter\] to continue: 
+
+![](../.gitbook/assets/3.1centos68mysqlsecure01.png)
+
+The wizard asks you if you want to change the current password, choose yes and change the password:
+
+![](../.gitbook/assets/3.1centos68mysqlsecure1.png)
+
 {% code-tabs %}
 {% code-tabs-item title="Install Composer." %}
 ```text
@@ -115,40 +115,69 @@ yum -y install composer
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-{% hint style="warning" %}
-ProcessMaker does NOT support special characters \(such as: `@ # $ % ^ & () /`\) in the root password.
-{% endhint %}
-
-The wizard asks you if you want to remove anonymous users, choose yes.
-
-![](../.gitbook/assets/3.1centos68mysqlsecure02.png)
-
-The wizard asks you if you want to disable the root login, choose yes.
-
-![](../.gitbook/assets/3.1centos68mysqlsecure03.png)
-
-{% hint style="info" %}
-In the case MySQL is in other server, you must create a new user and give this user the permissions to access.
-{% endhint %}
-
 ## Virtual Host Configuration
 
 Create the virtual host that corresponds with the [web server application you installed](install-required-software.md#install-the-web-server-application).
 
 {% tabs %}
-{% tab title="Apache" %}
+{% tab title="Apache 2.4.x" %}
 {% hint style="info" %}
 Create the following virtual host only if you installed the Apache web server.
 
-Click the **NGINX+PHP-FPM** tab if you installed NGINX+PHP-FPM web server.
+Click the **NGINX** tab if you installed NGINX web server.
 {% endhint %}
+
+{% code-tabs %}
+{% code-tabs-item title="1. Create the virtual host." %}
+```text
+vi /etc/httpd/conf.d/processmaker.conf
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+{% code-tabs %}
+{% code-tabs-item title="2. Insert the following configuration file content at /etc/httpd/conf.d/processmaker.conf." %}
+```text
+<VirtualHost *:80>
+    ServerName 172.16.0.72
+ 
+    DocumentRoot /opt/processmaker/public
+    DirectoryIndex index.php index.html
+ 
+    <Directory /opt/processmaker/public>
+        Options Indexes FollowSymLinks MultiViews
+        AllowOverride All
+        Order allow,deny
+        Allow from all
+        Require all granted
+ 
+        ExpiresActive On
+        <IfModule mod_rewrite.c>
+            RewriteEngine On
+            RewriteCond %{REQUEST_FILENAME} !-d
+            RewriteRule ^(.*)/$ /$1 [L,R=301]
+            RewriteCond %{HTTP:Authorization} .
+            RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+            RewriteCond %{REQUEST_FILENAME} !-f
+            RewriteRule ^ index.php [L]
+        </IfModule>
+    </Directory>
+    #PHP-FPM
+    <FilesMatch "\.php">
+            SetHandler "proxy:unix:/var/run/php-fpm/processmaker.sock|fcgi://localhost"
+    </FilesMatch>
+ 
+</VirtualHost>
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
 {% endtab %}
 
-{% tab title="NGINX+PHP-FPM" %}
+{% tab title="NGINX" %}
 {% hint style="info" %}
-Create the following virtual host only if you installed the NGINX + PHP-FPM web server.
+Create the following virtual host only if you installed the NGINX web server.
 
-Click the **Apache** tab if you installed Apache web server.
+Click the **Apache 2.4.x** tab if you installed Apache web server.
 {% endhint %}
 
 {% code-tabs %}
@@ -216,6 +245,22 @@ server {
 {% endtab %}
 {% endtabs %}
 
+{% hint style="warning" %}
+ProcessMaker does NOT support special characters \(such as: `@ # $ % ^ & () /`\) in the root password.
+{% endhint %}
+
+The wizard asks you if you want to remove anonymous users, choose yes.
+
+![](../.gitbook/assets/3.1centos68mysqlsecure02.png)
+
+The wizard asks you if you want to disable the root login, choose yes.
+
+![](../.gitbook/assets/3.1centos68mysqlsecure03.png)
+
+{% hint style="info" %}
+In the case MySQL is in other server, you must create a new user and give this user the permissions to access.
+{% endhint %}
+
 ## Download the ProcessMaker 4 Installer
 
 {% code-tabs %}
@@ -231,19 +276,31 @@ wget https://github.com/ProcessMaker/bpm/releases/download/beta1/bpm-beta1.tar.g
 Follow the procedure to untar the ProcessMaker 4 installer based on which [web server application you installed](install-required-software.md#install-the-web-server-application).
 
 {% tabs %}
-{% tab title="Apache" %}
+{% tab title="Apache 2.4.x" %}
 {% hint style="info" %}
 Follow the commands below to untar the ProcessMaker 4 installer only if you installed the Apache web server.
 
-Click the **NGINX+PHP-FPM** tab if you installed NGINX+PHP-FPM web server.
+Click the **NGINX** tab if you installed NGINX web server.
 {% endhint %}
+
+{% code-tabs %}
+{% code-tabs-item title="Untar the ProcessMaker 4 installer." %}
+```text
+tar -xzvf bpm4_version.tar.gz
+#change the folder name to processmaker
+mv bpm_version processmaker
+#then change the ownership to apache
+chown -R apache:apache processmaker
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
 {% endtab %}
 
-{% tab title="NGINX+PHP-FPM" %}
+{% tab title="NGINX" %}
 {% hint style="info" %}
-Follow the commands below to untar the ProcessMaker 4 installer only if you installed the NGINX + PHP-FPM web server.
+Follow the commands below to untar the ProcessMaker 4 installer only if you installed the NGINX web server.
 
-Click the **Apache** tab if you installed Apache web server.
+Click the **Apache 2.4.x** tab if you installed Apache web server.
 {% endhint %}
 
 {% code-tabs %}
@@ -408,18 +465,24 @@ ProcessMaker installation is complete. Please visit the url in your browser to c
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-The wizard asks you if you want to remove the test database, choose yes.
-
-![](../.gitbook/assets/3.1centos68mysqlsecure04.png)
-
-The wizard asks you if you want to reload the privilege tables, choose yes.
-
 ## Log In to ProcessMaker
 
 After ProcessMaker is installed, go to [https://localhost](https://localhost) or the IP address you specified. Use the following credentials to [log in](../using-processmaker/log-in.md):
 
 * Username: `admin`
 * Password: `admin`
+
+The wizard asks you if you want to remove the test database, choose yes.
+
+![](../.gitbook/assets/3.1centos68mysqlsecure04.png)
+
+The wizard asks you if you want to reload the privilege tables, choose yes.
+
+## Related Topics
+
+{% page-ref page="prerequisites.md" %}
+
+{% page-ref page="../using-processmaker/log-in.md" %}
 
 ![](../.gitbook/assets/3.1centos68mysqlsecure06.png)
 
@@ -433,18 +496,165 @@ service mysql restart
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
+
+
 ~~Document how to set up the password that will be used in the ProcessMaker installation.~~
 
-## Install the Web Server Application
+## Install the Web Server, PHP and PHP-FPM
 
-Install one of the following web server applications.
+Install one of the following web server applications along with PHP and PHP-FPM.
 
 {% tabs %}
-{% tab title="Apache" %}
+{% tab title="Apache 2.4.x, PHP and PHP-FPM" %}
+{% hint style="info" %}
+Follow the commands below to install Apache web server along with PHP and PHP-FPM.
 
+Click the **NGINX, PHP and PHP-FPM** tab for commands to install NGINX web server along with PHP and PHP-FPM.
+{% endhint %}
+
+### Install Apache 2.4.x
+
+Install the default Apache version that ships with CentOS Linux. Furthermore, install the SSL module to run using HTTPS protocols:
+
+{% code-tabs %}
+{% code-tabs-item title="1. Install Apache 2.4.x and the SSL module using HTTPS protocols." %}
+```text
+yum -y install httpd mod_ssl
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+Set standard ProcessMaker configurations.
+
+{% code-tabs %}
+{% code-tabs-item title="2. Set standard ProcessMaker configurations." %}
+```text
+sed -i 's@#LoadModule expires_module modules/mod_expires.so@LoadModule expires_module modules/mod_expires.so@' /etc/httpd/conf/httpd.conf ;
+sed -i 's@#LoadModule rewrite_module modules/mod_rewrite.so@LoadModule rewrite_module modules/mod_rewrite.so@' /etc/httpd/conf/httpd.conf ;
+sed -i 's@#LoadModule deflate_module modules/mod_deflate.so@LoadModule deflate_module modules/mod_deflate.so@' /etc/httpd/conf/httpd.conf ;
+sed -i 's@#LoadModule vhost_alias_module modules/mod_vhost_alias.so@LoadModule vhost_alias_module modules/mod_vhost_alias.so@' /etc/httpd/conf/httpd.conf ;
+sed -i 's@#LoadModule filter_module modules/mod_filter.so@LoadModule filter_module modules/mod_filter.so@' /etc/httpd/conf/httpd.conf ;
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+Start the Apache service and set it to automatically start.
+
+{% code-tabs %}
+{% code-tabs-item title="3. Start the Apache service and set it to automatically start." %}
+```text
+systemctl start httpd
+systemctl enable httpd
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+### Install PHP 7.2.x
+
+Add the corresponding EPEL repository to download the required PHP version:
+
+{% code-tabs %}
+{% code-tabs-item title="1. Add the corresponding EPEL repository to download the required PHP version." %}
+```text
+rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+Install PHP and all the extensions that ProcessMaker needs:
+
+{% code-tabs %}
+{% code-tabs-item title="2. Install PHP and all the extensions that ProcessMaker needs." %}
+```text
+yum -y install php72w
+yum -y install php72w-cli php72w-gd php72w-mysqlnd php72w-soap php72w-mbstring php72w-ldap php72w-mcrypt php72w-xml php72w-devel php72w-pecl-apcu php72w-fpm php72w-opcache
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+Set standard ProcessMaker configurations:
+
+{% code-tabs %}
+{% code-tabs-item title="3. Set standard ProcessMaker configurations." %}
+```text
+sed -i '/short_open_tag = Off/c\short_open_tag = On' /etc/php.ini
+sed -i '/post_max_size = 8M/c\post_max_size = 24M' /etc/php.ini
+sed -i '/upload_max_filesize = 2M/c\upload_max_filesize = 24M' /etc/php.ini
+sed -i '/;date.timezone =/c\date.timezone = America/New_York' /etc/php.ini
+sed -i '/expose_php = On/c\expose_php = Off' /etc/php.ini
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+### PHP-FPM Configuration File
+
+Start the service and configuration:
+
+{% code-tabs %}
+{% code-tabs-item title="1. Start the service and configuration." %}
+```text
+systemctl start php-fpm
+systemctl enable php-fpm
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+Create the configuration file.
+
+{% code-tabs %}
+{% code-tabs-item title="2. Create the configuration file." %}
+```text
+vi /etc/php-fpm.d/processmaker.conf
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+{% code-tabs %}
+{% code-tabs-item title="3. Insert the following configuration file content at /etc/php-fpm.d/processmaker.conf." %}
+```text
+[processmaker]
+user = apache
+group = apache
+listen = /var/run/php-fpm/processmaker.sock
+listen.mode = 0664
+listen.owner = apache
+listen.group = apache
+pm = dynamic
+pm.max_children = 100 
+pm.start_servers = 20
+pm.min_spare_servers = 20
+pm.max_spare_servers = 50
+pm.max_requests = 500
+php_admin_value[error_log] = /var/log/php-fpm/processmaker-error.log
+php_admin_flag[log_errors] = on
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+### OpCache Configuration
+
+{% code-tabs %}
+{% code-tabs-item title="Configure OpCache." %}
+```text
+sed -i '/;opcache.enable_cli=0/c\opcache.enable_cli=1' /etc/php.d/opcache.ini
+sed -i '/opcache.max_accelerated_files=4000/c\opcache.max_accelerated_files=10000' /etc/php.d/opcache.ini
+sed -i '/;opcache.max_wasted_percentage=5/c\opcache.max_wasted_percentage=5' /etc/php.d/opcache.ini
+sed -i '/;opcache.use_cwd=1/c\opcache.use_cwd=1' /etc/php.d/opcache.ini
+sed -i '/;opcache.validate_timestamps=1/c\opcache.validate_timestamps=1' /etc/php.d/opcache.ini
+sed -i '/;opcache.fast_shutdown=0/c\opcache.fast_shutdown=1' /etc/php.d/opcache.ini
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
 {% endtab %}
 
-{% tab title="NGINX + PHP-FPM" %}
+{% tab title="NGINX, PHP and PHP-FPM" %}
+{% hint style="info" %}
+Follow the commands below to install NGINX web server and PHP-FPM.
+
+Click the **Apache 2.4.x, PHP and PHP-FPM** tab for commands to install Apache web server along with PHP and PHP-FPM.
+{% endhint %}
+
 ### Install NGINX
 
 Create the repository: 
@@ -717,12 +927,4 @@ firewall-cmd --reload
 ## Reboot the Server
 
 After installing the above software successfully, reboot the server.
-
-## Related Topics
-
-{% page-ref page="prerequisites.md" %}
-
-{% page-ref page="../using-processmaker/log-in.md" %}
-
-
 
