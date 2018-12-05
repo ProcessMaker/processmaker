@@ -31,6 +31,7 @@ ProcessMaker supports the current and previous major releases of Firefox, Google
 * Microsoft Edge:  Two latest stable releases
 * Google Chrome:  Two latest stable releases
 * Mozilla Firefox:  Two latest stable releases
+* Apple Safari: Two latest stable releases
 
 ## Related Topics
 
