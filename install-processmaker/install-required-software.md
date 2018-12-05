@@ -544,7 +544,7 @@ echo "SELINUXTYPE=targeted" >> /etc/selinux/config
 {% endcode-tabs %}
 {% endhint %}
 
-## Install Firewall
+## Install the Firewall
 
 {% hint style="info" %}
 CentOS Linux 7 requires a firewall.
@@ -559,7 +559,7 @@ yum -y install firewalld
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="2. Set the firewall to auto-start." %}
+{% code-tabs-item title="2. Set the firewall to automatically start." %}
 ```text
 systemctl start firewalld
 systemctl enable firewalld
