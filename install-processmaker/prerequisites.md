@@ -27,11 +27,11 @@ ProcessMaker supports the current and previous major releases of Firefox, Google
 
  ProcessMaker supports the following desktop browser versions:
 
-* Microsoft Internet Explorer 11: Two latest stable releases
-* Microsoft Edge:  Two latest stable releases
-* Google Chrome:  Two latest stable releases
-* Mozilla Firefox:  Two latest stable releases
-* Apple Safari: Two latest stable releases
+* **Microsoft Internet Explorer 11:** Two latest stable releases.
+* **Microsoft Edge:** Two latest stable releases.
+* **Google Chrome:** Two latest stable releases.
+* **Mozilla Firefox:** Two latest stable releases.
+* **Apple Safari:** Two latest stable releases.
 
 ## Related Topics
 
