@@ -2812,12 +2812,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/caleeli/bpm-package-email-connector.git",
-                "reference": "04e0499efccbed2f52f83ef967609ce2a7604c62"
+                "reference": "82dcd370bf93927b45e4156932ff7e9c226ba583"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/caleeli/bpm-package-email-connector/zipball/04e0499efccbed2f52f83ef967609ce2a7604c62",
-                "reference": "04e0499efccbed2f52f83ef967609ce2a7604c62",
+                "url": "https://api.github.com/repos/caleeli/bpm-package-email-connector/zipball/82dcd370bf93927b45e4156932ff7e9c226ba583",
+                "reference": "82dcd370bf93927b45e4156932ff7e9c226ba583",
                 "shasum": ""
             },
             "require": {
@@ -2846,7 +2846,7 @@
                 "source": "https://github.com/caleeli/bpm-package-email-connector/tree/master",
                 "issues": "https://github.com/caleeli/bpm-package-email-connector/issues"
             },
-            "time": "2018-12-05T19:33:45+00:00"
+            "time": "2018-12-05T19:57:10+00:00"
         },
         {
             "name": "processmaker/nayra",
