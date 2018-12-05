@@ -2,7 +2,7 @@
 description: Install required software and ProcessMaker 4 Community edition.
 ---
 
-# Install Required Software and ProcessMaker
+# Install Required Software and ProcessMaker 4
 
 The following instructions describe how to install required software and ProcessMaker on CentOS Linux 7.x. However, ProcessMaker 4 can be installed on any Linux distribution that supports PHP 7.2.
 
@@ -66,7 +66,7 @@ grep "temporary password" /var/log/mysqld.log
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-Configure MySQL and complete the requests:
+Configure MySQL and complete the wizard below:
 
 {% code-tabs %}
 {% code-tabs-item title="5. Change the root password." %}
@@ -76,41 +76,41 @@ mysql_secure_installation
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-At the moment you run the previous command a wizard shows with the following information:
+After you run the previous command a wizard displays:
 
-![](../.gitbook/assets/3.1centos68mysqlsecure0.png)
+![MySQL wizard to configure the MySQL database](../.gitbook/assets/3.1centos68mysqlsecure0.png)
 
-If there was a password set you need to enter that password, otherwise press \[Enter\] to continue: 
+If there was a password set you need to enter that password. Otherwise press \[Enter\] to continue: 
 
-![](../.gitbook/assets/3.1centos68mysqlsecure01.png)
+![Enter the password or press \[Enter\] to continue](../.gitbook/assets/3.1centos68mysqlsecure01.png)
 
-The wizard asks you if you want to change the current password, choose yes and change the password:
+The wizard asks you if you want to change the current password. Choose yes and change the password:
 
-![](../.gitbook/assets/3.1centos68mysqlsecure1.png)
+![Change the current database password](../.gitbook/assets/3.1centos68mysqlsecure1.png)
 
 {% hint style="warning" %}
 ProcessMaker does NOT support special characters \(such as: `@ # $ % ^ & () /`\) in the root password.
 {% endhint %}
 
-The wizard asks you if you want to remove anonymous users, choose yes.
+The wizard asks you if you want to remove anonymous users. Choose yes.
 
-![](../.gitbook/assets/3.1centos68mysqlsecure02.png)
+![Remove anonymous users](../.gitbook/assets/3.1centos68mysqlsecure02.png)
 
-The wizard asks you if you want to disable the root login, choose yes.
+The wizard asks you if you want to disable the root login. Choose yes.
 
-![](../.gitbook/assets/3.1centos68mysqlsecure03.png)
+![Disable the root login](../.gitbook/assets/3.1centos68mysqlsecure03.png)
 
 {% hint style="info" %}
-In the case MySQL is in other server, you must create a new user and give this user the permissions to access.
+If MySQL is in another server, you must create a new user and give that user the permissions to access.
 {% endhint %}
 
-The wizard asks you if you want to remove the test database, choose yes.
+The wizard asks you if you want to remove the test database. Choose yes.
 
-![](../.gitbook/assets/3.1centos68mysqlsecure04.png)
+![Remove the test database](../.gitbook/assets/3.1centos68mysqlsecure04.png)
 
-The wizard asks you if you want to reload the privilege tables, choose yes.
+The wizard asks you if you want to reload the privilege tables. Choose yes.
 
-![](../.gitbook/assets/3.1centos68mysqlsecure06.png)
+![Reload the privilege tables](../.gitbook/assets/3.1centos68mysqlsecure06.png)
 
 After you finish using the wizard restart the MySQL service.
 
@@ -793,7 +793,7 @@ The batch script asks you for the following information to create the ProcessMak
 After you provide the batch script with your database information, the script installs the ProcessMaker database. An example of the script output is below.
 
 {% code-tabs %}
-{% code-tabs-item title="Batch script that installs the ProcessMaker database with your database information." %}
+{% code-tabs-item title="Batch script output that installs the ProcessMaker database with your database information." %}
 ```text
 ProcessMaker Installer
 This application installs a new version of ProcessMaker.
