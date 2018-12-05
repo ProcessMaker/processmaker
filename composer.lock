@@ -2812,12 +2812,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/caleeli/bpm-package-email-connector.git",
-                "reference": "b1b5e5d302551b0401332da2ae9ddb2f7db158b8"
+                "reference": "04e0499efccbed2f52f83ef967609ce2a7604c62"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/caleeli/bpm-package-email-connector/zipball/b1b5e5d302551b0401332da2ae9ddb2f7db158b8",
-                "reference": "b1b5e5d302551b0401332da2ae9ddb2f7db158b8",
+                "url": "https://api.github.com/repos/caleeli/bpm-package-email-connector/zipball/04e0499efccbed2f52f83ef967609ce2a7604c62",
+                "reference": "04e0499efccbed2f52f83ef967609ce2a7604c62",
                 "shasum": ""
             },
             "require": {
@@ -2836,12 +2836,17 @@
                     "ProcessMaker\\Packages\\Connectors\\Email\\": "src/"
                 }
             },
+            "scripts": {
+                "post-autoload-dump": [
+                    "@php artisan vendor:publish --tag=bpm-package-email-connector"
+                ]
+            },
             "description": "ProcessMaker BPM Connectors that provide Email service",
             "support": {
                 "source": "https://github.com/caleeli/bpm-package-email-connector/tree/master",
                 "issues": "https://github.com/caleeli/bpm-package-email-connector/issues"
             },
-            "time": "2018-12-04T18:13:55+00:00"
+            "time": "2018-12-05T19:33:45+00:00"
         },
         {
             "name": "processmaker/nayra",
