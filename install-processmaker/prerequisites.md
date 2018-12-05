@@ -37,13 +37,13 @@ If you are using Internet Explorer, consider the following:
 
 * ProcessMaker does not support [Enterprise Mode for Internet Explorer 11](https://docs.microsoft.com/en-us/internet-explorer/ie11-deploy-guide/enterprise-mode-overview-for-ie11).
 * By default, the Internet Explorer Enhanced Security configuration is enabled on Windows Server 2003 and later. This feature can prevent ProcessMaker from displaying correctly in Internet Explorer and can restrict access to network resources. Therefore, disable this feature before working with ProcessMaker.
-* Due to recent security updates on Internet Explorer 11, the "quirks mode" support has been removed. This mode was required by ProcessMaker to correctly display its frames in Internet Explorer. This was the reason why most of users accessing ProcessMaker on Internet Explorer 11 experienced many issues with the application \(especially in the **HOME** section\).
+* Due to recent security updates on Internet Explorer 11, the "quirks mode" support has been removed. This mode was required by ProcessMaker to correctly display its frames in Internet Explorer. This was the reason why most of users accessing ProcessMaker on Internet Explorer 11 experienced many issues with the application \(especially in the **Requests** section\).
 
   ProcessMaker presents some solutions for those users who currently use Internet Explorer 11 to work with the application.
 
-  * When a new case is created, the case is opened in a new tab.
-  * When a case is opened, the case is opened in a new tab.
-  * When a task of the case is completed, the tab for the current case is closed.
+  * When a new Request is created, the Request is opened in a new tab.
+  * When a Request is opened, the Request is opened in a new tab.
+  * When a task of the Request is completed, the tab for the current Request is closed.
 
   ![](../.gitbook/assets/processmaker3_internetexplorer11_newtab.png) 
 
