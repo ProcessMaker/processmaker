@@ -6,29 +6,26 @@ description: Install ProcessMaker 4 Community edition on-premises.
 
 Ensure that you have reviewed ProcessMaker [requirements](prerequisites.md) and [installed the required software](install-required-software.md) before installing ProcessMaker.
 
+The following instructions describe how to install ProcessMaker 4 Community edition on CentOS Linux 7.x. However, ProcessMaker 4 can be installed on any Linux distribution that supports PHP 7.2.
+
 ## Virtual Host Configuration
 
-Create the virtual host that corresponds with the [web server application you installed](install-required-software.md#install-the-web-server-application):
+Create the virtual host that corresponds with the [web server application you installed](install-required-software.md#install-the-web-server-application).
 
-* [Apache](install-processmaker.md#virtual-host-configuration-for-apache)
-* [NGINX + PHP-FPM](install-processmaker.md#virtual-host-configuration-for-nginx-php-fpm)
-
-### Virtual Host Configuration for Apache
-
+{% tabs %}
+{% tab title="Apache" %}
 {% hint style="info" %}
-Create the following virtual host only if you [installed the Apache web server](install-required-software.md#apache).
+Create the following virtual host only if you installed the Apache web server.
 {% endhint %}
+{% endtab %}
 
-
-
-### Virtual Host Configuration for NGINX + PHP-FPM
-
+{% tab title="NGINX+PHP-FPM" %}
 {% hint style="info" %}
-Create the following virtual host only if you [installed the NGINX + PHP-FPM web server](install-required-software.md#install-nginx-php-fpm).
+Create the following virtual host only if you installed the NGINX + PHP-FPM web server.
 {% endhint %}
 
 {% code-tabs %}
-{% code-tabs-item title="Create the virtual host." %}
+{% code-tabs-item title="1. Create the virtual host." %}
 ```text
 vi /etc/nginx/conf.d/processmaker.conf
 ```
@@ -36,7 +33,7 @@ vi /etc/nginx/conf.d/processmaker.conf
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="Below is the content for /etc/nginx/conf.d/processmaker.conf" %}
+{% code-tabs-item title="2. Insert the following configuration file content at /etc/nginx/conf.d/processmaker.conf." %}
 ```text
 server {
     listen 80;
@@ -89,11 +86,13 @@ server {
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
+{% endtab %}
+{% endtabs %}
 
 ## Download and Untar the ProcessMaker 4 Installer
 
 {% code-tabs %}
-{% code-tabs-item title="Download the ProcessMaker 4 installer inside /opt/." %}
+{% code-tabs-item title="1. Download the ProcessMaker 4 installer inside /opt/." %}
 ```text
 wget https://github.com/ProcessMaker/bpm/releases/download/beta1/bpm-beta1.tar.gz
 ```
@@ -101,7 +100,7 @@ wget https://github.com/ProcessMaker/bpm/releases/download/beta1/bpm-beta1.tar.g
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="Untar the ProcessMaker 4 installer." %}
+{% code-tabs-item title="2. Untar the ProcessMaker 4 installer." %}
 ```text
 tar -xvf bpm4_version.tar.gz
 #change the folder name to processmaker
@@ -139,7 +138,7 @@ The batch script asks you for the following information to create the ProcessMak
 * Database password
 * IP address or domain name to install the database \(`https://localhost` is the recommended default\)
 
-After you provide the batch script with your database information, the script installs the ProcessMaker database. The script is below.
+After you provide the batch script with your database information, the script installs the ProcessMaker database. An example of the script output is below.
 
 {% code-tabs %}
 {% code-tabs-item title="Batch script that installs the ProcessMaker database with your database information." %}

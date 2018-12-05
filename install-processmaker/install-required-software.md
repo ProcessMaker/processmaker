@@ -4,6 +4,8 @@ description: Install required software before installing ProcessMaker 4 Communit
 
 # Install Required Software
 
+The following instructions describe how to install ProcessMaker required software on CentOS Linux 7.x. However, ProcessMaker 4 can be installed on any Linux distribution that supports PHP 7.2.
+
 ## Install MySQL Community Server Edition
 
 ### Remove MariaDB
@@ -23,7 +25,7 @@ yum -y remove mariadb*
 ### Install MySQL Community Server
 
 {% code-tabs %}
-{% code-tabs-item title="Install MySQL Community Server." %}
+{% code-tabs-item title="1. Install MySQL Community Server." %}
 ```text
 yum install -y yum-utils
 yum localinstall -y https://repo.mysql.com//mysql57-community-release-el7-11.noarch.rpm 
@@ -33,7 +35,7 @@ yum install -y mysql-community-server
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="Start the MySQL service and set it to start when the server starts." %}
+{% code-tabs-item title="2. Start the MySQL service and set it to start when the server starts." %}
 ```text
 systemctl start mysqld
 systemctl enable mysqld
@@ -42,7 +44,7 @@ systemctl enable mysqld
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="Get the root password." %}
+{% code-tabs-item title="3. Get the root password." %}
 ```text
 grep "temporary password" /var/log/mysqld.log
 ```
@@ -50,7 +52,7 @@ grep "temporary password" /var/log/mysqld.log
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="Change the root password." %}
+{% code-tabs-item title="4. Change the root password." %}
 ```text
 mysql_secure_installation
 ```
@@ -61,21 +63,18 @@ mysql_secure_installation
 
 ## Install the Web Server Application
 
-Install one of the following web server applications:
+Install one of the following web server applications.
 
-* [Apache](install-required-software.md#apache)
-* [NGINX + PHP-FPM](install-required-software.md#install-nginx-php-fpm)
+{% tabs %}
+{% tab title="Apache" %}
 
-### Apache
+{% endtab %}
 
-
-
-### Install NGINX + PHP-FPM
-
-#### Install NGINX
+{% tab title="NGINX + PHP-FPM" %}
+### Install NGINX
 
 {% code-tabs %}
-{% code-tabs-item title="Add the NGINX repository file." %}
+{% code-tabs-item title="1. Add the NGINX repository file." %}
 ```text
 vi /etc/yum.repos.d/nginx.repo
 ```
@@ -83,7 +82,7 @@ vi /etc/yum.repos.d/nginx.repo
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="Add the following lines in the /etc.yum.repos.d/nginx.repo file." %}
+{% code-tabs-item title="2. Add the following lines in the /etc.yum.repos.d/nginx.repo file." %}
 ```text
 [nginx]
 name=nginx repo
@@ -96,7 +95,7 @@ enabled=1
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="Install NGINX and start the service." %}
+{% code-tabs-item title="3. Install NGINX and start the service." %}
 ```text
 yum clean all && yum -y install nginx
 systemctl start nginx
@@ -106,7 +105,7 @@ systemctl enable nginx
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="Add the EPEL \(CentOS 7.x\) or Red Hat repositories to install php. The following commands add EPEL repos." %}
+{% code-tabs-item title="4. Add the EPEL \(CentOS 7.x\) or Red Hat repositories to install php. The following commands add EPEL repos." %}
 ```text
 rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
@@ -115,10 +114,10 @@ yum -y install php72w php72w-cli php72w-opcache php72w-fpm php72w-gd php72w-mysq
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-#### Install PHP-FPM
+### Install PHP-FPM
 
 {% code-tabs %}
-{% code-tabs-item title="Start the service and configuration." %}
+{% code-tabs-item title="1. Start the service and configuration." %}
 ```text
 systemctl start php-fpm
 systemctl enable php-fpm
@@ -127,7 +126,7 @@ systemctl enable php-fpm
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="Configure PHP-FPM using standard ProcessMaker settings for validation." %}
+{% code-tabs-item title="2. Configure PHP-FPM using standard ProcessMaker settings for validation." %}
 ```text
 sed -i '/short_open_tag = Off/c\short_open_tag = On' /etc/php.ini
 sed -i '/post_max_size = 8M/c\post_max_size = 24M' /etc/php.ini
@@ -138,7 +137,7 @@ sed -i '/expose_php = On/c\expose_php = Off' /etc/php.ini
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-#### OpCache
+### OpCache
 
 {% code-tabs %}
 {% code-tabs-item title="Configure OpCache." %}
@@ -165,10 +164,10 @@ session.save_path = /var/lib/php/7.1/session
 {% endcode-tabs %}
 {% endhint %}
 
-#### PHP-FPM Configuration File
+### PHP-FPM Configuration File
 
 {% code-tabs %}
-{% code-tabs-item title="Create the configuration file for /etc/php-fpm.d/processmaker.conf." %}
+{% code-tabs-item title="1. Create the configuration file for /etc/php-fpm.d/processmaker.conf." %}
 ```text
 vi /etc/php-fpm.d/processmaker.conf
 ```
@@ -176,7 +175,7 @@ vi /etc/php-fpm.d/processmaker.conf
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="Below is the contents of the configuration file for /etc/php-fpm.d/processmaker.conf." %}
+{% code-tabs-item title="2. Insert the following configuration file content at /etc/php-fpm.d/processmaker.conf." %}
 ```text
 [processmaker]
 user = nginx
@@ -198,7 +197,7 @@ php_admin_flag[log_errors] = on
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="Create the NGINX configuration to work with ProcessMaker." %}
+{% code-tabs-item title="3. Create the NGINX configuration to work with ProcessMaker." %}
 ```text
 mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bk
 vi /etc/nginx/nginx.conf
@@ -207,7 +206,7 @@ vi /etc/nginx/nginx.conf
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="Below is the contents of the configuration file for /etc/nginx/nginx.conf." %}
+{% code-tabs-item title="4. Below is the contents of the configuration file for /etc/nginx/nginx.conf." %}
 ```text
 user nginx;
  
@@ -269,6 +268,8 @@ http {
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
+{% endtab %}
+{% endtabs %}
 
 ## Install Docker Community Edition
 
@@ -299,11 +300,11 @@ reboot -h 0
 ## Install Firewall
 
 {% hint style="info" %}
-CentOS 7 requires a firewall.
+CentOS Linux 7 requires a firewall.
 {% endhint %}
 
 {% code-tabs %}
-{% code-tabs-item title="Install the firewall." %}
+{% code-tabs-item title="1. Install the firewall." %}
 ```text
 yum -y install firewalld
 ```
@@ -311,7 +312,7 @@ yum -y install firewalld
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="Set the firewall to auto-start." %}
+{% code-tabs-item title="2. Set the firewall to auto-start." %}
 ```text
 systemctl start firewalld
 systemctl enable firewalld
@@ -320,7 +321,7 @@ systemctl enable firewalld
 {% endcode-tabs %}
 
 {% code-tabs %}
-{% code-tabs-item title="Open the port through which ProcessMaker will run. By default use port 80." %}
+{% code-tabs-item title="3. Open the port through which ProcessMaker will run. By default use port 80." %}
 ```text
 firewall-cmd --zone=public --add-port=3306/tcp --permanent
 firewall-cmd --zone=public --add-port=6001/tcp --permanent
