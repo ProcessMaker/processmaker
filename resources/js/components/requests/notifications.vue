@@ -80,10 +80,10 @@
             let self = this;
             ProcessMaker.apiClient.get('/user_notifications')
                 .then(function (response) {
-                    response.data.notifications.forEach(function (element) {
+                    response.data.data.forEach(function (element) {
                         ProcessMaker.pushNotification(element);
                     });
-                    self.totalMessages = response.data.total
+                    self.totalMessages = response.data.meta.total
                 });
         }
     };
