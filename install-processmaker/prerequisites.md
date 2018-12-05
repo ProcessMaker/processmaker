@@ -23,7 +23,7 @@ The following are software requirements for ProcessMaker 4 Community edition:
 
 ## Supported Browsers
 
-ProcessMaker supports the current and previous major releases of Firefox, Google Chrome and Edge on a rolling basis. Each time a new version is released, we begin testing and then supporting that version and stop supporting the third most recent version.
+ProcessMaker supports the current and previous major releases of the desktop browsers listed below on a rolling basis. Each time a new version is released, we begin testing and then supporting that version and stop supporting the third most recent version.
 
  ProcessMaker supports the following desktop browser versions:
 
