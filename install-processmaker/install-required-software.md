@@ -90,17 +90,17 @@ Install one of the following web server applications.
 {% tab title="NGINX + PHP-FPM" %}
 ### Install NGINX
 
-To install NGINX you need to create the repository, for this you need to create a `.repo` file 
+Create the repository: 
 
 {% code-tabs %}
 {% code-tabs-item title="1. Add the NGINX repository file." %}
 ```text
-nano /etc/yum.repos.d/nginx.repo
+vi /etc/yum.repos.d/nginx.repo
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-After you create the file, add the following lines and save:
+After creating the repository, add the following lines and save the file:
 
 {% code-tabs %}
 {% code-tabs-item title="2. Add the following lines in the /etc/yum.repos.d/nginx.repo file." %}
@@ -115,7 +115,11 @@ enabled=1
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-Make sure that the file is in the path `/etc/yum.repos.d/` other way it will not work and you can not install NGINX:
+{% hint style="info" %}
+Ensure that the repository file is in the path `/etc/yum.repos.d/`. Otherwise, you cannot install NGINX.
+{% endhint %}
+
+Install NGINX and start the service:
 
 {% code-tabs %}
 {% code-tabs-item title="3. Install NGINX and start the service." %}
@@ -129,10 +133,14 @@ systemctl enable nginx
 
 ### Install PHP, PHP-FPM and OpCache
 
-To install PHP 7.2 you need to add the following repositories unless your linux distribution has that version to install, if that is the case go to step 2.
+{% hint style="info" %}
+If your Linux distribution has PHP 7.2, skip to the command 3 \(Start the service and configuration\).
+{% endhint %}
+
+Add the following repositories:
 
 {% code-tabs %}
-{% code-tabs-item title="1. Add the EPEL \(CentOS 7.x\) or Red Hat repositories to install php." %}
+{% code-tabs-item title="1. Add the EPEL \(CentOS 7.x\) or Red Hat repositories to install PHP." %}
 ```text
 rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
@@ -140,7 +148,7 @@ rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-After the repositories are added you can install PHP with the following command:
+After the repositories are added, install PHP and its modules:
 
 {% code-tabs %}
 {% code-tabs-item title="2. Install PHP and its modules." %}
@@ -150,7 +158,7 @@ yum -y install php72w php72w-cli php72w-opcache php72w-fpm php72w-gd php72w-mysq
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-To start the PHP-FPM module use the following commands:
+Start the PHP-FPM module:
 
 {% code-tabs %}
 {% code-tabs-item title="3. Start the service and configuration." %}
@@ -161,7 +169,7 @@ systemctl enable php-fpm
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-The following commands set PHP ready for ProcessMaker installation:
+Set PHP ready for the ProcessMaker installation:
 
 {% code-tabs %}
 {% code-tabs-item title="4. Configure PHP-FPM using standard ProcessMaker settings for validation." %}
@@ -177,8 +185,6 @@ sed -i '/expose_php = On/c\expose_php = Off' /etc/php.ini
 
 ### OpCache Configuration
 
-To configure the OpCache module use the following command:
-
 {% code-tabs %}
 {% code-tabs-item title="Configure OpCache." %}
 ```text
@@ -191,18 +197,6 @@ sed -i '/;opcache.fast_shutdown=0/c\opcache.fast_shutdown=1' /etc/php.d/opcache.
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
-
-{% hint style="info" %}
-If you use the Enhanced Login plugin, set the `session.save_path` variable in the `/etc/php.ini` file:
-
-{% code-tabs %}
-{% code-tabs-item title="Set the session.save\_path variable in the /etc/php.ini file." %}
-```text
-session.save_path = /var/lib/php/7.1/session
-```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
-{% endhint %}
 
 ### PHP-FPM Configuration File
 
