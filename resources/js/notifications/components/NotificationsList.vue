@@ -5,10 +5,6 @@
                   pagination-path="meta">
 
             <template slot="taskName" slot-scope="props">
-                <!--<b-link @click="onAction('openTask', props.rowData, props.rowIndex)">-->
-                    <!--{{props.rowData.name}}-->
-                <!--</b-link>-->
-
                 <a v-bind:href="props.rowData.url">{{props.rowData.name}}</a>
             </template>
 
@@ -94,12 +90,12 @@
         methods: {
             dismiss(id) {
                 ProcessMaker.removeNotifications([id]);
-                document.location.reload();
+                this.fetch();
             },
 
             unread(id){
                 ProcessMaker.unreadNotifications([id]);
-                document.location.reload();
+                this.fetch();
             },
 
             onAction(action, rowData, index) {
