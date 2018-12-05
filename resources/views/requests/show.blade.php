@@ -133,7 +133,7 @@
                             </li>
                             
                             @if($canCancel == true)
-                            <template v-if="statusLabel == 'In Progress'">
+                            <template v-if="statusLabel == 'In Progress' && canCancel == true">
                             <li class="list-group-item">
                                 <h5>{{__('Cancel Request')}}</h5>
                                 <button type="button" class="btn btn-outline-danger btn-block"
@@ -175,6 +175,7 @@
                     request: @json($request),
                     files: @json($files),
                     refreshTasks: 0,
+                    canCancel: @json($canCancel),
                     status: 'ACTIVE'
                 };
             },
