@@ -4,11 +4,13 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Laravel\Horizon\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Models\Notification;
 use ProcessMaker\Http\Resources\Notifications as NotificationResource;
+use ProcessMaker\Models\User;
 
 class NotificationController extends Controller
 {
@@ -51,7 +53,27 @@ class NotificationController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Notification::query();
+        $query = Notification::select(
+            'id',
+            'read_at',
+            'data->>name as name',
+            'data->>message as message',
+            'data->>processName as processName',
+            'data->>userName as userName',
+            'data->>request_id as request_id',
+            'data->>url as url')
+            ->where('notifiable_type', User::class)
+            ->where('notifiable_id', Auth::user()->id);
+
+        $filter = $request->input('filter', '');
+        if (!empty($filter)) {
+            $filter = '%' . $filter . '%';
+            $query->where(function ($query) use ($filter) {
+                $query->Where('data->name', 'like', $filter)
+                    ->orWhere('data->processName', 'like', $filter)
+                    ->orWhereRaw("case when read_at is null then 'dismiss' else 'unread' end like '$filter'");
+            });
+        }
 
         $response =
             $query->orderBy(
@@ -257,6 +279,23 @@ class NotificationController extends Controller
         return response([], 201);
     }
 
+    public function updateAsUnread(Request $request)
+    {
+        $messageIds = $request->input('message_ids');
+        $routes = $request->input('routes');
+
+        $updated = DB::table('notifications')
+            ->whereIn('id', $messageIds)
+            ->orWhereIn('data->url', $routes)
+            ->get();
+
+        DB::table('notifications')
+            ->whereIn('id', $messageIds)
+            ->orWhereIn('data->url', $routes)
+            ->update(['read_at' => null]);
+        return response($updated, 201);
+    }
+
     /**
      * Returns a list of notifications not read by the authenticated user
      *
@@ -290,13 +329,29 @@ class NotificationController extends Controller
      *         ),
      *     )
      */
-    public function userNotifications()
+    public function userNotifications(Request $request)
     {
-        $list = \Auth::user()->activeNotifications();
-        return response([
-            'total' => $list->count(),
-            'notifications' => $list->take(5)
-        ], 200);
+        $query = Notification::select(
+                'id',
+                'read_at',
+                'data->name as name',
+                'data->message as message',
+                'data->processName as processName',
+                'data->userName as userName',
+                'data->request_id as request_id',
+                'data->url as url')
+            ->where('notifiable_type', User::class)
+            ->where('notifiable_id', Auth::user()->id)
+            ->whereNull('read_at');
+
+        $response =
+            $query->orderBy(
+                $request->input('order_by', 'id'),
+                $request->input('order_direction', 'ASC')
+            )
+                ->paginate($request->input('per_page', 5));
+
+        return new ApiCollection($response);
     }
 
 }
