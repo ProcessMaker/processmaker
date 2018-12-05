@@ -62,7 +62,9 @@ class ScreenController extends Controller
                     ->orWhere('config', 'like', $filter);
             });
         }
-
+        if($request->input('type')) {
+            $query->where('type', $request->input('type'));
+        }
         $response =
             $query->orderBy(
                 $request->input('order_by', 'title'),
