@@ -1,10 +1,10 @@
 import Vue from "vue";
-import TasksList from "./components/TasksList";
+import NotificationsList from "./components/NotificationsList";
 
 new Vue({
-    el: "#tasks",
+    el: "#notifications",
     data: {
         filter: ""
     },
-    components: {TasksList}
+    components: {NotificationsList}
 });

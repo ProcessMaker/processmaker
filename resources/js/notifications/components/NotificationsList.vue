@@ -4,21 +4,24 @@
                   @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data"
                   pagination-path="meta">
 
-            <template slot="name" slot-scope="props">
-                <b-link @click="onAction('edit', props.rowData, props.rowIndex)">
-                    {{props.rowData.element_name}}
-                </b-link>
+            <template slot="taskName" slot-scope="props">
+                <!--<b-link @click="onAction('openTask', props.rowData, props.rowIndex)">-->
+                    <!--{{props.rowData.name}}-->
+                <!--</b-link>-->
+
+                <a v-bind:href="props.rowData.url">{{props.rowData.name}}</a>
             </template>
 
-            <template slot="requestName" slot-scope="props">
-                <b-link @click="onAction('showRequestSummary', props.rowData, props.rowIndex)">
-                    {{props.rowData.process.name}}
-                </b-link>
-            </template>
+            <template slot="changeStatus" slot-scope="props">
+                <span v-if="props.rowData.read_at === null"  class="badge badge-pill badge-info"
+                      style="cursor:pointer" @click="dismiss(props.rowData.id)">
+                    Dismiss
+                </span>
 
-            <template slot="assignee" slot-scope="props">
-                <avatar-image class="d-inline-flex pull-left align-items-center" size="25"
-                              :input-data="props.rowData.user" display-name="true"></avatar-image>
+                <span v-if="props.rowData.read_at !==  null"  class="badge badge-pill badge-secondary"
+                      style="cursor:pointer" @click="unread(props.rowData.id)">
+                    Unread
+                </span>
             </template>
 
             <template slot="actions" slot-scope="props">
@@ -52,44 +55,31 @@
         props: ["filter"],
         data() {
             return {
-                orderBy: "due_at",
+                orderBy: "created_at",
 
                 sortOrder: [
                     {
-                        field: "due_at",
-                        sortField: "due_at",
+                        field: "created_at",
+                        sortField: "created_at",
                         direction: "asc"
                     },
                 ],
                 fields: [
                     {
-                        title: "ID",
-                        name: "id",
-                        sortField: "id"
+                        title: "TASK",
+                        name: "__slot:taskName",
                     },
                     {
-                        title: "TASK",
-                        name: "__slot:name",
-                        field: "element_name",
-                        sortField: "element_name"
+                        title: "PROCESS",
+                        name: "processName"
+                    },
+                    {
+                        title: "id",
+                        name: "id"
                     },
                     {
                         title: "REQUEST",
-                        name: "__slot:requestName",
-                        field: "request",
-                        sortField: "request.name"
-                    },
-                    {
-                        title: "ASSIGNEE",
-                        name: "__slot:assignee",
-                        field: "user",
-                        sortField: "user.lastname"
-                    },
-                    {
-                        title: "DUE DATE",
-                        name: "due_at",
-                        callback: this.formatDueDate,
-                        sortField: "due_at"
+                        name: "__slot:changeStatus",
                     }
                 ]
             };
@@ -102,14 +92,19 @@
             }
         },
         methods: {
-            onAction(action, rowData, index) {
-                if (action === "edit") {
-                    let link = "/tasks/" + rowData.id + "/edit";
-                    window.location = link;
-                }
+            dismiss(id) {
+                ProcessMaker.removeNotifications([id]);
+                document.location.reload();
+            },
 
-                if (action === "showRequestSummary") {
-                    let link = "/requests/" + rowData.process_request.id;
+            unread(id){
+                ProcessMaker.unreadNotifications([id]);
+                document.location.reload();
+            },
+
+            onAction(action, rowData, index) {
+                if (action === "openTask") {
+                    let link = rowData.url;
                     window.location = link;
                 }
             },
@@ -148,10 +143,8 @@
                 // Load from our api client
                 ProcessMaker.apiClient
                     .get(
-                        "tasks?page=" +
+                        "notifications?page=" +
                         this.page +
-                        "&include=process,processRequest,processRequest.user,user" +
-                        "&status=" + this.getTaskStatus() +
                         "&per_page=" +
                         this.perPage +
                         "&filter=" +
