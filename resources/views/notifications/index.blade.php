@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-{{__('Tasks')}}
+{{__('Notifications')}}
 @endsection
 
 @section('sidebar')
@@ -9,8 +9,8 @@
 @endsection
 
 @section('content')
-<div class="container page-content" id="tasks">
-  <h1>{{__('Tasks')}}</h1>
+<div class="container page-content" id="notifications">
+  <h1>{{__('Notifications')}}</h1>
   <div class="row">
     <div class="col">
       <div class="input-group">
@@ -28,11 +28,11 @@
     </div>
   </div>
   <div class="container-fluid">
-    <tasks-list :filter="filter"></tasks-list>
+    <notifications-list :filter="filter"></notifications-list>
   </div>
 </div>
 @endsection
 
 @section('js')
-<script src="{{mix('js/tasks/index.js')}}"></script>
+<script src="{{mix('js/notifications/index.js')}}"></script>
 @endsection
