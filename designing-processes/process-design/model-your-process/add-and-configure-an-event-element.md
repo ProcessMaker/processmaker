@@ -2,7 +2,7 @@
 description: Add and configure Event elements in your process model.
 ---
 
-# Add and Configure an Event Element
+# Add and Configure Event Elements
 
 ## Add a Start Event Element
 
@@ -36,7 +36,7 @@ Follow these steps to add an End Event element to the process model:
 
 ### Edit the Identifier Value
 
-An identifier is a value assigned to a process model or process element that Process Modeler uses to identify that element. Process Modeler automatically assigns a unique value to each process element added to a process model. However, an element's identifier value can be changed as long as it is unique.
+Process Modeler assigns a value to a process model or process element to identify that element. Process Modeler automatically assigns a unique value to each process element added to a process model. However, an element's identifier value can be changed as long as it is unique.
 
 {% hint style="info" %}
 All identifier values for all elements in the process model must be unique.
@@ -56,5 +56,13 @@ Follow these steps to edit the name for an Event element:
 
 1. Place a [Start Event](add-and-configure-an-event-element.md#add-a-start-event-element) or [End Event](add-and-configure-an-event-element.md#add-an-end-event-element) element into your process model.
 2. Click the Event element in which to edit its name. The current name displays in the **Name** field in the right side bar.
-3. In the **Name** field, edit the the selected Event element's name and then press **Enter**. The Event element's name is changed.
+3. In the **Name** field, edit the the selected Event element's name and then press **Enter**. The element's name is changed.
+
+## Related Topics
+
+{% page-ref page="../process-modeling-element-descriptions.md" %}
+
+{% page-ref page="../../viewing-processes/view-the-list-of-processes/view-your-processes.md" %}
+
+{% page-ref page="../../viewing-processes/create-a-process.md" %}
 
