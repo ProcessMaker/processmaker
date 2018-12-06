@@ -57,6 +57,13 @@
     @include('layouts.navbar')
     <div class="flex-grow-1 d-flex flex-column h-100" id="mainbody">
       <div class="main flex-grow-1">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item ml-4"><a href="#">Home</a></li>
+            <li class="breadcrumb-item"><a href="#">Library</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Data</li>
+          </ol>
+        </nav>
         @yield('content')
       </div>
     </div>
