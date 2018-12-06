@@ -1,5 +1,6 @@
 <template>
     <div class="data-table">
+
         <vuetable :dataManager="dataManager" :sortOrder="sortOrder" :css="css" :api-mode="false"
                   @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data"
                   pagination-path="meta">
@@ -9,14 +10,12 @@
             </template>
 
             <template slot="changeStatus" slot-scope="props">
-                <span v-if="props.rowData.read_at === null" style="cursor:pointer" @click="read(props.rowData.id)">
-                   <i class="far fa-envelope"></i>
-                    Unread
+                <span v-if="props.rowData.read_at === null" style="cursor:pointer" @click="read(props.rowData.id)"
+                      class="far fa-envelope fa-lg">
                 </span>
 
                 <span v-if="props.rowData.read_at !==  null" style="cursor:pointer" @click="unread(props.rowData.id)">
-                   <i class="far fa-envelope-open"></i>
-                    Read
+                   <i class="far fa-envelope-open fa-lg"></i>
                 </span>
             </template>
 
@@ -38,6 +37,7 @@
         props: ["filter"],
         data() {
             return {
+
                 orderBy: "",
 
                 sortOrder: [
@@ -46,7 +46,8 @@
                     {
                         title: "STATUS",
                         name: "__slot:changeStatus",
-                        sortField: "read_at"
+                        sortField: "read_at",
+                        width:"80px"
                     },
                     {
                         title: "SUBJECT",
@@ -88,6 +89,18 @@
                 }
             },
 
+            transform(data) {
+                for (let record of data.data) {
+                    record['created_at'] = this.formatDate(record['created_at']);
+                    if (record['read_at']) {
+                        record['read_at'] = this.formatDate(record['read_at']);
+                    } else {
+                        record['read_at'] = null;
+                    }
+                }
+                return data;
+            },
+
             fetch() {
                 this.loading = true;
                 if (this.cancelToken) {
@@ -122,25 +135,7 @@
 </script>
 
 <style lang="scss" scoped>
-    /deep/ th#_total_users {
-        width: 150px;
-        text-align: center;
-    }
-
-    /deep/ th#_description {
-        width: 250px;
-    }
-
-    /deep/ i.fa-circle {
-        &.active {
-            color: green;
-        }
-        &.inactive {
-            color: red;
-        }
-    }
-
-    /deep/ tr td:nth-child(4) {
+    /deep/ tr td:nth-child(1) {
         padding: 6px 10px;
     }
 </style>

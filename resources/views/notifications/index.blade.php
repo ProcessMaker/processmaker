@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-{{__('Notifications')}}
+{{__('Notifications inbox')}}
 @endsection
 
 @section('sidebar')
@@ -10,7 +10,7 @@
 
 @section('content')
 <div class="container page-content" id="notifications">
-  <h1>{{__('Notifications')}}</h1>
+  <h1>{{__('Notifications inbox')}}</h1>
   <div class="row">
     <div class="col">
       <div class="input-group">
@@ -19,6 +19,7 @@
             <i class="fas fa-search"></i>
           </span>
         </div>
+
         <input v-model="filter" class="form-control" placeholder="{{__('Search')}}...">
       </div>
 
@@ -27,6 +28,7 @@
       
     </div>
   </div>
+
   <div class="container-fluid">
     <notifications-list :filter="filter"></notifications-list>
   </div>
