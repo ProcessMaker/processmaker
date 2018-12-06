@@ -19,6 +19,10 @@ mix.webpackConfig({
             new MonocoEditorPlugin()
         ],
         resolve: {
+            modules: [
+                path.resolve(__dirname, 'node_modules'),
+                'node_modules'
+            ],
             symlinks: false,
             alias: {
                 // This is so we can override some of Laravel Horizon's javascript with our own so we can embed in our UI
