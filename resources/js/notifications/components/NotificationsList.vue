@@ -135,8 +135,12 @@
 </script>
 
 <style lang="scss" scoped>
-    /deep/ tr td:nth-child(1) {
-        padding: 6px 10px;
+    /deep/ .vuetable-th-slot-subject {
+        min-width: 450px;
+        white-space: nowrap;
+    }
+    /deep/ tr td:nth-child(1) span {
+        padding: 6px 0px 0px 12px;
     }
 </style>
 
