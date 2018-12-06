@@ -44,7 +44,7 @@
         watch: {
             messages(value, mutation) {
                 $(this.$el)
-                    .find(".dropdown-menu")
+                    .find(".dropdown")
                     .dropdown("toggle");
             }
         },
