@@ -207,21 +207,27 @@ class User extends Authenticatable implements HasMedia
         return $url;
     }
 
+    /**
+     * Returns the list of notifications not read by the user
+     *
+     * @return \Illuminate\Support\Collection
+     */
     public function activeNotifications()
     {
-        $tasks = DB::table('notifications')
-            ->where('data->user_id', $this->id)
+        $notifications = DB::table('notifications')
+            ->where('notifiable_type', User::class)
+            ->where('notifiable_id', $this->id)
             ->whereNull('read_at')
             ->get();
 
         $data = [];
-        foreach ($tasks as $task) {
-            $taskData = json_decode($task->data, false);
-            $taskData->id = $task->id;
-            $data[] = $taskData;
+        foreach ($notifications as $notification) {
+            $notificationData = json_decode($notification->data, false);
+            $notificationData->id = $notification->id;
+            $data[] = $notificationData;
         }
 
-        return $data;
+        return collect($data);
     }
 
     /**

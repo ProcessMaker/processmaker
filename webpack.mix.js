@@ -55,6 +55,8 @@ mix.webpackConfig({
     .js('resources/js/tasks/index.js', 'public/js/tasks/index.js')
     .js('resources/js/tasks/show.js', 'public/js/tasks/show.js')
 
+    .js('resources/js/notifications/index.js', 'public/js/notifications/index.js')
+
 
 
 

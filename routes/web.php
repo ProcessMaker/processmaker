@@ -44,6 +44,8 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
     ]);
 
     Route::resource('tasks', 'TaskController');
+
+    Route::resource('notifications', 'NotificationController');
 });
 
 // Add our broadcasting routes
@@ -63,3 +65,4 @@ $this->post('password/reset', 'Auth\ResetPasswordController@reset');
 $this->get('password/success', function () {
     return view('auth.passwords.success', ['title' => __('Password Reset')]);
 })->name('password-success');
+
