@@ -95,6 +95,7 @@
   * [What is Process Modeling?](designing-processes/process-design/what-is-process-modeling.md)
   * [Process Modeling Element Descriptions](designing-processes/process-design/process-modeling-element-descriptions.md)
   * [Model Your Process](designing-processes/process-design/model-your-process/README.md)
+    * [Add and Configure an Event Element](designing-processes/process-design/model-your-process/add-and-configure-an-event-element.md)
     * [Use the Top Bar](designing-processes/process-design/model-your-process/toolboxes.md)
     * [Interact With an Element](designing-processes/process-design/model-your-process/bpmn-side-bar/README.md)
       * [Use a Task Element](designing-processes/process-design/model-your-process/bpmn-side-bar/task.md)

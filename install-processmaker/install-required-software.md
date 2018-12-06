@@ -80,7 +80,7 @@ After you run the previous command a wizard displays:
 
 ![MySQL wizard to configure the MySQL database](../.gitbook/assets/3.1centos68mysqlsecure0.png)
 
-If there was a password set you need to enter that password. Otherwise press \[Enter\] to continue: 
+If there was a password set you need to enter that password. Otherwise press **Enter** to continue: 
 
 ![Enter the password or press \[Enter\] to continue](../.gitbook/assets/3.1centos68mysqlsecure01.png)
 

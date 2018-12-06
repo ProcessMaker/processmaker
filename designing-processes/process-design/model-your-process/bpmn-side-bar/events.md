@@ -21,13 +21,13 @@ See the following sections for information how to use this element in a process 
 * [Set an Event Identifier](events.md#set-an-event-identifier)
 * [Set an Event Name](events.md#set-an-event-name)
 
-## Adding an Event Element
+## Add a Start Event Element
 
-Follow these steps to add an event to the process modeler:
+Follow these steps to add a Start Event element to the process model:
 
 1. [View your processes](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/~/drafts/-LRhVZm0ddxDcGGdN5ZN/primary/designing-processes/viewing-processes/view-the-list-of-processes/view-your-processes#view-all-processes). The **Processes** page displays.
-2. Click a process to open it. Process Modeler displays.
-3. Locate the [event](events.md#event-types) element in the BPMN left side bar. Drag and drop the element to the process modeler. The event has been added to the process modeler.
+2. Create a new process or click the process name of an existing process to open it. Process Modeler displays.
+3. Locate the Start Event element in the **BPMN** left side bar. Drag and drop the element to where in the process model you want to place it. The event has been added to the process model.
 
 \[Image\]
 
