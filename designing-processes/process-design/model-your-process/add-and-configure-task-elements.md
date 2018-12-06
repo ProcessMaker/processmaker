@@ -32,7 +32,7 @@ Follow these steps to edit the identifier value for a Task element:
 
 1. Place a [Task](add-and-configure-task-elements.md#add-a-task-element) element into your process model.
 2. Click the Task element in which to edit its identifier value. The current Task identifier value displays in the **Identifier** field in the right side bar.
-3. In the **Identifier** field, edit the the selected Task element's identifier value and then press **Enter**. The identifier value is changed.
+3. In the **Identifier** field, edit the selected Task element's identifier value and then press **Enter**. The identifier value is changed.
 
 ### Edit the Element Name
 
@@ -42,9 +42,17 @@ Follow these steps to edit the name for a Task element:
 
 1. Place a [Task](add-and-configure-task-elements.md#add-a-task-element) element into your process model.
 2. Click the Task element in which to edit its name. The current name displays in the **Name** field in the right side bar.
-3. In the **Name** field, edit the the selected Task element's name and then press **Enter**. The element's name is changed.
+3. In the **Name** field, edit the selected Task element's name and then press **Enter**. The element's name is changed.
 
-### Select the ProcessMaker Screen for Task Input
+### Select the ProcessMaker Screen for a Task Element
+
+{% hint style="info" %}
+For information about ProcessMaker Screens, see [What is a Screen?](../../design-forms/what-is-a-form.md).
+{% endhint %}
+
+Since Task elements are designed to collect or display [Request](../../../using-processmaker/requests/what-is-a-request.md) information, specify which ProcessMaker Screen a selected Task element uses. A ProcessMaker Screen must already exist before it can be selected for use in a Task element.
+
+Follow these steps to select a ProcessMaker Screen for a Task element:
 
 
 
