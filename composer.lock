@@ -2812,12 +2812,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/nayra.git",
-                "reference": "b012aad681847a6df342c4074a505e3e70432382"
+                "reference": "e1a5d8291ae8220c3d9b6a0950076af6076f5831"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/b012aad681847a6df342c4074a505e3e70432382",
-                "reference": "b012aad681847a6df342c4074a505e3e70432382",
+                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/e1a5d8291ae8220c3d9b6a0950076af6076f5831",
+                "reference": "e1a5d8291ae8220c3d9b6a0950076af6076f5831",
                 "shasum": ""
             },
             "require-dev": {
@@ -2834,7 +2834,7 @@
                 "Apache-2.0"
             ],
             "description": "BPMN compliant engine",
-            "time": "2018-11-09T22:16:07+00:00"
+            "time": "2018-12-06T23:35:27+00:00"
         },
         {
             "name": "psr/cache",
