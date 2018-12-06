@@ -18,8 +18,8 @@ See the following sections for information how to use this element in a process 
 Follow these steps to add an event to the process modeler:
 
 1. [View your processes](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/~/drafts/-LRhVZm0ddxDcGGdN5ZN/primary/designing-processes/viewing-processes/view-the-list-of-processes/view-your-processes#view-all-processes). The **Processes** page displays.
-2. Click a process to open it. The process modeler displays.
-3. Locate the text annotation element in the BPMN left side bar. Drag and drop the element to the process modeler. The text annotation has been added to the process modeler.
+2. Click a process to open it. Process Modeler displays.
+3. Locate the text annotation element in the BPMN left side bar. Drag and drop the element to the process modeler. The text annotation has been added to the process model.
 
 \[Image\]
 
@@ -27,7 +27,7 @@ Follow these steps to add an event to the process modeler:
 
 Follow these steps to set a text annotation identifier:
 
-1. [Add a text annotation](text-annotation.md#adding-a-text-annotation) to the process modeler.
+1. [Add a text annotation](text-annotation.md#adding-a-text-annotation) to the process model.
 2. Click the new text annotation.
 3. The default text annotation identifier displays in the context right side bar.
 4. In the **Identifier** field, enter a text annotation ID identifier. Process Modeler automatically saves the new value.
@@ -42,7 +42,7 @@ The ID identifier should be unique across all elements in the diagram.
 
 Follow these steps to set a text annotation identifier:
 
-1. [Add a text annotation](text-annotation.md#adding-a-text-annotation) to the process modeler.
+1. [Add a text annotation](text-annotation.md#adding-a-text-annotation) to the process model.
 2. Click the new text annotation.
 3. The default text annotation description displays in the context right side bar.
 4. In the **Annotation Description** field, enter a text annotation description. Process Modeler automatically saves the new value.

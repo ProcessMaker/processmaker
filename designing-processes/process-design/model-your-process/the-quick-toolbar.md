@@ -25,7 +25,7 @@ Take into account that the flow connector is not available in an End event in th
 Follow these steps to delete an element:
 
 1. ​[View your processes](../../viewing-processes/view-the-list-of-processes/view-your-processes.md#view-all-processes). The **Processes** page displays.
-2. Click a process to open it. The process modeler displays.
+2. Click a process to open it. Process Modeler displays.
 3. Select the element to be deleted. Available options display in the Quick toolbar. \[Image\]
 4. Click the **Trash** icon \[Image\]. The element is deleted.
 

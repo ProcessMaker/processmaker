@@ -70,6 +70,18 @@ Below is a Text Annotation element in Process Modeler.
 
 Sequence Flow represents intended workflow in a modeled process. As a best practice indicate a consistent direction of Sequence Flows, either left to right or top to bottom, to make modeled processes easier to understand.
 
+In Process Modeler, a Sequence Flow indicator displays when you click a process element to the model. Below the arrow icon represents a Sequence Flow indicator in Process Modeler.
+
+![Sequence Flow indicator on a selected process element](../../.gitbook/assets/sequence-flow-indicator-process-modeler-processes.png)
+
+The Sequence Flow indicates how two process elements are connected. Below are two process elements connected in Process Modeler.
+
+![Two process elements connected by the Sequence Flow](../../.gitbook/assets/sequence-flow-connecting-elements-process-modeler-processes.png)
+
+{% hint style="info" %}
+For information how to connect process elements, see [Connect and Delete Elements](model-your-process/the-quick-toolbar.md#connect-one-element-to-another).
+{% endhint %}
+
 ## Organize Process Participants
 
 BPMN 2.0 provides graphical representations to organize participants in a modeled process.

@@ -26,7 +26,7 @@ See the following sections for information how to use this element in a process 
 Follow these steps to add an event to the process modeler:
 
 1. [View your processes](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/~/drafts/-LRhVZm0ddxDcGGdN5ZN/primary/designing-processes/viewing-processes/view-the-list-of-processes/view-your-processes#view-all-processes). The **Processes** page displays.
-2. Click a process to open it. The process modeler displays.
+2. Click a process to open it. Process Modeler displays.
 3. Locate the [event](events.md#event-types) element in the BPMN left side bar. Drag and drop the element to the process modeler. The event has been added to the process modeler.
 
 \[Image\]
@@ -54,7 +54,7 @@ Take into account that the process modeler can save automatically an identifier 
 
 Follow these steps to set an event name:
 
-1. [Add an event](events.md#adding-an-event-element) to the process modeler.
+1. [Add an event](events.md#adding-an-event-element) to the process model.
 2. Click the new event.
 3. The default event name displays in the context right side bar.
 4. In the **Name** field, enter an event name. Process Modeler automatically saves the new value.

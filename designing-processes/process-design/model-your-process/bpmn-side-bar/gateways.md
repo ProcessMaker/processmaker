@@ -18,8 +18,8 @@ See the following sections for information how to use this element in a process 
 Follow these steps to add an exclusive gateway to the process modeler:
 
 1. [View your processes](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/~/drafts/-LRhVZm0ddxDcGGdN5ZN/primary/designing-processes/viewing-processes/view-the-list-of-processes/view-your-processes#view-all-processes). The **Processes** page displays.
-2. Click a process to open it. The process modeler displays.
-3. Locate the exclusive gateway element in the BPMN left side bar. Drag and drop the element to the process modeler. The exclusive gateway has been added to the process modeler.
+2. Click a process to open it. Process Modeler displays.
+3. Locate the exclusive gateway element in the BPMN left side bar. Drag and drop the element to the process modeler. The exclusive gateway has been added to the process model.
 
 \[Image\]
 
@@ -27,7 +27,7 @@ Follow these steps to add an exclusive gateway to the process modeler:
 
 Follow these steps to set a gateway identifier:
 
-1. [Add an exclusive gateway](gateways.md#adding-an-exclusive-gateway-element) to the process modeler.
+1. [Add an exclusive gateway](gateways.md#adding-an-exclusive-gateway-element) to the process model.
 2. Click the new exclusive gateway.
 3. The default exclusive gateway identifier displays in the context right side bar.
 4. In the **Identifier** field, enter an exclusive gateway ID identifier. Process Modeler automatically saves the new value.
@@ -42,7 +42,7 @@ The ID identifier should be unique across all elements in the diagram.
 
 Follow these steps to set an exclusive gateway name:
 
-1. [Add an exclusive gateway](gateways.md#adding-an-exclusive-gateway-element) to the process modeler.
+1. [Add an exclusive gateway](gateways.md#adding-an-exclusive-gateway-element) to the process model.
 2. Click the new exclusive gateway.
 3. The default exclusive gateway name displays in the context right side bar.
 4. In the **Name** field, enter an exclusive gateway name. Process Modeler automatically saves the new value.
@@ -53,7 +53,7 @@ Follow these steps to set an exclusive gateway name:
 
 Follow these steps to define an exclusive gateway direction:
 
-1. [Add an exclusive gateway](gateways.md#adding-an-exclusive-gateway-element) to the process modeler.
+1. [Add an exclusive gateway](gateways.md#adding-an-exclusive-gateway-element) to the process model.
 2. Click the new exclusive gateway.
 3. Two exclusive gateway directions displays in the context right side bar.
 4. In the **Direction** dropdown, select the direction between: 
