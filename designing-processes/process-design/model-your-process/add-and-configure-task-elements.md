@@ -52,6 +52,10 @@ For information about ProcessMaker Screens, see [What is a Screen?](../../design
 
 Since Task elements are designed to collect or display [Request](../../../using-processmaker/requests/what-is-a-request.md) information, specify which ProcessMaker Screen a selected Task element uses. A ProcessMaker Screen must already exist before it can be selected for use in a Task element.
 
+{% hint style="warning" %}
+Ensure to select a ProcessMaker Screen for each Task element in your process model. If a ProcessMaker Screen is not specified and Requests are started for that process, users who are assigned that task have no way of interacting with the Request.
+{% endhint %}
+
 Follow these steps to select a ProcessMaker Screen for a Task element:
 
 
