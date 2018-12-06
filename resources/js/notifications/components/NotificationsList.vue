@@ -4,33 +4,20 @@
                   @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data"
                   pagination-path="meta">
 
-            <template slot="taskName" slot-scope="props">
+            <template slot="subject" slot-scope="props">
                 <a v-bind:href="props.rowData.url">{{props.rowData.name}}</a>
             </template>
 
             <template slot="changeStatus" slot-scope="props">
-                <span v-if="props.rowData.read_at === null"  class="badge badge-pill badge-info"
-                      style="cursor:pointer" @click="dismiss(props.rowData.id)">
-                    Dismiss
+                <span v-if="props.rowData.read_at === null" style="cursor:pointer" @click="read(props.rowData.id)">
+                   <i class="far fa-envelope"></i>
+                    Read
                 </span>
 
-                <span v-if="props.rowData.read_at !==  null"  class="badge badge-pill badge-secondary"
-                      style="cursor:pointer" @click="unread(props.rowData.id)">
+                <span v-if="props.rowData.read_at !==  null" style="cursor:pointer" @click="unread(props.rowData.id)">
+                   <i class="far fa-envelope"></i>
                     Unread
                 </span>
-            </template>
-
-            <template slot="actions" slot-scope="props">
-                <div class="actions">
-                    <div class="popout">
-                        <b-btn variant="action" @click="onAction('edit', props.rowData, props.rowIndex)"
-                               v-b-tooltip.hover title=""><i class="fas fa-edit"></i></b-btn>
-                        <b-btn variant="action" @click="onAction('pause', props.rowData, props.rowIndex)"
-                               v-b-tooltip.hover title=""><i class="fas fa-pause"></i></b-btn>
-                        <b-btn variant="action" @click="onAction('undo', props.rowData, props.rowIndex)"
-                               v-b-tooltip.hover title=""><i class="fas fa-undo"></i></b-btn>
-                    </div>
-                </div>
             </template>
 
         </vuetable>
@@ -51,31 +38,25 @@
         props: ["filter"],
         data() {
             return {
-                orderBy: "created_at",
+                orderBy: "",
 
                 sortOrder: [
-                    {
-                        field: "created_at",
-                        sortField: "created_at",
-                        direction: "asc"
-                    },
                 ],
                 fields: [
                     {
-                        title: "TASK",
-                        name: "__slot:taskName",
-                    },
-                    {
-                        title: "PROCESS",
-                        name: "processName"
-                    },
-                    {
-                        title: "id",
-                        name: "id"
-                    },
-                    {
-                        title: "REQUEST",
+                        title: "STATUS",
                         name: "__slot:changeStatus",
+                        sortField: "read_at"
+                    },
+                    {
+                        title: "SUBJECT",
+                        name: "__slot:subject",
+                        sortField: "name",
+                    },
+                    {
+                        title: "DATE CREATED",
+                        name: "created_at",
+                        sortField: "created_at"
                     }
                 ]
             };
@@ -88,7 +69,7 @@
             }
         },
         methods: {
-            dismiss(id) {
+            read(id) {
                 ProcessMaker.removeNotifications([id]);
                 this.fetch();
             },
@@ -96,27 +77,6 @@
             unread(id){
                 ProcessMaker.unreadNotifications([id]);
                 this.fetch();
-            },
-
-            onAction(action, rowData, index) {
-                if (action === "openTask") {
-                    let link = rowData.url;
-                    window.location = link;
-                }
-            },
-            formatDueDate(value) {
-                let dueDate = moment(value);
-                let now = moment();
-                let diff = dueDate.diff(now, "hours");
-                let color =
-                    diff < 0 ? "text-danger" : diff <= 1 ? "text-warning" : "text-primary";
-                return '<span class="' + color + '">' + this.formatDate(dueDate) +
-                    "</span>";
-            },
-            getTaskStatus() {
-                let path = new URL(location.href);
-                let status = path.searchParams.get('status');
-                return ((status === null) ? 'ACTIVE' : status);
             },
 
             getSortParam: function () {

@@ -56,6 +56,7 @@ class NotificationController extends Controller
         $query = Notification::select(
             'id',
             'read_at',
+            'created_at',
             'data->>name as name',
             'data->>message as message',
             'data->>processName as processName',
@@ -67,20 +68,18 @@ class NotificationController extends Controller
 
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
-            $filter = '%' . $filter . '%';
-            $query->where(function ($query) use ($filter) {
-                $query->Where('data->name', 'like', $filter)
-                    ->orWhere('data->processName', 'like', $filter)
-                    ->orWhereRaw("case when read_at is null then 'dismiss' else 'unread' end like '$filter'");
+            $subsearch = '%' . $filter . '%';
+            $query->where(function ($query) use ($subsearch, $filter) {
+                $query->Where('data->name', 'like', $subsearch)
+                    ->orWhereRaw("case when read_at is null then 'read' else 'unread' end like '$filter%'");
             });
         }
 
         $response =
             $query->orderBy(
-                $request->input('order_by', 'id'),
-                $request->input('order_direction', 'ASC')
-            )
-                ->paginate($request->input('per_page', 10));
+                $request->input('order_by', 'created_at'),
+                $request->input('order_direction', 'DESC')
+            )->paginate($request->input('per_page', 10));
 
         return new ApiCollection($response);
     }
