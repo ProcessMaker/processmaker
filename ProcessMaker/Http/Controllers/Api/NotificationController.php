@@ -57,6 +57,7 @@ class NotificationController extends Controller
             'id',
             'read_at',
             'created_at',
+            'updated_at',
             'data->>name as name',
             'data->>message as message',
             'data->>processName as processName',
