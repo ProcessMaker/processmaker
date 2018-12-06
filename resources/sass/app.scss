@@ -37,7 +37,7 @@
 .multiselect,
 .multiselect__input,
 .multiselect__single {
-  font-size: 14px;
+  // font-size: 14px;
 }
 
 body,
@@ -107,7 +107,7 @@ html {
 
   .dropdown a {
     color: #333333;
-    font-size: 14px;
+    // font-size: 14px;
     padding-top: 7px;
     padding-bottom: 7px;
 
@@ -141,7 +141,7 @@ html {
   }
 
   .nav-link {
-    font-size: 18px;
+    // font-size: 18px;
     font-weight: normal;
     color: #333333;
 
@@ -160,7 +160,7 @@ html {
 /*modal style*/
 .modal-title {
   margin-left: 15px;
-  font-size: 18px;
+  // font-size: 18px;
   font-weight: 600;
 }
 
@@ -172,7 +172,7 @@ html {
   .close {
     padding: 20px;
     margin-right: -3px;
-    font-size: 28px;
+    // font-size: 28px;
     font-weight: 1000;
     margin: -26px;
   }
@@ -193,7 +193,7 @@ html {
 }
 
 .form-check label {
-  font-size: 14px;
+  // font-size: 14px;
   color: #788793;
   margin-bottom: 0;
 }
@@ -203,7 +203,7 @@ html {
 }
 
 .form-control {
-  font-size: 14px;
+  // font-size: 14px;
   color: #333333;
   border-color: #b6bfc6;
   border-radius: 2px;
@@ -236,7 +236,7 @@ select.form-control:not([size]):not([multiple]) {
   border-radius: 0.12rem;
   padding: 7px 16px;
   line-height: 1;
-  font-size: 14px;
+  // font-size: 14px;
   text-transform: uppercase;
   font-weight: 400;
 }
@@ -250,7 +250,7 @@ select.form-control:not([size]):not([multiple]) {
   background-color: #788793;
   border-color: #788793;
   text-transform: uppercase;
-  font-size: 14px;
+  // font-size: 14px;
   font-weight: 600;
 }
 
@@ -263,7 +263,7 @@ a.btn-action {
 }
 
 h1.page-title {
-  font-size: 18px;
+  // font-size: 18px;
   font-weight: 600;
 
   margin-right: 16px;
@@ -276,7 +276,7 @@ h1.page-title {
 // Data table rules
 table.vuetable {
   margin-top: 16px;
-  font-size: $font-size-base;
+  // // font-size: $font-size-base;
 
   tr {
     .actions {
@@ -301,7 +301,7 @@ table.vuetable {
         right: 0;
         top: 0;
         margin: 3px;
-        font-size: $font-size-large;
+        // // font-size: $font-size-large;
 
         button.btn-action {
           color: #788793;
@@ -457,12 +457,12 @@ table.vuetable {
 
   h1 {
     font-weight: 600;
-    font-size: 31px;
+    // font-size: 31px;
     line-height: 46px;
   }
 
   p {
-    font-size: 23px;
+    // font-size: 23px;
   }
 }
 
@@ -499,7 +499,7 @@ table.vuetable {
 
 .avatar-initials-list {
   position: relative;
-  font-size: 12px;
+  // font-size: 12px;
   line-height: 10px;
   color: #fff;
   margin: -7px;

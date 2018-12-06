@@ -1,28 +1,32 @@
-
-
-
 // Changing the body background and text
 $body-bg: #f7f9fb;
 
 // Fonts
 
-$font-family-sans-serif:  "Open Sans" !default;
-$font-family-serif:       Georgia, "Times New Roman", Times, serif !default;
+$font-family-sans-serif: "Open Sans" !default;
+$font-family-serif: Georgia,
+"Times New Roman",
+Times,
+serif !default;
 
 //** Default monospace fonts for `<code>`, `<kbd>`, and `<pre>`.
-$font-family-monospace:   Menlo, Monaco, Consolas, "Courier New", monospace !default;
-$font-family-base:        $font-family-sans-serif !default;
+$font-family-monospace: Menlo,
+Monaco,
+Consolas,
+"Courier New",
+monospace !default;
+$font-family-base: $font-family-sans-serif !default;
 
-$font-size-base:          0.75rem !default;
-$font-size-large:         ceil(($font-size-base * 1.25)) !default; // ~18px
-$font-size-small:         ceil(($font-size-base * 0.85)) !default; // ~12px
+// $font-size-base: 0.75rem !default;
+// $font-size-large: ceil(($font-size-base * 1.25)) !default; // ~18px
+// $font-size-small: ceil(($font-size-base * 0.85)) !default; // ~12px
 
-$font-size-h1:            floor(($font-size-base * 2.6)) !default; // ~36px
-$font-size-h2:            floor(($font-size-base * 2.15)) !default; // ~30px
-$font-size-h3:            ceil(($font-size-base * 1.7)) !default; // ~24px
-$font-size-h4:            ceil(($font-size-base * 1.25)) !default; // ~18px
-$font-size-h5:            $font-size-base !default;
-$font-size-h6:            ceil(($font-size-base * 0.85)) !default; // ~12px
+// $font-size-h1: floor(($font-size-base * 2.6)) !default; // ~36px
+// $font-size-h2: floor(($font-size-base * 2.15)) !default; // ~30px
+// $font-size-h3: ceil(($font-size-base * 1.7)) !default; // ~24px
+// $font-size-h4: ceil(($font-size-base * 1.25)) !default; // ~18px
+// $font-size-h5: $font-size-base !default;
+// $font-size-h6: ceil(($font-size-base * 0.85)) !default; // ~12px
 
 // Changing the theme colors
 $primary: #3397e1;
@@ -47,15 +51,15 @@ $link-hover-decoration: none;
 
 // components
 
-$component-active-color:    $primary !default;
+$component-active-color: $primary !default;
 $component-active-bg: $light;
 
 // navbar
-$navbar-default-link-active-color:         $primary !default;
-$navbar-inverse-link-active-color:          $primary !default;
-$nav-tabs-active-link-hover-color:         $primary !default;
-$nav-pills-active-link-hover-color:          $primary !default;
-$list-group-active-color:          $primary !default;
+$navbar-default-link-active-color: $primary !default;
+$navbar-inverse-link-active-color: $primary !default;
+$nav-tabs-active-link-hover-color: $primary !default;
+$nav-pills-active-link-hover-color: $primary !default;
+$list-group-active-color: $primary !default;
 
 //pagination
 $pagination-color: $secondary;
@@ -72,15 +76,15 @@ $breadcrumb-divider-color: $primary;
 $breadcrumb-item: $secondary;
 
 //table
-$table-cell-padding:            10px !default;
-$table-condensed-cell-padding:  5px !default;
-$table-bg:                      $light !default;
-$table-bg-accent:               #f9f9f9 !default;
-$table-bg-hover:                $grey-bg !default;
-$table-bg-active:               $table-bg-hover !default;
+$table-cell-padding: 10px !default;
+$table-condensed-cell-padding: 5px !default;
+$table-bg: $light !default;
+$table-bg-accent: #f9f9f9 !default;
+$table-bg-hover: $grey-bg !default;
+$table-bg-active: $table-bg-hover !default;
 
 //** Border color for table and cell borders.
-$table-border-color:            $grey-bg !default;
+$table-border-color: $grey-bg !default;
 
 //
 
