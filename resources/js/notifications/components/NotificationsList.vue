@@ -11,12 +11,12 @@
             <template slot="changeStatus" slot-scope="props">
                 <span v-if="props.rowData.read_at === null" style="cursor:pointer" @click="read(props.rowData.id)">
                    <i class="far fa-envelope"></i>
-                    Read
+                    Unread
                 </span>
 
                 <span v-if="props.rowData.read_at !==  null" style="cursor:pointer" @click="unread(props.rowData.id)">
-                   <i class="far fa-envelope"></i>
-                    Unread
+                   <i class="far fa-envelope-open"></i>
+                    Read
                 </span>
             </template>
 

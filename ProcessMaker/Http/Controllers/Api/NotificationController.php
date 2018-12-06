@@ -71,7 +71,7 @@ class NotificationController extends Controller
             $subsearch = '%' . $filter . '%';
             $query->where(function ($query) use ($subsearch, $filter) {
                 $query->Where('data->name', 'like', $subsearch)
-                    ->orWhereRaw("case when read_at is null then 'read' else 'unread' end like '$filter%'");
+                    ->orWhereRaw("case when read_at is null then 'unread' else 'read' end like '$filter%'");
             });
         }
 
@@ -294,63 +294,4 @@ class NotificationController extends Controller
             ->update(['read_at' => null]);
         return response($updated, 201);
     }
-
-    /**
-     * Returns a list of notifications not read by the authenticated user
-     *
-     * @param Request $request
-     *
-     * @return ApiCollection
-     *
-     * @OA\Get(
-     *     path="/user_notifications",
-     *     summary="Returns a list of notifications not read by the authenticated user",
-     *     tags={"Notifications"},
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="list of notifications",
-     *         @OA\JsonContent(
-     *             type="array",
-     *              @OA\Items (
-     *                      @OA\Property(
-     *                          property="count",
-     *                          type="integer",
-     *                          description="Total number of notifications "
-     *                      ),
-     *                      @OA\Property(
-     *                          property="notifications",
-     *                          type="array",
-     *                          description="List of the first notifications"
-     *                      ),
-     *              )
-     *             ),
-     *         ),
-     *     )
-     */
-    public function userNotifications(Request $request)
-    {
-        $query = Notification::select(
-                'id',
-                'read_at',
-                'data->name as name',
-                'data->message as message',
-                'data->processName as processName',
-                'data->userName as userName',
-                'data->request_id as request_id',
-                'data->url as url')
-            ->where('notifiable_type', User::class)
-            ->where('notifiable_id', Auth::user()->id)
-            ->whereNull('read_at');
-
-        $response =
-            $query->orderBy(
-                $request->input('order_by', 'id'),
-                $request->input('order_direction', 'ASC')
-            )
-                ->paginate($request->input('per_page', 5));
-
-        return new ApiCollection($response);
-    }
-
 }

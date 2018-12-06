@@ -60,6 +60,9 @@
         methods: {
             remove(message) {
                 ProcessMaker.removeNotifications([message.id]);
+                if (this.totalMessages > 0) {
+                    this.totalMessages--;
+                }
             },
             formatDateTime(iso8601) {
                 return moment(iso8601).format("MM/DD/YY HH:mm");
@@ -78,7 +81,7 @@
             });
 
             let self = this;
-            ProcessMaker.apiClient.get('/user_notifications')
+            ProcessMaker.apiClient.get('/notifications?per_page=5&filter=unread')
                 .then(function (response) {
                     response.data.data.forEach(function (element) {
                         ProcessMaker.pushNotification(element);

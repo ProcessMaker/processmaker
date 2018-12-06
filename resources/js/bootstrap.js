@@ -81,20 +81,7 @@ window.ProcessMaker = {
      * @param urls
      */
     unreadNotifications (messageIds = [], urls = []) {
-        console.log('alalala');
-        window.ProcessMaker.apiClient.put('/unread_notifications', {message_ids: messageIds, routes: urls})
-            .then(response => {console.log(response)});
-
-        // messageIds.forEach(function (messageId) {
-        //     ProcessMaker.notifications.push(ProcessMaker.notifications.findIndex(x => x.id === messageId), 1);
-        // });
-
-        // urls.forEach(function (url) {
-        //     let messageIndex = ProcessMaker.notifications.findIndex(x => x.url === url);
-        //     if (messageIndex >= 0) {
-        //         ProcessMaker.removeNotification(ProcessMaker.notifications[messageIndex].id);
-        //     }
-        // });
+        window.ProcessMaker.apiClient.put('/unread_notifications', {message_ids: messageIds, routes: urls});
     },
 };
 

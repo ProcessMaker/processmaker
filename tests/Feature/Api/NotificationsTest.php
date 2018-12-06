@@ -164,24 +164,4 @@ class NotificationsTest extends TestCase
         //Validate the header status code
         $response->assertStatus(405);
     }
-
-    public function testGetUserNotifications()
-    {
-        factory(Notification::class, 10)->create([
-            'notifiable_type' => User::class,
-            'notifiable_id' => $this->user->id,
-            'data' => '{"test":1}'
-        ]);
-
-        $response = $this->apiCall('GET', '/user_notifications');
-
-        //Validate the header status code
-        $response->assertStatus(200);
-
-        // Verify structure
-        $response->assertJsonStructure(['data', 'meta']);
-
-        // Verify count
-        $this->assertEquals(10, $response->json()['meta']['total']);
-    }
 }
