@@ -16,7 +16,7 @@
     },
     {
         "type": "vcs",
-        "url": "https://github.com/caleeli/bpm-package-email-connector.git"
+        "url": "https://github.com/nolanpro/bpm-package-email-connector.git"
     }
   ],
   "require": {
