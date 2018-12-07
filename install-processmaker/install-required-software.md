@@ -78,15 +78,15 @@ mysql_secure_installation
 
 After you run the previous command a wizard displays:
 
-![MySQL wizard to configure the MySQL database](../.gitbook/assets/3.1centos68mysqlsecure0.png)
+![MySQL wizard to configure the MySQL database](../.gitbook/assets/4centos7mysqlsecurepass.png)
 
 If there was a password set you need to enter that password. Otherwise press **Enter** to continue: 
 
-![Enter the password or press \[Enter\] to continue](../.gitbook/assets/3.1centos68mysqlsecure01.png)
+![Enter the password or press \[Enter\] to continue](../.gitbook/assets/4centos7mysqlsecurerootpass.png)
 
 The wizard asks you if you want to change the current password. Choose yes and change the password:
 
-![Change the current database password](../.gitbook/assets/3.1centos68mysqlsecure1.png)
+![Change the current database password](../.gitbook/assets/4centos7mysqlsecurechangepass.png)
 
 {% hint style="warning" %}
 ProcessMaker does NOT support special characters \(such as: `@ # $ % ^ & () /`\) in the root password.
@@ -94,11 +94,11 @@ ProcessMaker does NOT support special characters \(such as: `@ # $ % ^ & () /`\)
 
 The wizard asks you if you want to remove anonymous users. Choose yes.
 
-![Remove anonymous users](../.gitbook/assets/3.1centos68mysqlsecure02.png)
+![Remove anonymous users](../.gitbook/assets/4centos7mysqlsecureremoveanonimus.png)
 
 The wizard asks you if you want to disable the root login. Choose yes.
 
-![Disable the root login](../.gitbook/assets/3.1centos68mysqlsecure03.png)
+![Disable the root login](../.gitbook/assets/4centos7mysqlsecurerootlogin.png)
 
 {% hint style="info" %}
 If MySQL is in another server, you must create a new user and give that user the permissions to access.
@@ -106,11 +106,11 @@ If MySQL is in another server, you must create a new user and give that user the
 
 The wizard asks you if you want to remove the test database. Choose yes.
 
-![Remove the test database](../.gitbook/assets/3.1centos68mysqlsecure04.png)
+![Remove the test database](../.gitbook/assets/4centos7mysqlsecureremovetestdb%20%281%29.png)
 
 The wizard asks you if you want to reload the privilege tables. Choose yes.
 
-![Reload the privilege tables](../.gitbook/assets/3.1centos68mysqlsecure06.png)
+![Reload the privilege tables](../.gitbook/assets/4centos7mysqlsecurereloadtables.png)
 
 After you finish using the wizard restart the MySQL service.
 
