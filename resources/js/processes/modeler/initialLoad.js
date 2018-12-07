@@ -1,17 +1,17 @@
 // Our initial node types to register with our modeler
 import {
-association,
-        endEvent,
-        exclusiveGateway,
-        inclusiveGateway,
-        parallelGateway,
-        sequenceFlow,
-        startEvent,
-        task,
-        scriptTask,
-//        pool,
-//        poolLane,
-        textAnnotation
+    association,
+    endEvent,
+    exclusiveGateway,
+    inclusiveGateway,
+    parallelGateway,
+    sequenceFlow,
+    startEvent,
+    task,
+    scriptTask,
+    //pool,
+    //poolLane,
+    textAnnotation
 } from '@processmaker/modeler';
 import bpmnExtension from '@processmaker/processmaker-bpmn-moddle/resources/processmaker.json';
 import ModelerScreenSelect from './components/inspector/ScreenSelect';
@@ -19,6 +19,7 @@ import ExpressionEditor from './components/inspector/ExpressionEditor';
 import TaskAssignment from './components/inspector/TaskAssignment';
 import ConfigEditor from './components/inspector/ConfigEditor';
 import ScriptSelect from './components/inspector/ScriptSelect';
+import SummaryScreenSelect from './components/inspector/SummaryScreenSelect';
 
 Vue.component('ModelerScreenSelect', ModelerScreenSelect);
 Vue.component('ExpressionEditor', ExpressionEditor);
@@ -41,7 +42,7 @@ let nodeTypes = [
 //    poolLane,
 ]
 
-ProcessMaker.EventBus.$on('modeler-init', ({ registerNode, registerBpmnExtension, registerInspectorExtension }) => {
+ProcessMaker.EventBus.$on('modeler-init', ({registerNode, registerBpmnExtension, registerInspectorExtension}) => {
     /* Register basic node types */
     for (const node of nodeTypes) {
         registerNode(node, () => node.id);
@@ -94,6 +95,14 @@ ProcessMaker.EventBus.$on('modeler-init', ({ registerNode, registerBpmnExtension
             helper: 'Configuration JSON for the script task',
             name: 'id',
             property: 'config',
+        }
+    });
+    registerInspectorExtension(endEvent, {
+        component: 'SummaryScreenSelect',
+        config: {
+            label: 'Summary screen',
+            helper: 'Summary screen that will be displayed by the event.',
+            name: 'screenRef'
         }
     });
 });
