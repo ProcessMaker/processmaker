@@ -20,7 +20,7 @@
             </b-nav-item>
         @endforeach
     </b-navbar-nav>
-    <b-navbar-nav class="ml-auto">
+    <b-navbar-nav class="ml-auto" id="mobileRight">
         <li class="nav-item">
             <component id="navbar-request-button" v-bind:is="'request-modal'"></component>
         </li>
@@ -57,13 +57,5 @@
         border-left: 1px solid rgb(227, 231, 236);
         height: 30px;
         margin-top: 17px;
-    }
-
-    .nav-item {
-        padding-top: 5px;
-    }
-
-    .nav-notification {
-        padding-top: 8px;
     }
 </style>
