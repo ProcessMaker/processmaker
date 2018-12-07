@@ -13,6 +13,10 @@
     {
         "type": "vcs",
         "url": "https://github.com/ProcessMaker/laravel-chunk-upload"
+    },
+    {
+        "type": "vcs",
+        "url": "https://github.com/caleeli/bpm-package-email-connector.git"
     }
   ],
   "require": {
@@ -31,6 +35,7 @@
     "phing/phing": "^2.16",
     "pion/laravel-chunk-upload": "dev-bugfix",
     "predis/predis": "^1.1",
+    "processmaker/bpm-package-email-connector": "dev-master",
     "processmaker/nayra": "dev-master",
     "ralouphie/getallheaders": "^2.0",
     "spatie/laravel-fractal": "^5.3",

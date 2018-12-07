@@ -30,6 +30,11 @@ Vue.component('multiselect', Multiselect);
 //Event bus ProcessMaker
 window.ProcessMaker.events = new Vue();
 
+window.ProcessMaker.nodeTypes = [];
+window.ProcessMaker.nodeTypes.get = function(id) {
+    return this.find(node => node.id === id);
+}
+
 // Assign our navbar component to our global ProcessMaker object
 window.ProcessMaker.navbar = new Vue({
     el: "#navbar",
