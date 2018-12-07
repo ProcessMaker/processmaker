@@ -40,7 +40,8 @@ class ProcessSeeder extends Seeder
             echo 'Creating: ', $filename, "\n";
             $process = factory(Process::class)->make([
                 'bpmn' => file_get_contents($filename),
-                'user_id' => $admin->getKey()
+                'user_id' => $admin->getKey(),
+                'status' => 'ACTIVE',
             ]);
             //Load the process title from the the main process of the BPMN definition
             $processes = $process->getDefinitions()->getElementsByTagName('process');
@@ -127,15 +128,6 @@ class ProcessSeeder extends Seeder
             //Update the screen and script references in the BPMN of the process
             $process->bpmn = $definitions->saveXML();
             $process->save();
-
-            echo 'Process created: ', $process->uid, "\n";
-
-            //Create environment variables for the default processes
-            factory(EnvironmentVariable::class)->create([
-                'name' => 'hours_of_work',
-                'description' => 'Regular schedule of hours of work for employees',
-                'value' => '8'
-            ]);
         }
     }
 

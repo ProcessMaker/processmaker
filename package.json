@@ -47,7 +47,7 @@
     "@fortawesome/fontawesome-free-brands": "^5.0.13",
     "@fortawesome/fontawesome-free-solid": "^5.0.13",
     "@fortawesome/fontawesome-free-webfonts": "^1.0.9",
-    "@processmaker/modeler": "^0.1.14",
+    "@processmaker/modeler": "^0.1.15",
     "@processmaker/processmaker-bpmn-moddle": "^0.1.2",
     "@processmaker/vue-form-builder": "^0.4.0",
     "@tinymce/tinymce-vue": "^1.0.8",

@@ -10,10 +10,6 @@
                                v-b-tooltip.hover title="Edit"><i class="fas fa-edit"></i></b-btn>
                         <b-btn variant="action" @click="onDelete( props.rowData, props.rowIndex)" v-b-tooltip.hover
                                title="Remove"><i class="fas fa-trash-alt"></i></b-btn>
-                        <b-btn variant="action" @click="onAction('users-item', props.rowData, props.rowIndex)"
-                               v-b-tooltip.hover title="Users"><i class="fas fa-users"></i></b-btn>
-                        <b-btn variant="action" @click="onAction('permissions-item', props.rowData, props.rowIndex)"
-                               v-b-tooltip.hover title="Permissions"><i class="fas fa-user-lock"></i></b-btn>
                     </div>
                 </div>
             </template>

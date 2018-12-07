@@ -9,6 +9,8 @@ association,
         startEvent,
         task,
         scriptTask,
+//        pool,
+//        poolLane,
         textAnnotation
 } from '@processmaker/modeler';
 import bpmnExtension from '@processmaker/processmaker-bpmn-moddle/resources/processmaker.json';
@@ -35,6 +37,8 @@ let nodeTypes = [
     sequenceFlow,
     textAnnotation,
     association,
+//    pool,
+//    poolLane,
 ]
 
 ProcessMaker.EventBus.$on('modeler-init', ({ registerNode, registerBpmnExtension, registerInspectorExtension }) => {

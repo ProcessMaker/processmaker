@@ -19,8 +19,6 @@
                             aria-controls="nav-home" aria-selected="true">Information</a>
                         <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab"
                             aria-controls="nav-profile" aria-selected="false">Permissions</a>
-                        <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab"
-                            aria-controls="nav-contact" aria-selected="false">Groups</a>
                     </div>
                 </nav>
                 <div class="card card-body tab-content mt-3" id="nav-tabContent">
@@ -105,25 +103,58 @@
                         <table class="table mb-0">
                             <thead>
                                 <tr>
-                                    <th>Would you like to make this user an admin?</th>
-                                    <th><input type="checkbox" v-model="isAdmin"></th>
+                                    <th colspan="6"><label>Would you like to make this user an admin? <input type="checkbox" v-model="isAdmin"></label></th>
                                 </tr>
                                 <tr>
-                                    <th>Select All Permissions</th>
-                                    <th><input type="checkbox" v-model="selectAll" @click="select" :disabled="isAdmin = isAdmin"></th>
+                                    <th class="text-right" colspan="6"><label>Select All Permissions <input type="checkbox" v-model="selectAll" @click="select" :disabled="isAdmin = isAdmin"></label></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="permission in permissions">
-                                    <td>@{{permission.name}}</td>
-                                    <td><input type="checkbox" :value="permission.id" v-model="selected" :disabled="isAdmin = isAdmin"></td>
-                                </tr>
+                              <tr>
+                                <td>Name</td>
+                                <td>List</td>
+                                <td>Create</td>
+                                <td>Delete</td>
+                                <td>Edit</td>
+                                <td>View</td>
+                              @php
+                              $header = '';
+                              $i = 0;
+                              @endphp
+
+                              @foreach ($all_permissions as $key => $value)
+
+                              @php
+
+                              if(strpos($value['guard_name'],'.') === false) continue;
+
+                              list($guard,$action) = explode('.',$value['guard_name']);
+
+                              if($header !== $guard) {
+
+                              if($i > 0){
+                              echo '</tr>';
+                              }
+
+                              echo '<tr>
+                                <td>'.str_replace('_',' ',title_case($guard)).'</td>';
+
+                                $header = $guard;
+
+                                $i++;
+
+                                }
+
+                                @endphp
+
+                                <td align="center>"><input type="checkbox" :value="{{$value['id']}}" v-model="selected" :disabled="isAdmin = isAdmin"></td>
+
+                                @endforeach
+                              </tr>
                             </tbody>
                         </table>
                         <hr class="mt-0">
                         <button class="btn btn-secondary float-right" @click="onPermissionUpdate">SUBMIT</button>
-                    </div>
-                    <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
                     </div>
                 </div>
             </div>

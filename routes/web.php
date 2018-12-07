@@ -7,7 +7,6 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
 // Routes related to Authentication (password reset, etc)
 // Auth::routes();
     Route::namespace('Admin')->prefix('admin')->group(function () {
-        Route::resource('about', 'AboutController');
         Route::resource('groups', 'GroupController')->only(['index', 'edit', 'show']);
         Route::resource('preferences', 'PreferenceController');
         Route::resource('users', 'UserController');
@@ -27,6 +26,7 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
     });
 
     Route::resource('processes', 'ProcessController');
+    Route::get('about', 'AboutController@index')->name('about.index');
     Route::get('profile/edit', 'ProfileController@edit')->name('profile.edit');
     Route::get('profile/{id}', 'ProfileController@show');
     Route::put('profile/{id}', 'ProfileController@update')->name('profile.update');
@@ -44,6 +44,8 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
     ]);
 
     Route::resource('tasks', 'TaskController');
+
+    Route::resource('notifications', 'NotificationController');
 });
 
 // Add our broadcasting routes
@@ -63,3 +65,4 @@ $this->post('password/reset', 'Auth\ResetPasswordController@reset');
 $this->get('password/success', function () {
     return view('auth.passwords.success', ['title' => __('Password Reset')]);
 })->name('password-success');
+

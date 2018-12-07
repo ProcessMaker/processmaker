@@ -54,9 +54,10 @@ window.ProcessMaker = {
     /**
      * Removes notifications by message ids or urls
      *
-     * @param {object} notification
-     *
      * @returns {void}
+     * @param messageIds
+     *
+     * @param urls
      */
     removeNotifications (messageIds = [], urls = []) {
         window.ProcessMaker.apiClient.put('/read_notifications', {message_ids: messageIds, routes: urls});
@@ -70,6 +71,17 @@ window.ProcessMaker = {
                ProcessMaker.removeNotification(ProcessMaker.notifications[messageIndex].id);
             }
         });
+    },
+    /**
+     * Mark as unread a list of notifications
+     *
+     * @returns {void}
+     * @param messageIds
+     *
+     * @param urls
+     */
+    unreadNotifications (messageIds = [], urls = []) {
+        window.ProcessMaker.apiClient.put('/unread_notifications', {message_ids: messageIds, routes: urls});
     },
 };
 

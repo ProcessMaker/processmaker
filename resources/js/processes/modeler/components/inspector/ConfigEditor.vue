@@ -45,7 +45,7 @@
         },
         watch: {
             value() {
-                this.code = this.value;
+                this.code = this.propertyGetter;
             },
             code() {
                 const node = this.$parent.$parent.inspectorNode;

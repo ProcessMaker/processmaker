@@ -131,7 +131,9 @@
                                 <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
                                               :input-data="requestBy" display-name="true"></avatar-image>
                             </li>
-                            <template v-if="statusLabel !== 'Canceled'">
+                            
+                            @if($canCancel == true)
+                            <template v-if="statusLabel == 'In Progress' && canCancel == true">
                             <li class="list-group-item">
                                 <h5>{{__('Cancel Request')}}</h5>
                                 <button type="button" class="btn btn-outline-danger btn-block"
@@ -140,7 +142,7 @@
                                 </button>
                             </li>
                             </template>
-
+                            @endif
                             <li class="list-group-item">
                                 <h5>{{__('Participants')}}</h5>
                                 <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
@@ -173,6 +175,7 @@
                     request: @json($request),
                     files: @json($files),
                     refreshTasks: 0,
+                    canCancel: @json($canCancel),
                     status: 'ACTIVE'
                 };
             },
