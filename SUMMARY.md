@@ -98,12 +98,13 @@
     * [Edit the Process Model Information](designing-processes/process-design/model-your-process/edit-the-process-model-information.md)
     * [Add and Configure Event Elements](designing-processes/process-design/model-your-process/add-and-configure-an-event-element.md)
     * [Add and Configure Task Elements](designing-processes/process-design/model-your-process/add-and-configure-task-elements.md)
+    * [Add and Configure Script Task Elements](designing-processes/process-design/model-your-process/add-and-configure-script-task-elements.md)
+    * [Connect and Delete Elements](designing-processes/process-design/model-your-process/the-quick-toolbar.md)
     * [Use the Top Bar](designing-processes/process-design/model-your-process/toolboxes.md)
     * [Interact With an Element](designing-processes/process-design/model-your-process/bpmn-side-bar/README.md)
       * [Use a Task Element](designing-processes/process-design/model-your-process/bpmn-side-bar/task.md)
       * [Use an Exclusive Gateway Element](designing-processes/process-design/model-your-process/bpmn-side-bar/gateways.md)
       * [Use a Text Annotation Element](designing-processes/process-design/model-your-process/bpmn-side-bar/text-annotation.md)
-    * [Connect and Delete Elements](designing-processes/process-design/model-your-process/the-quick-toolbar.md)
 
 ## ProcessMaker Administration
 
