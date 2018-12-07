@@ -117,7 +117,7 @@ After you finish using the wizard restart the MySQL service.
 {% code-tabs %}
 {% code-tabs-item title="Restart the MySQL service." %}
 ```text
-service mysql restart
+service mysqld restart
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
@@ -136,7 +136,7 @@ Click the **NGINX 1.x, PHP and PHP-FPM** tab for commands to install NGINX web s
 
 ### Install Apache 2.4.x
 
-Install the default Apache version that ships with CentOS Linux. Furthermore, install the SSL module to run using HTTPS protocols:
+Install the default Apache version that ships with CentOS 7 Linux. Furthermore, install the SSL module to run using HTTPS protocols:
 
 {% code-tabs %}
 {% code-tabs-item title="1. Install Apache 2.4.x and the SSL module using HTTPS protocols." %}
@@ -176,7 +176,7 @@ systemctl enable httpd
 Add the corresponding EPEL repository to download the required PHP version:
 
 {% code-tabs %}
-{% code-tabs-item title="1. Add the corresponding EPEL repository to download the required PHP version." %}
+{% code-tabs-item title="1. Add the EPEL repository to download the required PHP version." %}
 ```text
 rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
@@ -187,7 +187,7 @@ rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
 Install PHP and all the extensions that ProcessMaker needs:
 
 {% code-tabs %}
-{% code-tabs-item title="2. Install PHP and all the extensions that ProcessMaker needs." %}
+{% code-tabs-item title="2. Install PHP and all the extensions." %}
 ```text
 yum -y install php72w
 yum -y install php72w-cli php72w-gd php72w-mysqlnd php72w-soap php72w-mbstring php72w-ldap php72w-mcrypt php72w-xml php72w-devel php72w-pecl-apcu php72w-fpm php72w-opcache
@@ -227,13 +227,15 @@ Create the configuration file.
 {% code-tabs %}
 {% code-tabs-item title="2. Create the configuration file." %}
 ```text
-vi /etc/php-fpm.d/processmaker.conf
+nano /etc/php-fpm.d/processmaker.conf
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
+Inside the `processmaker.conf` file add the following lines:
+
 {% code-tabs %}
-{% code-tabs-item title="3. Insert the following configuration file content at /etc/php-fpm.d/processmaker.conf." %}
+{% code-tabs-item title="3. Insert the following configuration file content." %}
 ```text
 [processmaker]
 user = apache
@@ -256,6 +258,8 @@ php_admin_flag[log_errors] = on
 
 ### OpCache Configuration
 
+Set the following configuration that is standard for ProcessMaker: 
+
 {% code-tabs %}
 {% code-tabs-item title="Configure OpCache." %}
 ```text
@@ -277,14 +281,14 @@ Follow the commands below to install NGINX web server and PHP-FPM.
 Click the **Apache 2.4.x, PHP and PHP-FPM** tab for commands to install Apache web server along with PHP and PHP-FPM.
 {% endhint %}
 
-### Install NGINX 1.0
+### Install NGINX 1.x
 
 Create the repository: 
 
 {% code-tabs %}
 {% code-tabs-item title="1. Add the NGINX repository file." %}
 ```text
-vi /etc/yum.repos.d/nginx.repo
+nano /etc/yum.repos.d/nginx.repo
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
@@ -292,7 +296,7 @@ vi /etc/yum.repos.d/nginx.repo
 After creating the repository, add the following lines and save the file:
 
 {% code-tabs %}
-{% code-tabs-item title="2. Add the following lines in the /etc/yum.repos.d/nginx.repo file." %}
+{% code-tabs-item title="2. Add the following lines." %}
 ```text
 [nginx]
 name=nginx repo
@@ -308,12 +312,21 @@ enabled=1
 Ensure that the repository file is in the path `/etc/yum.repos.d/`. Otherwise, you cannot install NGINX.
 {% endhint %}
 
-Install NGINX and start the service:
+Install NGINX:
 
 {% code-tabs %}
-{% code-tabs-item title="3. Install NGINX and start the service." %}
+{% code-tabs-item title="3. Install NGINX." %}
 ```text
 yum clean all && yum -y install nginx
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+After the installation start and enable the service.
+
+{% code-tabs %}
+{% code-tabs-item title=" Start the server and enable the service." %}
+```text
 systemctl start nginx
 systemctl enable nginx
 ```
@@ -342,7 +355,8 @@ After the repositories are added, install PHP and its modules:
 {% code-tabs %}
 {% code-tabs-item title="2. Install PHP and its modules." %}
 ```text
-yum -y install php72w php72w-cli php72w-opcache php72w-fpm php72w-gd php72w-mysqlnd php72w-soap php72w-mbstring php72w-ldap php72w-mcrypt php72w-xml
+yum -y install php72w
+yum -y install php72w-cli php72w-gd php72w-mysqlnd php72w-soap php72w-mbstring php72w-ldap php72w-mcrypt php72w-xml php72w-devel php72w-pecl-apcu php72w-fpm php72w-opcache
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
@@ -374,6 +388,8 @@ sed -i '/expose_php = On/c\expose_php = Off' /etc/php.ini
 
 ### OpCache Configuration
 
+Set the following configuration that is standard for ProcessMaker: 
+
 {% code-tabs %}
 {% code-tabs-item title="Configure OpCache." %}
 ```text
@@ -389,16 +405,20 @@ sed -i '/;opcache.fast_shutdown=0/c\opcache.fast_shutdown=1' /etc/php.d/opcache.
 
 ### PHP-FPM Configuration File
 
+Create the configuration file for ProcessMaker:
+
 {% code-tabs %}
-{% code-tabs-item title="1. Create the configuration file for /etc/php-fpm.d/processmaker.conf." %}
+{% code-tabs-item title="1. Create the configuration file." %}
 ```text
-vi /etc/php-fpm.d/processmaker.conf
+nano /etc/php-fpm.d/processmaker.conf
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
+Add the following lines to the `processmaker.conf` file:
+
 {% code-tabs %}
-{% code-tabs-item title="2. Insert the following configuration file content at /etc/php-fpm.d/processmaker.conf." %}
+{% code-tabs-item title="2. Insert the following configuration file content." %}
 ```text
 [processmaker]
 user = nginx
@@ -419,17 +439,21 @@ php_admin_flag[log_errors] = on
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
+Rename the `nginx.conf` file and create a new one:
+
 {% code-tabs %}
 {% code-tabs-item title="3. Create the NGINX configuration to work with ProcessMaker." %}
 ```text
 mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bk
-vi /etc/nginx/nginx.conf
+nano /etc/nginx/nginx.conf
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
+Inside the new `nginx.conf` file add the following lines:
+
 {% code-tabs %}
-{% code-tabs-item title="4. Below is the contents of the configuration file for /etc/nginx/nginx.conf." %}
+{% code-tabs-item title="4. Add the contents of the configuration file." %}
 ```text
 user nginx;
  
@@ -521,10 +545,22 @@ systemctl enable docker
 
 ## Install Composer
 
+Install the last version of composer
+
 {% code-tabs %}
 {% code-tabs-item title="Install Composer." %}
 ```text
 yum -y install composer
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+verify if the installation success by running the command:
+
+{% code-tabs %}
+{% code-tabs-item title="Verify composer functionality." %}
+```text
+composer
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
@@ -550,6 +586,8 @@ echo "SELINUXTYPE=targeted" >> /etc/selinux/config
 CentOS Linux 7 requires a firewall.
 {% endhint %}
 
+Install the firewall.
+
 {% code-tabs %}
 {% code-tabs-item title="1. Install the firewall." %}
 ```text
@@ -557,6 +595,8 @@ yum -y install firewalld
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
+
+Start the firewall and enable.
 
 {% code-tabs %}
 {% code-tabs-item title="2. Set the firewall to automatically start." %}
@@ -567,8 +607,10 @@ systemctl enable firewalld
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
+Set the configuration of exceptions.
+
 {% code-tabs %}
-{% code-tabs-item title="3. Open the port through which ProcessMaker will run. By default use port 80." %}
+{% code-tabs-item title="3. Set the configuration for ProcessMaker." %}
 ```text
 firewall-cmd --zone=public --add-port=6001/tcp --permanent
 firewall-cmd --zone=public --add-port=80/tcp --permanent
@@ -589,19 +631,29 @@ Create the following virtual host only if you installed the Apache web server.
 Click the **NGINX 1.x** tab if you installed NGINX web server.
 {% endhint %}
 
+Create the file of configuration for ProcessMaker:
+
 {% code-tabs %}
 {% code-tabs-item title="1. Create the virtual host." %}
 ```text
-vi /etc/httpd/conf.d/processmaker.conf
+nano /etc/httpd/conf.d/processmaker.conf
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
+Add the following lines to the `processmaker.conf` file:
+
+{% hint style="info" %}
+Replace the `<IP_Address>` with the IP address that you are going to use.
+
+If going to use a port, do not forget to add  the line `Listen <port>` and add `:<port>` to the IP address.
+{% endhint %}
+
 {% code-tabs %}
-{% code-tabs-item title="2. Insert the following configuration file content at /etc/httpd/conf.d/processmaker.conf." %}
+{% code-tabs-item title="2. Insert the configuration file content." %}
 ```text
 <VirtualHost *:80>
-    ServerName 172.16.0.72
+    ServerName <IP_Address>
  
     DocumentRoot /opt/processmaker/public
     DirectoryIndex index.php index.html
@@ -633,6 +685,16 @@ vi /etc/httpd/conf.d/processmaker.conf
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
+
+Restart the server:
+
+{% code-tabs %}
+{% code-tabs-item title="3. Restart the service." %}
+```text
+service httpd restart
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
 {% endtab %}
 
 {% tab title="NGINX 1.x" %}
@@ -642,21 +704,31 @@ Create the following virtual host only if you installed the NGINX web server.
 Click the **Apache 2.4.x** tab if you installed Apache web server.
 {% endhint %}
 
+Create the file of configuration for ProcessMaker:
+
 {% code-tabs %}
 {% code-tabs-item title="1. Create the virtual host." %}
 ```text
-vi /etc/nginx/conf.d/processmaker.conf
+nano /etc/nginx/conf.d/processmaker.conf
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
+Add the following lines to the `processmaker.conf` file:
+
+{% hint style="info" %}
+Replace the `<IP_Address>` with the IP address that you are going to use.
+
+If going to use a port, do not forget to add  the line `Listen <port>;` and add `:<port>` to the IP address.
+{% endhint %}
+
 {% code-tabs %}
-{% code-tabs-item title="2. Insert the following configuration file content at /etc/nginx/conf.d/processmaker.conf." %}
+{% code-tabs-item title="2. Insert the following configuration file content." %}
 ```text
 server {
     listen 80;
   #  listen 443 ssl http2;
-    server_name 172.16.0.65; #use your server name or IP address
+    server_name <IP_Address>; #use your server name or IP address
     root "/opt/processmaker/public"; #where processmkaker is installed if not in www SELINUX needs to be disabled
  
     index index.html index.htm index.php;
@@ -704,13 +776,35 @@ server {
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
+
+Restart the server:
+
+{% code-tabs %}
+{% code-tabs-item title="3. Restart the service." %}
+```text
+service nginx restart
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
 {% endtab %}
 {% endtabs %}
 
 ## Download the ProcessMaker 4 Installer
 
+Go to the `/opt` directory:
+
 {% code-tabs %}
-{% code-tabs-item title="1. Download the ProcessMaker 4 installer inside /opt/." %}
+{% code-tabs-item title="Redirect to opt directory." %}
+```text
+cd /opt
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+Inside the directory download the ProcessMaker installer:
+
+{% code-tabs %}
+{% code-tabs-item title="Download the ProcessMaker 4 installer." %}
 ```text
 wget https://github.com/ProcessMaker/bpm/releases/download/beta1/bpm-beta1.tar.gz
 ```
@@ -729,13 +823,31 @@ Follow the commands below to untar the ProcessMaker 4 installer only if you inst
 Click the **NGINX 1.x** tab if you installed NGINX web server.
 {% endhint %}
 
+To untar the ProcessMaker `.tar` file use the following command:
+
 {% code-tabs %}
 {% code-tabs-item title="Untar the ProcessMaker 4 installer." %}
 ```text
 tar -xzvf bpm4_version.tar.gz
-#change the folder name to processmaker
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+Rename the folder.
+
+{% code-tabs %}
+{% code-tabs-item title="Change the folder name to processmaker." %}
+```text
 mv bpm_version processmaker
-#then change the ownership to apache
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+Provide permissions of ownership.
+
+{% code-tabs %}
+{% code-tabs-item title="Change the ownership to apache." %}
+```text
 chown -R apache:apache processmaker
 ```
 {% endcode-tabs-item %}
@@ -749,13 +861,31 @@ Follow the commands below to untar the ProcessMaker 4 installer only if you inst
 Click the **Apache 2.4.x** tab if you installed Apache web server.
 {% endhint %}
 
+To untar the ProcessMaker `.tar` file use the following command:
+
 {% code-tabs %}
 {% code-tabs-item title="Untar the ProcessMaker 4 installer." %}
 ```text
 tar -xzvf bpm4_version.tar.gz
-#change the folder name to processmaker
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+Rename the folder.
+
+{% code-tabs %}
+{% code-tabs-item title="Change the folder name to processmaker." %}
+```text
 mv bpm_version processmaker
-#then change the ownership to nginx
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+Provide permissions of ownership.
+
+{% code-tabs %}
+{% code-tabs-item title="Change the ownership to apache." %}
+```text
 chown -R nginx:nginx processmaker
 ```
 {% endcode-tabs-item %}
@@ -772,25 +902,65 @@ Ensure the following prior to performing the following command:
 * You have your database credentials available.
 {% endhint %}
 
+Enter MySQL with the following command:
+
+{% code-tabs %}
+{% code-tabs-item title="Enter MySQL." %}
+```text
+mysql -u root -p
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+Inside MySQL command lines use the following commands to create a database:
+
+{% code-tabs %}
+{% code-tabs-item title="Create the database for ProcessMaker." %}
+```text
+create database pm4;
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+Verify if the database was created successfully.
+
+```text
+show databases;
+```
+
+Exit the MySQL command line by using the command `exit` or `quit`
+
+Go to ProcessMaker directory:
+
+{% code-tabs %}
+{% code-tabs-item title="Enter ProcessMaker folder." %}
+```text
+cd processmaker
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+Run the following command to set the database:
+
 {% code-tabs %}
 {% code-tabs-item title="Install the ProcessMaker database." %}
 ```text
-#inside processmaker execute
 php artisan bpm:install
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-The batch script asks you for the following information to create the ProcessMaker database:
-
-* Database credentials
-* Database port number
-* Database name
-* Database username
-* Database password
-* IP address or domain name to install the database \(`https://localhost` is the recommended default\)
+Before start the batch script asks you if you are ready to begin, type `yes` and press \[Enter\]
 
 After you provide the batch script with your database information, the script installs the ProcessMaker database. An example of the script output is below.
+
+The batch script asks you for the following information to create the ProcessMaker database:
+
+* The MySQL Host: `localhost`
+* The MySQL Port: `3306`
+* The MySQL Database Name: `pm4`
+* The MySQL Username: `root`
+* The MySQL Password: \(the password you set on the section [Install MySQL Community Server](install-required-software.md#install-mysql-community-server-edition)\)
 
 {% code-tabs %}
 {% code-tabs-item title="Batch script output that installs the ProcessMaker database with your database information." %}
@@ -835,7 +1005,7 @@ Refer to the Installation Guide for more information on database best practices.
  >
  
  What is the url of this ProcessMaker Installation? (Ex: https://pm.example.com, no trailing slash):
- > http://<ip address or domain name>
+ > http://pm4.example
  
 Installing ProcessMaker Database, OAuth SSL Keys and configuration file
 Dropped all tables successfully.
