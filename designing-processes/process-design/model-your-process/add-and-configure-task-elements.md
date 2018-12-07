@@ -72,13 +72,48 @@ If no ProcessMaker Screens exist, the drop-down contains no options. Ensure to s
 
 ### Specify When the Task is Due
 
-Specify how much time the task is due from when a task is assigned to a Request participant.  After the specified time has expired, ~~what happens?~~
+Specify how much time a task in a Task element is due from when that task is assigned to a Request participant. The default period of time for a task to be due is 72 hours \(three days\).
+
+The task due date displays for each [pending assigned task](../../../using-processmaker/requests/view-completed-requests.md#view-completed-requests-in-which-you-are-a-participant). After the specified time has expired for a task, an overdue indicator displays for that task to the assigned task recipient.
 
 {% hint style="info" %}
-Specify due time in total number of hours. This includes hours not normally associated with business hours, including overnight hours, weekends, and holidays.
+Specify due time for a Task element in total number of hours. This includes hours not normally associated with business hours, including overnight hours, weekends, and holidays.
 {% endhint %}
 
-Follow these steps to specify when a task is due:
+Follow these steps to specify when a Task element is due:
 
+1. Place a [Task](add-and-configure-task-elements.md#add-a-task-element) element into your process model.
+2. Select the Task element in which to specify how many hours the task is due.
+3. Specify the total number of hours the task is due in one of the following ways:
+   * Enter the number in the **Due In** field and then press **Enter**. The number of hours is entered.
+   * Hover your cursor over the **Due In** field, and then use the spin arrows to increase or decrease the total number of hours by one.
 
+### Select to Whom to Assign the Task
+
+Select to whom to assign the Task element in a process model:
+
+* **Requestor:** Assign the Task element to the Request initiator.
+* **User:** Assign the Task element to a selected person.
+
+Follow these steps to select to whom to assign the Task element:
+
+1. Place a [Task](add-and-configure-task-elements.md#add-a-task-element) element into your process model.
+2. Select the Task element in which to select to whom to assign the Task element.
+3. From the **Task Assignment** field, select one of the following options:
+   * **To requestor:** Select **To requestor** to assign the Task element to the Request initiator.
+   * **To user:** Select **To user** to assign the Task element to a specified person. When this option is selected, the **Assigned User** field displays below the **Task Assignment** field. From the **Assigned User** field, select the person's full name as the Task element's assignee.
+
+## Related Topics
+
+{% page-ref page="../process-modeling-element-descriptions.md" %}
+
+{% page-ref page="../../viewing-processes/view-the-list-of-processes/view-your-processes.md" %}
+
+{% page-ref page="../../viewing-processes/create-a-process.md" %}
+
+{% page-ref page="../../design-forms/what-is-a-form.md" %}
+
+{% page-ref page="../../../using-processmaker/requests/what-is-a-request.md" %}
+
+{% page-ref page="../../../using-processmaker/task-management/view-tasks-you-need-to-do.md" %}
 
