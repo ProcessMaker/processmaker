@@ -40,7 +40,6 @@
     "ralouphie/getallheaders": "^2.0",
     "spatie/laravel-fractal": "^5.3",
     "spatie/laravel-medialibrary": "^7.0.0",
-    "spatie/server-side-rendering": "^0.2.5",
     "symfony/expression-language": "^4.1",
     "symfony/psr-http-message-bridge": "1.*",
     "watson/validating": "^3.1",

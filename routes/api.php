@@ -12,7 +12,6 @@ Route::group(
     Route::apiResource('group_members', 'GroupMemberController')->only(['index', 'show', 'destroy', 'store']);
     Route::apiResource('environment_variables', 'EnvironmentVariablesController');
     Route::apiResource('screens', 'ScreenController');
-    Route::post('screens/{screen}/render', 'ScreenController@render')->name('screen.render');
     Route::apiResource('screen_categories', 'ScreenCategoryController');
     Route::post('scripts/preview', 'ScriptController@preview')->name('script.preview');
     Route::apiResource('scripts', 'ScriptController');
