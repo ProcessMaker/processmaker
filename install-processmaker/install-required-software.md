@@ -131,7 +131,7 @@ Install one of the following web server applications along with PHP and PHP-FPM.
 {% hint style="info" %}
 Follow the commands below to install Apache web server along with PHP and PHP-FPM.
 
-Click the **NGINX 1.0, PHP and PHP-FPM** tab for commands to install NGINX web server along with PHP and PHP-FPM.
+Click the **NGINX 1.x, PHP and PHP-FPM** tab for commands to install NGINX web server along with PHP and PHP-FPM.
 {% endhint %}
 
 ### Install Apache 2.4.x
@@ -270,7 +270,7 @@ sed -i '/;opcache.fast_shutdown=0/c\opcache.fast_shutdown=1' /etc/php.d/opcache.
 {% endcode-tabs %}
 {% endtab %}
 
-{% tab title="NGINX 1.0, PHP and PHP-FPM" %}
+{% tab title="NGINX 1.x, PHP and PHP-FPM" %}
 {% hint style="info" %}
 Follow the commands below to install NGINX web server and PHP-FPM.
 
@@ -586,7 +586,7 @@ Create the virtual host that corresponds with the [web server application you in
 {% hint style="info" %}
 Create the following virtual host only if you installed the Apache web server.
 
-Click the **NGINX 1.0** tab if you installed NGINX web server.
+Click the **NGINX 1.x** tab if you installed NGINX web server.
 {% endhint %}
 
 {% code-tabs %}
@@ -635,7 +635,7 @@ vi /etc/httpd/conf.d/processmaker.conf
 {% endcode-tabs %}
 {% endtab %}
 
-{% tab title="NGINX 1.0" %}
+{% tab title="NGINX 1.x" %}
 {% hint style="info" %}
 Create the following virtual host only if you installed the NGINX web server.
 
@@ -726,7 +726,7 @@ Follow the procedure to untar the ProcessMaker 4 installer based on which [web s
 {% hint style="info" %}
 Follow the commands below to untar the ProcessMaker 4 installer only if you installed the Apache web server.
 
-Click the **NGINX 1.0** tab if you installed NGINX web server.
+Click the **NGINX 1.x** tab if you installed NGINX web server.
 {% endhint %}
 
 {% code-tabs %}
@@ -742,7 +742,7 @@ chown -R apache:apache processmaker
 {% endcode-tabs %}
 {% endtab %}
 
-{% tab title="NGINX 1.0" %}
+{% tab title="NGINX 1.x" %}
 {% hint style="info" %}
 Follow the commands below to untar the ProcessMaker 4 installer only if you installed the NGINX web server.
 
