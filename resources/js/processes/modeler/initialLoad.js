@@ -19,7 +19,6 @@ import ExpressionEditor from './components/inspector/ExpressionEditor';
 import TaskAssignment from './components/inspector/TaskAssignment';
 import ConfigEditor from './components/inspector/ConfigEditor';
 import ScriptSelect from './components/inspector/ScriptSelect';
-import SummaryScreenSelect from './components/inspector/SummaryScreenSelect';
 
 Vue.component('ModelerScreenSelect', ModelerScreenSelect);
 Vue.component('ExpressionEditor', ExpressionEditor);
@@ -38,8 +37,8 @@ let nodeTypes = [
     sequenceFlow,
     textAnnotation,
     association,
-//    pool,
-//    poolLane,
+    //pool,
+    //poolLane,
 ]
 
 ProcessMaker.EventBus.$on('modeler-init', ({registerNode, registerBpmnExtension, registerInspectorExtension}) => {
@@ -57,7 +56,8 @@ ProcessMaker.EventBus.$on('modeler-init', ({registerNode, registerBpmnExtension,
         config: {
             label: 'Screen For Input',
             helper: 'What Screen Should Be Used For Rendering This Task',
-            name: 'screenRef'
+            name: 'screenRef',
+            type: 'FORM'
         }
     });
     registerInspectorExtension(task, {
@@ -98,11 +98,12 @@ ProcessMaker.EventBus.$on('modeler-init', ({registerNode, registerBpmnExtension,
         }
     });
     registerInspectorExtension(endEvent, {
-        component: 'SummaryScreenSelect',
+        component: 'ModelerScreenSelect',
         config: {
             label: 'Summary screen',
-            helper: 'Summary screen that will be displayed by the event.',
-            name: 'screenRef'
+            helper: 'Summary screen that will be displayed when process finish with this End event.',
+            name: 'screenRef',
+            type: 'FORM'
         }
     });
 });
