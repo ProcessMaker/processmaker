@@ -45,7 +45,7 @@ All identifier values for all elements in the process model must be unique.
 Follow these steps to edit the identifier value for an Event element:
 
 1. Place a [Start Event](add-and-configure-an-event-element.md#add-a-start-event-element) or [End Event](add-and-configure-an-event-element.md#add-an-end-event-element) element into your process model.
-2. Click the Event element in which to edit its identifier value. The current Event identifier value displays in the **Identifier** field in the right side bar.
+2. Select the Event element in which to edit its identifier value. The current Event identifier value displays in the **Identifier** field in the right side bar.
 3. In the **Identifier** field, edit the selected Event element's identifier value and then press **Enter**. The identifier value is changed.
 
 ### Edit the Element Name
@@ -55,7 +55,7 @@ An element name is a human-readable reference for a process element. Process Mod
 Follow these steps to edit the name for an Event element:
 
 1. Place a [Start Event](add-and-configure-an-event-element.md#add-a-start-event-element) or [End Event](add-and-configure-an-event-element.md#add-an-end-event-element) element into your process model.
-2. Click the Event element in which to edit its name. The current name displays in the **Name** field in the right side bar.
+2. Select the Event element in which to edit its name. The current name displays in the **Name** field in the right side bar.
 3. In the **Name** field, edit the selected Event element's name and then press **Enter**. The element's name is changed.
 
 ## Related Topics

@@ -31,7 +31,7 @@ All identifier values for all elements in the process model must be unique.
 Follow these steps to edit the identifier value for a Task element:
 
 1. Place a [Task](add-and-configure-task-elements.md#add-a-task-element) element into your process model.
-2. Click the Task element in which to edit its identifier value. The current Task identifier value displays in the **Identifier** field in the right side bar.
+2. Select the Task element in which to edit its identifier value. The current Task identifier value displays in the **Identifier** field in the right side bar.
 3. In the **Identifier** field, edit the selected Task element's identifier value and then press **Enter**. The identifier value is changed.
 
 ### Edit the Element Name
@@ -41,7 +41,7 @@ An element name is a human-readable reference for a process element. Process Mod
 Follow these steps to edit the name for a Task element:
 
 1. Place a [Task](add-and-configure-task-elements.md#add-a-task-element) element into your process model.
-2. Click the Task element in which to edit its name. The current name displays in the **Name** field in the right side bar.
+2. Select the Task element in which to edit its name. The current name displays in the **Name** field in the right side bar.
 3. In the **Name** field, edit the selected Task element's name and then press **Enter**. The element's name is changed.
 
 ### Select the ProcessMaker Screen for a Task Element
@@ -53,10 +53,32 @@ For information about ProcessMaker Screens, see [What is a Screen?](../../design
 Since Task elements are designed to collect or display [Request](../../../using-processmaker/requests/what-is-a-request.md) information, specify which ProcessMaker Screen a selected Task element uses. A ProcessMaker Screen must already exist before it can be selected for use in a Task element.
 
 {% hint style="warning" %}
-Ensure to select a ProcessMaker Screen for each Task element in your process model. If a ProcessMaker Screen is not specified and Requests are started for that process, users who are assigned that task have no way of interacting with the Request.
+Ensure to select a ProcessMaker Screen for each Task element in your process model. If a ProcessMaker Screen is not specified and Requests are started for that process, users who are assigned Tasks with no ProcessMaker Screens have no way of interacting with the Request.
 {% endhint %}
 
 Follow these steps to select a ProcessMaker Screen for a Task element:
+
+1. Place a [Task](add-and-configure-task-elements.md#add-a-task-element) element into your process model.
+2. Select the Task element in which to specify its ProcessMaker Screen.
+3. In the **Screen For Input** field, select which ProcessMaker Screen that Task element uses. The ProcessMaker Screen is selected.
+
+{% hint style="info" %}
+Click the **Refresh** link below the **Screen For Input** field to refresh the options in the drop-down.
+{% endhint %}
+
+{% hint style="warning" %}
+If no ProcessMaker Screens exist, the drop-down contains no options. Ensure to select a ProcessMaker Screen for every Task element in the process model before making the process active.
+{% endhint %}
+
+### Specify When the Task is Due
+
+Specify how much time the task is due from when a task is assigned to a Request participant.  After the specified time has expired, ~~what happens?~~
+
+{% hint style="info" %}
+Specify due time in total number of hours. This includes hours not normally associated with business hours, including overnight hours, weekends, and holidays.
+{% endhint %}
+
+Follow these steps to specify when a task is due:
 
 
 
