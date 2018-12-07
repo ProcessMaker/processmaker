@@ -1,6 +1,7 @@
 import FormText from "@processmaker/vue-form-builder/src/components/renderer/form-text";
 import FormMultiColumn from "@processmaker/vue-form-builder/src/components/renderer/form-multi-column"
 import FormRecordList from "@processmaker/vue-form-builder/src/components/renderer/form-record-list"
+import FileDownload from "./components/file-download"
 
 import {
     FormInput,
@@ -11,8 +12,7 @@ import {
     FormDatePicker
 } from "@processmaker/vue-form-elements/src/components";
 
-let initialControls =  [
-    {
+let initialControls = [{
         builderComponent: FormText,
         builderBinding: 'FormText',
         rendererComponent: FormText,
@@ -27,8 +27,7 @@ let initialControls =  [
                 fontSize: '1em',
                 fontWeight: 'normal'
             },
-            inspector: [
-                {
+            inspector: [{
                     type: "FormInput",
                     field: "label",
                     config: {
@@ -42,8 +41,7 @@ let initialControls =  [
                     config: {
                         label: "Font Weight",
                         helper: "The weight of the text",
-                        options: [
-                            {
+                        options: [{
                                 value: 'normal',
                                 content: 'Normal'
                             },
@@ -62,8 +60,79 @@ let initialControls =  [
                     config: {
                         label: "Font Size",
                         helper: "The size of the text in em",
-                        options: [
+                        options: [{
+                                value: '0.5em',
+                                content: '0.5'
+                            },
                             {
+                                value: '1em',
+                                content: '1'
+                            },
+                            {
+                                value: '1.5em',
+                                content: '1.5'
+                            },
+                            {
+                                value: '2em',
+                                content: '2'
+                            },
+                        ]
+                    }
+                },
+
+
+            ]
+        }
+    },
+    {
+        builderComponent: FileDownload,
+        builderBinding: 'FileDownload',
+        rendererComponent: FileDownload,
+        rendererBinding: 'FileDownload',
+        control: {
+            label: 'File Download',
+            component: 'FileDownload',
+            'editor-component': 'FileDownload',
+            'editor-icon': require('./components/file-download.png'),
+            config: {
+                label: 'New Text',
+                fontSize: '1em',
+                fontWeight: 'normal'
+            },
+            inspector: [{
+                    type: "FormInput",
+                    field: "label",
+                    config: {
+                        label: "Text Label",
+                        helper: "The text to display",
+                    }
+                },
+                {
+                    type: "FormSelect",
+                    field: "fontWeight",
+                    config: {
+                        label: "Font Weight",
+                        helper: "The weight of the text",
+                        options: [{
+                                value: 'normal',
+                                content: 'Normal'
+                            },
+                            {
+                                value: 'bold',
+                                content: 'Bold'
+                            }
+                        ]
+                    }
+                },
+
+
+                {
+                    type: "FormSelect",
+                    field: "fontSize",
+                    config: {
+                        label: "Font Size",
+                        helper: "The size of the text in em",
+                        options: [{
                                 value: '0.5em',
                                 content: '0.5'
                             },
@@ -103,10 +172,8 @@ let initialControls =  [
                 [],
                 []
             ],
-            config: {
-            },
-            inspector: [
-                {
+            config: {},
+            inspector: [{
                     type: "FormText",
                     config: {
                         label: "MultiColumn",
@@ -133,8 +200,7 @@ let initialControls =  [
                 fields: [],
                 form: ''
             },
-            inspector: [
-                {
+            inspector: [{
                     type: "FormInput",
                     field: "name",
                     config: {

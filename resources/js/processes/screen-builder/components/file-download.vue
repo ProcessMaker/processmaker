@@ -1,7 +1,7 @@
 <template>
   <div>
     <i class="fas fa-download"></i>
-    Download {{file}}
+    <a>Download {{file}}</a>
   </div>
 </template>
 
@@ -10,10 +10,14 @@
 export default {
   data() {
     return {
-      file: ""
+      file: "example.png"
     };
   },
-  methods: {}
+  methods: {
+    onClick() {
+      console.log("HEllo");
+    }
+  }
 };
 </script>
 
