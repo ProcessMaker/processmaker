@@ -20,7 +20,7 @@
 
 <script>
 export default {
-  props: ["value", "label", "helper"],
+  props: ["value", "label", "helper", "types"],
   data() {
     return {
       content: "",
@@ -55,9 +55,11 @@ export default {
       this.$emit("input", this.content);
     },
     load() {
+      console.log("TYPES", this.types);
       this.loading = true;
+      let types = this.types ? this.types : 'FORM';
       ProcessMaker.apiClient
-        .get("/screens?type=FORM")
+        .get("/screens?type=" + types)
         .then(response => {
           this.screens = response.data.data;
           this.loading = false;
