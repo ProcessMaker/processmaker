@@ -3,6 +3,7 @@ namespace ProcessMaker\Repositories;
 
 use Carbon\Carbon;
 use ProcessMaker\Models\ProcessRequest as Instance;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken as Token;
 use ProcessMaker\Nayra\Bpmn\Collection;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
@@ -215,12 +216,34 @@ class TokenRepository implements TokenRepositoryInterface
 
     public function persistThrowEventTokenArrives(ThrowEventInterface $event, TokenInterface $token)
     {
-        
+
     }
 
     public function persistThrowEventTokenConsumed(ThrowEventInterface $endEvent, TokenInterface $token)
     {
-        
+//        $request = ProcessRequest::find($token->getInstance()->id);
+//        $definitions = $request->process->getDefinitions();
+//        $element = $definitions->findElementById($endEvent->getId());
+//        if (!$element) {
+//            return [];
+//        }
+//        $definition =  $element->getBpmnElementInstance()->getProperties();
+//        $screenId = empty($definition['screenRef']) ? null : Screen::find($definition['screenRef']);
+//        $request->summary_screen_id = $screenId;
+//        $request->save();
+        $this->instanceRepository->persistInstanceUpdated($token->getInstance());
+        $token->status = 'CLOSED';
+        $token->element_id = $endEvent->getId();
+        $token->element_type = 'end_event';
+        $token->element_name = $endEvent->getName();
+        $token->process_id = $token->getInstance()->process->getKey();
+        $token->process_request_id = $token->getInstance()->getKey();
+        $token->user_id = null;
+        $token->due_at = null;
+        $token->riskchanges_at = null;
+        $token->completed_at = Carbon::now();
+        $token->saveOrFail();
+        $token->setId($token->getKey());
     }
 
     public function persistThrowEventTokenPassed(ThrowEventInterface $endEvent, TokenInterface $token)

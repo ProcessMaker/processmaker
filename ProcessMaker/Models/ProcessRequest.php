@@ -20,6 +20,7 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  * @property string $user_id
  * @property string $process_collaboration_id
  * @property string $participant_id
+ * @property string $summary_screen_id
  * @property string $name
  * @property string $status
  * @property string $data
@@ -160,6 +161,18 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
             ->exists();
     }
 
+    public function getSummaryScreen()
+    {
+//        return $this->belongsTo(Screen::class, 'summary_screen_id');
+//        $this->tokens()->filter(function($token) {
+//            return $token->element_type == 'End Event';
+//        });
+        $query = $this->tokens()->where('element_type', 'End Event');
+        return $query->get()->first();
+//        return $this->tokens()->where('element_type', 'End Event');
+    }
+
+
     /**
      * Get tokens of the request.
      *
@@ -267,6 +280,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
 
         return $result;
     }
+
 
     /**
      * Check if the user has access to this request
