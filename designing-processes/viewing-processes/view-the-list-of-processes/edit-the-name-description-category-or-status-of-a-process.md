@@ -2,7 +2,7 @@
 description: Edit general information about a business process.
 ---
 
-# Edit the Name, Description, Category, or Status of a Process
+# Edit Process Information
 
 {% hint style="info" %}
 To edit general process information, you must be a member of the Process Owner group. Otherwise, the **Processes** option is not available from the top menu that allows you to perform process management activities.

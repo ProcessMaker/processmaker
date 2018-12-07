@@ -24,7 +24,7 @@ yum -y remove mariadb*
 
 ### Install MySQL Community Server
 
-Install the program `yum-utils` to use repositories and add the following repository:
+Install the program `yum-utils` to use repositories and add the repository:
 
 {% code-tabs %}
 {% code-tabs-item title="1. Add the repository." %}
@@ -35,7 +35,7 @@ yum localinstall -y https://repo.mysql.com//mysql57-community-release-el7-11.noa
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-After installing the repository, install the MySQL server using the following command:
+After installing the repository, install the MySQL server:
 
 {% code-tabs %}
 {% code-tabs-item title="2. Install MySQL Community Server." %}
@@ -56,7 +56,7 @@ systemctl enable mysqld
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-Sometimes MySQL comes with a default password already set. Use the following command to get the default password:
+Sometimes MySQL comes with a default password already set. Get the default password:
 
 {% code-tabs %}
 {% code-tabs-item title="4. Get the root password." %}
@@ -80,9 +80,9 @@ After you run the previous command a wizard displays:
 
 ![MySQL wizard to configure the MySQL database](../.gitbook/assets/4centos7mysqlsecurepass.png)
 
-If there was a password set you need to enter that password. Otherwise press **Enter** to continue: 
+If there was a default password set, enter that password. Otherwise press **Enter** to continue: 
 
-![Enter the password or press \[Enter\] to continue](../.gitbook/assets/4centos7mysqlsecurerootpass.png)
+![Enter the default password or press \[Enter\] to continue](../.gitbook/assets/4centos7mysqlsecurerootpass.png)
 
 The wizard asks you if you want to change the current password. Choose yes and change the password:
 
@@ -112,7 +112,7 @@ The wizard asks you if you want to reload the privilege tables. Choose yes.
 
 ![Reload the privilege tables](../.gitbook/assets/4centos7mysqlsecurereloadtables.png)
 
-After you finish using the wizard restart the MySQL service.
+After you finish using the wizard restart the MySQL service:
 
 {% code-tabs %}
 {% code-tabs-item title="Restart the MySQL service." %}
@@ -146,7 +146,7 @@ yum -y install httpd mod_ssl
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-Set standard ProcessMaker configurations.
+Set standard ProcessMaker configurations:
 
 {% code-tabs %}
 {% code-tabs-item title="2. Set standard ProcessMaker configurations." %}
@@ -160,7 +160,7 @@ sed -i 's@#LoadModule filter_module modules/mod_filter.so@LoadModule filter_modu
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-Start the Apache service and set it to automatically start.
+Start the Apache service and set it to automatically start:
 
 {% code-tabs %}
 {% code-tabs-item title="3. Start the Apache service and set it to automatically start." %}
@@ -222,7 +222,7 @@ systemctl enable php-fpm
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-Create the configuration file.
+Create the configuration file:
 
 {% code-tabs %}
 {% code-tabs-item title="2. Create the configuration file." %}
@@ -322,7 +322,7 @@ yum clean all && yum -y install nginx
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-After the installation start and enable the service.
+After the installation start and enable the service:
 
 {% code-tabs %}
 {% code-tabs-item title=" Start the server and enable the service." %}
@@ -522,7 +522,7 @@ http {
 
 Ensure that you meet [Docker CE requirements](https://docs.docker.com/install/linux/docker-ce/centos/#os-requirements) before installing Docker CE.
 
-Install Docker.
+Install Docker:
 
 {% code-tabs %}
 {% code-tabs-item title="1. Install Docker." %}
@@ -532,7 +532,7 @@ yum -y install docker
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-Start the service and make it persistent.
+Start the service and make it persistent:
 
 {% code-tabs %}
 {% code-tabs-item title="2. Start the service and make it persistent." %}
@@ -545,7 +545,7 @@ systemctl enable docker
 
 ## Install Composer
 
-Install the last version of composer
+Install the last version of Composer:
 
 {% code-tabs %}
 {% code-tabs-item title="Install Composer." %}
@@ -555,7 +555,7 @@ yum -y install composer
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-verify if the installation success by running the command:
+Verify that Composer installed successfully:
 
 {% code-tabs %}
 {% code-tabs-item title="Verify composer functionality." %}
@@ -586,7 +586,7 @@ echo "SELINUXTYPE=targeted" >> /etc/selinux/config
 CentOS Linux 7 requires a firewall.
 {% endhint %}
 
-Install the firewall.
+Install the firewall:
 
 {% code-tabs %}
 {% code-tabs-item title="1. Install the firewall." %}
@@ -596,7 +596,7 @@ yum -y install firewalld
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-Start the firewall and enable.
+Start the firewall and enable:
 
 {% code-tabs %}
 {% code-tabs-item title="2. Set the firewall to automatically start." %}
@@ -607,7 +607,7 @@ systemctl enable firewalld
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-Set the configuration of exceptions.
+Set the configuration of exceptions:
 
 {% code-tabs %}
 {% code-tabs-item title="3. Set the configuration for ProcessMaker." %}
@@ -833,7 +833,7 @@ tar -xzvf bpm4_version.tar.gz
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-Rename the folder.
+Rename the folder:
 
 {% code-tabs %}
 {% code-tabs-item title="Change the folder name to processmaker." %}
@@ -843,7 +843,7 @@ mv bpm_version processmaker
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-Provide permissions of ownership.
+Provide permissions of ownership:
 
 {% code-tabs %}
 {% code-tabs-item title="Change the ownership to apache." %}
@@ -871,7 +871,7 @@ tar -xzvf bpm4_version.tar.gz
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-Rename the folder.
+Rename the folder:
 
 {% code-tabs %}
 {% code-tabs-item title="Change the folder name to processmaker." %}
@@ -881,7 +881,7 @@ mv bpm_version processmaker
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-Provide permissions of ownership.
+Provide permissions of ownership:
 
 {% code-tabs %}
 {% code-tabs-item title="Change the ownership to apache." %}
@@ -896,7 +896,7 @@ chown -R nginx:nginx processmaker
 ## Install the ProcessMaker Database
 
 {% hint style="info" %}
-Ensure the following prior to performing the following command:
+Ensure the following prior to performing the next command:
 
 * You have [MySQL Community Edition installed](install-required-software.md#install-mysql-community-server-edition).
 * You have your database credentials available.
@@ -922,13 +922,13 @@ create database pm4;
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-Verify if the database was created successfully.
+Verify if the database was created successfully:
 
 ```text
 show databases;
 ```
 
-Exit the MySQL command line by using the command `exit` or `quit`
+Exit the MySQL command line by using the command `exit` or `quit`.
 
 Go to ProcessMaker directory:
 
@@ -950,17 +950,9 @@ php artisan bpm:install
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-Before start the batch script asks you if you are ready to begin, type `yes` and press \[Enter\]
+Before start the batch script asks you if you are ready to begin, type `yes` and press **Enter**.
 
 After you provide the batch script with your database information, the script installs the ProcessMaker database. An example of the script output is below.
-
-The batch script asks you for the following information to create the ProcessMaker database:
-
-* The MySQL Host: `localhost`
-* The MySQL Port: `3306`
-* The MySQL Database Name: `pm4`
-* The MySQL Username: `root`
-* The MySQL Password: \(the password you set on the section [Install MySQL Community Server](install-required-software.md#install-mysql-community-server-edition)\)
 
 {% code-tabs %}
 {% code-tabs-item title="Batch script output that installs the ProcessMaker database with your database information." %}
@@ -1080,6 +1072,14 @@ ProcessMaker installation is complete. Please visit the url in your browser to c
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
+
+The batch script asks you for the following information to create the ProcessMaker database:
+
+* The MySQL Host: `localhost`
+* The MySQL Port: `3306`
+* The MySQL Database Name: `pm4`
+* The MySQL Username: `root`
+* The MySQL Password: \(the password you set on the section [Install MySQL Community Server](install-required-software.md#install-mysql-community-server-edition)\)
 
 ## Reboot the Server
 

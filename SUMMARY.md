@@ -37,7 +37,7 @@
   * [Manage Processes](designing-processes/viewing-processes/view-the-list-of-processes/README.md)
     * [View All Processes](designing-processes/viewing-processes/view-the-list-of-processes/view-your-processes.md)
     * [Search for a Process](designing-processes/viewing-processes/view-the-list-of-processes/search-for-a-process.md)
-    * [Edit the Name, Description, Category, or Status of a Process](designing-processes/viewing-processes/view-the-list-of-processes/edit-the-name-description-category-or-status-of-a-process.md)
+    * [Edit Process Information](designing-processes/viewing-processes/view-the-list-of-processes/edit-the-name-description-category-or-status-of-a-process.md)
     * [Activate or Deactivate a Process](designing-processes/viewing-processes/view-the-list-of-processes/activate-or-deactivate-a-process.md)
     * [Preview a Process](designing-processes/viewing-processes/view-the-list-of-processes/preview-a-process.md)
     * [Remove a Process](designing-processes/viewing-processes/view-the-list-of-processes/remove-a-process.md)
