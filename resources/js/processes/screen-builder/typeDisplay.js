@@ -95,65 +95,16 @@ let initialControls = [{
             'editor-component': 'FileDownload',
             'editor-icon': require('./components/file-download.png'),
             config: {
-                label: 'New Text',
-                fontSize: '1em',
-                fontWeight: 'normal'
+                label: 'Download File',
             },
             inspector: [{
-                    type: "FormInput",
-                    field: "label",
-                    config: {
-                        label: "Text Label",
-                        helper: "The text to display",
-                    }
-                },
-                {
-                    type: "FormSelect",
-                    field: "fontWeight",
-                    config: {
-                        label: "Font Weight",
-                        helper: "The weight of the text",
-                        options: [{
-                                value: 'normal',
-                                content: 'Normal'
-                            },
-                            {
-                                value: 'bold',
-                                content: 'Bold'
-                            }
-                        ]
-                    }
-                },
-
-
-                {
-                    type: "FormSelect",
-                    field: "fontSize",
-                    config: {
-                        label: "Font Size",
-                        helper: "The size of the text in em",
-                        options: [{
-                                value: '0.5em',
-                                content: '0.5'
-                            },
-                            {
-                                value: '1em',
-                                content: '1'
-                            },
-                            {
-                                value: '1.5em',
-                                content: '1.5'
-                            },
-                            {
-                                value: '2em',
-                                content: '2'
-                            },
-                        ]
-                    }
-                },
-
-
-            ]
+                type: "FormInput",
+                field: "label",
+                config: {
+                    label: "Text Label",
+                    helper: "The text to display",
+                }
+            }, ]
         }
     },
     {
