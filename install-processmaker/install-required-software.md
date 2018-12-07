@@ -88,10 +88,6 @@ The wizard asks you if you want to change the current password. Choose yes and c
 
 ![Change the current database password](../.gitbook/assets/4centos7mysqlsecurechangepass.png)
 
-{% hint style="warning" %}
-ProcessMaker does NOT support special characters \(such as: `@ # $ % ^ & () /`\) in the root password.
-{% endhint %}
-
 The wizard asks you if you want to remove anonymous users. Choose yes.
 
 ![Remove anonymous users](../.gitbook/assets/4centos7mysqlsecureremoveanonimus.png)
@@ -117,7 +113,7 @@ After you finish using the wizard restart the MySQL service:
 {% code-tabs %}
 {% code-tabs-item title="Restart the MySQL service." %}
 ```text
-service mysqld restart
+systemctl restart mysqld
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
