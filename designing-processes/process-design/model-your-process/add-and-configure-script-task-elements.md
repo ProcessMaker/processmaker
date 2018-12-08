@@ -46,11 +46,11 @@ Follow these steps to edit the name for a Script Task element:
 
 ### Select the ProcessMaker Script for a Script Task Element
 
+Since Script Task elements are designed to run a ProcessMaker Script, specify which ProcessMaker Script a selected Script Task element uses. A ProcessMaker Script must already exist before it can be selected for use in a Script Task element.
+
 {% hint style="info" %}
 For information about ProcessMaker Scripts, see [What is a Script?](../../scripts/what-is-a-script.md).
 {% endhint %}
-
-Since Script Task elements are designed to run a ProcessMaker Script, specify which ProcessMaker Script a selected Script Task element uses. A ProcessMaker Script must already exist before it can be selected for use in a Script Task element.
 
 {% hint style="warning" %}
 Ensure to select a ProcessMaker Script for each Script Task element in your process model. If a ProcessMaker Script is not specified and Requests are started for that process, Requests associated with that process will stall and never complete because there is no ProcessMaker Script to run for the Script Task element\(s\).
@@ -59,7 +59,7 @@ Ensure to select a ProcessMaker Script for each Script Task element in your proc
 Follow these steps to select a ProcessMaker Script for a Script Task element:
 
 1. Place a [Script Task](add-and-configure-script-task-elements.md#add-a-script-task-element) element into your process model.
-2. Select the Script Task element in which to specify its ProcessMaker Script.
+2. Select the Script Task element in which to specify its ProcessMaker Script. Options for the Script Task element display in the right side bar.
 3. In the **Script** field, select which ProcessMaker Script that Script Task element uses. The ProcessMaker Script is selected.
 
 {% hint style="info" %}
@@ -72,7 +72,35 @@ If no ProcessMaker Scripts exist, the drop-down contains no options. Ensure to s
 
 ### Configure the ProcessMaker Script Selected for a Script Task Element
 
+After [selecting the ProcessMaker Script for the Script Task element](add-and-configure-script-task-elements.md#select-the-processmaker-script-for-a-script-task-element), optionally provide a JSON script that configures variable values for the selected ProcessMaker Script. Providing a JSON script from the Script Task is identical to providing JSON configuration script in the **Script Config JSON** panel in Scripts Editor for a ProcessMaker Script.
 
+{% hint style="info" %}
+For information about ProcessMaker Scripts, see [What is a Script?](../../scripts/what-is-a-script.md).
+
+For information about adding a JSON configuration script for a ProcessMaker Script, see [Scripts Editor](../../scripts/scripts-editor.md#enter-other-json-data-as-input-to-your-processmaker-script).
+{% endhint %}
+
+If a JSON script exists in the Script Task element, that script is used for the ProcessMaker Script. An existing JSON configuration script displays in the **Script Configuration** option for a selected Script Task element.
+
+{% hint style="warning" %}
+The JSON script in the Script Task element overrides any JSON script entered in the **Script Config JSON** panel in Scripts Editor for the associated ProcessMaker Script.
+{% endhint %}
+
+Follow these steps to enter or edit a JSON configuration script for a Script Task element:
+
+1. Place a [Script Task](add-and-configure-script-task-elements.md#add-a-script-task-element) element into your process model.
+2. Select the Script Task element in which to specify its ProcessMaker Script. Options for the Script Task element display in the right side bar.
+3. [Select the ProcessMaker Script for the Script Task element.](add-and-configure-script-task-elements.md#select-the-processmaker-script-for-a-script-task-element)
+4. Click the icon![](../../../.gitbook/assets/json-configuration-script-icon-script-task-element-process-modeler-processes.png)beside the **Script Configuration** option. The **Script Config Editor** displays.  
+
+   ![](../../../.gitbook/assets/script-config-editor-task-element-process-modeler-processses.png)
+
+5. Enter your JSON configuration script. Use the scroll panel to the right of the ProcessMaker script to scroll to different sections of the script if necessary. This is useful especially when you are editing a long ProcessMaker Script.
+6. Click **Close** or the Close icon![](../../../.gitbook/assets/close-script-config-editor-script-task-element-process-modeler-processes.png). The JSON configuration script is saved.
+
+{% hint style="info" %}
+You can enter your JSON configuration script directly into the **Script Configuration** option instead of using the **Script Config Editor**.
+{% endhint %}
 
 ## Related Topics
 
@@ -83,4 +111,6 @@ If no ProcessMaker Scripts exist, the drop-down contains no options. Ensure to s
 {% page-ref page="../../viewing-processes/create-a-process.md" %}
 
 {% page-ref page="../../scripts/what-is-a-script.md" %}
+
+{% page-ref page="../../scripts/scripts-editor.md" %}
 

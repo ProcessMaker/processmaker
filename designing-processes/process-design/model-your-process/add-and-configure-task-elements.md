@@ -59,7 +59,7 @@ Ensure to select a ProcessMaker Screen for each Task element in your process mod
 Follow these steps to select a ProcessMaker Screen for a Task element:
 
 1. Place a [Task](add-and-configure-task-elements.md#add-a-task-element) element into your process model.
-2. Select the Task element in which to specify its ProcessMaker Screen.
+2. Select the Task element in which to specify its ProcessMaker Screen. Options for the Script Task element display in the right side bar.
 3. In the **Screen For Input** field, select which ProcessMaker Screen that Task element uses. The ProcessMaker Screen is selected.
 
 {% hint style="info" %}
@@ -98,7 +98,7 @@ Select to whom to assign the Task element in a process model:
 Follow these steps to select to whom to assign the Task element:
 
 1. Place a [Task](add-and-configure-task-elements.md#add-a-task-element) element into your process model.
-2. Select the Task element in which to select to whom to assign the Task element.
+2. Select the Task element in which to select to whom to assign the Task element. Options for the Script Task element display in the right side bar.
 3. From the **Task Assignment** field, select one of the following options:
    * **To requestor:** Select **To requestor** to assign the Task element to the Request initiator.
    * **To user:** Select **To user** to assign the Task element to a specified person. When this option is selected, the **Assigned User** field displays below the **Task Assignment** field. From the **Assigned User** field, select the person's full name as the Task element's assignee.

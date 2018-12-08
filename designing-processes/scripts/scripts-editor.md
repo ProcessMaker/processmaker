@@ -39,7 +39,7 @@ Follow these guidelines to develop and test ProcessMaker Scripts in Scripts Edit
 
 ### Develop Your ProcessMaker Script
 
-Develop the ProcessMaker Script below the script's name and language. Use the scroll panel to the right of the ProcessMaker script to scroll to different sections of the script. This is useful especially when you are editing a long ProcessMaker Script.
+Develop the ProcessMaker Script below the script's name and language. Use the scroll panel to the right of the ProcessMaker script to scroll to different sections of the script if necessary. This is useful especially when you are editing a long ProcessMaker Script.
 
 ### Enter JSON Data Model Variables as Input to Your ProcessMaker Script
 
@@ -74,11 +74,11 @@ If the ProcessMaker Script evaluates successfully, its output displays below the
 
 ### Save Your ProcessMaker Script
 
-Click the **Save** icon ![](../../.gitbook/assets/save-icon-processes.png) from Script Editor's top menu to save the ProcessMaker Script.
+Click the **Save** icon![](../../.gitbook/assets/save-icon-processes.png)from Script Editor's top menu to save the ProcessMaker Script.
 
 ### Close Scripts Editor
 
-Click the **Close** icon ![](../../.gitbook/assets/close-icon-processes.png) from Script Editor's top menu to close Scripts Editor and return to the **Scripts** page.
+Click the **Close** icon![](../../.gitbook/assets/close-icon-processes.png)from Script Editor's top menu to close Scripts Editor and return to the **Scripts** page.
 
 ## Scripts Editor Best Practices
 
