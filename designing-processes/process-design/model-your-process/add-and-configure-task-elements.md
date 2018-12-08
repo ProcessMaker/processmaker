@@ -7,7 +7,7 @@ description: Add and configure Task elements in your process model.
 ## Add a Task Element
 
 {% hint style="info" %}
-For a description of the [Task](../process-modeling-element-descriptions.md#user-task) element, see [Process Modeling Element Descriptions](../process-modeling-element-descriptions.md).
+For a description of the [Task](process-modeling-element-descriptions.md#user-task) element, see [Process Modeling Element Descriptions](process-modeling-element-descriptions.md).
 {% endhint %}
 
 Follow these steps to add a Task element to the process model:
@@ -105,7 +105,7 @@ Follow these steps to select to whom to assign the Task element:
 
 ## Related Topics
 
-{% page-ref page="../process-modeling-element-descriptions.md" %}
+{% page-ref page="process-modeling-element-descriptions.md" %}
 
 {% page-ref page="../../viewing-processes/view-the-list-of-processes/view-your-processes.md" %}
 

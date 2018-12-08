@@ -7,7 +7,7 @@ description: Add and configure Script Task elements in your process model.
 ## Add a Script Task Element
 
 {% hint style="info" %}
-For a description of the [Script Task](../process-modeling-element-descriptions.md#script-task) element, see [Process Modeling Element Descriptions](../process-modeling-element-descriptions.md).
+For a description of the [Script Task](process-modeling-element-descriptions.md#script-task) element, see [Process Modeling Element Descriptions](process-modeling-element-descriptions.md).
 {% endhint %}
 
 Follow these steps to add a Script Task element to the process model:
@@ -104,7 +104,7 @@ You can enter your JSON configuration script directly into the **Script Configur
 
 ## Related Topics
 
-{% page-ref page="../process-modeling-element-descriptions.md" %}
+{% page-ref page="process-modeling-element-descriptions.md" %}
 
 {% page-ref page="../../viewing-processes/view-the-list-of-processes/view-your-processes.md" %}
 

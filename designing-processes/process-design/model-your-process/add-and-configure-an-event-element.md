@@ -7,7 +7,7 @@ description: Add and configure Event elements in your process model.
 ## Add a Start Event Element
 
 {% hint style="info" %}
-For a description of the [Start Event](../process-modeling-element-descriptions.md#start-event) element, see [Process Modeling Element Descriptions](../process-modeling-element-descriptions.md).
+For a description of the [Start Event](process-modeling-element-descriptions.md#start-event) element, see [Process Modeling Element Descriptions](process-modeling-element-descriptions.md).
 {% endhint %}
 
 Follow these steps to add a Start Event element to the process model:
@@ -21,7 +21,7 @@ Follow these steps to add a Start Event element to the process model:
 ## Add an End Event Element
 
 {% hint style="info" %}
-For a description of the [End Event](../process-modeling-element-descriptions.md#end-event) element, see [Process Modeling Element Descriptions](../process-modeling-element-descriptions.md).
+For a description of the [End Event](process-modeling-element-descriptions.md#end-event) element, see [Process Modeling Element Descriptions](process-modeling-element-descriptions.md).
 {% endhint %}
 
 Follow these steps to add an End Event element to the process model:
@@ -60,7 +60,7 @@ Follow these steps to edit the name for an Event element:
 
 ## Related Topics
 
-{% page-ref page="../process-modeling-element-descriptions.md" %}
+{% page-ref page="process-modeling-element-descriptions.md" %}
 
 {% page-ref page="../../viewing-processes/view-the-list-of-processes/view-your-processes.md" %}
 
