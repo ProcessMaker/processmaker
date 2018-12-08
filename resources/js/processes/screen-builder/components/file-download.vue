@@ -11,6 +11,7 @@
 
 
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
@@ -27,8 +28,7 @@ export default {
   },
   methods: {
     onClick() {
-      console.log("downloading");
-      ProcessMaker.apiClient
+      axios
         .get("request/" + this.requestId + "/files/" + this.files.data[0].id)
         .then(response => {
           console.log("HEllo");
