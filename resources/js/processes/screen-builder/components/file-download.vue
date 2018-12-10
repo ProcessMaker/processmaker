@@ -28,11 +28,23 @@ export default {
   },
   methods: {
     onClick() {
-      axios
-        .get("request/" + this.requestId + "/files/" + this.files.data[0].id)
-        .then(response => {
-          console.log("HEllo");
-        });
+      axios({
+        url:
+          "https://bpm4.local.processmaker.com/request/" +
+          this.requestId +
+          "/files/" +
+          this.files.data[0].id,
+        method: "GET",
+        responseType: "blob" // important
+      }).then(response => {
+        //axios needs to be told to open the file
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", this.files.data[0].file_name);
+        document.body.appendChild(link);
+        link.click();
+      });
     },
     getRequestId() {
       this.requestId = document.head.querySelector(
