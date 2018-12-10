@@ -11,7 +11,7 @@
       data-path="data"
       pagination-path="meta"
     >
-      <template slot="name" slot-scope="props">
+      <template slot="ids" slot-scope="props">
         <b-link @click="openRequest(props.rowData, props.rowIndex)">{{props.rowData.name}}</b-link>
       </template>
       <template slot="participants" slot-scope="props">
@@ -59,9 +59,11 @@ export default {
       ],
       fields: [
         {
-          title: "Process",
-          name: "__slot:name",
-          sortField: "name"
+          name: "__slot:ids",
+          title: "Name",
+          field: "id",
+          sortField: "id",
+          width: "50px"
         },
         {
           title: "Status",
