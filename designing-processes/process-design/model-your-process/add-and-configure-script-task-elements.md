@@ -18,7 +18,7 @@ Follow these steps to add a Script Task element to the process model:
 
 ![Script Task element](../../../.gitbook/assets/script-task-process-modeler-processes.png)
 
-## Configure a Task Element
+## Configure a Script Task Element
 
 ### Edit the Identifier Value
 
