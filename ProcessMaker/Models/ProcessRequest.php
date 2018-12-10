@@ -20,7 +20,6 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  * @property string $user_id
  * @property string $process_collaboration_id
  * @property string $participant_id
- * @property string $summary_screen_id
  * @property string $name
  * @property string $status
  * @property string $data
