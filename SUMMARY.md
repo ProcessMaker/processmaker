@@ -96,12 +96,14 @@
   * [Model Your Process](designing-processes/process-design/model-your-process/README.md)
     * [Process Modeling Element Descriptions](designing-processes/process-design/model-your-process/process-modeling-element-descriptions.md)
     * [Edit the Process Model Information](designing-processes/process-design/model-your-process/edit-the-process-model-information.md)
+    * [Filter Elements in the BPMN Panel](designing-processes/process-design/model-your-process/filter-elements-in-the-bpmn-panel.md)
     * [Add and Configure Event Elements](designing-processes/process-design/model-your-process/add-and-configure-an-event-element.md)
     * [Add and Configure Task Elements](designing-processes/process-design/model-your-process/add-and-configure-task-elements.md)
     * [Add and Configure Script Task Elements](designing-processes/process-design/model-your-process/add-and-configure-script-task-elements.md)
     * [Add and Configure Exclusive Gateway Elements](designing-processes/process-design/model-your-process/add-and-configure-exclusive-gateway-elements.md)
     * [Add and Configure Text Annotation Elements](designing-processes/process-design/model-your-process/add-and-configure-text-annotation-elements.md)
-    * [Connect and Remove Elements](designing-processes/process-design/model-your-process/the-quick-toolbar.md)
+    * [Connect Process Model Elements](designing-processes/process-design/model-your-process/the-quick-toolbar.md)
+    * [Remove Process Model Elements](designing-processes/process-design/model-your-process/remove-process-model-elements.md)
     * [Save Your Process Model](designing-processes/process-design/model-your-process/toolboxes.md)
 
 ## ProcessMaker Administration

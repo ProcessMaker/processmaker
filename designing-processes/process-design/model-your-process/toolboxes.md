@@ -4,18 +4,22 @@ description: Save your process model.
 
 # Save Your Process Model
 
-You can see the title of your project at left side of the top bar. In the top bar, you can also [save all changes made in your process](toolboxes.md#save-changes-in-your-process).
+## Save Your Process Model
 
-![](../../../.gitbook/assets/pm4_thetopbar.png)
+Process Modeler displays the **Save** icon![](../../../.gitbook/assets/save-icon-processes.png)on the same bar as the process name.
 
-## Save Changes in Your Process
+![Save button \(highlighted\) located beside the process name](../../../.gitbook/assets/top-bar-process-modeler-processes.png)
 
-Follow these steps to save changes in your process model:
+Follow these steps to save your process model:
 
 1. ​[View your processes](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/~/drafts/-LRhVZm0ddxDcGGdN5ZN/primary/designing-processes/viewing-processes/view-the-list-of-processes/view-your-processes#view-all-processes). The **Processes** page displays.
-2. Click a process to open it. Process Modeler displays.
+2. [Create a new process](../../viewing-processes/create-a-process.md) or [select the process name of an existing process to open it](../../viewing-processes/view-the-list-of-processes/view-your-processes.md#view-all-processes). Process Modeler displays.
 3. Make changes in the process model.
-4. Click the **Trash** icon \[Image\]. The element is deleted. \[Image\]
+4. Click the **Save** icon![](../../../.gitbook/assets/save-icon-processes.png). The process model is saved.
 
+## Related Topics
 
+{% page-ref page="../../viewing-processes/view-the-list-of-processes/view-your-processes.md" %}
+
+{% page-ref page="../../viewing-processes/create-a-process.md" %}
 
