@@ -101,7 +101,7 @@
     * [Add and Configure Script Task Elements](designing-processes/process-design/model-your-process/add-and-configure-script-task-elements.md)
     * [Add and Configure Exclusive Gateway Elements](designing-processes/process-design/model-your-process/add-and-configure-exclusive-gateway-elements.md)
     * [Add and Configure Text Annotation Elements](designing-processes/process-design/model-your-process/add-and-configure-text-annotation-elements.md)
-    * [Connect and Delete Elements](designing-processes/process-design/model-your-process/the-quick-toolbar.md)
+    * [Connect and Remove Elements](designing-processes/process-design/model-your-process/the-quick-toolbar.md)
     * [Use the Top Bar](designing-processes/process-design/model-your-process/toolboxes.md)
     * [Interact With an Element](designing-processes/process-design/model-your-process/bpmn-side-bar/README.md)
       * [Use a Task Element](designing-processes/process-design/model-your-process/bpmn-side-bar/task.md)
