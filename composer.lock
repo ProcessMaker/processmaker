@@ -2812,16 +2812,17 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/caleeli/bpm-package-email-connector.git",
-                "reference": "82dcd370bf93927b45e4156932ff7e9c226ba583"
+                "reference": "1a2f9cfdc9cdcf4202c2ae7080e87cb70df41be5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/caleeli/bpm-package-email-connector/zipball/82dcd370bf93927b45e4156932ff7e9c226ba583",
-                "reference": "82dcd370bf93927b45e4156932ff7e9c226ba583",
+                "url": "https://api.github.com/repos/caleeli/bpm-package-email-connector/zipball/1a2f9cfdc9cdcf4202c2ae7080e87cb70df41be5",
+                "reference": "1a2f9cfdc9cdcf4202c2ae7080e87cb70df41be5",
                 "shasum": ""
             },
             "require": {
-                "processmaker/bpm": "4.0.*"
+                "processmaker/bpm": "4.0.*",
+                "spatie/server-side-rendering": "^0.2.5"
             },
             "type": "project",
             "extra": {
@@ -2846,7 +2847,7 @@
                 "source": "https://github.com/caleeli/bpm-package-email-connector/tree/master",
                 "issues": "https://github.com/caleeli/bpm-package-email-connector/issues"
             },
-            "time": "2018-12-05T19:57:10+00:00"
+            "time": "2018-12-10T12:34:48+00:00"
         },
         {
             "name": "processmaker/nayra",
@@ -3667,6 +3668,54 @@
                 "spatie"
             ],
             "time": "2016-12-14T15:37:00+00:00"
+        },
+        {
+            "name": "spatie/server-side-rendering",
+            "version": "0.2.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spatie/server-side-rendering.git",
+                "reference": "fb646f07be18e83324d7e32773c19ccf06a78530"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spatie/server-side-rendering/zipball/fb646f07be18e83324d7e32773c19ccf06a78530",
+                "reference": "fb646f07be18e83324d7e32773c19ccf06a78530",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.0",
+                "symfony/process": "^3.0|^4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Spatie\\Ssr\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sebastian De Deyne",
+                    "email": "sebastian@spatie.be",
+                    "homepage": "https://spatie.be",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Server side rendering JavaScript in your PHP application",
+            "homepage": "https://github.com/spatie/server-side-rendering",
+            "keywords": [
+                "SSR",
+                "server-side-rendering",
+                "spatie"
+            ],
+            "time": "2018-08-10T08:07:00+00:00"
         },
         {
             "name": "spatie/temporary-directory",

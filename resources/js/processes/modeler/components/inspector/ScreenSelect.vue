@@ -19,7 +19,7 @@
 
 <script>
 export default {
-    props: ["value", "label", "helper"],
+    props: ["value", "label", "helper", "params"],
     data() {
         return {
             content: "",
@@ -56,7 +56,9 @@ export default {
         load() {
             this.loading = true;
             ProcessMaker.apiClient
-                .get("/screens")
+                .get("/screens", {
+                    params: this.params
+                })
                 .then(response => {
                     this.screens = response.data.data;
                     this.loading = false;

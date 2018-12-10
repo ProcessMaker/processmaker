@@ -62,7 +62,15 @@ class ScreenController extends Controller
                     ->orWhere('config', 'like', $filter);
             });
         }
-
+        //  Filter by specific field values
+        $filterByFields = ['type','screen_category_id'];
+        $parameters = $request->all();
+        foreach ($parameters as $column => $filter) {
+            if (in_array($column, $filterByFields)) {
+                $key = array_search($column, $filterByFields);
+                $query->where(is_string($key) ? $key : $column, 'like', $filter);
+            }
+        }
         $response =
             $query->orderBy(
                 $request->input('order_by', 'title'),
