@@ -161,15 +161,26 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
             ->exists();
     }
 
-    public function getSummaryScreen()
+    /**
+     * Returns the id of the summary screen that is associated with the end event in which the request
+     * finished
+     *
+     * @return null
+     */
+    public function getSummaryScreenId()
     {
-//        return $this->belongsTo(Screen::class, 'summary_screen_id');
-//        $this->tokens()->filter(function($token) {
-//            return $token->element_type == 'End Event';
-//        });
-        $query = $this->tokens()->where('element_type', 'End Event');
-        return $query->get()->first();
-//        return $this->tokens()->where('element_type', 'End Event');
+        $endEvents = $this->tokens()->where('element_type', 'end_event')->get();
+
+        if ($endEvents->count(0) === 0) {
+           return null;
+        }
+
+
+        //get the first token that is and end event to get the summary screen
+        $definition = $endEvents->first()->getDefinition();
+        $screenId = empty($definition['screenRef']) ? null : Screen::find($definition['screenRef']);
+
+        return $screenId;
     }
 
 

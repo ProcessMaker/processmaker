@@ -221,16 +221,6 @@ class TokenRepository implements TokenRepositoryInterface
 
     public function persistThrowEventTokenConsumed(ThrowEventInterface $endEvent, TokenInterface $token)
     {
-//        $request = ProcessRequest::find($token->getInstance()->id);
-//        $definitions = $request->process->getDefinitions();
-//        $element = $definitions->findElementById($endEvent->getId());
-//        if (!$element) {
-//            return [];
-//        }
-//        $definition =  $element->getBpmnElementInstance()->getProperties();
-//        $screenId = empty($definition['screenRef']) ? null : Screen::find($definition['screenRef']);
-//        $request->summary_screen_id = $screenId;
-//        $request->save();
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
         $token->status = 'CLOSED';
         $token->element_id = $endEvent->getId();

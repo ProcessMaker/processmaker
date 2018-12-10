@@ -60,7 +60,7 @@ class RequestController extends Controller
         $request->participants;
         $request->user;
         $request->summary = $request->summary();
-        $request->summary_screen = $request->getSummaryScreen();
+        $request->summary_screen = $request->getSummaryScreenId();
         if (Auth::user()->is_administrator === true) {
             $canCancel = true;
         } else {
