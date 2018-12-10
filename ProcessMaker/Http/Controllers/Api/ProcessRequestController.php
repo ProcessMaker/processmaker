@@ -213,7 +213,8 @@ class ProcessRequestController extends Controller
     {
         if ($httpRequest->status === 'CANCELED') {
             $permission = 'requests.cancel';
-            if (!Auth::user()->hasProcessPermission(Process::find($request->process_id), $permission)) {
+            
+            if (!Auth::user()->hasProcessPermission($request->process, $permission)) {
                 throw new AuthorizationException('Not authorized: ' . $permission);
             }
             $this->cancelRequestToken($request);

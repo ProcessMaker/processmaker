@@ -24,8 +24,8 @@ Route::group(
     Route::post('process_events/{process}', 'ProcessController@triggerStartEvent')->name('process_events.trigger');
     Route::apiResource('files', 'FileController');
     Route::apiResource('notifications', 'NotificationController');
-    Route::get('user_notifications', 'NotificationController@userNotifications');
     Route::put('read_notifications', 'NotificationController@updateAsRead');
+    Route::put('unread_notifications', 'NotificationController@updateAsUnread');
     Route::apiResource('task_assignments', 'TaskAssignmentController')->only(['index', 'store', 'update', 'destroy']);
     }
 );

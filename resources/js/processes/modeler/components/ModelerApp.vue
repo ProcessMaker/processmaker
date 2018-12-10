@@ -17,7 +17,7 @@
       <font-awesome-icon :style="{color: statusColor}" :icon="statusIcon" />
     </status-bar>
 
-  </div>    
+  </div>
 </template>
 
 
@@ -56,10 +56,6 @@ export default {
       }
   },
   mounted() {
-    // Emit our lifecycle events to allow customizations to modify the modeler
-    // if needed
-    //ProcessMaker.EventBus.$emit('modeler-init', this.$refs.modeler);
-    //ProcessMaker.EventBus.$emit('modeler-start', this.$refs.modeler);
     ProcessMaker.$modeler = this.$refs.modeler;
   },
   methods: {

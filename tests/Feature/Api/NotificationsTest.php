@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Faker\Factory as Faker;
 use Illuminate\Support\Facades\DB;
 use ProcessMaker\Models\Notification;
+use ProcessMaker\Models\User;
 use Ramsey\Uuid\Uuid;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
@@ -53,9 +54,11 @@ class NotificationsTest extends TestCase
     public function testListNotification()
     {
         $existing = Notification::count();
-        $faker = Faker::create();
 
-        factory(Notification::class, 10)->create();
+        factory(Notification::class, 10)->create([
+            'notifiable_type' => User::class,
+            'notifiable_id' => $this->user->id
+        ]);
 
         $response = $this->apiCall('GET', self::API_TEST_URL);
 
@@ -64,7 +67,7 @@ class NotificationsTest extends TestCase
 
         // Verify structure
         $response->assertJsonStructure([
-            'data' => ['*' => self::STRUCTURE],
+            'data',
             'meta',
         ]);
 
@@ -79,7 +82,10 @@ class NotificationsTest extends TestCase
     public function testNotificationListDates()
     {
         DB::table('users')->delete();
-        $newEntity = factory(Notification::class)->create();
+        $newEntity = factory(Notification::class)->create([
+            'notifiable_type' => User::class,
+            'notifiable_id' => $this->user->id
+        ]);
         $route = self::API_TEST_URL;
         $response = $this->apiCall('GET', $route);
 
@@ -163,5 +169,4 @@ class NotificationsTest extends TestCase
         //Validate the header status code
         $response->assertStatus(405);
     }
-
 }
