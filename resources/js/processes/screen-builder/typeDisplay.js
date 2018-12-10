@@ -85,14 +85,14 @@ let initialControls = [{
         }
     },
     {
-        builderComponent: FileDownload,
-        builderBinding: 'FileDownload',
+        builderComponent: FormText,
+        builderBinding: 'FormText',
         rendererComponent: FileDownload,
         rendererBinding: 'FileDownload',
         control: {
             label: 'File Download',
             component: 'FileDownload',
-            'editor-component': 'FileDownload',
+            'editor-component': 'FormText',
             'editor-icon': require('./components/file-download.png'),
             config: {
                 label: 'Download File',
