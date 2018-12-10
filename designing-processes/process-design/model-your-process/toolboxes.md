@@ -1,4 +1,8 @@
-# Use the Top Bar
+---
+description: Save your process model.
+---
+
+# Save Your Process Model
 
 You can see the title of your project at left side of the top bar. In the top bar, you can also [save all changes made in your process](toolboxes.md#save-changes-in-your-process).
 
@@ -6,7 +10,7 @@ You can see the title of your project at left side of the top bar. In the top ba
 
 ## Save Changes in Your Process
 
-Follow these steps to save changes in your process:
+Follow these steps to save changes in your process model:
 
 1. ​[View your processes](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/~/drafts/-LRhVZm0ddxDcGGdN5ZN/primary/designing-processes/viewing-processes/view-the-list-of-processes/view-your-processes#view-all-processes). The **Processes** page displays.
 2. Click a process to open it. Process Modeler displays.

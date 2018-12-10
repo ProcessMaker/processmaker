@@ -18,6 +18,10 @@ Below is a Start Event element in Process Modeler.
 
 ![Start Event element](../../../.gitbook/assets/start-event-element-process-modeler-processes.png)
 
+{% hint style="info" %}
+See [Add and Configure Event Elements](add-and-configure-an-event-element.md#add-a-start-event-element) for more information.
+{% endhint %}
+
 ### End Event
 
 An End Event indicates where a modeled process normally ends when abnormal events do not terminate a [Request](../../../using-processmaker/requests/) for that process \(such as a canceled Request\). An End Event terminates the flow of of a Request for that process. Therefore, an End Event cannot have an outgoing [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow). A process can have multiple End Events.
@@ -25,6 +29,10 @@ An End Event indicates where a modeled process normally ends when abnormal event
 Below is an End Event element in Process Modeler.
 
 ![End Event element](../../../.gitbook/assets/end-event-element-process-modeler-processes.png)
+
+{% hint style="info" %}
+See [Add and Configure Event Elements](add-and-configure-an-event-element.md#add-an-end-event-element) for more information.
+{% endhint %}
 
 ## Tasks
 
@@ -38,7 +46,15 @@ People perform User Task activities through ProcessMaker Screens as digital [for
 
 Below is a User Task element in Process Modeler.
 
+{% hint style="info" %}
+
+{% endhint %}
+
 ![User Task element](../../../.gitbook/assets/task-element-process-modeler-processes.png)
+
+{% hint style="info" %}
+See [Add and Configure Task Elements](add-and-configure-task-elements.md) for more information.
+{% endhint %}
 
 ### Script Task
 
@@ -50,6 +66,10 @@ Below is a Script Task element in Process Modeler.
 
 ![Script Task element](../../../.gitbook/assets/script-task-element-process-modeler-processes.png)
 
+{% hint style="info" %}
+See [Add and Configure Script Task Elements](add-and-configure-script-task-elements.md) for more information.
+{% endhint %}
+
 ## Exclusive Gateway
 
 An Exclusive Gateway represents a decision that creates alternative paths within a [Request's](../../../using-processmaker/requests/) workflow. During a Request's workflow for that process, only one outgoing path from the Exclusive Gateway can be taken. An Exclusive Gateway can have two or more outgoing Sequence Flows.
@@ -58,6 +78,10 @@ Below is an Exclusive Gateway element in Process Modeler.
 
 ![Exclusive Gateway element](../../../.gitbook/assets/exclusive-gateway-element-process-modeler-processes.png)
 
+{% hint style="info" %}
+See [Add and Configure Exclusive Gateway Elements](add-and-configure-exclusive-gateway-elements.md) for more information.
+{% endhint %}
+
 ## Text Annotation
 
 Text annotation is human-readable text in a modeled process provides description regarding the process. Text annotation performs no functional role in process Requests or routing.
@@ -65,6 +89,10 @@ Text annotation is human-readable text in a modeled process provides description
 Below is a Text Annotation element in Process Modeler.
 
 ![Text Annotation element](../../../.gitbook/assets/text-control-screens-builder-processes%20%281%29.png)
+
+{% hint style="info" %}
+See [Add and Configure Text Annotation Elements](add-and-configure-text-annotation-elements.md) for more information.
+{% endhint %}
 
 ## Sequence Flow
 
@@ -79,7 +107,7 @@ The Sequence Flow indicates how two process elements are connected. Below are tw
 ![Two process elements connected by the Sequence Flow](../../../.gitbook/assets/sequence-flow-connecting-elements-process-modeler-processes.png)
 
 {% hint style="info" %}
-For information how to connect process elements, see [Connect and Delete Elements](the-quick-toolbar.md#connect-one-element-to-another).
+See [Connect and Remove Elements](the-quick-toolbar.md) for more information.
 {% endhint %}
 
 ## Organize Process Participants
