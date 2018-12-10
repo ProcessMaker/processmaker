@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "58d7d2e0727e0f0d807d81e01efd6d4c",
+    "content-hash": "89af836dc9cdd216d80bea4485e169fb",
     "packages": [
         {
             "name": "cakephp/chronos",
@@ -2811,12 +2811,12 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/nolanpro/bpm-package-email-connector.git",
+                "url": "https://github.com/caleeli/bpm-package-email-connector.git",
                 "reference": "105a81f71a5354af50e7086993c3fc0ed457f0a1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nolanpro/bpm-package-email-connector/zipball/105a81f71a5354af50e7086993c3fc0ed457f0a1",
+                "url": "https://api.github.com/repos/caleeli/bpm-package-email-connector/zipball/105a81f71a5354af50e7086993c3fc0ed457f0a1",
                 "reference": "105a81f71a5354af50e7086993c3fc0ed457f0a1",
                 "shasum": ""
             },
