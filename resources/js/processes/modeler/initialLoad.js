@@ -1,17 +1,17 @@
 // Our initial node types to register with our modeler
 import {
-association,
-        endEvent,
-        exclusiveGateway,
-        inclusiveGateway,
-        parallelGateway,
-        sequenceFlow,
-        startEvent,
-        task,
-        scriptTask,
-//        pool,
-//        poolLane,
-        textAnnotation
+    association,
+    endEvent,
+    exclusiveGateway,
+    inclusiveGateway,
+    parallelGateway,
+    sequenceFlow,
+    startEvent,
+    task,
+    scriptTask,
+    //pool,
+    //poolLane,
+    textAnnotation
 } from '@processmaker/modeler';
 import bpmnExtension from '@processmaker/processmaker-bpmn-moddle/resources/processmaker.json';
 import ModelerScreenSelect from './components/inspector/ScreenSelect';
@@ -37,11 +37,11 @@ let nodeTypes = [
     sequenceFlow,
     textAnnotation,
     association,
-//    pool,
-//    poolLane,
+    //pool,
+    //poolLane,
 ]
 
-ProcessMaker.EventBus.$on('modeler-init', ({ registerNode, registerBpmnExtension, registerInspectorExtension }) => {
+ProcessMaker.EventBus.$on('modeler-init', ({registerNode, registerBpmnExtension, registerInspectorExtension}) => {
     /* Register basic node types */
     for (const node of nodeTypes) {
         registerNode(node, () => node.id);
@@ -56,7 +56,8 @@ ProcessMaker.EventBus.$on('modeler-init', ({ registerNode, registerBpmnExtension
         config: {
             label: 'Screen For Input',
             helper: 'What Screen Should Be Used For Rendering This Task',
-            name: 'screenRef'
+            name: 'screenRef',
+            type: 'FORM'
         }
     });
     registerInspectorExtension(task, {
@@ -94,6 +95,15 @@ ProcessMaker.EventBus.$on('modeler-init', ({ registerNode, registerBpmnExtension
             helper: 'Configuration JSON for the script task',
             name: 'id',
             property: 'config',
+        }
+    });
+    registerInspectorExtension(endEvent, {
+        component: 'ModelerScreenSelect',
+        config: {
+            label: 'Summary screen',
+            helper: 'Summary screen that will be displayed when process finish with this End event.',
+            name: 'screenRef',
+            type: 'FORM'
         }
     });
 });

@@ -52,16 +52,6 @@
                     <div class="invalid-feedback" v-if="errors.category">@{{errors.category[0]}}</div>
                 </div>
                 <div class="form-group p-0">
-                    {!! Form::label('summaryScreen', __('Summary screen')) !!}
-                    {!! Form::select('summaryScreen', ['null' => '- No screen -'] + $screens, null,
-                        ['id' => 'summary_screen_id',
-                            'class' => 'form-control',
-                            'v-model' => 'formData.summary_screen_id',
-                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.screen}'
-                        ])
-                    !!}
-                </div>
-                <div class="form-group p-0">
                     {!! Form::label('startRequest', __('Start Request')) !!}
                     {!! Form::select('startRequest', $listStart, null, [
                             'id' => 'start_request_id',
@@ -165,13 +155,6 @@
                     let that = this;
                     this.formData.start_request = this.formatAssigneePermissions([this.formData.start_request_id]);
                     this.formData.cancel_request = this.formatAssigneePermissions([this.formData.cancel_request_id]);
-
-                    //if the summary screen id is not a number (e.g. null string)
-                    // is set to null
-                    this.formData.summary_screen_id =
-                        isNaN(this.formData.summary_screen_id)
-                            ? null
-                            : this.formData.summary_screen_id;
 
                     ProcessMaker.apiClient.put('processes/' + that.formData.id, that.formData)
                         .then(response => {
