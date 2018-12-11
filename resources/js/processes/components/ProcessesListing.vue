@@ -17,6 +17,15 @@
         >{{props.rowData.name}}</b-link>
       </template>
 
+      <template slot="owner" slot-scope="props">
+        <avatar-image
+          class="d-inline-flex pull-left align-items-center"
+          size="25"
+          :input-data="props.rowData.user"
+          display-name="true"
+        ></avatar-image>
+      </template>
+
       <template slot="actions" slot-scope="props">
         <div class="actions">
           <div class="popout">
@@ -81,7 +90,7 @@ export default {
         },
         {
           title: "Owner",
-          name: "user",
+          name: "__slot:owner",
           sortField: "user.firstname",
           callback: this.formatUserName
         },
