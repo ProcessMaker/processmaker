@@ -66,7 +66,15 @@ class RequestController extends Controller
         } else {
             $canCancel = Auth::user()->hasProcessPermission($request->process, 'requests.cancel');
         }
-        $files = $request->getMedia();
+        $file_ids = [];
+        // grab only the files that have been saved to our data object
+        foreach($request->data as $datum) {
+            if (is_array($datum) && array_key_exists('_type', $datum) && $datum['_type'] == 'file') {
+                array_push($file_ids, $datum['id']);
+            }
+        }
+        $files = $request->Media->whereIn('id', $file_ids);
+
         return view('requests.show', compact('request', 'files', 'canCancel'));
     }
 
