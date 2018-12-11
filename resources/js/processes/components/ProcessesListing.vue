@@ -22,7 +22,7 @@
           class="d-inline-flex pull-left align-items-center"
           size="25"
           :input-data="props.rowData.user"
-          display-name="true"
+          hide-name="true"
         ></avatar-image>
       </template>
 
