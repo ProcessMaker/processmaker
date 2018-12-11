@@ -111,8 +111,7 @@ export default {
         {
           title: "ASSIGNEE",
           name: "__slot:assignee",
-          field: "user",
-          sortField: "user.lastname"
+          field: "user"
         },
         {
           title: "DUE",
