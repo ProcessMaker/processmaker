@@ -51,7 +51,8 @@ class ProcessRequestFileController extends Controller
             if ($save->isFinished()) {
                 // save the file and return any response you need
                 $file = $request->addMedia($save->getFile())->toMediaCollection();
-                return new JsonResponse(['message' => 'file successfully uploaded','fileUploadId' => $file->id], 200);
+                $identifier = ['_type' => 'file', 'id' => $file->id];
+                return new JsonResponse(['message' => 'file successfully uploaded','fileUploadId' => $identifier], 200);
             }
             // we are in chunk mode, lets send the current progress
             /** @var AbstractHandler $handler */
@@ -66,6 +67,7 @@ class ProcessRequestFileController extends Controller
     */
     public function store(Request $laravel_request, FileReceiver $receiver, ProcessRequest $request)
     {
+        //delete it and upload the new one 
         if($laravel_request->input('chunk')) {
             // Perform a chunk upload
             return $this->chunk($receiver, $request);
