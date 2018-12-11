@@ -43,7 +43,10 @@
         },
         watch: {
             messages(value, mutation) {
-                this.totalMessages++;
+                //update the number of messages just whe the number has been initialized (in mounted)
+                if (this.incrementTotalMessages === true) {
+                    this.totalMessages++;
+                }
                 $(this.$el)
                     .find(".dropdown")
                     .dropdown("toggle");
@@ -52,6 +55,7 @@
         data() {
             return {
                 totalMessages: 0,
+                incrementTotalMessages: false,
                 arrowStyle: {
                     top: "0px",
                     left: "0px"
@@ -88,6 +92,10 @@
                         ProcessMaker.pushNotification(element);
                     });
                     self.totalMessages = response.data.meta.total
+
+                    setTimeout(function() {
+                       self.incrementTotalMessages=true;
+                    }, 3000)
                 });
         }
     };
