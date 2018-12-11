@@ -13,7 +13,7 @@
                 <li v-if="messages.length == 0">No Tasks Found
                     <hr>
                 </li>
-                <li v-for="task in messages">
+                <li v-for="(task, index) in messages" v-if="index <= 5">
                     <small class="float-right muted">{{ moment(task.dateTime).format() }}</small>
                     <h3><a v-bind:href="task.url" @click.stop="remove(task)">{{task.name}}</a></h3>
                     <div class="muted">
@@ -43,6 +43,7 @@
         },
         watch: {
             messages(value, mutation) {
+                this.totalMessages++;
                 $(this.$el)
                     .find(".dropdown")
                     .dropdown("toggle");
