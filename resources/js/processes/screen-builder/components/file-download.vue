@@ -47,11 +47,17 @@ export default {
       });
     },
     getRequestId() {
-      this.requestId = document.head.querySelector(
-        'meta[name="request-id"]'
-      ).content;
+      let node = document.head.querySelector('meta[name="request-id"]');
+      console.log(node);
+      if (node === null) {
+        return;
+      }
+      this.requestId = node.content;
     },
     getFiles() {
+      if (this.requestId === null) {
+        return;
+      }
       ProcessMaker.apiClient
         .get("requests/" + this.requestId + "/files")
         .then(response => {
