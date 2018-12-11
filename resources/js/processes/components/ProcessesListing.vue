@@ -80,7 +80,7 @@ export default {
           callback: this.formatStatus
         },
         {
-          title: "Modified By",
+          title: "Owner",
           name: "user",
           sortField: "user.firstname",
           callback: this.formatUserName
