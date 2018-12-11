@@ -80,7 +80,7 @@ export default {
           callback: "formatDate"
         },
         {
-          title: "Created At",
+          title: "Created",
           name: "created_at",
           sortField: "created_at",
           callback: "formatDate"
