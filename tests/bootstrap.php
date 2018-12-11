@@ -14,43 +14,44 @@ use Illuminate\Support\Facades\Artisan;
 // Bootstrap laravel
 app()->make(Kernel::class)->bootstrap();
 
-// Setup our testexternal database
-config(['database.connections.testexternal' => [
-    'driver' => 'mysql',
-    'host' => env('DB_HOST', '127.0.0.1'),
-    'port' => env('DB_PORT', '3306'),
-    // We set database to null to ensure we can create the testexternal database
-    'database' => null,
-    'username' => env('DB_USERNAME', 'root'),
-    'password' => env('DB_PASSWORD', ''),
-    'unix_socket' => env('DB_SOCKET', ''),
-    'charset' => 'utf8mb4',
-    'collation' => 'utf8mb4_unicode_ci',
-    'prefix' => '',
-    'strict' => true,
-    'engine' => null,
-]]);
-
-// First create the test external mysql database as well as our test database
-DB::connection('testexternal')->unprepared('CREATE DATABASE IF NOT EXISTS testexternal');
-
-// Now set the database name properly
-config(['database.connections.testexternal.database' => env('DB_TESTEXTERNAL_DB', 'testexternal')]);
-DB::connection('testexternal')->reconnect();
-
-// Now, drop all test tables and repopulate with schema
-Schema::connection('testexternal')->dropIfExists('test');
-
-Schema::connection('testexternal')->create('test', function ($table) {
-    $table->increments('id');
-    $table->string('value');
-});
-DB::connection('testexternal')->table('test')->insert([
-    'value' => 'testvalue'
-]);
-
-// Only do if we are supporting MSSql tests
 if (env('RUN_MSSQL_TESTS')) {
+    // Setup our testexternal database
+    config(['database.connections.testexternal' => [
+        'driver' => 'mysql',
+        'host' => env('DB_HOST', '127.0.0.1'),
+        'port' => env('DB_PORT', '3306'),
+        // We set database to null to ensure we can create the testexternal database
+        'database' => null,
+        'username' => env('DB_USERNAME', 'root'),
+        'password' => env('DB_PASSWORD', ''),
+        'unix_socket' => env('DB_SOCKET', ''),
+        'charset' => 'utf8mb4',
+        'collation' => 'utf8mb4_unicode_ci',
+        'prefix' => '',
+        'strict' => true,
+        'engine' => null,
+    ]]);
+
+    // First create the test external mysql database as well as our test database
+    DB::connection('testexternal')->unprepared('CREATE DATABASE IF NOT EXISTS testexternal');
+
+    // Now set the database name properly
+    config(['database.connections.testexternal.database' => env('DB_TESTEXTERNAL_DB', 'testexternal')]);
+    DB::connection('testexternal')->reconnect();
+
+    // Now, drop all test tables and repopulate with schema
+    Schema::connection('testexternal')->dropIfExists('test');
+
+    Schema::connection('testexternal')->create('test', function ($table) {
+        $table->increments('id');
+        $table->string('value');
+    });
+    DB::connection('testexternal')->table('test')->insert([
+        'value' => 'testvalue'
+    ]);
+
+    // Only do if we are supporting MSSql tests
+
     config(['database.connections.mssql' => [
         'driver' => 'sqlsrv',
         'host' => env('MSSQL_HOST', '127.0.0.1'),
