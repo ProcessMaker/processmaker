@@ -69,8 +69,9 @@ class ProcessCanceledNotification extends Notification
     {
         $instance = Instance::find($this->instanceUid);
         return [
-            'name' => sprintf('Completed: %s', $this->processName),
-            'dateTime' => $instance->completed_at->toIso8601String(),
+            'type' => 'PROCESS_CANCELED',
+            'name' => sprintf('Canceled: %s', $this->processName),
+            'dateTime' => $instance->updated_at->toIso8601String(),
             'uid' => $this->processName,
             'request_id' => $instance->getKey(),
             'url' => sprintf(
