@@ -91,7 +91,6 @@ export default {
         {
           title: "Owner",
           name: "__slot:owner",
-          sortField: "user.firstname",
           callback: this.formatUserName
         },
         {

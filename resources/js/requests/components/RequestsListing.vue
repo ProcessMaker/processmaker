@@ -72,8 +72,7 @@ export default {
         },
         {
           title: "Participants",
-          name: "__slot:participants",
-          sortField: "assigned"
+          name: "__slot:participants"
         },
         {
           title: "Started",
