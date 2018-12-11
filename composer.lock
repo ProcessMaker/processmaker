@@ -1,7 +1,7 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
     "content-hash": "89af836dc9cdd216d80bea4485e169fb",
@@ -3147,12 +3147,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/caleeli/bpm-package-email-connector.git",
-                "reference": "281623b7df9fb862856207253296a1f536cbf008"
+                "reference": "04eb2b8254792443dffd74346844a19163490198"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/caleeli/bpm-package-email-connector/zipball/281623b7df9fb862856207253296a1f536cbf008",
-                "reference": "281623b7df9fb862856207253296a1f536cbf008",
+                "url": "https://api.github.com/repos/caleeli/bpm-package-email-connector/zipball/04eb2b8254792443dffd74346844a19163490198",
+                "reference": "04eb2b8254792443dffd74346844a19163490198",
                 "shasum": ""
             },
             "require": {
@@ -3182,7 +3182,7 @@
                 "source": "https://github.com/caleeli/bpm-package-email-connector/tree/master",
                 "issues": "https://github.com/caleeli/bpm-package-email-connector/issues"
             },
-            "time": "2018-12-10T14:15:57+00:00"
+            "time": "2018-12-11T13:06:17+00:00"
         },
         {
             "name": "processmaker/nayra",
