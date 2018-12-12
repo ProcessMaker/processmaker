@@ -50,10 +50,9 @@
 
     export default {
         mixins: [datatableMixin],
-        props: ["groupId"],
+        props: ["filter", "groupId"],
         data() {
             return {
-                filter: "",
                 orderBy: "username",
                 // Our listing of users
                 sortOrder: [
@@ -163,9 +162,7 @@
                         "&order_by=" +
                         this.orderBy +
                         "&order_direction=" +
-                        this.orderDirection +
-                        this.filter +
-                        "&include=member"
+                        this.orderDirection
                     )
                     .then(response => {
                         this.data = this.transform(response.data);
