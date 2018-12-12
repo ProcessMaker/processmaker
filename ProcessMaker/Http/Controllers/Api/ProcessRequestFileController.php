@@ -39,7 +39,7 @@ class ProcessRequestFileController extends Controller
       * @param FileReceiver $receiver The Chunk FileReceiver
       * @return JsonResponse
       */
-    public function chunk(FileReceiver $receiver, ProcessRequest $request)
+    private function chunk(FileReceiver $receiver, ProcessRequest $request, Request $laravel_request)
     {
             // Perform a chunk upload
             if ($receiver->isUploaded() === false) {
@@ -47,12 +47,26 @@ class ProcessRequestFileController extends Controller
             }
             // receive the file
             $save = $receiver->receive();
+
+            // This needs to be the unique uploader name
+            $data_name = $laravel_request->input('data_name');
+
             // check if the upload has finished (in chunk mode it will send smaller files)
             if ($save->isFinished()) {
+                
+                foreach($request->getMedia() as $mediaItem) {
+                    if($mediaItem->getCustomProperty('data_name') == $data_name) {
+                        $mediaItem->delete();
+                    }
+                }
+
                 // save the file and return any response you need
-                $file = $request->addMedia($save->getFile())->toMediaCollection();
-                $identifier = ['_type' => 'file', 'id' => $file->id];
-                return new JsonResponse(['message' => 'file successfully uploaded','fileUploadId' => $identifier], 200);
+                $file = $request
+                    ->addMedia($save->getFile())
+                    ->withCustomProperties(['data_name' => $data_name]) // photo_1
+                    ->toMediaCollection();
+                // $identifier = ['_type' => 'file', 'id' => $file->id];
+                return new JsonResponse(['message' => 'file successfully uploaded','fileUploadId' => $file->id], 200);
             }
             // we are in chunk mode, lets send the current progress
             /** @var AbstractHandler $handler */
@@ -70,7 +84,7 @@ class ProcessRequestFileController extends Controller
         //delete it and upload the new one 
         if($laravel_request->input('chunk')) {
             // Perform a chunk upload
-            return $this->chunk($receiver, $request);
+            return $this->chunk($receiver, $request, $laravel_request);
         } else {
             $file = $request->addMedia($laravel_request->file)->toMediaCollection();
             return new JsonResponse(['message' => 'file successfully uploaded'], 200);
