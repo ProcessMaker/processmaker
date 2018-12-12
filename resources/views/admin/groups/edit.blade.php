@@ -16,9 +16,9 @@
                 <nav>
                     <div class="nav nav-tabs" id="nav-tab" role="tablist">
                         <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab"
-                           aria-controls="nav-home" aria-selected="true">Information</a>
+                           aria-controls="nav-home" aria-selected="true">Group Details</a>
                         <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-users" role="tab"
-                           aria-controls="nav-profile" aria-selected="false">Users</a>
+                           aria-controls="nav-profile" aria-selected="false">Group Members</a>
                     </div>
                 </nav>
 
@@ -51,7 +51,6 @@
                     </div>
 
                     <div class="tab-pane fade" id="nav-users" role="tabpanel" aria-labelledby="nav-profile-tab">
-                        <h1>{{__('Users in group')}}</h1>
                         <div class="row">
                             <div class="col">
                                 <div class="input-group">
