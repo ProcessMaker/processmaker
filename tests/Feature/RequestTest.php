@@ -9,6 +9,7 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Models\PermissionAssignment;
 use ProcessMaker\Models\Permission;
 use \PermissionSeeder;
+use Illuminate\Http\Testing\File;
 
 class RequestTest extends TestCase
 {
@@ -26,43 +27,6 @@ class RequestTest extends TestCase
         $response->assertStatus(200);
         // check the correct view is called
         $response->assertViewIs('requests.index');
-    }
-
-    /**
-     * Test to make sure the controller and route work with the view and show_all_requests permissions
-     *
-     * @return void
-     */
-    public function testRequestAllRouteWithShowAllRequestsPermission()
-    {
-        factory(Permission::class)->create(['guard_name' => 'show_all_requests']);
-        $this->user = factory(User::class)->create();
-        $this->user->giveDirectPermission('show_all_requests');
-        // get the URL
-        $response = $this->webCall('GET', '/requests/all');
-        $response->assertStatus(200);
-        // check the correct view is called
-        $response->assertViewIs('requests.index');
-    }
-
-    public function testShowRouteWithShowAllPermission()
-    {
-        $this->user = factory(User::class)->create();
-
-        factory(Permission::class)->create(['guard_name' => 'show_all_requests']);
-        $request_id = factory(ProcessRequest::class)->create()->id;
-
-        $response = $this->webCall('GET', '/requests/' . $request_id);
-        $response->assertStatus(403);
-
-        $this->user->giveDirectPermission('show_all_requests');
-        $this->user->refresh();
-
-        $response = $this->webCall('GET', '/requests/' . $request_id);
-        $response->assertStatus(200);
-
-        // check the correct view is called
-        $response->assertViewIs('requests.show');
     }
 
     /**
@@ -104,5 +68,19 @@ class RequestTest extends TestCase
 
         $response = $this->webCall('GET', '/requests/' . $request_id);
         $response->assertStatus(200);
+    }
+
+    public function testShowMediaFiles()
+    {
+        $process_request = factory(ProcessRequest::class)->create();
+        $file_1 = $process_request->addMedia(File::image('photo1.jpg'))->toMediaCollection();
+        $file_2 = $process_request->addMedia(File::image('photo2.jpg'))->toMediaCollection();
+        $file_3 = $process_request->addMedia(File::image('photo3.jpg'))->toMediaCollection();
+
+        $response = $this->webCall('GET', '/requests/' . $process_request->id);
+        // Full request->getMedia payload is sent for Vue, so assert some HTML also
+        $response->assertSee('photo2.jpg</a>');
+        $response->assertSee('photo3.jpg</a>');
+        $response->assertSee('photo1.jpg</a>');
     }
 }
