@@ -160,15 +160,6 @@ let initialControls =  [
                         helper: "List of fields to display in the record list"
                     }
                 },
-                {
-                    type: "PageSelect",
-                    field: "form",
-                    config: {
-                        label: "Record Form",
-                        helper: "The form to use for adding/editing records"
-                    }
-                }
-
             ]
 
         },
