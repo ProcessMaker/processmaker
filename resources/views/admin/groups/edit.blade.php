@@ -69,7 +69,7 @@
                                     {{__('User')}}</button>
                             </div>
                         </div>
-                        <users-listing ref="listing" :filter="filter" v-on:reload="reload"></users-listing>
+                        <users-in-group ref="listing" :filter="filter" :group-id="formData.id"></users-in-group>
                     </div>
                 </div>
             </div>
@@ -89,12 +89,12 @@
 @section('js')
     <script src="{{mix('js/admin/groups/edit.js')}}"></script>
     <script>
-//        import datatableMixin from "js/components/common/mixins/datatable";
         new Vue({
             el: '#editGroup',
             data() {
                 return {
                     formData: @json($group),
+                    filter: "",
                     errors: {
                         'name': null,
                         'description': null,

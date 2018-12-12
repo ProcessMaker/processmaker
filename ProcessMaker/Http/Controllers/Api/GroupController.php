@@ -7,6 +7,8 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Http\Resources\Groups as GroupResource;
+use ProcessMaker\Models\GroupMember;
+use ProcessMaker\Models\User;
 
 class GroupController extends Controller
 {
@@ -221,4 +223,80 @@ class GroupController extends Controller
         $group->delete();
         return response([], 204);
     }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param Request $request
+     *
+     * @return ApiCollection
+     *
+     * @OA\Get(
+     *     path="/groups",
+     *     summary="Returns all groups that the user has access to",
+     *     operationId="getGroups",
+     *     tags={"Groups"},
+     *     @OA\Parameter(ref="#/components/parameters/filter"),
+     *     @OA\Parameter(ref="#/components/parameters/order_by"),
+     *     @OA\Parameter(ref="#/components/parameters/order_direction"),
+     *     @OA\Parameter(ref="#/components/parameters/per_page"),
+     *     @OA\Parameter(ref="#/components/parameters/include"),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="list of groups",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/groups"),
+     *             ),
+     *             @OA\Property(
+     *                 property="meta",
+     *                 type="object",
+     *                 allOf={@OA\Schema(ref="#/components/schemas/metadata")},
+     *             ),
+     *         ),
+     *     ),
+     * )
+     */
+    public function members(Group $group, Request $request)
+    {
+        $query = User::query()
+                ->leftJoin('group_members', 'users.id', '=', 'group_members.member_id');
+
+        $query->where('group_members.group_id', $group->id);
+
+        $filter = $request->input('filter', '');
+        if (!empty($filter)) {
+            $filter = '%' . $filter . '%';
+            $query->where(function ($query) use ($filter) {
+                $query->Where('username', 'like', $filter)
+                    ->orWhere('firstname', 'like', $filter)
+                    ->orWhere('lastname', 'like', $filter);
+            });
+        }
+
+        $order_by = 'username';
+        $order_direction = 'ASC';
+
+        if($request->has('order_by')){
+            $order_by = $request->input('order_by');
+        }
+
+        if($request->has('order_direction')){
+            $order_direction = $request->input('order_direction');
+        }
+
+        $response =
+            $query->orderBy(
+                $request->input('order_by', $order_by),
+                $request->input('order_direction', $order_direction)
+            )
+                ->paginate($request->input('per_page', 10));
+
+        return new ApiCollection($response);
+    }
+
 }

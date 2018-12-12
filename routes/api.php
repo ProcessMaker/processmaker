@@ -9,6 +9,7 @@ Route::group(
 
     Route::apiResource('users', 'UserController');
     Route::apiResource('groups', 'GroupController');
+    Route::get('group_users/{group}', 'GroupController@members');
     Route::apiResource('group_members', 'GroupMemberController')->only(['index', 'show', 'destroy', 'store']);
     Route::apiResource('environment_variables', 'EnvironmentVariablesController');
     Route::apiResource('screens', 'ScreenController');

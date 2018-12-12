@@ -1,5 +1,5 @@
 import Vue from "vue";
-import UsersListing from "../users/components/UsersListing.vue";
+import UsersInGroupListing from "./components/UsersInGroupListing.vue";
 
-Vue.component('users-listing', UsersListing);
+Vue.component('users-in-group', UsersInGroupListing);
 
