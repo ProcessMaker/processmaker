@@ -73,6 +73,53 @@
                     </div>
                 </div>
             </div>
+
+            <div class="modal" tabindex="-1" role="dialog" id="addUser">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">{{__('Add Users')}}</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-user">
+                                {!!Form::label('users', __('Users'))!!}
+                                <multiselect v-model="selectedUsers" :options="availableUsers" :multiple="true"
+                                             track-by="name"
+                                             :custom-label="customLabel" :show-labels="false" label="name">
+
+                                    <template slot="tag" slot-scope="props">
+                                        <span class="multiselect__tag  d-flex align-items-center" style="width:max-content;">
+                                            <span class="option__desc mr-1">@{{ props.option.name }}
+                                                <span class="option__title">@{{ props.option.desc }}</span>
+                                            </span>
+                                            <i aria-hidden="true" tabindex="1" @click="props.remove(props.option)"
+                                               class="multiselect__tag-icon"></i>
+                                        </span>
+                                    </template>
+
+                                    <template slot="option" slot-scope="props">
+                                        <div class="option__desc d-flex align-items-center">
+                                            <span class="option__title mr-1">@{{ props.option.name }}</span>
+                                            <span class="option__small">@{{ props.option.desc }}</span>
+                                        </div>
+                                    </template>
+                                </multiselect>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary"
+                                    data-dismiss="modal">{{__('Close')}}</button>
+                            <button type="button" class="btn btn-secondary" @click="onSubmit"
+                                    id="disabledForNow">{{__('Save')}}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
             <div class="col-4">
                 <div class="card card-body">
                     Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore
@@ -94,15 +141,25 @@
             data() {
                 return {
                     formData: @json($group),
-                    filter: "",
+                    filter: '',
                     errors: {
                         'name': null,
                         'description': null,
                         'status': null
-                    }
+                    },
+                    selectedUsers: [],
+                    availableUsers: [],
+                    {{--availableUsers: @json($users),--}}
                 }
             },
             methods: {
+                customLabel(options) {
+//                    return ` ${options.img} ${options.title} ${options.desc} `
+                    return 'nada';
+                },
+                onSubmit() {
+                    alert('todo: store users');
+                },
                 resetErrors() {
                     this.errors = Object.assign({}, {
                         name: null,
