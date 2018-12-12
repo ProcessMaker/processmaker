@@ -20,6 +20,21 @@
 //   @extend justify-content-end;
 // }
 
+.data-table {
+  margin-top:20px;
+  // border:1px solid #b6bfc6;
+
+  th {
+  border: 0;
+  }
+
+//   .vuetable-body:hover {
+//   background-color: $grey-bg !important
+// }
+}
+
+
+
 .multiselect__tag-icon:focus,
 .multiselect__tag-icon:hover {
   background: #788793 !important;
@@ -233,12 +248,12 @@ select.form-control:not([size]):not([multiple]) {
 }
 
 .btn {
-  border-radius: 0.12rem;
-  padding: 7px 16px;
-  line-height: 1;
-  font-size: 14px;
+  // border-radius: 0.12rem;
+  // padding: 7px 16px;
+  // line-height: 1;
+  // font-size: 14px;
   text-transform: uppercase;
-  font-weight: 400;
+  // font-weight: 400;
 }
 
 #navbar-request-button {
@@ -273,6 +288,11 @@ h1.page-title {
   margin-bottom: 24px;
 }
 
+.vuetable th { white-space: nowrap}
+
+.popout button {
+  padding:0 10px;
+}
 // Data table rules
 
 

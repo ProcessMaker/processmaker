@@ -36,7 +36,7 @@
         <div class="actions">
           <div class="popout">
             <b-btn
-              variant="action"
+              variant="secondary"
               @click="onAction('edit', props.rowData, props.rowIndex)"
               v-b-tooltip.hover
               title
@@ -44,7 +44,7 @@
               <i class="fas fa-edit"></i>
             </b-btn>
             <b-btn
-              variant="action"
+              variant="secondary"
               @click="onAction('pause', props.rowData, props.rowIndex)"
               v-b-tooltip.hover
               title
@@ -52,7 +52,7 @@
               <i class="fas fa-pause"></i>
             </b-btn>
             <b-btn
-              variant="action"
+              variant="secondary"
               @click="onAction('undo', props.rowData, props.rowIndex)"
               v-b-tooltip.hover
               title

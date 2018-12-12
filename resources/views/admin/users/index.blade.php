@@ -24,7 +24,7 @@
 
             </div>
             <div class="col-8" align="right">
-                <button type="button" class="btn btn-action text-light" data-toggle="modal" data-target="#addUser">
+                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#addUser">
                     <i class="fas fa-plus"></i>
                     {{__('User')}}</button>
             </div>

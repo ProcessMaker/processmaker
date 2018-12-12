@@ -23,7 +23,7 @@
             </div>
 
             <div class="col-8" align="right">
-                <a href="#" class="btn btn-action" data-toggle="modal" data-target="#addScript"><i
+                <a href="#" class="btn btn-secondary" data-toggle="modal" data-target="#addScript"><i
                             class="fas fa-plus"></i>
                     {{__('Script')}}</a>
             </div>

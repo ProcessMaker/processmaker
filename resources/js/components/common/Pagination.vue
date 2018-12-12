@@ -1,6 +1,6 @@
 <template>
   <div class="row">
-    <div class="col-md-6 col-sm-12 d-flex">
+    <div class="col-md-6 col-sm-12 d-flex py-2 px-4">
       <div v-if="tablePagination" class="meta">
         {{tablePagination.from + 1}} - {{tablePagination.to}} of {{tablePagination.total}} {{title}}
       </div>

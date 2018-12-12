@@ -1,5 +1,7 @@
 <template>
-  <div class="data-table">
+
+    <div class="data-table">
+      <div class="card card-body" style="padding:0">
     <vuetable
       :dataManager="dataManager"
       :sortOrder="sortOrder"
@@ -12,9 +14,7 @@
       pagination-path="meta"
     >
       <template slot="name" slot-scope="props">
-        <b-link
-          @click="onAction('edit-designer', props.rowData, props.rowIndex)"
-        >{{props.rowData.name}}</b-link>
+        {{props.rowData.name}}
       </template>
 
       <template slot="owner" slot-scope="props">
@@ -30,17 +30,26 @@
         <div class="actions">
           <div class="popout">
             <b-btn
-              variant="action"
+              variant="link"
+              @click="onAction('edit-designer', props.rowData, props.rowIndex)"
+              v-b-tooltip.hover
+              title="Modeler"
+            >
+              <i class="fas fa-project-diagram"></i>
+            </b-btn>
+            <b-btn
+              variant="link"
               @click="onAction('edit-item', props.rowData, props.rowIndex)"
               v-b-tooltip.hover
               title="Edit"
             >
-              <i class="fas fa-edit"></i>
-            </b-btn>
+              <i class="fas fa-cog"></i>
+            </b-btn>            
           </div>
         </div>
       </template>
     </vuetable>
+    
     <pagination
       single="Process"
       plural="Processes"
@@ -49,6 +58,7 @@
       @vuetable-pagination:change-page="onPageChange"
       ref="pagination"
     ></pagination>
+  </div>
   </div>
 </template>
 
@@ -61,7 +71,6 @@ export default {
   data() {
     return {
       orderBy: "name",
-
       sortOrder: [
         {
           field: "name",
