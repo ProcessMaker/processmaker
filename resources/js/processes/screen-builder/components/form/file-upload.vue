@@ -64,7 +64,8 @@ export default {
         // We cannot increase this until laravel chunk uploader handles this gracefully
         simultaneousUploads: 1,
         query: {
-          chunk: true
+          chunk: true,
+          data_name: this.name
         },
         testChunks: false,
         // Setup our headers to deal with API calls
