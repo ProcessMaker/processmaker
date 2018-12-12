@@ -13,30 +13,65 @@
         <h1>{{__('Edit Group')}}</h1>
         <div class="row">
             <div class="col-8">
-                <div class="card card-body">
-                    {!! Form::open() !!}
-                    <div class="form-group">
-                        {!! Form::label('name', 'Name') !!}
-                        {!! Form::text('name', null, ['id' => 'name','class'=> 'form-control', 'v-model' => 'formData.name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}']) !!}
-                        <small class="form-text text-muted">Group name must be distinct</small>
-                        <div class="invalid-feedback" v-if="errors.name">@{{errors.name[0]}}</div>
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab"
+                           aria-controls="nav-home" aria-selected="true">Information</a>
+                        <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-users" role="tab"
+                           aria-controls="nav-profile" aria-selected="false">Users</a>
                     </div>
-                    <div class="form-group">
-                        {!! Form::label('description', 'Description') !!}
-                        {!! Form::textarea('description', null, ['id' => 'description', 'rows' => 4, 'class'=> 'form-control', 'v-model' => 'formData.description', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.description}']) !!}
-                        <div class="invalid-feedback" v-if="errors.description">@{{errors.description[0]}}</div>
+                </nav>
+
+
+                <div class="card card-body tab-content mt-3" id="nav-tabContent">
+                    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                        {!! Form::open() !!}
+                        <div class="form-group">
+                            {!! Form::label('name', 'Name') !!}
+                            {!! Form::text('name', null, ['id' => 'name','class'=> 'form-control', 'v-model' => 'formData.name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}']) !!}
+                            <small class="form-text text-muted">Group name must be distinct</small>
+                            <div class="invalid-feedback" v-if="errors.name">@{{errors.name[0]}}</div>
+                        </div>
+                        <div class="form-group">
+                            {!! Form::label('description', 'Description') !!}
+                            {!! Form::textarea('description', null, ['id' => 'description', 'rows' => 4, 'class'=> 'form-control', 'v-model' => 'formData.description', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.description}']) !!}
+                            <div class="invalid-feedback" v-if="errors.description">@{{errors.description[0]}}</div>
+                        </div>
+                        <div class="form-group">
+                            {!! Form::label('status', 'Status') !!}
+                            {!! Form::select('status', ['ACTIVE' => 'Active', 'INACTIVE' => 'Inactive'], null, ['id' => 'status', 'class' => 'form-control', 'v-model' => 'formData.status', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.status}']) !!}
+                            <div class="invalid-feedback" v-if="errors.status">@{{errors.status[0]}}</div>
+                        </div>
+                        <br>
+                        <div class="text-right">
+                            {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose']) !!}
+                            {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'onUpdate']) !!}
+                        </div>
+                        {!! Form::close() !!}
                     </div>
-                    <div class="form-group">
-                        {!! Form::label('status', 'Status') !!}
-                        {!! Form::select('status', ['ACTIVE' => 'Active', 'INACTIVE' => 'Inactive'], null, ['id' => 'status', 'class' => 'form-control', 'v-model' => 'formData.status', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.status}']) !!}
-                        <div class="invalid-feedback" v-if="errors.status">@{{errors.status[0]}}</div>
+
+                    <div class="tab-pane fade" id="nav-users" role="tabpanel" aria-labelledby="nav-profile-tab">
+                        <h1>{{__('Users in group')}}</h1>
+                        <div class="row">
+                            <div class="col">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-search"></i>
+                                        </span>
+                                    </div>
+                                    <input v-model="filter" class="form-control" placeholder="{{__('Search')}}...">
+                                </div>
+
+                            </div>
+                            <div class="col-8" align="right">
+                                <button type="button" class="btn btn-action text-light" data-toggle="modal" data-target="#addUser">
+                                    <i class="fas fa-plus"></i>
+                                    {{__('User')}}</button>
+                            </div>
+                        </div>
+                        <users-listing ref="listing" :filter="filter" v-on:reload="reload"></users-listing>
                     </div>
-                    <br>
-                    <div class="text-right">
-                        {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose']) !!}
-                        {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'onUpdate']) !!}
-                    </div>
-                    {!! Form::close() !!}
                 </div>
             </div>
             <div class="col-4">
@@ -53,7 +88,9 @@
 @endsection
 
 @section('js')
+    <script src="{{mix('js/admin/groups/edit.js')}}"></script>
     <script>
+//        import datatableMixin from "js/components/common/mixins/datatable";
         new Vue({
             el: '#editGroup',
             data() {
