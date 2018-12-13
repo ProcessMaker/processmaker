@@ -30,17 +30,17 @@
                 variant="link"
                 @click="onAction('edit-designer', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Modeler"
+                title="Open Modeler"
               >
-                <i class="fas fa-project-diagram fa-fw"></i>
+                <i class="fas fa-pen-square fa-lg fa-fw"></i>
               </b-btn>
               <b-btn
                 variant="link"
                 @click="onAction('edit-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Edit"
+                title="Config"
               >
-                <i class="fas fa-pen-square fa-lg fa-fw"></i>
+                <i class="fas fa-cog fa-lg fa-fw"></i>
               </b-btn>
             </div>
           </div>
