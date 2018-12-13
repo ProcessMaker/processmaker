@@ -192,7 +192,7 @@ jobs:
             echo "MAIL_PORT=2525" >> .env
             echo "MAIL_USERNAME=26108c384589d1" >> .env
             echo "MAIL_PASSWORD=d9da3f11960069" >> .env
-            composer require processmaker/bpm-package-email-connector
+            composer require processmaker/bpm-package-email-connector -n --prefer-dist
 
       - run:
           name: "QA Package"
