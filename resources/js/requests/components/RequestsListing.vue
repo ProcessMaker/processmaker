@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="data-table">
     <vuetable
       :dataManager="dataManager"
       :sortOrder="sortOrder"
@@ -172,13 +172,3 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-/deep/ .vuetable-th-slot-ids {
-  min-width: 100px;
-  white-space: nowrap;
-}
-
-/deep/ tr td:nth-child(4) {
-  padding: 6px 10px;
-}
-</style>
