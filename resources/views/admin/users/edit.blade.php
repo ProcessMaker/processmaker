@@ -19,6 +19,8 @@
                             aria-controls="nav-home" aria-selected="true">Information</a>
                         <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab"
                             aria-controls="nav-profile" aria-selected="false">Permissions</a>
+                        <a class="nav-item nav-link" id="nav-tokens-tab" data-toggle="tab" href="#nav-tokens" role="tab"
+                            aria-controls="nav-tokens" aria-selected="false">API Tokens</a>
                     </div>
                 </nav>
                 <div class="card card-body tab-content mt-3" id="nav-tabContent">
@@ -129,6 +131,18 @@
                         <hr class="mt-0">
                         <button class="btn btn-secondary float-right" @click="onPermissionUpdate">SUBMIT</button>
                     </div>
+                    
+                    <div class="tab-pane fade" id="nav-tokens" role="tabpanel" aria-labelledby="nav-tokens-tab">
+                        <div class="form-group" v-if="apiToken != ''">
+                            {!!Form::label('token', __('API Token'))!!}
+                            {!!Form::textarea('token', null, ['class'=> 'form-control', 'v-model'=> 'apiToken']) !!}
+                        </div>
+                        <div class="form-group" v-if="apiToken == ''">
+                            GENERATE
+                        </div>
+                        <hr class="mt-0">
+                        <button class="btn btn-secondary float-right" @click="generateToken">Generate New Token</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -154,6 +168,7 @@
                     userPermissionIds: @json($permission_ids),
                     selected: [],
                     selectAll: false,
+                    apiToken: '',
                 }
             },
             beforeMount() {
@@ -163,6 +178,7 @@
                 this.hasPermission()
             },
             mounted() {
+                this.loadToken();
             },
             methods: {
                 resetErrors() {
@@ -246,7 +262,19 @@
                             location.reload();
                         })
                     }
-                 },
+                },
+                loadToken() {
+                    ProcessMaker.apiClient({method: 'GET', url: '/oauth/personal-access-tokens', baseURL: '/'})
+                        .then((result) => {
+                            // console.log("GET RESULT", result)
+                        })
+                },
+                generateToken() {
+                    // ProcessMaker.apiClient({method: 'POST', url: '/oauth/personal-access-tokens', baseURL: '/'})
+                    //     .then((result) => {
+                    //         console.log("POST RESULT", result)
+                    //     })
+                },
             }
         });
     </script>
