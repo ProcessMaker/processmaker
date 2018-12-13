@@ -26,6 +26,7 @@ class NotificationController extends Controller
      *     summary="Returns all notifications that the user has access to",
      *     operationId="getNotifications",
      *     tags={"Notifications"},
+     *     @OA\Parameter(ref="#/components/parameters/status"),
      *     @OA\Parameter(ref="#/components/parameters/filter"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),

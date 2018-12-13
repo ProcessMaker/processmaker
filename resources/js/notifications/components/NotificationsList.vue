@@ -6,11 +6,7 @@
                   pagination-path="meta">
 
             <template slot="subject" slot-scope="props">
-                <i class="fas fa-ban" v-if="props.rowData.type==='PROCESS_CANCELED'"></i>
-                <i class="fas fa-check-circle" v-if="props.rowData.type==='PROCESS_COMPLETED'"></i>
-                <i class="fas fa-play-circle" v-if="props.rowData.type==='TASK_CREATED'"></i>
-                <i class="fas fa-comment-alt" v-if="props.rowData.type==='MESSAGE'"></i>
-                &nbsp;<a v-bind:href="props.rowData.url">{{props.rowData.name}}</a>
+                <a v-bind:href="props.rowData.url">{{props.rowData.name}}</a>
             </template>
 
             <template slot="changeStatus" slot-scope="props">
@@ -145,3 +141,4 @@
         padding: 6px 0px 0px 12px;
     }
 </style>
+
