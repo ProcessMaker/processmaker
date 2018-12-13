@@ -24,12 +24,7 @@
       </template>
 
       <template slot="assignee" slot-scope="props">
-        <avatar-image
-          class="d-inline-flex pull-left align-items-center"
-          size="25"
-          :input-data="props.rowData.user"
-          display-name="true"
-        ></avatar-image>
+        <avatar-image size="25" :input-data="props.rowData.user" display-name="false"></avatar-image>
       </template>
 
       <template slot="actions" slot-scope="props">
@@ -103,18 +98,18 @@ export default {
           sortField: "element_name"
         },
         {
-          title: "REQUEST",
+          title: "Request",
           name: "__slot:requestName",
           field: "request",
           sortField: "request.name"
         },
         {
-          title: "ASSIGNEE",
+          title: "Assignee",
           name: "__slot:assignee",
           field: "user"
         },
         {
-          title: "DUE",
+          title: "Due",
           name: "due_at",
           callback: this.formatDueDate,
           sortField: "due_at"
