@@ -1,6 +1,7 @@
 import FormText from "@processmaker/vue-form-builder/src/components/renderer/form-text";
 import FormMultiColumn from "@processmaker/vue-form-builder/src/components/renderer/form-multi-column"
 import FormRecordList from "@processmaker/vue-form-builder/src/components/renderer/form-record-list"
+import FormRecordListStatic from "@processmaker/vue-form-builder/src/components/renderer/form-record-list-static"
 
 import {
     FormInput,
@@ -25,7 +26,9 @@ let initialControls =  [
             config: {
                 label: 'New Text',
                 fontSize: '1em',
-                fontWeight: 'normal'
+                fontWeight: 'normal',
+                textAlign: 'left',
+                color: 'black'
             },
             inspector: [
                 {
@@ -54,8 +57,39 @@ let initialControls =  [
                         ]
                     }
                 },
-
-
+                {
+                    type: "FormInput",
+                    field: "color",
+                    config: {
+                        label: "Text Color",
+                        helper: "Accepts all HTML colors and hex codes"
+                    }
+                },
+                {
+                    type: "FormSelect",
+                    field: "textAlign",
+                    config: {
+                        label: "Text Alignment",
+                        helper: "The Alignment of the text",
+                        options: [{
+                                value: 'center',
+                                content: 'Center'
+                            },
+                            {
+                                value: 'left',
+                                content: 'Left'
+                            },
+                            {
+                                value: 'right',
+                                content: 'Right'
+                            },
+                            {
+                                value: 'justify',
+                                content: 'Justify'
+                            },
+                        ]
+                    }
+                },
                 {
                     type: "FormSelect",
                     field: "fontSize",
@@ -119,7 +153,7 @@ let initialControls =  [
     {
         editorComponent: FormText,
         editorBinding: 'FormText',
-        rendererComponent: FormRecordList,
+        rendererComponent: FormRecordListStatic,
         rendererBinding: 'FormRecordList',
         control: {
             label: "Record List",
