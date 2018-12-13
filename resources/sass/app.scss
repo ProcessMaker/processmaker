@@ -19,18 +19,21 @@
 //   @extend form-inline;
 //   @extend justify-content-end;
 // }
+.table-card {
+  padding: 0;
+}
 
 .data-table {
-  margin-top:20px;
+  margin-top: 20px;
   // border:1px solid #b6bfc6;
 
   th {
-  border: 0;
+    border: 0;
   }
 
-//   .vuetable-body:hover {
-//   background-color: $grey-bg !important
-// }
+  //   .vuetable-body:hover {
+  //   background-color: $grey-bg !important
+  // }
 }
 
 
@@ -288,11 +291,14 @@ h1.page-title {
   margin-bottom: 24px;
 }
 
-.vuetable th { white-space: nowrap}
+.vuetable th {
+  white-space: nowrap
+}
 
 .popout button {
-  padding:0 10px;
+  padding: 0 10px;
 }
+
 // Data table rules
 
 
