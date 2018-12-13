@@ -62,8 +62,7 @@ export default {
           name: "__slot:ids",
           title: "Name",
           field: "id",
-          sortField: "id",
-          width: "50px"
+          sortField: "id"
         },
         {
           title: "Status",
