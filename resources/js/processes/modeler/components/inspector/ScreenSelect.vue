@@ -10,7 +10,7 @@
                     :selected="screen.id == value"
                     v-for="screen in screens"
                     :key="screen.id"
-                    >{{screen.title}}</option>
+                >{{screen.title}}</option>
             </select>
             <a href="#" @click="load">Refresh</a>
         </div>
