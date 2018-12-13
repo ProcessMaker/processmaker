@@ -92,7 +92,13 @@ jobs:
           # fallback to using the latest cache if no exact match is found
           - v1-npm-dependencies-
 
-      - run: composer install -n --prefer-dist
+      - run: 
+          name: "composer install -n --prefer-dist"
+          command: "composer install -n --prefer-dist"
+          environment:
+            DB_DATABASE: "circle_test"
+            DB_PASSWORD: "P4ssW0rd1!"
+            DB_USERNAME: "root"
 
       - run: npm install
 
@@ -130,7 +136,6 @@ jobs:
           name: "PHPUnit"
           command: "./vendor/bin/phpunit -d memory_limit=-1 --coverage-html coverage"
           environment:
-            DB_CONNECTION: "workflow"
             DB_DATABASE: "circle_test"
             DB_PASSWORD: "P4ssW0rd1!"
             DB_USERNAME: "root"
