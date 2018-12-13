@@ -23,6 +23,14 @@
             <div class="popout">
               <b-btn
                 variant="link"
+                @click="onAction('edit-screen', props.rowData, props.rowIndex)"
+                v-b-tooltip.hover
+                title="Open Editor"
+              >
+                <i class="fas fa-caret-square-right fa-lg fa-fw"></i>
+              </b-btn>
+              <b-btn
+                variant="link"
                 @click="onAction('edit-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
                 title="Edit"

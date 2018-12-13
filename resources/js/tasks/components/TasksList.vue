@@ -43,7 +43,7 @@
                 variant="link"
                 @click="onAction('showRequestSummary', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Open Task"
+                title="Open Request"
               >
                 <i class="fas fa-clipboard fa-lg fa-fw"></i>
               </b-btn>
