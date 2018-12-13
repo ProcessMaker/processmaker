@@ -53,6 +53,11 @@ return[
     'screens' => 'Screens',
     'environment_variables'=> 'Environment Variables'
   ],
+  'sidebar_notifications' => [
+        'notifications' => 'Notifications',
+        'unread' => 'Unread',
+        'all' => 'All'
+    ],
   'topnav' => [
     'requests' => 'Requests',
     'tasks' => 'Tasks',

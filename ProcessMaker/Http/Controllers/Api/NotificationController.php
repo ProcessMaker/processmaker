@@ -26,6 +26,13 @@ class NotificationController extends Controller
      *     summary="Returns all notifications that the user has access to",
      *     operationId="getNotifications",
      *     tags={"Notifications"},
+     *     @OA\Parameter(
+     *         name="status",
+     *         in="query",
+     *         description="Only return notifications by status (unread, all, etc.)",
+     *         required=false,
+     *         @OA\Schema(type="string"),
+     *     ),
      *     @OA\Parameter(ref="#/components/parameters/filter"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
@@ -75,6 +82,17 @@ class NotificationController extends Controller
                 $query->Where('data->name', 'like', $subsearch)
                     ->orWhereRaw("case when read_at is null then 'unread' else 'read' end like '$filter%'");
             });
+        }
+
+        //restrict all filters and results to the selected status
+        $status = $request->input('status', '');
+        switch ($status) {
+            case 'read':
+                $query->whereNotNull('read_at');
+                break;
+            case 'unread':
+                $query->whereNull('read_at');
+                break;
         }
 
         $response =
