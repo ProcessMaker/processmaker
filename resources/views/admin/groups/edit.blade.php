@@ -197,3 +197,49 @@
         });
     </script>
 @endsection
+
+@section('css')
+    <style>
+        .inline-input {
+            margin-right: 6px;
+        }
+        .inline-button {
+            background-color: rgb(109, 124, 136);
+            font-weight: 100;
+        }
+        .input-and-select {
+            width: 212px;
+        }
+        .multiselect__element span img {
+            border-radius: 50%;
+            height: 20px;
+        }
+        .multiselect__tags-wrap {
+            display: flex !important;
+        }
+        .multiselect__tags-wrap img {
+            height: 15px;
+            border-radius: 50%;
+        }
+        .multiselect__tag-icon:after {
+            color: white !important;
+        }
+        .multiselect__option--highlight {
+            background: #00bf9c !important;
+        }
+        .multiselect__option--selected.multiselect__option--highlight {
+            background: #00bf9c !important;
+        }
+        .multiselect__tags {
+            border: 1px solid #b6bfc6 !important;
+            border-radius: 0.125em !important;
+            height: calc(1.875rem + 2px) !important;
+        }
+        .multiselect__tag {
+            background: #788793 !important;
+        }
+        .multiselect__tag-icon:after {
+            color: white !important;
+        }
+    </style>
+@endsection
