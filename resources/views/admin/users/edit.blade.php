@@ -66,33 +66,6 @@
                             {!!Form::password('confpassword', ['class'=> 'form-control', 'v-model'=> 'formData.confpassword',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}'])!!}
                         </div>
-                        <div class="form-group">
-                            <label>{{__('Groups')}}</label>
-                            <multiselect v-model="value" :options="dataGroups" :multiple="true" track-by="name"
-                                        :custom-label="customLabel"
-                                        :show-labels="false" label="name">
-
-                                <template slot="tag" slot-scope="props">
-                                <span class="multiselect__tag  d-flex align-items-center" style="width:max-content;">
-                                    <img class="option__image mr-1" :src="props.option.img" alt="Check it">
-                                    <span class="option__desc mr-1">@{{ props.option.name }}
-                                        <span class="option__title">@{{ props.option.desc }}</span>
-                                    </span>
-                                    <i aria-hidden="true" tabindex="1" @click="props.remove(props.option)"
-                                    class="multiselect__tag-icon"></i>
-                                </span>
-                                </template>
-
-                                <template slot="option" slot-scope="props">
-                                    <div class="option__desc d-flex align-items-center">
-                                        <img class="option__image mr-1" :src="props.option.img" alt="options">
-                                        <span class="option__title mr-1">@{{ props.option.name }}</span>
-                                        <span class="option__small">@{{ props.option.desc }}</span>
-                                    </div>
-                                </template>
-                            </multiselect>
-                        </div>
-
                         <div class="text-right">
                             {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose']) !!}
                             {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'onProfileUpdate']) !!}
@@ -168,9 +141,6 @@
             data() {
                 return {
                     formData: @json($user),
-                    options: @json($groups),
-                    dataGroups: [],
-                    value: [],
                     errors: {
                         username: null,
                         firstname: null,
@@ -193,7 +163,6 @@
                 this.hasPermission()
             },
             mounted() {
-                this.fillDataGroups(this.options);
             },
             methods: {
                 resetErrors() {
@@ -205,29 +174,6 @@
                         password: null,
                         status: null
                     });
-                },
-                customLabel(option) {
-                    return ` ${option.img} ${option.name} ${option.desc}`
-                },
-                fillDataGroups(data) {
-                    let that = this;
-                    that.dataGroups = [];
-                    let values = [];
-                    data.forEach(value => {
-                        let option = value;
-                        option.img = '/img/avatar-placeholder.gif';
-                        option.desc = ' ';
-                        that.dataGroups.push(option);
-                        //fill groups selected
-                        if (that.formData && that.formData.hasOwnProperty('memberships')) {
-                            that.formData.memberships.forEach(member => {
-                                if (member.group_id === option.id) {
-                                    values.push(option);
-                                }
-                            });
-                        }
-                    });
-                    that.value = values;
                 },
                 onClose() {
                     window.location.href = '/admin/users';
@@ -253,71 +199,11 @@
                     let that = this;
                     ProcessMaker.apiClient.put('users/' + that.formData.id, that.formData)
                         .then(response => {
-                            //Remove member that has previously registered and is not in the post data.
-                            if (that.formData && that.formData.hasOwnProperty('memberships') && that.formData.memberships) {
-                                that.formData.memberships.forEach(dataMember => {
-                                    let deleteMember = true;
-                                    that.value.forEach(group => {
-                                        if (dataMember.group_id === group.id) {
-                                            deleteMember = false;
-                                            return false;
-                                        }
-                                    });
-                                    if (deleteMember) {
-                                        ProcessMaker.apiClient.delete('group_members/' + dataMember.id);
-                                    }
-                                });
-                            }
-                            const promises = [];
-                            //Add member who were not previously registered.
-                            that.value.forEach(group => {
-                                let save = true;
-                                if (that.formData && that.formData.hasOwnProperty('memberships') &&
-                                    that.formData.memberships) {
-                                    that.formData.memberships.forEach(dataMember => {
-                                        if (dataMember.group_id === group.id) {
-                                            save = false;
-                                            return false;
-                                        }
-                                    });
-                                }
-                                if (save) {
-                                    promises.push(new Promise(
-                                        (resolve, reject) => {
-                                            ProcessMaker.apiClient
-                                                .post('group_members', {
-                                                    'group_id': group.id,
-                                                    'member_type': 'ProcessMaker\\Models\\User',
-                                                    'member_id': that.formData.id
-                                                })
-                                                .then(() => {
-                                                    that.formData.memberships.push({
-                                                        group_id: group.id
-                                                    });
-                                                    resolve()
-                                                })
-                                                .catch(() => {
-                                                    reject()
-                                                })
-                                        })
-                                    )
-                                }
-                            });
-                            Promise.all(promises)
-                                .then(() => {
-                                    ProcessMaker.alert('{{__('Update User Successfully')}}', 'success');
-                                    that.onClose();
-                                })
-                                .catch(() => {
-                                    ProcessMaker.alert('{{__('An error occurred while saving the Groups.')}}', 'danger')
-                                })
+                            ProcessMaker.alert('{{__('Update User Successfully')}}', 'success');
+                            that.onClose();
                         })
                         .catch(error => {
-                            //define how display errors
-                            if (error.response.status && error.response.status === 422) {
-                                // Validation error
-                                that.errors = error.response.data.errors;
-                            }
+                            ProcessMaker.alert('{{__('An error occurred while saving the Groups.')}}', 'danger');
                         });
                 },
                 isSuperUser() {
