@@ -86,30 +86,6 @@
                         'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.password}'])!!}
 
                     </div>
-                    <div class="form-group">
-                        {!!Form::label('groups', __('Groups'))!!}
-                        <multiselect v-model="selectedGroups" :options="availableGroups" :multiple="true"
-                                     track-by="name"
-                                     :custom-label="customLabel" :show-labels="false" label="name">
-
-                            <template slot="tag" slot-scope="props">
-                            <span class="multiselect__tag  d-flex align-items-center" style="width:max-content;">
-                                <span class="option__desc mr-1">@{{ props.option.name }}
-                                    <span class="option__title">@{{ props.option.desc }}</span>
-                                </span>
-                                <i aria-hidden="true" tabindex="1" @click="props.remove(props.option)"
-                                   class="multiselect__tag-icon"></i>
-                            </span>
-                            </template>
-
-                            <template slot="option" slot-scope="props">
-                                <div class="option__desc d-flex align-items-center">
-                                    <span class="option__title mr-1">@{{ props.option.name }}</span>
-                                    <span class="option__small">@{{ props.option.desc }}</span>
-                                </div>
-                            </template>
-                        </multiselect>
-                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary"
@@ -138,13 +114,8 @@
                 confpassword: '',
                 addError: {},
                 submitted: false,
-                selectedGroups: [],
-                availableGroups: @json($groups),
             },
             methods: {
-                customLabel(options) {
-                    return ` ${options.img} ${options.title} ${options.desc} `
-                },
                 validatePassword() {
                     if (this.password !== this.confpassword) {
                         this.addError.password = ['Passwords must match']
@@ -164,48 +135,9 @@
                             status: this.status,
                             email: this.email,
                             password: this.password
-                        })
-                            .then(response => {
-                                ProcessMaker.alert('{{__('User successfully added ')}}', 'success');
-                                const promises = [];
-                                this.selectedGroups.forEach(group => {
-                                    promises.push(new Promise(
-                                        (resolve, reject) => {
-                                            ProcessMaker.apiClient.post("/group_members", {
-                                                member_type: "ProcessMaker\\Models\\User",
-                                                member_id: response.data.id,
-                                                group_id: group.id
-                                            })
-                                                .then(() => {
-                                                    resolve(true)
-                                                })
-                                                .catch(() => {
-                                                    ProcessMaker.alert('{{__('An error occurred while saving the Group')}}', 'danger');
-                                                    resolve(false)
-                                               })
-                                        })
-                                    )
-                                });
-
-                                Promise.all(promises)
-                                    .then(() => {
-                                        ProcessMaker.alert('{{__('Groups successfully added ')}}', 'success')
-                                    })
-                                    .catch(() => {
-                                        ProcessMaker.alert('{{__('Error when saving Group ')}}', 'danger')
-                                    })
-                                    .finally(() => {
-                                        window.location = "/admin/users/" + response.data.id + '/edit'
-                                    })
-                            })
-                            .catch(error => {
-                                if (error.response.status === 422) {
-                                    this.addError = error.response.data.errors
-                                }
-                            })
-                            .finally(() => {
-                                this.submitted = false
-                            })
+                        }).then(function (response) {
+                            window.location = "/admin/users/" + response.data.id + '/edit'
+                        });
                     }
                 }
             }
