@@ -32,7 +32,7 @@
                 v-b-tooltip.hover
                 title="Modeler"
               >
-                <i class="fas fa-project-diagram"></i>
+                <i class="fas fa-project-diagram fa-fw"></i>
               </b-btn>
               <b-btn
                 variant="link"
@@ -40,7 +40,7 @@
                 v-b-tooltip.hover
                 title="Edit"
               >
-                <i class="fas fa-cog"></i>
+                <i class="fas fa-pen-square fa-lg fa-fw"></i>
               </b-btn>
             </div>
           </div>

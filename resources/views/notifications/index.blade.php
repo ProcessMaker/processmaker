@@ -10,7 +10,7 @@
 
 @section('content')
 <div class="container page-content" id="notifications">
-  <h1>{{__('Notifications inbox')}}</h1>
+  <h1>{{__('Notifications Inbox')}}</h1>
   <div class="row">
     <div class="col">
       <div class="input-group">

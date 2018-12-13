@@ -21,7 +21,7 @@
                 v-b-tooltip.hover
                 title="Edit"
               >
-                <i class="fas fa-edit"></i>
+                <i class="fas fa-pen-square fa-lg fa-fw"></i>
               </b-btn>
               <b-btn
                 variant="link"
@@ -29,7 +29,7 @@
                 v-b-tooltip.hover
                 title="Remove"
               >
-                <i class="fas fa-trash-alt"></i>
+                <i class="fas fa-trash-alt fa-lg fa-fw"></i>
               </b-btn>
             </div>
           </div>

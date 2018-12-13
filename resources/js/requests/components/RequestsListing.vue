@@ -25,6 +25,20 @@
             :input-data="participant"
           ></avatar-image>
         </template>
+        <template slot="actions" slot-scope="props">
+          <div class="actions">
+            <div class="popout">
+              <b-btn
+                variant="link"
+                @click="onAction('edit-designer', props.rowData, props.rowIndex)"
+                v-b-tooltip.hover
+                title="Open Request"
+              >
+                <i class="fas fa-caret-square-right fa-lg fa-fw"></i>
+              </b-btn>
+            </div>
+          </div>
+        </template>
       </vuetable>
       <pagination
         single="Request"
@@ -84,11 +98,22 @@ export default {
           title: "Completed",
           name: "completed_at",
           sortField: "completed_at"
+        },
+        {
+          name: "__slot:actions",
+          title: ""
         }
       ]
     };
   },
   methods: {
+    onAction(action, data, index) {
+      switch (action) {
+        case "edit-designer":
+          this.openRequest(data, index);
+          break;
+      }
+    },
     openRequest(data, index) {
       window.location.href = "/requests/" + data.id;
     },

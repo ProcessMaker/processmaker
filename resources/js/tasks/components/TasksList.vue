@@ -35,9 +35,17 @@
                 variant="link"
                 @click="onAction('edit', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
+                title="Open Task"
+              >
+                <i class="fas fa-caret-square-right fa-lg fa-fw"></i>
+              </b-btn>
+              <b-btn
+                variant="link"
+                @click="onAction('edit', props.rowData, props.rowIndex)"
+                v-b-tooltip.hover
                 title="Edit"
               >
-                <i class="fas fa-cog"></i>
+                <i class="fas fa-pen-square fa-lg fa-fw"></i>
               </b-btn>
               <b-btn
                 variant="link"
@@ -45,7 +53,7 @@
                 v-b-tooltip.hover
                 title="Pause"
               >
-                <i class="fas fa-pause"></i>
+                <i class="fas fa-pause fa-lg fa-fw"></i>
               </b-btn>
               <b-btn
                 variant="link"
@@ -53,7 +61,7 @@
                 v-b-tooltip.hover
                 title="Undo"
               >
-                <i class="fas fa-undo"></i>
+                <i class="fas fa-undo fa-lg fa-fw"></i>
               </b-btn>
             </div>
           </div>
