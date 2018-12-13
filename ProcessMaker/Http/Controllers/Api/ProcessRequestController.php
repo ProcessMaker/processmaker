@@ -13,6 +13,7 @@ use ProcessMaker\Http\Resources\ProcessRequests;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Http\Resources\ProcessRequests as ProcessRequestResource;
+use ProcessMaker\Notifications\ProcessCanceledNotification;
 
 class ProcessRequestController extends Controller
 {
@@ -269,6 +270,9 @@ class ProcessRequestController extends Controller
      */
     private function cancelRequestToken(ProcessRequest $request)
     {
+        //notify to the user that started the request, its cancellation
+        $request->user->notify(new ProcessCanceledNotification($request));
+
         //cancel request
         $request->status = 'CANCELED';
         $request->saveOrFail();
