@@ -80,24 +80,6 @@
                         callback: this.formatStatus
                     },
                     {
-                        title: "Modified",
-                        name: "updated_at",
-                        sortField: "updated_at",
-                        callback: "formatDate"
-                    },
-                    {
-                        title: "Created",
-                        name: "created_at",
-                        sortField: "created_at",
-                        callback: "formatDate"
-                    },
-                    {
-                        title: "Last login",
-                        name: "loggedin_at",
-                        sortField: "loggedin_at",
-                        callback: "formatDate"
-                    },
-                    {
                         name: "__slot:actions",
                         title: ""
                     }
@@ -131,8 +113,8 @@
                     "<b>Are you sure to delete the group </b>" + data.name + "?",
                     "",
                     function () {
-                        ProcessMaker.apiClient.delete("groups/" + data.id).then(response => {
-                            ProcessMaker.alert("Group successfully eliminated", "success");
+                        ProcessMaker.apiClient.delete("group_members/" + data.id).then(response => {
+                            ProcessMaker.alert("Member successfully eliminated", "success");
                             that.fetch();
                         });
                     }

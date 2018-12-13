@@ -87,13 +87,13 @@
                             <div class="form-user">
                                 {!!Form::label('users', __('Users'))!!}
                                 <multiselect v-model="selectedUsers" :options="availableUsers" :multiple="true"
-                                             track-by="name"
-                                             :custom-label="customLabel" :show-labels="false" label="name">
+                                             track-by="fullname"
+                                             :custom-label="customLabel" :show-labels="false" label="fullname">
 
                                     <template slot="tag" slot-scope="props">
                                         <span class="multiselect__tag  d-flex align-items-center" style="width:max-content;">
-                                            <span class="option__desc mr-1">@{{ props.option.name }}
-                                                <span class="option__title">@{{ props.option.desc }}</span>
+                                            <span class="option__desc mr-1">
+                                                <span class="option__title">@{{ props.option.fullname }}</span>
                                             </span>
                                             <i aria-hidden="true" tabindex="1" @click="props.remove(props.option)"
                                                class="multiselect__tag-icon"></i>
@@ -102,8 +102,7 @@
 
                                     <template slot="option" slot-scope="props">
                                         <div class="option__desc d-flex align-items-center">
-                                            <span class="option__title mr-1">@{{ props.option.name }}</span>
-                                            <span class="option__small">@{{ props.option.desc }}</span>
+                                            <span class="option__title mr-1">@{{ props.option.fullname }}</span>
                                         </div>
                                     </template>
                                 </multiselect>
@@ -112,7 +111,7 @@
                         <div class="modal-footer">
                             <button type="button" class="btn btn-outline-secondary"
                                     data-dismiss="modal">{{__('Close')}}</button>
-                            <button type="button" class="btn btn-secondary" @click="onSubmit"
+                            <button type="button" class="btn btn-secondary" @click="onSave"
                                     id="disabledForNow">{{__('Save')}}</button>
                         </div>
                     </div>
@@ -140,6 +139,7 @@
             el: '#editGroup',
             data() {
                 return {
+                    showAddUserModal:false,
                     formData: @json($group),
                     filter: '',
                     errors: {
@@ -148,17 +148,25 @@
                         'status': null
                     },
                     selectedUsers: [],
-                    availableUsers: [],
-                    {{--availableUsers: @json($users),--}}
+                    availableUsers: @json($users)
                 }
             },
             methods: {
                 customLabel(options) {
-//                    return ` ${options.img} ${options.title} ${options.desc} `
-                    return 'nada';
+                    return `${options.fullname}`
                 },
-                onSubmit() {
-                    alert('todo: store users');
+                onSave() {
+                    let that = this;
+                    this.selectedUsers.forEach(function (user) {
+                        ProcessMaker.apiClient
+                            .post('group_members', {
+                                'group_id': that.formData.id,
+                                'member_type': 'ProcessMaker\\Models\\User',
+                                'member_id': user.id
+                            });
+                    })
+                    this.$refs['listing'].fetch();
+                    $('#addUser').modal('hide');
                 },
                 resetErrors() {
                     this.errors = Object.assign({}, {
