@@ -41,27 +41,11 @@
               </b-btn>
               <b-btn
                 variant="link"
-                @click="onAction('edit', props.rowData, props.rowIndex)"
+                @click="onAction('showRequestSummary', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Edit"
+                title="Open Task"
               >
-                <i class="fas fa-pen-square fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                variant="link"
-                @click="onAction('pause', props.rowData, props.rowIndex)"
-                v-b-tooltip.hover
-                title="Pause"
-              >
-                <i class="fas fa-pause fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                variant="link"
-                @click="onAction('undo', props.rowData, props.rowIndex)"
-                v-b-tooltip.hover
-                title="Undo"
-              >
-                <i class="fas fa-undo fa-lg fa-fw"></i>
+                <i class="fas fa-clipboard fa-lg fa-fw"></i>
               </b-btn>
             </div>
           </div>
