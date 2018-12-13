@@ -1,64 +1,61 @@
 <template>
+  <div class="data-table">
+    <div class="card card-body table-card">
+      <vuetable
+        :dataManager="dataManager"
+        :sortOrder="sortOrder"
+        :css="css"
+        :api-mode="false"
+        @vuetable:pagination-data="onPaginationData"
+        :fields="fields"
+        :data="data"
+        data-path="data"
+        pagination-path="meta"
+      >
+        <template slot="name" slot-scope="props">{{props.rowData.name}}</template>
 
-    <div class="data-table">
-      <div class="card card-body" style="padding:0">
-    <vuetable
-      :dataManager="dataManager"
-      :sortOrder="sortOrder"
-      :css="css"
-      :api-mode="false"
-      @vuetable:pagination-data="onPaginationData"
-      :fields="fields"
-      :data="data"
-      data-path="data"
-      pagination-path="meta"
-    >
-      <template slot="name" slot-scope="props">
-        {{props.rowData.name}}
-      </template>
+        <template slot="owner" slot-scope="props">
+          <avatar-image
+            class="d-inline-flex pull-left align-items-center"
+            size="25"
+            :input-data="props.rowData.user"
+            hide-name="true"
+          ></avatar-image>
+        </template>
 
-      <template slot="owner" slot-scope="props">
-        <avatar-image
-          class="d-inline-flex pull-left align-items-center"
-          size="25"
-          :input-data="props.rowData.user"
-          hide-name="true"
-        ></avatar-image>
-      </template>
-
-      <template slot="actions" slot-scope="props">
-        <div class="actions">
-          <div class="popout">
-            <b-btn
-              variant="link"
-              @click="onAction('edit-designer', props.rowData, props.rowIndex)"
-              v-b-tooltip.hover
-              title="Modeler"
-            >
-              <i class="fas fa-project-diagram"></i>
-            </b-btn>
-            <b-btn
-              variant="link"
-              @click="onAction('edit-item', props.rowData, props.rowIndex)"
-              v-b-tooltip.hover
-              title="Edit"
-            >
-              <i class="fas fa-cog"></i>
-            </b-btn>            
+        <template slot="actions" slot-scope="props">
+          <div class="actions">
+            <div class="popout">
+              <b-btn
+                variant="link"
+                @click="onAction('edit-designer', props.rowData, props.rowIndex)"
+                v-b-tooltip.hover
+                title="Modeler"
+              >
+                <i class="fas fa-project-diagram"></i>
+              </b-btn>
+              <b-btn
+                variant="link"
+                @click="onAction('edit-item', props.rowData, props.rowIndex)"
+                v-b-tooltip.hover
+                title="Edit"
+              >
+                <i class="fas fa-cog"></i>
+              </b-btn>
+            </div>
           </div>
-        </div>
-      </template>
-    </vuetable>
-    
-    <pagination
-      single="Process"
-      plural="Processes"
-      :perPageSelectEnabled="true"
-      @changePerPage="changePerPage"
-      @vuetable-pagination:change-page="onPageChange"
-      ref="pagination"
-    ></pagination>
-  </div>
+        </template>
+      </vuetable>
+
+      <pagination
+        single="Process"
+        plural="Processes"
+        :perPageSelectEnabled="true"
+        @changePerPage="changePerPage"
+        @vuetable-pagination:change-page="onPageChange"
+        ref="pagination"
+      ></pagination>
+    </div>
   </div>
 </template>
 
@@ -219,19 +216,3 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-/deep/ th#_total_users {
-  width: 150px;
-  text-align: center;
-}
-
-/deep/ th#_description {
-  width: 250px;
-}
-
-/deep/ .rounded-user {
-  border-radius: 50% !important;
-  height: 1.5em;
-  margin-right: 0.5em;
-}
-</style>
