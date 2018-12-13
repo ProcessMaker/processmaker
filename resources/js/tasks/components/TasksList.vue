@@ -32,26 +32,26 @@
           <div class="actions">
             <div class="popout">
               <b-btn
-                variant="secondary"
+                variant="link"
                 @click="onAction('edit', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title
+                title="Edit"
               >
-                <i class="fas fa-edit"></i>
+                <i class="fas fa-cog"></i>
               </b-btn>
               <b-btn
-                variant="secondary"
+                variant="link"
                 @click="onAction('pause', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title
+                title="Pause"
               >
                 <i class="fas fa-pause"></i>
               </b-btn>
               <b-btn
-                variant="secondary"
+                variant="link"
                 @click="onAction('undo', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title
+                title="Undo"
               >
                 <i class="fas fa-undo"></i>
               </b-btn>
@@ -115,6 +115,10 @@ export default {
           name: "due_at",
           callback: this.formatDueDate,
           sortField: "due_at"
+        },
+        {
+          name: "__slot:actions",
+          title: ""
         }
       ]
     };
@@ -203,27 +207,5 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-/deep/ th#_total_users {
-  width: 150px;
-  text-align: center;
-}
 
-/deep/ th#_description {
-  width: 250px;
-}
-
-/deep/ i.fa-circle {
-  &.active {
-    color: green;
-  }
-  &.inactive {
-    color: red;
-  }
-}
-
-/deep/ tr td:nth-child(4) {
-  padding: 6px 10px;
-}
-</style>
 
