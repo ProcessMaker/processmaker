@@ -225,17 +225,17 @@ class GroupController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * Display the list of users in a group
      *
      * @param Request $request
      *
      * @return ApiCollection
      *
      * @OA\Get(
-     *     path="/groups",
-     *     summary="Returns all groups that the user has access to",
-     *     operationId="getGroups",
-     *     tags={"Groups"},
+     *     path="/group_users",
+     *     summary="Returns all users of a group",
+     *     operationId="getMembers",
+     *     tags={"Group_users"},
      *     @OA\Parameter(ref="#/components/parameters/filter"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
@@ -244,13 +244,13 @@ class GroupController extends Controller
      *
      *     @OA\Response(
      *         response=200,
-     *         description="list of groups",
+     *         description="list of members of a group",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(
      *                 property="data",
      *                 type="array",
-     *                 @OA\Items(ref="#/components/schemas/groups"),
+     *                 @OA\Items(ref="#/components/schemas/users"),
      *             ),
      *             @OA\Property(
      *                 property="meta",
