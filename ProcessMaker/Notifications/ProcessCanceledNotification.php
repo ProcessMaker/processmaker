@@ -9,7 +9,7 @@ use Illuminate\Notifications\Notification;
 use ProcessMaker\Models\ProcessRequest as Instance;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 
-class ProcessCompletedNotification extends Notification
+class ProcessCanceledNotification extends Notification
 {
     use Queueable;
 
@@ -69,9 +69,9 @@ class ProcessCompletedNotification extends Notification
     {
         $instance = Instance::find($this->instanceUid);
         return [
-            'type' => 'PROCESS_COMPLETED',
-            'name' => sprintf('Request completed: %s', $this->processName),
-            'dateTime' => $instance->completed_at->toIso8601String(),
+            'type' => 'PROCESS_CANCELED',
+            'name' => sprintf('Request canceled: %s', $this->processName),
+            'dateTime' => $instance->updated_at->toIso8601String(),
             'uid' => $this->processName,
             'request_id' => $instance->getKey(),
             'url' => sprintf(

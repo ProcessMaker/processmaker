@@ -84,6 +84,7 @@ class ActivityActivatedNotification extends Notification
         $token = Token::find($this->tokenUid);
         $request = $token->processRequest;
         return [
+            'type' => 'TASK_CREATED' ,
             'message' => sprintf('Task created: %s', $activity->getName()),
             'name' => $activity->getName(),
             'processName' => $process->name,
