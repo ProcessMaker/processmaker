@@ -9,6 +9,7 @@ use ProcessMaker\Models\PermissionAssignment;
 
 class PermissionSeeder extends Seeder
 {
+
     private $permissions = [
         'documents.index',
         'documents.create',
@@ -65,6 +66,9 @@ class PermissionSeeder extends Seeder
 
     public function run($user = null)
     {
+        if (Permission::count() !== 0) {
+            return;
+        }
         $group = factory(Group::class)->create([
             'name' => 'All Permissions',
         ]);
@@ -81,7 +85,8 @@ class PermissionSeeder extends Seeder
 
         foreach ($this->permissions as $permissionString) {
             $permission = factory(Permission::class)->create([
-                'name' => ucwords(preg_replace('/(\.|_)/', ' ', $permissionString)),
+                'name' => ucwords(preg_replace('/(\.|_)/', ' ',
+                        $permissionString)),
                 'guard_name' => $permissionString,
             ]);
             factory(PermissionAssignment::class)->create([

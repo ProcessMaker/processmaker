@@ -40,6 +40,7 @@ let nodeTypes = [
     //pool,
     //poolLane,
 ]
+ProcessMaker.nodeTypes.push(...nodeTypes);
 
 ProcessMaker.EventBus.$on('modeler-init', ({registerNode, registerBpmnExtension, registerInspectorExtension}) => {
     /* Register basic node types */
