@@ -3,8 +3,10 @@ namespace ProcessMaker\Repositories;
 
 use Carbon\Carbon;
 use ProcessMaker\Models\ProcessRequest as Instance;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken as Token;
 use ProcessMaker\Nayra\Bpmn\Collection;
+use ProcessMaker\Nayra\Bpmn\Models\EndEvent;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\GatewayInterface;
@@ -215,12 +217,27 @@ class TokenRepository implements TokenRepositoryInterface
 
     public function persistThrowEventTokenArrives(ThrowEventInterface $event, TokenInterface $token)
     {
-        
+
     }
 
-    public function persistThrowEventTokenConsumed(ThrowEventInterface $endEvent, TokenInterface $token)
+    public function persistThrowEventTokenConsumed(ThrowEventInterface $event, TokenInterface $token)
     {
-        
+        // we register just end event throw events
+        if ($event instanceof EndEvent) {
+            $this->instanceRepository->persistInstanceUpdated($token->getInstance());
+            $token->status = 'CLOSED';
+            $token->element_id = $event->getId();
+            $token->element_type = 'end_event';
+            $token->element_name = $event->getName();
+            $token->process_id = $token->getInstance()->process->getKey();
+            $token->process_request_id = $token->getInstance()->getKey();
+            $token->user_id = null;
+            $token->due_at = null;
+            $token->riskchanges_at = null;
+            $token->completed_at = Carbon::now();
+            $token->saveOrFail();
+            $token->setId($token->getKey());
+        }
     }
 
     public function persistThrowEventTokenPassed(ThrowEventInterface $endEvent, TokenInterface $token)

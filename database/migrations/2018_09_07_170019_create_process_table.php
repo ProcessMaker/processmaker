@@ -17,7 +17,6 @@ class CreateProcessTable extends Migration
             // Columns
             $table->increments('id');
             $table->unsignedInteger('process_category_id')->nullable();
-            $table->unsignedInteger('summary_screen_id')->nullable();
             $table->unsignedInteger('user_id');
             $table->text('bpmn');
             $table->text('description');
@@ -31,7 +30,6 @@ class CreateProcessTable extends Migration
             // Foreign keys
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('process_category_id')->references('id')->on('process_categories')->onDelete('cascade');
-            //$table->foreign('summary_screen_id')->references('id')->on('screens')->onDelete('cascade');
         });
     }
 
