@@ -32,10 +32,12 @@
                                 <a class="nav-link" id="completed-tab" data-toggle="tab" href="#completed" role="tab"
                                    aria-controls="completed" aria-selected="false">{{__('Completed')}}</a>
                             </li>
+                            @if(count($files) > 0 )                           
                             <li class="nav-item">
                                 <a class="nav-link" id="files-tab" data-toggle="tab" href="#files" role="tab"
                                    aria-controls="files" aria-selected="false">{{__('Attached Files')}}</a>
                             </li>
+                            @endif
                         </template>
                     </ul>
                     <div class="tab-content" id="requestTabContent">
