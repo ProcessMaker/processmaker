@@ -46,6 +46,7 @@ mix.webpackConfig({
     .js('resources/js/processes/screen-builder/main.js', 'public/js/processes/screen-builder')
     .js('resources/js/processes/screen-builder/typeForm.js', 'public/js/processes/screen-builder')
     .js('resources/js/processes/screen-builder/typeDisplay.js', 'public/js/processes/screen-builder')
+    .js('resources/js/processes/screen-builder/typeEmail.js', 'public/js/processes/screen-builder')
 
     .js('resources/js/requests/index.js', 'public/js/requests')
 

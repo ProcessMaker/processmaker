@@ -6,12 +6,11 @@
             <select class="form-control" @change="updateValue">
                 <option value></option>
                 <option
-                        :value="screen.id"
-                        :selected="screen.id == value"
-                        v-for="screen in screens"
-                        :key="screen.id"
-                >{{screen.title}}
-                </option>
+                    :value="screen.id"
+                    :selected="screen.id == value"
+                    v-for="screen in screens"
+                    :key="screen.id"
+                >{{screen.title}}</option>
             </select>
             <a href="#" @click="load">Refresh</a>
         </div>
@@ -21,7 +20,7 @@
 
 <script>
     export default {
-        props: ["value", "label", "helper", "type"],
+        props: ["value", "label", "helper", "params"],
         data() {
             return {
                 content: "",
@@ -57,15 +56,18 @@
             },
             load() {
                 this.loading = true;
+                let params = Object.assign({type:'FORM'}, this.params);
                 ProcessMaker.apiClient
-                    .get("/screens?type=" + this.type)
-                    .then(response => {
-                        this.screens = response.data.data;
-                        this.loading = false;
-                    })
-                    .catch(err => {
-                        this.loading = false;
-                    });
+                        .get("/screens", {
+                            params: params
+                        })
+                        .then(response => {
+                            this.screens = response.data.data;
+                            this.loading = false;
+                        })
+                        .catch(err => {
+                            this.loading = false;
+                        });
             }
         }
     };
