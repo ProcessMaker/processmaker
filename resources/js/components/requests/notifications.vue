@@ -100,7 +100,7 @@
 
                     setTimeout(function() {
                        self.incrementTotalMessages=true;
-                    }, 3000)
+                    }, 2000)
                 });
         }
     };
