@@ -26,8 +26,8 @@
                     <hr>
                 </li>
                 <li class="footer">
-                    <a href="/notifications" v-if="totalMessages > 1">
-                        View All {{totalMessages}} Notifications
+                    <a href="/notifications?status=unread" v-if="totalMessages > 1">
+                        All {{totalMessages}} Unread Notifications
                     </a>
                     <a href="/notifications" v-else>
                         View All Notifications

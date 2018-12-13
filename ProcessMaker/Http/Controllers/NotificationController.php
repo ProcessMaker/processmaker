@@ -17,9 +17,13 @@ class NotificationController extends Controller
     public function index(Request $request)
     {
         $status = $request->input('status');
-        $title = $status === 'unread'
-                ? __('Unread notifications inbox')
-                : __('Notifications inbox');
+
+        $title = __('All Notifications');
+
+        if($status === 'unread') {
+          $title = __('Unread Notifications');
+        }
+        
         return view('notifications.index', compact('status', 'title'));
     }
 }

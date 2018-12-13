@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-{{__('Notifications inbox')}}
+{{__('Notifications Inbox')}}
 @endsection
 
 @section('sidebar')
@@ -25,7 +25,7 @@
 
     </div>
     <div class="col-8" align="right">
-      
+
     </div>
   </div>
 
