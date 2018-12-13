@@ -130,6 +130,7 @@ jobs:
           name: "PHPUnit"
           command: "./vendor/bin/phpunit -d memory_limit=-1 --coverage-html coverage"
           environment:
+            DB_CONNECTION: "workflow"
             DB_DATABASE: "circle_test"
             DB_PASSWORD: "P4ssW0rd1!"
             DB_USERNAME: "root"
