@@ -157,7 +157,7 @@ jobs:
           name: "QA Configuration File Build"
           command: |
             echo "APP_KEY=" >> .env
-            echo "APP_DEBUG=TRUE" >> .env
+            echo "APP_DEBUG=FALSE" >> .env
             echo "APP_NAME=ProcessMaker" >> .env
             echo "APP_ENV=staging" >> .env
             echo "DB_HOST=${QA_RDS_HOST}" >> .env
@@ -225,37 +225,37 @@ jobs:
             # Generate Passport Keys
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "cd ~/builds/$BUILD_NAME && php artisan passport:keys"
             
-      #- run:
-      #    name: "SauceLabs Browser Tests: Chrome"
-      #    command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"cd ~/builds/$BUILD_NAME && php artisan dusk\""
-      #    environment:
-      #      DB_DATABASE: "circle_test"
-      #      RUN_MSSQL_TESTS: "true"
-      #      MSSQL_HOST: "127.0.0.1"
+      - run:
+          name: "SauceLabs Browser Tests: Chrome"
+          command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"cd ~/builds/$BUILD_NAME && php artisan dusk\""
+          environment:
+            DB_DATABASE: "circle_test"
+            RUN_MSSQL_TESTS: "true"
+            MSSQL_HOST: "127.0.0.1"
 
-      #- run:
-      #    name: "SauceLabs Browser Tests: Firefox"
-      #    command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk\""
-      #    environment:
-      #      SAUCELABS_BROWSER: "firefox"
-      #      SAUCELABS_PLATFORM: "Windows 10"
-      #      SAUCELABS_BROWSER_VERSION: "47.0"
+      - run:
+          name: "SauceLabs Browser Tests: Firefox"
+          command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk\""
+          environment:
+            SAUCELABS_BROWSER: "firefox"
+            SAUCELABS_PLATFORM: "Windows 10"
+            SAUCELABS_BROWSER_VERSION: "47.0"
 
-      #- run:
-      #    name: "SauceLabs Browser Tests: Edge"
-      #    command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk\""
-      #    environment:
-      #      SAUCELABS_BROWSER: "MicrosoftEdge"
-      #      SAUCELABS_PLATFORM: "Windows 10"
-      #      SAUCELABS_BROWSER_VERSION: "16.16299"
+      - run:
+          name: "SauceLabs Browser Tests: Edge"
+          command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk\""
+          environment:
+            SAUCELABS_BROWSER: "MicrosoftEdge"
+            SAUCELABS_PLATFORM: "Windows 10"
+            SAUCELABS_BROWSER_VERSION: "16.16299"
 
-      #- run:
-      #    name: "SauceLabs Browser Tests: Safari"
-      #    command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk\""
-      #    environment:
-      #      SAUCELABS_BROWSER: "safari"
-      #      SAUCELABS_PLATFORM: "macOS 10.13"
-      #      SAUCELABS_BROWSER_VERSION: "11.0"
+      - run:
+          name: "SauceLabs Browser Tests: Safari"
+          command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk\""
+          environment:
+            SAUCELABS_BROWSER: "safari"
+            SAUCELABS_PLATFORM: "macOS 10.13"
+            SAUCELABS_BROWSER_VERSION: "11.0"
 
       - run:
           name: "Final QA Artisan DB Migration"

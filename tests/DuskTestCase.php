@@ -2,7 +2,7 @@
 
 namespace Tests;
 
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Dusk\TestCase as BaseTestCase;
 use Facebook\WebDriver\Chrome\ChromeOptions;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
@@ -16,7 +16,7 @@ use Facebook\WebDriver\Remote\DesiredCapabilities;
 abstract class DuskTestCase extends BaseTestCase
 {
     use CreatesApplication;
-    use DatabaseMigrations;
+    use RefreshDatabase;
 
     public function setUp()
     {
@@ -51,9 +51,10 @@ abstract class DuskTestCase extends BaseTestCase
             ]);
 
             return RemoteWebDriver::create(
-                'http://localhost:9515', DesiredCapabilities::chrome()->setCapability(
-                    ChromeOptions::CAPABILITY, $options
+                'http://localhost:9515', DesiredCapabilities::chrome()
+                    ->setCapability(ChromeOptions::CAPABILITY, $options
                 )
+                ->setCapability('acceptInsecureCerts', true)
             );
         } else {
             // We currently support SauceLabs based cloud testing
