@@ -76,6 +76,17 @@ class NotificationController extends Controller
             });
         }
 
+        //restrict all filters and results to the selected status
+        $status = $request->input('status', '');
+        switch ($status) {
+            case 'read':
+                $query->whereNotNull('read_at');
+                break;
+            case 'unread':
+                $query->whereNull('read_at');
+                break;
+        }
+
         $response =
             $query->orderBy(
                 $request->input('order_by', 'created_at'),

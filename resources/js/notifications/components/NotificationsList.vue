@@ -34,7 +34,7 @@
 
     export default {
         mixins: [datatableMixin],
-        props: ["filter"],
+        props: ["filter", "status"],
         data() {
             return {
 
@@ -112,12 +112,10 @@
                 // Load from our api client
                 ProcessMaker.apiClient
                     .get(
-                        "notifications?page=" +
-                        this.page +
-                        "&per_page=" +
-                        this.perPage +
-                        "&filter=" +
-                        this.filter +
+                        "notifications?page=" + this.page +
+                        "&per_page=" + this.perPage +
+                        "&status=" + this.status +
+                        "&filter=" + this.filter +
                         this.getSortParam()
                         , {
                             cancelToken: new CancelToken(c => {

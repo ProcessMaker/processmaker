@@ -30,7 +30,7 @@
   </div>
 
   <div class="container-fluid">
-    <notifications-list :filter="filter"></notifications-list>
+    <notifications-list :filter="filter" status="{{ $status }}"></notifications-list>
   </div>
 </div>
 @endsection

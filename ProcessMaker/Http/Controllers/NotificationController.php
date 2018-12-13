@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Http\Controllers;
 
+use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\ProcessRequestToken;
 
@@ -13,8 +14,9 @@ class NotificationController extends Controller
         'overdue' => 'Due ',
     ];
 
-    public function index()
+    public function index(Request $request)
     {
-        return view('notifications.index');
+        $status = $request->input('status');
+        return view('notifications.index', compact('status'));
     }
 }

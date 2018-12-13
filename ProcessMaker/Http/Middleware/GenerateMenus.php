@@ -128,7 +128,7 @@ class GenerateMenus
         Menu::make('sidebar_notifications', function ($menu) {
             $submenu = $menu->add(__('menus.sidebar_notifications.notifications'));
             $submenu->add(__('menus.sidebar_notifications.unread'), [
-                'route' => ['notifications.index', 'filter' => 'unread'],
+                'route' => ['notifications.index', 'status' => 'unread'],
                 'icon' => 'fa-inbox',
                 'id' => 'notifications-unread'
             ]);
