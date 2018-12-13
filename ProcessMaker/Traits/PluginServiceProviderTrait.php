@@ -66,4 +66,14 @@ trait PluginServiceProviderTrait
         $key = str_replace('\\', '_', static::class);
         return static::version === Cache::get($key, '0.0.0');
     }
+
+    /**
+     * Register a seeder that should be executed when php artisan db:seed is called.
+     *
+     * @param string $seederClass
+     */
+    protected function registerSeeder($seederClass)
+    {
+        LoadPluginSeeders::registerSeeder($seederClass);
+    }
 }

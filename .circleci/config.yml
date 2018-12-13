@@ -92,13 +92,7 @@ jobs:
           # fallback to using the latest cache if no exact match is found
           - v1-npm-dependencies-
 
-      - run: 
-          name: "composer install -n --prefer-dist"
-          command: "composer install -n --prefer-dist"
-          environment:
-            DB_DATABASE: "circle_test"
-            DB_PASSWORD: "P4ssW0rd1!"
-            DB_USERNAME: "root"
+      - run: composer install -n --prefer-dist
 
       - run: npm install
 
@@ -189,6 +183,16 @@ jobs:
             php artisan key:generate --force
             # Copy over our test oauth keys. Regular install will create new ones
             cp tests/storage/keys/* storage/keys/
+
+      - run:
+          name: "Add Email-Connector Plugin"
+          command: |
+            echo "MAIL_DRIVER=smtp" >> .env
+            echo "MAIL_HOST=smtp.mailtrap.io" >> .env
+            echo "MAIL_PORT=2525" >> .env
+            echo "MAIL_USERNAME=26108c384589d1" >> .env
+            echo "MAIL_PASSWORD=d9da3f11960069" >> .env
+            composer require processmaker/bpm-package-email-connector
 
       - run:
           name: "QA Package"
