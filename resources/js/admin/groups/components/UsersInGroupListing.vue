@@ -62,8 +62,8 @@
                     },
                     {
                         title: "Full Name",
-                        name: "fullname",
-                        sortField: "fullname"
+                        name: "firstname",
+                        sortField: "firstname"
                     },
                     {
                         title: "Status",
