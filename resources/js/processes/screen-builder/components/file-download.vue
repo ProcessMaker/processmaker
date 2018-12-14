@@ -28,12 +28,9 @@ export default {
   },
   methods: {
     onClick() {
-      axios({
-        url:
-          "https://bpm4.local.processmaker.com/request/" +
-          this.requestId +
-          "/files/" +
-          this.files.data[0].id,
+      ProcessMaker.apiClient({
+        baseURL: "/",
+        url: "/request/" + this.requestId + "/files/" + this.files.data[0].id,
         method: "GET",
         responseType: "blob" // important
       }).then(response => {
