@@ -109,20 +109,13 @@ html {
 }
 
 @media only screen and (max-width: 600px) {
-	.navbar {
 
-		.seperator {
-			border-left: none;
-			height: none;
-			margin-top: none;
-		}
-
-		#mobileRight {
-			float: right;
-			margin-top: -200px;
-			margin-bottom: 200px;
-		}
+	#mobileRight {
+		float: right;
+		margin-top: -167px;
+		margin-bottom: 280px;
 	}
+
 }
 
 .breadcrumb {

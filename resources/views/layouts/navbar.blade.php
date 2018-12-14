@@ -1,7 +1,7 @@
 <b-navbar id="navbar" v-cloak  toggleable="md" type="light" variant="light">
     <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
 
-    <b-navbar-brand href="#"></b-navbar-brand>
+    <b-navbar-brand class="d-block d-sm-none" href="#"><img class="img-fluid" src={{asset(env('LOGIN_LOGO_PATH', '/img/processmaker_login.png'))}}></b-navbar-brand>
 
     <b-collapse is-nav id="nav_collapse">
 
@@ -25,12 +25,12 @@
             <component id="navbar-request-button" v-bind:is="'request-modal'"></component>
         </li>
 
-        <li class="nav-notification">
+        <li class="nav-notification d-none d-lg-block">
             <notifications id="navbar-notifications-button" v-bind:is="'notifications'" v-bind:messages="messages">
             </notifications>
         </li>
-        <li class="seperator"></li>
-        <li class="nav-item align-self-center">
+        <li class="seperator d-none d-lg-block"></li>
+        <li class="nav-item align-self-center d-none d-lg-block">
             @php
                 $items = [];
                 foreach ($dropdown_nav->items as $item ) {
