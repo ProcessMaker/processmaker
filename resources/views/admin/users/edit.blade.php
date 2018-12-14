@@ -133,12 +133,34 @@
                     </div>
                     
                     <div class="tab-pane fade" id="nav-tokens" role="tabpanel" aria-labelledby="nav-tokens-tab">
-                        <div class="form-group" v-if="apiToken != ''">
-                            {!!Form::label('token', __('API Token'))!!}
-                            {!!Form::textarea('token', null, ['class'=> 'form-control', 'v-model'=> 'apiToken']) !!}
-                        </div>
-                        <div class="form-group" v-if="apiToken == ''">
-                            GENERATE
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Created At</th>
+                                    <th>Expires At</th>
+                                    <th>Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="token in apiTokens">
+                                    <td>@{{ token.id.substr(0,7) }}</td>
+                                    <td>@{{ moment(token.created_at).format() }}</td>
+                                    <td>@{{ moment(token.expires_at).format() }}</td>
+                                    <td>
+                                        <a style="cursor: pointer" @click='deleteToken(token.id)'>
+                                            <i class="fas fa-trash-alt fa-lg" style="cursor: pointer"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr v-if='apiTokens.length == 0'>
+                                    <td colspan="4">User has no tokens.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="form-group" v-if="newToken != null">
+                            <h3>New token @{{ newToken.token.id.substr(0,7) }} created. This token can only be seen now. You can not retrieve it after you leave this page.</h3>
+                            <textarea style="height: 400px" class="form-control">@{{ newToken.accessToken }}</textarea>
                         </div>
                         <hr class="mt-0">
                         <button class="btn btn-secondary float-right" @click="generateToken">Generate New Token</button>
@@ -168,7 +190,8 @@
                     userPermissionIds: @json($permission_ids),
                     selected: [],
                     selectAll: false,
-                    apiToken: '',
+                    newToken: null,
+                    apiTokens: [],
                 }
             },
             beforeMount() {
@@ -178,7 +201,7 @@
                 this.hasPermission()
             },
             mounted() {
-                this.loadToken();
+                this.loadTokens();
             },
             methods: {
                 resetErrors() {
@@ -263,18 +286,42 @@
                         })
                     }
                 },
-                loadToken() {
+                loadTokens() {
                     ProcessMaker.apiClient({method: 'GET', url: '/oauth/personal-access-tokens', baseURL: '/'})
                         .then((result) => {
-                            // console.log("GET RESULT", result)
+                            this.apiTokens = result.data
                         })
                 },
                 generateToken() {
-                    // ProcessMaker.apiClient({method: 'POST', url: '/oauth/personal-access-tokens', baseURL: '/'})
-                    //     .then((result) => {
-                    //         console.log("POST RESULT", result)
-                    //     })
+                    ProcessMaker.apiClient({
+                        method: 'POST',
+                        url: '/oauth/personal-access-tokens',
+                        baseURL: '/',
+                        data: { name: 'API Token', scopes: [] }
+                        })
+                        .then((result) => {
+                            this.newToken = result.data;
+                            this.loadTokens();
+                        })
                 },
+                deleteToken(tokenId) {
+                    ProcessMaker.confirmModal(
+                        "Caution!",
+                        "Are you sure to delete the token " + tokenId.substr(0,7) + "? Any services using it will no longer have access.",
+                        "",
+                        () => {
+                            ProcessMaker.apiClient({
+                                method: 'DELETE',
+                                url: '/oauth/personal-access-tokens/' + tokenId,
+                                baseURL: '/',
+                                })
+                                .then((result) => {
+                                    this.loadTokens();
+                                    this.newToken = null;
+                                })
+                        }
+                    );
+                }
             }
         });
     </script>
