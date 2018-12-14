@@ -2,7 +2,6 @@
   <div class="row">
     <div class="col-md-6 col-sm-12 d-flex py-2 px-4">
       <div
-        v-if="tablePagination > 1"
         class="pagination"
       >{{tablePagination.from + 1}} - {{tablePagination.to}} of {{tablePagination.total}} {{title}}</div>
     </div>
