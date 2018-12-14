@@ -1,9 +1,13 @@
 <template>
-  <div class="row">
-    <div class="col-md-6 col-sm-12 d-flex py-2 px-4">
+  <div class="row mb-2">
+    <div class="col-md-6 col-sm-12 d-flex">
       <div
+        v-if="tablePagination && tablePagination.last_page > 1"
         class="pagination"
       >{{tablePagination.from + 1}} - {{tablePagination.to}} of {{tablePagination.total}} {{title}}</div>
+      <div
+        v-if="tablePagination && tablePagination.last_page < 1"
+      >{{tablePagination.total}} {{title}}</div>
     </div>
     <div class="col-md-6 col-sm-12 d-flex justify-content-end">
       <div v-show="tablePagination && tablePagination.last_page > 1" :class="css.wrapperClass">
@@ -65,7 +69,6 @@
 
 <script>
 import PaginationMixin from "vuetable-2/src/components/VuetablePaginationMixin.vue";
-
 export default {
   mixins: [PaginationMixin],
   props: ["perPageSelectEnabled", "single", "plural"],
@@ -92,17 +95,14 @@ export default {
 
 <style lang="scss" scoped>
 @import "resources/sass/_variables.scss";
-
 .meta {
   font-size: 12px;
   color: #788793;
 }
-
 .meta {
   font-size: 12px;
   color: #788793;
 }
-
 .pagination-nav-item {
   background-color: $body-bg;
   width: 29px;
@@ -114,23 +114,17 @@ export default {
   cursor: pointer;
   border-radius: 2px;
   color: #788793;
-
   &.active {
     background-color: #e9edf1;
   }
-
   &.disabled {
     cursor: not-allowed;
   }
-
   &:hover {
     background-color: white;
   }
 }
-
 .pagination-nav-drop {
   width: 40px;
 }
 </style>
-
-
