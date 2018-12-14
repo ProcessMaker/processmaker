@@ -1,7 +1,6 @@
 <b-navbar id="navbar" v-cloak  toggleable="md" type="light" variant="light">
-    <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
-
     <b-navbar-brand class="d-block d-sm-none" href="#"><img class="img-fluid" src={{asset(env('LOGIN_LOGO_PATH', '/img/processmaker_login.png'))}}></b-navbar-brand>
+    <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
 
     <b-collapse is-nav id="nav_collapse">
 
