@@ -23,8 +23,8 @@
                 </nav>
 
 
-                <div class="card card-body tab-content mt-3" id="nav-tabContent">
-                    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                <div class="tab-content mt-3" id="nav-tabContent">
+                    <div class="card card-body tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
                         {!! Form::open() !!}
                         <div class="form-group">
                             {!! Form::label('name', 'Name') !!}
@@ -49,7 +49,6 @@
                         </div>
                         {!! Form::close() !!}
                     </div>
-
                     <div class="tab-pane fade" id="nav-users" role="tabpanel" aria-labelledby="nav-profile-tab">
                         <div class="row">
                             <div class="col">

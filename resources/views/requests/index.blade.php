@@ -62,9 +62,9 @@
                         </div>
                     </div>
                     <div class="col-8" align="right">
-
+                        
                     </div>
-                </div>
+                </div>                
             </template>
             <requests-listing ref="requestList" :filter="filter" type="{{ $type }}"></requests-listing>
         </div>

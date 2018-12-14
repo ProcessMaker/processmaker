@@ -19,6 +19,27 @@
 //   @extend form-inline;
 //   @extend justify-content-end;
 // }
+.table-card {
+	padding: 0;
+}
+
+.data-table {
+	margin-top: 20px;
+	// border:1px solid #b6bfc6;
+
+	th {
+		border: 0;
+	}
+
+	//   .vuetable-body:hover {
+	//   background-color: $grey-bg !important
+	// }
+}
+
+.actions .popout {
+	white-space: nowrap;
+}
+
 
 .multiselect__tag-icon:focus,
 .multiselect__tag-icon:hover {
@@ -184,12 +205,12 @@ select.form-control:not([size]):not([multiple]) {
 }
 
 .btn {
-	border-radius: 0.12rem;
-	padding: 7px 16px;
-	line-height: 1;
+	// border-radius: 0.12rem;
+	// padding: 7px 16px;
+	// line-height: 1;
 	// font-size: 14px;
 	text-transform: uppercase;
-	font-weight: 400;
+	// font-weight: 400;
 }
 
 #navbar-request-button {
@@ -224,81 +245,17 @@ h1.page-title {
 	margin-bottom: 24px;
 }
 
-// Data table rules
-table.vuetable {
-	margin-top: 16px;
-	font-size: 0.813em;
-
-	tr {
-		.actions {
-			.popout {
-				display: none;
-			}
-		}
-	}
-
-	tr:hover td {
-		background-color: $grey-bg;
-
-		.actions {
-			cursor: pointer;
-			text-align: right;
-			color: #788793;
-
-			.popout {
-				// display: none;
-				position: absolute;
-				background-color: $grey-bg;
-				right: 0;
-				top: 0;
-				margin: 3px;
-				// // font-size: $font-size-large;
-
-				button.btn-action {
-					color: #788793;
-					height: 32px;
-					width: 32px;
-					margin-left: 4px;
-					margin-right: 4px;
-					background-color: $grey-bg;
-					border: 0;
-					text-align: center;
-					padding: 0;
-
-					&:hover {
-						background-color: white;
-						border-radius: 2px;
-					}
-				}
-			}
-
-			.popout {
-				display: flex;
-			}
-		}
-	}
-
-	.vuetable-slot {
-		position: relative;
-	}
-
-
-
-	th {
-		background-color: $grey-bg;
-		color: $secondary;
-		text-transform: uppercase;
-
-		&.ascending,
-		&.descending {
-			color: #333333;
-		}
-	}
-
-	.vuetable-pagination {
-		color: $secondary;
-	}
+.vuetable th {
+	white-space: nowrap
 }
+
+.popout button {
+	padding: 0 10px;
+}
+
+// Data table rules
+
+
 
 ///icomoon
 @font-face {

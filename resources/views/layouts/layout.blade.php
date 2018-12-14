@@ -31,6 +31,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico" />
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     <link href="{{ mix('css/sidebar.css') }}" rel="stylesheet">
+    {{-- <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.min.css"> --}}
     @yield('css')
     <script type="text/javascript">
     window.Processmaker = {
