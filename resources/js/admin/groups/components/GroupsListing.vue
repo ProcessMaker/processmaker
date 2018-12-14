@@ -189,4 +189,11 @@ export default {
 /deep/ .vuetable-th-members_count {
   min-width: 90px;
 }
+
+/deep/ th#_updated_at {
+  width: 14%;
+}
+/deep/ th#_created_at {
+  width: 14%;
+}
 </style>

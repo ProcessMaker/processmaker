@@ -159,7 +159,7 @@ export default {
       let response =
         '<i class="fas fa-circle ' + bubbleColor[status] + ' small"></i> ';
       status = status.charAt(0).toUpperCase() + status.slice(1);
-      return response + status;
+      return '<div style="white-space:nowrap">' + response + status + "</div>";
     },
     formatUserName(user) {
       return (
@@ -216,3 +216,11 @@ export default {
 };
 </script>
 
+<style lang="scss" scoped>
+/deep/ th#_updated_at {
+  width: 14%;
+}
+/deep/ th#_created_at {
+  width: 14%;
+}
+</style>
