@@ -1,8 +1,10 @@
 <?php
+
 namespace ProcessMaker\Jobs;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
@@ -51,12 +53,15 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
         $dataStore = $token->getInstance()->getDataStore();
         $data = $dataStore->getData();
         if (empty($implementation)) {
-            $element->complete($token);
-            Log::info('Service task not implemented: ' . $implementation);
+            Log::error('Service task implementation not defined');
+            throw new ScriptException('Service task implementation not defined');
         } else {
-            $script = Script::where('key', $implementation)->firstOrFail();
+            $script = Script::where('key', $implementation)->first();
         }
-
+        if (empty($script)) {
+            Log::error('Service task not implemented: ' . $implementation);
+            throw new ScriptException('Service task not implemented: ' . $implementation);
+        }
         $response = $script->runScript($data, $configuration);
         if (is_array($response['output'])) {
             foreach ($response['output'] as $key => $value) {

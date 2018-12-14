@@ -11,8 +11,7 @@ import {
     FormDatePicker
 } from "@processmaker/vue-form-elements/src/components";
 
-let initialControls =  [
-    {
+let initialControls = [{
         builderComponent: FormText,
         builderBinding: 'FormText',
         rendererComponent: FormText,
@@ -21,14 +20,13 @@ let initialControls =  [
             label: 'Text',
             component: 'FormText',
             'editor-component': 'FormText',
-            'editor-icon': require('@processmaker/vue-form-builder/src/assets/icons/Label.png'),
+            'editor-icon': require('./font-solid.svg'),
             config: {
                 label: 'New Text',
                 fontSize: '1em',
                 fontWeight: 'normal'
             },
-            inspector: [
-                {
+            inspector: [{
                     type: "FormInput",
                     field: "label",
                     config: {
@@ -42,8 +40,7 @@ let initialControls =  [
                     config: {
                         label: "Font Weight",
                         helper: "The weight of the text",
-                        options: [
-                            {
+                        options: [{
                                 value: 'normal',
                                 content: 'Normal'
                             },
@@ -62,8 +59,7 @@ let initialControls =  [
                     config: {
                         label: "Font Size",
                         helper: "The size of the text in em",
-                        options: [
-                            {
+                        options: [{
                                 value: '0.5em',
                                 content: '0.5'
                             },
@@ -96,17 +92,15 @@ let initialControls =  [
             label: "Multi Column",
             component: 'FormMultiColumn',
             "editor-component": "MultiColumn",
-            'editor-icon': require('@processmaker/vue-form-builder/src/assets/icons/Button.png'),
+            'editor-icon': require('./columns-solid.svg'),
             container: true,
             // Default items container
             items: [
                 [],
                 []
             ],
-            config: {
-            },
-            inspector: [
-                {
+            config: {},
+            inspector: [{
                     type: "FormText",
                     config: {
                         label: "MultiColumn",
@@ -125,7 +119,7 @@ let initialControls =  [
             label: "Record List",
             component: 'FormRecordList',
             "editor-component": "FormText",
-            'editor-icon': require('@processmaker/vue-form-builder/src/assets/icons/Table.png'),
+            'editor-icon': require('./th-list-solid.svg'),
             config: {
                 name: '',
                 label: "New Record List",
@@ -133,8 +127,7 @@ let initialControls =  [
                 fields: [],
                 form: ''
             },
-            inspector: [
-                {
+            inspector: [{
                     type: "FormInput",
                     field: "name",
                     config: {

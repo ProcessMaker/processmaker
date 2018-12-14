@@ -32,10 +32,12 @@
                                 <a class="nav-link" id="completed-tab" data-toggle="tab" href="#completed" role="tab"
                                    aria-controls="completed" aria-selected="false">{{__('Completed')}}</a>
                             </li>
+                            @if(count($files) > 0 )                           
                             <li class="nav-item">
                                 <a class="nav-link" id="files-tab" data-toggle="tab" href="#files" role="tab"
                                    aria-controls="files" aria-selected="false">{{__('Attached Files')}}</a>
                             </li>
+                            @endif
                         </template>
                     </ul>
                     <div class="tab-content" id="requestTabContent">
@@ -131,7 +133,9 @@
                                 <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
                                               :input-data="requestBy" display-name="true"></avatar-image>
                             </li>
-                            <template v-if="statusLabel == 'In Progress'">
+                            
+                            @if($canCancel == true)
+                            <template v-if="statusLabel == 'In Progress' && canCancel == true">
                             <li class="list-group-item">
                                 <h5>{{__('Cancel Request')}}</h5>
                                 <button type="button" class="btn btn-outline-danger btn-block"
@@ -140,7 +144,7 @@
                                 </button>
                             </li>
                             </template>
-
+                            @endif
                             <li class="list-group-item">
                                 <h5>{{__('Participants')}}</h5>
                                 <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
@@ -173,6 +177,7 @@
                     request: @json($request),
                     files: @json($files),
                     refreshTasks: 0,
+                    canCancel: @json($canCancel),
                     status: 'ACTIVE'
                 };
             },
@@ -196,7 +201,7 @@
                  * If the screen summary is configured.
                  **/
                 showScreenSummary() {
-                    return this.request.process.summary_screen !== null
+                    return this.request.summary_screen !== null
                 },
                 /**
                  * Get the summary of the Request.
@@ -209,7 +214,7 @@
                  * Get Screen summary
                  * */
                 screenSummary() {
-                    return this.request.process.summary_screen.config;
+                    return this.request.summary_screen.config;
                 },
                 /**
                  * prepare data screen
@@ -280,7 +285,7 @@
                     this.$refs.completed.fetch();
                     ProcessMaker.apiClient.get(`requests/${this.requestId}`, {
                         params: {
-                            include: 'participants,user,summary,process.summaryScreen'
+                            include: 'participants,user,summary,summaryScreen'
                         }
                     })
                         .then((response) => {

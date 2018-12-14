@@ -4,11 +4,13 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Laravel\Horizon\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Models\Notification;
 use ProcessMaker\Http\Resources\Notifications as NotificationResource;
+use ProcessMaker\Models\User;
 
 class NotificationController extends Controller
 {
@@ -24,6 +26,13 @@ class NotificationController extends Controller
      *     summary="Returns all notifications that the user has access to",
      *     operationId="getNotifications",
      *     tags={"Notifications"},
+     *     @OA\Parameter(
+     *         name="status",
+     *         in="query",
+     *         description="Only return notifications by status (unread, all, etc.)",
+     *         required=false,
+     *         @OA\Schema(type="string"),
+     *     ),
      *     @OA\Parameter(ref="#/components/parameters/filter"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
@@ -51,14 +60,46 @@ class NotificationController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Notification::query();
+        $query = Notification::select(
+            'id',
+            'read_at',
+            'created_at',
+            'updated_at',
+            'data->>type as type',
+            'data->>name as name',
+            'data->>message as message',
+            'data->>processName as processName',
+            'data->>userName as userName',
+            'data->>request_id as request_id',
+            'data->>url as url')
+            ->where('notifiable_type', User::class)
+            ->where('notifiable_id', Auth::user()->id);
+
+        $filter = $request->input('filter', '');
+        if (!empty($filter)) {
+            $subsearch = '%' . $filter . '%';
+            $query->where(function ($query) use ($subsearch, $filter) {
+                $query->Where('data->name', 'like', $subsearch)
+                    ->orWhereRaw("case when read_at is null then 'unread' else 'read' end like '$filter%'");
+            });
+        }
+
+        //restrict all filters and results to the selected status
+        $status = $request->input('status', '');
+        switch ($status) {
+            case 'read':
+                $query->whereNotNull('read_at');
+                break;
+            case 'unread':
+                $query->whereNull('read_at');
+                break;
+        }
 
         $response =
             $query->orderBy(
-                $request->input('order_by', 'id'),
-                $request->input('order_direction', 'ASC')
-            )
-                ->paginate($request->input('per_page', 10));
+                $request->input('order_by', 'created_at'),
+                $request->input('order_direction', 'DESC')
+            )->paginate($request->input('per_page', 10));
 
         return new ApiCollection($response);
     }
@@ -257,53 +298,20 @@ class NotificationController extends Controller
         return response([], 201);
     }
 
-
-    /**
-     * Returns a list of notifications not read by the authenticated user
-     *
-     * @param Request $request
-     *
-     * @return ApiCollection
-     *
-     * @OA\Get(
-     *     path="/user_notifications",
-     *     summary="Returns a list of notifications not read by the authenticated user",
-     *     tags={"Notifications"},
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="list of notifications",
-     *         @OA\JsonContent(
-     *             type="array",
-     *              @OA\Items (
-     *                      @OA\Property(
-     *                          property="dateTime",
-     *                          type="date",
-     *                          description="date when the notification has been created"
-     *                      ),
-     *                      @OA\Property(
-     *                          property="id",
-     *                          type="string",
-     *                          description="message id"
-     *                      ),
-     *                      @OA\Property(
-     *                          property="message",
-     *                          type="string",
-     *                          description="message text"
-     *                      ),
-     *                      @OA\Property(
-     *                          property="url",
-     *                          type="string",
-     *                          description="associated url of the message"
-     *                      ),
-     *              )
-     *             ),
-     *         ),
-     *     )
-     */
-    public function userNotifications()
+    public function updateAsUnread(Request $request)
     {
-        return response(\Auth::user()->activeNotifications(), 200);
-    }
+        $messageIds = $request->input('message_ids');
+        $routes = $request->input('routes');
 
+        $updated = DB::table('notifications')
+            ->whereIn('id', $messageIds)
+            ->orWhereIn('data->url', $routes)
+            ->get();
+
+        DB::table('notifications')
+            ->whereIn('id', $messageIds)
+            ->orWhereIn('data->url', $routes)
+            ->update(['read_at' => null]);
+        return response($updated, 201);
+    }
 }

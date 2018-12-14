@@ -60,4 +60,13 @@
         </xsd:complexContent>
     </xsd:complexType>
 
+    <xsd:complexType name="tPmEndEvent">
+        <xsd:complexContent>
+            <xsd:extension base="bpmn:tEndEvent">
+                <xsd:attribute name="screenRef" type="xsd:string" use="optional"/>
+                <xsd:attribute name="screenVersion" type="xsd:string" use="optional"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
 </xsd:schema>
