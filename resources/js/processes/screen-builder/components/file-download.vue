@@ -1,69 +1,67 @@
 <template>
-  <div>
-    <div v-for="file in files.data" v-if="loaded">
-      <div @click="onClick">
-        <i class="fas fa-download fa-lg"></i>
-        <a>Download {{file.file_name}}</a>
-      </div>
+    <div>
+        <div v-for="file in files.data" v-if="loaded">
+            <b-btn variant="secondary" @click="onClick">
+                <i class="fas fa-download"></i> {{file.file_name}}
+            </b-btn>
+        </div>
     </div>
-  </div>
 </template>
 
 
 <script>
-import axios from "axios";
-export default {
-  data() {
-    return {
-      loaded: false,
-      files: {},
-      requestId: null
+    export default {
+        data() {
+            return {
+                loaded: false,
+                files: {},
+                requestId: null
+            };
+        },
+        beforeMount() {
+            this.getRequestId();
+        },
+        mounted() {
+            this.getFiles();
+        },
+        methods: {
+            onClick() {
+                ProcessMaker.apiClient({
+                    baseURL: "/",
+                    url: "/request/" + this.requestId + "/files/" + this.files.data[0].id,
+                    method: "GET",
+                    responseType: "blob" // important
+                }).then(response => {
+                    //axios needs to be told to open the file
+                    const url = window.URL.createObjectURL(new Blob([response.data]));
+                    const link = document.createElement("a");
+                    link.href = url;
+                    link.setAttribute("download", this.files.data[0].file_name);
+                    document.body.appendChild(link);
+                    link.click();
+                });
+            },
+            getRequestId() {
+                let node = document.head.querySelector('meta[name="request-id"]');
+                console.log(node);
+                if (node === null) {
+                    return;
+                }
+                this.requestId = node.content;
+            },
+            getFiles() {
+                if (this.requestId === null) {
+                    return;
+                }
+                ProcessMaker.apiClient
+                    .get("requests/" + this.requestId + "/files")
+                    .then(response => {
+                        this.files = response.data;
+                        this.loaded = true;
+                    });
+            }
+        }
     };
-  },
-  beforeMount() {
-    this.getRequestId();
-  },
-  mounted() {
-    this.getFiles();
-  },
-  methods: {
-    onClick() {
-      ProcessMaker.apiClient({
-        baseURL: "/",
-        url: "/request/" + this.requestId + "/files/" + this.files.data[0].id,
-        method: "GET",
-        responseType: "blob" // important
-      }).then(response => {
-        //axios needs to be told to open the file
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", this.files.data[0].file_name);
-        document.body.appendChild(link);
-        link.click();
-      });
-    },
-    getRequestId() {
-      let node = document.head.querySelector('meta[name="request-id"]');
-      console.log(node);
-      if (node === null) {
-        return;
-      }
-      this.requestId = node.content;
-    },
-    getFiles() {
-      if (this.requestId === null) {
-        return;
-      }
-      ProcessMaker.apiClient
-        .get("requests/" + this.requestId + "/files")
-        .then(response => {
-          this.files = response.data;
-          this.loaded = true;
-        });
-    }
-  }
-};
 </script>
 
 <style lang="scss" scoped>
