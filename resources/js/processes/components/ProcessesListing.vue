@@ -1,54 +1,61 @@
 <template>
   <div class="data-table">
-    <vuetable
-      :dataManager="dataManager"
-      :sortOrder="sortOrder"
-      :css="css"
-      :api-mode="false"
-      @vuetable:pagination-data="onPaginationData"
-      :fields="fields"
-      :data="data"
-      data-path="data"
-      pagination-path="meta"
-    >
-      <template slot="name" slot-scope="props">
-        <b-link
-          @click="onAction('edit-designer', props.rowData, props.rowIndex)"
-        >{{props.rowData.name}}</b-link>
-      </template>
+    <div class="card card-body table-card">
+      <vuetable
+        :dataManager="dataManager"
+        :sortOrder="sortOrder"
+        :css="css"
+        :api-mode="false"
+        @vuetable:pagination-data="onPaginationData"
+        :fields="fields"
+        :data="data"
+        data-path="data"
+        pagination-path="meta"
+      >
+        <template slot="name" slot-scope="props">{{props.rowData.name}}</template>
 
-      <template slot="owner" slot-scope="props">
-        <avatar-image
-          class="d-inline-flex pull-left align-items-center"
-          size="25"
-          :input-data="props.rowData.user"
-          hide-name="true"
-        ></avatar-image>
-      </template>
+        <template slot="owner" slot-scope="props">
+          <avatar-image
+            class="d-inline-flex pull-left align-items-center"
+            size="25"
+            :input-data="props.rowData.user"
+            hide-name="true"
+          ></avatar-image>
+        </template>
 
-      <template slot="actions" slot-scope="props">
-        <div class="actions">
-          <div class="popout">
-            <b-btn
-              variant="action"
-              @click="onAction('edit-item', props.rowData, props.rowIndex)"
-              v-b-tooltip.hover
-              title="Edit"
-            >
-              <i class="fas fa-edit"></i>
-            </b-btn>
+        <template slot="actions" slot-scope="props">
+          <div class="actions">
+            <div class="popout">
+              <b-btn
+                variant="link"
+                @click="onAction('edit-designer', props.rowData, props.rowIndex)"
+                v-b-tooltip.hover
+                title="Open Modeler"
+              >
+                <i class="fas fa-pen-square fa-lg fa-fw"></i>
+              </b-btn>
+              <b-btn
+                variant="link"
+                @click="onAction('edit-item', props.rowData, props.rowIndex)"
+                v-b-tooltip.hover
+                title="Config"
+              >
+                <i class="fas fa-cog fa-lg fa-fw"></i>
+              </b-btn>
+            </div>
           </div>
-        </div>
-      </template>
-    </vuetable>
-    <pagination
-      single="Process"
-      plural="Processes"
-      :perPageSelectEnabled="true"
-      @changePerPage="changePerPage"
-      @vuetable-pagination:change-page="onPageChange"
-      ref="pagination"
-    ></pagination>
+        </template>
+      </vuetable>
+
+      <pagination
+        single="Process"
+        plural="Processes"
+        :perPageSelectEnabled="true"
+        @changePerPage="changePerPage"
+        @vuetable-pagination:change-page="onPageChange"
+        ref="pagination"
+      ></pagination>
+    </div>
   </div>
 </template>
 
@@ -61,7 +68,6 @@ export default {
   data() {
     return {
       orderBy: "name",
-
       sortOrder: [
         {
           field: "name",
@@ -153,7 +159,7 @@ export default {
       let response =
         '<i class="fas fa-circle ' + bubbleColor[status] + ' small"></i> ';
       status = status.charAt(0).toUpperCase() + status.slice(1);
-      return response + status;
+      return '<div style="white-space:nowrap">' + response + status + "</div>";
     },
     formatUserName(user) {
       return (
@@ -211,18 +217,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/deep/ th#_total_users {
-  width: 150px;
-  text-align: center;
+/deep/ th#_updated_at {
+  width: 14%;
 }
-
-/deep/ th#_description {
-  width: 250px;
-}
-
-/deep/ .rounded-user {
-  border-radius: 50% !important;
-  height: 1.5em;
-  margin-right: 0.5em;
+/deep/ th#_created_at {
+  width: 14%;
 }
 </style>
