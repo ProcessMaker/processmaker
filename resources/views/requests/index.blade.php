@@ -20,7 +20,7 @@
                         text-variant="white" class="bg-info mb-3 d-flex flex-row card-border border-0">
                         <a href="{{ route('requests_by_type', ['type' => '']) }}" class="card-link text-light">
                             <h1 class="m-0 font-weight-bold">{{$startedMe}}</h1>
-                            <h4 class="card-text">{{__('Started by Me')}}</h4>
+                            <h6 class="card-text">{{__('Started by Me')}}</h6>
                         </a>
                     </b-card>
 
@@ -28,7 +28,7 @@
                         text-variant="white" class="bg-success mb-3 d-flex flex-row card-border border-0">
                         <a href="{{ route('requests_by_type', ['type' => 'in_progress']) }}" class="card-link text-light">
                             <h1 class="m-0 font-weight-bold">{{$inProgress}}</h1>
-                            <h4 class="card-text">{{__('In Progress')}}</h4>
+                            <h6 class="card-text">{{__('In Progress')}}</h6>
                         </a>
                     </b-card>
 
@@ -36,7 +36,7 @@
                         text-variant="white" class="bg-primary mb-3 d-flex flex-row card-border border-0">
                         <a href="{{ route('requests_by_type', ['type' => 'completed']) }}" class="card-link text-light">
                             <h1 class="m-0 font-weight-bold">{{$completed}}</h1>
-                            <h4 class="card-text">{{__('Complete')}}</h4>
+                            <h6 class="card-text">{{__('Complete')}}</h6>
                         </a>
                     </b-card>
 
@@ -44,7 +44,7 @@
                         text-variant="white" class="bg-warning mb-3 d-flex flex-row  card-border border-0">
                         <a href="{{ route('requests_by_type', ['type' => 'all']) }}" class="card-link text-light">
                             <h1 class="m-0 font-weight-bold">{{$allRequest}}</h1>
-                            <h4 class="card-text">{{__('All Request')}}</h4>
+                            <h6 class="card-text">{{__('All Request')}}</h6>
                         </a>
                     </b-card>
 
