@@ -50,11 +50,6 @@ class GenerateMenus
               'id' => 'homeid'
           ]);
 
-          $submenu->add(__('menus.sidebar_admin.preferences'), [
-                'route' => 'preferences.index',
-                'icon' => 'fa-globe',
-                'id' => 'homeid'
-          ]);
           $submenu->add(__('menus.sidebar_admin.queue_management'), [
                 'route' => 'horizon.index',
                 'icon' => 'fa-infinity',
