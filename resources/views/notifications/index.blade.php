@@ -1,16 +1,16 @@
 @extends('layouts.layout')
 
 @section('title')
-{{__('Notifications inbox')}}
+{{__('Notifications Inbox')}}
 @endsection
 
 @section('sidebar')
-@include('layouts.sidebar', ['sidebar' => Menu::get('sidebar_task')])
+@include('layouts.sidebar', ['sidebar' => Menu::get('sidebar_notifications')])
 @endsection
 
 @section('content')
 <div class="container page-content" id="notifications">
-  <h1>{{__('Notifications inbox')}}</h1>
+  <h1>{{$title}}</h1>
   <div class="row">
     <div class="col">
       <div class="input-group">
@@ -25,12 +25,12 @@
 
     </div>
     <div class="col-8" align="right">
-      
+
     </div>
   </div>
 
   <div class="container-fluid">
-    <notifications-list :filter="filter"></notifications-list>
+    <notifications-list :filter="filter" status="{{ $status }}"></notifications-list>
   </div>
 </div>
 @endsection

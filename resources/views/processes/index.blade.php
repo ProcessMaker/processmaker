@@ -24,7 +24,7 @@
 
 		</div>
 		<div class="col-8" align="right">
-			<a href="#" class="btn btn-action" data-toggle="modal" data-target="#addProcess"><i class="fas fa-plus"></i>
+			<a href="#" class="btn btn-secondary" data-toggle="modal" data-target="#addProcess"><i class="fas fa-plus"></i>
 				{{__('Process')}}</a>
 		</div>
 	</div>

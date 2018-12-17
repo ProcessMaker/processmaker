@@ -26,7 +26,12 @@
                     <hr>
                 </li>
                 <li class="footer">
-                    <a href="/notifications">View All {{totalMessages}} Notifications</a>
+                    <a href="/notifications?status=unread" v-if="totalMessages > 1">
+                        All {{totalMessages}} Unread Notifications
+                    </a>
+                    <a href="/notifications" v-else>
+                        View All Notifications
+                    </a>
                 </li>
             </ul>
         </b-popover>
@@ -95,7 +100,7 @@
 
                     setTimeout(function() {
                        self.incrementTotalMessages=true;
-                    }, 3000)
+                    }, 2000)
                 });
         }
     };

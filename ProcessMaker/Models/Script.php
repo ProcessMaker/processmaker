@@ -86,9 +86,12 @@ class Script extends Model
         $variablesParameter = [];
         EnvironmentVariable::chunk(50, function ($variables) use (&$variablesParameter) {
             foreach ($variables as $variable) {
-                $variablesParameter[] = $variable['name'] . '=' . $variable['value'];
+                $variablesParameter[] = escapeshellarg($variable['name']) . '=' . escapeshellarg($variable['value']);
             }
         });
+
+        // Add the url to the host
+        $variablesParameter[] = 'HOST_URL=' . escapeshellarg(config('app.docker_host_url'));
 
         if ($variablesParameter) {
             $variablesParameter = "-e " . implode(" -e ", $variablesParameter);
@@ -99,7 +102,7 @@ class Script extends Model
         // So we have the files, let's execute the docker container
         switch (strtolower($language)) {
             case 'php':
-                $config = [
+                $dockerConfig = [
                     'image' => 'processmaker/executor:php',
                     'command' => 'php /opt/executor/bootstrap.php',
                     'parameters' => $variablesParameter,
@@ -114,7 +117,7 @@ class Script extends Model
                 ];
                 break;
             case 'lua':
-                $config = [
+                $dockerConfig = [
                     'image' => 'processmaker/executor:lua',
                     'command' => 'lua5.3 /opt/executor/bootstrap.lua',
                     'parameters' => $variablesParameter,
@@ -134,7 +137,7 @@ class Script extends Model
 
         $executeMethod = config('app.bpm_scripts_docker_mode')==='binding'
             ? 'executeBinding' : 'executeCopying';
-        $response = $this->$executeMethod($config);
+        $response = $this->$executeMethod($dockerConfig);
         $returnCode = $response['returnCode'];
         $stdOutput = $response['output'];
         $output = $response['outputs']['response'];

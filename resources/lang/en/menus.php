@@ -23,8 +23,6 @@ return[
     'security' => 'Security',
     'login' => 'Login',
     'authentication' => 'Authentication',
-    'system_preferences' => 'System Preferences',
-    'preferences' => 'Preferences',
     'localization' => 'Localization',
     'languages' => 'Languages',
     'email_configuration' => 'Email Configuration',
@@ -53,6 +51,11 @@ return[
     'screens' => 'Screens',
     'environment_variables'=> 'Environment Variables'
   ],
+  'sidebar_notifications' => [
+        'notifications' => 'Notifications',
+        'unread' => 'Unread',
+        'all' => 'All'
+    ],
   'topnav' => [
     'requests' => 'Requests',
     'tasks' => 'Tasks',

@@ -1,38 +1,54 @@
 <template>
-  <div>
-    <vuetable
-      :dataManager="dataManager"
-      :sortOrder="sortOrder"
-      :css="css"
-      :api-mode="false"
-      @vuetable:pagination-data="onPaginationData"
-      :fields="fields"
-      :data="data"
-      data-path="data"
-      pagination-path="meta"
-    >
-      <template slot="ids" slot-scope="props">
-        <b-link @click="openRequest(props.rowData, props.rowIndex)">{{props.rowData.name}}</b-link>
-      </template>
-      <template slot="participants" slot-scope="props">
-        <avatar-image
-          v-for="participant in props.rowData.participants"
-          :key="participant.id"
-          class="d-inline-flex pull-left align-items-center"
-          size="25"
-          hide-name="true"
-          :input-data="participant"
-        ></avatar-image>
-      </template>
-    </vuetable>
-    <pagination
-      single="Request"
-      plural="Requests"
-      :perPageSelectEnabled="true"
-      @changePerPage="changePerPage"
-      @vuetable-pagination:change-page="onPageChange"
-      ref="pagination"
-    ></pagination>
+  <div class="data-table">
+    <div class="card card-body table-card">
+      <vuetable
+        :dataManager="dataManager"
+        :sortOrder="sortOrder"
+        :css="css"
+        :api-mode="false"
+        @vuetable:pagination-data="onPaginationData"
+        :fields="fields"
+        :data="data"
+        data-path="data"
+        pagination-path="meta"
+      >
+        <template slot="ids" slot-scope="props">
+          <b-link @click="openRequest(props.rowData, props.rowIndex)">{{props.rowData.name}}</b-link>
+        </template>
+        <template slot="participants" slot-scope="props">
+          <avatar-image
+            v-for="participant in props.rowData.participants"
+            :key="participant.id"
+            class="d-inline-flex pull-left align-items-center"
+            size="25"
+            hide-name="true"
+            :input-data="participant"
+          ></avatar-image>
+        </template>
+        <template slot="actions" slot-scope="props">
+          <div class="actions">
+            <div class="popout">
+              <b-btn
+                variant="link"
+                @click="onAction('edit-designer', props.rowData, props.rowIndex)"
+                v-b-tooltip.hover
+                title="Open Request"
+              >
+                <i class="fas fa-caret-square-right fa-lg fa-fw"></i>
+              </b-btn>
+            </div>
+          </div>
+        </template>
+      </vuetable>
+      <pagination
+        single="Request"
+        plural="Requests"
+        :perPageSelectEnabled="true"
+        @changePerPage="changePerPage"
+        @vuetable-pagination:change-page="onPageChange"
+        ref="pagination"
+      ></pagination>
+    </div>
   </div>
 </template>
 
@@ -62,8 +78,7 @@ export default {
           name: "__slot:ids",
           title: "Name",
           field: "id",
-          sortField: "id",
-          width: "50px"
+          sortField: "id"
         },
         {
           title: "Status",
@@ -83,11 +98,22 @@ export default {
           title: "Completed",
           name: "completed_at",
           sortField: "completed_at"
+        },
+        {
+          name: "__slot:actions",
+          title: ""
         }
       ]
     };
   },
   methods: {
+    onAction(action, data, index) {
+      switch (action) {
+        case "edit-designer":
+          this.openRequest(data, index);
+          break;
+      }
+    },
     openRequest(data, index) {
       window.location.href = "/requests/" + data.id;
     },
@@ -172,13 +198,3 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-/deep/ .vuetable-th-slot-ids {
-  min-width: 100px;
-  white-space: nowrap;
-}
-
-/deep/ tr td:nth-child(4) {
-  padding: 6px 10px;
-}
-</style>

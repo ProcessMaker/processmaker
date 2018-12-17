@@ -1,7 +1,7 @@
 import FormText from "@processmaker/vue-form-builder/src/components/renderer/form-text";
 import FormMultiColumn from "@processmaker/vue-form-builder/src/components/renderer/form-multi-column"
 import FormRecordList from "@processmaker/vue-form-builder/src/components/renderer/form-record-list"
-import FileDownload from "./components/file-download"
+import FormRecordListStatic from "@processmaker/vue-form-builder/src/components/renderer/form-record-list-static"
 
 import {
     FormInput,
@@ -12,7 +12,8 @@ import {
     FormDatePicker
 } from "@processmaker/vue-form-elements/src/components";
 
-let initialControls = [{
+let initialControls =  [
+    {
         builderComponent: FormText,
         builderBinding: 'FormText',
         rendererComponent: FormText,
@@ -21,13 +22,16 @@ let initialControls = [{
             label: 'Text',
             component: 'FormText',
             'editor-component': 'FormText',
-            'editor-icon': require('./font-solid.svg'),
+            'editor-icon': require('@processmaker/vue-form-builder/src/assets/icons/Label.png'),
             config: {
                 label: 'New Text',
                 fontSize: '1em',
-                fontWeight: 'normal'
+                fontWeight: 'normal',
+                textAlign: 'left',
+                color: 'black'
             },
-            inspector: [{
+            inspector: [
+                {
                     type: "FormInput",
                     field: "label",
                     config: {
@@ -41,7 +45,8 @@ let initialControls = [{
                     config: {
                         label: "Font Weight",
                         helper: "The weight of the text",
-                        options: [{
+                        options: [
+                            {
                                 value: 'normal',
                                 content: 'Normal'
                             },
@@ -52,15 +57,47 @@ let initialControls = [{
                         ]
                     }
                 },
-
-
+                {
+                    type: "FormInput",
+                    field: "color",
+                    config: {
+                        label: "Text Color",
+                        helper: "Accepts all HTML colors and hex codes"
+                    }
+                },
+                {
+                    type: "FormSelect",
+                    field: "textAlign",
+                    config: {
+                        label: "Text Alignment",
+                        helper: "The Alignment of the text",
+                        options: [{
+                                value: 'center',
+                                content: 'Center'
+                            },
+                            {
+                                value: 'left',
+                                content: 'Left'
+                            },
+                            {
+                                value: 'right',
+                                content: 'Right'
+                            },
+                            {
+                                value: 'justify',
+                                content: 'Justify'
+                            },
+                        ]
+                    }
+                },
                 {
                     type: "FormSelect",
                     field: "fontSize",
                     config: {
                         label: "Font Size",
                         helper: "The size of the text in em",
-                        options: [{
+                        options: [
+                            {
                                 value: '0.5em',
                                 content: '0.5'
                             },
@@ -85,29 +122,6 @@ let initialControls = [{
         }
     },
     {
-        builderComponent: FormText,
-        builderBinding: 'FormText',
-        rendererComponent: FileDownload,
-        rendererBinding: 'FileDownload',
-        control: {
-            label: 'File Download',
-            component: 'FileDownload',
-            'editor-component': 'FormText',
-            'editor-icon': require('./components/file-download.png'),
-            config: {
-                label: 'Download File',
-            },
-            inspector: [{
-                type: "FormInput",
-                field: "label",
-                config: {
-                    label: "Text Label",
-                    helper: "The text to display",
-                }
-            }]
-        }
-    },
-    {
         editorComponent: FormMultiColumn,
         editorBinding: 'FormMultiColumn',
         rendererComponent: FormMultiColumn,
@@ -116,15 +130,17 @@ let initialControls = [{
             label: "Multi Column",
             component: 'FormMultiColumn',
             "editor-component": "MultiColumn",
-            'editor-icon': require('./columns-solid.svg'),
+            'editor-icon': require('@processmaker/vue-form-builder/src/assets/icons/Button.png'),
             container: true,
             // Default items container
             items: [
                 [],
                 []
             ],
-            config: {},
-            inspector: [{
+            config: {
+            },
+            inspector: [
+                {
                     type: "FormText",
                     config: {
                         label: "MultiColumn",
@@ -137,13 +153,13 @@ let initialControls = [{
     {
         editorComponent: FormText,
         editorBinding: 'FormText',
-        rendererComponent: FormRecordList,
+        rendererComponent: FormRecordListStatic,
         rendererBinding: 'FormRecordList',
         control: {
             label: "Record List",
             component: 'FormRecordList',
             "editor-component": "FormText",
-            'editor-icon': require('./th-list-solid.svg'),
+            'editor-icon': require('@processmaker/vue-form-builder/src/assets/icons/Table.png'),
             config: {
                 name: '',
                 label: "New Record List",
@@ -151,7 +167,8 @@ let initialControls = [{
                 fields: [],
                 form: ''
             },
-            inspector: [{
+            inspector: [
+                {
                     type: "FormInput",
                     field: "name",
                     config: {
