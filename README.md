@@ -193,9 +193,15 @@ $user->createToken('Name it here')->accessToken;
 
 Copy the token. In api/documentation, click on the Authenticate button on the top right and enter it in the `pm_api_bearer` value field.
 
+**More Info**
+
+Detailed examples can be found at [https://github.com/zircote/swagger-php/tree/master/Examples/petstore.swagger.io](https://github.com/zircote/swagger-php/tree/master/Examples/petstore.swagger.io)
+
+Full OpenAPI 3.0 specification at [https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.1.md](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.1.md)
+
 **Testing with Laravel Dusk**
 
-When testing in Laravel Dusk, make sure to turn off debugging mode in your `.env` so you can use the whole page and screens executing functional tests. Then, change app_env value to `develop` in the same file:
+When testing in [Laravel Dusk](https://laravel.com/docs/5.7/dusk), make sure to turn off debugging mode in your `.env` so you can use the whole page and screens executing functional tests. Then, change app_env value to `develop` in the same file:
 
 ```text
 APP_DEBUG=FALSE
@@ -206,11 +212,15 @@ Execute `vagrant ssh` to ssh into the newly created virtual machine.
 
 Execute `php artisan dusk` in `/home/vagrant/processmaker` to execute Laravel dusk test cases.
 
+Execute `php artisan dusk:make newTest` to generate a new Dusk test. The generated test will be placed in the `tests/Browser` directory.
+
 **More Info**
 
-Detailed examples can be found at [https://github.com/zircote/swagger-php/tree/master/Examples/petstore.swagger.io](https://github.com/zircote/swagger-php/tree/master/Examples/petstore.swagger.io)
+Detailed installation can be found at [https://laravel.com/docs/5.7/dusk#installation](https://laravel.com/docs/5.7/dusk#installation)
 
-Full OpenAPI 3.0 specification at [https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.1.md](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.1.md)
+To interact with web elements [https://laravel.com/docs/5.7/dusk#interacting-with-elements](https://laravel.com/docs/5.7/dusk#interacting-with-elements)
+
+List of available assertions [https://laravel.com/docs/5.7/dusk#available-assertions](https://laravel.com/docs/5.7/dusk#available-assertions)
 
 #### License
 
