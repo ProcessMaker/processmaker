@@ -193,6 +193,19 @@ $user->createToken('Name it here')->accessToken;
 
 Copy the token. In api/documentation, click on the Authenticate button on the top right and enter it in the `pm_api_bearer` value field.
 
+**Testing with Laravel Dusk**
+
+When testing in Laravel Dusk, make sure to turn off debugging mode in your `.env` so you can use the whole page and screens executing functional tests. Then, change app_env value to `develop` in the same file:
+
+```text
+APP_DEBUG=FALSE
+APP_ENV=develop
+```
+
+Execute `vagrant ssh` to ssh into the newly created virtual machine.
+
+Execute `php artisan dusk` in `/home/vagrant/processmaker` to execute Laravel dusk test cases.
+
 **More Info**
 
 Detailed examples can be found at [https://github.com/zircote/swagger-php/tree/master/Examples/petstore.swagger.io](https://github.com/zircote/swagger-php/tree/master/Examples/petstore.swagger.io)
