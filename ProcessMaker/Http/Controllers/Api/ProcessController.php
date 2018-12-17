@@ -291,6 +291,9 @@ class ProcessController extends Controller
      */
     public function destroy(Process $process)
     {
+        $process->status='INACTIVE';
+        $process->save();
+
         if ($process->collaborations->count() !== 0) {
             return response(
                 ['message' => 'The item should not have associated collaboration',
@@ -304,6 +307,7 @@ class ProcessController extends Controller
                     'errors' => ['requests' => $process->requests->count()]],
                 422);
         }
+
 
         $process->delete();
         return response('', 204);

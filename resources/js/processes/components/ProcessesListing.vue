@@ -31,6 +31,7 @@
                                     @click="onAction('edit-designer', props.rowData, props.rowIndex)"
                                     v-b-tooltip.hover
                                     title="Open Modeler"
+                                    v-if="props.rowData.status === 'ACTIVE'"
                             >
                                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
                             </b-btn>
@@ -39,6 +40,7 @@
                                     @click="onAction('edit-item', props.rowData, props.rowIndex)"
                                     v-b-tooltip.hover
                                     title="Config"
+                                    v-if="props.rowData.status === 'ACTIVE'"
                             >
                                 <i class="fas fa-cog fa-lg fa-fw"></i>
                             </b-btn>
@@ -50,15 +52,6 @@
                                     v-if="props.rowData.status === 'ACTIVE'"
                             >
                                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
-                            </b-btn>
-                            <b-btn
-                                    variant="link"
-                                    @click="onAction('activate-item', props.rowData, props.rowIndex)"
-                                    v-b-tooltip.hover
-                                    title="Activate"
-                                    v-if="props.rowData.status === 'INACTIVE'"
-                            >
-                                <i class="fas fa-lightbulb fa-lg fa-fw"></i>
                             </b-btn>
                         </div>
                     </div>
@@ -149,18 +142,9 @@
                     case "edit-designer":
                         this.goToDesigner(data.id);
                         break;
-
                     case "edit-item":
                         this.goToEdit(data.id);
                         break;
-                    case "activate-item":
-//                        ProcessMaker.apiClient
-//                            .post("processes/" + data.id)
-//                            .then(response => {
-//                                ProcessMaker.alert("User Marked As Deleted", "warning");
-//                                this.$emit("reload");
-//                            });
-//                        break;
                     case "remove-item":
                         ProcessMaker.confirmModal(
                             "Caution!",
