@@ -13,7 +13,7 @@
         pagination-path="meta"
       >
         <template slot="title" slot-scope="props">
-          <b-link @click="onAction('edit', props.rowData, props.rowIndex)">{{props.rowData.title}}</b-link>
+          <b-link @click="onAction('edit-script', props.rowData, props.rowIndex)">{{props.rowData.title}}</b-link>
         </template>
 
         <template slot="actions" slot-scope="props">
@@ -21,11 +21,19 @@
             <div class="popout">
               <b-btn
                 variant="link"
-                @click="onAction('edit-item', props.rowData, props.rowIndex)"
+                @click="onAction('edit-script', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
                 title="Edit"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
+              </b-btn>
+              <b-btn
+                variant="link"
+                @click="onAction('edit-item', props.rowData, props.rowIndex)"
+                v-b-tooltip.hover
+                title="Config"
+              >
+                <i class="fas fa-cog fa-lg fa-fw"></i>
               </b-btn>
               <b-btn
                 variant="link"
@@ -72,7 +80,8 @@ export default {
       fields: [
         {
           title: "Name",
-          name: "title",
+          name: "__slot:title",
+          field: "title",
           sortField: "title"
         },
         {
@@ -112,6 +121,9 @@ export default {
     },
     onAction(action, data, index) {
       switch (action) {
+        case "edit-script":
+          window.location.href = "/processes/scripts/" + data.id + "/builder";
+          break;
         case "edit-item":
           this.goToEdit(data.id);
           break;
