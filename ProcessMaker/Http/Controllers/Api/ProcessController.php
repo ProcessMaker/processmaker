@@ -65,9 +65,13 @@ class ProcessController extends Controller
         $orderBy = $this->getRequestSortBy($request, 'name');
         $perPage = $this->getPerPage($request);
         $include = $this->getRequestInclude($request);
+        $status = $request->input('status');
 
-        $processes = Process::with($include)
-            ->select('processes.*')
+        $processes = ($status === 'deleted')
+                        ? Process::onlyTrashed()->with($include)
+                        : Process::with($include);
+
+        $processes->select('processes.*')
             ->leftJoin('process_categories as category', 'processes.process_category_id', '=', 'category.id')
             ->leftJoin('users as user', 'processes.user_id', '=', 'user.id')
             ->where($where);

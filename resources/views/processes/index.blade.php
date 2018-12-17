@@ -29,7 +29,8 @@
 		</div>
 	</div>
 	<div class="container-fluid">
-		<processes-listing ref="processListing" :filter="filter" v-on:edit="edit" v-on:reload="reload"></processes-listing>
+		<processes-listing ref="processListing" :filter="filter" status="{{ $status }}"
+                           v-on:edit="edit" v-on:reload="reload"></processes-listing>
 	</div>
 </div>
 <div class="modal" tabindex="-1" role="dialog" id="addProcess">

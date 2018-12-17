@@ -116,7 +116,13 @@ class GenerateMenus
               'icon' => 'fa-cogs',
               'id' => 'process-environment'
           ]);
-        });
+
+          $submenu->add(__('menus.sidebar_processes.deleted_processes'), [
+              'route' => ['processes.index', 'status' => 'deleted'],
+              'icon' => 'fa-trash',
+              'id' => 'process-environment'
+          ]);
+    });
 
         Menu::make('sidebar_designer', function ($menu) {});
 
