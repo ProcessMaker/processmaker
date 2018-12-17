@@ -39,6 +39,12 @@ class ProcessRequestFileController extends Controller
       * @param FileReceiver $receiver The Chunk FileReceiver
       * @return JsonResponse
       */
+
+    public function show(Request $laravel_request, ProcessRequest $request, $file_id)
+    {
+        return $request->getMedia()->where('id', $file_id)->first();
+    }
+
     private function chunk(FileReceiver $receiver, ProcessRequest $request, Request $laravel_request)
     {
             // Perform a chunk upload

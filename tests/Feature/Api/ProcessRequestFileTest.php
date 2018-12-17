@@ -98,4 +98,28 @@ class ProcessRequestFileTest extends TestCase
         //confirm the file was deleted
         $this->assertEquals($process_request->getMedia()->count(),0);
     }
+
+    /**
+     * test get a single file for a process by id
+     */
+    public function testShow()
+    {
+        //create a request
+        $process_request = factory(ProcessRequest::class)->create();
+
+        //upload a fake document with id of the request
+        $fileUpload1 = File::image('photo1.jpg');
+        $fileUpload2 = File::image('photo2.jpg');
+
+        //save the file with media lib
+        $file1 = $process_request->addMedia($fileUpload1)->toMediaCollection();
+        $file2 = $process_request->addMedia($fileUpload2)->toMediaCollection();
+
+        $response = $this->apiCall('GET', '/requests/' . $process_request->id . '/files/' . $file2->id);
+        $response->assertStatus(200);
+        $this->assertEquals(
+            $response->headers->get('content-disposition'),
+            'attachment; filename="photo2.jpg"'
+        );
+    }
 }

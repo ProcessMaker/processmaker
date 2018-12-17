@@ -104,7 +104,7 @@ let initialControls = [{
                     label: "Text Label",
                     helper: "The text to display",
                 }
-            }, ]
+            }]
         }
     },
     {

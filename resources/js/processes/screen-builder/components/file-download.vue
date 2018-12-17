@@ -1,7 +1,7 @@
 <template>
     <div>
         <div v-for="file in files.data" v-if="loaded">
-            <b-btn variant="secondary" @click="onClick">
+            <b-btn variant="secondary" @click="onClick(file.id)">
                 <i class="fas fa-download"></i> {{file.file_name}}
             </b-btn>
         </div>
@@ -25,10 +25,10 @@
             this.getFiles();
         },
         methods: {
-            onClick() {
+            onClick(fileId) {
                 ProcessMaker.apiClient({
                     baseURL: "/",
-                    url: "/request/" + this.requestId + "/files/" + this.files.data[0].id,
+                    url: "/request/" + this.requestId + "/files/" + fileId,
                     method: "GET",
                     responseType: "blob" // important
                 }).then(response => {
@@ -43,7 +43,6 @@
             },
             getRequestId() {
                 let node = document.head.querySelector('meta[name="request-id"]');
-                console.log(node);
                 if (node === null) {
                     return;
                 }
