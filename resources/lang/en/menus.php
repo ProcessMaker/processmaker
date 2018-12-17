@@ -23,8 +23,6 @@ return[
     'security' => 'Security',
     'login' => 'Login',
     'authentication' => 'Authentication',
-    'system_preferences' => 'System Preferences',
-    'preferences' => 'Preferences',
     'localization' => 'Localization',
     'languages' => 'Languages',
     'email_configuration' => 'Email Configuration',

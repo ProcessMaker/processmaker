@@ -8,7 +8,6 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
 // Auth::routes();
     Route::namespace('Admin')->prefix('admin')->group(function () {
         Route::resource('groups', 'GroupController')->only(['index', 'edit', 'show']);
-        Route::resource('preferences', 'PreferenceController');
         Route::resource('users', 'UserController');
     });
 

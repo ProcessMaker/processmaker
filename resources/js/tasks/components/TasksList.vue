@@ -1,76 +1,65 @@
 <template>
   <div class="data-table">
-    <vuetable
-      :dataManager="dataManager"
-      :sortOrder="sortOrder"
-      :css="css"
-      :api-mode="false"
-      @vuetable:pagination-data="onPaginationData"
-      :fields="fields"
-      :data="data"
-      data-path="data"
-      pagination-path="meta"
-    >
-      <template slot="name" slot-scope="props">
-        <b-link
-          @click="onAction('edit', props.rowData, props.rowIndex)"
-        >{{props.rowData.element_name}}</b-link>
-      </template>
+    <div class="card card-body table-card">
+      <vuetable
+        :dataManager="dataManager"
+        :sortOrder="sortOrder"
+        :css="css"
+        :api-mode="false"
+        @vuetable:pagination-data="onPaginationData"
+        :fields="fields"
+        :data="data"
+        data-path="data"
+        pagination-path="meta"
+      >
+        <template slot="name" slot-scope="props">
+          <b-link
+            @click="onAction('edit', props.rowData, props.rowIndex)"
+          >{{props.rowData.element_name}}</b-link>
+        </template>
 
-      <template slot="requestName" slot-scope="props">
-        <b-link
-          @click="onAction('showRequestSummary', props.rowData, props.rowIndex)"
-        >{{props.rowData.process.name}}</b-link>
-      </template>
+        <template slot="requestName" slot-scope="props">
+          <b-link
+            @click="onAction('showRequestSummary', props.rowData, props.rowIndex)"
+          >{{props.rowData.process.name}}</b-link>
+        </template>
 
-      <template slot="assignee" slot-scope="props">
-        <avatar-image
-          class="d-inline-flex pull-left align-items-center"
-          size="25"
-          :input-data="props.rowData.user"
-          display-name="true"
-        ></avatar-image>
-      </template>
+        <template slot="assignee" slot-scope="props">
+          <avatar-image size="25" :input-data="props.rowData.user" display-name="false"></avatar-image>
+        </template>
 
-      <template slot="actions" slot-scope="props">
-        <div class="actions">
-          <div class="popout">
-            <b-btn
-              variant="action"
-              @click="onAction('edit', props.rowData, props.rowIndex)"
-              v-b-tooltip.hover
-              title
-            >
-              <i class="fas fa-edit"></i>
-            </b-btn>
-            <b-btn
-              variant="action"
-              @click="onAction('pause', props.rowData, props.rowIndex)"
-              v-b-tooltip.hover
-              title
-            >
-              <i class="fas fa-pause"></i>
-            </b-btn>
-            <b-btn
-              variant="action"
-              @click="onAction('undo', props.rowData, props.rowIndex)"
-              v-b-tooltip.hover
-              title
-            >
-              <i class="fas fa-undo"></i>
-            </b-btn>
+        <template slot="actions" slot-scope="props">
+          <div class="actions">
+            <div class="popout">
+              <b-btn
+                variant="link"
+                @click="onAction('edit', props.rowData, props.rowIndex)"
+                v-b-tooltip.hover
+                title="Open Task"
+              >
+                <i class="fas fa-caret-square-right fa-lg fa-fw"></i>
+              </b-btn>
+              <b-btn
+                variant="link"
+                @click="onAction('showRequestSummary', props.rowData, props.rowIndex)"
+                v-b-tooltip.hover
+                title="Open Request"
+              >
+                <i class="fas fa-clipboard fa-lg fa-fw"></i>
+              </b-btn>
+            </div>
           </div>
-        </div>
-      </template>
-    </vuetable>
-    <pagination
-      single="Task"
-      plural="Tasks"
-      :perPageSelectEnabled="true"
-      @changePerPage="changePerPage"
-      @vuetable-pagination:change-page="onPageChange"
-      ref="pagination"
-    ></pagination>
+        </template>
+      </vuetable>
+      <pagination
+        single="Task"
+        plural="Tasks"
+        :perPageSelectEnabled="true"
+        @changePerPage="changePerPage"
+        @vuetable-pagination:change-page="onPageChange"
+        ref="pagination"
+      ></pagination>
+    </div>
   </div>
 </template>
 
@@ -103,21 +92,25 @@ export default {
           sortField: "element_name"
         },
         {
-          title: "REQUEST",
+          title: "Request",
           name: "__slot:requestName",
           field: "request",
           sortField: "request.name"
         },
         {
-          title: "ASSIGNEE",
+          title: "Assignee",
           name: "__slot:assignee",
           field: "user"
         },
         {
-          title: "DUE",
+          title: "Due",
           name: "due_at",
           callback: this.formatDueDate,
           sortField: "due_at"
+        },
+        {
+          name: "__slot:actions",
+          title: ""
         }
       ]
     };
@@ -206,27 +199,5 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-/deep/ th#_total_users {
-  width: 150px;
-  text-align: center;
-}
 
-/deep/ th#_description {
-  width: 250px;
-}
-
-/deep/ i.fa-circle {
-  &.active {
-    color: green;
-  }
-  &.inactive {
-    color: red;
-  }
-}
-
-/deep/ tr td:nth-child(4) {
-  padding: 6px 10px;
-}
-</style>
 
