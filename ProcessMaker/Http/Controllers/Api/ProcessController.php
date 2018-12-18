@@ -250,6 +250,48 @@ class ProcessController extends Controller
         return new Resource($process->refresh());
     }
 
+    /**
+     * Reverses the soft delete of the element
+     *
+     * @param Request $request
+     * @param Process $process
+     * @return ResponseFactory|Response
+     * @throws \Throwable
+     *
+     * @OA\Put(
+     *     path="/processes/processId/restore",
+     *     summary="Restore a soft deleted process",
+     *     operationId="restoreProcess",
+     *     tags={"Process"},
+     *     @OA\Parameter(
+     *         description="ID of process to return",
+     *         in="path",
+     *         name="process_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(ref="#/components/schemas/ProcessEditable")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *     ),
+     * )
+     */
+    public function restore(Request $request, $processId)
+    {
+        $process = Process::withTrashed()->find($processId);
+        $process->status='ACTIVE';
+        $process->save();
+        $process->restore();
+        return new Resource($process->refresh());
+    }
+
     private function savePermission($process, $assignableType, $assignableId, $permissionId)
     {
         $processPerm = new ProcessPermission();

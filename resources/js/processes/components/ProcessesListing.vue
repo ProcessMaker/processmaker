@@ -53,6 +53,16 @@
                             >
                                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
                             </b-btn>
+                            <b-btn
+                                    variant="link"
+                                    @click="onAction('restore-item', props.rowData, props.rowIndex)"
+                                    v-b-tooltip.hover
+                                    title="Restore"
+                                    v-if="props.rowData.status === 'INACTIVE'"
+                            >
+                                <i class="fas fa-lightbulb fa-lg fa-fw"></i>
+                            </b-btn>
+
                         </div>
                     </div>
                 </template>
@@ -144,6 +154,13 @@
                         break;
                     case "edit-item":
                         this.goToEdit(data.id);
+                        break;
+                    case "restore-item":
+                        ProcessMaker.apiClient
+                            .put("processes/" + data.id + "/restore")
+                            .then(response => {
+                                this.$emit("reload");
+                            });
                         break;
                     case "remove-item":
                         ProcessMaker.confirmModal(
