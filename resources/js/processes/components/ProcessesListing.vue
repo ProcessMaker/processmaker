@@ -48,10 +48,10 @@
                                     variant="link"
                                     @click="onAction('remove-item', props.rowData, props.rowIndex)"
                                     v-b-tooltip.hover
-                                    title="Remove"
+                                    title="Archive"
                                     v-if="props.rowData.status === 'ACTIVE'"
                             >
-                                <i class="fas fa-trash-alt fa-lg fa-fw"></i>
+                                <i class="fas fa-download fa-lg fa-fw"></i>
                             </b-btn>
                             <b-btn
                                     variant="link"
@@ -60,7 +60,7 @@
                                     title="Restore"
                                     v-if="props.rowData.status === 'INACTIVE'"
                             >
-                                <i class="fas fa-lightbulb fa-lg fa-fw"></i>
+                                <i class="fas fa-upload fa-lg fa-fw"></i>
                             </b-btn>
 
                         </div>
