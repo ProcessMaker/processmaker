@@ -104,7 +104,7 @@ ProcessMaker.EventBus.$on('modeler-init', ({registerNode, registerBpmnExtension,
             label: 'Summary screen',
             helper: 'Summary screen that will be displayed when process finish with this End event.',
             name: 'screenRef',
-            type: 'DISPLAY'
+            params: { type: 'DISPLAY' }
         }
     });
 });

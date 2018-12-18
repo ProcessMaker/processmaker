@@ -3,11 +3,10 @@
 // @import '../sass/_variables.scss';
 @import "~bootstrap/scss/bootstrap";
 // Font Awesome
-@import '~@fortawesome/fontawesome/styles.css';
-@import '~@fortawesome/fontawesome-free-webfonts/scss/fa-brands';
-@import '~@fortawesome/fontawesome-free-webfonts/scss/fa-regular';
-@import '~@fortawesome/fontawesome-free-webfonts/scss/fa-solid';
-@import '~@fortawesome/fontawesome-free-webfonts/scss/fontawesome';
+@import '~@fortawesome/fontawesome-free/scss/brands';
+@import '~@fortawesome/fontawesome-free/scss/regular';
+@import '~@fortawesome/fontawesome-free/scss/solid';
+@import '~@fortawesome/fontawesome-free/scss/fontawesome';
 @import '~vue-multiselect/dist/vue-multiselect.min.css';
 
 @font-face {

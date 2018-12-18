@@ -1,9 +1,10 @@
 <template>
     <div>
         <div v-for="file in files.data" v-if="loaded">
-            <b-btn variant="secondary" @click="onClick(file.id)">
-                <i class="fas fa-download"></i> {{file.file_name}}
+            <b-btn variant="primary" @click="onClick(file.id)">
+                <i class="fas fa-file-download"></i> Download
             </b-btn>
+            {{file.file_name}}
         </div>
     </div>
 </template>
