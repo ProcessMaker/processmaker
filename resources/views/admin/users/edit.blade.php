@@ -131,7 +131,7 @@
                         <hr class="mt-0">
                         <button class="btn btn-secondary float-right" @click="onPermissionUpdate">SUBMIT</button>
                     </div>
-                    
+
                     <div class="tab-pane fade" id="nav-tokens" role="tabpanel" aria-labelledby="nav-tokens-tab">
                         <table class="table">
                             <thead>
@@ -159,8 +159,9 @@
                             </tbody>
                         </table>
                         <div class="form-group" v-if="newToken != null">
-                            <h3>New token @{{ newToken.token.id.substr(0,7) }} created. This token can only be seen now. You can not retrieve it after you leave this page.</h3>
-                            <textarea style="height: 400px" class="form-control">@{{ newToken.accessToken }}</textarea>
+                            <div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i> Make sure you copy your access token now. You won't be able to see it again.</div>
+                            <button @click="copyTextArea" class="btn btn-secondary"><i class="fas fa-paste"></i> Copy Token To Clipboard</button>
+                            <textarea ref="text" style="height: 400px" class="form-control">@{{ newToken.accessToken }}</textarea>
                         </div>
                         <hr class="mt-0">
                         <button class="btn btn-secondary float-right" @click="generateToken">Generate New Token</button>
@@ -204,6 +205,10 @@
                 this.loadTokens();
             },
             methods: {
+              copyTextArea() {
+      this.$refs.text.select();
+      document.execCommand('copy');
+    },
                 resetErrors() {
                     this.errors = Object.assign({}, {
                         username: null,
@@ -302,6 +307,7 @@
                         .then((result) => {
                             this.newToken = result.data;
                             this.loadTokens();
+                            ProcessMaker.alert("Access token generated successfully", "success");
                         })
                 },
                 deleteToken(tokenId) {
