@@ -14,15 +14,21 @@ use ProcessMaker\Models\User;
 
 class ProcessController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $status = $request->input('status');
         $processes = Process::all(); //what will be in the database = Model
         $processCategories = ProcessCategory::where('status', 'ACTIVE')->get();
         $processCategoryArray = ['' => 'None'];
         foreach ($processCategories as $pc) {
             $processCategoryArray[$pc->id] = $pc->name;
         }
-        return view('processes.index', ["processes" => $processes, "processCategories" => $processCategoryArray]);
+        return view('processes.index',
+            [
+                "processes" => $processes,
+                "processCategories" => $processCategoryArray,
+                "status" => $status
+            ]);
     }
 
     /**
@@ -135,5 +141,4 @@ class ProcessController extends Controller
         $process->delete();
         return redirect('/processes');
     }
-
 }
