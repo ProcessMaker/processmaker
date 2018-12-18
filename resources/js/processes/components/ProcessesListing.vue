@@ -166,13 +166,13 @@
                     case "remove-item":
                         ProcessMaker.confirmModal(
                             "Caution!",
-                            "<b>Are you sure to inactive the process </b>'" + data.name + "'?",
+                            "<b>Are you sure you want to archive the process: </b>'" + data.name + "'?",
                             "",
                             () => {
                                 ProcessMaker.apiClient
                                     .delete("processes/" + data.id)
                                     .then(response => {
-                                        ProcessMaker.alert("Process Marked As Deleted", "warning");
+                                        ProcessMaker.alert("Process Archived", "warning");
                                         this.$emit("reload");
                                     });
                             }
