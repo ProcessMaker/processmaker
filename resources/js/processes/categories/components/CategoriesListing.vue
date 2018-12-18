@@ -28,6 +28,7 @@
                 @click="onAction('remove-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
                 title="Remove"
+                v-if="props.rowData.processes_count < 1"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
               </b-btn>
