@@ -10,6 +10,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
+use ProcessMaker\Facades\WorkflowManager;
 
 /**
  * Tests routes related to tokens list and show
@@ -221,5 +222,21 @@ class TasksTest extends TestCase
         //Check the structure
         $response->assertJsonStructure($this->structure);
         $response->assertJsonStructure(['user' => ['id', 'email'], 'definition' => []]);
+    }
+
+    public function testUpdateTask()
+    {
+        $this->user = factory(User::class)->create(); // normal user
+        $request = factory(ProcessRequest::class)->create();
+        $token = factory(ProcessRequestToken::class)->create([
+            'user_id' => $this->user->id,
+            'status' => 'ACTIVE',
+        ]);
+        $params = ['status' => 'COMPLETED', 'foo' => 'bar'];
+        WorkflowManager::shouldReceive('completeTask')
+            ->once()
+            ->with(\Mockery::any(), \Mockery::any(), \Mockery::any(), $params);
+        $response = $this->apiCall('PUT', '/tasks/' . $token->id, $params);
+        $this->assertStatus(200, $response);
     }
 }

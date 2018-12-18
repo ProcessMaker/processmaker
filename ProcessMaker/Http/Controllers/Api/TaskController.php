@@ -8,10 +8,11 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Task as Resource;
 use ProcessMaker\Models\ProcessRequestToken;
+use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
-    public $skipPermissionCheckFor = ['index', 'show'];
+    public $skipPermissionCheckFor = ['index', 'show', 'update'];
 
     /**
      * Display a listing of the resource.
@@ -79,6 +80,7 @@ class TaskController extends Controller
      */
     public function update(Request $request, ProcessRequestToken $task)
     {
+        $task->authorize(Auth::user());
         if ($request->input('status') === 'COMPLETED') {
             if ($task->status === 'CLOSED') {
                 return abort(422, __('Task already closed'));
