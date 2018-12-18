@@ -11,6 +11,7 @@ use ProcessMaker\Models\ProcessRequestToken;
 
 class TaskController extends Controller
 {
+    public $skipPermissionCheckFor = ['index', 'show'];
 
     /**
      * Display a listing of the resource.

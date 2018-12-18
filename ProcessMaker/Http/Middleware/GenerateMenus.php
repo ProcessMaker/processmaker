@@ -50,11 +50,6 @@ class GenerateMenus
               'id' => 'homeid'
           ]);
 
-          $submenu->add(__('menus.sidebar_admin.preferences'), [
-                'route' => 'preferences.index',
-                'icon' => 'fa-globe',
-                'id' => 'homeid'
-          ]);
           $submenu->add(__('menus.sidebar_admin.queue_management'), [
                 'route' => 'horizon.index',
                 'icon' => 'fa-infinity',
@@ -106,6 +101,11 @@ class GenerateMenus
               'icon' => 'fa-sitemap',
               'id' => 'process-categories'
           ]);
+          $submenu->add(__('menus.sidebar_processes.archived_processes'), [
+              'route' => ['processes.index', 'status' => 'deleted'],
+              'icon' => 'fa-archive',
+              'id' => 'process-environment'
+          ]);
           $submenu->add(__('menus.sidebar_processes.scripts'), [
               'route' => 'scripts.index',
               'icon' => 'fa-code',
@@ -121,7 +121,9 @@ class GenerateMenus
               'icon' => 'fa-cogs',
               'id' => 'process-environment'
           ]);
-        });
+
+
+    });
 
         Menu::make('sidebar_designer', function ($menu) {});
 
