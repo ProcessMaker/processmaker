@@ -50,7 +50,7 @@ return[
     'scripts' => 'Scripts',
     'screens' => 'Screens',
     'environment_variables'=> 'Environment Variables',
-    'deleted_processes'=> 'Deleted Processes'
+    'archived_processes'=> 'Archived Processes'
   ],
   'sidebar_notifications' => [
         'notifications' => 'Notifications',
