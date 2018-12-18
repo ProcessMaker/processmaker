@@ -1,7 +1,14 @@
 @extends('layouts.layout')
 
 @section('title')
-{{__('Processes')}}
+	@php
+	$title = __('Processes');
+	$status = request()->get('status');
+	if( $status === 'deleted'){
+		$title = __('Process Archive');
+	}
+	@endphp
+{{$title}}
 @endsection
 
 @section('sidebar')
@@ -10,7 +17,7 @@
 
 @section('content')
 <div class="container page-content" id="processIndex">
-	<h1>{{__('Processes')}}</h1>
+	<h1>{{$title}}</h1>
 	<div class="row">
 		<div class="col">
 			<div class="input-group">
@@ -97,7 +104,7 @@
                 })
                 .then(response => {
 					ProcessMaker.alert('{{__('Process successfully added')}}', 'success')
-                    window.location = "/modeler/" + response.data.id 
+                    window.location = "/modeler/" + response.data.id
                 })
                 .catch(error => {
                     if (error.response.status === 422) {
