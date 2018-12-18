@@ -17,6 +17,8 @@ Route::group(
     Route::post('scripts/preview', 'ScriptController@preview')->name('script.preview');
     Route::apiResource('scripts', 'ScriptController');
     Route::apiResource('processes', 'ProcessController');
+    Route::put('processes/{processId}/restore', 'ProcessController@restore');
+    Route::get('start_processes', 'ProcessController@startProcesses');
     Route::apiResource('process_categories', 'ProcessCategoryController');
     Route::put('permissions', 'PermissionController@update');
     Route::apiResource('tasks', 'TaskController')->only(['index', 'show', 'update']);
