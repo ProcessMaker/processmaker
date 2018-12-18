@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Models\User;
@@ -180,6 +181,12 @@ class UserController extends Controller
     {
         $request->validate(User::rules($user));
         $user->fill($request->json()->all());
+        if (Auth::user()->is_administrator) {
+            // user must be an admin to make another user an admin
+            if($request->get('is_administrator') === true) {
+                $user->is_administrator = true;
+            }
+        }
         $user->saveOrFail();
         if ($request->has('avatar')) {
             $this->uploadAvatar($user, $request);

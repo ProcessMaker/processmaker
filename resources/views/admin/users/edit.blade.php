@@ -16,119 +16,119 @@
                 <nav>
                     <div class="nav nav-tabs" id="nav-tab" role="tablist">
                         <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab"
-                            aria-controls="nav-home" aria-selected="true">Information</a>
+                            aria-controls="nav-home" aria-selected="true">{{__('Information')}}</a>
                         <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab"
-                            aria-controls="nav-profile" aria-selected="false">Permissions</a>
+                            aria-controls="nav-profile" aria-selected="false">{{__('Permissions')}}</a>
                     </div>
                 </nav>
-                <div class="card card-body tab-content mt-3" id="nav-tabContent">
-                    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-                        {!! Form::open() !!}
-                        <div class="form-group">
-                            {!!Form::label('username', __('Username'))!!}
-                            {!!Form::text('username', null, ['class'=> 'form-control', 'v-model'=> 'formData.username',
-                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.username}'])!!}
-                            <div class="invalid-feedback" v-if="errors.username">@{{errors.username[0]}}</div>
-                        </div>
-                        <div class="form-group">
-                            {!!Form::label('firstname', __('First name'))!!}
-                            {!!Form::text('firstname', null, ['class'=> 'form-control', 'v-model'=> 'formData.firstname',
-                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.firstname}'])!!}
-                            <div class="invalid-feedback" v-if="errors.firstname">@{{errors.firstname[0]}}
+                <div class="card card-body mt-3">
+                    {!! Form::open() !!}
+                    <div class="tab-content" id="nav-tabContent">
+                        <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                            <div class="form-group">
+                                {!!Form::label('username', __('Username'))!!}
+                                {!!Form::text('username', null, ['class'=> 'form-control', 'v-model'=> 'formData.username',
+                                'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.username}'])!!}
+                                <div class="invalid-feedback" v-if="errors.username">@{{errors.username[0]}}</div>
+                            </div>
+                            <div class="form-group">
+                                {!!Form::label('firstname', __('First name'))!!}
+                                {!!Form::text('firstname', null, ['class'=> 'form-control', 'v-model'=> 'formData.firstname',
+                                'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.firstname}'])!!}
+                                <div class="invalid-feedback" v-if="errors.firstname">@{{errors.firstname[0]}}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                {!!Form::label('lastname', __('Last name'))!!}
+                                {!!Form::text('lastname', null, ['class'=> 'form-control', 'v-model'=> 'formData.lastname',
+                                'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.lastname}'])!!}
+                                <div class="invalid-feedback" v-if="errors.lastname">@{{errors.lastname[0]}}</div>
+                            </div>
+                            <div class="form-group">
+                                {!!Form::label('status', 'Status');!!}
+                                {!!Form::select('size', ['ACTIVE' => 'Active', 'INACTIVE' => 'Inactive'], 'formData.status', ['class'=> 'form-control', 'v-model'=> 'formData.status',
+                                'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.status}']);!!}
+                                <div class="invalid-feedback" v-if="errors.email">@{{errors.status[0]}}</div>
+                            </div>
+                            <div class="form-group">
+                                {!!Form::label('email', __('Email'))!!}
+                                {!!Form::email('email', null, ['class'=> 'form-control', 'v-model'=> 'formData.email',
+                                'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.email}'])!!}
+                                <div class="invalid-feedback" v-if="errors.email">@{{errors.email[0]}}</div>
+                            </div>
+                            <div class="form-group">
+                                {!!Form::label('password', __('Password'))!!}
+                                {!!Form::password('password', ['class'=> 'form-control', 'v-model'=> 'formData.password',
+                                'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}'])!!}
+                                <div class="invalid-feedback" v-if="errors.password">@{{errors.password[0]}}</div>
+                            </div>
+                            <div class="form-group">
+                                {!!Form::label('confpassword', __('Confirm Password'))!!}
+                                {!!Form::password('confpassword', ['class'=> 'form-control', 'v-model'=> 'formData.confpassword',
+                                'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}'])!!}
                             </div>
                         </div>
-                        <div class="form-group">
-                            {!!Form::label('lastname', __('Last name'))!!}
-                            {!!Form::text('lastname', null, ['class'=> 'form-control', 'v-model'=> 'formData.lastname',
-                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.lastname}'])!!}
-                            <div class="invalid-feedback" v-if="errors.lastname">@{{errors.lastname[0]}}</div>
-                        </div>
-                        <div class="form-group">
-                            {!!Form::label('status', 'Status');!!}
-                            {!!Form::select('size', ['ACTIVE' => 'Active', 'INACTIVE' => 'Inactive'], 'formData.status', ['class'=> 'form-control', 'v-model'=> 'formData.status',
-                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.status}']);!!}
-                            <div class="invalid-feedback" v-if="errors.email">@{{errors.status[0]}}</div>
-                        </div>
-                        <div class="form-group">
-                            {!!Form::label('email', __('Email'))!!}
-                            {!!Form::email('email', null, ['class'=> 'form-control', 'v-model'=> 'formData.email',
-                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.email}'])!!}
-                            <div class="invalid-feedback" v-if="errors.email">@{{errors.email[0]}}</div>
-                        </div>
-                        <div class="form-group">
-                            {!!Form::label('password', __('Password'))!!}
-                            {!!Form::password('password', ['class'=> 'form-control', 'v-model'=> 'formData.password',
-                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}'])!!}
-                            <div class="invalid-feedback" v-if="errors.password">@{{errors.password[0]}}</div>
-                        </div>
-                        <div class="form-group">
-                            {!!Form::label('confpassword', __('Confirm Password'))!!}
-                            {!!Form::password('confpassword', ['class'=> 'form-control', 'v-model'=> 'formData.confpassword',
-                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}'])!!}
-                        </div>
-                        <div class="text-right">
-                            {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose']) !!}
-                            {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'onProfileUpdate']) !!}
-                        </div>
-                        {!! Form::close() !!}
-                    </div>
-                    <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
-                        <table class="table mb-0">
-                            <thead>
+                        <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+                            <table class="table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th colspan="6"><label>Would you like to make this user an admin? <input type="checkbox" v-model="formData.is_administrator"></label></th>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-right" colspan="6"><label>Select All Permissions <input type="checkbox" v-model="selectAll" @click="select" :disabled="formData.is_administrator"></label></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
                                 <tr>
-                                    <th colspan="6"><label>Would you like to make this user an admin? <input type="checkbox" v-model="isAdmin"></label></th>
-                                </tr>
-                                <tr>
-                                    <th class="text-right" colspan="6"><label>Select All Permissions <input type="checkbox" v-model="selectAll" @click="select" :disabled="isAdmin = isAdmin"></label></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                              <tr>
-                                <td>Name</td>
-                                <td>List</td>
-                                <td>Create</td>
-                                <td>Delete</td>
-                                <td>Edit</td>
-                                <td>View</td>
-                              @php
-                              $header = '';
-                              $i = 0;
-                              @endphp
-
-                              @foreach ($all_permissions as $key => $value)
-
-                              @php
-
-                              if(strpos($value['guard_name'],'.') === false) continue;
-
-                              list($guard,$action) = explode('.',$value['guard_name']);
-
-                              if($header !== $guard) {
-
-                              if($i > 0){
-                              echo '</tr>';
-                              }
-
-                              echo '<tr>
-                                <td>'.str_replace('_',' ',title_case($guard)).'</td>';
-
-                                $header = $guard;
-
-                                $i++;
-
-                                }
-
+                                    <td>Name</td>
+                                    <td>List</td>
+                                    <td>Create</td>
+                                    <td>Delete</td>
+                                    <td>Edit</td>
+                                    <td>View</td>
+                                @php
+                                $header = '';
+                                $i = 0;
                                 @endphp
 
-                                <td align="center>"><input type="checkbox" :value="{{$value['id']}}" v-model="selected" :disabled="isAdmin = isAdmin"></td>
+                                @foreach ($all_permissions as $key => $value)
 
-                                @endforeach
-                              </tr>
-                            </tbody>
-                        </table>
-                        <hr class="mt-0">
-                        <button class="btn btn-secondary float-right" @click="onPermissionUpdate">SUBMIT</button>
+                                @php
+
+                                if(strpos($value['guard_name'],'.') === false) continue;
+
+                                list($guard,$action) = explode('.',$value['guard_name']);
+
+                                if($header !== $guard) {
+
+                                if($i > 0){
+                                echo '</tr>';
+                                }
+
+                                echo '<tr>
+                                    <td>'.str_replace('_',' ',title_case($guard)).'</td>';
+
+                                    $header = $guard;
+
+                                    $i++;
+
+                                    }
+
+                                    @endphp
+
+                                    <td align="center>"><input type="checkbox" :value="{{$value['id']}}" v-model="selected" :disabled="formData.is_administrator"></td>
+
+                                    @endforeach
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
+                    <div class="text-right">
+                        {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose']) !!}
+                        {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'onProfileUpdate']) !!}
+                    </div>
+                    {!! Form::close() !!}
                 </div>
             </div>
         </div>
@@ -147,17 +147,14 @@
                         lastname: null,
                         email: null,
                         password: null,
-                        status: null
+                        status: null,
+                        is_administrator: null,
                     },
-                    isAdmin: false,
                     permissions: @json($all_permissions),
                     userPermissionIds: @json($permission_ids),
                     selected: [],
                     selectAll: false,
                 }
-            },
-            beforeMount() {
-                this.isSuperUser()
             },
             created() {
                 this.hasPermission()
@@ -196,20 +193,14 @@
                 onProfileUpdate() {
                     this.resetErrors();
                     if (!this.validatePassword()) return false;
-                    let that = this;
-                    ProcessMaker.apiClient.put('users/' + that.formData.id, that.formData)
+                    ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
                         .then(response => {
-                            ProcessMaker.alert('{{__('Update User Successfully')}}', 'success');
-                            that.onClose();
+                            this.permissionUpdate();
                         })
                         .catch(error => {
+                            console.log(error);
                             ProcessMaker.alert('{{__('An error occurred while saving the Groups.')}}', 'danger');
                         });
-                },
-                isSuperUser() {
-                    if(this.formData.is_administrator === true) {
-                        this.isAdmin = true
-                    }
                 },
                 hasPermission() {
                     if(this.userPermissionIds){
@@ -224,29 +215,16 @@
                         }
                     }
                 },
-                onPermissionUpdate() {
-                    if(this.isAdmin === true) {
-                    ProcessMaker.apiClient.put("/users/" + this.formData.id, {
-                        is_administrator: this.isAdmin,
-                        email: this.formData.email,
-                        username: this.formData.username
+                permissionUpdate() {
+                    ProcessMaker.apiClient.put("/permissions", {
+                        permission_ids: this.selected,
+                        user_id: this.formData.id
                     })
                     .then(response => {
-                        ProcessMaker.alert('{{__('Admin successfully added ')}}', 'success');
-                        location.reload();
+                        ProcessMaker.alert('{{__('Updated User Successfully')}}', 'success');
+                        this.onClose();
                     })
-                    }
-                    else{
-                        ProcessMaker.apiClient.put("/permissions", {
-                            permission_ids: this.selected,
-                            user_id: this.formData.id
-                            })
-                        .then(response => {
-                            ProcessMaker.alert('{{__('Permission successfully added ')}}', 'success');
-                            location.reload();
-                        })
-                    }
-                 },
+                },
             }
         });
     </script>
