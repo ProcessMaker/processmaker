@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
@@ -49,6 +50,7 @@ class Process extends Model implements HasMedia
 {
     use HasMediaTrait;
     use SerializeToIso8601;
+    use SoftDeletes;
 
     /**
      * The attributes that aren't mass assignable.
@@ -60,6 +62,15 @@ class Process extends Model implements HasMedia
         'user_id',
         'created_at',
         'updated_at',
+    ];
+
+    /**
+     * The attributes that are dates.
+     *
+     * @var array
+     */
+    protected $dates = [
+        'deleted_at',
     ];
 
     /**
