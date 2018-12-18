@@ -159,6 +159,7 @@
                         ProcessMaker.apiClient
                             .put("processes/" + data.id + "/restore")
                             .then(response => {
+                                ProcessMaker.alert("The process was restored successfully", "success");
                                 this.$emit("reload");
                             });
                         break;
@@ -171,7 +172,7 @@
                                 ProcessMaker.apiClient
                                     .delete("processes/" + data.id)
                                     .then(response => {
-                                        ProcessMaker.alert("User Marked As Deleted", "warning");
+                                        ProcessMaker.alert("Process Marked As Deleted", "warning");
                                         this.$emit("reload");
                                     });
                             }
