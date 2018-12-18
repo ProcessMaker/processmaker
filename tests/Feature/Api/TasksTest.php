@@ -61,6 +61,33 @@ class TasksTest extends TestCase
         //Verify the structure
         $response->assertJsonStructure(['data' => ['*' => $this->structure]]);
     }
+    
+    /**
+     * You only see tasks that belong to you if you are not admin
+     */
+    public function testGetListAssignedTasks()
+    {
+        $user_1 = factory(User::class)->create();
+        $user_2 = factory(User::class)->create();
+        $this->user = $user_1;
+
+        $request = factory(ProcessRequest::class)->create();
+        // Create some tokens
+        factory(ProcessRequestToken::class, 2)->create([
+            'process_request_id' => $request->id,
+            'user_id' => $user_1->id
+        ]);
+        factory(ProcessRequestToken::class, 3)->create([
+            'process_request_id' => $request->id,
+            'user_id' => $user_2->id
+        ]);
+        //Get a page of tokens
+        $route = route('api.' . $this->resource . '.index');
+        $response = $this->apiCall('GET', $route);
+
+        // should only see the user's 2 tasks
+        $this->assertEquals(count($response->json()['data']), 2);
+    }
 
     /**
      * Test to verify that the list dates are in the correct format (yyyy-mm-dd H:i+GMT)
