@@ -100,7 +100,8 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     protected $casts = [
         'completed_at' => 'datetime:c',
         'initiated_at' => 'datetime:c',
-        'data' => 'array'
+        'data' => 'array',
+        'errors' => 'array',
     ];
 
     /**
@@ -309,16 +310,6 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     }
 
     /**
-     * Errors occurred during the execution of the process.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function errors()
-    {
-        return $this->hasMany(ProcessRequestErrors::class);
-    }
-
-    /**
      * Records an error occurred during the execution of the process.
      *
      * @param Throwable $exception
@@ -331,7 +322,9 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
             'element_id' => $element ? $element->getId() : null,
             'element_name' => $element ? $element->getName() : null,
         ];
-        $this->errors()->create($error);
+        $errors = $this->errors;
+        $errors[] = $error;
+        $this->errors = $errors;
         $this->status = 'ERROR';
         $this->save();
     }
