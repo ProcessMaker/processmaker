@@ -139,7 +139,7 @@ export default {
       let now = moment();
       let diff = dueDate.diff(now, "hours");
       let color =
-        diff < 0 ? "text-danger" : diff <= 1 ? "text-warning" : "text-primary";
+        diff < 0 ? "text-danger" : diff <= 1 ? "text-warning" : "text-dark";
       return (
         '<span class="' + color + '">' + this.formatDate(dueDate) + "</span>"
       );
