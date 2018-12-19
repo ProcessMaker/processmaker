@@ -38,6 +38,12 @@
                                    aria-controls="files" aria-selected="false">{{__('Attached Files')}}</a>
                             </li>
                             @endif
+                            @if($request->status === 'ERROR')
+                            <li class="nav-item">
+                                <a class="nav-link" id="errors-tab" data-toggle="tab" href="#errors" role="tab"
+                                   aria-controls="errors" aria-selected="false">{{__('Errors')}}</a>
+                            </li>
+                            @endif
                         </template>
                     </ul>
                     <div class="tab-content" id="requestTabContent">
@@ -118,6 +124,9 @@
                             </div>
                         </div>
                     </div>
+                        <div class="tab-pane fade" id="errors" role="tabpanel" aria-labelledby="errors-tab">
+                            <request-errors :data="errorLogs"></request-errors>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -178,7 +187,8 @@
                     files: @json($files),
                     refreshTasks: 0,
                     canCancel: @json($canCancel),
-                    status: 'ACTIVE'
+                    status: 'ACTIVE',
+                    errorLogs: @json(['data'=>$request->errors]),
                 };
             },
             computed: {
