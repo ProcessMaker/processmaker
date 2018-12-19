@@ -7,7 +7,7 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
 // Routes related to Authentication (password reset, etc)
 // Auth::routes();
     Route::namespace('Admin')->prefix('admin')->group(function () {
-        Route::resource('groups', 'GroupController')->only(['index', 'edit', 'show']);
+        Route::resource('groups', 'GroupController')->only(['index', 'edit']);
         Route::resource('users', 'UserController');
     });
 
