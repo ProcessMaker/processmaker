@@ -157,10 +157,6 @@
                                             <div class="invalid-feedback" v-if="errors.language">@{{errors.language[0]}}</div>
                                         </div>
                                     </div>
-                                    {{--<div class="text-right">--}}
-                                        {{--{!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose']) !!}--}}
-                                        {{--{!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'onUpdate']) !!}--}}
-                                    {{--</div>--}}
 
                                     <div class="text-right">
                                         {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose']) !!}
@@ -301,58 +297,6 @@
                         <button class="btn btn-secondary float-right" @click="generateToken">Generate New Token</button>
                     </div>
 
-
-                    <div class="tab-pane fade" id="nav-test" role="tabpanel" aria-labelledby="nav-test-tab">
-                        {!! Form::open() !!}
-                        <div class="form-group">
-                            {!!Form::label('username', __('Username'))!!}
-                            {!!Form::text('username', null, ['class'=> 'form-control', 'v-model'=> 'formData.username',
-                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.username}'])!!}
-                            <div class="invalid-feedback" v-if="errors.username">@{{errors.username[0]}}</div>
-                        </div>
-                        <div class="form-group">
-                            {!!Form::label('firstname', __('First name'))!!}
-                            {!!Form::text('firstname', null, ['class'=> 'form-control', 'v-model'=> 'formData.firstname',
-                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.firstname}'])!!}
-                            <div class="invalid-feedback" v-if="errors.firstname">@{{errors.firstname[0]}}
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            {!!Form::label('lastname', __('Last name'))!!}
-                            {!!Form::text('lastname', null, ['class'=> 'form-control', 'v-model'=> 'formData.lastname',
-                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.lastname}'])!!}
-                            <div class="invalid-feedback" v-if="errors.lastname">@{{errors.lastname[0]}}</div>
-                        </div>
-                        <div class="form-group">
-                            {!!Form::label('status', 'Status');!!}
-                            {!!Form::select('size', ['ACTIVE' => 'Active', 'INACTIVE' => 'Inactive'], 'formData.status', ['class'=> 'form-control', 'v-model'=> 'formData.status',
-                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.status}']);!!}
-                            <div class="invalid-feedback" v-if="errors.email">@{{errors.status[0]}}</div>
-                        </div>
-                        <div class="form-group">
-                            {!!Form::label('email', __('Email'))!!}
-                            {!!Form::email('email', null, ['class'=> 'form-control', 'v-model'=> 'formData.email',
-                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.email}'])!!}
-                            <div class="invalid-feedback" v-if="errors.email">@{{errors.email[0]}}</div>
-                        </div>
-                        <div class="form-group">
-                            {!!Form::label('password', __('Password'))!!}
-                            {!!Form::password('password', ['class'=> 'form-control', 'v-model'=> 'formData.password',
-                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}'])!!}
-                            <div class="invalid-feedback" v-if="errors.password">@{{errors.password[0]}}</div>
-                        </div>
-                        <div class="form-group">
-                            {!!Form::label('confpassword', __('Confirm Password'))!!}
-                            {!!Form::password('confpassword', ['class'=> 'form-control', 'v-model'=> 'formData.confpassword',
-                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}'])!!}
-                        </div>
-                        <div class="text-right">
-                            {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose']) !!}
-                            {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'onProfileUpdate']) !!}
-                        </div>
-                        {!! Form::close() !!}
-
-                    </div>
                 </div>
             </div>
         </div>
