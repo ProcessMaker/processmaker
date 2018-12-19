@@ -148,16 +148,23 @@
 
                                         <div class="form-group col">
                                             {!! Form::label('language', 'Language') !!}
-                                            {!! Form::select('language', [$currentUser->language=>$currentUser->language], $currentUser->language, ['id' => 'language','class'=>
+                                            {!! Form::select('language', ['us_en' => 'us_en'], $currentUser->language,
+                                            ['id' =>
+                                            'language','class'=>
                                             'form-control',
                                             'v-model' => 'formData.language',
                                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.language}']) !!}
                                             <div class="invalid-feedback" v-if="errors.language">@{{errors.language[0]}}</div>
                                         </div>
                                     </div>
+                                    {{--<div class="text-right">--}}
+                                        {{--{!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose']) !!}--}}
+                                        {{--{!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'onUpdate']) !!}--}}
+                                    {{--</div>--}}
+
                                     <div class="text-right">
                                         {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose']) !!}
-                                        {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'onUpdate']) !!}
+                                        {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'onProfileUpdate']) !!}
                                     </div>
                                 </div>
                             </div>
@@ -372,6 +379,13 @@
                             selectAll: false,
                             newToken: null,
                             apiTokens: [],
+                            options: [
+                                {
+                                    src: @json($currentUser['avatar']),
+                                    title: @json($currentUser['fullname']),
+                                    initials: @json($currentUser['firstname'][0]) + @json($currentUser['lastname'][0])
+                                }
+                            ]
                         }
                     },
                     beforeMount() {
