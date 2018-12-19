@@ -20,7 +20,8 @@
                 </div>
             </div>
             <div class="no-requests" v-if="!Object.keys(processes).length && !loading">
-                No Requests have been defined yet or are available to you
+                <h4>You don't have any Processes.</h4>
+                <a href="/processes">Please visit the Processes page</a> and click on +Process to get started.
             </div>
             <div v-if="loading" class="loading">
                 Finding Requests available to you
