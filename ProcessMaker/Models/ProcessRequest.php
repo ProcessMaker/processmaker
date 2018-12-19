@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
@@ -158,8 +159,8 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     public function hasUserParticipated(User $user)
     {
         return $this->tokens()
-            ->where('user_id', $user->id)
-            ->exists();
+                ->where('user_id', $user->id)
+                ->exists();
     }
 
     /**
@@ -173,7 +174,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $endEvents = $this->tokens()->where('element_type', 'end_event')->get();
 
         if ($endEvents->count(0) === 0) {
-           return null;
+            return null;
         }
 
 
@@ -183,7 +184,6 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
 
         return $screenId;
     }
-
 
     /**
      * Get tokens of the request.
@@ -209,7 +209,8 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      */
     public function collaboration()
     {
-        return $this->belongsTo(ProcessCollaboration::class, 'process_collaboration_id');
+        return $this->belongsTo(ProcessCollaboration::class,
+                'process_collaboration_id');
     }
 
     /**
@@ -228,8 +229,8 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     public function assigned()
     {
         return $this->hasMany(ProcessRequestToken::class)
-            ->with('user')
-            ->whereNotIn('element_type', ['scriptTask']);
+                ->with('user')
+                ->whereNotIn('element_type', ['scriptTask']);
     }
 
     /**
@@ -271,8 +272,9 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      */
     public function participants()
     {
-        return $this->hasManyThrough(User::class, ProcessRequestToken::class, 'process_request_id', 'id', $this->getKeyName(), 'user_id')
-            ->distinct();
+        return $this->hasManyThrough(User::class, ProcessRequestToken::class,
+                    'process_request_id', 'id', $this->getKeyName(), 'user_id')
+                ->distinct();
     }
 
     /**
@@ -317,10 +319,23 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      */
     public function logError(Throwable $exception, FlowElementInterface $element = null)
     {
+        // Get the first line of the message
+        $array = explode("\n", $exception->getMessage());
+        $message = '';
+        $body = '';
+        while ($array) {
+            $message = array_shift($array);
+            if (trim($message)) {
+                $body = implode("\n", $array);
+                break;
+            }
+        }
         $error = [
-            'message' => $exception->getMessage(),
+            'message' => $message,
+            'body' => $body,
             'element_id' => $element ? $element->getId() : null,
             'element_name' => $element ? $element->getName() : null,
+            'created_at' => Carbon::now('UTC')->format('c'),
         ];
         $errors = $this->errors ?: [];
         $errors[] = $error;
