@@ -7,6 +7,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\View\View;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Group;
+use ProcessMaker\Models\JsonData;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\PermissionAssignment;
@@ -38,7 +39,34 @@ class UserController extends Controller
         $permission_ids = $user->permissionAssignments()->pluck('permission_id')->toArray();
         $all_permissions = Permission::all();
         $users_permission_ids = $this->user_permission_ids($user);
-        return view('admin.users.edit', compact(['user', 'groups', 'all_permissions', 'users_permission_ids', 'permission_ids']));
+
+
+        $currentUser = $user;
+        $states = JsonData::states();
+        $countries = JsonData::countries();
+
+        $timezones = array_reduce(JsonData::timezones(),
+            function ($result, $item) {
+                $result[$item] = $item;
+                return $result;
+            }
+        );
+
+        $datetimeFormats = array_reduce(JsonData::datetimeFormats(),
+            function ($result, $item) {
+                $result[$item['format']] = $item['title'];
+                return $result;
+            }
+        );
+
+//        return view('profile.edit',
+//            compact('currentUser', 'states', 'timezones', 'countries', 'datetimeFormats'));
+
+
+
+        return view('admin.users.edit', compact(['user', 'groups', 'all_permissions', 'users_permission_ids', 'permission_ids', 'currentUser',
+             'states', 'timezones', 'countries', 'datetimeFormats'
+            ]));
     }
 
     public function create()
