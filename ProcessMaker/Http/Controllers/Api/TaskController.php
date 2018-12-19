@@ -8,10 +8,11 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Task as Resource;
 use ProcessMaker\Models\ProcessRequestToken;
+use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
-    public $skipPermissionCheckFor = ['index', 'show'];
+    public $skipPermissionCheckFor = ['index', 'show', 'update'];
 
     /**
      * Display a listing of the resource.
@@ -52,6 +53,11 @@ class TaskController extends Controller
         $query->orderBy(
             $request->input('order_by', 'updated_at'), $request->input('order_direction', 'asc')
         );
+
+        // only show tasks that the user is assigned to
+        if (!Auth::user()->is_administrator) {
+            $query->where('process_request_tokens.user_id', Auth::user()->id);
+        }
         $response = $query->paginate($request->input('per_page', 10));
         return new ApiCollection($response);
     }
@@ -79,6 +85,7 @@ class TaskController extends Controller
      */
     public function update(Request $request, ProcessRequestToken $task)
     {
+        $task->authorize(Auth::user());
         if ($request->input('status') === 'COMPLETED') {
             if ($task->status === 'CLOSED') {
                 return abort(422, __('Task already closed'));
