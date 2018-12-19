@@ -1,34 +1,44 @@
 @extends('layouts.minimal')
-
 @section('content')
-<div align="center">
-  <div class="formContainer">
-    <img src="/img/md-blue-logo.png">
-    <h3>{{__('Forgot Your Password?')}}</h3>
+
+<div align="container">
+  <div align="center" class="p-5">
+    <img class="mb-4" src={{asset(env('LOGIN_LOGO_PATH', '/img/processmaker_login.png'))}}>
+     <h3>{{__('Forgot Your Password?')}}</h3>
     <p>{{__("Enter your email address and we'll send you a reset link.")}}</p>
-    <form method="POST" class="form" action="{{ route('password.email') }}">
-      @if (session('status'))
-      <div class="alert alert-success">
-        {{ session('status') }}
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 offset-md-3">
+      <div class="card card-body">
+		<form method="POST" class="form" action="{{ route('password.email') }}">
+			@if (session('status'))
+			<div class="alert alert-success">
+				{{ session('status') }}
+			</div>
+			@endif
+			@csrf
+			<div class="form-group">
+				<label for="email">{{ __('Email Address') }}</label>
+				<input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" required>
+				@if ($errors->has('email'))
+				<span class="invalid-feedback">
+				<strong>{{ $errors->first('email') }}</strong>
+				</span>
+				@endif
+			</div>
+			<div class="form-group">
+				<button type="submit" class="btn btn-success btn-block">{{ __('Request Reset Link') }}</button>
+			</div>
+			<div class="form-group">
+				<a href="/login">{{__("Back to Login")}}</a>
+			</div>
+		</form>
       </div>
-      @endif
-      @csrf
-      <div class="form-group">
-        <label for="email">{{ __('Email Address') }}</label>
-        <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" required>
-        @if ($errors->has('email'))
-        <span class="invalid-feedback">
-          <strong>{{ $errors->first('email') }}</strong>
-        </span>
-        @endif
-      </div>
-      <div class="form-group">
-        <button type="submit" class="btn btn-success btn-block">{{ __('Request Reset Link') }}</button>
-      </div>
-      <div class="form-group">
-        <a href="/login">{{__("Back to Login")}}</a>
-      </div>
-    </form>
+
+    </div>
+
+
   </div>
 </div>
 @endsection
