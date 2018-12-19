@@ -33,9 +33,9 @@ Follow these steps to change your profile settings:
    * Select the state, region, or territory in which you work in the **State or Region** drop-down menu.
    * Enter the Postal code in which you work in the **Postal code** field.
    * Select the country where you work from the **Country** drop-down menu.
-   * Select in which timezone you work from the **Timezone** drop-down menu.
+   * Select in which timezone you work from the **Time zone** drop-down menu.
    * Select in which language to display ProcessMaker field labels from the **Language** drop-down menu.
-3. Click **UPDATE** to save changes to your profile. Otherwise, click **CANCEL**.
+3. Click **UPDATE** to save changes to your profile. Otherwise, click **CANCEL** to not make changes.
 
 ## Change Your Account Username or Password
 
@@ -52,6 +52,6 @@ Follow these steps to change your account password:
 2. Change your username in the **Username** field if necessary.
 3. To change your password, follow these guidelines:
    * Enter your new password in the **New Password** field.
-   * Confirm your new password by duplicating what you entered into the **New Password** field.
-4. Click **UPDATE** to save changes to your profile. Otherwise, click **CANCEL**.
+   * Confirm your new password in the **Confirm Password** field by duplicating what you entered in the **New Password** field.
+4. Click **UPDATE** to save changes to your profile. Otherwise, click **CANCEL** to not make changes.
 
