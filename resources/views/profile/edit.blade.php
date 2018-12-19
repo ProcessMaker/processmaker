@@ -125,7 +125,7 @@
 
                         <div class="form-group col">
                             {!! Form::label('language', 'Language') !!}
-                            {!! Form::select('language', [$currentUser->language=>$currentUser->language], $currentUser->language, ['id' => 'language','class'=>
+                            {!! Form::select('language', ['us_en' => 'us_en'], $currentUser->language, ['id' => 'language','class'=>
                             'form-control',
                             'v-model' => 'formData.language',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.language}']) !!}
@@ -150,6 +150,11 @@
                         {!! Form::text('username', null, ['id' => 'username', 'rows' => 4, 'class'=> 'form-control', 'v-model'
                         => 'formData.username', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.username}']) !!}
                         <div class="invalid-feedback" v-if="errors.username">@{{errors.username[0]}}</div>
+                    </div>
+                    <div class="form-group">
+                        <small class="form-text text-muted">
+                            Leave the password blank to keep the current password:
+                        </small>
                     </div>
                     <div class="form-group">
                         {!! Form::label('password', 'New Password') !!}
@@ -219,7 +224,7 @@
             data() {
                 return {
                     image: "",
-                    id: window.ProcessMaker.user.id
+                    idxx: window.ProcessMaker.user.id
                 };
             },
             methods: {
@@ -291,6 +296,8 @@
             },
             methods: {
                 onUpdate() {
+                    this.resetErrors();
+                    if (!this.validatePassword()) return false;
                     if (this.image) {
                         this.formData.avatar = this.image;
                     }
@@ -303,6 +310,31 @@
                 },
                 onClose() {
 
+                },
+                resetErrors() {
+                    this.errors = Object.assign({}, {
+                        username: null,
+                        firstname: null,
+                        lastname: null,
+                        email: null,
+                        password: null,
+                        status: null
+                    });
+                },
+                validatePassword() {
+                    if (!this.formData.password && !this.formData.confPassword) {
+                        return true;
+                    }
+                    if (this.formData.password.trim() === '' && this.formData.confPassword.trim() === '') {
+                        return true
+                    }
+                    if (this.formData.password !== this.formData.confPassword) {
+                        this.errors.password = ['Passwords must match']
+                        this.password = ''
+                        this.submitted = false
+                        return false
+                    }
+                    return true
                 },
             }
         });
