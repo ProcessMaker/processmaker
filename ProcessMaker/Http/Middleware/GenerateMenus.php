@@ -31,9 +31,11 @@ class GenerateMenus
             $menu->group(['prefix' => 'processes'], function($request_items) {
                 $request_items->add(__('menus.topnav.processes'), ['route' => 'processes.index']);
             });
-            $menu->group(['prefix' => 'admin'], function($admin_items) {
-                $admin_items->add(__('menus.topnav.admin'), ['route' => 'users.index']);
-            });
+            if (\Auth::user() && \Auth::user()->canSeeMenu('admin')) {
+                $menu->group(['prefix' => 'admin'], function($admin_items) {
+                    $admin_items->add(__('menus.topnav.admin'), ['route' => 'users.index']);
+                });
+            }
         });
 
         // Build the menus
