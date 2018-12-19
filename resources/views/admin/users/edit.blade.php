@@ -422,7 +422,7 @@
                             if (this.formData.password.trim() === '' && this.formData.confpassword.trim() === '') {
                                 return true
                             }
-                            if (this.formData.password !== this.formData.confpassword) {
+                            if (this.formData.password !== this.formData.confPassword) {
                                 this.errors.password = ['Passwords must match']
                                 this.password = ''
                                 this.submitted = false

@@ -291,6 +291,8 @@
             },
             methods: {
                 onUpdate() {
+                    this.resetErrors();
+                    if (!this.validatePassword()) return false;
                     if (this.image) {
                         this.formData.avatar = this.image;
                     }
@@ -303,6 +305,31 @@
                 },
                 onClose() {
 
+                },
+                resetErrors() {
+                    this.errors = Object.assign({}, {
+                        username: null,
+                        firstname: null,
+                        lastname: null,
+                        email: null,
+                        password: null,
+                        status: null
+                    });
+                },
+                validatePassword() {
+                    if (!this.formData.password && !this.formData.confPassword) {
+                        return true;
+                    }
+                    if (this.formData.password.trim() === '' && this.formData.confPassword.trim() === '') {
+                        return true
+                    }
+                    if (this.formData.password !== this.formData.confPassword) {
+                        this.errors.password = ['Passwords must match']
+                        this.password = ''
+                        this.submitted = false
+                        return false
+                    }
+                    return true
                 },
             }
         });
