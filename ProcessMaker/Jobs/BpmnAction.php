@@ -73,8 +73,8 @@ abstract class BpmnAction implements ShouldQueue
             $definitions->getEngine()->runToNextState();
         } catch (Throwable $exception) {
             // Change the Request to error status
-            $instance = !$instance && $this instanceof StartEvent ? $response : $instance;
-            if ($instance) {
+            $request = !$instance && $this instanceof StartEvent ? $response : $instance;
+            if ($request) {
                 $request->logError($exception, $element);
             }
             throw $exception;
