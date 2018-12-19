@@ -2,15 +2,16 @@
 
 namespace ProcessMaker\Models;
 
-use Carbon\Carbon;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
+use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
-use \Illuminate\Auth\Access\AuthorizationException;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use Throwable;
 
 /**
  * Represents an Eloquent model of a Request which is an instance of a Process.
@@ -291,7 +292,6 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         return $result;
     }
 
-
     /**
      * Check if the user has access to this request
      *
@@ -306,5 +306,33 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
             return true;
         }
         throw new AuthorizationException("Not authorized to view this request");
+    }
+
+    /**
+     * Errors occurred during the execution of the process.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function errors()
+    {
+        return $this->hasMany(ProcessRequestErrors::class);
+    }
+
+    /**
+     * Records an error occurred during the execution of the process.
+     *
+     * @param Throwable $exception
+     * @param FlowElementInterface $element
+     */
+    public function logError(Throwable $exception, FlowElementInterface $element = null)
+    {
+        $error = [
+            'message' => $exception,
+            'element_id' => $element ? $element->getId() : null,
+            'element_name' => $element ? $element->getName() : null,
+        ];
+        $this->errors()->create($error);
+        $this->status = 'ERROR';
+        $this->save();
     }
 }
