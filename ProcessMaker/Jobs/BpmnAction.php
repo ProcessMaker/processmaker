@@ -1,4 +1,5 @@
 <?php
+
 namespace ProcessMaker\Jobs;
 
 use Illuminate\Bus\Queueable;
@@ -8,6 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\App;
 use ProcessMaker\Models\Process as Definitions;
+use Throwable;
 
 abstract class BpmnAction implements ShouldQueue
 {
@@ -67,7 +69,16 @@ abstract class BpmnAction implements ShouldQueue
         $response = App::call([$this, 'action'], compact('definitions', 'instance', 'token', 'process', 'element', 'data'));
 
         //Run engine to the next state
-        $definitions->getEngine()->runToNextState();
+        try {
+            $definitions->getEngine()->runToNextState();
+        } catch (Throwable $exception) {
+            // Change the Request to error status
+            $instance = !$instance && $this instanceof StartEvent ? $response : $instance;
+            if ($instance) {
+                $request->logError($exception, $element);
+            }
+            throw $exception;
+        }
 
         return $response;
     }
