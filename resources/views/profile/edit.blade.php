@@ -219,7 +219,7 @@
             data() {
                 return {
                     image: "",
-                    id: window.ProcessMaker.user.id
+                    idxx: window.ProcessMaker.user.id
                 };
             },
             methods: {
