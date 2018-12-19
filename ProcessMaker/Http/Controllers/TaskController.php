@@ -20,7 +20,8 @@ class TaskController extends Controller
 
     public function index()
     {
-        return view('tasks.index');
+        $title = Request::input('status') == 'CLOSED' ? 'Completed Tasks' : 'To Do Tasks';
+        return view('tasks.index', compact('title'));
     }
 
     public function show()
