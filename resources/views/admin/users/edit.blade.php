@@ -58,6 +58,11 @@
                             <div class="invalid-feedback" v-if="errors.email">@{{errors.email[0]}}</div>
                         </div>
                         <div class="form-group">
+                            <small class="form-text text-muted">
+                                Leave the password blank to keep the current password:
+                            </small>
+                        </div>
+                        <div class="form-group">
                             {!!Form::label('password', __('Password'))!!}
                             {!!Form::password('password', ['class'=> 'form-control', 'v-model'=> 'formData.password',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}'])!!}
