@@ -41,7 +41,7 @@
 	</div>
 </div>
 <div class="modal" tabindex="-1" role="dialog" id="addProcess">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">{{__('Add A Process')}}</h5>
@@ -73,7 +73,7 @@
       </div>
     	<div class="modal-footer">
 			<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
-			<button type="button" class="btn btn-secondary" id="disabledForNow" @click="onSubmit" :disabled="submitted">Save</button>
+			<button type="button" class="btn btn-secondary" id="disabledForNow" @click="onSubmit">Save</button>
         </div>
     </div>
     </div>
@@ -90,12 +90,15 @@
             description: '',
             process_category_id: '',
             addError: {},
-            submitted: false,
             status: ''
         },
         methods: {
             onSubmit() {
-                this.submitted = true;
+                this.errors = Object.assign({}, {
+                    name: null,
+                    description: null,
+                    status: null
+                });
                 ProcessMaker.apiClient.post("/processes", {
                     name: this.name,
                     description: this.description,
@@ -107,12 +110,7 @@
                     window.location = "/modeler/" + response.data.id
                 })
                 .catch(error => {
-                    if (error.response.status === 422) {
-                        this.addError = error.response.data.errors
-                    }
-                })
-                .finally(() => {
-                    this.submitted = false
+                    this.errors = error.response.data.errors;
                 })
             }
         }

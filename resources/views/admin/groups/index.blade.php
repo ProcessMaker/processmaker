@@ -106,7 +106,7 @@
                     .then(response => {
                         ProcessMaker.alert('{{__('Create Group Successfully')}}', 'success');
                         //redirect show group
-                        window.location = "/admin/groups/" + response.data.id
+                        window.location = "/admin/groups/" + response.data.id + "/edit"
                     })
                     .catch(error => {
                         //define how display errors

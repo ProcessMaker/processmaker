@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-    {{__('Edit Groups')}}
+    {{__('Edit Group')}}
 @endsection
 
 @section('sidebar')

@@ -10,7 +10,7 @@
                   <input class="form-control form-control-sm" v-model="filter" placeholder="Search...">
                 </div>
           </span>
-            <p>We've made it easy for you to make the following requests</p>
+            <p>We've made it easy for you to make the following Requests.</p>
             <div v-if="Object.keys(processes).length && !loading" class="process-list">
                 <div class="category" v-for="(category, index) in processes">
                     <h3 class="name">{{index}}</h3>
@@ -20,7 +20,8 @@
                 </div>
             </div>
             <div class="no-requests" v-if="!Object.keys(processes).length && !loading">
-                No Requests have been defined yet or are available to you
+                <h4>You don't have any Processes.</h4>
+                <a href="/processes">Please visit the Processes page</a> and click on +Process to get started.
             </div>
             <div v-if="loading" class="loading">
                 Finding Requests available to you

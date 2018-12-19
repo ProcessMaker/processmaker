@@ -7,7 +7,7 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
 // Routes related to Authentication (password reset, etc)
 // Auth::routes();
     Route::namespace('Admin')->prefix('admin')->group(function () {
-        Route::resource('groups', 'GroupController')->only(['index', 'edit', 'show']);
+        Route::resource('groups', 'GroupController')->only(['index', 'edit']);
         Route::resource('users', 'UserController');
     });
 
@@ -19,6 +19,7 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
             'screen-builder' => 'screen'
         ])->only(['edit']);
         Route::resource('scripts', 'ScriptController');
+        Route::get('scripts/{script}/builder', 'ScriptController@builder');
         Route::resource('categories', 'ProcessCategoryController')->parameters([
             'categories' => 'processCategory'
         ]);

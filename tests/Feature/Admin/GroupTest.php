@@ -40,20 +40,4 @@ class GroupTest extends TestCase
         $response->assertViewIs('admin.groups.edit');
         $response->assertSee('Edit Group');
     }
-
-    /**
-     * Test to make sure the controller and route work with the view SHOW
-     *
-     * @return void
-     */
-    public function testShowRoute()
-    {
-        $group = factory(Group::class)->create();
-        // get the URL
-        $response = $this->webCall('GET', '/admin/groups/' . $group->id);
-        $response->assertStatus(200);
-        // check the correct view is called
-        $response->assertViewIs('admin.groups.show');
-        $response->assertSee($group->name);
-    }
 }
