@@ -18,7 +18,7 @@ class ProcessController extends Controller
     {
         $status = $request->input('status');
         $processes = Process::all(); //what will be in the database = Model
-        $processCategories = ProcessCategory::all();
+        $processCategories = ProcessCategory::where('status', 'ACTIVE')->get();
         $processCategoryArray = ['' => 'None'];
         foreach ($processCategories as $pc) {
             $processCategoryArray[$pc->id] = $pc->name;
@@ -39,6 +39,7 @@ class ProcessController extends Controller
     public function edit(Process $process)
     {
         $categories = ProcessCategory::orderBy('name')
+            ->where('status', 'ACTIVE')
             ->get()
             ->pluck('name', 'id')
             ->toArray();
