@@ -12,8 +12,7 @@ Please contact your ProcessMaker Administrator if you do not know either of the 
 * the web address to access the ProcessMaker log in page
 * your ProcessMaker log in credentials
 
-Did you forget your password? See [Reset Your Password](log-in.md#reset-your-password).  
-.
+Did you forget your password? See [Reset Your Password](log-in.md#reset-your-password).
 {% endhint %}
 
 ## Log In
