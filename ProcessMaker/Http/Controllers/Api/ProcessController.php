@@ -65,9 +65,13 @@ class ProcessController extends Controller
         $orderBy = $this->getRequestSortBy($request, 'name');
         $perPage = $this->getPerPage($request);
         $include = $this->getRequestInclude($request);
+        $status = $request->input('status');
 
-        $processes = Process::with($include)
-            ->select('processes.*')
+        $processes = ($status === 'deleted')
+                        ? Process::onlyTrashed()->with($include)
+                        : Process::with($include);
+
+        $processes->select('processes.*')
             ->leftJoin('process_categories as category', 'processes.process_category_id', '=', 'category.id')
             ->leftJoin('users as user', 'processes.user_id', '=', 'user.id')
             ->where($where);
@@ -246,6 +250,48 @@ class ProcessController extends Controller
         return new Resource($process->refresh());
     }
 
+    /**
+     * Reverses the soft delete of the element
+     *
+     * @param Request $request
+     * @param Process $process
+     * @return ResponseFactory|Response
+     * @throws \Throwable
+     *
+     * @OA\Put(
+     *     path="/processes/processId/restore",
+     *     summary="Restore a soft deleted process",
+     *     operationId="restoreProcess",
+     *     tags={"Process"},
+     *     @OA\Parameter(
+     *         description="ID of process to return",
+     *         in="path",
+     *         name="process_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(ref="#/components/schemas/ProcessEditable")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *     ),
+     * )
+     */
+    public function restore(Request $request, $processId)
+    {
+        $process = Process::withTrashed()->find($processId);
+        $process->status='ACTIVE';
+        $process->save();
+        $process->restore();
+        return new Resource($process->refresh());
+    }
+
     private function savePermission($process, $assignableType, $assignableId, $permissionId)
     {
         $processPerm = new ProcessPermission();
@@ -287,6 +333,9 @@ class ProcessController extends Controller
      */
     public function destroy(Process $process)
     {
+        $process->status='INACTIVE';
+        $process->save();
+
         if ($process->collaborations->count() !== 0) {
             return response(
                 ['message' => 'The item should not have associated collaboration',
@@ -300,6 +349,7 @@ class ProcessController extends Controller
                     'errors' => ['requests' => $process->requests->count()]],
                 422);
         }
+
 
         $process->delete();
         return response('', 204);
