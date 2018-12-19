@@ -28,9 +28,6 @@
                 </nav>
                 <div class="card card-body tab-content mt-3" id="nav-tabContent">
                     <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-
-                        {{--=========================--}}
-
                         <div class="row">
                             <div class="col-8">
                                 <div class="card card-body">
@@ -186,6 +183,11 @@
                                     </div>
 
                                     <div class="form-group">
+                                        <small class="form-text text-muted">
+                                            Leave the password blank to keep the current password:
+                                        </small>
+                                    </div>
+                                    <div class="form-group">
                                         {!! Form::label('password', 'New Password') !!}
                                         {!! Form::password('password', ['id' => 'password', 'rows' => 4, 'class'=> 'form-control', 'v-model'
                                         => 'formData.password', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}']) !!}
@@ -200,9 +202,6 @@
                                 </div>
                             </div>
                         </div>
-
-                        {{-----------------------------}}
-
                     </div>
                     <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
                         <table class="table mb-0">
