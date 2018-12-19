@@ -19,6 +19,8 @@
                             aria-controls="nav-home" aria-selected="true">Information</a>
                         <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab"
                             aria-controls="nav-profile" aria-selected="false">Permissions</a>
+                        <a class="nav-item nav-link" id="nav-tokens-tab" data-toggle="tab" href="#nav-tokens" role="tab"
+                            aria-controls="nav-tokens" aria-selected="false">API Tokens</a>
                     </div>
                 </nav>
                 <div class="card card-body tab-content mt-3" id="nav-tabContent">
@@ -129,6 +131,41 @@
                         <hr class="mt-0">
                         <button class="btn btn-secondary float-right" @click="onPermissionUpdate">SUBMIT</button>
                     </div>
+
+                    <div class="tab-pane fade" id="nav-tokens" role="tabpanel" aria-labelledby="nav-tokens-tab">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Created At</th>
+                                    <th>Expires At</th>
+                                    <th>Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="token in apiTokens">
+                                    <td>@{{ token.id.substr(0,7) }}</td>
+                                    <td>@{{ moment(token.created_at).format() }}</td>
+                                    <td>@{{ moment(token.expires_at).format() }}</td>
+                                    <td>
+                                        <a style="cursor: pointer" @click='deleteToken(token.id)'>
+                                            <i class="fas fa-trash-alt fa-lg" style="cursor: pointer"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr v-if='apiTokens.length == 0'>
+                                    <td colspan="4">User has no tokens.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="form-group" v-if="newToken != null">
+                            <div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i> Make sure you copy your access token now. You won't be able to see it again.</div>
+                            <button @click="copyTextArea" class="btn btn-secondary"><i class="fas fa-paste"></i> Copy Token To Clipboard</button>
+                            <textarea ref="text" style="height: 400px" class="form-control">@{{ newToken.accessToken }}</textarea>
+                        </div>
+                        <hr class="mt-0">
+                        <button class="btn btn-secondary float-right" @click="generateToken">Generate New Token</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -154,6 +191,8 @@
                     userPermissionIds: @json($permission_ids),
                     selected: [],
                     selectAll: false,
+                    newToken: null,
+                    apiTokens: [],
                 }
             },
             beforeMount() {
@@ -163,8 +202,13 @@
                 this.hasPermission()
             },
             mounted() {
+                this.loadTokens();
             },
             methods: {
+              copyTextArea() {
+      this.$refs.text.select();
+      document.execCommand('copy');
+    },
                 resetErrors() {
                     this.errors = Object.assign({}, {
                         username: null,
@@ -246,7 +290,44 @@
                             location.reload();
                         })
                     }
-                 },
+                },
+                loadTokens() {
+                    ProcessMaker.apiClient({method: 'GET', url: '/oauth/personal-access-tokens', baseURL: '/'})
+                        .then((result) => {
+                            this.apiTokens = result.data
+                        })
+                },
+                generateToken() {
+                    ProcessMaker.apiClient({
+                        method: 'POST',
+                        url: '/oauth/personal-access-tokens',
+                        baseURL: '/',
+                        data: { name: 'API Token', scopes: [] }
+                        })
+                        .then((result) => {
+                            this.newToken = result.data;
+                            this.loadTokens();
+                            ProcessMaker.alert("Access token generated successfully", "success");
+                        })
+                },
+                deleteToken(tokenId) {
+                    ProcessMaker.confirmModal(
+                        "Caution!",
+                        "Are you sure to delete the token " + tokenId.substr(0,7) + "? Any services using it will no longer have access.",
+                        "",
+                        () => {
+                            ProcessMaker.apiClient({
+                                method: 'DELETE',
+                                url: '/oauth/personal-access-tokens/' + tokenId,
+                                baseURL: '/',
+                                })
+                                .then((result) => {
+                                    this.loadTokens();
+                                    this.newToken = null;
+                                })
+                        }
+                    );
+                }
             }
         });
     </script>
