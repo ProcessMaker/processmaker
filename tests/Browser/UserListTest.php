@@ -11,9 +11,24 @@ use Laravel\Dusk\Browser;
 
 class UserListTest extends DuskTestCase
 {
+    
+    public function testBasicExample()
+    {
+        $user = factory(User::class)->create([
+            'email' => 'taylor@laravel.com',
+        ]);
+
+        $this->browse(function ($browser) use ($user) {
+            $browser->visit('/login')
+                    ->type('email', $user->email)
+                    ->type('password', 'secret')
+                    ->press('Login')
+                    ->assertPathIs('/home');
+        });
+    }    
     /**
      * @throws \Throwable
-     */
+     
     public function testLogin()
     {
         //Factory 100 users
@@ -52,5 +67,7 @@ class UserListTest extends DuskTestCase
                 ->assertPresent('div.icon:nth-child(2) > .fa-angle-left')
                 ->assertPresent('div.icon:nth-child(8) > .fa-angle-right');
         });
-    }
+    }        
+        */
+
 }
