@@ -36,7 +36,7 @@
                         text-variant="white" class="bg-primary mb-3 d-flex flex-row card-border border-0">
                         <a href="{{ route('requests_by_type', ['type' => 'completed']) }}" class="card-link text-light">
                             <h1 class="m-0 font-weight-bold">{{$completed}}</h1>
-                            <h6 class="card-text">{{__('Complete')}}</h6>
+                            <h6 class="card-text">{{__('Completed')}}</h6>
                         </a>
                     </b-card>
 
@@ -44,7 +44,7 @@
                         text-variant="white" class="bg-warning mb-3 d-flex flex-row  card-border border-0">
                         <a href="{{ route('requests_by_type', ['type' => 'all']) }}" class="card-link text-light">
                             <h1 class="m-0 font-weight-bold">{{$allRequest}}</h1>
-                            <h6 class="card-text">{{__('All Request')}}</h6>
+                            <h6 class="card-text">{{__('All Requests')}}</h6>
                         </a>
                     </b-card>
 
