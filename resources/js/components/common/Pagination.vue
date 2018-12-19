@@ -1,11 +1,12 @@
 <template>
-  <div class="row mb-2">
+  <div class="row mb-2 pl-2 pr-2">
     <div class="col-md-6 col-sm-12 d-flex">
       <div
         v-if="tablePagination && tablePagination.last_page > 1"
         class="pagination"
       >{{tablePagination.from + 1}} - {{tablePagination.to}} of {{tablePagination.total}} {{title}}</div>
       <div
+        class="pagination"
         v-if="tablePagination && tablePagination.last_page < 1"
       >{{tablePagination.total}} {{title}}</div>
     </div>
