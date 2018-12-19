@@ -69,6 +69,10 @@
                                 {!!Form::password('confpassword', ['class'=> 'form-control', 'v-model'=> 'formData.confpassword',
                                 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}'])!!}
                             </div>
+                            <div class="text-right">
+                                {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose']) !!}
+                                {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'onProfileUpdate']) !!}
+                            </div>
                         </div>
                         <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
                             <table class="table mb-0">
@@ -124,45 +128,50 @@
                                 </tr>
                                 </tbody>
                             </table>
+                            <div class="text-right">
+                                {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose']) !!}
+                                {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'onProfileUpdate']) !!}
+                            </div>
                         </div>
-                    </div>
-                    <div class="tab-pane fade" id="nav-tokens" role="tabpanel" aria-labelledby="nav-tokens-tab">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Created At</th>
-                                    <th>Expires At</th>
-                                    <th>Delete</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="token in apiTokens">
-                                    <td>@{{ token.id.substr(0,7) }}</td>
-                                    <td>@{{ moment(token.created_at).format() }}</td>
-                                    <td>@{{ moment(token.expires_at).format() }}</td>
-                                    <td>
-                                        <a style="cursor: pointer" @click='deleteToken(token.id)'>
-                                            <i class="fas fa-trash-alt fa-lg" style="cursor: pointer"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr v-if='apiTokens.length == 0'>
-                                    <td colspan="4">User has no tokens.</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <div class="form-group" v-if="newToken != null">
-                            <div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i> Make sure you copy your access token now. You won't be able to see it again.</div>
-                            <button @click="copyTextArea" class="btn btn-secondary"><i class="fas fa-paste"></i> Copy Token To Clipboard</button>
-                            <textarea ref="text" style="height: 400px" class="form-control">@{{ newToken.accessToken }}</textarea>
+                        <div class="tab-pane fade" id="nav-tokens" role="tabpanel" aria-labelledby="nav-tokens-tab">
+                            <div v-if="!isCurrentUser">
+                                Only the logged in user can create API tokens
+                            </div>
+                            <div v-if="isCurrentUser">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Created At</th>
+                                            <th>Expires At</th>
+                                            <th>Delete</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="token in apiTokens">
+                                            <td>@{{ token.id.substr(0,7) }}</td>
+                                            <td>@{{ moment(token.created_at).format() }}</td>
+                                            <td>@{{ moment(token.expires_at).format() }}</td>
+                                            <td>
+                                                <a style="cursor: pointer" @click='deleteToken(token.id)'>
+                                                    <i class="fas fa-trash-alt fa-lg" style="cursor: pointer"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr v-if='apiTokens.length == 0'>
+                                            <td colspan="4">User has no tokens.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div class="form-group" v-if="newToken != null">
+                                    <div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i> Make sure you copy your access token now. You won't be able to see it again.</div>
+                                    <button type="button" @click="copyTextArea" class="btn btn-secondary"><i class="fas fa-paste"></i> Copy Token To Clipboard</button>
+                                    <textarea ref="text" style="height: 400px" class="form-control">@{{ newToken.accessToken }}</textarea>
+                                </div>
+                                <hr class="mt-0">
+                                <button type="button" class="btn btn-secondary float-right" @click="generateToken">Generate New Token</button>
+                            </div>
                         </div>
-                        <hr class="mt-0">
-                        <button class="btn btn-secondary float-right" @click="generateToken">Generate New Token</button>
-                    </div>
-                    <div class="text-right">
-                        {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose']) !!}
-                        {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'onProfileUpdate']) !!}
                     </div>
                     {!! Form::close() !!}
                 </div>
@@ -192,6 +201,7 @@
                     selectAll: false,
                     newToken: null,
                     apiTokens: [],
+                    currentUserId: {{ Auth::user()->id }},
                 }
             },
             created() {
@@ -200,11 +210,16 @@
             mounted() {
                 this.loadTokens();
             },
+            computed: {
+                isCurrentUser() {
+                    return this.currentUserId == this.formData.id
+                },
+            },
             methods: {
-              copyTextArea() {
-      this.$refs.text.select();
-      document.execCommand('copy');
-    },
+                copyTextArea() {
+                    this.$refs.text.select();
+                    document.execCommand('copy');
+                },
                 resetErrors() {
                     this.errors = Object.assign({}, {
                         username: null,
