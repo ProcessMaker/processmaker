@@ -318,11 +318,11 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     public function logError(Throwable $exception, FlowElementInterface $element = null)
     {
         $error = [
-            'message' => $exception,
+            'message' => $exception->getMessage(),
             'element_id' => $element ? $element->getId() : null,
             'element_name' => $element ? $element->getName() : null,
         ];
-        $errors = $this->errors;
+        $errors = $this->errors ?: [];
         $errors[] = $error;
         $this->errors = $errors;
         $this->status = 'ERROR';
