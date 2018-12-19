@@ -59,12 +59,7 @@ class UserController extends Controller
             }
         );
 
-//        return view('profile.edit',
-//            compact('currentUser', 'states', 'timezones', 'countries', 'datetimeFormats'));
-
-
-
-        return view('admin.users.edit', compact(['user', 'groups', 'all_permissions', 'users_permission_ids', 'permission_ids', 'currentUser',
+        return view('admin.users.edit', compact(['user', 'groups', 'all_permissions', 'users_permission_ids', 'permission_ids',
              'states', 'timezones', 'countries', 'datetimeFormats'
             ]));
     }

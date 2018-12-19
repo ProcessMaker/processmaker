@@ -148,7 +148,7 @@
 
                                         <div class="form-group col">
                                             {!! Form::label('language', 'Language') !!}
-                                            {!! Form::select('language', ['us_en' => 'us_en'], $currentUser->language,
+                                            {!! Form::select('language', ['us_en' => 'us_en'], $user->language,
                                             ['id' =>
                                             'language','class'=>
                                             'form-control',
@@ -381,9 +381,9 @@
                             apiTokens: [],
                             options: [
                                 {
-                                    src: @json($currentUser['avatar']),
-                                    title: @json($currentUser['fullname']),
-                                    initials: @json($currentUser['firstname'][0]) + @json($currentUser['lastname'][0])
+                                    src: @json($user['avatar']),
+                                    title: @json($user['fullname']),
+                                    initials: @json($user['firstname'][0]) + @json($user['lastname'][0])
                                 }
                             ]
                         }
