@@ -39,7 +39,7 @@
                             <h6 class="card-text">{{__('Completed')}}</h6>
                         </a>
                     </b-card>
-
+                    @if (Auth::user()->is_administrator)
                     <b-card header="<i class='fas fa-clipboard fa-2x'></i>" header-class="d-flex align-items-center justify-content-center card-size-header border-0"
                         text-variant="white" class="bg-warning mb-3 d-flex flex-row  card-border border-0">
                         <a href="{{ route('requests_by_type', ['type' => 'all']) }}" class="card-link text-light">
@@ -47,6 +47,7 @@
                             <h6 class="card-text">{{__('All Requests')}}</h6>
                         </a>
                     </b-card>
+                    @endif
 
                 </b-card-group>
 

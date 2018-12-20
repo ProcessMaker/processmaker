@@ -75,21 +75,21 @@ class ProcessRequestController extends Controller
             }
         }
 
+        if (!Auth::user()->is_administrator) {
+            $query->startedMe(Auth::user()->id);
+        } 
+
         // type filter
         switch ($request->input('type')) {
             case 'started_me':
-                $query->startedMe(Auth::user()->id);
-                break;
-            case 'in_progress':
-                if (!Auth::user()->is_administrator) {
+                if (Auth::user()->is_administrator) {
                     $query->startedMe(Auth::user()->id);
                 }
+                break;
+            case 'in_progress':
                 $query->inProgress();
                 break;
             case 'completed':
-                if (!Auth::user()->is_administrator) {
-                        $query->startedMe(Auth::user()->id);
-                    }
                 $query->completed();
                 break;
         }
