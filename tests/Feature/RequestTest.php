@@ -30,6 +30,52 @@ class RequestTest extends TestCase
     }
 
     /**
+     * Test that admin users can vue all requests
+     *
+     * @return void
+     */
+    public function testRequestAllRouteAsAdmin()
+    {
+        $this->user = factory(User::class)->create();
+        $request = factory(ProcessRequest::class)->create();
+
+        $response = $this->webCall('GET', '/requests/' . $request->id);
+        $response->assertStatus(403);
+
+        $this->user->update(['is_administrator' => true]);
+        // $this->user->refresh();
+        $response = $this->webCall('GET', '/requests/' . $request->id);
+        
+        $response->assertStatus(200);
+        
+        // check the correct view is called
+        $response->assertViewIs('requests.show');
+    }
+
+    /**
+     * Test that the assigned user can vue the request
+     *
+     * @return void
+     */
+    public function testShowRouteForUser()
+    {
+        $this->user = factory(User::class)->create();
+        $request = factory(ProcessRequest::class)->create();
+
+        $response = $this->webCall('GET', '/requests/' . $request->id);
+        $response->assertStatus(403);
+
+        $request->update(['user_id' => $this->user->id]);
+        // $request->refresh();
+
+        $response = $this->webCall('GET', '/requests/' . $request->id);
+        $response->assertStatus(200);
+
+        // check the correct view is called
+        $response->assertViewIs('requests.show');
+    }
+
+    /**
      * Test to make sure the controller and route work with the view
      *
      * @return void

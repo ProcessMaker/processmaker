@@ -1,6 +1,8 @@
 <?php
 
 return [
+    // Uncomment to use route permissions for the horizon ui
+    // 'middleware' => ['web', 'authorize'],
 
     'uri' => 'admin/queues',
 
