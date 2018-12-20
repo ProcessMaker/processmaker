@@ -11,7 +11,7 @@ export default {
         Vuetable,
         Pagination
     },
-    created () {
+    created() {
         // Use our api to fetch our role listing
         this.fetch();
     },
@@ -24,7 +24,7 @@ export default {
     },
     methods: {
         // Handler to properly format date/time columns according to localized format
-        formatDate (value, format) {
+        formatDate(value, format) {
             format = format || '';
             if (value) {
                 return window.moment(value)
@@ -33,18 +33,18 @@ export default {
             return "n/a";
         },
         // Data manager takes new sorting and calls our fetch method
-        dataManager (sortOrder, pagination) {
+        dataManager(sortOrder, pagination) {
             this.orderBy = sortOrder[0].field;
             this.orderDirection = sortOrder[0].direction;
             this.fetch();
         },
         // Handler to change what page of results we are on
-        changePerPage (value) {
+        changePerPage(value) {
             this.perPage = value;
             this.fetch();
         },
         // Transformers our API meta data to a format understood by vuetable 2
-        transform (data) {
+        transform(data) {
             // Clean up fields for meta pagination so vue table pagination can understand
             data.meta.last_page = data.meta.total_pages;
             data.meta.from = (data.meta.current_page - 1) * data.meta.per_page;
@@ -52,11 +52,11 @@ export default {
             return data;
         },
         // Handler to set pagination data on our pagination based off of data passed into vuetable
-        onPaginationData (data) {
+        onPaginationData(data) {
             this.$refs.pagination.setPaginationData(data);
         },
         // Handler to change the page based on events fired from our pagination component
-        onPageChange (page) {
+        onPageChange(page) {
             if (page == "next") {
                 this.page = this.page + 1;
             } else if (page == "prev") {
@@ -74,7 +74,7 @@ export default {
         }
 
     },
-    data () {
+    data() {
         return {
             // The returned data that will be loaded into the vuetable
             data: [],
@@ -91,7 +91,7 @@ export default {
             // Cancel token which should be stored from axios if you want to cancel the current in progress request
             cancelToken: null,
             css: {
-                tableClass: "table table-hover",
+                tableClass: "table table-hover table-responsive",
                 loadingClass: "loading",
                 detailRowClass: "vuetable-detail-row",
                 handleIcon: "grey sidebar icon",
@@ -100,7 +100,7 @@ export default {
                 descendingIcon: "fas fa-sort-down",
                 ascendingClass: "ascending",
                 descendingClass: "descending",
-                renderIcon (classes, options) {
+                renderIcon(classes, options) {
                     return `<i class="${classes.join(" ")}"></i>`;
                 }
             }
