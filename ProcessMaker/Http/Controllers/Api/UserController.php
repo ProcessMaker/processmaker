@@ -183,9 +183,7 @@ class UserController extends Controller
         $user->fill($request->json()->all());
         if (Auth::user()->is_administrator) {
             // user must be an admin to make another user an admin
-            if($request->get('is_administrator') === true) {
-                $user->is_administrator = true;
-            }
+            $user->is_administrator = $request->get('is_administrator');
         }
         $user->saveOrFail();
         if ($request->has('avatar')) {
