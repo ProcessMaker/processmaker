@@ -5,81 +5,22 @@
             <select ref="assignmentsDropDownList"
                     class="form-control"
                     :value="assignmentGetter"
-                    @input="assignmentSetter">
+                    @input="assignmentSetter"
+                    @change="assignmentTypeChanged">
                 <option value=""></option>
                 <option value="requestor">To requestor</option>
                 <option value="cyclical" v-if="false">Cyclical</option>
                 <option value="user">To user</option>
             </select>
         </div>
-        <div class="form-group" v-if="showMultiassignment">
-            <label>Assigned Users/Groups</label>
-            <button @click="showUserOrGroup=true;" class="btn-sm float-right">+</button>
-            <button @click="removeUserOrGroup" :disabled="!selectedAssignee" class="btn-sm float-right">-</button>
-            <div class="list-users-groups small">
-                <small v-if="loadingAssigned">loading...</small>
-                <span v-else v-for="(row, index) in assignedUsersGroups"
-                      class="list-group-item list-group-item-action pt-0 pb-0"
-                      :class="{'bg-primary': selectedAssigneeIndex == index}"
-                      @click="selectAssignee(row, index)">
-                    <avatar-image v-if="row.assigned.fullname"
-                                  class-container=""
-                                  size="12" class-image=""
-                                  :input-data="row.assigned"></avatar-image>
-                    <template v-else>
-                        <i class="fa fa-users" aria-hidden="true"></i>
-                        <span class="text-center text-capitalize text-nowrap m-1">{{row.assigned.name}}</span>
-                    </template>
-                </span>
-            </div>
-        </div>
-
         <div class="form-group" v-if="showAssignOneUser">
             <label>Assigned User</label>
-            <select class="form-control" @change="changedUser" v-model="selectedUser">
-                <option v-for="(row, index) in activeUsers" v-bind:value="row.id">
-                    {{row.fullname}}
+            <select class="form-control" @change="updateAssignment" v-model="selectedUserId">
+                <option v-for="user in users" v-bind:value="user.id">
+                    {{user.fullname}}
                 </option>
             </select>
         </div>
-
-        <b-modal v-model="showUserOrGroup" size="md" centered title="Assign User or Group" v-cloak>
-            <div class="input-group mb-3">
-                <input type="text" class="form-control" placeholder="search user or group" v-model="filter">
-                <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="button" @click="loadUsersAndGroups">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="list-users-groups">
-                <span v-for="(row, index) in usersAndGroups"
-                      class="list-group-item list-group-item-action pt-1 pb-1"
-                      :class="{'bg-primary': selectedUserGroupIndex == index}"
-                      @click="selectUserGroup(row, index)"
-                      @dblclick="selectUserGroup(row, index);addUserOrGroup();"
-                >
-                      <avatar-image v-if="row.fullname"
-                                    class-container=""
-                                    size="12" class-image=""
-                                    :input-data="row"></avatar-image>
-                    <template v-else>
-                        <i class="fa fa-users" aria-hidden="true"></i>
-                        <span class="text-center text-capitalize text-nowrap m-1">{{row.name}}</span>
-                    </template>
-                </span>
-            </div>
-            <div slot="modal-footer">
-                <b-button @click="cancelAddUserOrGroup" class="btn btn-outline-secondary btn-sm text-uppercase">
-                    CLOSE
-                </b-button>
-                <b-button :disabled="selectedUserGroupIndex < 0" @click="addUserOrGroup"
-                          class="btn btn-secondary btn-sm text-uppercase">
-                    ASSIGN
-                </b-button>
-            </div>
-
-        </b-modal>
     </div>
 </template>
 
@@ -91,16 +32,24 @@
         props: ["value", "label", "helper", "property"],
         data() {
             return {
+                users: [],
+                groups: [],
+                // showAssignOneUser: false,
+                showUserOrGroup: false,
+                filter: '',
+                loadingAssigned: true,
+                selectedUserId: null,
+                assignmentId: null,
+
+                // temp
+                usersAndGroups: [],
+
+                // remove below
+                selectedUserGroupIndex: -1,
+                selectedUserGroup: null,
                 selectedAssigneeIndex: -1,
                 selectedAssignee: null,
                 assignedUsersGroups: [],
-                usersAndGroups: [],
-                showUserOrGroup: false,
-                filter: '',
-                selectedUserGroupIndex: -1,
-                selectedUserGroup: null,
-                loadingAssigned: true,
-                selectedUser: ''
             };
         },
         computed: {
@@ -118,11 +67,6 @@
             node() {
                 return this.$parent.$parent.inspectorNode;
             },
-            activeUsers: function () {
-               return this.usersAndGroups.filter(function (u) {
-                  return u.fullname !== undefined;
-               })
-            },
             showAssignOneUser() {
                 return this.assignmentGetter === 'user';
             },
@@ -132,116 +76,94 @@
         },
         methods: {
             /**
-             * Select an assigned user or group
-             *
-             * @param {object} assignee
-             * @param {number} index
-             */
-            selectAssignee(assignee, index) {
-                this.selectedAssigneeIndex = index;
-                this.selectedAssignee = assignee;
-            },
-            /**
              * Updates in the backend the user assigned when it is changed
              *
              */
-            changedUser() {
-                let assignToDelete = this.assignedUsersGroups.pop();
-                if (assignToDelete !== null && assignToDelete !== undefined) {
-                    let idToDelete = assignToDelete.data === undefined ? assignToDelete.id : assignToDelete.data.id;
-                    ProcessMaker.apiClient
-                        .delete(`task_assignments/${idToDelete}`)
-                        .then(() => {
-                            this.selectedUserGroupIndex = -1;
-                            this.selectedUserGroup = this.usersAndGroups
-                                .filter(usr => usr.id === this.selectedUser && usr.fullname)[0];
-                            this.addUserOrGroup();
-                        });
+            updateAssignment() {
+                if (!this.assignmentId) {
+                    return this.createAssignment();
                 }
-                else {
-                    this.selectedUserGroupIndex = -1;
-                    this.selectedUserGroup = this.usersAndGroups
-                        .filter(usr => usr.id === this.selectedUser && usr.fullname)[0];
-                    this.addUserOrGroup();
+                if (!this.selectedUserId) {
+                    return this.deleteAssignment();
+                }
+                ProcessMaker.apiClient
+                    .put(`task_assignments/${this.assignmentId}`, {
+                        'process_id': this.process.id,
+                        'process_task_id': this.value,
+                        'assignment_id': this.selectedUserId,
+                        'assignment_type': USER_TYPE,
+                    })
+                    .then(() => {});
+            },
+            assignmentTypeChanged()
+            {
+                if (this.assignmentGetter != 'user' && this.assignmentId) {
+                    this.deleteAssignment()
+                }
+                // set a default user otherwise the nayra engine will break
+                if (this.assignmentGetter == 'user' && !this.selectedUserId) {
+                    this.selectedUserId = this.users[0].id
+                    this.updateAssignment()
                 }
             },
             /**
-             * Remove a user or group from assigned list
+             * Remove an assignment
              */
-            removeUserOrGroup() {
-                if (this.selectedAssigneeIndex > -1) {
-                    ProcessMaker.apiClient
-                        .delete(`task_assignments/${this.selectedAssignee.id}`)
-                        .then(() => {
-                            this.assignedUsersGroups.splice(this.selectedAssigneeIndex, 1);
-                            this.selectedAssigneeIndex = -1;
-                        });
-                }
-            },
-            /**
-             * Select an user or group
-             *
-             * @param {object} userGroup
-             * @param {number} index
-             */
-            selectUserGroup(userGroup, index) {
-                this.selectedUserGroupIndex = index;
-                this.selectedUserGroup = userGroup;
+            deleteAssignment() {
+                ProcessMaker.apiClient
+                    .delete(`task_assignments/${this.assignmentId}`)
+                    .then(() => {
+                        this.assignmentId = null
+                        this.selectedUserId = null
+                        // this.assignedUsersGroups.splice(this.selectedAssigneeIndex, 1);
+                        // this.selectedAssigneeIndex = -1;
+                    });
             },
             /**
              * Add an user or group.
              */
-            addUserOrGroup() {
+            createAssignment() {
                 ProcessMaker.apiClient
                     .post("/task_assignments", {
                         'process_id': this.process.id,
                         'process_task_id': this.value,
-                        'assignment_id': this.selectedUserGroup.id,
-                        'assignment_type': this.selectedUserGroup.fullname ? USER_TYPE : GROUP_TYPE
+                        'assignment_id': this.selectedUserId,
+                        'assignment_type': USER_TYPE,
                     })
                     .then(assignment => {
-                        assignment.assigned = this.selectedUserGroup;
-                        this.assignedUsersGroups.push(assignment);
-                        this.selectUserGroup(null, -1);
-                        this.showUserOrGroup = false;
+                        this.assignmentId = assignment.data.id
+                        // this.showAssignees  = false;
                     });
-            },
-            /**
-             * Cancel the add user or group action.
-             */
-            cancelAddUserOrGroup() {
-                this.showUserOrGroup = false;
             },
             /**
              * Load the list of assigned users
              */
             loadUsersAndGroups() {
-                this.usersAndGroups.splice(0);
                 ProcessMaker.apiClient
                     .get("/users", {
                         params: {
                             filter: this.filter,
-                            per_page: 5,
                         }
                     })
                     .then(response => {
-                        this.usersAndGroups.push(...response.data.data);
+                        this.users = response.data.data;
                     });
+
+                return; // Not using groups yet
                 ProcessMaker.apiClient
                     .get("/groups", {
                         params: {
                             filter: this.filter,
-                            per_page: 5,
                         }
                     })
                     .then(response => {
-                        this.usersAndGroups.push(...response.data.data);
+                        this.groups = response.data.data;
                     });
             },
             /**
              * Load the list of assigned users
              */
-            loadAssignedUsers() {
+            loadAssignments() {
                 this.loadingAssigned = true;
                 ProcessMaker.apiClient
                     .get("/task_assignments", {
@@ -252,13 +174,15 @@
                         }
                     })
                     .then(response => {
-                        this.assignedUsersGroups.splice(0);
-                        this.assignedUsersGroups.push(...response.data.data);
-                        this.loadingAssigned = false;
+                        if (response.data.data.length > 0) {
+                            // get the last element in array (even though there should only be one)
+                            const assignment = response.data.data.slice(-1)[0]
 
-
-                        if (this.assignedUsersGroups.length > 0) {
-                            this.selectedUser = this.assignedUsersGroups[0].assigned.id;
+                            if (assignment.assignment_type != 'ProcessMaker\\Models\\User') {
+                                throw("Only users assignments are supported for now")
+                            }
+                            this.assignmentId = assignment.id
+                            this.selectedUserId = assignment.assignment_id
                         }
                     });
             },
@@ -271,13 +195,16 @@
             },
         },
         watch: {
-            value() {
-                this.loadAssignedUsers();
-            }
+            value: _.debounce(function() {
+                if (this.assignmentId) {
+                    this.updateAssignment();
+                    this.loadAssignments();
+                }
+            }, 500),
         },
         mounted() {
             this.loadUsersAndGroups();
-            this.loadAssignedUsers();
+            this.loadAssignments();
         }
     };
 </script>
