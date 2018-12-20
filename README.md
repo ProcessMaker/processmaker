@@ -201,7 +201,7 @@ Full OpenAPI 3.0 specification at [https://github.com/OAI/OpenAPI-Specification/
 
 **Testing with Laravel Dusk**
 
-When testing in [Laravel Dusk](https://laravel.com/docs/5.7/dusk), make sure to turn off debugging mode in your `.env` so you can use the whole page and screens executing functional tests. Then, change app_env value to `develop` in the same file:
+When testing in [Laravel Dusk](https://laravel.com/docs/5.7/dusk), make sure to turn off debugging mode in your `.env` so you can use the whole page and screens executing functional tests. Then, change app\_env value to `develop` in the same file:
 
 ```text
 APP_DEBUG=FALSE
@@ -216,11 +216,11 @@ Execute `php artisan dusk:make newTest` to generate a new Dusk test. The generat
 
 **More Info**
 
-Detailed installation can be found at [https://laravel.com/docs/5.7/dusk#installation](https://laravel.com/docs/5.7/dusk#installation)
+Detailed installation can be found at [https://laravel.com/docs/5.7/dusk\#installation](https://laravel.com/docs/5.7/dusk#installation)
 
-To interact with web elements [https://laravel.com/docs/5.7/dusk#interacting-with-elements](https://laravel.com/docs/5.7/dusk#interacting-with-elements)
+To interact with web elements [https://laravel.com/docs/5.7/dusk\#interacting-with-elements](https://laravel.com/docs/5.7/dusk#interacting-with-elements)
 
-List of available assertions [https://laravel.com/docs/5.7/dusk#available-assertions](https://laravel.com/docs/5.7/dusk#available-assertions)
+List of available assertions [https://laravel.com/docs/5.7/dusk\#available-assertions](https://laravel.com/docs/5.7/dusk#available-assertions)
 
 #### License
 
