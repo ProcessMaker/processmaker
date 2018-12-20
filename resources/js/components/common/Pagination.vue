@@ -10,7 +10,7 @@
         v-if="tablePagination && tablePagination.last_page < 1"
       >{{tablePagination.total}} {{title}}</div>
     </div>
-    <div class="col-md-6 col-sm-12 d-flex justify-content-end">
+    <div class="col-md-6 col-sm-12 d-flex justify-content-end button-pagination">
       <div v-show="tablePagination && tablePagination.last_page > 1" :class="css.wrapperClass">
         <div
           @click="loadPage(1)"
