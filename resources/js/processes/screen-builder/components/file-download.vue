@@ -19,6 +19,7 @@
                 requestId: null
             };
         },
+        props: ['name'],
         beforeMount() {
             this.getRequestId();
         },
@@ -54,7 +55,7 @@
                     return;
                 }
                 ProcessMaker.apiClient
-                    .get("requests/" + this.requestId + "/files")
+                    .get("requests/" + this.requestId + "/files?name=" + this.name)
                     .then(response => {
                         this.files = response.data;
                         this.loaded = true;

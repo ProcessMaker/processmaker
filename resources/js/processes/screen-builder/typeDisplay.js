@@ -104,7 +104,16 @@ let initialControls = [{
                     label: "Text Label",
                     helper: "The text to display",
                 }
-            }]
+            },
+            {
+                type: "FormInput",
+                field: "name",
+                config: {
+                    label: 'Download Name',
+                    helper: "The name of the Download",
+                }
+            }
+          ]
         }
     },
     {

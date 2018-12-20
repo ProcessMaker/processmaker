@@ -31,7 +31,24 @@ class ProcessRequestFileController extends Controller
     */
     public function index(Request $laravel_request, ProcessRequest $request)
      {
-        return new ResourceCollection($request->getMedia());
+		//Retrieve media from ProcessRequest
+		$media = $request->getMedia();
+		
+		//Retrieve input variable 'name'
+		$name = $laravel_request->get('name');
+		
+		//If no name, retern entire collection; otherwise, filter collection
+		if (! $name) {
+			return new ResourceCollection($media);
+		} else {
+			$filtered = $media->reject(function ($item, $key) use ($name) {
+				if ($item->custom_properties['data_name'] != $name) {
+					return true;
+				}
+			});
+			
+	        return new ResourceCollection($filtered);
+		}
      }
 
      /**
