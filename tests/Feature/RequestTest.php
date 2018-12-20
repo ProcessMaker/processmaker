@@ -29,36 +29,45 @@ class RequestTest extends TestCase
     }
 
     /**
-     * Test to make sure the controller and route work with the view and show_all_requests permissions
+     * Test that admin users can vue all requests
      *
      * @return void
      */
-    public function testRequestAllRouteWithShowAllRequestsPermission()
-    {
-        factory(Permission::class)->create(['guard_name' => 'show_all_requests']);
-        $this->user = factory(User::class)->create();
-        $this->user->giveDirectPermission('show_all_requests');
-        // get the URL
-        $response = $this->webCall('GET', '/requests/all');
-        $response->assertStatus(200);
-        // check the correct view is called
-        $response->assertViewIs('requests.index');
-    }
-
-    public function testShowRouteWithShowAllPermission()
+    public function testRequestAllRouteAsAdmin()
     {
         $this->user = factory(User::class)->create();
+        $request = factory(ProcessRequest::class)->create();
 
-        factory(Permission::class)->create(['guard_name' => 'show_all_requests']);
-        $request_id = factory(ProcessRequest::class)->create()->id;
-
-        $response = $this->webCall('GET', '/requests/' . $request_id);
+        $response = $this->webCall('GET', '/requests/' . $request->id);
         $response->assertStatus(403);
 
-        $this->user->giveDirectPermission('show_all_requests');
-        $this->user->refresh();
+        $this->user->update(['is_administrator' => true]);
+        // $this->user->refresh();
+        $response = $this->webCall('GET', '/requests/' . $request->id);
+        
+        $response->assertStatus(200);
+        
+        // check the correct view is called
+        $response->assertViewIs('requests.show');
+    }
 
-        $response = $this->webCall('GET', '/requests/' . $request_id);
+    /**
+     * Test that the assigned user can vue the request
+     *
+     * @return void
+     */
+    public function testShowRouteForUser()
+    {
+        $this->user = factory(User::class)->create();
+        $request = factory(ProcessRequest::class)->create();
+
+        $response = $this->webCall('GET', '/requests/' . $request->id);
+        $response->assertStatus(403);
+
+        $request->update(['user_id' => $this->user->id]);
+        // $request->refresh();
+
+        $response = $this->webCall('GET', '/requests/' . $request->id);
         $response->assertStatus(200);
 
         // check the correct view is called
