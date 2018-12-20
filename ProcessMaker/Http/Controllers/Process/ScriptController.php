@@ -21,4 +21,9 @@ class ScriptController extends Controller
     {
         return view('processes.scripts.edit', ['script' => $script]);
     }
+
+    public function builder(Script $script)
+    {
+        return view('processes.scripts.builder', ['script' => $script]);
+    }
 }

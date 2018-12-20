@@ -34,7 +34,7 @@
     </div>
 
     <div class="modal" tabindex="-1" role="dialog" id="addScript">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">{{__('Add A Script')}}</h5>
@@ -65,9 +65,11 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary"
-                            data-dismiss="modal">{{__('Close')}}</button>
-                    <button type="button" class="btn btn-secondary" id="disabledForNow" @click="onSubmit"
-                            :disabled="submitted">{{__('Save')}}</button>
+                            data-dismiss="modal">{{__('Close')}}
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="disabledForNow" @click="onSubmit">
+                        {{__('Save')}}
+                    </button>
                 </div>
             </div>
         </div>
@@ -85,11 +87,14 @@
                 description: '',
                 code: '',
                 addError: {},
-                submitted: false,
             },
             methods: {
                 onSubmit() {
-                    this.submitted = true;
+                    this.errors = Object.assign({}, {
+                        name: null,
+                        description: null,
+                        status: null
+                    });
                     ProcessMaker.apiClient.post("/scripts", {
                         title: this.title,
                         language: this.language,
@@ -101,12 +106,7 @@
                         window.location = "/processes/scripts/" + response.data.id + "/edit";
                     })
                     .catch(error => {
-                        if (error.response.status === 422) {
-                            this.addError = error.response.data.errors;
-                        }
-                    })
-                    .finally(() => {
-                        this.submitted = false;
+                        this.errors = error.response.data.errors;
                     })
                 }
             }

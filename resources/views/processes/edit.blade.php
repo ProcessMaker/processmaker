@@ -140,6 +140,9 @@
                     response['groups'] = [];
 
                     data.forEach(value => {
+                        if (value === null) {
+                            return;
+                        }
                         let option = value.split('-');
                         if (option[0] === 'user') {
                             response['users'].push(parseInt(option[1]));

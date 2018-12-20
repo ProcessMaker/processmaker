@@ -14,6 +14,8 @@ use ProcessMaker\Models\User;
 
 class NotificationController extends Controller
 {
+    public $skipPermissionCheckFor = ['index', 'show'];
+
     /**
      * Display a listing of the resource.
      *

@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-{{__('Tasks')}}
+{{__($title)}}
 @endsection
 
 @section('sidebar')
@@ -10,7 +10,7 @@
 
 @section('content')
 <div class="container page-content" id="tasks">
-  <h1>{{__('Tasks')}}</h1>
+  <h1>{{__($title)}}</h1>
   <div class="row">
     <div class="col">
       <div class="input-group">
