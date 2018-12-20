@@ -16,7 +16,7 @@ Do one of the following to view Requests that you started:
 ![&quot;Started By Me&quot; Request tab](../../.gitbook/assets/started-by-me-request.png)
 
 {% hint style="info" %}
-Click the Request ID value in the first column of the table to [view information](request-details.md) about that Request.
+Click the ~~Request ID \(or the process name associated with the Request?\)~~ value in the first column of the table to [view information](request-details.md) about that Request.
 {% endhint %}
 
 {% hint style="info" %}

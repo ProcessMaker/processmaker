@@ -41,7 +41,7 @@ In-progress Requests display information about the participants in a selected Re
 
 The following information displays about participants in a selected in-progress Request:
 
-* **Requested By:** The **Requested By** field displays the avatar and full name of the person who started the selected Request. The Request may have been started from a person manually interacting with a form or as an authenticated user to the ProcessMaker 4 REST API.
+* **Requested By:** The **Requested By** field displays the avatar and full name of the person who started the selected Request. The Request may have been started from a person manually interacting with a form or as an authenticated user to the ProcessMaker 4 [REST API](https://develop.bpm4.qa.processmaker.net/api/documentation).
 * **Participants:** The **Participants** field displays the avatars of all participants in the selected Request to date.
 * **Request creation date:** The date and time the Request was created displays below the **Participants** field.
 

@@ -84,7 +84,9 @@ Click the **Close** icon![](../../.gitbook/assets/close-icon-processes.png)from 
 
 Follow these best practices when developing ProcessMaker Scripts.
 
+~~What are Script Editor best practices?~~
 
+~~Is there a workflow in which a ProcessMaker Developer would work with a Process Owner, since the ProcessMaker Script must be ready before a process using a Script Task element can become active?~~
 
 ## Related Topics
 

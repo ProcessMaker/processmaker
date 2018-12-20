@@ -13,7 +13,9 @@ Follow these steps to start a Request:
 
    ![](../../.gitbook/assets/+-request-button-highlighted.png)
 
-   The **New Request** screen displays. This screen displays processes for which you are authorized to start a new Request. Below is the **New Request** screen with a process.  
+   The **New Request** screen displays. This screen displays processes for which you are authorized to start a new Request.
+
+   Below is the **New Request** screen with a process from which a Request can be started. Processes can be organized into categories within your organization to make it easier to locate from which process to start a Request.  
 
    ![](../../.gitbook/assets/new-request-screen-requests.png)
 
@@ -27,6 +29,8 @@ Follow these steps to start a Request:
 {% hint style="info" %}
 If there are no active processes or you do not have authorization to start a Request for a process, the following message displays: **No Requests have been defined yet or are available to you**.
 {% endhint %}
+
+After the Request starts, the new Request displays in the **My Requests** tab.
 
 ## Related Topics
 

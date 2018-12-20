@@ -10,7 +10,7 @@ Below are a few examples of tasks that your organization might use:
 
 * Enter information into a form as part of a request.
 * Approve or reject a request based on entered information.
-* Run a script automatically as an authenticated user in the REST API.
+* Run a script automatically as an authenticated user in the [REST API](https://develop.bpm4.qa.processmaker.net/api/documentation).
 
 ## Related Topics
 

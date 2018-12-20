@@ -30,7 +30,7 @@ The **In Progress** tab displays the following information:
 * **ID:** The **ID** column displays the Request ID. ~~What does the ID represent?~~ Click the ID to [view information](request-details.md) about that Request.
 * **Process:** The **Process** column displays the name of the process associated with the Request.
 * **Status:** The **Status** column displays the **In Progress** status.
-* **Participants:** The **Participants** column displays avatars of each participant in the Request. Participants might be users interacting with a form or as an authenticated user to the ProcessMaker 4 REST API.
+* **Participants:** The **Participants** column displays avatars of each participant in the Request. Participants might be users interacting with a form or as an authenticated user to the ProcessMaker 4 [REST API](https://develop.bpm4.qa.processmaker.net/api/documentation).
 * **Started:** The **Started** column displays the date and time you made the Request. The time is displayed according to your time zone setting.
 * **Completed:** The **Completed** column displays the date and time the Request was completed. Since Requests in this tab are in-progress, this column is empty.
 

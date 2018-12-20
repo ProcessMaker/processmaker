@@ -12,7 +12,7 @@ Below are a few examples of Requests that your organization might use:
 * Request a leave of absence for next week.
 * Request information about a project.
 
-Likewise, you can participate in others' Requests. This occurs when someone else in your organization starts a Request that involves you. You might be the only person making the decision of someone's Request, or you are member of a group involved in the decision process. Furthermore, Requests can be started automatically through the ProcessMaker 4 REST API.
+Likewise, you can participate in others' Requests. This occurs when someone else in your organization starts a Request that involves you. You might be the only person making the decision of someone's Request, or you are member of a group involved in the decision process. Furthermore, Requests can be started automatically through the ProcessMaker 4 [REST API](https://develop.bpm4.qa.processmaker.net/api/documentation).
 
 ## Related Topics
 
