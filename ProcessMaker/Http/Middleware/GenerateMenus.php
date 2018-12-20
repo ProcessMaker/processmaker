@@ -31,9 +31,11 @@ class GenerateMenus
             $menu->group(['prefix' => 'processes'], function($request_items) {
                 $request_items->add(__('menus.topnav.processes'), ['route' => 'processes.index']);
             });
-            $menu->group(['prefix' => 'admin'], function($admin_items) {
-                $admin_items->add(__('menus.topnav.admin'), ['route' => 'users.index']);
-            });
+            if (\Auth::user() && \Auth::user()->canSeeMenu('admin')) {
+                $menu->group(['prefix' => 'admin'], function($admin_items) {
+                    $admin_items->add(__('menus.topnav.admin'), ['route' => 'users.index']);
+                });
+            }
         });
 
         // Build the menus
@@ -101,6 +103,11 @@ class GenerateMenus
               'icon' => 'fa-sitemap',
               'id' => 'process-categories'
           ]);
+          $submenu->add(__('menus.sidebar_processes.archived_processes'), [
+              'route' => ['processes.index', 'status' => 'deleted'],
+              'icon' => 'fa-archive',
+              'id' => 'process-environment'
+          ]);
           $submenu->add(__('menus.sidebar_processes.scripts'), [
               'route' => 'scripts.index',
               'icon' => 'fa-code',
@@ -116,7 +123,9 @@ class GenerateMenus
               'icon' => 'fa-cogs',
               'id' => 'process-environment'
           ]);
-        });
+
+
+    });
 
         Menu::make('sidebar_designer', function ($menu) {});
 

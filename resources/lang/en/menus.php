@@ -49,7 +49,8 @@ return[
     'categories' => 'Process Categories',
     'scripts' => 'Scripts',
     'screens' => 'Screens',
-    'environment_variables'=> 'Environment Variables'
+    'environment_variables'=> 'Environment Variables',
+    'archived_processes'=> 'Archived Processes'
   ],
   'sidebar_notifications' => [
         'notifications' => 'Notifications',

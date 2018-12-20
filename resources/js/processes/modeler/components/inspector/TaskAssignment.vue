@@ -36,7 +36,7 @@
 
         <div class="form-group" v-if="showAssignOneUser">
             <label>Assigned User</label>
-            <select class="form-control" @click="changedUser" v-model="selectedUser">
+            <select class="form-control" @change="changedUser" v-model="selectedUser">
                 <option v-for="(row, index) in activeUsers" v-bind:value="row.id">
                     {{row.fullname}}
                 </option>

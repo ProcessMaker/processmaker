@@ -1,7 +1,14 @@
 @extends('layouts.layout')
 
 @section('title')
-{{__('Processes')}}
+	@php
+	$title = __('Processes');
+	$status = request()->get('status');
+	if( $status === 'deleted'){
+		$title = __('Process Archive');
+	}
+	@endphp
+{{$title}}
 @endsection
 
 @section('sidebar')
@@ -10,7 +17,7 @@
 
 @section('content')
 <div class="container page-content" id="processIndex">
-	<h1>{{__('Processes')}}</h1>
+	<h1>{{$title}}</h1>
 	<div class="row">
 		<div class="col">
 			<div class="input-group">
@@ -29,11 +36,12 @@
 		</div>
 	</div>
 	<div class="container-fluid">
-		<processes-listing ref="processListing" :filter="filter" v-on:edit="edit" v-on:reload="reload"></processes-listing>
+		<processes-listing ref="processListing" :filter="filter" status="{{ $status }}"
+                           v-on:edit="edit" v-on:reload="reload"></processes-listing>
 	</div>
 </div>
 <div class="modal" tabindex="-1" role="dialog" id="addProcess">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">{{__('Add A Process')}}</h5>
@@ -65,7 +73,7 @@
       </div>
     	<div class="modal-footer">
 			<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
-			<button type="button" class="btn btn-secondary" id="disabledForNow" @click="onSubmit" :disabled="submitted">Save</button>
+			<button type="button" class="btn btn-secondary" id="disabledForNow" @click="onSubmit">Save</button>
         </div>
     </div>
     </div>
@@ -82,12 +90,15 @@
             description: '',
             process_category_id: '',
             addError: {},
-            submitted: false,
             status: ''
         },
         methods: {
             onSubmit() {
-                this.submitted = true;
+                this.errors = Object.assign({}, {
+                    name: null,
+                    description: null,
+                    status: null
+                });
                 ProcessMaker.apiClient.post("/processes", {
                     name: this.name,
                     description: this.description,
@@ -96,15 +107,10 @@
                 })
                 .then(response => {
 					ProcessMaker.alert('{{__('Process successfully added')}}', 'success')
-                    window.location = "/modeler/" + response.data.id 
+                    window.location = "/modeler/" + response.data.id
                 })
                 .catch(error => {
-                    if (error.response.status === 422) {
-                        this.addError = error.response.data.errors
-                    }
-                })
-                .finally(() => {
-                    this.submitted = false
+                    this.errors = error.response.data.errors;
                 })
             }
         }

@@ -8,6 +8,8 @@ use ProcessMaker\Models\ProcessRequestToken;
 
 class NotificationController extends Controller
 {
+    public $skipPermissionCheckFor = ['index', 'show'];
+
     private static $dueLabels = [
         'open' => 'Due ',
         'completed' => 'Completed ',

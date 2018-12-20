@@ -305,8 +305,6 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     {
         if ($this->user_id === $user->id || $user->is_administrator) {
             return true;
-        } elseif ($user->hasPermission('show_all_requests')) {
-            return true;
         }
         throw new AuthorizationException("Not authorized to view this request");
     }
