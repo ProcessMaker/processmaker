@@ -38,7 +38,7 @@
 
 .actions .popout {
 	white-space: nowrap;
-	float:right
+	float: right
 }
 
 
@@ -117,6 +117,13 @@ html {
 		margin-bottom: 280px;
 	}
 
+	.input-group {
+		width: 200px;
+	}
+
+	.button-pagination {
+		margin-left: -18px;
+	}
 }
 
 .breadcrumb {
