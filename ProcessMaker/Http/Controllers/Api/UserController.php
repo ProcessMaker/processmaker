@@ -181,7 +181,7 @@ class UserController extends Controller
     {
         $request->validate(User::rules($user));
         $user->fill($request->json()->all());
-        if (Auth::user()->is_administrator) {
+        if (Auth::user()->is_administrator && $request->has('is_administrator')) {
             // user must be an admin to make another user an admin
             $user->is_administrator = $request->get('is_administrator');
         }
