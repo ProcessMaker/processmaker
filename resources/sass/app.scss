@@ -109,6 +109,10 @@ html {
 	border-color: #b9bfc4;
 }
 
+.table-responsive {
+	display: inline-table;
+}
+
 @media only screen and (max-width: 600px) {
 
 	#mobileRight {
@@ -123,6 +127,10 @@ html {
 
 	.button-pagination {
 		margin-left: -18px;
+	}
+
+	.table-responsive {
+		display: block;
 	}
 }
 
