@@ -53,8 +53,7 @@ trait ScriptDockerBindingFilesTrait
                 $parameters, $bindings, $image, $command);
         $line = exec($cmd, $output, $returnCode);
         if ($returnCode) {
-            throw new RuntimeException('Unable to run a docker container: '
-            . implode("\n", $output));
+            throw new RuntimeException(implode("\n", $output));
         }
         $outputs = $this->getOutputFilesContent();
         $this->removeTemporalFiles();

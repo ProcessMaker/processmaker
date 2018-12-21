@@ -18,6 +18,7 @@
             <select class="form-control" @change="updateAssignment" v-model="selectedUserId">
                 <option v-for="user in users" v-bind:value="user.id">
                     {{user.fullname}}
+
                 </option>
             </select>
         </div>

@@ -99,7 +99,12 @@ class TokenRepository implements TokenRepositoryInterface
      */
     public function persistActivityException(ActivityInterface $activity, TokenInterface $token)
     {
-        
+        $this->instanceRepository->persistInstanceError($token->getInstance());
+        $token->status = $token->getStatus();
+        $token->element_id = $activity->getId();
+        $token->process_request_id = $token->getInstance()->getKey();
+        $token->save();
+        $token->setId($token->getKey());
     }
 
     /**
