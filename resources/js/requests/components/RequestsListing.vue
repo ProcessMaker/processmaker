@@ -133,6 +133,10 @@ export default {
           color = "primary";
           label = "Completed";
           break;
+        case "ERROR":
+          color = "danger";
+          label = "Error";
+          break;
       }
       return (
         '<i class="fas fa-circle text-' +

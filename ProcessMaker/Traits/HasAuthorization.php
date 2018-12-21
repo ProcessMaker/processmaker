@@ -90,4 +90,11 @@ trait HasAuthorization
         }
         return $response;
     }
+
+    public function canSeeMenu(String $_menu)
+    {
+        if ($this->is_administrator) {
+            return true;
+        }
+    }
 }

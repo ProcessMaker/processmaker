@@ -3,14 +3,16 @@
 namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
+use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
-use \Illuminate\Auth\Access\AuthorizationException;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use Throwable;
 
 /**
  * Represents an Eloquent model of a Request which is an instance of a Process.
@@ -99,7 +101,8 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     protected $casts = [
         'completed_at' => 'datetime:c',
         'initiated_at' => 'datetime:c',
-        'data' => 'array'
+        'data' => 'array',
+        'errors' => 'array',
     ];
 
     /**
@@ -156,8 +159,8 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     public function hasUserParticipated(User $user)
     {
         return $this->tokens()
-            ->where('user_id', $user->id)
-            ->exists();
+                ->where('user_id', $user->id)
+                ->exists();
     }
 
     /**
@@ -171,7 +174,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $endEvents = $this->tokens()->where('element_type', 'end_event')->get();
 
         if ($endEvents->count(0) === 0) {
-           return null;
+            return null;
         }
 
 
@@ -181,7 +184,6 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
 
         return $screenId;
     }
-
 
     /**
      * Get tokens of the request.
@@ -207,7 +209,8 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      */
     public function collaboration()
     {
-        return $this->belongsTo(ProcessCollaboration::class, 'process_collaboration_id');
+        return $this->belongsTo(ProcessCollaboration::class,
+                'process_collaboration_id');
     }
 
     /**
@@ -226,8 +229,8 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     public function assigned()
     {
         return $this->hasMany(ProcessRequestToken::class)
-            ->with('user')
-            ->whereNotIn('element_type', ['scriptTask']);
+                ->with('user')
+                ->whereNotIn('element_type', ['scriptTask']);
     }
 
     /**
@@ -269,8 +272,9 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      */
     public function participants()
     {
-        return $this->hasManyThrough(User::class, ProcessRequestToken::class, 'process_request_id', 'id', $this->getKeyName(), 'user_id')
-            ->distinct();
+        return $this->hasManyThrough(User::class, ProcessRequestToken::class,
+                    'process_request_id', 'id', $this->getKeyName(), 'user_id')
+                ->distinct();
     }
 
     /**
@@ -291,7 +295,6 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         return $result;
     }
 
-
     /**
      * Check if the user has access to this request
      *
@@ -302,9 +305,40 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     {
         if ($this->user_id === $user->id || $user->is_administrator) {
             return true;
-        } elseif ($user->hasPermission('show_all_requests')) {
-            return true;
         }
         throw new AuthorizationException("Not authorized to view this request");
+    }
+
+    /**
+     * Records an error occurred during the execution of the process.
+     *
+     * @param Throwable $exception
+     * @param FlowElementInterface $element
+     */
+    public function logError(Throwable $exception, FlowElementInterface $element = null)
+    {
+        // Get the first line of the message
+        $array = explode("\n", $exception->getMessage());
+        $message = '';
+        $body = '';
+        while ($array) {
+            $message = array_shift($array);
+            if (trim($message)) {
+                $body = implode("\n", $array);
+                break;
+            }
+        }
+        $error = [
+            'message' => $message,
+            'body' => $body,
+            'element_id' => $element ? $element->getId() : null,
+            'element_name' => $element ? $element->getName() : null,
+            'created_at' => Carbon::now('UTC')->format('c'),
+        ];
+        $errors = $this->errors ?: [];
+        $errors[] = $error;
+        $this->errors = $errors;
+        $this->status = 'ERROR';
+        $this->save();
     }
 }

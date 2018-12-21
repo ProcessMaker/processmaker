@@ -103,8 +103,6 @@
                 this.$emit('input', this.value);
             },
         },
-        watch: {
-        },
         mounted() {
             this.loadUsersAndGroups();
         }
