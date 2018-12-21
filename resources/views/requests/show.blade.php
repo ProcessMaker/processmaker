@@ -12,20 +12,20 @@
     <div id="request" class="container">
         <h1>{{$request->name}} # {{$request->getKey()}}</h1>
         <div class="row">
-            <div class="col-8">
+            <div class="col-md-8">
 
                 <div class="container-fluid">
                     <ul class="nav nav-tabs" id="requestTab" role="tablist">
                         <template v-if="status">
                             <li class="nav-item" v-if="!showSummary">
                                 <a class="nav-link active" id="pending-tab" data-toggle="tab" href="#pending" role="tab"
-                                   aria-controls="pending" aria-selected="true">{{__('Pending Tasks')}}</a>
+                                   aria-controls="pending" aria-selected="true">{{__('Tasks')}}</a>
                             </li>
                             <li class="nav-item">
                                 <a id="summary-tab" data-toggle="tab" href="#summary" role="tab"
                                    aria-controls="summary" aria-selected="false"
                                    v-bind:class="{ 'nav-link':true, active: showSummary }">
-                                    {{__('Request Summary')}}
+                                    {{__('Summary')}}
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -35,7 +35,7 @@
                             @if(count($files) > 0 )                           
                             <li class="nav-item">
                                 <a class="nav-link" id="files-tab" data-toggle="tab" href="#files" role="tab"
-                                   aria-controls="files" aria-selected="false">{{__('Attached Files')}}</a>
+                                   aria-controls="files" aria-selected="false">{{__('Files')}}</a>
                             </li>
                             @endif
                         </template>
@@ -121,7 +121,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-4">
+            <div class="col-md-4">
                 <template v-if="statusLabel">
                     <div class="card">
                         <div :class="classStatusCard">
