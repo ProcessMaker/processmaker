@@ -21,8 +21,14 @@
                 <div class="container-fluid">
                     <ul class="nav nav-tabs" id="requestTab" role="tablist">
                         <template v-if="status">
+                            @if($request->status === 'ERROR')
+                            <li class="nav-item">
+                                <a class="nav-link active" id="errors-tab" data-toggle="tab" href="#errors" role="tab"
+                                   aria-controls="errors" aria-selected="false">{{__('Errors')}}</a>
+                            </li>
+                            @endif
                             <li class="nav-item" v-if="!showSummary">
-                                <a class="nav-link active" id="pending-tab" data-toggle="tab" href="#pending" role="tab"
+                                <a class="nav-link" :class="{ active: activePending }"  id="pending-tab" data-toggle="tab" href="#pending" role="tab"
                                    aria-controls="pending" aria-selected="true">{{__('Pending Tasks')}}</a>
                             </li>
                             <li class="nav-item">
@@ -45,7 +51,10 @@
                         </template>
                     </ul>
                     <div class="tab-content" id="requestTabContent">
-                        <div class="tab-pane fade show active" id="pending" role="tabpanel"
+                        <div class="tab-pane" :class="{ active: activeErrors }" id="errors" role="tabpanel" aria-labelledby="errors-tab">
+                            <request-errors :errors="errorLogs"></request-errors>
+                        </div>
+                        <div class="tab-pane fade show" :class="{ active: activePending }" id="pending" role="tabpanel"
                              aria-labelledby="pending-tab" v-if="!showSummary">
                             <request-detail ref="pending" :process-request-id="requestId" status="ACTIVE">
                             </request-detail>
@@ -182,10 +191,17 @@
                     files: @json($files),
                     refreshTasks: 0,
                     canCancel: @json($canCancel),
-                    status: 'ACTIVE'
+                    status: 'ACTIVE',
+                    errorLogs: @json(['data'=>$request->errors]),
                 };
             },
             computed: {
+                activeErrors() {
+                    return this.request.status === 'ERROR';
+                },
+                activePending() {
+                    return this.request.status === 'ACTIVE';
+                },
                 /**
                  * Get the list of participants in the request.
                  *
