@@ -42,8 +42,8 @@ class RequestTest extends TestCase
         $response = $this->webCall('GET', '/requests/' . $request->id);
         $response->assertStatus(403);
 
-        $this->user->update(['is_administrator' => true]);
-        // $this->user->refresh();
+        $this->user->is_administrator = true;
+        $this->user->save();
         $response = $this->webCall('GET', '/requests/' . $request->id);
         
         $response->assertStatus(200);
