@@ -196,9 +196,9 @@
         },
         watch: {
             value: _.debounce(function() {
+                this.loadAssignments();
                 if (this.assignmentId) {
                     this.updateAssignment();
-                    this.loadAssignments();
                 }
             }, 500),
         },
