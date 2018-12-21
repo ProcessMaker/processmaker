@@ -217,7 +217,6 @@ class ProcessController extends Controller
         $process->fill($request->except('cancel_request', 'start_request', 'cancel_request_id', 'start_request_id'));
         $process->saveOrFail();
 
-
         unset(
             $original_attributes['id'],
             $original_attributes['updated_at']

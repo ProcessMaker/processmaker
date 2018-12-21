@@ -17,7 +17,7 @@ use ProcessMaker\Notifications\ProcessCanceledNotification;
 
 class ProcessRequestController extends Controller
 {
-    public $skipPermissionCheckFor = ['index', 'show'];
+    public $skipPermissionCheckFor = ['index', 'show', 'store', 'destroy'];
 
     /**
      * Display a listing of the resource.
