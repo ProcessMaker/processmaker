@@ -3,12 +3,13 @@
 namespace ProcessMaker\Traits;
 
 use DOMElement;
+use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\User;
 use ProcessMaker\Providers\WorkflowServiceProvider as PM;
 
 /**
- * Trait that allows that all dates of an Eloquent model be serialized in ISO 8601 format
+ * Update the task assignments
  *
  * @package ProcessMaker\Traits
  */
@@ -20,13 +21,13 @@ trait ProcessTaskAssignmentsTrait
      */
     public static function bootProcessTaskAssignmentsTrait()
     {
-        static::saved([static::class, 'updateTaskAssignments']);
+        static::saving([static::class, 'updateTaskAssignments']);
     }
 
     public static function updateTaskAssignments(Process $process)
     {
         $process->assignments()->delete();
-        $definitions = $process->getDefinitions();
+        $definitions = $process->getDefinitions(true);
         if ($definitions) {
             $assignments = [];
             foreach ($definitions->getElementsByTagName('task') as $node) {
@@ -53,6 +54,9 @@ trait ProcessTaskAssignmentsTrait
         $users = explode(',',
             $node->getAttributeNS(PM::PROCESS_MAKER_NS, 'assignedUsers'));
         if ($assignment === 'user') {
+            if (empty($users[0])) {
+                throw new TaskDoesNotHaveUsersException($node->getAttribute('id'));
+            }
             $assignments[] = [
                 'process_task_id' => $node->getAttribute('id'),
                 'assignment_id' => $users[0],

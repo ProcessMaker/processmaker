@@ -135,11 +135,13 @@ class Process extends Model implements HasMedia
     /**
      * Get the process definitions from BPMN field.
      *
+     * @param bool $forceParse
+     *
      * @return ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface
      */
-    public function getDefinitions()
+    public function getDefinitions($forceParse = false)
     {
-        if (empty($this->bpmnDefinitions)) {
+        if ($forceParse || empty($this->bpmnDefinitions)) {
             $this->bpmnDefinitions = app(BpmnDocumentInterface::class, ['process' => $this]);
             if ($this->bpmn) {
                 $this->bpmnDefinitions->loadXML($this->bpmn);
