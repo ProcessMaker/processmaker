@@ -37,7 +37,7 @@
 
 .actions .popout {
 	white-space: nowrap;
-	float:right
+	float: right
 }
 
 
@@ -108,6 +108,10 @@ html {
 	border-color: #b9bfc4;
 }
 
+.table-responsive {
+	display: inline-table;
+}
+
 @media only screen and (max-width: 600px) {
 
 	#mobileRight {
@@ -116,6 +120,24 @@ html {
 		margin-bottom: 280px;
 	}
 
+	.input-group {
+		width: 200px;
+	}
+
+	.button-pagination {
+		margin-left: -18px;
+	}
+
+	.table-responsive {
+		display: block;
+	}
+
+	.nav-tabs {
+		-webkit-box-orient: vertical;
+		-webkit-box-direction: normal;
+		-ms-flex-direction: column;
+		flex-direction: column;
+	}
 }
 
 .breadcrumb {
