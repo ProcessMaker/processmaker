@@ -16,6 +16,7 @@ use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use ProcessMaker\Traits\ProcessTaskAssignmentsTrait;
 
 /**
  * Represents a business process definition.
@@ -51,6 +52,7 @@ class Process extends Model implements HasMedia
     use HasMediaTrait;
     use SerializeToIso8601;
     use SoftDeletes;
+    use ProcessTaskAssignmentsTrait;
 
     /**
      * The attributes that aren't mass assignable.
@@ -357,5 +359,15 @@ class Process extends Model implements HasMedia
     public function versions()
     {
         return $this->hasMany(ProcessVersion::class);
+    }
+
+    /**
+     * Assignments of the process.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function assignments()
+    {
+        return $this->hasMany(ProcessTaskAssignment::class);
     }
 }
