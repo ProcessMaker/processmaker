@@ -103,7 +103,7 @@
                     })
                     .then(response => {
                         ProcessMaker.alert('{{__('Script successfully added')}}', 'success');
-                        window.location = "/processes/scripts/" + response.data.id + "/edit";
+                        window.location = "/processes/scripts/" + response.data.id + "/builder";
                     })
                     .catch(error => {
                         this.errors = error.response.data.errors;
