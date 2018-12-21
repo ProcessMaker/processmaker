@@ -132,6 +132,13 @@ html {
 	.table-responsive {
 		display: block;
 	}
+
+	.nav-tabs {
+		-webkit-box-orient: vertical;
+		-webkit-box-direction: normal;
+		-ms-flex-direction: column;
+		flex-direction: column;
+	}
 }
 
 .breadcrumb {
