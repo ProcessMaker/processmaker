@@ -84,7 +84,6 @@ class User extends Authenticatable implements HasMedia
         'timezone',
         'datetime_format',
         'language',
-        'is_administrator',
         'expires_at'
 
     ];

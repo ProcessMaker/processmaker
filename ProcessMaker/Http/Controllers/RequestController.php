@@ -70,7 +70,9 @@ class RequestController extends Controller
         } else {
             $canCancel = Auth::user()->hasProcessPermission($request->process, 'requests.cancel');
         }
+
         $files = $request->getMedia();
+
         return view('requests.show', compact('request', 'files', 'canCancel'));
     }
 

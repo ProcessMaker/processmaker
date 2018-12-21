@@ -9,6 +9,7 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Models\PermissionAssignment;
 use ProcessMaker\Models\Permission;
 use \PermissionSeeder;
+use Illuminate\Http\Testing\File;
 
 class RequestTest extends TestCase
 {
@@ -41,8 +42,8 @@ class RequestTest extends TestCase
         $response = $this->webCall('GET', '/requests/' . $request->id);
         $response->assertStatus(403);
 
-        $this->user->update(['is_administrator' => true]);
-        // $this->user->refresh();
+        $this->user->is_administrator = true;
+        $this->user->save();
         $response = $this->webCall('GET', '/requests/' . $request->id);
         
         $response->assertStatus(200);
@@ -113,5 +114,19 @@ class RequestTest extends TestCase
 
         $response = $this->webCall('GET', '/requests/' . $request_id);
         $response->assertStatus(200);
+    }
+
+    public function testShowMediaFiles()
+    {
+        $process_request = factory(ProcessRequest::class)->create();
+        $file_1 = $process_request->addMedia(File::image('photo1.jpg'))->toMediaCollection();
+        $file_2 = $process_request->addMedia(File::image('photo2.jpg'))->toMediaCollection();
+        $file_3 = $process_request->addMedia(File::image('photo3.jpg'))->toMediaCollection();
+
+        $response = $this->webCall('GET', '/requests/' . $process_request->id);
+        // Full request->getMedia payload is sent for Vue, so assert some HTML also
+        $response->assertSee('photo2.jpg</a>');
+        $response->assertSee('photo3.jpg</a>');
+        $response->assertSee('photo1.jpg</a>');
     }
 }

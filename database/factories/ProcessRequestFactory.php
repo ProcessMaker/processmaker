@@ -12,7 +12,7 @@ use ProcessMaker\Models\User;
 $factory->define(ProcessRequest::class, function (Faker $faker) {
     return [
         'name' => $faker->sentence(3),
-        'data' => '{}',
+        'data' => [],
         'status' => $faker->randomElement(['DRAFT', 'ACTIVE', 'COMPLETED']),
         'callable_id' => $faker->randomDigit,
         'user_id' => function () {

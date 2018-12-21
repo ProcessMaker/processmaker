@@ -28,11 +28,12 @@ export default {
   props: ["label", "error", "helper", "name", "value", "controlClass"],
   mounted() {
     // we need to be able to remove the classes from the npm package
-    var element = document.getElementById("submitFile");
-    element.classList.remove("uploader-btn");
-
-    var element = document.getElementById("uploaderMain");
-    element.classList.remove("uploader-drop");
+    let element = document.querySelectorAll(
+      "[id='submitFile'],[id='uploaderMain']"
+    );
+    element.forEach(e => {
+      e.classList.remove("uploader-btn", "uploader-drop");
+    });
 
     //emit message when upload happens
     const uploaderInstance = this.$refs.uploader.uploader;
@@ -63,7 +64,8 @@ export default {
         // We cannot increase this until laravel chunk uploader handles this gracefully
         simultaneousUploads: 1,
         query: {
-          chunk: true
+          chunk: true,
+          data_name: this.name
         },
         testChunks: false,
         // Setup our headers to deal with API calls

@@ -33,10 +33,6 @@ class PermissionController extends Controller
      *              type="integer",
      *              description="Id of the user whose permissions are configured"),
      *          @OA\Property(
-     *              property="is_administrator",
-     *              type="boolean",
-     *              description="boolean value to define if the user will be administrator"),
-     *          @OA\Property(
      *              property="permissions_ids",
      *              type="array",
      *              collectionFormat="multi",
@@ -56,9 +52,6 @@ class PermissionController extends Controller
         $user = User::findOrFail($request->input('user_id'));
         $selected_permission_ids = $request->input('permission_ids');
 
-        $user->is_administrator = $request->has('is_administrator')
-                                ? $request->input('is_administrator')
-                                : false;
         $user->update();
 
         // assign the users permissions ids
