@@ -22,4 +22,15 @@ class Permission extends Model
             throw new ModelNotFoundException($name . " permission does not exist");
         }
     }
+
+    /**
+     * Query filter for type = route
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeRoutes($query)
+    {
+        return $query->where('type', 'ROUTE');
+    }
 }
