@@ -8,6 +8,10 @@
     @include('layouts.sidebar', ['sidebar' => Menu::get('sidebar_request')])
 @endsection
 
+@section('meta')
+<meta name="request-id" content="{{ $request->id }}">
+@endsection
+
 @section('content')
     <div id="request" class="container">
         <h1>{{$request->name}} # {{$request->getKey()}}</h1>

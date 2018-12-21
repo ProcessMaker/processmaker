@@ -31,7 +31,24 @@ class ProcessRequestFileController extends Controller
     */
     public function index(Request $laravel_request, ProcessRequest $request)
      {
-        return new ResourceCollection($request->getMedia());
+		//Retrieve media from ProcessRequest
+		$media = $request->getMedia();
+		
+		//Retrieve input variable 'name'
+		$name = $laravel_request->get('name');
+		
+		//If no name, retern entire collection; otherwise, filter collection
+		if (! $name) {
+			return new ResourceCollection($media);
+		} else {
+			$filtered = $media->reject(function ($item, $key) use ($name) {
+				if ($item->custom_properties['data_name'] != $name) {
+					return true;
+				}
+			});
+			
+	        return new ResourceCollection($filtered);
+		}
      }
 
      /**
@@ -39,7 +56,13 @@ class ProcessRequestFileController extends Controller
       * @param FileReceiver $receiver The Chunk FileReceiver
       * @return JsonResponse
       */
-    public function chunk(FileReceiver $receiver, ProcessRequest $request)
+
+    public function show(Request $laravel_request, ProcessRequest $request, $file_id)
+    {
+        return $request->getMedia()->where('id', $file_id)->first();
+    }
+
+    private function chunk(FileReceiver $receiver, ProcessRequest $request, Request $laravel_request)
     {
             // Perform a chunk upload
             if ($receiver->isUploaded() === false) {
@@ -47,10 +70,25 @@ class ProcessRequestFileController extends Controller
             }
             // receive the file
             $save = $receiver->receive();
+
+            // This needs to be the unique uploader name
+            $data_name = $laravel_request->input('data_name');
+
             // check if the upload has finished (in chunk mode it will send smaller files)
             if ($save->isFinished()) {
+                
+                foreach($request->getMedia() as $mediaItem) {
+                    if($mediaItem->getCustomProperty('data_name') == $data_name) {
+                        $mediaItem->delete();
+                    }
+                }
+
                 // save the file and return any response you need
-                $file = $request->addMedia($save->getFile())->toMediaCollection();
+                $file = $request
+                    ->addMedia($save->getFile())
+                    ->withCustomProperties(['data_name' => $data_name]) // photo_1
+                    ->toMediaCollection();
+                // $identifier = ['_type' => 'file', 'id' => $file->id];
                 return new JsonResponse(['message' => 'file successfully uploaded','fileUploadId' => $file->id], 200);
             }
             // we are in chunk mode, lets send the current progress
@@ -66,9 +104,10 @@ class ProcessRequestFileController extends Controller
     */
     public function store(Request $laravel_request, FileReceiver $receiver, ProcessRequest $request)
     {
+        //delete it and upload the new one 
         if($laravel_request->input('chunk')) {
             // Perform a chunk upload
-            return $this->chunk($receiver, $request);
+            return $this->chunk($receiver, $request, $laravel_request);
         } else {
             $file = $request->addMedia($laravel_request->file)->toMediaCollection();
             return new JsonResponse(['message' => 'file successfully uploaded'], 200);
