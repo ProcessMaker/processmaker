@@ -164,6 +164,7 @@
                     </div>
                     <div class="form-group">
                         {!! Form::label('confPassword', 'Confirm confPassword') !!}
+                        {!! Form::label('confPassword', 'Confirm Password') !!}
                         {!! Form::password('confPassword', ['id' => 'confPassword', 'rows' => 4, 'class'=> 'form-control', 'v-model'
                         => 'formData.confPassword', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.confPassword}']) !!}
                         <div class="invalid-feedback" v-if="errors.confPassword">@{{errors.confPassword[0]}}</div>
