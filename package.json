@@ -80,6 +80,7 @@
     "vue-json-pretty": "^1.4.1-beta.1",
     "vue-monaco": "^0.2.0",
     "vue-multiselect": "^2.1.0",
+    "vue-password": "^1.2.0",
     "vue-resource": "^1.5.1",
     "vue-router": "^3.0.1",
     "vue-simple-uploader": "^0.5.6",
