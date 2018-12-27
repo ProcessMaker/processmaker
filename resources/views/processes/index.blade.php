@@ -99,6 +99,10 @@
                     description: null,
                     status: null
                 });
+                if(this.process_category_id === '') {
+                    // this.addError.process_category_id = "Process Category is required";
+                    ProcessMaker.alert('{{__('Process Category is required')}}', 'danger');
+                }else {
                 ProcessMaker.apiClient.post("/processes", {
                     name: this.name,
                     description: this.description,
@@ -112,6 +116,7 @@
                 .catch(error => {
                     this.errors = error.response.data.errors;
                 })
+            }
             }
         }
 	})
