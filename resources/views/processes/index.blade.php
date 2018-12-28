@@ -62,7 +62,7 @@
         </div>
         <div class="form-group">
 			{!! Form::label('process_category_id', 'Category')!!}
-			{!! Form::select('process_category_id', $processCategories, null, ['class'=> 'form-control', 'v-model'=> 'process_category_id', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.process_category_id}']) !!}
+			{!! Form::select('process_category_id', [null => 'Category is required'] + $processCategories, null, ['class'=> 'form-control', 'v-model'=> 'process_category_id', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.process_category_id}']) !!}
 			<div class="invalid-feedback" v-for="category in addError.process_category_id">@{{category}}</div>
         </div>
         <div class="form-group">
