@@ -140,6 +140,9 @@ class Install extends Command
         $this->call('passport:install', [
             '--force' => true
         ]);
+		
+		//Create a symbolic link from "public/storage" to "storage/app/public"
+		$this->call('storage:link');
 
         $this->info(__("ProcessMaker installation is complete. Please visit the url in your browser to continue."));
         return true;
