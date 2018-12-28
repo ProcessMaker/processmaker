@@ -1,8 +1,13 @@
 <?php
+
 use Illuminate\Database\Seeder;
+use ProcessMaker\Traits\LoadPluginSeeders;
 
 class DatabaseSeeder extends Seeder
 {
+
+    use LoadPluginSeeders;
+
     /**
      * Run the database seeds.
      *
@@ -15,5 +20,6 @@ class DatabaseSeeder extends Seeder
             ProcessSeeder::class,
             PermissionSeeder::class
         ]);
+        $this->callPluginSeeders();
     }
 }

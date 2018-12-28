@@ -125,7 +125,7 @@
 
                         <div class="form-group col">
                             {!! Form::label('language', 'Language') !!}
-                            {!! Form::select('language', [$currentUser->language=>$currentUser->language], $currentUser->language, ['id' => 'language','class'=>
+                            {!! Form::select('language', ['us_en' => 'us_en'], $currentUser->language, ['id' => 'language','class'=>
                             'form-control',
                             'v-model' => 'formData.language',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.language}']) !!}
@@ -152,16 +152,25 @@
                         <div class="invalid-feedback" v-if="errors.username">@{{errors.username[0]}}</div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('password', 'New Password') !!}
-                        {!! Form::password('password', ['id' => 'password', 'rows' => 4, 'class'=> 'form-control', 'v-model'
-                        => 'formData.password', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}']) !!}
-                        <div class="invalid-feedback" v-if="errors.password">@{{errors.password[0]}}</div>
+                        <small class="form-text text-muted">
+                            Leave the password blank to keep the current password:
+                        </small>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('confPassword', 'Confirm confPassword') !!}
+                        {!! Form::label('password', 'New Password') !!}
+						<vue-password v-model="formData.password" :disable-toggle=true>
+							<div slot="password-input" slot-scope="props">
+								{!! Form::password('password', ['id' => 'password', 'rows' => 4, 'class'=> 'form-control', 'v-model'
+								=> 'formData.password', '@input' => 'props.updatePassword($event.target.value)',
+								'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}']) !!}
+							</div>
+						</vue-password>
+                    </div>
+                    <div class="form-group">
+                        {!! Form::label('confPassword', 'Confirm Password') !!}
                         {!! Form::password('confPassword', ['id' => 'confPassword', 'rows' => 4, 'class'=> 'form-control', 'v-model'
-                        => 'formData.confPassword', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.confPassword}']) !!}
-                        <div class="invalid-feedback" v-if="errors.confPassword">@{{errors.confPassword[0]}}</div>
+                        => 'formData.confPassword', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}']) !!}
+						<div class="invalid-feedback" :style="{display: (errors.password) ? 'block' : 'none' }" v-if="errors.password">@{{errors.password[0]}}</div>
                     </div>
                 </div>
             </div>
@@ -213,13 +222,15 @@
 @endsection
 
 @section('js')
+	<script src="{{mix('js/admin/profile/edit.js')}}"></script>
+	
     <script>
         new Vue({
             el: '#exampleModal',
             data() {
                 return {
                     image: "",
-                    id: window.ProcessMaker.user.id
+                    idxx: window.ProcessMaker.user.id
                 };
             },
             methods: {
@@ -291,6 +302,8 @@
             },
             methods: {
                 onUpdate() {
+                    this.resetErrors();
+                    if (!this.validatePassword()) return false;
                     if (this.image) {
                         this.formData.avatar = this.image;
                     }
@@ -303,6 +316,37 @@
                 },
                 onClose() {
 
+                },
+                resetErrors() {
+                    this.errors = Object.assign({}, {
+                        username: null,
+                        firstname: null,
+                        lastname: null,
+                        email: null,
+                        password: null,
+                        status: null
+                    });
+                },
+                validatePassword() {
+                    if (!this.formData.password && !this.formData.confPassword) {
+                        return true;
+                    }
+                    if (this.formData.password.trim() === '' && this.formData.confPassword.trim() === '') {
+                        return true
+                    }
+					if (this.formData.password.trim().length > 0 && this.formData.password.trim().length < 8) {
+						this.errors.password = ['Password must be at least 8 characters']
+                        this.password = ''
+                        this.submitted = false
+                        return false
+					}
+                    if (this.formData.password !== this.formData.confPassword) {
+                        this.errors.password = ['Passwords must match']
+                        this.password = ''
+                        this.submitted = false
+                        return false
+                    }
+                    return true
                 },
             }
         });

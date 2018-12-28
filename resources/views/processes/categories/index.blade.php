@@ -23,7 +23,7 @@
                 </div>
             </div>
             <div class="col-8" align="right">
-                <button type="button" class="btn btn-action text-light" data-toggle="modal"
+                <button type="button" class="btn btn-secondary" data-toggle="modal"
                         data-target="#createProcessCategory">
                     <i class="fas fa-plus"></i> {{__('Category')}}
                 </button>

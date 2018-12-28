@@ -17,7 +17,7 @@
         <h1>{{$task->element_name}}</h1>
         <div class="row">
             @if ($task->getScreen() && ($task->advanceStatus==='open' || $task->advanceStatus==='overdue'))
-            <div class="col-8">
+            <div class="col-md-8">
                 <div class="container-fluid">
                     <div class="card card-body">
                         <task-screen process-id="{{$task->processRequest->process->getKey()}}"
@@ -29,7 +29,7 @@
                 </div>
             </div>
             @elseif ($task->advanceStatus==='completed')
-            <div class="col-8">
+            <div class="col-md-8">
                 <div class="container-fluid">
                     <div class="card card-body" align="center">
                         <h1>Task Completed <i class="fas fa-clipboard-check"></i></h1>
@@ -37,7 +37,7 @@
                 </div>
             </div>
             @endif
-            <div class="col-4">
+            <div class="col-md-4">
                 <template v-if="dateDueAt">
                 <div class="card">
                     <div :class="statusCard">

@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
@@ -15,13 +16,13 @@ use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use ProcessMaker\Traits\ProcessTaskAssignmentsTrait;
 
 /**
  * Represents a business process definition.
  *
  * @property string $id
  * @property string $process_category_id
- * @property string $summary_screen_id
  * @property string $user_id
  * @property string $bpmn
  * @property string $description
@@ -50,6 +51,8 @@ class Process extends Model implements HasMedia
 {
     use HasMediaTrait;
     use SerializeToIso8601;
+    use SoftDeletes;
+    use ProcessTaskAssignmentsTrait;
 
     /**
      * The attributes that aren't mass assignable.
@@ -61,6 +64,15 @@ class Process extends Model implements HasMedia
         'user_id',
         'created_at',
         'updated_at',
+    ];
+
+    /**
+     * The attributes that are dates.
+     *
+     * @var array
+     */
+    protected $dates = [
+        'deleted_at',
     ];
 
     /**
@@ -89,11 +101,6 @@ class Process extends Model implements HasMedia
     public function category()
     {
         return $this->belongsTo(ProcessCategory::class, 'process_category_id');
-    }
-
-    public function summaryScreen()
-    {
-        return $this->belongsTo(Screen::class, 'summary_screen_id');
     }
 
     /**
@@ -128,11 +135,13 @@ class Process extends Model implements HasMedia
     /**
      * Get the process definitions from BPMN field.
      *
+     * @param bool $forceParse
+     *
      * @return ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface
      */
-    public function getDefinitions()
+    public function getDefinitions($forceParse = false)
     {
-        if (empty($this->bpmnDefinitions)) {
+        if ($forceParse || empty($this->bpmnDefinitions)) {
             $this->bpmnDefinitions = app(BpmnDocumentInterface::class, ['process' => $this]);
             if ($this->bpmn) {
                 $this->bpmnDefinitions->loadXML($this->bpmn);
@@ -345,12 +354,22 @@ class Process extends Model implements HasMedia
         $query->where('id', $this->id);
         return new ProcessEvents($query, $this);
     }
-    
+
     /**
      * Get the associated versions
      */
     public function versions()
     {
         return $this->hasMany(ProcessVersion::class);
+    }
+
+    /**
+     * Assignments of the process.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function assignments()
+    {
+        return $this->hasMany(ProcessTaskAssignment::class);
     }
 }

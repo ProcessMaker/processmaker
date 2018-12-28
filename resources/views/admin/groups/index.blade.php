@@ -24,7 +24,7 @@
 
         </div>
         <div class="col-8" align="right">
-            <a href="#" class="btn btn-action" data-toggle="modal" data-target="#createGroup"><i class="fas fa-plus"></i>
+            <a href="#" class="btn btn-secondary" data-toggle="modal" data-target="#createGroup"><i class="fas fa-plus"></i>
                 {{__('Group')}}</a>
         </div>
     </div>
@@ -106,7 +106,7 @@
                     .then(response => {
                         ProcessMaker.alert('{{__('Create Group Successfully')}}', 'success');
                         //redirect show group
-                        window.location = "/admin/groups/" + response.data.id
+                        window.location = "/admin/groups/" + response.data.id + "/edit"
                     })
                     .catch(error => {
                         //define how display errors

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use ProcessMaker\Nayra\Bpmn\TokenTrait;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Traits\SerializeToIso8601;
+use \Illuminate\Auth\Access\AuthorizationException;
 
 /**
  * ProcessRequestToken is used to store the state of a token of the
@@ -174,5 +175,19 @@ class ProcessRequestToken extends Model implements TokenInterface
         }
 
         return $result;
+    }
+
+    /**
+     * Check if the user has access to this task
+     *
+     * @param User $user
+     * @return void
+     */
+    public function authorize(User $user)
+    {
+        if ($this->user_id === $user->id || $user->is_administrator) {
+            return true;
+        }
+        throw new AuthorizationException("Not authorized to view this task");
     }
 }

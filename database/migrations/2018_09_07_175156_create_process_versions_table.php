@@ -19,12 +19,12 @@ class CreateProcessVersionsTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('process_id');
             $table->unsignedInteger('process_category_id')->nullable();
-            $table->unsignedInteger('summary_screen_id')->nullable();
             $table->unsignedInteger('user_id');
             $table->text('bpmn');
             $table->text('description');
             $table->string('name');
             $table->enum('status', ['ACTIVE', 'INACTIVE']);
+            $table->softDeletes();
             $table->timestamps();
 
             // Indexes

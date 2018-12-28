@@ -678,4 +678,19 @@ class ProcessTest extends TestCase
         $this->assertStatus(422, $response);
         $response->assertJsonStructure($this->errorStructure);
     }
+
+    /**
+     * Tests the deletion and restore of a process
+     */
+    public function testDeleteRestore()
+    {
+        $process = factory(Process::class)->create();
+        $response = $this->apiCall('DELETE', '/processes/' . $process->id . '');
+        $this->assertDatabaseMissing('processes', ['id' => $process->id, 'deleted_at' => null]);
+
+        //now we restore the process
+        $responseRestore = $this->apiCall('PUT', '/processes/' . $process->id . '/restore');
+        $responseRestore->assertStatus(200);
+        $this->assertDatabaseHas('processes', ['id' => $process->id, 'deleted_at' => null]);
+    }
 }

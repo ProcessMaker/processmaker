@@ -8,38 +8,53 @@
     @include('layouts.sidebar', ['sidebar' => Menu::get('sidebar_request')])
 @endsection
 
+@section('meta')
+<meta name="request-id" content="{{ $request->id }}">
+@endsection
+
 @section('content')
     <div id="request" class="container">
         <h1>{{$request->name}} # {{$request->getKey()}}</h1>
         <div class="row">
-            <div class="col-8">
+            <div class="col-md-8">
 
                 <div class="container-fluid">
                     <ul class="nav nav-tabs" id="requestTab" role="tablist">
                         <template v-if="status">
+                            @if($request->status === 'ERROR')
+                            <li class="nav-item">
+                                <a class="nav-link active" id="errors-tab" data-toggle="tab" href="#errors" role="tab"
+                                   aria-controls="errors" aria-selected="false">{{__('Errors')}}</a>
+                            </li>
+                            @endif
                             <li class="nav-item" v-if="!showSummary">
-                                <a class="nav-link active" id="pending-tab" data-toggle="tab" href="#pending" role="tab"
-                                   aria-controls="pending" aria-selected="true">{{__('Pending Tasks')}}</a>
+                                <a class="nav-link" :class="{ active: activePending }"  id="pending-tab" data-toggle="tab" href="#pending" role="tab"
+                                   aria-controls="pending" aria-selected="true">{{__('Tasks')}}</a>
                             </li>
                             <li class="nav-item">
                                 <a id="summary-tab" data-toggle="tab" href="#summary" role="tab"
                                    aria-controls="summary" aria-selected="false"
                                    v-bind:class="{ 'nav-link':true, active: showSummary }">
-                                    {{__('Request Summary')}}
+                                    {{__('Summary')}}
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="completed-tab" data-toggle="tab" href="#completed" role="tab"
                                    aria-controls="completed" aria-selected="false">{{__('Completed')}}</a>
                             </li>
+                            @if(count($files) > 0 )                           
                             <li class="nav-item">
                                 <a class="nav-link" id="files-tab" data-toggle="tab" href="#files" role="tab"
-                                   aria-controls="files" aria-selected="false">{{__('Attached Files')}}</a>
+                                   aria-controls="files" aria-selected="false">{{__('Files')}}</a>
                             </li>
+                            @endif
                         </template>
                     </ul>
                     <div class="tab-content" id="requestTabContent">
-                        <div class="tab-pane fade show active" id="pending" role="tabpanel"
+                        <div class="tab-pane" :class="{ active: activeErrors }" id="errors" role="tabpanel" aria-labelledby="errors-tab">
+                            <request-errors :errors="errorLogs"></request-errors>
+                        </div>
+                        <div class="tab-pane fade show" :class="{ active: activePending }" id="pending" role="tabpanel"
                              aria-labelledby="pending-tab" v-if="!showSummary">
                             <request-detail ref="pending" :process-request-id="requestId" status="ACTIVE">
                             </request-detail>
@@ -119,7 +134,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-4">
+            <div class="col-md-4">
                 <template v-if="statusLabel">
                     <div class="card">
                         <div :class="classStatusCard">
@@ -176,10 +191,17 @@
                     files: @json($files),
                     refreshTasks: 0,
                     canCancel: @json($canCancel),
-                    status: 'ACTIVE'
+                    status: 'ACTIVE',
+                    errorLogs: @json(['data'=>$request->errors]),
                 };
             },
             computed: {
+                activeErrors() {
+                    return this.request.status === 'ERROR';
+                },
+                activePending() {
+                    return this.request.status === 'ACTIVE';
+                },
                 /**
                  * Get the list of participants in the request.
                  *
@@ -199,7 +221,7 @@
                  * If the screen summary is configured.
                  **/
                 showScreenSummary() {
-                    return this.request.process.summary_screen !== null
+                    return this.request.summary_screen !== null
                 },
                 /**
                  * Get the summary of the Request.
@@ -212,7 +234,7 @@
                  * Get Screen summary
                  * */
                 screenSummary() {
-                    return this.request.process.summary_screen.config;
+                    return this.request.summary_screen.config;
                 },
                 /**
                  * prepare data screen
@@ -283,7 +305,7 @@
                     this.$refs.completed.fetch();
                     ProcessMaker.apiClient.get(`requests/${this.requestId}`, {
                         params: {
-                            include: 'participants,user,summary,process.summaryScreen'
+                            include: 'participants,user,summary,summaryScreen'
                         }
                     })
                         .then((response) => {

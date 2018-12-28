@@ -3,11 +3,11 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Traits\SerializeToIso8601;
+use RuntimeException;
 
 /**
  * Represents an Eloquent model of a Script
@@ -143,9 +143,7 @@ class Script extends Model
         $output = $response['outputs']['response'];
         if ($returnCode || $stdOutput) {
             // Has an error code
-            return [
-                'output' => implode($stdOutput, "\n")
-            ];
+            throw new RuntimeException(implode("\n", $stdOutput));
         } else {
             // Success
             $response = json_decode($output, true);

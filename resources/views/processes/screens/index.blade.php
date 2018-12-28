@@ -23,7 +23,7 @@
                 </div>
             </div>
             <div class="col-8" align="right">
-                <button type="button" href="#" class="btn btn-action text-white" data-toggle="modal"
+                <button type="button" href="#" class="btn btn-secondary" data-toggle="modal"
                         data-target="#createScreen">
                     <i class="fas fa-plus"></i> {{__('Screen')}}
                 </button>

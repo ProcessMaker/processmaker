@@ -318,6 +318,9 @@ class ScreenTest extends TestCase
      */
     public function testScreenRender()
     {
+        $this->markTestSkipped(
+            'api /screens/{id}/render not yet implemented.'
+        );
         $screen = factory(Screen::class)->create([
             'type' => 'EMAIL',
             'config' => ''

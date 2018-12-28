@@ -22,7 +22,7 @@ class CreateProcessRequestTokens extends Migration
             // Element points to a bpmn element, not another model
             $table->string('element_id');
             $table->string('element_type');
-            $table->string('element_name');
+            $table->string('element_name')->nullable();
             $table->enum('status', ['ACTIVE', 'FAILING', 'COMPLETED', 'CLOSED', 'EVENT_CATCH'])
                     ->default('ACTIVE');
             $table->timestamp('completed_at')->nullable();

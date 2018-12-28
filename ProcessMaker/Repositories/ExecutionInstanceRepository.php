@@ -110,6 +110,23 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
     }
 
     /**
+     * Persists instance when an error occurs
+     *
+     * @param ExecutionInstanceInterface $instance
+     *
+     * @return mixed
+     */
+    public function persistInstanceError(ExecutionInstanceInterface $instance)
+    {
+        //Get instance data
+        $data = $instance->getDataStore()->getData();
+        //Save instance
+        $instance->status = 'ERROR';
+        $instance->data = $data;
+        $instance->saveOrFail();
+    }
+
+    /**
      * Persists instance data related to the event Process Instance Completed
      *
      * @param ExecutionInstanceInterface $instance

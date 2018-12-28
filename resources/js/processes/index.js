@@ -6,7 +6,7 @@ new Vue({
     data: {
         filter: "",
         processModal: false,
-        processId: null
+        processId: null,
     },
     components: {
         ProcessesListing
