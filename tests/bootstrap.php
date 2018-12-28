@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\Artisan;
 // Bootstrap laravel
 app()->make(Kernel::class)->bootstrap();
 
+//Ensure storage directory is linked
+Artisan::call('storage:link', []);
+
 if (env('RUN_MSSQL_TESTS')) {
     // Setup our testexternal database
     config(['database.connections.testexternal' => [

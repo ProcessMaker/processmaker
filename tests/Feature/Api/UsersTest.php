@@ -8,6 +8,7 @@ use ProcessMaker\Models\User;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\UploadedFile;
 
 class UsersTest extends TestCase
 {
@@ -315,6 +316,48 @@ class UsersTest extends TestCase
 
         //Validate the header status code
         $response->assertStatus(405);
+    }
+    
+    /**
+     * The user can upload an avatar
+     */
+    public function testUpdateUserAvatar()
+    {
+        //Create a new user
+        $user = factory(User::class)->create([
+            'username' => 'AvatarUser',
+        ]);
+        
+        //Set our API url for this users
+        $url = self::API_TEST_URL . '/' . $user->id;
+        
+        //Create a fake image and encode it to base64
+        $fakeImage = UploadedFile::fake()
+                                 ->image('avatar.jpg', 1200, 1200)
+                                 ->size(1500)
+                                 ->get();
+        $avatar = 'data:image/png;base64,' . base64_encode($fakeImage);
+
+        //Update the user with the fake image as an avatar
+        $putResponse = $this->apiCall('PUT', $url, [
+            'username' => $user->username,
+            'email' => $user->email,
+            'avatar' => $avatar,
+        ]);
+        
+        //Validate the header status code
+        $putResponse->assertStatus(204);
+        
+        //Request the user from the API
+        $getResponse = $this->apiCall('GET', $url);
+        
+        //Assert that the 'avatar' key exists
+        $getResponse->assertJsonStructure(['avatar']);
+        
+        //Assert that the file exists in the correct location
+        $json = $getResponse->json();
+        $path = parse_url($json['avatar'], PHP_URL_PATH);
+        $this->assertFileExists('public' . $path);
     }
 
 }

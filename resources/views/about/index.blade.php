@@ -18,9 +18,9 @@
         <hr>
         <div>{{__('ProcessMaker v4.0')}}</div>
         <hr>
-        <a href="https://github.com/ProcessMaker/bpm/issues">{{__('Report an issue')}}  <i class="fas fa-caret-right fa-lg float-right mr-1"></i></a>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLScnYje8uTACYwp3VxdRoA26OFkbfFs6kuXofqY-QXXsG-h9xA/viewform" target="_blank">{{__('Report an issue')}}  <i class="fas fa-caret-right fa-lg float-right mr-1"></i></a>
         <hr>
-        <a href="https://github.com/ProcessMaker/bpm">{{__('Get Help')}}  <i class="fas fa-caret-right fa-lg float-right mr-1"></i></a>
+        <a href="https://github.com/ProcessMaker/bpm" target="_blank">{{__('Get Help')}}  <i class="fas fa-caret-right fa-lg float-right mr-1"></i></a>
         <hr>
         &copy; {{date('Y')}} - All Rights Reserved
       </div>

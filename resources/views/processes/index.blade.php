@@ -52,7 +52,7 @@
       <div class="modal-body" v-if="processCategories">
         <div class="form-group">
 			{!! Form::label('name', 'Name') !!}
-			{!! Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.name}']) !!}
+			{!! Form::text('name', null, ['autocomplete' => 'off', 'class'=> 'form-control', 'v-model'=> 'name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.name}']) !!}
 			<div class="invalid-feedback" v-for="name in addError.name">@{{name}}</div>
         </div>
         <div class="form-group">
