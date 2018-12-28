@@ -97,7 +97,7 @@
             process_category_id: '',
             addError: {},
             status: '',
-            processCategories: ""
+            processCategories: @json($processCategories)
         },
         methods: {
             onSubmit() {
