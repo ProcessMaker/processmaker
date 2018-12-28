@@ -49,7 +49,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body" v-if="processCategories">
         <div class="form-group">
 			{!! Form::label('name', 'Name') !!}
 			{!! Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.name}']) !!}
@@ -71,9 +71,15 @@
 			<div class="invalid-feedback" v-for="status in addError.status">@{{status}}</div>
         </div>
       </div>
+        <div class="modal-body" v-else>
+          <div>Categories are required to create a process</div>
+            <a  href="{{ url('processes/categories') }}" class="btn btn-primary container mt-2">
+                     {{__('Add Category')}}
+            </a>
+        </div>
     	<div class="modal-footer">
-			<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
-			<button type="button" class="btn btn-secondary" id="disabledForNow" @click="onSubmit">Save</button>
+			<button type="button" class="btn btn-outline-secondary" data-dismiss="modal" v-if='processCategories'>Close</button>
+			<button type="button" class="btn btn-secondary" id="disabledForNow" @click="onSubmit" v-if='processCategories'>Save</button>
         </div>
     </div>
     </div>
@@ -90,7 +96,8 @@
             description: '',
             process_category_id: '',
             addError: {},
-            status: ''
+            status: '',
+            processCategories: ""
         },
         methods: {
             onSubmit() {
