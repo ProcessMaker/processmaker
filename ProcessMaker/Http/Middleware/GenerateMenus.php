@@ -21,18 +21,18 @@ class GenerateMenus
 
         Menu::make('topnav', function ($menu) {
             $menu->group(['prefix' => 'requests'], function($request_items) {
-                $request_items->add(__('menus.topnav.requests'), ['route' => 'requests.index']);
+                $request_items->add(__('menus.topnav.requests'), ['route' => 'requests.index'])->active('requests/*');
             });
             //@TODO change the index to the correct blade
             $menu->group(['prefix' => 'tasks'], function($request_items) {
-                $request_items->add(__('menus.topnav.tasks'), ['route' => 'tasks.index']);
+                $request_items->add(__('menus.topnav.tasks'), ['route' => 'tasks.index'])->active('tasks/*');
             });
             //@TODO change the index to the correct blade
             $menu->group(['prefix' => 'processes'], function($request_items) {
-                $request_items->add(__('menus.topnav.processes'), ['route' => 'processes.index']);
+                $request_items->add(__('menus.topnav.processes'), ['route' => 'processes.index'])->active('processes/*');
             });
             $menu->group(['prefix' => 'admin'], function($admin_items) {
-                $admin_items->add(__('menus.topnav.admin'), ['route' => 'users.index']);
+                $admin_items->add(__('menus.topnav.admin'), ['route' => 'users.index'])->active('admin/*');
             });
         });
 

@@ -35,6 +35,17 @@
 	// }
 }
 
+.active {
+	color: $primary;
+}
+
+.navbar-light .navbar-nav .show>.nav-link,
+.navbar-light .navbar-nav .active>.nav-link,
+.navbar-light .navbar-nav .nav-link.show,
+.navbar-light .navbar-nav .nav-link.active {
+	color: $primary;
+}
+
 .actions .popout {
 	white-space: nowrap;
 	float: right
