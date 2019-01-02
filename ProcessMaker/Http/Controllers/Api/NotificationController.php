@@ -72,6 +72,7 @@ class NotificationController extends Controller
             'data->>message as message',
             'data->>processName as processName',
             'data->>userName as userName',
+            'data->>dateTime as dateTime',
             'data->>request_id as request_id',
             'data->>url as url')
             ->where('notifiable_type', User::class)
