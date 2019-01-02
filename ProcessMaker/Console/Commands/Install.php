@@ -115,6 +115,16 @@ class Install extends Command
         // Set it as our url in our config
         config(['app.url' => $this->env['APP_URL']]);
 
+        //Confirm the user would like to setup their email
+        if ($this->confirm('Would you like to setup email options?')) {
+            //Fetch from name & email from the user
+            $this->fetchEmailFromInfo();
+            
+            //Explain and then fetch email credentials
+            $this->info(__('ProcessMaker works with any SMTP server as well as several email APIs.'));
+            $this->fetchEmailCredentials();
+        }
+
         $this->info(__("Installing ProcessMaker Database, OAuth SSL Keys and configuration file"));
 
         // The database should already exist and is tested by the fetchDatabaseCredentials call
@@ -144,11 +154,6 @@ class Install extends Command
 		//Create a symbolic link from "public/storage" to "storage/app/public"
 		$this->call('storage:link');
         
-        //If the user would like to setup their email, run the command
-        if ($this->confirm('Would you like to setup email options now?')) {
-            $this->call('bpm:setup-email');
-        }
-
         $this->info(__("ProcessMaker installation is complete. Please visit the url in your browser to continue."));
         return true;
     }
@@ -188,6 +193,69 @@ class Install extends Command
         $this->env['DB_USERNAME'] = $this->ask(__("Enter your MySQL Username"));
         $this->env['DB_PASSWORD'] = $this->secret(__("Enter your MySQL Password (Input hidden)"));
     }
+    
+    private function fetchEmailCredentials()
+    {
+        //Present multiple choice list of email drivers
+        $type = $this->choice(__('Which email driver would you like to use?'), ['SMTP', 'Mailgun', 'Sparkpost', 'Amazon SES', 'Mailtrap'], 0);
+        $method = camel_case('setup' . $type);
+        $this->{$method}();
+    }
+    
+    private function fetchEmailFromInfo()
+    {
+        //Obtain from address and name from user
+        $this->env['MAIL_FROM_ADDRESS'] = $this->ask(__("Enter the email address you'd like emails to come from"), 'admin@example.com');
+        $this->env['MAIL_FROM_NAME'] = '"' . $this->ask(__("Enter the name you'd like emails to come from"), 'ProcessMaker') . '"';  
+    }
+    
+    private function setupSMTP()
+    {
+        //Ask for SMTP credentials
+        $this->env['MAIL_DRIVER'] = "smtp";
+        $this->env['MAIL_HOST'] = $this->ask(__("Enter your SMTP host"));
+        $this->env['MAIL_PORT'] = $this->anticipate(__("Enter your SMTP port"), [25, 465, 587, 2525]);
+        $this->env['MAIL_USERNAME'] = $this->ask(__("Enter your SMTP username"));
+        $this->env['MAIL_PASSWORD'] = $this->secret(__("Enter your SMTP password (input hidden)"));
+    }
+
+    private function setupMailgun()
+    {
+        //Ask for Mailgun credentials
+        $this->env['MAIL_DRIVER'] = "mailgun";
+        $this->env['MAILGUN_DOMAIN'] = $this->ask(__("Enter your Mailgun domain"));
+        $this->env['MAILGUN_SECRET'] = $this->secret(__("Enter your Mailgun secret (input hidden)"));
+        $this->env['MAILGUN_ENDPOINT'] = $this->ask(__("Enter your Mailgun endpoint"), 'api.mailgun.net');
+    }
+
+    private function setupAmazonSES()
+    {
+        //Warn about dependency
+        $this->info(__("<comment>Please note that aws/aws-sdk-php must be installed for this driver to function.</comment>"));
+
+        //Ask for SES credentials
+        $this->env['MAIL_DRIVER'] = "ses";
+        $this->env['SES_KEY'] = $this->ask(__("Enter your Amazon SES key"));
+        $this->env['SES_SECRET'] = $this->secret(__("Enter your Amazon SES secret (input hidden)"));
+        $this->env['SES_REGION'] = $this->ask(__("Enter your Amazon SES region"), 'us-east-1');
+    }
+
+    private function setupSparkpost()
+    {
+        //Ask for Sparkpost credentials
+        $this->env['MAIL_DRIVER'] = "sparkpost";
+        $this->env['SPARKPOST_SECRET'] = $this->secret(__("Enter your Sparkpost secret (input hidden)"));
+    }
+    
+    private function setupMailtrap()
+    {
+        //Ask for Mailtrap credentials
+        $this->env['MAIL_DRIVER'] = "smtp";
+        $this->env['MAIL_HOST'] = 'smtp.mailtrap.io';
+        $this->env['MAIL_PORT'] = 2525;
+        $this->env['MAIL_USERNAME'] = $this->ask(__("Enter your Mailtrap inbox username"));
+        $this->env['MAIL_PASSWORD'] = $this->secret(__("Enter your Mailtrap inbox password (input hidden)"));    
+    }    
 
     private function testDatabaseConnection()
     {
