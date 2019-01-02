@@ -16,7 +16,45 @@ class FileController extends Controller
      *
      * @param Request $request
      *
-     * @return \Illuminate\Http\Response
+     * @return ApiCollection
+     *
+     * @OA\Get(
+     *     path="/requests/{request_id}/files",
+     *     summary="Returns the list of files associated to a request",
+     *     operationId="getFiles",
+     *     tags={"Files"},
+     *     @OA\Parameter(ref="#/components/parameters/filter"),
+     *     @OA\Parameter(ref="#/components/parameters/order_by"),
+     *     @OA\Parameter(ref="#/components/parameters/order_direction"),
+     *     @OA\Parameter(ref="#/components/parameters/per_page"),
+     *     @OA\Parameter(
+     *         description="ID of the request",
+     *         in="path",
+     *         name="request_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="list of files",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/media"),
+     *             ),
+     *             @OA\Property(
+     *                 property="meta",
+     *                 type="object",
+     *                 allOf={@OA\Schema(ref="#/components/schemas/metadata")},
+     *             ),
+     *         ),
+     *     ),
+     * )
      */
     public function index(Request $request)
     {
@@ -45,6 +83,54 @@ class FileController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
+     *
+     * @OA\Post(
+     *     path="/requests/{request_id}/files",
+     *     summary="Save a new media file",
+     *     operationId="createFile",
+     *     tags={"Files"},
+     *
+     *      @OA\Parameter(
+     *         name="media_id",
+     *         in="query",
+     *         description="ID of the model to which the file will be associated",
+     *         required=false,
+     *         @OA\Schema(type="integer"),
+     *     ),
+     *      @OA\Parameter(
+     *         name="media",
+     *         in="query",
+     *         description="Name of the class of the model",
+     *         required=false,
+     *         @OA\Schema(type="string"),
+     *     ),
+     *      @OA\Parameter(
+     *         description="ID of the request",
+     *         in="path",
+     *         name="request_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(
+     *              @OA\Property(property="file", type="string", format="byte"),
+     *      )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="success",
+     *         @OA\JsonContent(
+     *              @OA\Property(property="id", type="string"),
+     *              @OA\Property(property="model_id", type="string"),
+     *              @OA\Property(property="file_name", type="string"),
+     *              @OA\Property(property="mime_type", type="string")
+     *             ),
+     *         )
+     *     ),
+     * )
      */
     public function store(Request $request)
     {
@@ -80,6 +166,35 @@ class FileController extends Controller
      * @param Media $file
      * @return \Illuminate\Http\Response
      *
+     * @OA\Get(
+     *     path="/requests/{request_id}/files/{file_id}",
+     *     summary="Get a file uploaded to a request",
+     *     operationId="getFilesById",
+     *     tags={"Files"},
+     *     @OA\Parameter(
+     *         description="ID of the file to return",
+     *         in="path",
+     *         name="file_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         description="ID of the request",
+     *         in="path",
+     *         name="request_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successfully found the group",
+     *         @OA\JsonContent(ref="#/components/schemas/groups")
+     *     ),
+     * )
      */
     public function show(Media $file)
     {
@@ -96,6 +211,49 @@ class FileController extends Controller
      * @param Media $file
      *
      * @return \Illuminate\Http\Response
+     *
+     * @OA\Put(
+     *     path="/requests/{request_id}/files/{file_id}",
+     *     summary="Update a media file",
+     *     operationId="updateFile",
+     *     tags={"Files"},
+     *
+     *     @OA\Parameter(
+     *         description="ID of the file to update",
+     *         in="path",
+     *         name="file_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *      @OA\Parameter(
+     *         description="ID of the request",
+     *         in="path",
+     *         name="request_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(
+     *              @OA\Property(property="file", type="string", format="byte"),
+     *      )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="success",
+     *         @OA\JsonContent(
+     *              @OA\Property(property="id", type="string"),
+     *              @OA\Property(property="model_id", type="string"),
+     *              @OA\Property(property="file_name", type="string"),
+     *              @OA\Property(property="mime_type", type="string")
+     *             ),
+     *         )
+     *     ),
+     * )
      */
     public function update(Request $request, Media $file)
     {
@@ -112,6 +270,26 @@ class FileController extends Controller
      * @return \Illuminate\Http\Response
      *
      * @internal param int $id
+     *
+     * @OA\Delete(
+     *     path="/requests/{request_id}",
+     *     summary="Delete a media file",
+     *     operationId="deleteFile",
+     *     tags={"Files"},
+     *     @OA\Parameter(
+     *         description="ID of the request",
+     *         in="path",
+     *         name="request_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="success"
+     *     ),
+     * )
      */
     public function destroy(Media $file)
     {
