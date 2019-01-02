@@ -143,6 +143,11 @@ class Install extends Command
 		
 		//Create a symbolic link from "public/storage" to "storage/app/public"
 		$this->call('storage:link');
+        
+        //If the user would like to setup their email, run the command
+        if ($this->confirm('Would you like to setup email options now?')) {
+            $this->call('bpm:setup-email');
+        }
 
         $this->info(__("ProcessMaker installation is complete. Please visit the url in your browser to continue."));
         return true;
