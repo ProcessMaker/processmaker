@@ -7,7 +7,7 @@ description: Cancel a Request in which you have permission to do so.
 Request participants can cancel a Request in the following circumstances:
 
 * A Process Owner for the process associated with a Request [selects which permission\(s\) are allowed to cancel a Request for that process](../../designing-processes/viewing-processes/view-the-list-of-processes/edit-the-name-description-category-or-status-of-a-process.md#edit-general-information-about-a-process). If a Request participant's user account has that permission, then that Request participant can cancel a Request for that process.
-* Any Process Administrator can cancel a Request associated with any active process.
+* Any ProcessMaker Administrator can cancel a Request associated with any active process.
 
 {% hint style="info" %}
 If your user account does not have the permission\(s\) to cancel Requests for that process, functionality does not display to cancel those Requests.
@@ -24,7 +24,12 @@ Follow these steps to cancel a Request:
 
    ![](../../.gitbook/assets/in-progress-request.png)
 
-3. Click the ~~Request ID value \(or Process Name associated with the Request?\)~~ in the first column of the table for the Request that you want to cancel. Information about the Request displays.  
+3. Do one of the following:
+
+   * From the **Name** column, click the name of the process associated with the Request that you want to cancel.
+   * Click the Open Request icon ![](../../.gitbook/assets/open-request-icon-requests.png) for the Request you want to cancel.
+
+   Information about the Request displays.
 
    ![](../../.gitbook/assets/in-progress-request-to-cancel-request-requests%20%281%29.png)
 
