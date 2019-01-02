@@ -73,7 +73,7 @@
                     </div>
                     <div class="row">
                         <div class="form-group col">
-                            {!! Form::label('postal', 'Postal code') !!}
+                            {!! Form::label('postal', 'Postal Code') !!}
                             {!! Form::text('postal', null, ['id' => 'postal', 'rows' => 4, 'class'=> 'form-control', 'v-model'
                             => 'formData.postal', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.postal}']) !!}
                             <div class="invalid-feedback" v-if="errors.postal">@{{errors.postal[0]}}</div>

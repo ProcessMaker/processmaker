@@ -82,13 +82,15 @@
         },
         methods: {
             read(id) {
-                ProcessMaker.removeNotifications([id]);
-                this.fetch();
+                ProcessMaker.removeNotifications([id]).then(() => {
+                    this.fetch();
+                });
             },
 
             unread(id){
-                ProcessMaker.unreadNotifications([id]);
-                this.fetch();
+                ProcessMaker.unreadNotifications([id]).then(() => {
+                    this.fetch();
+                });
             },
 
             getSortParam: function () {

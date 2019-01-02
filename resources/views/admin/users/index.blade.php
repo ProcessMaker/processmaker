@@ -76,15 +76,19 @@
                     </div>
                     <div class="form-group">
                         {!!Form::label('password', __('Password'))!!}
-                        {!!Form::password('password', ['class'=> 'form-control', 'v-model'=> 'password', 'v-bind:class' =>
-                        '{\'form-control\':true, \'is-invalid\':addError.password}'])!!}
-                        <div class="invalid-feedback" v-for="password in addError.password">@{{password}}</div>
+                        <vue-password v-model="password" :disable-toggle=true ref="passwordStrength">
+                            <div slot="password-input" slot-scope="props">
+                                {!!Form::password('password', ['class'=> 'form-control', 'v-model'=> 'password',
+                                '@input' => 'props.updatePassword($event.target.value)',
+                                'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.password}'])!!}
+                            </div>
+                        </vue-password>
                     </div>
                     <div class="form-group">
                         {!!Form::label('confpassword', __('Confirm Password'))!!}
                         {!!Form::password('confpassword', ['class'=> 'form-control', 'v-model'=> 'confpassword',
                         'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.password}'])!!}
-
+                        <div class="invalid-feedback" v-for="password in addError.password">@{{password}}</div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -117,9 +121,19 @@
             },
             methods: {
                 validatePassword() {
+                    if (this.password.trim().length > 0 && this.password.trim().length < 8) {
+                        this.addError.password = ['Password must be at least 8 characters']
+                        this.$refs.passwordStrength.updatePassword('')
+                        this.password = ''
+                        this.confpassword = ''
+                        this.submitted = false
+                        return false
+                    }
                     if (this.password !== this.confpassword) {
                         this.addError.password = ['Passwords must match']
+                        this.$refs.passwordStrength.updatePassword('')
                         this.password = ''
+                        this.confpassword = ''
                         this.submitted = false
                         return false
                     }
@@ -137,6 +151,9 @@
                             password: this.password
                         }).then(function (response) {
                             window.location = "/admin/users/" + response.data.id + '/edit'
+                        }).catch(error => {
+                           this.addError = error.response.data.errors
+                            
                         });
                     }
                 }

@@ -23,6 +23,28 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
  *
+ * @OA\Schema(
+ *   schema="mediaEditable",
+ *   @OA\Property(property="id", type="integer", format="id"),
+ *   @OA\Property(property="model_id", type="integer", format="id"),
+ *   @OA\Property(property="model_type", type="string", format="id"),
+ *   @OA\Property(property="collection_name", type="string"),
+ *   @OA\Property(property="name", type="string"),
+ *   @OA\Property(property="file_name", type="string"),
+ *   @OA\Property(property="mime_type", type="string"),
+ *   @OA\Property(property="disk", type="string"),
+ *   @OA\Property(property="size", type="integer"),
+ *   @OA\Property(property="manipulations", type="string"),
+ *   @OA\Property(property="custom_properties", type="string"),
+ *   @OA\Property(property="responsive_images", type="array", items="string"),
+ *   @OA\Property(property="order_column", type="integer"),
+ * ),
+ * @OA\Schema(
+ *   schema="media",
+ *   allOf={@OA\Schema(ref="#/components/schemas/mediaEditable")},
+ *   @OA\Property(property="created_at", type="string", format="date-time"),
+ *   @OA\Property(property="updated_at", type="string", format="date-time"),
+ * )
  */
 class Media extends Model
 {

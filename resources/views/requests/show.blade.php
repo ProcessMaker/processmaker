@@ -96,8 +96,8 @@
 
                                     <div class="card-body">
                                         <p class="card-text">
-                                            {{__('This request is currently in progress.')}}
-                                            {{__('This screen will be populated once the request is completed.')}}
+                                            {{__('This Request is currently in progress.')}}
+                                            {{__('This screen will be populated once the Request is completed.')}}
                                         </p>
                                     </div>
                                 </div>
