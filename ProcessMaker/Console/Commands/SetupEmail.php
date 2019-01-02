@@ -65,12 +65,14 @@ class SetupEmail extends Command
         $this->fetchEmailFromInfo();
         
         //Explain and then fetch email credentials
-        $this->info(__('ProcessMaker provides email functionality that works with any SMTP server as well as several email APIs.'));
+        $this->info(__('ProcessMaker works with any SMTP server as well as several email APIs.'));
         $this->fetchEmailCredentials();
 
         //Update the env file with the new options
         $this->updateEnvFile();
         
+        //Send completion message
+        $this->info(__("Email setup is complete."));
         return true;
     }
     
