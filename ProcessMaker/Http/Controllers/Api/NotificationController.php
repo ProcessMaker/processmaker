@@ -14,7 +14,8 @@ use ProcessMaker\Models\User;
 
 class NotificationController extends Controller
 {
-    public $skipPermissionCheckFor = ['index', 'show'];
+    // No need for further authorization since the ID is a guid
+    public $skipPermissionCheckFor = ['index', 'show', 'updateAsRead', 'updateAsUnread'];
 
     /**
      * Display a listing of the resource.
