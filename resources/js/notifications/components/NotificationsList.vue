@@ -82,13 +82,20 @@
         },
         methods: {
             read(id) {
-                ProcessMaker.removeNotifications([id]);
-                this.fetch();
+                console.log("loading..");
+                ProcessMaker.removeNotifications([id]).then(() => {
+                    console.log("done");
+
+                    this.fetch();
+                });
             },
 
             unread(id){
-                ProcessMaker.unreadNotifications([id]);
-                this.fetch();
+                console.log("loading..");
+                ProcessMaker.unreadNotifications([id]).then(() => {
+                    console.log("done");
+                    this.fetch();
+                });
             },
 
             getSortParam: function () {

@@ -60,16 +60,17 @@ window.ProcessMaker = {
      * @param urls
      */
     removeNotifications (messageIds = [], urls = []) {
-        window.ProcessMaker.apiClient.put('/read_notifications', {message_ids: messageIds, routes: urls});
-        messageIds.forEach(function (messageId) {
-            ProcessMaker.notifications.splice(ProcessMaker.notifications.findIndex(x => x.id === messageId), 1);
-        });
+        return window.ProcessMaker.apiClient.put('/read_notifications', {message_ids: messageIds, routes: urls}).then(() => {
+            messageIds.forEach(function (messageId) {
+                ProcessMaker.notifications.splice(ProcessMaker.notifications.findIndex(x => x.id === messageId), 1);
+            });
 
-        urls.forEach(function (url) {
-            let messageIndex = ProcessMaker.notifications.findIndex(x => x.url === url);
-            if (messageIndex >= 0) {
-               ProcessMaker.removeNotification(ProcessMaker.notifications[messageIndex].id);
-            }
+            urls.forEach(function (url) {
+                let messageIndex = ProcessMaker.notifications.findIndex(x => x.url === url);
+                if (messageIndex >= 0) {
+                    ProcessMaker.removeNotification(ProcessMaker.notifications[messageIndex].id);
+                }
+            });
         });
     },
     /**
@@ -81,7 +82,7 @@ window.ProcessMaker = {
      * @param urls
      */
     unreadNotifications (messageIds = [], urls = []) {
-        window.ProcessMaker.apiClient.put('/unread_notifications', {message_ids: messageIds, routes: urls});
+        return window.ProcessMaker.apiClient.put('/unread_notifications', {message_ids: messageIds, routes: urls});
     },
 };
 
