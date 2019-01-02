@@ -82,18 +82,13 @@
         },
         methods: {
             read(id) {
-                console.log("loading..");
                 ProcessMaker.removeNotifications([id]).then(() => {
-                    console.log("done");
-
                     this.fetch();
                 });
             },
 
             unread(id){
-                console.log("loading..");
                 ProcessMaker.unreadNotifications([id]).then(() => {
-                    console.log("done");
                     this.fetch();
                 });
             },
