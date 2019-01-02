@@ -65,6 +65,8 @@ class UsersTest extends TestCase
         $url = self::API_TEST_URL;
         $response = $this->apiCall('POST', $url, [
             'username' => 'newuser',
+            'firstname' => 'name',
+            'lastname' => 'name',
             'email' => $faker->email,
             'password' => $faker->sentence(10)
         ]);
@@ -341,6 +343,8 @@ class UsersTest extends TestCase
         //Update the user with the fake image as an avatar
         $putResponse = $this->apiCall('PUT', $url, [
             'username' => $user->username,
+            'firstname' => 'name',
+            'lastname' => 'name',
             'email' => $user->email,
             'avatar' => $avatar,
         ]);
