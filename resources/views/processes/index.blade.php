@@ -49,7 +49,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body" v-if="processCategories">
         <div class="form-group">
 			{!! Form::label('name', 'Name') !!}
 			{!! Form::text('name', null, ['autocomplete' => 'off', 'class'=> 'form-control', 'v-model'=> 'name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.name}']) !!}
@@ -62,7 +62,7 @@
         </div>
         <div class="form-group">
 			{!! Form::label('process_category_id', 'Category')!!}
-			{!! Form::select('process_category_id', $processCategories, null, ['class'=> 'form-control', 'v-model'=> 'process_category_id', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.process_category_id}']) !!}
+			{!! Form::select('process_category_id', [null => 'Category is required'] + $processCategories, null, ['class'=> 'form-control', 'v-model'=> 'process_category_id', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.process_category_id}']) !!}
 			<div class="invalid-feedback" v-for="category in addError.process_category_id">@{{category}}</div>
         </div>
         <div class="form-group">
@@ -71,9 +71,15 @@
 			<div class="invalid-feedback" v-for="status in addError.status">@{{status}}</div>
         </div>
       </div>
+        <div class="modal-body" v-else>
+          <div>Categories are required to create a process</div>
+            <a  href="{{ url('processes/categories') }}" class="btn btn-primary container mt-2">
+                     {{__('Add Category')}}
+            </a>
+        </div>
     	<div class="modal-footer">
-			<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
-			<button type="button" class="btn btn-secondary" id="disabledForNow" @click="onSubmit">Save</button>
+			<button type="button" class="btn btn-outline-secondary" data-dismiss="modal" v-if='processCategories'>Close</button>
+			<button type="button" class="btn btn-secondary" id="disabledForNow" @click="onSubmit" v-if='processCategories'>Save</button>
         </div>
     </div>
     </div>
@@ -90,7 +96,8 @@
             description: '',
             process_category_id: '',
             addError: {},
-            status: ''
+            status: '',
+            processCategories: @json($processCategories)
         },
         methods: {
             onSubmit() {
@@ -99,6 +106,10 @@
                     description: null,
                     status: null
                 });
+                if(this.process_category_id === '') {
+                    // this.addError.process_category_id = "Process Category is required";
+                    ProcessMaker.alert('{{__('Process Category is required')}}', 'danger');
+                }else {
                 ProcessMaker.apiClient.post("/processes", {
                     name: this.name,
                     description: this.description,
@@ -112,6 +123,7 @@
                 .catch(error => {
                     this.errors = error.response.data.errors;
                 })
+            }
             }
         }
 	})
