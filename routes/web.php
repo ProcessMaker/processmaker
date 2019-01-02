@@ -31,7 +31,7 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
     Route::get('profile/{id}', 'ProfileController@show');
     Route::put('profile/{id}', 'ProfileController@update')->name('profile.update');
     // Ensure our modeler loads at a distinct url
-    Route::get('modeler/{process}', 'Process\ModelerController')->name('modeler');
+    Route::get('modeler/{process}', 'Process\ModelerController')->name('modeler.show');
 
     Route::get('/', 'HomeController@index')->name('home');
 
