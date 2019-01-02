@@ -61,7 +61,8 @@ class PermissionSeeder extends Seeder
         'users.create',
         'users.destroy',
         'users.edit',
-        'users.show'
+        'users.show',
+        'modeler.show'
     ];
 
     private $resourcePermissions = [
