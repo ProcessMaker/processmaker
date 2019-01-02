@@ -67,8 +67,9 @@
                     },
                     {
                         title: "DATE CREATED",
-                        name: "created_at",
-                        sortField: "created_at"
+                        name: "dateTime",
+                        sortField: "dateTime",
+                        callback: "formatDate"
                     }
                 ]
             };
