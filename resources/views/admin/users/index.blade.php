@@ -151,6 +151,9 @@
                             password: this.password
                         }).then(function (response) {
                             window.location = "/admin/users/" + response.data.id + '/edit'
+                        }).catch(error => {
+                           this.addError = error.response.data.errors
+                            
                         });
                     }
                 }
