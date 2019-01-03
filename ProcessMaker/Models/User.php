@@ -119,8 +119,6 @@ class User extends Authenticatable implements HasMedia
         $unique = Rule::unique('users')->ignore($existing);
 
         return [
-            'firstname' => 'required',
-            'lastname' => 'required',
             'username' => ['required', $unique],
             'email' => ['required', 'email', $unique]
         ];
