@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1dcddd86515f7b7855ab544a7c7916f3",
+    "content-hash": "be9203322ead538a4a2f15454b09857c",
     "packages": [
         {
             "name": "cakephp/chronos",
@@ -1927,7 +1927,7 @@
                 {
                     "name": "Luís Otávio Cobucci Oblonczyk",
                     "email": "lcobucci@gmail.com",
-                    "role": "Developer"
+                    "role": "developer"
                 }
             ],
             "description": "A simple library to work with JSON Web Token and JSON Web Signature",
@@ -3147,12 +3147,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/pm4-connector-send-email.git",
-                "reference": "a4dcdeadda994baf2c2f67c6b0bca2b15f7cd4e2"
+                "reference": "a4dcdea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/pm4-connector-send-email/zipball/a4dcdeadda994baf2c2f67c6b0bca2b15f7cd4e2",
-                "reference": "a4dcdeadda994baf2c2f67c6b0bca2b15f7cd4e2",
+                "url": "https://api.github.com/repos/ProcessMaker/pm4-connector-send-email/zipball/a4dcdea",
+                "reference": "a4dcdea",
                 "shasum": ""
             },
             "require": {
@@ -3179,8 +3179,7 @@
             },
             "description": "ProcessMaker BPM Connectors that provide Email service",
             "support": {
-                "source": "https://github.com/ProcessMaker/pm4-connector-send-email/tree/master",
-                "issues": "https://github.com/ProcessMaker/pm4-connector-send-email/issues"
+                "source": "https://github.com/ProcessMaker/pm4-connector-send-email/tree/master"
             },
             "time": "2018-12-29T02:20:13+00:00"
         },
