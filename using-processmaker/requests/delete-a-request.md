@@ -53,7 +53,19 @@ For information how to view all Requests, see [View All Requests](view-all-reque
 
 {% page-ref page="what-is-a-request.md" %}
 
+{% page-ref page="make-a-request.md" %}
+
+{% page-ref page="view-started-requests.md" %}
+
+{% page-ref page="view-in-progress-requests.md" %}
+
+{% page-ref page="view-completed-requests.md" %}
+
 {% page-ref page="view-all-requests.md" %}
 
-{% page-ref page="../../designing-processes/viewing-processes/view-the-list-of-processes/edit-the-name-description-category-or-status-of-a-process.md" %}
+{% page-ref page="search-for-a-request.md" %}
+
+{% page-ref page="request-details.md" %}
+
+
 

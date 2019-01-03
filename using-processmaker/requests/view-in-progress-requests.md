@@ -48,6 +48,8 @@ If there are no Requests in progress in which you are a participant, the followi
 
 {% page-ref page="make-a-request.md" %}
 
+{% page-ref page="delete-a-request.md" %}
+
 {% page-ref page="view-started-requests.md" %}
 
 {% page-ref page="view-completed-requests.md" %}

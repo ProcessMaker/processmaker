@@ -802,7 +802,7 @@ Inside the directory download the ProcessMaker installer:
 {% code-tabs %}
 {% code-tabs-item title="Download the ProcessMaker 4 installer." %}
 ```text
-wget https://github.com/ProcessMaker/bpm/releases/download/beta1/bpm-beta1.tar.gz
+wget https://github.com/ProcessMaker/bpm/releases/download/beta2/bpm-beta2.tar.gz
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}

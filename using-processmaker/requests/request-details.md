@@ -101,6 +101,8 @@ The following information displays about participants in a selected completed Re
 
 {% page-ref page="make-a-request.md" %}
 
+{% page-ref page="delete-a-request.md" %}
+
 {% page-ref page="view-started-requests.md" %}
 
 {% page-ref page="view-in-progress-requests.md" %}

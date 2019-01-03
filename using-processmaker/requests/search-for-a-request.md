@@ -45,6 +45,8 @@ Click the Request ID value from the **ID** column of the table to [view informat
 
 {% page-ref page="make-a-request.md" %}
 
+{% page-ref page="delete-a-request.md" %}
+
 {% page-ref page="view-started-requests.md" %}
 
 {% page-ref page="view-in-progress-requests.md" %}

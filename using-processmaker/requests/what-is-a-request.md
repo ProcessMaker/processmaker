@@ -18,6 +18,8 @@ Likewise, you can participate in others' Requests. This occurs when someone else
 
 {% page-ref page="make-a-request.md" %}
 
+{% page-ref page="delete-a-request.md" %}
+
 {% page-ref page="view-started-requests.md" %}
 
 {% page-ref page="view-in-progress-requests.md" %}

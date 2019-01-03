@@ -36,6 +36,8 @@ After the Request starts, the new Request displays in the **Started by Me** tab 
 
 {% page-ref page="what-is-a-request.md" %}
 
+{% page-ref page="delete-a-request.md" %}
+
 {% page-ref page="view-started-requests.md" %}
 
 {% page-ref page="view-in-progress-requests.md" %}

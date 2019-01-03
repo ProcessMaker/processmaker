@@ -48,6 +48,8 @@ If there are no Requests you have started, the following message displays: **No 
 
 {% page-ref page="make-a-request.md" %}
 
+{% page-ref page="delete-a-request.md" %}
+
 {% page-ref page="view-in-progress-requests.md" %}
 
 {% page-ref page="view-completed-requests.md" %}
