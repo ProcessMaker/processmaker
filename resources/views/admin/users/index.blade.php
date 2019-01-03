@@ -47,7 +47,7 @@
                     <div class="form-group">
                         {!!Form::label('username', __('Username'))!!}
                         {!!Form::text('username', null, ['class'=> 'form-control', 'v-model'=> 'username', 'v-bind:class'
-                        => '{\'form-control\':true, \'is-invalid\':addError.username}'])!!}
+                        => '{\'form-control\':true, \'is-invalid\':addError.username}', 'autocomplete' => 'off']) !!}
                         <div class="invalid-feedback" v-for="username in addError.username">@{{username}}</div>
                     </div>
                     <div class="form-group">
@@ -71,7 +71,7 @@
                     <div class="form-group">
                         {!!Form::label('email', __('Email'))!!}
                         {!!Form::email('email', null, ['class'=> 'form-control', 'v-model'=> 'email', 'v-bind:class' =>
-                        '{\'form-control\':true, \'is-invalid\':addError.email}'])!!}
+                        '{\'form-control\':true, \'is-invalid\':addError.email}', 'autocomplete' => 'off'])!!}
                         <div class="invalid-feedback" v-for="email in addError.email">@{{email}}</div>
                     </div>
                     <div class="form-group">
@@ -79,7 +79,7 @@
                         <vue-password v-model="password" :disable-toggle=true ref="passwordStrength">
                             <div slot="password-input" slot-scope="props">
                                 {!!Form::password('password', ['class'=> 'form-control', 'v-model'=> 'password',
-                                '@input' => 'props.updatePassword($event.target.value)',
+                                '@input' => 'props.updatePassword($event.target.value)', 'autocomplete' => 'new-password',
                                 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.password}'])!!}
                             </div>
                         </vue-password>
@@ -87,7 +87,7 @@
                     <div class="form-group">
                         {!!Form::label('confpassword', __('Confirm Password'))!!}
                         {!!Form::password('confpassword', ['class'=> 'form-control', 'v-model'=> 'confpassword',
-                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.password}'])!!}
+                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.password}', 'autocomplete' => 'new-password'])!!}
                         <div class="invalid-feedback" v-for="password in addError.password">@{{password}}</div>
                     </div>
                 </div>
