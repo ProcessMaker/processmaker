@@ -83,6 +83,8 @@ class NotificationController extends Controller
             $subsearch = '%' . $filter . '%';
             $query->where(function ($query) use ($subsearch, $filter) {
                 $query->Where('data->name', 'like', $subsearch)
+                    ->orWhere('data->userName', 'like', $subsearch)
+                    ->orWhere('data->processName', 'like', $subsearch)
                     ->orWhereRaw("case when read_at is null then 'unread' else 'read' end like '$filter%'");
             });
         }
