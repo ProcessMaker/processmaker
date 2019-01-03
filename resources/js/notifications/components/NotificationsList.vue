@@ -131,6 +131,8 @@
                         this.perPage +
                         "&filter=" +
                         this.filter +
+                        "&status=" +
+                        new URLSearchParams(window.location.search).get('status') +
                         this.getSortParam()
                         , {
                             cancelToken: new CancelToken(c => {
