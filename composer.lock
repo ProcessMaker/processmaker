@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "58e8b670d1a2f70d912a7fcf5a831184",
+    "content-hash": "be9203322ead538a4a2f15454b09857c",
     "packages": [
         {
             "name": "cakephp/chronos",
@@ -368,16 +368,16 @@
         },
         {
             "name": "doctrine/dbal",
-            "version": "v2.9.1",
+            "version": "v2.9.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "ec74d6e300d78fbc896669c3ca57ef9719adc9c6"
+                "reference": "22800bd651c1d8d2a9719e2a3dc46d5108ebfcc9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/ec74d6e300d78fbc896669c3ca57ef9719adc9c6",
-                "reference": "ec74d6e300d78fbc896669c3ca57ef9719adc9c6",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/22800bd651c1d8d2a9719e2a3dc46d5108ebfcc9",
+                "reference": "22800bd651c1d8d2a9719e2a3dc46d5108ebfcc9",
                 "shasum": ""
             },
             "require": {
@@ -446,7 +446,7 @@
                 "php",
                 "queryobject"
             ],
-            "time": "2018-12-14T04:51:13+00:00"
+            "time": "2018-12-31T03:27:51+00:00"
         },
         {
             "name": "doctrine/event-manager",
@@ -1572,16 +1572,16 @@
         },
         {
             "name": "laravel/passport",
-            "version": "v7.0.3",
+            "version": "v7.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/passport.git",
-                "reference": "404b345775c91cd04443e77e8d6164b9727a3448"
+                "reference": "d7f24f6d4e95049b04369d60596d7a5b619a1dc9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/passport/zipball/404b345775c91cd04443e77e8d6164b9727a3448",
-                "reference": "404b345775c91cd04443e77e8d6164b9727a3448",
+                "url": "https://api.github.com/repos/laravel/passport/zipball/d7f24f6d4e95049b04369d60596d7a5b619a1dc9",
+                "reference": "d7f24f6d4e95049b04369d60596d7a5b619a1dc9",
                 "shasum": ""
             },
             "require": {
@@ -1603,12 +1603,12 @@
             },
             "require-dev": {
                 "mockery/mockery": "~1.0",
-                "phpunit/phpunit": "~6.0"
+                "phpunit/phpunit": "~7.4"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "6.0-dev"
+                    "dev-master": "7.0-dev"
                 },
                 "laravel": {
                     "providers": [
@@ -1637,7 +1637,7 @@
                 "oauth",
                 "passport"
             ],
-            "time": "2018-10-22T14:47:22+00:00"
+            "time": "2019-01-02T10:25:07+00:00"
         },
         {
             "name": "laravel/slack-notification-channel",
@@ -3146,12 +3146,12 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/caleeli/bpm-package-email-connector.git",
+                "url": "https://github.com/ProcessMaker/pm4-connector-send-email.git",
                 "reference": "a4dcdea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/caleeli/bpm-package-email-connector/zipball/a4dcdea",
+                "url": "https://api.github.com/repos/ProcessMaker/pm4-connector-send-email/zipball/a4dcdea",
                 "reference": "a4dcdea",
                 "shasum": ""
             },
@@ -3179,8 +3179,7 @@
             },
             "description": "ProcessMaker BPM Connectors that provide Email service",
             "support": {
-                "source": "https://github.com/caleeli/bpm-package-email-connector/tree/master",
-                "issues": "https://github.com/caleeli/bpm-package-email-connector/issues"
+                "source": "https://github.com/ProcessMaker/pm4-connector-send-email/tree/master"
             },
             "time": "2018-12-29T02:20:13+00:00"
         },
@@ -3873,16 +3872,16 @@
         },
         {
             "name": "spatie/laravel-medialibrary",
-            "version": "7.5.2",
+            "version": "7.5.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-medialibrary.git",
-                "reference": "6e5e355ecb262875320904f57c06dbe332eb3d36"
+                "reference": "e1d8fe917eff9b4440978516d93bde65df8c2fea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-medialibrary/zipball/6e5e355ecb262875320904f57c06dbe332eb3d36",
-                "reference": "6e5e355ecb262875320904f57c06dbe332eb3d36",
+                "url": "https://api.github.com/repos/spatie/laravel-medialibrary/zipball/e1d8fe917eff9b4440978516d93bde65df8c2fea",
+                "reference": "e1d8fe917eff9b4440978516d93bde65df8c2fea",
                 "shasum": ""
             },
             "require": {
@@ -3952,7 +3951,7 @@
                 "media",
                 "spatie"
             ],
-            "time": "2018-11-19T17:16:59+00:00"
+            "time": "2019-01-03T17:10:42+00:00"
         },
         {
             "name": "spatie/pdf-to-image",
@@ -5577,16 +5576,16 @@
         },
         {
             "name": "vlucas/phpdotenv",
-            "version": "v2.5.1",
+            "version": "v2.5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vlucas/phpdotenv.git",
-                "reference": "8abb4f9aa89ddea9d52112c65bbe8d0125e2fa8e"
+                "reference": "cfd5dc225767ca154853752abc93aeec040fcf36"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vlucas/phpdotenv/zipball/8abb4f9aa89ddea9d52112c65bbe8d0125e2fa8e",
-                "reference": "8abb4f9aa89ddea9d52112c65bbe8d0125e2fa8e",
+                "url": "https://api.github.com/repos/vlucas/phpdotenv/zipball/cfd5dc225767ca154853752abc93aeec040fcf36",
+                "reference": "cfd5dc225767ca154853752abc93aeec040fcf36",
                 "shasum": ""
             },
             "require": {
@@ -5623,7 +5622,7 @@
                 "env",
                 "environment"
             ],
-            "time": "2018-07-29T20:33:41+00:00"
+            "time": "2018-10-30T17:29:25+00:00"
         },
         {
             "name": "watson/validating",
