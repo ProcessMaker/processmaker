@@ -25,7 +25,7 @@
         </template>
 
         <template slot="assignee" slot-scope="props">
-          <avatar-image size="25" :input-data="props.rowData.user" display-name="false"></avatar-image>
+          <avatar-image size="25" :input-data="props.rowData.user" hide-name="true"></avatar-image>
         </template>
 
         <template slot="actions" slot-scope="props">
