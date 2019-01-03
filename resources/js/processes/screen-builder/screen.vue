@@ -9,6 +9,9 @@
                     <li class="nav-item">
                         <a class="nav-link" @click="mode = 'preview'" href="#">Preview</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" @click="openComputedProperties" href="#">Computed Properties</a>
+                    </li>
                 </ul>
 
                 <ul class="navbar-nav  pull-right">
@@ -22,6 +25,7 @@
             </nav>
         </div>
 
+        <computed-properties v-model="computed" ref="computedProperties"></computed-properties>
         <vue-form-builder :class="{invisible: mode != 'editor'}" @change="updateConfig" ref="screenBuilder"
                           v-show="mode === 'editor'" config="config"/>
         <div id="preview" :class="{invisible: mode != 'preview'}">
@@ -42,7 +46,7 @@
                     <div class="row">
                         <div class="col-sm">
                             <vue-form-renderer ref="renderer" @submit="previewSubmit" v-model="previewData"
-                                               :config="config"/>
+                                               :config="config" :computed="computed"/>
                         </div>
                     </div>
                 </div>
@@ -58,6 +62,7 @@
 </template>
 
 <script>
+    import ComputedProperties from "@processmaker/vue-form-builder/src/components/computed-properties";
     import VueFormBuilder from "@processmaker/vue-form-builder/src/components/vue-form-builder";
     import VueFormRenderer from "@processmaker/vue-form-builder/src/components/vue-form-renderer";
     import VueJsonPretty from "vue-json-pretty";
@@ -67,10 +72,12 @@
         data() {
             return {
                 mode: "editor",
+                computed: [],
                 config: [
                     {
                         name: "Default",
-                        items: []
+                        items: [],
+                        computed: []
                     }
                 ],
                 previewData: null,
@@ -78,6 +85,7 @@
             };
         },
         components: {
+            ComputedProperties,
             VueFormRenderer,
             VueFormBuilder,
             VueJsonPretty,
@@ -131,6 +139,9 @@
             ProcessMaker.EventBus.$emit('screen-builder-start', this);
         },
         methods: {
+            openComputedProperties() {
+                this.$refs.computedProperties.show();
+            },
             addControl(
                 control,
                 rendererComponent,
