@@ -4,7 +4,7 @@ description: View the status of Requests you've started.
 
 # View Requests You Started
 
-The **Started by Me** tab in the **Requests** page displays all Requests you started. Request information display in tabular format.
+The **Started by Me** tab in the **Requests** page displays all Requests you started. Request information displays in tabular format.
 
 ## View Requests You Started
 
@@ -16,7 +16,10 @@ Do one of the following to view Requests that you started:
 ![&quot;Started By Me&quot; Request tab](../../.gitbook/assets/started-by-me-request.png)
 
 {% hint style="info" %}
-Click the ~~Request ID \(or the process name associated with the Request?\)~~ value in the first column of the table to [view information](request-details.md) about that Request.
+To [view information](request-details.md) about a Request, do one of the following:
+
+* From the **Name** column, click the name of the process associated with the Request that you want to cancel.
+* Click the Open Request icon ![](../../.gitbook/assets/open-request-icon-requests.png) for the Request in which you want to view information.
 {% endhint %}
 
 {% hint style="info" %}
@@ -25,11 +28,11 @@ Use the [Search](search-for-a-request.md) field to filter Requests that display 
 
 The **Started by Me** tab displays the following information:
 
-* **ID:** The **ID** column displays the Request ID. ~~What does the ID represent?~~ Click the ID to [view information](request-details.md) about that Request.
-* **Process:** The **Process** column displays the name of the process associated with the Request.
+* **Name:** The **Name** column displays the name of the process associated with the Request. Click the process name to [view information](request-details.md) about that Request.
 * **Status:** The **Status** column displays the status of the process associated with the Request. The following are possible statuses:
   * In Progress
   * Completed
+  * Error
 * **Participants:** The **Participants** column displays avatars of each participant in the Request.
 * **Started:** The **Started** column displays the date and time you made the Request. The time is displayed according to your time zone setting.
 * **Completed:** The **Completed** column displays the date and time the Request was completed. If the Request is not completed, this field displays no value for that Request. The time is displayed according to your time zone setting.

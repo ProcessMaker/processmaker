@@ -27,7 +27,7 @@ Follow these steps to start a Request:
    The process you selected starts a Request.
 
 {% hint style="info" %}
-If there are no active processes or you do not have authorization to start a Request for a process, the following message displays: **No Requests have been defined yet or are available to you**.
+If there are no active processes or you do not have authorization to start a Request for a process, the following message displays: **At this time there are no Requests available**.
 {% endhint %}
 
 After the Request starts, the new Request displays in the **Started by Me** tab in the **Requests** page.
