@@ -165,7 +165,7 @@
                                     <div class="form-group">
                                         {!! Form::label('username', 'Username') !!}
                                         {!! Form::text('username', null, ['id' => 'username', 'rows' => 4, 'class'=> 'form-control', 'v-model'
-                                        => 'formData.username', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.username}']) !!}
+                                        => 'formData.username', 'autocomplete' => 'off', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.username}']) !!}
                                         <div class="invalid-feedback" v-if="errors.username">@{{errors.username[0]}}</div>
                                     </div>
 
@@ -186,7 +186,7 @@
 										<vue-password v-model="formData.password" :disable-toggle=true>
 											<div slot="password-input" slot-scope="props">
 												{!! Form::password('password', ['id' => 'password', 'rows' => 4, 'class'=> 'form-control', 'v-model'
-												=> 'formData.password', '@input' => 'props.updatePassword($event.target.value)',
+												=> 'formData.password', 'autocomplete' => 'new-password', '@input' => 'props.updatePassword($event.target.value)',
 												'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}']) !!}
 											</div>
 										</vue-password>
@@ -194,7 +194,7 @@
 				                    <div class="form-group">
 				                        {!! Form::label('confPassword', 'Confirm Password') !!}
 				                        {!! Form::password('confPassword', ['id' => 'confPassword', 'rows' => 4, 'class'=> 'form-control', 'v-model'
-				                        => 'formData.confPassword', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}']) !!}
+				                        => 'formData.confPassword', 'autocomplete' => 'new-password', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}']) !!}
 										<div class="invalid-feedback" :style="{display: (errors.password) ? 'block' : 'none' }" v-if="errors.password">@{{errors.password[0]}}</div>
 				                    </div>
                                 </div>
