@@ -9,7 +9,8 @@ use ProcessMaker\Models\JsonData;
 
 class ProfileController extends Controller
 {
-
+    public $skipPermissionCheckFor = ['edit'];
+    
     /**
      * edit your profile.
      *
