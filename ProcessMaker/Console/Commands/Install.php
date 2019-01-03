@@ -69,7 +69,10 @@ class Install extends Command
             'BROADCAST_DRIVER' => 'redis',
             'BROADCASTER_KEY' => '21a795019957dde6bcd96142e05d4b10',
             'APP_TIMEZONE' => 'UTC',
-            'DATE_FORMAT' => '"m/d/Y H:i"'
+            'DATE_FORMAT' => '"m/d/Y H:i"',
+            'MAIN_LOGO_PATH' => '"/img/processmaker_logo.png"',
+            'ICON_PATH_PATH' => '"/img/processmaker_icon.png"',
+            'LOGIN_LOGO_PATH' => '"img/processmaker_login.png"'
         ];
 
 
