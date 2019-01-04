@@ -42,7 +42,8 @@ class Screen extends Model
     use SerializeToIso8601;
 
     protected $casts = [
-        'config' => 'array'
+        'config' => 'array',
+        'computed' => 'array'
     ];
 
     /**
