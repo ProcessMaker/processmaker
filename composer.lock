@@ -3147,12 +3147,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/pm4-connector-send-email.git",
-                "reference": "a4dcdeadda994baf2c2f67c6b0bca2b15f7cd4e2"
+                "reference": "4e4b79f72a2bb24b4e1f7884c3b8c3177f8c4686"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/pm4-connector-send-email/zipball/a4dcdeadda994baf2c2f67c6b0bca2b15f7cd4e2",
-                "reference": "a4dcdeadda994baf2c2f67c6b0bca2b15f7cd4e2",
+                "url": "https://api.github.com/repos/ProcessMaker/pm4-connector-send-email/zipball/4e4b79f72a2bb24b4e1f7884c3b8c3177f8c4686",
+                "reference": "4e4b79f72a2bb24b4e1f7884c3b8c3177f8c4686",
                 "shasum": ""
             },
             "require": {
@@ -3182,7 +3182,7 @@
                 "source": "https://github.com/ProcessMaker/pm4-connector-send-email/tree/master",
                 "issues": "https://github.com/ProcessMaker/pm4-connector-send-email/issues"
             },
-            "time": "2018-12-29T02:20:13+00:00"
+            "time": "2019-01-04T20:23:52+00:00"
         },
         {
             "name": "processmaker/nayra",
