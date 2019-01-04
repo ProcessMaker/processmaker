@@ -1,6 +1,7 @@
 import Vue from "vue";
 import PackagesListing from "./components/PackagesListing";
 
+
 new Vue({
     el: "#packages-listing",
     data: {

@@ -15,7 +15,6 @@ class PackageController extends Controller
 {
     public function index(Request $request)
     {
-        //dd(Session::all());
         return view('admin.packages.index');
     }
 }

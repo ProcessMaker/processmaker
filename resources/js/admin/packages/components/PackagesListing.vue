@@ -45,8 +45,8 @@
                         name: "version",
                     },
                     {
-                        title: "Expire in",
-                        name: "expire_in",
+                        title: "Expires on",
+                        name: "expires_on",
                         callback: 'formatDate'
                     }
                 ]
