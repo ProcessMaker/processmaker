@@ -6,12 +6,10 @@ description: View information about a Request in which you started or participat
 
 A ProcessMaker Administrator can create a custom format and style for how Request information displays for your organization. This topic discusses how ProcessMaker 4 displays Request information by default.
 
-View information about a Request by clicking the Request ID from any of the following **Request** page tabs:
+To view information about a Request, do one of the following:
 
-* [Started By Me](view-started-requests.md) tab
-* [In Progress](view-in-progress-requests.md) tab
-* [Completed](view-completed-requests.md) tab
-* [All Requests](view-all-requests.md) tab
+* From the **Name** column, click the name of the process associated with the Request that you want to view.
+* Click the Open Request icon ![](../../.gitbook/assets/open-request-icon-requests.png) for the Request in which you want to view information.
 
 ## Information for In-Progress Requests
 
@@ -54,14 +52,14 @@ This section discusses how information displays for completed Requests.
 The **Request Summary** tab displays a summary of all information entered into the completed Request. Request information may be entered in the following ways:
 
 * Users manually enter information into forms.
-* Authenticated users submit data through the ProcessMaker 4 REST API.
+* Authenticated users submit data through the ProcessMaker 4 [REST API](https://develop.bpm4.qa.processmaker.net/api/documentation).
 
 ![Request Summary tab for a completed Request](../../.gitbook/assets/request-summary-request.png)
 
 The **Request Summary** tab displays the following information:
 
-* **KEY:** The **KEY** column displays the key name as entered into a screen form at design-time or specified through the ProcessMaker 4 REST API.
-* **VALUE:** The **VALUE** column displays the key value as entered by a person manually interacting with a form or specified through the ProcessMaker 4 REST API.
+* **KEY:** The **KEY** column displays the key name as entered into a screen form at design-time or specified through the ProcessMaker 4 [REST API](https://develop.bpm4.qa.processmaker.net/api/documentation).
+* **VALUE:** The **VALUE** column displays the key value as entered by a person manually interacting with a form or specified through the ProcessMaker 4 [REST API](https://develop.bpm4.qa.processmaker.net/api/documentation).
 
 {% hint style="info" %}
 [Control how tabular information displays.](../control-how-requests-display-in-a-tab.md)
@@ -76,7 +74,7 @@ The **Completed** tab displays a summary of all tasks for the selected completed
 The **Completed** tab displays the following information:
 
 * **Task:** The **Task** column displays the name of each completed task in the selected Request. 
-* Assigned: The **Assigned** column displays the avatar for the username to whom the task was assigned.
+* **Assigned:** The **Assigned** column displays the avatar for the username to whom the task was assigned.
 * **Due Date:** The **Due Date** column displays the date the task is due.
 
 {% hint style="info" %}
@@ -85,15 +83,41 @@ The **Completed** tab displays the following information:
 
 ### Request Participants
 
-Completed Requests display information about the participants in a selected Request.
+Completed Requests display information about the participants for a selected Request.
 
 ![Request participant information for a completed Request](../../.gitbook/assets/completed-request-participants-request.png)
 
 The following information displays about participants in a selected completed Request:
 
-* **Requested By:** The **Requested By** field displays the avatar and full name of the person who started the selected Request. The Request may have been started from a person manually interacting with a form or as an authenticated user to the ProcessMaker 4 REST API.
+* **Requested By:** The **Requested By** field displays the avatar and full name of the person who started the selected Request. The Request may have been started from a person manually interacting with a form or as an authenticated user to the ProcessMaker 4 [REST API](https://develop.bpm4.qa.processmaker.net/api/documentation).
 * **Participants:** The **Participants** field displays the avatars of all participants in the selected Request.
 * **Request completion date:** The date and time the Request was completed displays below the **Participants** field.
+
+## Error Information for a Request
+
+### Summary of the Error
+
+The **Errors** tab displays summary information about an error for a selected Request if an error occurred. If a Request error has not occurred, the **Errors** tab does not display.
+
+![Summary information for a Request error](../../.gitbook/assets/error-tab-information-requests.png)
+
+The **Errors** tab displays the following information:
+
+* **Error:** The **Error** column displays the error description. 
+* **Time:** The **Time** column displays how long ago the error occurred.
+* **Element:** The **Element** column displays to which element the error occurred within the process associated with the Request.
+
+### Request Participants
+
+Requests in which an error occurs display information about the participants for that Request.
+
+![Request participant information for a Request in which an error occurred](../../.gitbook/assets/error-request-information-requests.png)
+
+The following information displays about participants in a selected Request in which an error occurred:
+
+* **Requested By:** The **Requested By** field displays the avatar and full name of the person who started the selected Request. The Request may have been started from a person manually interacting with a form or as an authenticated user to the ProcessMaker 4 [REST API](https://develop.bpm4.qa.processmaker.net/api/documentation).
+* **Participants:** The **Participants** field displays the avatars of all participants in the selected Request.
+* **Request error date:** The date and time in which the Request error occurred displays below the **Participants** field.
 
 ## Related Topics
 
