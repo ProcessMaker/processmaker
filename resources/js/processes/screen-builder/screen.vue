@@ -132,7 +132,7 @@
                     }
                 ];
 
-            this.computed = this.screen.computed;
+            this.computed = this.screen.computed ? this.screen.computed : [];
 
             this.$refs.screenBuilder.computed = this.screen.computed
                 ? this.screen.computed
