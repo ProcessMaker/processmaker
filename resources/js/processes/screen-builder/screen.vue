@@ -27,7 +27,7 @@
 
         <computed-properties v-model="computed" ref="computedProperties"></computed-properties>
         <vue-form-builder :class="{invisible: mode != 'editor'}" @change="updateConfig" ref="screenBuilder"
-                          v-show="mode === 'editor'" config="config"/>
+                          v-show="mode === 'editor'" config="config" computed="computed"/>
         <div id="preview" :class="{invisible: mode != 'preview'}">
             <div id="data-input">
                 <div class="card-header">
@@ -131,6 +131,14 @@
                         items: []
                     }
                 ];
+
+            this.computed = this.screen.computed ? this.screen.computed : [];
+
+            this.$refs.screenBuilder.computed = this.screen.computed
+                ? this.screen.computed
+                : [];
+
+
             if (this.screen.title) {
                 this.$refs.screenBuilder.config[0].name = this.screen.title;
             }
@@ -177,7 +185,8 @@
                     .put("screens/" + this.screen.id, {
                         title: this.screen.title,
                         description: this.screen.description,
-                        config: this.config
+                        config: this.config,
+                        computed: this.computed
                     })
                     .then(response => {
                         ProcessMaker.alert(" Successfully saved", "success");

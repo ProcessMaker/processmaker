@@ -24,6 +24,7 @@
                                    instance-id="{{$task->processRequest->getKey()}}"
                                    token-id="{{$task->getKey()}}"
                                    :screen="{{json_encode($task->getScreen()->config)}}"
+                                   :computed="{{json_encode($task->getScreen()->computed)}}"
                                    :data="{{json_encode($task->processRequest->data)}}"/>
                     </div>
                 </div>
