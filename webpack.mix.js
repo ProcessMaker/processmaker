@@ -15,29 +15,29 @@ const MonocoEditorPlugin = require('monaco-editor-webpack-plugin')
 */
 
 mix.webpackConfig({
-    plugins: [
-        new MonocoEditorPlugin()
-    ],
-    resolve: {
-        modules: [
-            path.resolve(__dirname, 'node_modules'),
-            'node_modules'
+        plugins: [
+            new MonocoEditorPlugin()
         ],
-        symlinks: false,
-        alias: {
-            // This is so we can override some of Laravel Horizon's javascript with our own so we can embed in our UI
-            Horizon: path.resolve(__dirname, 'vendor/laravel/horizon/resources/assets/js/')
+        resolve: {
+            modules: [
+                path.resolve(__dirname, 'node_modules'),
+                'node_modules'
+            ],
+            symlinks: false,
+            alias: {
+                // This is so we can override some of Laravel Horizon's javascript with our own so we can embed in our UI
+                Horizon: path.resolve(__dirname, 'vendor/laravel/horizon/resources/assets/js/')
+            }
         }
-    }
-}).js('resources/js/app-layout.js', 'public/js')
+    }).js('resources/js/app-layout.js', 'public/js')
     .js('resources/js/processes/modeler/index.js', 'public/js/processes/modeler')
     .js('resources/js/processes/modeler/initialLoad.js', 'public/js/processes/modeler')
     .js('resources/js/admin/users/index.js', 'public/js/admin/users')
-    .js('resources/js/admin/users/edit.js', 'public/js/admin/users/edit.js')
+	.js('resources/js/admin/users/edit.js', 'public/js/admin/users/edit.js')
     .js('resources/js/admin/groups/index.js', 'public/js/admin/groups')
     .js('resources/js/admin/groups/edit.js', 'public/js/admin/groups/edit.js')
     .js('resources/js/admin/queues/index.js', 'public/js/admin/queues')
-    .js('resources/js/admin/profile/edit.js', 'public/js/admin/profile/edit.js')
+	.js('resources/js/admin/profile/edit.js', 'public/js/admin/profile/edit.js')
     .js('resources/js/admin/packages/index.js', 'public/js/admin/packages')
 
     .js('resources/js/processes/index.js', 'public/js/processes')
