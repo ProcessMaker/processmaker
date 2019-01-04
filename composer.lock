@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "be9203322ead538a4a2f15454b09857c",
+    "content-hash": "1dcddd86515f7b7855ab544a7c7916f3",
     "packages": [
         {
             "name": "cakephp/chronos",
@@ -1927,7 +1927,7 @@
                 {
                     "name": "Luís Otávio Cobucci Oblonczyk",
                     "email": "lcobucci@gmail.com",
-                    "role": "developer"
+                    "role": "Developer"
                 }
             ],
             "description": "A simple library to work with JSON Web Token and JSON Web Signature",
@@ -3147,12 +3147,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/pm4-connector-send-email.git",
-                "reference": "a4dcdea"
+                "reference": "4e4b79f72a2bb24b4e1f7884c3b8c3177f8c4686"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/pm4-connector-send-email/zipball/a4dcdea",
-                "reference": "a4dcdea",
+                "url": "https://api.github.com/repos/ProcessMaker/pm4-connector-send-email/zipball/4e4b79f72a2bb24b4e1f7884c3b8c3177f8c4686",
+                "reference": "4e4b79f72a2bb24b4e1f7884c3b8c3177f8c4686",
                 "shasum": ""
             },
             "require": {
@@ -3179,9 +3179,10 @@
             },
             "description": "ProcessMaker BPM Connectors that provide Email service",
             "support": {
-                "source": "https://github.com/ProcessMaker/pm4-connector-send-email/tree/master"
+                "source": "https://github.com/ProcessMaker/pm4-connector-send-email/tree/master",
+                "issues": "https://github.com/ProcessMaker/pm4-connector-send-email/issues"
             },
-            "time": "2018-12-29T02:20:13+00:00"
+            "time": "2019-01-04T20:23:52+00:00"
         },
         {
             "name": "processmaker/nayra",

@@ -47,7 +47,7 @@
              * Get the value of the edited property
              */
             assignedUserGetter() {
-                const node = this.$parent.$parent.inspectorNode;
+                const node = this.$parent.$parent.highlightedNode.definition;
                 const value = _.get(node, 'assignedUsers');
                 return value;
             },
@@ -55,12 +55,12 @@
              * Get the value of the edited property
              */
             assignmentGetter() {
-                const node = this.$parent.$parent.inspectorNode;
+                const node = this.$parent.$parent.highlightedNode.definition;
                 const value = _.get(node, 'assignment');
                 return value;
             },
             node() {
-                return this.$parent.$parent.inspectorNode;
+                return this.$parent.$parent.highlightedNode.definition;
             },
             activeUsers: function () {
                return this.usersAndGroups.filter(function (u) {

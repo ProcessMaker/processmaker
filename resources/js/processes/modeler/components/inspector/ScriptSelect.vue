@@ -29,7 +29,7 @@ export default {
     },
     computed: {
         node() {
-            return this.$parent.$parent.inspectorNode;
+            return this.$parent.$parent.highlightedNode.definition;
         }
     },
     mounted() {
