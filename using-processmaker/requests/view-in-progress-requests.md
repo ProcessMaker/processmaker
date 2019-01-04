@@ -18,7 +18,10 @@ Follow these steps to view in-progress Requests:
 ![&quot;In Progress&quot; Request tab](../../.gitbook/assets/in-progress-request.png)
 
 {% hint style="info" %}
-Click the Request ID value in the first column of the table to [view information](request-details.md) about that Request.
+To [view information](request-details.md) about a Request, do one of the following:
+
+* From the **Name** column, click the name of the process associated with the Request that you want to view.
+* Click the Open Request icon ![](../../.gitbook/assets/open-request-icon-requests.png) for the Request in which you want to view information.
 {% endhint %}
 
 {% hint style="info" %}
