@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
+    public $skipPermissionCheckFor = ['index'];
+
     public function index(Request $request)
     {
 

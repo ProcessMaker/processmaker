@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Feature\Api;
 
 use Carbon\Carbon;
@@ -9,6 +10,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
+use ProcessMaker\Facades\WorkflowManager;
 
 /**
  * Tests routes related to tokens list and show
@@ -59,25 +61,62 @@ class TasksTest extends TestCase
         //Verify the structure
         $response->assertJsonStructure(['data' => ['*' => $this->structure]]);
     }
+    
+    /**
+     * You only see tasks that belong to you if you are not admin
+     */
+    public function testGetListAssignedTasks()
+    {
+        $user_1 = factory(User::class)->create();
+        $user_2 = factory(User::class)->create();
+        $this->user = $user_1;
+
+        $request = factory(ProcessRequest::class)->create();
+        // Create some tokens
+        factory(ProcessRequestToken::class, 2)->create([
+            'process_request_id' => $request->id,
+            'user_id' => $user_1->id
+        ]);
+        factory(ProcessRequestToken::class, 3)->create([
+            'process_request_id' => $request->id,
+            'user_id' => $user_2->id
+        ]);
+        //Get a page of tokens
+        $route = route('api.' . $this->resource . '.index');
+        $response = $this->apiCall('GET', $route);
+
+        // should only see the user's 2 tasks
+        $this->assertEquals(count($response->json()['data']), 2);
+    }
 
     /**
      * Test to verify that the list dates are in the correct format (yyyy-mm-dd H:i+GMT)
      */
     public function testTaskListDates()
     {
-        $request = factory(ProcessRequest::class)->create();
+        $name = 'testTaskTimezone';
+        $request = factory(ProcessRequest::class)->create(['name' => $name]);
         // Create some tokens
         $newEntity = factory(ProcessRequestToken::class)->create([
             'process_request_id' => $request->id
         ]);
-        $route = route('api.' . $this->resource . '.index', ['per_page' => 10]);
+        $route = route('api.' . $this->resource . '.index', ['filter' => $name]);
         $response = $this->apiCall('GET', $route);
 
-        $fieldsToValidate = collect(['created_at', 'updated_at', 'due_at']);
-        $fieldsToValidate->map(function ($field) use ($response, $newEntity){
-            $this->assertEquals(Carbon::parse($newEntity->$field)->format('c'),
-                $response->getData()->data[0]->$field);
-        });
+        $this->assertEquals(
+            $newEntity->created_at->format('c'),
+            $response->getData()->data[0]->created_at
+        );
+
+        $this->assertEquals(
+            $newEntity->updated_at->format('c'),
+            $response->getData()->data[0]->updated_at
+        );
+
+        $this->assertEquals(
+            $newEntity->due_at->format('c'),
+            $response->getData()->data[0]->due_at
+        );
     }
 
     /**
@@ -130,7 +169,7 @@ class TasksTest extends TestCase
         $response->assertJsonStructure(['data' => ['*' => $this->structure]]);
         //Verify the first row
         $firstRow = $response->json('data')[0];
-        $this->assertArraySubset(['completed_at'=>null], $firstRow);
+        $this->assertArraySubset(['completed_at' => null], $firstRow);
     }
 
     /**
@@ -209,6 +248,22 @@ class TasksTest extends TestCase
         $this->assertStatus(200, $response);
         //Check the structure
         $response->assertJsonStructure($this->structure);
-        $response->assertJsonStructure(['user'=>['id', 'email'],'definition'=>[]]);
+        $response->assertJsonStructure(['user' => ['id', 'email'], 'definition' => []]);
+    }
+
+    public function testUpdateTask()
+    {
+        $this->user = factory(User::class)->create(); // normal user
+        $request = factory(ProcessRequest::class)->create();
+        $token = factory(ProcessRequestToken::class)->create([
+            'user_id' => $this->user->id,
+            'status' => 'ACTIVE',
+        ]);
+        $params = ['status' => 'COMPLETED', 'foo' => 'bar'];
+        WorkflowManager::shouldReceive('completeTask')
+            ->once()
+            ->with(\Mockery::any(), \Mockery::any(), \Mockery::any(), $params);
+        $response = $this->apiCall('PUT', '/tasks/' . $token->id, $params);
+        $this->assertStatus(200, $response);
     }
 }

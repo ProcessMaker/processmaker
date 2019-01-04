@@ -69,11 +69,15 @@ class ProcessCompletedNotification extends Notification
     {
         $instance = Instance::find($this->instanceUid);
         return [
-            'name' => sprintf('Completed: %s', $this->processName),
+            'type' => 'PROCESS_COMPLETED',
+            'name' => sprintf('Request completed: %s', $this->processName),
             'dateTime' => $instance->completed_at->toIso8601String(),
             'uid' => $this->processName,
             'request_id' => $instance->getKey(),
-            'url' => '/process',
+            'url' => sprintf(
+                '/requests/%s',
+                $this->instanceUid
+            )
         ];
     }
 

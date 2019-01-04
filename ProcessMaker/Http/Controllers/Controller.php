@@ -15,6 +15,13 @@ class Controller extends BaseController
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
     /**
+     * Allow any logged in user to access the given actions
+     *
+     * @var array
+     */
+    public $skipPermissionCheckFor = [];
+
+    /**
      * Our overridden callAction unsets the parameters used by our middleware since
      * controllers don't care about them
      * @param string $method

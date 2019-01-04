@@ -14,6 +14,9 @@ jobs:
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
       - image: circleci/mysql:5.7
+        environment:
+          - MYSQL_ROOT_PASSWORD: P4ssW0rd1!
+          - MYSQL_DATABASE: circle_test
 
       # Add support for Microsoft SQL Server Testing
       - image: microsoft/mssql-server-linux:2017-GA
@@ -128,6 +131,8 @@ jobs:
           command: "./vendor/bin/phpunit -d memory_limit=-1 --coverage-html coverage"
           environment:
             DB_DATABASE: "circle_test"
+            DB_PASSWORD: "P4ssW0rd1!"
+            DB_USERNAME: "root"
             RUN_MSSQL_TESTS: "true"
             MSSQL_HOST: "127.0.0.1"
             MSSQL_PORT: "1433"
@@ -135,6 +140,7 @@ jobs:
             MSSQL_USERNAME: "sa"
             MSSQL_PASSWORD: "P4ssW0rd1!"
             BPM_SCRIPTS_HOME: "/opt/executor"
+            BPM_SCRIPTS_DOCKER_MODE: "copying"
       - run:
           name: "Jest"
           command: "npm run test"
@@ -151,7 +157,7 @@ jobs:
           name: "QA Configuration File Build"
           command: |
             echo "APP_KEY=" >> .env
-            echo "APP_DEBUG=TRUE" >> .env
+            echo "APP_DEBUG=FALSE" >> .env
             echo "APP_NAME=ProcessMaker" >> .env
             echo "APP_ENV=staging" >> .env
             echo "DB_HOST=${QA_RDS_HOST}" >> .env
@@ -165,15 +171,28 @@ jobs:
             echo "SAUCELABS_BROWSER_TESTING=true" >> .env
             echo "SAUCELABS_USERNAME=${SAUCELABS_USERNAME}" >> .env
             echo "SAUCELABS_ACCESS_KEY=${SAUCELABS_ACCESS_KEY}" >> .env
-            # Put in configuration file for Braoodcaster
+            # Put in configuration file for Broadcaster
             echo "BROADCAST_DRIVER=redis" >> .env
-            echo "BROADCASTER_HOST=https://" >> .env
+            echo "BROADCASTER_HOST=%%BROADCASTER_HOST%%" >> .env
             echo "BROADCASTER_KEY=21a795019957dde6bcd96142e05d4b10" >> .env
-
+            echo "REDIS_PORT=%%REDISPORT%%" >> .env
+            echo "BPM_SCRIPTS_HOME=/home/circleci/tmp" >> .env
+            echo "HOME=/home/circleci" >> .env
+            
             # Generate unique app key
             php artisan key:generate --force
             # Copy over our test oauth keys. Regular install will create new ones
             cp tests/storage/keys/* storage/keys/
+
+      - run:
+          name: "Add Email-Connector Plugin"
+          command: |
+            echo "MAIL_DRIVER=smtp" >> .env
+            echo "MAIL_HOST=smtp.mailtrap.io" >> .env
+            echo "MAIL_PORT=2525" >> .env
+            echo "MAIL_USERNAME=26108c384589d1" >> .env
+            echo "MAIL_PASSWORD=d9da3f11960069" >> .env
+            composer require processmaker/bpm-package-email-connector -n --prefer-dist
 
       - run:
           name: "QA Package"
@@ -201,42 +220,42 @@ jobs:
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "rm -Rf ~/builds/$BUILD_NAME/public/storage"
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "php ~/builds/$BUILD_NAME/artisan storage:link"
             echo "Deployed to https://${BUILD_NAME}.bpm4.qa.processmaker.net/"
-            # Run containerDeploy.sh script to spin up Redis docker container, laravel-echo-server, and horizon
+            # Run containerDeploy.sh script to spin up Redis docker container, laravel-echo-server, and horizon. Excluding QUEUE for now.
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "sudo /bin/bash /root/cloudops/containerDeploy.sh $BUILD_NAME"
             # Generate Passport Keys
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "cd ~/builds/$BUILD_NAME && php artisan passport:keys"
             
-      #- run:
-      #    name: "SauceLabs Browser Tests: Chrome"
-      #    command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"cd ~/builds/$BUILD_NAME && php artisan dusk\""
-      #    environment:
-      #      DB_DATABASE: "circle_test"
-      #      RUN_MSSQL_TESTS: "true"
-      #      MSSQL_HOST: "127.0.0.1"
+      - run:
+          name: "SauceLabs Browser Tests: Chrome"
+          command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"cd ~/builds/$BUILD_NAME && php artisan dusk\""
+          environment:
+            DB_DATABASE: "circle_test"
+            RUN_MSSQL_TESTS: "true"
+            MSSQL_HOST: "127.0.0.1"
 
-      #- run:
-      #    name: "SauceLabs Browser Tests: Firefox"
-      #    command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk\""
-      #    environment:
-      #      SAUCELABS_BROWSER: "firefox"
-      #      SAUCELABS_PLATFORM: "Windows 10"
-      #      SAUCELABS_BROWSER_VERSION: "47.0"
+      - run:
+          name: "SauceLabs Browser Tests: Firefox"
+          command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk\""
+          environment:
+            SAUCELABS_BROWSER: "firefox"
+            SAUCELABS_PLATFORM: "Windows 10"
+            SAUCELABS_BROWSER_VERSION: "47.0"
 
-      #- run:
-      #    name: "SauceLabs Browser Tests: Edge"
-      #    command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk\""
-      #    environment:
-      #      SAUCELABS_BROWSER: "MicrosoftEdge"
-      #      SAUCELABS_PLATFORM: "Windows 10"
-      #      SAUCELABS_BROWSER_VERSION: "16.16299"
+      - run:
+          name: "SauceLabs Browser Tests: Edge"
+          command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk\""
+          environment:
+            SAUCELABS_BROWSER: "MicrosoftEdge"
+            SAUCELABS_PLATFORM: "Windows 10"
+            SAUCELABS_BROWSER_VERSION: "16.16299"
 
-      #- run:
-      #    name: "SauceLabs Browser Tests: Safari"
-      #    command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk\""
-      #    environment:
-      #      SAUCELABS_BROWSER: "safari"
-      #      SAUCELABS_PLATFORM: "macOS 10.13"
-      #      SAUCELABS_BROWSER_VERSION: "11.0"
+      - run:
+          name: "SauceLabs Browser Tests: Safari"
+          command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk\""
+          environment:
+            SAUCELABS_BROWSER: "safari"
+            SAUCELABS_PLATFORM: "macOS 10.13"
+            SAUCELABS_BROWSER_VERSION: "11.0"
 
       - run:
           name: "Final QA Artisan DB Migration"

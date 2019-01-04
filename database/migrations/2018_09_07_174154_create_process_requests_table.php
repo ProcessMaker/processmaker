@@ -24,9 +24,10 @@ class CreateProcessRequestsTable extends Migration
             $table->string('participant_id')->nullable();
             // The callable id is the text id of the bpmn element
             $table->string('callable_id');
-            $table->enum('status', ['DRAFT','ACTIVE', 'COMPLETED', 'ERROR']);
+            $table->enum('status', ['DRAFT','ACTIVE', 'COMPLETED', 'ERROR', 'CANCELED']);
             $table->json('data');
             $table->string('name');
+            $table->json('errors')->nullable();
             $table->timestamp('completed_at')->nullable();
             $table->timestamp('initiated_at')->nullable();
             $table->timestamps();

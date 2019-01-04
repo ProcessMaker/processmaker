@@ -15,23 +15,30 @@ const MonocoEditorPlugin = require('monaco-editor-webpack-plugin')
 */
 
 mix.webpackConfig({
-        plugins: [
-            new MonocoEditorPlugin()
+    plugins: [
+        new MonocoEditorPlugin()
+    ],
+    resolve: {
+        modules: [
+            path.resolve(__dirname, 'node_modules'),
+            'node_modules'
         ],
-        resolve: {
-            symlinks: false,
-            alias: {
-                // This is so we can override some of Laravel Horizon's javascript with our own so we can embed in our UI
-                Horizon: path.resolve(__dirname, 'vendor/laravel/horizon/resources/assets/js/')
-            }
+        symlinks: false,
+        alias: {
+            // This is so we can override some of Laravel Horizon's javascript with our own so we can embed in our UI
+            Horizon: path.resolve(__dirname, 'vendor/laravel/horizon/resources/assets/js/')
         }
-    }).js('resources/js/app-layout.js', 'public/js')
+    }
+}).js('resources/js/app-layout.js', 'public/js')
     .js('resources/js/processes/modeler/index.js', 'public/js/processes/modeler')
     .js('resources/js/processes/modeler/initialLoad.js', 'public/js/processes/modeler')
     .js('resources/js/admin/users/index.js', 'public/js/admin/users')
+    .js('resources/js/admin/users/edit.js', 'public/js/admin/users/edit.js')
     .js('resources/js/admin/groups/index.js', 'public/js/admin/groups')
-    .js('resources/js/admin/packages/index.js', 'public/js/admin/packages')
+    .js('resources/js/admin/groups/edit.js', 'public/js/admin/groups/edit.js')
     .js('resources/js/admin/queues/index.js', 'public/js/admin/queues')
+    .js('resources/js/admin/profile/edit.js', 'public/js/admin/profile/edit.js')
+    .js('resources/js/admin/packages/index.js', 'public/js/admin/packages')
 
     .js('resources/js/processes/index.js', 'public/js/processes')
     .js('resources/js/processes/categories/index.js', 'public/js/processes/categories')
@@ -42,6 +49,7 @@ mix.webpackConfig({
     .js('resources/js/processes/screen-builder/main.js', 'public/js/processes/screen-builder')
     .js('resources/js/processes/screen-builder/typeForm.js', 'public/js/processes/screen-builder')
     .js('resources/js/processes/screen-builder/typeDisplay.js', 'public/js/processes/screen-builder')
+    .js('resources/js/processes/screen-builder/typeEmail.js', 'public/js/processes/screen-builder')
 
     .js('resources/js/requests/index.js', 'public/js/requests')
 
@@ -51,6 +59,8 @@ mix.webpackConfig({
     .js('resources/js/requests/show.js', 'public/js/requests')
     .js('resources/js/tasks/index.js', 'public/js/tasks/index.js')
     .js('resources/js/tasks/show.js', 'public/js/tasks/show.js')
+
+    .js('resources/js/notifications/index.js', 'public/js/notifications/index.js')
 
 
 

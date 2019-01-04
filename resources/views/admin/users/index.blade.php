@@ -24,7 +24,7 @@
 
             </div>
             <div class="col-8" align="right">
-                <button type="button" class="btn btn-action text-light" data-toggle="modal" data-target="#addUser">
+                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#addUser">
                     <i class="fas fa-plus"></i>
                     {{__('User')}}</button>
             </div>
@@ -47,7 +47,7 @@
                     <div class="form-group">
                         {!!Form::label('username', __('Username'))!!}
                         {!!Form::text('username', null, ['class'=> 'form-control', 'v-model'=> 'username', 'v-bind:class'
-                        => '{\'form-control\':true, \'is-invalid\':addError.username}'])!!}
+                        => '{\'form-control\':true, \'is-invalid\':addError.username}', 'autocomplete' => 'off']) !!}
                         <div class="invalid-feedback" v-for="username in addError.username">@{{username}}</div>
                     </div>
                     <div class="form-group">
@@ -71,44 +71,24 @@
                     <div class="form-group">
                         {!!Form::label('email', __('Email'))!!}
                         {!!Form::email('email', null, ['class'=> 'form-control', 'v-model'=> 'email', 'v-bind:class' =>
-                        '{\'form-control\':true, \'is-invalid\':addError.email}'])!!}
+                        '{\'form-control\':true, \'is-invalid\':addError.email}', 'autocomplete' => 'off'])!!}
                         <div class="invalid-feedback" v-for="email in addError.email">@{{email}}</div>
                     </div>
                     <div class="form-group">
                         {!!Form::label('password', __('Password'))!!}
-                        {!!Form::password('password', ['class'=> 'form-control', 'v-model'=> 'password', 'v-bind:class' =>
-                        '{\'form-control\':true, \'is-invalid\':addError.password}'])!!}
-                        <div class="invalid-feedback" v-for="password in addError.password">@{{password}}</div>
+                        <vue-password v-model="password" :disable-toggle=true ref="passwordStrength">
+                            <div slot="password-input" slot-scope="props">
+                                {!!Form::password('password', ['class'=> 'form-control', 'v-model'=> 'password',
+                                '@input' => 'props.updatePassword($event.target.value)', 'autocomplete' => 'new-password',
+                                'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.password}'])!!}
+                            </div>
+                        </vue-password>
                     </div>
                     <div class="form-group">
                         {!!Form::label('confpassword', __('Confirm Password'))!!}
                         {!!Form::password('confpassword', ['class'=> 'form-control', 'v-model'=> 'confpassword',
-                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.password}'])!!}
-
-                    </div>
-                    <div class="form-group">
-                        {!!Form::label('groups', __('Groups'))!!}
-                        <multiselect v-model="selectedGroups" :options="availableGroups" :multiple="true"
-                                     track-by="name"
-                                     :custom-label="customLabel" :show-labels="false" label="name">
-
-                            <template slot="tag" slot-scope="props">
-                            <span class="multiselect__tag  d-flex align-items-center" style="width:max-content;">
-                                <span class="option__desc mr-1">@{{ props.option.name }}
-                                    <span class="option__title">@{{ props.option.desc }}</span>
-                                </span>
-                                <i aria-hidden="true" tabindex="1" @click="props.remove(props.option)"
-                                   class="multiselect__tag-icon"></i>
-                            </span>
-                            </template>
-
-                            <template slot="option" slot-scope="props">
-                                <div class="option__desc d-flex align-items-center">
-                                    <span class="option__title mr-1">@{{ props.option.name }}</span>
-                                    <span class="option__small">@{{ props.option.desc }}</span>
-                                </div>
-                            </template>
-                        </multiselect>
+                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.password}', 'autocomplete' => 'new-password'])!!}
+                        <div class="invalid-feedback" v-for="password in addError.password">@{{password}}</div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -138,17 +118,22 @@
                 confpassword: '',
                 addError: {},
                 submitted: false,
-                selectedGroups: [],
-                availableGroups: @json($groups),
             },
             methods: {
-                customLabel(options) {
-                    return ` ${options.img} ${options.title} ${options.desc} `
-                },
                 validatePassword() {
+                    if (this.password.trim().length > 0 && this.password.trim().length < 8) {
+                        this.addError.password = ['Password must be at least 8 characters']
+                        this.$refs.passwordStrength.updatePassword('')
+                        this.password = ''
+                        this.confpassword = ''
+                        this.submitted = false
+                        return false
+                    }
                     if (this.password !== this.confpassword) {
                         this.addError.password = ['Passwords must match']
+                        this.$refs.passwordStrength.updatePassword('')
                         this.password = ''
+                        this.confpassword = ''
                         this.submitted = false
                         return false
                     }
@@ -164,48 +149,12 @@
                             status: this.status,
                             email: this.email,
                             password: this.password
-                        })
-                            .then(response => {
-                                ProcessMaker.alert('{{__('User successfully added ')}}', 'success');
-                                const promises = [];
-                                this.selectedGroups.forEach(group => {
-                                    promises.push(new Promise(
-                                        (resolve, reject) => {
-                                            ProcessMaker.apiClient.post("/group_members", {
-                                                member_type: "ProcessMaker\\Models\\User",
-                                                member_id: response.data.id,
-                                                group_id: group.id
-                                            })
-                                                .then(() => {
-                                                    resolve(true)
-                                                })
-                                                .catch(() => {
-                                                    ProcessMaker.alert('{{__('An error occurred while saving the Group')}}', 'danger');
-                                                    resolve(false)
-                                               })
-                                        })
-                                    )
-                                });
-
-                                Promise.all(promises)
-                                    .then(() => {
-                                        ProcessMaker.alert('{{__('Groups successfully added ')}}', 'success')
-                                    })
-                                    .catch(() => {
-                                        ProcessMaker.alert('{{__('Error when saving Group ')}}', 'danger')
-                                    })
-                                    .finally(() => {
-                                        window.location = "/admin/users/" + response.data.id + '/edit'
-                                    })
-                            })
-                            .catch(error => {
-                                if (error.response.status === 422) {
-                                    this.addError = error.response.data.errors
-                                }
-                            })
-                            .finally(() => {
-                                this.submitted = false
-                            })
+                        }).then(function (response) {
+                            window.location = "/admin/users/" + response.data.id + '/edit'
+                        }).catch(error => {
+                           this.addError = error.response.data.errors
+                            
+                        });
                     }
                 }
             }

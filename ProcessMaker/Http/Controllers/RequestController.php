@@ -6,9 +6,21 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\ProcessRequest;
+use Spatie\MediaLibrary\Models\Media;
+use Spatie\MediaLibrary\HasMedia\HasMedia;
+use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
 class RequestController extends Controller
 {
+    use HasMediaTrait;
+    /**
+     * A user should always be able to see their
+     * started requests.
+     * 
+     * @var array
+     */
+    public $skipPermissionCheckFor = ['index', 'show'];
+
     /**
      * Get the list of requests.
      *
@@ -17,10 +29,14 @@ class RequestController extends Controller
     public function index($type = null)
     {
         //load counters
-        $allRequest = ProcessRequest::count();
+        $query = ProcessRequest::query();
+        if (!Auth::user()->is_administrator) {
+            $query->startedMe(Auth::user()->id);
+        }
+        $allRequest = $query->count();
         $startedMe = ProcessRequest::startedMe(Auth::user()->id)->count();
-        $inProgress = ProcessRequest::inProgress()->count();
-        $completed = ProcessRequest::completed()->count();
+        $inProgress = $query->inProgress()->count();
+        $completed = $query->completed()->count();
 
         $title = 'My Requests';
 
@@ -42,12 +58,27 @@ class RequestController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function show(ProcessRequest $request)
+    public function show(ProcessRequest $request, Media $mediaItems)
     {
+        $request->authorize(Auth::user());
         $request->participants;
         $request->user;
         $request->summary = $request->summary();
-        $request->process->summaryScreen;
-        return view('requests.show', compact('request'));
+        $request->summary_screen = $request->getSummaryScreenId();
+        if (Auth::user()->is_administrator === true) {
+            $canCancel = true;
+        } else {
+            $canCancel = Auth::user()->hasProcessPermission($request->process, 'requests.cancel');
+        }
+
+        $files = $request->getMedia();
+
+        return view('requests.show', compact('request', 'files', 'canCancel'));
+    }
+
+    public function downloadFiles(ProcessRequest $requestID, Media $fileID)
+    {
+        $requestID->getMedia();
+        return response()->download($fileID->getPath(), $fileID->name);
     }
 }

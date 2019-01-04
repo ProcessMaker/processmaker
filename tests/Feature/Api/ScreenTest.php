@@ -52,6 +52,7 @@ class ScreenTest extends TestCase
 
         $response->assertStatus(201);
     }
+
     /**
      * Create Form screen successfully
      */
@@ -125,15 +126,20 @@ class ScreenTest extends TestCase
      */
     public function testScreenListDates()
     {
-        $newEntity = factory(Screen::class)->create();
-        $route = self::API_TEST_SCREEN;
+        $title = 'testScreenTimezone';
+        $newEntity = factory(Screen::class)->create(['title' => $title]);
+        $route = self::API_TEST_SCREEN . '?filter=' . $title;
         $response = $this->apiCall('GET', $route);
 
-        $fieldsToValidate = collect(['created_at', 'updated_at']);
-        $fieldsToValidate->map(function ($field) use ($response, $newEntity){
-            $this->assertEquals(Carbon::parse($newEntity->$field)->format('c'),
-                $response->getData()->data[0]->$field);
-        });
+        $this->assertEquals(
+            $newEntity->created_at->format('c'),
+            $response->getData()->data[0]->created_at
+        );
+
+        $this->assertEquals(
+            $newEntity->updated_at->format('c'),
+            $response->getData()->data[0]->updated_at
+        );
     }
 
     /**
@@ -219,15 +225,31 @@ class ScreenTest extends TestCase
     {
         //Post saved success
         $faker = Faker::create();
-        $url = self::API_TEST_SCREEN . '/' . factory(Screen::class)->create()->id;
+        $yesterday = \Carbon\Carbon::now()->subDay();
+        $screen = factory(Screen::class)->create([
+            "created_at" => $yesterday,
+        ]);
+        $original_attributes = $screen->getAttributes();
+        $url = self::API_TEST_SCREEN . '/' . $screen->id;
         $response = $this->apiCall('PUT', $url, [
             'title' => 'ScreenTitleTest',
             'description' => $faker->sentence(5),
-            'config' => '',
+            'config' => '{"foo":"bar"}',
         ]);
         //Validate the answer is correct
         $response->assertStatus(204);
+
+        // assert it creates a script version
+        $screen->refresh();
+        $version = $screen->versions()->first();
+        $this->assertEquals($version->screen_category_id, $screen->screen_category_id);
+        $this->assertEquals($version->title, $original_attributes['title']);
+        $this->assertEquals($version->description, $original_attributes['description']);
+        $this->assertEquals($version->config, null);
+        $this->assertEquals((string)$version->created_at, (string)$yesterday);
+        $this->assertEquals($version->updated_at, $screen->updated_at);
     }
+
     /**
      * Update Screen Type
      */
@@ -236,8 +258,8 @@ class ScreenTest extends TestCase
         $faker = Faker::create();
         $type = 'FORM';
         $url = self::API_TEST_SCREEN . '/' . factory(Screen::class)->create([
-            'type' => $type
-        ])->id;
+                'type' => $type
+            ])->id;
         $response = $this->apiCall('PUT', $url, [
             'title' => 'ScreenTitleTest',
             'type' => 'DETAIL',
@@ -256,8 +278,8 @@ class ScreenTest extends TestCase
         $faker = Faker::create();
         $title = 'Some title';
         $url = self::API_TEST_SCREEN . '/' . factory(Screen::class)->create([
-            'title' => $title,
-        ])->id;
+                'title' => $title,
+            ])->id;
         $response = $this->apiCall('PUT', $url, [
             'title' => $title,
             'description' => $faker->sentence(5),
@@ -289,6 +311,27 @@ class ScreenTest extends TestCase
         $response = $this->apiCall('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(405);
+    }
+    
+    /**
+     * Server side rendering of email screens
+     */
+    public function testScreenRender()
+    {
+        $this->markTestSkipped(
+            'api /screens/{id}/render not yet implemented.'
+        );
+        $screen = factory(Screen::class)->create([
+            'type' => 'EMAIL',
+            'config' => ''
+        ]);
+        $url = self::API_TEST_SCREEN . '/' . $screen->id . '/render';
+        $data = [
+            'foo' => 'bar'
+        ];
+        $response = $this->apiCall('POST', $url, $data);
+        $json = $response->json();
+        $this->assertEquals($json['html'], '<div data-server-rendered="true">Test SSR</div>');
     }
 
 }

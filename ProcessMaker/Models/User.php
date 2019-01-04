@@ -2,6 +2,8 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Laravel\Passport\HasApiTokens;
@@ -31,7 +33,7 @@ class User extends Authenticatable implements HasMedia
      *
      * @var array
      *
-     *   @OA\Schema(
+     * @OA\Schema(
      *   schema="usersEditable",
      *   @OA\Property(property="email", type="string", format="email"),
      *   @OA\Property(property="password", type="string"),
@@ -50,6 +52,7 @@ class User extends Authenticatable implements HasMedia
      *   @OA\Property(property="timezone", type="string"),
      *   @OA\Property(property="datetime_format", type="string"),
      *   @OA\Property(property="language", type="string"),
+     *   @OA\Property(property="is_administrator", type="boolean"),
      *   @OA\Property(property="loggedin_at", type="string"),
      *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
      * ),
@@ -104,7 +107,7 @@ class User extends Authenticatable implements HasMedia
         'is_administrator' => 'bool'
     ];
 
-/**
+    /**
      * Validation rules
      *
      * @param $existing
@@ -113,24 +116,12 @@ class User extends Authenticatable implements HasMedia
      */
     public static function rules($existing = null)
     {
-        $rules = [
-            'username' => 'required|unique:users,username',
-            'email' => 'required|email|unique:users,email'
-        ];
-        if ($existing) {
-            // ignore the unique rule for this id
-            $rules['username'] = [
-                'required',
-                Rule::unique('users')->ignore($existing->id, 'id')
-            ];
+        $unique = Rule::unique('users')->ignore($existing);
 
-            $rules['email'] = [
-                'required',
-                'email',
-                Rule::unique('users')->ignore($existing->id, 'id')
-            ];
-        }
-        return $rules;
+        return [
+            'username' => ['required', $unique],
+            'email' => ['required', 'email', $unique]
+        ];
     }
 
     /**
@@ -173,7 +164,8 @@ class User extends Authenticatable implements HasMedia
      *
      * @return string
      */
-    public function getFullnameAttribute() {
+    public function getFullnameAttribute()
+    {
         return $this->getFullName();
     }
 
@@ -182,7 +174,8 @@ class User extends Authenticatable implements HasMedia
      *
      * @param $pass
      */
-    public function setPasswordAttribute($pass){
+    public function setPasswordAttribute($pass)
+    {
 
         $this->attributes['password'] = Hash::make($pass);
 
@@ -193,7 +186,8 @@ class User extends Authenticatable implements HasMedia
      *
      * @return string
      */
-    public function getAvatarAttribute() {
+    public function getAvatarAttribute()
+    {
         return $this->getAvatar();
     }
 
@@ -210,6 +204,62 @@ class User extends Authenticatable implements HasMedia
             $url = $media->getFullUrl();
         }
         return $url;
+    }
+
+    /**
+     * Returns the list of notifications not read by the user
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function activeNotifications()
+    {
+        $notifications = DB::table('notifications')
+            ->where('notifiable_type', User::class)
+            ->where('notifiable_id', $this->id)
+            ->whereNull('read_at')
+            ->get();
+
+        $data = [];
+        foreach ($notifications as $notification) {
+            $notificationData = json_decode($notification->data, false);
+            $notificationData->id = $notification->id;
+            $data[] = $notificationData;
+        }
+
+        return collect($data);
+    }
+
+    /**
+     * User as assigned.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function assigned()
+    {
+        return $this->morphMany(ProcessTaskAssignment::class, 'assigned', 'assignment_type', 'assignment_id');
+    }
+
+    public function startProcesses()
+    {
+        $user = Auth::user();
+        if (!$user->hasPermission('requests.create')) {
+            return [];
+        }
+        $permission = Permission::byGuardName('requests.create');
+
+        $processUser = ProcessPermission::where('permission_id', $permission->id)
+            ->where('assignable_id', $user->id)
+            ->where('assignable_type', User::class)
+            ->pluck('process_id');
+
+        $processGroup = ProcessPermission::where('permission_id', $permission->id)
+            ->whereIn('assignable_id', $user->groupMembersFromMemberable()->pluck('group_id')->toArray())
+            ->where('assignable_type', Group::class)
+            ->pluck('process_id');
+
+        return array_values(array_unique(array_merge(
+            $processUser->toArray(), $processGroup->toArray()
+        ), SORT_REGULAR));
     }
 
 }

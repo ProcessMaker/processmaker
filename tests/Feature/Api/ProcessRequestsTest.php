@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Feature\Api;
 
 use Carbon\Carbon;
@@ -8,6 +9,9 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
+use ProcessMaker\Models\Permission;
+use ProcessMaker\Models\ProcessPermission;
+use ProcessMaker\Models\User;
 
 /**
  * Tests routes related to processes / CRUD related methods
@@ -123,15 +127,20 @@ class ProcessRequestsTest extends TestCase
      */
     public function testScreenListDates()
     {
-        $newEntity = factory(ProcessRequest::class)->create();
-        $route = self::API_TEST_URL;
+        $name = 'testRequestTimezone';
+        $newEntity = factory(ProcessRequest::class)->create(['name' => $name]);
+        $route = self::API_TEST_URL . '?filter=' . $name;
         $response = $this->apiCall('GET', $route);
 
-        $fieldsToValidate = collect(['created_at', 'updated_at']);
-        $fieldsToValidate->map(function ($field) use ($response, $newEntity){
-            $this->assertEquals(Carbon::parse($newEntity->$field)->format('c'),
-                $response->getData()->data[0]->$field);
-        });
+        $this->assertEquals(
+            $newEntity->updated_at->format('c'),
+            $response->getData()->data[0]->updated_at
+        );
+
+        $this->assertEquals(
+            $newEntity->created_at->format('c'),
+            $response->getData()->data[0]->created_at
+        );
     }
 
 
@@ -167,28 +176,31 @@ class ProcessRequestsTest extends TestCase
     }
 
     /**
-     * Get a list of Request by type 
+     * Get a list of Request by type
      */
     public function testListRequestWithType()
     {
         $in_progress = factory(ProcessRequest::class)->create([
             'status' => 'ACTIVE',
+            'user_id' => $this->user->id
         ]);
-        
+
         $completed = factory(ProcessRequest::class)->create([
             'status' => 'COMPLETED',
+            'user_id' => $this->user->id
         ]);
+
         $response = $this->apiCall('GET', self::API_TEST_URL . '/?type=completed');
         $json = $response->json();
         $this->assertCount(1, $json['data']);
         $this->assertEquals($completed->id, $json['data'][0]['id']);
-        
+
         $response = $this->apiCall('GET', self::API_TEST_URL . '/?type=in_progress');
         $json = $response->json();
         $this->assertCount(1, $json['data']);
         $this->assertEquals($in_progress->id, $json['data'][0]['id']);
     }
-    
+
     /**
      * Get a list of Request with assocations included
      */
@@ -214,7 +226,7 @@ class ProcessRequestsTest extends TestCase
         $request = factory(ProcessRequest::class)->create()->id;
 
         //load api
-        $response = $this->apiCall('GET', self::API_TEST_URL. '/' . $request);
+        $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $request);
 
         //Validate the status is correct
         $response->assertStatus(200);
@@ -230,7 +242,7 @@ class ProcessRequestsTest extends TestCase
     {
         $id = factory(ProcessRequest::class)->create(['name' => 'mytestrequestname'])->id;
         //The post must have the required parameters
-        $url = self::API_TEST_URL . '/' .$id;
+        $url = self::API_TEST_URL . '/' . $id;
 
         $response = $this->apiCall('PUT', $url, [
             'name' => null
@@ -267,7 +279,7 @@ class ProcessRequestsTest extends TestCase
         $verify_new = $this->apiCall('GET', $url);
 
         //Check that it has changed
-        $this->assertNotEquals($verify,$verify_new);
+        $this->assertNotEquals($verify, $verify_new);
     }
 
     /**
@@ -289,6 +301,45 @@ class ProcessRequestsTest extends TestCase
         //Validate the header status code
         $response->assertStatus(422);
         $response->assertSeeText('The name has already been taken');
+    }
+
+    /**
+     * test to be sure that you cannot cancel a request until you have been given permission
+     */
+    public function testCancelRequestWithPermissions()
+    {
+        //This user is being created so it is NOT an admin
+        $this->user = factory(User::class)->create(['is_administrator' => false]);
+        factory(Permission::class)->create(['guard_name' => 'requests.edit']);
+        $this->user->giveDirectPermission('requests.edit');
+        //the user needs both global permissions AND process permissions
+        $cancelPermission = factory(Permission::class)->create(['guard_name' => 'requests.cancel']);
+        $this->user->giveDirectPermission('requests.cancel');
+        
+        $process = factory(Process::class)->create();
+        $request = factory(ProcessRequest::class)->create(['user_id' => $this->user->id, 'process_id' => $process->id]);
+
+        $route = route('api.requests.update', [$request->id]);
+        //attempt to cancel a request
+        $response = $this->apiCall('PUT', $route, [
+                    'status' => 'CANCELED',
+                ]);
+
+        //confirm the user does not have access
+        $response->assertStatus(403);
+        
+        $processPermission = factory(ProcessPermission::class)->create([
+            'process_id' => $process->id,
+            'permission_id' => $cancelPermission->id,
+            'assignable_type' => User::class,
+            'assignable_id' => $this->user->id
+        ]);
+        
+        $response = $this->apiCall('PUT', $route, [
+            'status' => 'CANCELED',
+        ]);
+
+        $response->assertStatus(204);
     }
 
     /**

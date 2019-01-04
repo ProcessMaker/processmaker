@@ -4,9 +4,10 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
-use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
+use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Traits\SerializeToIso8601;
+use RuntimeException;
 
 /**
  * Represents an Eloquent model of a Script
@@ -39,7 +40,8 @@ use ProcessMaker\Traits\SerializeToIso8601;
 class Script extends Model
 {
     use SerializeToIso8601;
-    use ScriptDockerTrait;
+    use ScriptDockerCopyingFilesTrait;
+    use ScriptDockerBindingFilesTrait;
 
     protected $guarded = [
         'id',
@@ -61,20 +63,13 @@ class Script extends Model
      */
     public static function rules($existing = null)
     {
-        $rules = [
+        $unique = Rule::unique('scripts')->ignore($existing);
+
+        return [
             'key' => 'unique:scripts,key',
-            'title' => 'required|unique:scripts,title',
+            'title' => ['required', 'string', $unique],
             'language' => 'required|in:php,lua'
         ];
-        if ($existing) {
-            // ignore the unique rule for this id
-            $rules['title'] = [
-                'required',
-                'string',
-                Rule::unique('scripts')->ignore($existing->id, 'id')
-            ];
-        }
-        return $rules;
     }
 
     /**
@@ -91,9 +86,12 @@ class Script extends Model
         $variablesParameter = [];
         EnvironmentVariable::chunk(50, function ($variables) use (&$variablesParameter) {
             foreach ($variables as $variable) {
-                $variablesParameter[] = $variable['name'] . '=' . $variable['value'];
+                $variablesParameter[] = escapeshellarg($variable['name']) . '=' . escapeshellarg($variable['value']);
             }
         });
+
+        // Add the url to the host
+        $variablesParameter[] = 'HOST_URL=' . escapeshellarg(config('app.docker_host_url'));
 
         if ($variablesParameter) {
             $variablesParameter = "-e " . implode(" -e ", $variablesParameter);
@@ -104,7 +102,7 @@ class Script extends Model
         // So we have the files, let's execute the docker container
         switch (strtolower($language)) {
             case 'php':
-                $config = [
+                $dockerConfig = [
                     'image' => 'processmaker/executor:php',
                     'command' => 'php /opt/executor/bootstrap.php',
                     'parameters' => $variablesParameter,
@@ -119,14 +117,14 @@ class Script extends Model
                 ];
                 break;
             case 'lua':
-                $config = [
-                    'image' => 'processmaker/executor:php',
+                $dockerConfig = [
+                    'image' => 'processmaker/executor:lua',
                     'command' => 'lua5.3 /opt/executor/bootstrap.lua',
                     'parameters' => $variablesParameter,
                     'inputs' => [
                         '/opt/executor/data.json' => json_encode($data),
                         '/opt/executor/config.json' => json_encode($config),
-                        '/opt/executor/script.php' => $code
+                        '/opt/executor/script.lua' => $code
                     ],
                     'outputs' => [
                         'response' => '/opt/executor/output.json'
@@ -137,16 +135,15 @@ class Script extends Model
                 throw new ScriptLanguageNotSupported($language);
         }
 
-        $response = $this->execute($config);
+        $executeMethod = config('app.bpm_scripts_docker_mode')==='binding'
+            ? 'executeBinding' : 'executeCopying';
+        $response = $this->$executeMethod($dockerConfig);
         $returnCode = $response['returnCode'];
-        $errorContent = $response['output'];
+        $stdOutput = $response['output'];
         $output = $response['outputs']['response'];
-
-        if ($returnCode) {
+        if ($returnCode || $stdOutput) {
             // Has an error code
-            return [
-                'output' => implode($errorContent, "\n")
-            ];
+            throw new RuntimeException(implode("\n", $stdOutput));
         } else {
             // Success
             $response = json_decode($output, true);
@@ -166,5 +163,13 @@ class Script extends Model
     public static function scriptFormat2Language($format)
     {
         return static::$scriptFormats[$format];
+    }
+    
+    /**
+     * Get the associated versions
+     */
+    public function versions()
+    {
+        return $this->hasMany(ScriptVersion::class);
     }
 }

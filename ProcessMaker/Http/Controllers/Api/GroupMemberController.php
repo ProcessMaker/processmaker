@@ -97,6 +97,15 @@ class GroupMemberController extends Controller
      */
     public function store(Request $request)
     {
+        $isMemberAssociated = GroupMember::where('group_id', $request->input('group_id'))
+            ->where ('member_type', $request->input('member_type'))
+            ->where ('member_id', $request->input('member_id'))
+            ->count();
+
+        if ($isMemberAssociated) {
+            return response([], 201);
+        }
+
         $request->validate(GroupMember::rules());
 
         $group = Group::findOrFail($request->input('group_id'));

@@ -1,0 +1,363 @@
+[
+    {
+        "name": "Supplies Request",
+        "items": [
+            {
+                "label": "Record List",
+                "config": {
+                    "form": "1",
+                    "name": "items",
+                    "label": "Add items to the request",
+                    "fields": [
+                        {
+                            "value": "item",
+                            "content": "Item"
+                        },
+                        {
+                            "value": "quantity",
+                            "content": "Quantity"
+                        }
+                    ],
+                    "editable": true
+                },
+                "component": "FormRecordList",
+                "inspector": [
+                    {
+                        "type": "FormInput",
+                        "field": "name",
+                        "config": {
+                            "name": "List Name",
+                            "label": "List Name",
+                            "helper": "The data name for this list",
+                            "validation": "required"
+                        }
+                    },
+                    {
+                        "type": "FormInput",
+                        "field": "label",
+                        "config": {
+                            "label": "List Label",
+                            "helper": "The label describes this record list"
+                        }
+                    },
+                    {
+                        "type": "FormCheckbox",
+                        "field": "editable",
+                        "config": {
+                            "label": "Editable?",
+                            "helper": "Should records be editable/removable and can new records be added"
+                        }
+                    },
+                    {
+                        "type": "OptionsList",
+                        "field": "fields",
+                        "config": {
+                            "label": "Fields List",
+                            "helper": "List of fields to display in the record list"
+                        }
+                    },
+                    {
+                        "type": "PageSelect",
+                        "field": "form",
+                        "config": {
+                            "label": "Record Form",
+                            "helper": "The form to use for adding/editing records"
+                        }
+                    }
+                ],
+                "editor-component": "FormText"
+            },
+            {
+                "label": "Textarea",
+                "config": {
+                    "name": "comments",
+                    "rows": 2,
+                    "label": "Comments",
+                    "helper": null,
+                    "placeholder": null
+                },
+                "component": "FormTextArea",
+                "inspector": [
+                    {
+                        "type": "FormInput",
+                        "field": "name",
+                        "config": {
+                            "name": "Field Name",
+                            "label": "Field Name",
+                            "helper": "The data name for this field",
+                            "validation": "required"
+                        }
+                    },
+                    {
+                        "type": "FormInput",
+                        "field": "label",
+                        "config": {
+                            "label": "Field Label",
+                            "helper": "The label describes the fields name"
+                        }
+                    },
+                    {
+                        "type": "FormInput",
+                        "field": "validation",
+                        "config": {
+                            "label": "Validation",
+                            "helper": "The validation rules needed for this field"
+                        }
+                    },
+                    {
+                        "type": "FormInput",
+                        "field": "rows",
+                        "config": {
+                            "label": "Rows",
+                            "helper": "The number of rows to provide for input"
+                        }
+                    },
+                    {
+                        "type": "FormInput",
+                        "field": "placeholder",
+                        "config": {
+                            "label": "Placeholder",
+                            "helper": "The placeholder is what is shown in the field when no value is provided yet"
+                        }
+                    },
+                    {
+                        "type": "FormInput",
+                        "field": "helper",
+                        "config": {
+                            "label": "Help Text",
+                            "helper": "Help text is meant to provide additional guidance on the field's value"
+                        }
+                    }
+                ],
+                "editor-component": "FormTextArea"
+            },
+            {
+                "label": "Submit Button",
+                "config": {
+                    "event": "submit",
+                    "label": "Place Request",
+                    "variant": "primary"
+                },
+                "component": "FormButton",
+                "inspector": [
+                    {
+                        "type": "FormInput",
+                        "field": "label",
+                        "config": {
+                            "label": "Field Label",
+                            "helper": "The label describes the button's text"
+                        }
+                    },
+                    {
+                        "type": "FormSelect",
+                        "field": "variant",
+                        "config": {
+                            "label": "Variant",
+                            "helper": "The variant determines the appearance of the button",
+                            "options": [
+                                {
+                                    "value": "primary",
+                                    "content": "Primary"
+                                },
+                                {
+                                    "value": "secondary",
+                                    "content": "Secondary"
+                                },
+                                {
+                                    "value": "success",
+                                    "content": "Success"
+                                },
+                                {
+                                    "value": "danger",
+                                    "content": "Danger"
+                                },
+                                {
+                                    "value": "warning",
+                                    "content": "Warning"
+                                },
+                                {
+                                    "value": "info",
+                                    "content": "Info"
+                                },
+                                {
+                                    "value": "light",
+                                    "content": "Light"
+                                },
+                                {
+                                    "value": "dark",
+                                    "content": "Dark"
+                                },
+                                {
+                                    "value": "link",
+                                    "content": "Link"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "editor-component": "FormButton"
+            }
+        ]
+    },
+    {
+        "name": "Item",
+        "items": [
+            {
+                "label": "Select",
+                "config": {
+                    "name": "item",
+                    "label": "Item",
+                    "helper": null,
+                    "options": [
+                        {
+                            "value": null,
+                            "content": null
+                        },
+                        {
+                            "value": "pens",
+                            "content": "Pens"
+                        },
+                        {
+                            "value": "notebooks",
+                            "content": "Notebooks"
+                        },
+                        {
+                            "value": "markers",
+                            "content": "Markers"
+                        },
+                        {
+                            "value": "laptop",
+                            "content": "Laptop"
+                        },
+                        {
+                            "value": "ip_phone",
+                            "content": "IP Phone"
+                        }
+                    ],
+                    "validation": null,
+                    "placeholder": null
+                },
+                "component": "FormSelect",
+                "inspector": [
+                    {
+                        "type": "FormInput",
+                        "field": "name",
+                        "config": {
+                            "label": "Field Name",
+                            "helper": "The data name for this field"
+                        }
+                    },
+                    {
+                        "type": "FormInput",
+                        "field": "label",
+                        "config": {
+                            "label": "Field Label",
+                            "helper": "The label describes the fields name"
+                        }
+                    },
+                    {
+                        "type": "FormInput",
+                        "field": "validation",
+                        "config": {
+                            "label": "Validation",
+                            "helper": "The validation rules needed for this field"
+                        }
+                    },
+                    {
+                        "type": "FormInput",
+                        "field": "helper",
+                        "config": {
+                            "label": "Help Text",
+                            "helper": "Help text is meant to provide additional guidance on the field's value"
+                        }
+                    },
+                    {
+                        "type": "OptionsList",
+                        "field": "options",
+                        "config": {
+                            "label": "Options List",
+                            "helper": "List of options available in the select drop down"
+                        }
+                    }
+                ],
+                "editor-component": "FormSelect"
+            },
+            {
+                "label": "Line Input",
+                "config": {
+                    "name": "quantity",
+                    "type": "text",
+                    "label": "Quantity",
+                    "helper": null,
+                    "validation": "numeric",
+                    "placeholder": null
+                },
+                "component": "FormInput",
+                "inspector": [
+                    {
+                        "type": "FormInput",
+                        "field": "name",
+                        "config": {
+                            "name": "Field Name",
+                            "label": "Field Name",
+                            "helper": "The data name for this field",
+                            "validation": "required"
+                        }
+                    },
+                    {
+                        "type": "FormSelect",
+                        "field": "type",
+                        "config": {
+                            "name": "Field Type",
+                            "label": "Field Type",
+                            "helper": "The type for this field",
+                            "options": [
+                                {
+                                    "value": "text",
+                                    "content": "Text"
+                                },
+                                {
+                                    "value": "password",
+                                    "content": "Password"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "type": "FormInput",
+                        "field": "label",
+                        "config": {
+                            "label": "Field Label",
+                            "helper": "The label describes the fields name"
+                        }
+                    },
+                    {
+                        "type": "FormInput",
+                        "field": "validation",
+                        "config": {
+                            "label": "Validation",
+                            "helper": "The validation rules needed for this field"
+                        }
+                    },
+                    {
+                        "type": "FormInput",
+                        "field": "placeholder",
+                        "config": {
+                            "label": "Placeholder",
+                            "helper": "The placeholder is what is shown in the field when no value is provided yet"
+                        }
+                    },
+                    {
+                        "type": "FormInput",
+                        "field": "helper",
+                        "config": {
+                            "label": "Help Text",
+                            "helper": "Help text is meant to provide additional guidance on the field's value"
+                        }
+                    }
+                ],
+                "editor-component": "FormInput"
+            }
+        ]
+    }
+]

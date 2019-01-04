@@ -2,25 +2,36 @@
     <div class="notifications">
         <a class="count-info" data-toggle="dropdown" href="#" aria-expanded="false" id="exPopover1-bottom">
             <i class="fas fa-bell fa-lg font-size-23"></i>
-            <b-badge pill variant="danger" v-show="messages.length>0">{{messages.length}}</b-badge>
+            <b-badge pill variant="danger" v-show="messages.length>0">{{totalMessages}}</b-badge>
         </a>
-        <b-popover :target="'exPopover1-bottom'" :placement="'bottomleft'">
+        <b-popover :target="'exPopover1-bottom'"
+                   :placement="'bottomleft'"
+                   triggers="click blur"
+        >
             <h3 class="popover-header">New Tasks</h3>
             <ul class="list-unstyled tasklist">
                 <li v-if="messages.length == 0">No Tasks Found
                     <hr>
                 </li>
-                <li v-for="task in messages">
+                <li v-for="(task, index) in messages" v-if="index <= 5">
                     <small class="float-right muted">{{ moment(task.dateTime).format() }}</small>
                     <h3><a v-bind:href="task.url" @click.stop="remove(task)">{{task.name}}</a></h3>
                     <div class="muted">
                         {{task.processName}}<br>
                         {{task.userName}}
                     </div>
+                    <span class="badge badge-pill badge-info float-right" style="cursor:pointer" @click="remove(task)">
+                        Dismiss
+                    </span>
                     <hr>
                 </li>
                 <li class="footer">
-                    <a href="/tasks">View All Tasks</a>
+                    <a href="/notifications?status=unread" v-if="totalMessages > 1">
+                        All {{totalMessages}} Unread Notifications
+                    </a>
+                    <a href="/notifications" v-else>
+                        View All Notifications
+                    </a>
                 </li>
             </ul>
         </b-popover>
@@ -28,22 +39,28 @@
 </template>
 
 <script>
+    import moment from "moment";
     import {Popover} from 'bootstrap-vue/es/components';
-
     Vue.use(Popover);
     export default {
         props: {
-            messages: Array
+            messages: Array,
         },
         watch: {
             messages(value, mutation) {
+                //update the number of messages just whe the number has been initialized (in mounted)
+                if (this.incrementTotalMessages === true) {
+                    this.totalMessages++;
+                }
                 $(this.$el)
-                    .find(".dropdown-menu")
+                    .find(".dropdown")
                     .dropdown("toggle");
             }
         },
         data() {
             return {
+                totalMessages: 0,
+                incrementTotalMessages: false,
                 arrowStyle: {
                     top: "0px",
                     left: "0px"
@@ -52,7 +69,13 @@
         },
         methods: {
             remove(message) {
-                this.messages.splice(this.messages.indexOf(message), 1);
+                ProcessMaker.removeNotifications([message.id]);
+                if (this.totalMessages > 0) {
+                    this.totalMessages--;
+                }
+            },
+            formatDateTime(iso8601) {
+                return moment(iso8601).format("MM/DD/YY HH:mm");
             }
         },
         mounted() {
@@ -66,6 +89,19 @@
                 this.arrowStyle.left =
                     $("#navbar-request-button").offset().left + 32 + "px";
             });
+
+            let self = this;
+            ProcessMaker.apiClient.get('/notifications?per_page=5&filter=unread')
+                .then(function (response) {
+                    response.data.data.forEach(function (element) {
+                        ProcessMaker.pushNotification(element);
+                    });
+                    self.totalMessages = response.data.meta.total
+
+                    setTimeout(function() {
+                       self.incrementTotalMessages=true;
+                    }, 2000)
+                });
         }
     };
 </script>

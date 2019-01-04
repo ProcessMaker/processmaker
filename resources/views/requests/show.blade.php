@@ -8,37 +8,58 @@
     @include('layouts.sidebar', ['sidebar' => Menu::get('sidebar_request')])
 @endsection
 
+@section('meta')
+<meta name="request-id" content="{{ $request->id }}">
+@endsection
+
 @section('content')
     <div id="request" class="container">
         <h1>{{$request->name}} # {{$request->getKey()}}</h1>
         <div class="row">
-            <div class="col-8">
+            <div class="col-md-8">
 
                 <div class="container-fluid">
                     <ul class="nav nav-tabs" id="requestTab" role="tablist">
                         <template v-if="status">
-                            <li class="nav-item" v-if="status !== 'Completed'">
-                                <a class="nav-link active" id="pending-tab" data-toggle="tab" href="#pending" role="tab"
-                                   aria-controls="pending" aria-selected="true">{{__('Pending Tasks')}}</a>
+                            @if($request->status === 'ERROR')
+                            <li class="nav-item">
+                                <a class="nav-link active" id="errors-tab" data-toggle="tab" href="#errors" role="tab"
+                                   aria-controls="errors" aria-selected="false">{{__('Errors')}}</a>
+                            </li>
+                            @endif
+                            <li class="nav-item" v-if="!showSummary">
+                                <a class="nav-link" :class="{ active: activePending }"  id="pending-tab" data-toggle="tab" href="#pending" role="tab"
+                                   aria-controls="pending" aria-selected="true">{{__('Tasks')}}</a>
                             </li>
                             <li class="nav-item">
                                 <a id="summary-tab" data-toggle="tab" href="#summary" role="tab"
                                    aria-controls="summary" aria-selected="false"
-                                   v-bind:class="{ 'nav-link':true, active: (status === 'Completed') }">{{__('Request Summary')}}</a>
+                                   v-bind:class="{ 'nav-link':true, active: showSummary }">
+                                    {{__('Summary')}}
+                                </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="completed-tab" data-toggle="tab" href="#completed" role="tab"
                                    aria-controls="completed" aria-selected="false">{{__('Completed')}}</a>
                             </li>
+                            @if(count($files) > 0 )                           
+                            <li class="nav-item">
+                                <a class="nav-link" id="files-tab" data-toggle="tab" href="#files" role="tab"
+                                   aria-controls="files" aria-selected="false">{{__('Files')}}</a>
+                            </li>
+                            @endif
                         </template>
                     </ul>
                     <div class="tab-content" id="requestTabContent">
-                        <div class="tab-pane fade show active" id="pending" role="tabpanel"
-                             aria-labelledby="pending-tab" v-if="status !== 'Completed'">
+                        <div class="tab-pane" :class="{ active: activeErrors }" id="errors" role="tabpanel" aria-labelledby="errors-tab">
+                            <request-errors :errors="errorLogs"></request-errors>
+                        </div>
+                        <div class="tab-pane fade show" :class="{ active: activePending }" id="pending" role="tabpanel"
+                             aria-labelledby="pending-tab" v-if="!showSummary">
                             <request-detail ref="pending" :process-request-id="requestId" status="ACTIVE">
                             </request-detail>
                         </div>
-                        <div v-bind:class="{ 'tab-pane':true, active: (status === 'Completed') }" id="summary"
+                        <div v-bind:class="{ 'tab-pane':true, active: showSummary }" id="summary"
                              role="tabpanel" aria-labelledby="summary-tab">
                             <template v-if="showSummary">
                                 <template v-if="showScreenSummary">
@@ -75,8 +96,8 @@
 
                                     <div class="card-body">
                                         <p class="card-text">
-                                            This request is currently in progress.
-                                            This screen will be populated once the request is completed.
+                                            {{__('This Request is currently in progress.')}}
+                                            {{__('This screen will be populated once the Request is completed.')}}
                                         </p>
                                     </div>
                                 </div>
@@ -86,10 +107,34 @@
                             <request-detail ref="completed" :process-request-id="requestId" status="CLOSED">
                             </request-detail>
                         </div>
+                        <div class="tab-pane fade" id="files" role="tabpanel" aria-labelledby="files-tab">
+                        <div class="mt-3">
+                            <div>
+                                <table class="vuetable table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>{{__('File Name')}}</th>
+                                            <th>{{__('Mime Type')}}</th>
+                                            <th>{{__('Created At')}}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($files as $file)
+                                        <tr>
+                                            <td><a href="{{url('request/' .$request->id .'/files/' . $file->id)}}">{{$file->file_name}}</a></td>
+                                            <td>{{$file->mime_type}}</td>
+                                            <td>{{ $file->created_at->format('m/d/y h:i a')}}</td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                     </div>
                 </div>
             </div>
-            <div class="col-4">
+            <div class="col-md-4">
                 <template v-if="statusLabel">
                     <div class="card">
                         <div :class="classStatusCard">
@@ -101,6 +146,18 @@
                                 <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
                                               :input-data="requestBy" display-name="true"></avatar-image>
                             </li>
+                            
+                            @if($canCancel == true)
+                            <template v-if="statusLabel == 'In Progress' && canCancel == true">
+                            <li class="list-group-item">
+                                <h5>{{__('Cancel Request')}}</h5>
+                                <button type="button" class="btn btn-outline-danger btn-block"
+                                        @click="cancelRequest">
+                                    <i class="fas fa-stop-circle"></i> {{__('Cancel')}}
+                                </button>
+                            </li>
+                            </template>
+                            @endif
                             <li class="list-group-item">
                                 <h5>{{__('Participants')}}</h5>
                                 <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
@@ -131,11 +188,20 @@
                 return {
                     requestId: @json($request->getKey()),
                     request: @json($request),
+                    files: @json($files),
                     refreshTasks: 0,
-                    status: 'ACTIVE'
+                    canCancel: @json($canCancel),
+                    status: 'ACTIVE',
+                    errorLogs: @json(['data'=>$request->errors]),
                 };
             },
             computed: {
+                activeErrors() {
+                    return this.request.status === 'ERROR';
+                },
+                activePending() {
+                    return this.request.status === 'ACTIVE';
+                },
                 /**
                  * Get the list of participants in the request.
                  *
@@ -149,13 +215,13 @@
                  *
                  */
                 showSummary() {
-                    return this.request.status === 'COMPLETED';
+                    return this.request.status === 'COMPLETED' || this.request.status === 'CANCELED';
                 },
                 /**
                  * If the screen summary is configured.
                  **/
                 showScreenSummary() {
-                    return this.request.process.summary_screen !== null
+                    return this.request.summary_screen !== null
                 },
                 /**
                  * Get the summary of the Request.
@@ -168,7 +234,7 @@
                  * Get Screen summary
                  * */
                 screenSummary() {
-                    return this.request.process.summary_screen.config;
+                    return this.request.summary_screen.config;
                 },
                 /**
                  * prepare data screen
@@ -184,6 +250,7 @@
                     let header = {
                         "ACTIVE": "bg-success",
                         "COMPLETED": "bg-secondary",
+                        "CANCELED": 'bg-danger',
                         "ERROR": "bg-danger"
                     };
                     return 'card-header text-capitalize text-white ' + header[this.request.status.toUpperCase()];
@@ -192,18 +259,24 @@
                     let label = {
                         "ACTIVE": 'In Progress',
                         "COMPLETED": 'Completed',
+                        "CANCELED": 'Canceled',
                         "ERROR": 'Error'
                     };
 
                     if (this.request.status.toUpperCase() === 'COMPLETED') {
                         this.status = 'Completed'
                     }
+                    if (this.request.status.toUpperCase() === 'CANCELED') {
+                        this.status = 'Canceled'
+                    }
+
                     return label[this.request.status.toUpperCase()];
                 },
                 labelDate() {
                     let label = {
                         "ACTIVE": 'Created',
                         "COMPLETED": 'Completed On',
+                        "CANCELED": 'Canceled ',
                         "ERROR": 'Failed On'
                     };
                     return label[this.request.status.toUpperCase()];
@@ -212,6 +285,7 @@
                     let status = {
                         "ACTIVE": this.request.created_at,
                         "COMPLETED": this.request.completed_at,
+                        "CANCELED": this.request.updated_at,
                         "ERROR": this.request.updated_at
                     };
 
@@ -231,7 +305,7 @@
                     this.$refs.completed.fetch();
                     ProcessMaker.apiClient.get(`requests/${this.requestId}`, {
                         params: {
-                            include: 'participants,user,summary,process.summaryScreen'
+                            include: 'participants,user,summary,summaryScreen'
                         }
                     })
                         .then((response) => {
@@ -281,6 +355,22 @@
                             }
                         });
                     }
+                },
+                cancelRequest() {
+                    ProcessMaker.confirmModal(
+                        "Caution!",
+                        "<b>Are you sure you want cancel this request ?</b>",
+                        "",
+                        () => {
+                            ProcessMaker.apiClient.put(`requests/${this.requestId}`, {
+                                status: 'CANCELED'
+                            })
+                                .then(response => {
+                                    ProcessMaker.alert('Request Canceled Successfully', 'success');
+                                    window.location.reload();
+                                });
+                        }
+                    );
                 }
             },
             mounted() {

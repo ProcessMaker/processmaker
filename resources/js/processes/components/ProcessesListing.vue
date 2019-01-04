@@ -1,33 +1,82 @@
 <template>
     <div class="data-table">
-        <vuetable :dataManager="dataManager" :sortOrder="sortOrder" :css="css" :api-mode="false"
-                  @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data"
-                  pagination-path="meta">
-            <template slot="name" slot-scope="props">
-                <b-link @click="onAction('edit-designer', props.rowData, props.rowIndex)">
-                    {{props.rowData.name}}
-                </b-link>
-            </template>
+        <div class="card card-body table-card">
+            <vuetable
+                    :dataManager="dataManager"
+                    :sortOrder="sortOrder"
+                    :css="css"
+                    :api-mode="false"
+                    @vuetable:pagination-data="onPaginationData"
+                    :fields="fields"
+                    :data="data"
+                    data-path="data"
+                    pagination-path="meta"
+            >
+                <template slot="name" slot-scope="props">{{props.rowData.name}}</template>
 
-            <template slot="actions" slot-scope="props">
-                <div class="actions">
-                    <div class="popout">
-                        <b-btn variant="action" @click="onAction('edit-item', props.rowData, props.rowIndex)"
-                               v-b-tooltip.hover title="Edit"><i class="fas fa-edit"></i></b-btn>
-                        <b-btn variant="action" @click="onAction('toggle-status', props.rowData, props.rowIndex)"
-                               v-b-tooltip.hover :title='activateBtnTitle(props.rowData)'>
-                            <i class="fas" v-bind:class='activateBtnCssClass(props.rowData)'></i>
-                        </b-btn>
-                        <b-btn variant="action" @click="onAction('see-item', props.rowData, props.rowIndex)"
-                               v-b-tooltip.hover title="See"><i class="far fa-eye"></i></b-btn>
-                        <b-btn variant="action" @click="onAction('remove-item', props.rowData, props.rowIndex)"
-                               v-b-tooltip.hover title="Remove"><i class="fas fa-trash-alt"></i></b-btn>
+                <template slot="owner" slot-scope="props">
+                    <avatar-image
+                            class="d-inline-flex pull-left align-items-center"
+                            size="25"
+                            :input-data="props.rowData.user"
+                            hide-name="true"
+                    ></avatar-image>
+                </template>
+
+                <template slot="actions" slot-scope="props">
+                    <div class="actions">
+                        <div class="popout">
+                            <b-btn
+                                    variant="link"
+                                    @click="onAction('edit-designer', props.rowData, props.rowIndex)"
+                                    v-b-tooltip.hover
+                                    title="Open Modeler"
+                                    v-if="props.rowData.status === 'ACTIVE'"
+                            >
+                                <i class="fas fa-pen-square fa-lg fa-fw"></i>
+                            </b-btn>
+                            <b-btn
+                                    variant="link"
+                                    @click="onAction('edit-item', props.rowData, props.rowIndex)"
+                                    v-b-tooltip.hover
+                                    title="Config"
+                                    v-if="props.rowData.status === 'ACTIVE'"
+                            >
+                                <i class="fas fa-cog fa-lg fa-fw"></i>
+                            </b-btn>
+                            <b-btn
+                                    variant="link"
+                                    @click="onAction('remove-item', props.rowData, props.rowIndex)"
+                                    v-b-tooltip.hover
+                                    title="Archive"
+                                    v-if="props.rowData.status === 'ACTIVE'"
+                            >
+                                <i class="fas fa-download fa-lg fa-fw"></i>
+                            </b-btn>
+                            <b-btn
+                                    variant="link"
+                                    @click="onAction('restore-item', props.rowData, props.rowIndex)"
+                                    v-b-tooltip.hover
+                                    title="Restore"
+                                    v-if="props.rowData.status === 'INACTIVE'"
+                            >
+                                <i class="fas fa-upload fa-lg fa-fw"></i>
+                            </b-btn>
+
+                        </div>
                     </div>
-                </div>
-            </template>
-        </vuetable>
-        <pagination single="Process" plural="Processes" :perPageSelectEnabled="true" @changePerPage="changePerPage"
-                    @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
+                </template>
+            </vuetable>
+
+            <pagination
+                    single="Process"
+                    plural="Processes"
+                    :perPageSelectEnabled="true"
+                    @changePerPage="changePerPage"
+                    @vuetable-pagination:change-page="onPageChange"
+                    ref="pagination"
+            ></pagination>
+        </div>
     </div>
 </template>
 
@@ -36,23 +85,25 @@
 
     export default {
         mixins: [datatableMixin],
-        props: ["filter", "id"],
+        props: ["filter", "id", "status"],
         data() {
             return {
                 orderBy: "name",
+                sortOrder: [
+                    {
+                        field: "name",
+                        sortField: "name",
+                        direction: "asc"
+                    }
+                ],
 
-                sortOrder: [{
-                    field: "name",
-                    sortField: "name",
-                    direction: "asc"
-                }],
-
-                fields: [{
-                    title: "Process",
-                    name: "__slot:name",
-                    field: "name",
-                    sortField: "name"
-                },
+                fields: [
+                    {
+                        title: "Name",
+                        name: "__slot:name",
+                        field: "name",
+                        sortField: "name"
+                    },
                     {
                         title: "Category",
                         name: "category.name",
@@ -65,22 +116,21 @@
                         callback: this.formatStatus
                     },
                     {
-                        title: "Modified By",
-                        name: "user",
-                        sortField: "user.firstname",
+                        title: "Owner",
+                        name: "__slot:owner",
                         callback: this.formatUserName
                     },
                     {
                         title: "Modified",
                         name: "updated_at",
                         sortField: "updated_at",
-                        callback: 'formatDate'
+                        callback: "formatDate"
                     },
                     {
                         title: "Created",
                         name: "created_at",
                         sortField: "created_at",
-                        callback: 'formatDate'
+                        callback: "formatDate"
                     },
                     {
                         name: "__slot:actions",
@@ -91,17 +141,6 @@
         },
 
         methods: {
-            activateBtnCssClass(data) {
-                let showPowerOn = data.status === "INACTIVE";
-                let showPowerOff = data.status === "ACTIVE";
-                return {
-                    "fa-toggle-off": showPowerOff,
-                    "fa-toggle-on": showPowerOn
-                };
-            },
-            activateBtnTitle(data) {
-                return data.status === "ACTIVE" ? "Deactivate" : "Activate";
-            },
             goToEdit(data) {
                 window.location = "/processes/" + data + "/edit";
             },
@@ -110,12 +149,34 @@
             },
             onAction(action, data, index) {
                 switch (action) {
-                    case 'edit-designer':
+                    case "edit-designer":
                         this.goToDesigner(data.id);
                         break;
-
                     case "edit-item":
                         this.goToEdit(data.id);
+                        break;
+                    case "restore-item":
+                        ProcessMaker.apiClient
+                            .put("processes/" + data.id + "/restore")
+                            .then(response => {
+                                ProcessMaker.alert("The process was restored successfully", "success");
+                                this.$emit("reload");
+                            });
+                        break;
+                    case "remove-item":
+                        ProcessMaker.confirmModal(
+                            "Caution!",
+                            "<b>Are you sure you want to archive the process: </b>'" + data.name + "'?",
+                            "",
+                            () => {
+                                ProcessMaker.apiClient
+                                    .delete("processes/" + data.id)
+                                    .then(response => {
+                                        ProcessMaker.alert("Process Archived", "warning");
+                                        this.$emit("reload");
+                                    });
+                            }
+                        );
                         break;
                 }
             },
@@ -130,16 +191,16 @@
                 let response =
                     '<i class="fas fa-circle ' + bubbleColor[status] + ' small"></i> ';
                 status = status.charAt(0).toUpperCase() + status.slice(1);
-                return response + status;
+                return '<div style="white-space:nowrap">' + response + status + "</div>";
             },
             formatUserName(user) {
                 return (
-                    (user.avatar ?
-                        this.createImg({
+                    (user.avatar
+                        ? this.createImg({
                             src: user.avatar,
                             class: "rounded-user"
-                        }) :
-                        '<i class="fa fa-user rounded-user"></i>') +
+                        })
+                        : '<i class="fa fa-user rounded-user"></i>') +
                     "<span>" +
                     user.fullname +
                     "</span>"
@@ -160,11 +221,16 @@
                 this.orderBy = this.orderBy === "user" ? "user.firstname" : this.orderBy;
                 //change method sort by slot name
                 this.orderBy = this.orderBy === "__slot:name" ? "name" : this.orderBy;
+
+                let url = (this.status === null || this.status === '' || this.status === undefined)
+                    ? 'processes?'
+                    : 'processes?status=' + this.status + '&';
+                console.log(url);
+
                 // Load from our api client
                 ProcessMaker.apiClient
-                    .get(
-                        "processes" +
-                        "?page=" +
+                    .get( url +
+                        "page=" +
                         this.page +
                         "&per_page=" +
                         this.perPage +
@@ -188,18 +254,11 @@
 </script>
 
 <style lang="scss" scoped>
-    /deep/ th#_total_users {
-        width: 150px;
-        text-align: center;
+    /deep/ th#_updated_at {
+        width: 14%;
     }
 
-    /deep/ th#_description {
-        width: 250px;
-    }
-
-    /deep/ .rounded-user {
-        border-radius: 50% !important;
-        height: 1.5em;
-        margin-right: 0.5em;
+    /deep/ th#_created_at {
+        width: 14%;
     }
 </style>

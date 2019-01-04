@@ -7,9 +7,7 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
 // Routes related to Authentication (password reset, etc)
 // Auth::routes();
     Route::namespace('Admin')->prefix('admin')->group(function () {
-        Route::resource('about', 'AboutController');
-        Route::resource('groups', 'GroupController')->only(['index', 'edit', 'show']);
-        Route::resource('preferences', 'PreferenceController');
+        Route::resource('groups', 'GroupController')->only(['index', 'edit']);
         Route::resource('users', 'UserController');
         Route::get('packages', 'PackageController@index')->name('packages.index');
     });
@@ -22,27 +20,33 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
             'screen-builder' => 'screen'
         ])->only(['edit']);
         Route::resource('scripts', 'ScriptController');
+        Route::get('scripts/{script}/builder', 'ScriptController@builder');
         Route::resource('categories', 'ProcessCategoryController')->parameters([
             'categories' => 'processCategory'
         ]);
     });
 
     Route::resource('processes', 'ProcessController');
+    Route::get('about', 'AboutController@index')->name('about.index');
     Route::get('profile/edit', 'ProfileController@edit')->name('profile.edit');
     Route::get('profile/{id}', 'ProfileController@show');
+    Route::put('profile/{id}', 'ProfileController@update')->name('profile.update');
     // Ensure our modeler loads at a distinct url
-    Route::get('modeler/{process}', 'Process\ModelerController')->name('modeler');
+    Route::get('modeler/{process}', 'Process\ModelerController')->name('modeler.show');
 
     Route::get('/', 'HomeController@index')->name('home');
 
     Route::get('requests/{type}', 'RequestController@index')
         ->where('type', 'all|in_progress|completed')
         ->name('requests_by_type');
+    Route::get('request/{requestID}/files/{fileID}', 'RequestController@downloadFiles');
     Route::resource('requests', 'RequestController')->only([
         'index', 'show'
     ]);
 
     Route::resource('tasks', 'TaskController');
+
+    Route::resource('notifications', 'NotificationController');
 });
 
 // Add our broadcasting routes
@@ -62,3 +66,4 @@ $this->post('password/reset', 'Auth\ResetPasswordController@reset');
 $this->get('password/success', function () {
     return view('auth.passwords.success', ['title' => __('Password Reset')]);
 })->name('password-success');
+

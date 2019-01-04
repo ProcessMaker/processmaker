@@ -9,91 +9,71 @@ use ProcessMaker\Models\PermissionAssignment;
 
 class PermissionSeeder extends Seeder
 {
+
     private $permissions = [
-        'home',
-        'about.index',
-        'about.menu',
-        'admin.menu',
+        'documents.index',
         'documents.create',
         'documents.destroy',
         'documents.edit',
         'documents.show',
-        'documents.store',
-        'documents.update',
+        'environment_variables.index',
         'environment_variables.create',
         'environment_variables.destroy',
         'environment_variables.edit',
         'environment_variables.show',
-        'environment_variables.store',
-        'environment_variables.update',
-        'files.destroy',
-        'files.show',
-        'files.store',
-        'files.update',
-        'forms.create',
-        'forms.destroy',
-        'forms.edit',
-        'forms.show',
-        'forms.store',
-        'forms.update',
+        'screens.index',
+        'screens.create',
+        'screens.destroy',
+        'screens.edit',
+        'screens.show',
+        'group_members.index',
+        'group_members.create',
         'group_members.destroy',
+        'group_members.edit',
         'group_members.show',
-        'group_members.store',
+        'groups.index',
         'groups.create',
         'groups.destroy',
         'groups.edit',
         'groups.show',
-        'groups.store',
-        'groups.update',
-        'notifications',
-        'preferences.create',
-        'preferences.destroy',
-        'preferences.edit',
-        'preferences.show',
-        'preferences.store',
-        'preferences.update',
+        'process_categories.index',
+        'process_categories.create',
         'process_categories.destroy',
+        'process_categories.edit',
         'process_categories.show',
-        'process_categories.store',
-        'process_categories.update',
-        'process_events.trigger',
+        'processes.index',
         'processes.create',
         'processes.destroy',
         'processes.edit',
         'processes.show',
-        'processes.store',
-        'processes.update',
-        'processes.menu',
-        'profile.edit',
-        'profile.show',
-        'requests.destroy',
-        'requests.edit',
+        'requests.index',	
+        'requests.create',	
+        'requests.destroy',	
+        'requests.cancel',	
+        'requests.edit',	
         'requests.show',
-        'requests.store',
-        'requests.update',
-        'requests.watch',
-        'requests.menu',
-        'requests.menu_search',
-        'script.preview',
+        'scripts.index',
         'scripts.create',
         'scripts.destroy',
         'scripts.edit',
         'scripts.show',
-        'scripts.store',
-        'scripts.update',
-        'tasks.show',
-        'tasks.update',
+        'users.index',
         'users.create',
         'users.destroy',
         'users.edit',
         'users.show',
-        'users.store',
-        'users.update',
-        'users.menu',
+        'modeler.show'
+    ];
+
+    private $resourcePermissions = [
+        'requests'
     ];
 
     public function run($user = null)
     {
+        if (Permission::count() !== 0) {
+            return;
+        }
         $group = factory(Group::class)->create([
             'name' => 'All Permissions',
         ]);
@@ -108,9 +88,17 @@ class PermissionSeeder extends Seeder
             'member_id' => User::first()->id,
         ]);
 
-        foreach($this->permissions as $permissionString) {
+        foreach ($this->permissions as $permissionString) {
+            $type = 'ROUTE';
+            $resource = explode('.', $permissionString)[0];
+            if (in_array($resource, $this->resourcePermissions)) {
+                $type = 'RESOURCE';
+            }
+
             $permission = factory(Permission::class)->create([
-                'name' => $permissionString,
+                'name' => ucwords(preg_replace('/(\.|_)/', ' ',
+                        $permissionString)),
+                'type' => $type,
                 'guard_name' => $permissionString,
             ]);
             factory(PermissionAssignment::class)->create([

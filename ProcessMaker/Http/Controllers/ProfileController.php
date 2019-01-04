@@ -6,9 +6,11 @@ use Illuminate\Http\Request;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\JsonData;
 
+
 class ProfileController extends Controller
 {
-
+    public $skipPermissionCheckFor = ['edit'];
+    
     /**
      * edit your profile.
      *
@@ -45,9 +47,7 @@ class ProfileController extends Controller
      */
     public function show($id)
     {
-
         $user = User::findOrFail($id);
-
         return view('profile.show', compact('user'));
     }
 }

@@ -7,8 +7,6 @@ use Illuminate\Database\Eloquent\Model;
  * Represents an Eloquent model of a Request which is an instance of a Process.
  *
  * @property string $id
- * @property string $id
- * @property string $process_id
  * @property string $process_id
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at

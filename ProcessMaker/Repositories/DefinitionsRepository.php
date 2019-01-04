@@ -1,13 +1,14 @@
 <?php
 namespace ProcessMaker\Repositories;
 
+use ProcessMaker\Models\DataStore;
 use ProcessMaker\Models\FormalExpression;
+use ProcessMaker\Models\Message;
+use ProcessMaker\Models\MessageEventDefinition;
 use ProcessMaker\Nayra\Contracts\RepositoryInterface;
 use ProcessMaker\Nayra\RepositoryTrait;
 use ProcessMaker\Repositories\ExecutionInstanceRepository;
 use ProcessMaker\Repositories\TokenRepository;
-use ProcessMaker\Models\DataStore;
-use ProcessMaker\Repositories\Collaboration;
 
 /**
  * Definitions Repository
@@ -50,5 +51,15 @@ class DefinitionsRepository implements RepositoryInterface
     
     public function createDataStore() {
         return new DataStore();
+    }
+
+    public function createMessageEventDefinition()
+    {
+        return new MessageEventDefinition();
+    }
+
+    public function createMessage()
+    {
+        return new Message();
     }
 }

@@ -73,7 +73,7 @@
                     "placeholder": "",
                     "validation": "",
                     "helper": null,
-                    "type": "text"
+                    "type": "date"
                 },
                 "inspector": [
                     {
@@ -138,8 +138,8 @@
                         }
                     }
                 ],
-                "component": "FormInput",
-                "editor-component": "FormInput",
+                "component": "FormDatePicker",
+                "editor-component": "FormDatePicker",
                 "label": "Line Input"
             },
             {
@@ -149,7 +149,7 @@
                     "placeholder": "",
                     "validation": "",
                     "helper": null,
-                    "type": "text"
+                    "type": "date"
                 },
                 "inspector": [
                     {
@@ -214,8 +214,8 @@
                         }
                     }
                 ],
-                "component": "FormInput",
-                "editor-component": "FormInput",
+                "component": "FormDatePicker",
+                "editor-component": "FormDatePicker",
                 "label": "Line Input"
             },
             {

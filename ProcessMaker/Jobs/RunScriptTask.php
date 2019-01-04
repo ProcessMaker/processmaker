@@ -1,4 +1,5 @@
 <?php
+
 namespace ProcessMaker\Jobs;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -8,6 +9,7 @@ use ProcessMaker\Models\Script;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
+use Throwable;
 
 class RunScriptTask extends BpmnAction implements ShouldQueue
 {
@@ -59,16 +61,19 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
             $script = Script::find($scriptRef);
         }
 
-        $response = $script->runScript($data, $configuration);
-        if (is_array($response['output'])) {
+        try {
+            $response = $script->runScript($data, $configuration);
+            // Update data
             foreach ($response['output'] as $key => $value) {
                 $dataStore->putData($key, $value);
             }
             $element->complete($token);
             Log::info('Script completed: ' . $scriptRef);
-        } else {
+        } catch (Throwable $exception) {
+            // Change to error status
             $token->setStatus(ScriptTaskInterface::TOKEN_STATE_FAILING);
-            Log::info('Script failed: ' . $scriptRef . ' - ' . $response['output']);
+            $token->getInstance()->logError($exception, $element);
+            Log::info('Script failed: ' . $scriptRef . ' - ' . $exception->getMessage());
         }
     }
 }

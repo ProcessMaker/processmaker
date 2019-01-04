@@ -9,6 +9,16 @@
   "license": "GNU Affero General Public License version 3",
   "minimum-stability": "dev",
   "prefer-stable": true,
+  "repositories": [
+    {
+        "type": "vcs",
+        "url": "https://github.com/ProcessMaker/laravel-chunk-upload"
+    },
+    {
+        "type": "vcs",
+        "url": "https://github.com/ProcessMaker/pm4-connector-send-email.git"
+    }
+  ],
   "require": {
     "php": ">=7.2.0",
     "TYPO3/class-alias-loader": "^1.0",
@@ -23,11 +33,14 @@
     "laravelcollective/html": "^5.4.0",
     "lavary/laravel-menu": "^1.7",
     "phing/phing": "^2.16",
+    "pion/laravel-chunk-upload": "dev-bugfix",
     "predis/predis": "^1.1",
+    "processmaker/bpm-package-email-connector": "dev-master#a4dcdea",
     "processmaker/nayra": "dev-master",
     "ralouphie/getallheaders": "^2.0",
     "spatie/laravel-fractal": "^5.3",
     "spatie/laravel-medialibrary": "^7.0.0",
+    "symfony/expression-language": "^4.1",
     "symfony/psr-http-message-bridge": "1.*",
     "watson/validating": "^3.1",
     "zendframework/zend-diactoros": "1.*"

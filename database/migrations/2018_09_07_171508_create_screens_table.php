@@ -14,6 +14,7 @@ class CreateScreensTable extends Migration
     public function up()
     {
         Schema::create('screens', function (Blueprint $table) {
+            // NOTE: Remember to update ScreenVersions when updating this table
             $table->increments('id');
             $table->unsignedInteger('screen_category_id')->nullable();
             $table->text('title');

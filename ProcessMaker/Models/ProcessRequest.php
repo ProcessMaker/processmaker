@@ -1,12 +1,18 @@
 <?php
+
 namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
+use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
+use Spatie\MediaLibrary\HasMedia\HasMedia;
+use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use Throwable;
 
 /**
  * Represents an Eloquent model of a Request which is an instance of a Process.
@@ -47,11 +53,12 @@ use ProcessMaker\Traits\SerializeToIso8601;
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
  * )
  */
-class ProcessRequest extends Model implements ExecutionInstanceInterface
+class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMedia
 {
 
     use ExecutionInstanceTrait;
     use SerializeToIso8601;
+    use HasMediaTrait;
 
     /**
      * The attributes that aren't mass assignable.
@@ -94,7 +101,8 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
     protected $casts = [
         'completed_at' => 'datetime:c',
         'initiated_at' => 'datetime:c',
-        'data' => 'array'
+        'data' => 'array',
+        'errors' => 'array',
     ];
 
     /**
@@ -113,7 +121,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
      *
      * @param array $argument
      */
-    public function __construct(array $argument=[])
+    public function __construct(array $argument = [])
     {
         parent::__construct($argument);
         $this->bootElement([]);
@@ -128,26 +136,16 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
      */
     public static function rules($existing = null)
     {
-        $rules = [
-            'name' => 'required|unique:process_requests,name',
+        $unique = Rule::unique('process_requests')->ignore($existing);
+
+        return [
+            'name' => ['required', 'string', 'max:100', $unique],
             'data' => 'required',
             'status' => 'in:ACTIVE,COMPLETED,ERROR',
             'process_id' => 'required|exists:processes,id',
             'process_collaboration_id' => 'nullable|exists:process_collaborations,id',
             'user_id' => 'exists:users,id',
         ];
-
-        if ($existing) {
-            // ignore the unique rule for this id
-            $rules['name'] = [
-                'required',
-                'string',
-                'max:100',
-                Rule::unique('process_requests')->ignore($existing->id, 'id')
-            ];
-        }
-
-        return $rules;
     }
 
     /**
@@ -161,8 +159,30 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
     public function hasUserParticipated(User $user)
     {
         return $this->tokens()
-            ->where('user_id', $user->id)
-            ->exists();
+                ->where('user_id', $user->id)
+                ->exists();
+    }
+
+    /**
+     * Returns the id of the summary screen that is associated with the end event in which the request
+     * finished
+     *
+     * @return null
+     */
+    public function getSummaryScreenId()
+    {
+        $endEvents = $this->tokens()->where('element_type', 'end_event')->get();
+
+        if ($endEvents->count(0) === 0) {
+            return null;
+        }
+
+
+        //get the first token that is and end event to get the summary screen
+        $definition = $endEvents->first()->getDefinition();
+        $screenId = empty($definition['screenRef']) ? null : Screen::find($definition['screenRef']);
+
+        return $screenId;
     }
 
     /**
@@ -189,7 +209,8 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
      */
     public function collaboration()
     {
-        return $this->belongsTo(ProcessCollaboration::class, 'process_collaboration_id');
+        return $this->belongsTo(ProcessCollaboration::class,
+                'process_collaboration_id');
     }
 
     /**
@@ -208,8 +229,8 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
     public function assigned()
     {
         return $this->hasMany(ProcessRequestToken::class)
-            ->with('user')
-            ->whereNotIn('element_type' , ['scriptTask']);
+                ->with('user')
+                ->whereNotIn('element_type', ['scriptTask']);
     }
 
     /**
@@ -231,7 +252,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
      */
     public function scopeInProgress($query)
     {
-        $query->where('status' , '=', 'ACTIVE');
+        $query->where('status', '=', 'ACTIVE');
     }
 
     /**
@@ -241,7 +262,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
      */
     public function scopeCompleted($query)
     {
-        $query->where('status' , '=', 'COMPLETED');
+        $query->where('status', '=', 'COMPLETED');
     }
 
     /**
@@ -251,8 +272,9 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
      */
     public function participants()
     {
-        return $this->hasManyThrough(User::class, ProcessRequestToken::class, 'process_request_id', 'id', $this->getKeyName(), 'user_id')
-            ->distinct();
+        return $this->hasManyThrough(User::class, ProcessRequestToken::class,
+                    'process_request_id', 'id', $this->getKeyName(), 'user_id')
+                ->distinct();
     }
 
     /**
@@ -262,7 +284,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
     {
         $result = [];
         if (is_array($this->data)) {
-            foreach($this->data as $key => $value) {
+            foreach ($this->data as $key => $value) {
                 $result[] = [
                     'key' => $key,
                     'value' => $value
@@ -271,5 +293,52 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface
         }
 
         return $result;
+    }
+
+    /**
+     * Check if the user has access to this request
+     *
+     * @param User $user
+     * @return void
+     */
+    public function authorize(User $user)
+    {
+        if ($this->user_id === $user->id || $user->is_administrator) {
+            return true;
+        }
+        throw new AuthorizationException("Not authorized to view this request");
+    }
+
+    /**
+     * Records an error occurred during the execution of the process.
+     *
+     * @param Throwable $exception
+     * @param FlowElementInterface $element
+     */
+    public function logError(Throwable $exception, FlowElementInterface $element = null)
+    {
+        // Get the first line of the message
+        $array = explode("\n", $exception->getMessage());
+        $message = '';
+        $body = '';
+        while ($array) {
+            $message = array_shift($array);
+            if (trim($message)) {
+                $body = implode("\n", $array);
+                break;
+            }
+        }
+        $error = [
+            'message' => $message,
+            'body' => $body,
+            'element_id' => $element ? $element->getId() : null,
+            'element_name' => $element ? $element->getName() : null,
+            'created_at' => Carbon::now('UTC')->format('c'),
+        ];
+        $errors = $this->errors ?: [];
+        $errors[] = $error;
+        $this->errors = $errors;
+        $this->status = 'ERROR';
+        $this->save();
     }
 }

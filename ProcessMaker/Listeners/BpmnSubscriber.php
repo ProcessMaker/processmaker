@@ -48,12 +48,13 @@ class BpmnSubscriber
      */
     public function ProcessCompleted(ProcessInstanceCompletedEvent $event)
     {
+        Log::info('Process completed: ' . json_encode($event->instance->getProperties()));
+
         //client events
         $user = $event->instance->user;
         $notification = new ProcessCompletedNotification($event->instance);
         $user->notify($notification);
 
-        // Log::info('ProcessCompleted: ' . json_encode($event->instance->getProperties()));
     }
 
     /**

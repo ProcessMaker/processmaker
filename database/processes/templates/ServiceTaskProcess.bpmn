@@ -3,7 +3,7 @@
              xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
              xmlns:tns="http://sourceforge.net/bpmn/definitions/_1541612237879" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xmlns:pm="https://bpm4.processmaker.local/definitions/ProcessMaker.xsd"
+             xmlns:pm="http://processmaker.com/BPMN/2.0/Schema.xsd"
              expressionLanguage="http://www.w3.org/1999/XPath" id="_1541612237879" name=""
              targetNamespace="http://sourceforge.net/bpmn/definitions/_1541612237879"
              typeLanguage="http://www.w3.org/2001/XMLSchema">

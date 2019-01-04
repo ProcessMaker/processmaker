@@ -51,20 +51,13 @@ class EnvironmentVariable extends Model
 
     public static function rules($existing = null)
     {
-        $rules = [
-        'description' => 'required',
-        'value' => 'nullable',
+        $unique = Rule::unique('environment_variables')->ignore($existing);
+
+        return [
+            'description' => 'required',
+            'value' => 'nullable',
+            'name' => ['required', 'alpha_dash', $unique]
         ];
-        if($existing) {
-            $rules['name'] = [
-                'required',
-                'alpha_dash',
-                Rule::unique('environment_variables')->ignore($existing->id)
-            ];
-        } else {
-            $rules['name'] = 'required|alpha_dash|unique:environment_variables';
-        }
-        return $rules;
     }
 
 }

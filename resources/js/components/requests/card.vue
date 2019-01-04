@@ -1,15 +1,18 @@
 <template>
-    <div class="processes">
-        <div @click="newRequestLink(process)" class="process-card">
-            <div class="inner">
-                <div>
-                    <span class="name" v-html="transformedName"></span>
-                    <i v-show="spin===process.id" class="fa fa-spinner fa-spin fa-fw"></i>
+    <span>
+        <div v-for="event in process.events" class="processes">
+            <div @click="newRequestLink(process, event)" class="process-card">
+                <div class="inner">
+                    <div>
+                        <span class="name" v-html="transformedName"></span>
+                        <span v-if="process.events.length > 1">: {{event.name}}</span>
+                        <i v-show="spin===process.id + '.' + event.id" class="fa fa-spinner fa-spin fa-fw"></i>
+                    </div>
+                    <div ref="description" class="description" v-html="truncatedDescription"></div>
                 </div>
-                <div ref="description" class="description" v-html="truncatedDescription"></div>
             </div>
         </div>
-    </div>
+    </span>
 </template>
 
 <script>
@@ -21,10 +24,10 @@ export default {
       }
   },
   methods: {
-    newRequestLink(process) {
+    newRequestLink(process, event) {
       //Start a process
-      this.spin = process.id;
-      let startEventId = process.events[0].id;
+      this.spin = process.id + '.' + event.id;
+      let startEventId = event.id;
       window.ProcessMaker.apiClient.post('/process_events/'+this.process.id + '?event=' + startEventId)
         .then((response) => {
             this.spin = 0;

@@ -10,6 +10,7 @@
     <meta name="user-id" content="{{ Auth::user()->id }}">
     <meta name="datetime-format" content="{{ Auth::user()->datetime_format ?: config('app.dateformat') }}">
     <meta name="timezone" content="{{ Auth::user()->timezone ?: config('app.timezone') }}">
+    @yield('meta')
     @endif
     @if(config('broadcasting.broadcaster') == 'socket.io')
     <meta name="broadcaster" content="{{config('broadcasting.broadcaster')}}">
@@ -30,11 +31,13 @@
     <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico" />
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     <link href="{{ mix('css/sidebar.css') }}" rel="stylesheet">
+    {{-- <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.min.css"> --}}
     @yield('css')
     <script type="text/javascript">
     window.Processmaker = {
       csrfToken: "{{csrf_token()}}",
       userId: "{{\Auth::user()->id}}",
+      messages: @json(\Auth::user()->activeNotifications()),
       broadcasting: {
         broadcaster: "{{config('broadcasting.broadcaster')}}",
         host: "{{config('broadcasting.host')}}",

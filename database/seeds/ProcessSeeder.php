@@ -1,13 +1,18 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\EnvironmentVariable;
+use ProcessMaker\Models\Group;
+use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
 use ProcessMaker\Providers\WorkflowServiceProvider;
+use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 
 class ProcessSeeder extends Seeder
 {
@@ -28,10 +33,18 @@ class ProcessSeeder extends Seeder
      */
     public function run()
     {
+        if (Process::count() !== 0) {
+            return;
+        }
+        //load user admin
+        $admin = User::where('username', 'admin')->firstOrFail();
+
         foreach (glob(database_path('processes') . '/*.bpmn') as $filename) {
             echo 'Creating: ', $filename, "\n";
             $process = factory(Process::class)->make([
                 'bpmn' => file_get_contents($filename),
+                'user_id' => $admin->getKey(),
+                'status' => 'ACTIVE',
             ]);
             //Load the process title from the the main process of the BPMN definition
             $processes = $process->getDefinitions()->getElementsByTagName('process');
@@ -67,42 +80,57 @@ class ProcessSeeder extends Seeder
                     WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptRef', $script->id
                 );
                 $scriptTaskNode->setAttributeNS(
-                    WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptConfiguration', '{}'
+                    WorkflowServiceProvider::PROCESS_MAKER_NS, 'config', '{}'
                 );
             }
 
-            //Add screens to the process
-            $tasks = $definitions->getElementsByTagName('task');
-            $admin = User::where('username', 'admin')->firstOrFail();
-            foreach($tasks as $task) {
-                $screenRef = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef');
-                $id = $task->getAttribute('id');
-                if ($screenRef) {
-                    $screen = $this->createScreen($id, $screenRef, $process);
-                    $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef', $screen->getKey());
+            //Create/Assign Users to tasks
+            $lanes = $definitions->getElementsByTagName('lane');
+            foreach($lanes as $nodeLane) {
+                $lane = $nodeLane->getBpmnElementInstance();
+                $user = $this->getUserOrCreate($lane->getName());
+                foreach($lane->getFlowNodes() as $node) {
+                    if ($node instanceof ActivityInterface && !($node instanceof ScriptTaskInterface)) {
+                        factory(ProcessTaskAssignment::class)->create([
+                            'process_id' => $process->getKey(),
+                            'process_task_id' => $node->getId(),
+                            'assignment_id' => $user->getKey(),
+                            'assignment_type' => User::class,
+                        ]);
+                    }
                 }
-                //Assign "admin" to the task 
-                factory(ProcessTaskAssignment::class)->create([
-                    'process_id' => $process->getKey(),
-                    'process_task_id' => $id,
-                    'assignment_id' => $admin->getKey(),
-                    'assignment_type' => 'user',
-                ]);
             }
 
+            //Add screens to the process
+            $admin = User::where('username', 'admin')->firstOrFail();
+            $humanTasks = ['task', 'userTask'];
+            foreach($humanTasks as $humanTask) {
+                $tasks = $definitions->getElementsByTagName($humanTask);
+                foreach($tasks as $task) {
+                    $screenRef = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef');
+                    $id = $task->getAttribute('id');
+                    if ($screenRef) {
+                        $screen = $this->createScreen($id, $screenRef, $process);
+                        $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef', $screen->getKey());
+                    }
+                    //Assign "admin" to the task if it does not have user assigned
+                    $assignments = ProcessTaskAssignment::where('process_id', $process->getKey())
+                        ->where('process_task_id', $id)
+                        ->count();
+                    if (!$assignments) {
+                        factory(ProcessTaskAssignment::class)->create([
+                            'process_id' => $process->getKey(),
+                            'process_task_id' => $id,
+                            'assignment_id' => $admin->getKey(),
+                            'assignment_type' => User::class,
+                        ]);
+                    }
+                }
+            }
 
             //Update the screen and script references in the BPMN of the process
             $process->bpmn = $definitions->saveXML();
             $process->save();
-
-            echo 'Process created: ', $process->uid, "\n";
-
-            //Create environment variables for the default processes
-            factory(EnvironmentVariable::class)->create([
-                'name' => 'hours_of_work',
-                'description' => 'Regular schedule of hours of work for employees',
-                'value' => '8'
-            ]);
         }
     }
 
@@ -121,8 +149,7 @@ class ProcessSeeder extends Seeder
             $json = json_decode(file_get_contents(database_path('processes/screens/' . $screenRef . '.json')));
             return factory(Screen::class)->create([
                         'title' => $json[0]->name,
-                        'config' => $json,
-                        'process_id' => $process->id,
+                        'config' => $json
             ]);
         } elseif (file_exists(database_path('processes/screens/' . $id . '.json'))) {
             $json = json_decode(file_get_contents(database_path('processes/screens/' . $id . '.json')));
@@ -143,5 +170,67 @@ class ProcessSeeder extends Seeder
     private function languageOfMimeType($mime)
     {
         return in_array($mime, self::mimeTypes) ? array_search($mime, self::mimeTypes) : '';
+    }
+
+    /**
+     * Format name without spaces and to lowercase
+     *
+     * @param $name
+     *
+     * @return string
+     */
+    private function formatName($name)
+    {
+        return strtolower(str_replace(' ', '.', $name));
+    }
+
+    /**
+     * Get or create a user by full name.
+     *
+     * @param string $userFullName
+     *
+     * @return User
+     */
+    private function getUserOrCreate($userFullName)
+    {
+        $name = $this->formatName($userFullName);
+        $user = User::where('username', $name)
+            ->first();
+        if (!$user) {
+            $user = factory(User::class)->create([
+                'username' => $name,
+                'password' => Hash::make('admin'),
+                'status' => 'ACTIVE',
+                'is_administrator' => true
+            ]);
+        }
+
+        return $user;
+    }
+
+    /**
+     * Get or create a group by name
+     *
+     * @param $name
+     *
+     * @return mixed
+     */
+    private function getGroupOrCreate($name)
+    {
+        $group = Group::where('name', $name)->first();
+        if (!$group) {
+            $group = factory(Group::class)->create([
+                'name' => $name,
+                'status' => 'ACTIVE'
+            ]);
+        }
+        factory(GroupMember::class)->create( [
+            'member_id' => function () use ($name) {
+                return $this->getUserOrCreate($name)->getKey();
+            },
+            'member_type' => User::class,
+            'group_id' => $group->getKey()
+        ]);
+        return $group;
     }
 }
