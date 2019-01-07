@@ -25,8 +25,16 @@ Route::group(['middleware' => ['auth']], function () {
         ]);
     });
 
-    Route::resource('processes', 'ProcessController');
+    Route::get('processes', 'ProcessController@index')->name('processes.index');
+    Route::get('processes{{process}}/edit', 'ProcessController@edit')->name('processes.edit');
+    Route::get('processes/create', 'ProcessController@create')->name('processes.create');
+    Route::post('processes', 'ProcessController@store')->name('processes.store');
+    Route::get('processes{{processes}}', 'ProcessController@show')->name('processes.show');
+    Route::put('processes{{processes}}', 'ProcessController@update')->name('processes.edit');
+    Route::delete('processes{{processes}}', 'ProcessController@destroy')->name('processes.destroy');
+
     Route::get('about', 'AboutController@index')->name('about.index');
+
     Route::get('profile/edit', 'ProfileController@edit')->name('profile.edit');
     Route::get('profile/{id}', 'ProfileController@show');
     Route::put('profile/{id}', 'ProfileController@update')->name('profile.update');
@@ -39,13 +47,16 @@ Route::group(['middleware' => ['auth']], function () {
         ->where('type', 'all|in_progress|completed')
         ->name('requests_by_type');
     Route::get('request/{requestID}/files/{fileID}', 'RequestController@downloadFiles');
-    Route::resource('requests', 'RequestController')->only([
-        'index', 'show'
-    ]);
+    Route::get('requests', 'RequestController@index')->name('requests.index');
+    Route::get('requests/{{request}}', 'RequestController@show')->name('requests.show');
 
-    Route::resource('tasks', 'TaskController');
 
-    Route::resource('notifications', 'NotificationController');
+    Route::get('tasks', 'TaskController@index')->name('tasks.index');
+    Route::get('tasks/{{task}}', 'TaskController@show')->name('tasks.show');
+    Route::get('tasks/{{task}}/edit', 'TaskController@edit')->name('tasks.edit');
+
+    Route::get('notifications', 'NotificationController@index')->name('notifications.index');
+
 });
 
 // Add our broadcasting routes
