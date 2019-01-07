@@ -13,14 +13,12 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
-use ProcessMaker\Traits\HasAuthorization;
 
 class User extends Authenticatable implements HasMedia
 {
     use HasApiTokens;
     use Notifiable;
     use HasMediaTrait;
-    use HasAuthorization;
     use SerializeToIso8601;
 
     //Disk
