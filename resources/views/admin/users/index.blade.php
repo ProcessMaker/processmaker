@@ -150,7 +150,7 @@
                             email: this.email,
                             password: this.password
                         }).then(function (response) {
-                            window.location = "/admin/users/" + response.data.id + '/edit'
+                            window.location = "/admin/users/" + response.data.id + '/edit?created=true'
                         }).catch(error => {
                            this.addError = error.response.data.errors
                             
