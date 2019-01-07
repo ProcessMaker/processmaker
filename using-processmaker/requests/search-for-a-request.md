@@ -23,10 +23,8 @@ Follow these steps to search for a Request within the displayed tab:
    * [Completed](view-completed-requests.md) tab
    * [All Requests](view-all-requests.md) tab
 3. Click the **Search** field and then enter text to filter Requests using any of the following criteria:
-   * **Process name:** Search for the process name associated with the Request you seek.
-   * ~~**Participants:** Search for a participant associated with the Request in which you are searching.~~
-   * ~~**Started date:** Search for the date in which the Request started.~~
-   * ~~**Completed date:** Search for the date in which the Request completed.~~
+   * **Process name:** Search for the Process name associated with the Request.
+   * **Status:** Search by the Request status.
 
 As you enter text into the **Search** field, Requests display that match your entered text.
 
@@ -37,7 +35,7 @@ If there are no search results, the following message displays: **No data availa
 {% hint style="info" %}
 To [view information](request-details.md) about a Request, do one of the following:
 
-* From the **Name** column, click the name of the process associated with the Request that you want to view.
+* From the **Name** column, click the Process name associated with the Request that you want to view.
 * Click the Open Request icon ![](../../.gitbook/assets/open-request-icon-requests.png) for the Request in which you want to view information.
 {% endhint %}
 

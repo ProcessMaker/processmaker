@@ -20,7 +20,7 @@ Follow these steps to view in-progress Requests:
 {% hint style="info" %}
 To [view information](request-details.md) about a Request, do one of the following:
 
-* From the **Name** column, click the name of the process associated with the Request that you want to view.
+* From the **Name** column, click the Process name associated with the Request that you want to view.
 * Click the Open Request icon ![](../../.gitbook/assets/open-request-icon-requests.png) for the Request in which you want to view information.
 {% endhint %}
 
@@ -30,10 +30,10 @@ Use the [Search](search-for-a-request.md) field to filter Requests that display 
 
 The **In Progress** tab displays the following information:
 
-* **Name:** The **Name** column displays the name of the process associated with the Request. Click the process name to [view information](request-details.md#information-for-in-progress-requests) about that Request.
+* **Name:** The **Name** column displays the name of the Process associated with the Request. Click the Process name to [view information](request-details.md#information-for-in-progress-requests) about that Request.
 * **Status:** The **Status** column displays the **In Progress** status.
 * **Participants:** The **Participants** column displays avatars of each participant in the Request. Participants might be users interacting with a form or as an authenticated user to the ProcessMaker 4 [REST API](https://develop.bpm4.qa.processmaker.net/api/documentation).
-* **Started:** The **Started** column displays the date and time you made the Request. The time is displayed according to your time zone setting.
+* **Started:** The **Started** column displays the date and time you made the Request. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 * **Completed:** The **Completed** column displays the date and time the Request was completed. Since Requests in this tab are in-progress, this column is empty.
 
 {% hint style="info" %}

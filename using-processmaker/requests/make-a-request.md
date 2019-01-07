@@ -13,21 +13,21 @@ Follow these steps to start a Request:
 
    ![](../../.gitbook/assets/+-request-button-highlighted.png)
 
-   The **New Request** screen displays. This screen displays processes for which you are authorized to start a new Request.
+   The **New Request** screen displays. This screen displays Processes for which you are authorized to start a new Request.
 
-   Below is the **New Request** screen with a process from which a Request can be started. Processes can be organized into categories within your organization to make it easier to locate from which process to start a Request.  
+   Below is the **New Request** screen with a Process from which a Request can be started. Processes can be organized into Categories within your organization to make it easier to locate from which Process to start a Request.  
 
    ![](../../.gitbook/assets/new-request-screen-requests.png)
 
 3. Do one of the following:
 
-   * Select the process for which to start a new Request.
-   * From the **Search** field, enter text to filter the list of processes, and then select the process to start a new Request. For more information about searching for a Request, see [Search for a Request](search-for-a-request.md).
+   * Select the Process for which to start a new Request.
+   * From the **Search** field, enter text to filter the list of Processes, and then select the Process to start a new Request. For more information about searching for a Request, see [Search for a Request](search-for-a-request.md).
 
-   The process you selected starts a Request.
+   The Process you selected starts a Request.
 
 {% hint style="info" %}
-If there are no active processes or you do not have authorization to start a Request for a process, the following message displays: **At this time there are no Requests available**.
+If there are no active Processes or you do not have authorization to start a Request for a Process, the following message displays: **At this time there are no Requests available**.
 {% endhint %}
 
 After the Request starts, the new Request displays in the **Started by Me** tab in the **Requests** page.

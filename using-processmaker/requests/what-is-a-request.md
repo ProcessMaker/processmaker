@@ -4,7 +4,7 @@ description: Understand what Requests are in ProcessMaker 4.
 
 # What is a Request?
 
-In ProcessMaker 4, a "Request" represents when you start a process to make a request of one or more people in your organization. A Request represents an incident or case of a process.
+In ProcessMaker 4, a "Request" represents when you start a Process to make a request of one or more people in your organization. A Request represents an incident or case of a Process.
 
 Below are a few examples of Requests that your organization might use:
 

@@ -1,16 +1,16 @@
 ---
-description: Understand what tasks are in ProcessMaker 4.
+description: Understand what Tasks are in ProcessMaker 4.
 ---
 
 # What is a Task?
 
-In ProcessMaker 4, a "task" represents information that must be interacted with or acted upon in some way. Tasks are the steps in a business process.
+In ProcessMaker 4, a "Task" represents information that must be acted upon in some way. Tasks are the steps in a Process.
 
-Below are a few examples of tasks that your organization might use:
+Below are a few examples of Tasks that your organization might use:
 
-* Enter information into a form as part of a request.
-* Approve or reject a request based on entered information.
-* Run a script automatically as an authenticated user in the [REST API](https://develop.bpm4.qa.processmaker.net/api/documentation).
+* Enter information into a digital form, called ProcessMaker Screens, as part of a Request.
+* Approve or reject a Request based on entered information.
+* Run an automated script either through a ProcessMaker Script or as an authenticated user in the [REST API](https://develop.bpm4.qa.processmaker.net/api/documentation).
 
 ## Related Topics
 

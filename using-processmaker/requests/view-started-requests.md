@@ -18,7 +18,7 @@ Do one of the following to view Requests that you started:
 {% hint style="info" %}
 To [view information](request-details.md) about a Request, do one of the following:
 
-* From the **Name** column, click the name of the process associated with the Request that you want to view.
+* From the **Name** column, click the Process name associated with the Request that you want to view.
 * Click the Open Request icon ![](../../.gitbook/assets/open-request-icon-requests.png) for the Request in which you want to view information.
 {% endhint %}
 
@@ -28,14 +28,14 @@ Use the [Search](search-for-a-request.md) field to filter Requests that display 
 
 The **Started by Me** tab displays the following information:
 
-* **Name:** The **Name** column displays the name of the process associated with the Request. Click the process name to [view information](request-details.md) about that Request.
-* **Status:** The **Status** column displays the status of the process associated with the Request. The following are possible statuses:
+* **Name:** The **Name** column displays the name of the Process associated with the Request. Click the Process name to [view information](request-details.md) about that Request.
+* **Status:** The **Status** column displays the status of the Process associated with the Request. The following are possible statuses:
   * **In Progress:** The Request is in-progress and is represented by the![](../../.gitbook/assets/in-progress-status-icon-requests.png)icon.
   * **Completed:** The Request is completed and is represented by the![](../../.gitbook/assets/completed-status-icon-requests.png)icon.
   * **Error:** An error occurred with the Request and is represented by the![](../../.gitbook/assets/error-status-icon-requests.png)icon. [View the Request](request-details.md#error-information-for-a-request) to see the error.
 * **Participants:** The **Participants** column displays avatars of each participant in the Request.
-* **Started:** The **Started** column displays the date and time you made the Request. The time is displayed according to your time zone setting.
-* **Completed:** The **Completed** column displays the date and time the Request was completed. If the Request is not completed, this field displays no value for that Request. The time is displayed according to your time zone setting.
+* **Started:** The **Started** column displays the date and time you made the Request. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
+* **Completed:** The **Completed** column displays the date and time the Request was completed. If the Request is not completed, this field displays no value for that Request. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
 {% hint style="info" %}
 If there are no Requests you have started, the following message displays: **No Data Available**.
