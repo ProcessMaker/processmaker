@@ -9,23 +9,27 @@ A ProcessMaker Administrator can create a custom format and style for how Reques
 To view information about a Request, do one of the following:
 
 * From the **Name** column, click the name of the process associated with the Request that you want to view.
-* Click the Open Request icon ![](../../.gitbook/assets/open-request-icon-requests.png) for the Request in which you want to view information.
+* Click the Open Request icon![](../../.gitbook/assets/open-request-icon-requests.png)for the Request in which you want to view information.
 
 ## Information for In-Progress Requests
 
 This section discusses how information displays for in-progress Requests.
 
-### Pending Tasks
+### Tasks
 
-The **Pending Tasks** tab displays summary information for all upcoming tasks in the Request.
+The **Tasks** tab displays summary information for all upcoming tasks in the Request.
 
 ![Pending Tasks tab for an in-progress Request](../../.gitbook/assets/pending-tasks-request.png)
 
-The **Pending Tasks** tab displays the following information:
+The **Tasks** tab displays the following information:
 
 * **Task:** The **Task** column displays the name of the pending task. If a pending task is assigned to you, a hyperlink displays in the task name.
 * **Assigned:** The **Assigned** column displays the avatar for the username to whom the task is assigned.
 * **Due Date:** The **Due Date** column displays the date the task is due.
+
+{% hint style="info" %}
+If there are no tasks in which you have started or participated in, the following message displays: **No Data Available**.
+{% endhint %}
 
 {% hint style="info" %}
 [Control how tabular information displays.](../control-how-requests-display-in-a-tab.md)
@@ -40,6 +44,7 @@ In-progress Requests display information about the participants in a selected Re
 The following information displays about participants in a selected in-progress Request:
 
 * **Requested By:** The **Requested By** field displays the avatar and full name of the person who started the selected Request. The Request may have been started from a person manually interacting with a form or as an authenticated user to the ProcessMaker 4 [REST API](https://develop.bpm4.qa.processmaker.net/api/documentation).
+* **Cancel Request:** The **Cancel Request** field allows a Request participant or ProcessMaker Administrator to cancel the Request if that Request participant's user account has the appropriate permission to cancel Requests for that process. If your user account does not have the permission\(s\) to cancel Requests for that process, the **Cancel Request** field does not display.
 * **Participants:** The **Participants** field displays the avatars of all participants in the selected Request to date.
 * **Request creation date:** The date and time the Request was created displays below the **Participants** field.
 

@@ -32,7 +32,7 @@ The **Started by Me** tab displays the following information:
 * **Status:** The **Status** column displays the status of the process associated with the Request. The following are possible statuses:
   * **In Progress:** The Request is in-progress and is represented by the![](../../.gitbook/assets/in-progress-status-icon-requests.png)icon.
   * **Completed:** The Request is completed and is represented by the![](../../.gitbook/assets/completed-status-icon-requests.png)icon.
-  * **Error:** An error occurred with the Request and is represented by the![](../../.gitbook/assets/error-status-icon-requests.png)icon. [View the Request](request-details.md) to see the error.
+  * **Error:** An error occurred with the Request and is represented by the![](../../.gitbook/assets/error-status-icon-requests.png)icon. [View the Request](request-details.md#error-information-for-a-request) to see the error.
 * **Participants:** The **Participants** column displays avatars of each participant in the Request.
 * **Started:** The **Started** column displays the date and time you made the Request. The time is displayed according to your time zone setting.
 * **Completed:** The **Completed** column displays the date and time the Request was completed. If the Request is not completed, this field displays no value for that Request. The time is displayed according to your time zone setting.
