@@ -9,28 +9,16 @@ class Permission extends Model
 {
 
     protected $fillable = [
+        'title',
         'name',
-        'guard_name',
-        'description',
     ];
 
-    static public function byGuardName($name)
+    static public function byName($name)
     {
         try {
-            return self::where('guard_name', $name)->firstOrFail();
+            return self::where('name', $name)->firstOrFail();
         } catch(ModelNotFoundException $e) {
             throw new ModelNotFoundException($name . " permission does not exist");
         }
-    }
-
-    /**
-     * Query filter for type = route
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function scopeRoutes($query)
-    {
-        return $query->where('type', 'ROUTE');
     }
 }
