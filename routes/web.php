@@ -7,22 +7,33 @@ Route::group(['middleware' => ['auth']], function () {
 // Routes related to Authentication (password reset, etc)
 // Auth::routes();
     Route::namespace('Admin')->prefix('admin')->group(function () {
-        Route::resource('groups', 'GroupController')->only(['index', 'edit']);
-        Route::resource('users', 'UserController');
+        Route::get('groups', 'GroupController@index')->name('groups.index');
+        Route::get('groups/{group}', 'GroupController@create')->name('groups.show');
+        Route::get('groups/{group}/edit', 'GroupController@create')->name('groups.edit');
+
+        Route::get('users', 'UserController@index')->name('users.index');
+        Route::get('users/create', 'UserController@create')->name('users.create');
+        Route::get('users/{user}', 'UserController@show')->name('users.show');
+        Route::get('users/{user}/edit', 'UserController@edit')->name('users.edit');
     });
 
     Route::namespace('Process')->prefix('processes')->group(function () {
-        Route::resource('environment-variables', 'EnvironmentVariablesController');
-        Route::resource('documents', 'DocumentController');
-        Route::resource('screens', 'ScreenController');
-        Route::resource('screen-builder', 'ScreenBuilderController')->parameters([
-            'screen-builder' => 'screen'
-        ])->only(['edit']);
-        Route::resource('scripts', 'ScriptController');
-        Route::get('scripts/{script}/builder', 'ScriptController@builder');
-        Route::resource('categories', 'ProcessCategoryController')->parameters([
-            'categories' => 'processCategory'
-        ]);
+        Route::get('environment-variables', 'EnvironmentVariablesController@index')->name('environment-variables.index');
+        Route::get('environment-variables/{environment-variable}/edit', 'EnvironmentVariablesController@edit')->name('environment-variables.edit');
+
+        Route::get('documents', 'DocumentController@index')->name('documents.index');
+
+        Route::get('screens', 'ScreenController@index')->name('screens.index');
+        Route::get('screens/{screen}/edit', 'ScreenController@edit')->name('screens.edit');
+
+        Route::get('screen-builder/{screen}/edit', 'ScreenBuilderController@edit')->name('screen-builder.edit');
+        
+        Route::get('scripts', 'ScriptController@index')->name('scripts.index');
+        Route::get('scripts/{script}/edit', 'ScriptController@edit')->name('scripts.edit');
+        Route::get('scripts/{script}/builder', 'ScriptController@builder')->name('scripts.builder');
+        
+        Route::get('categories', 'ProcessCategoryController@index')->name('categories.index');
+        Route::get('categories/{processCategory}/edit', 'ProcessCategoryController@edit')->name('categories.edit');
     });
 
     Route::get('processes', 'ProcessController@index')->name('processes.index');
