@@ -28,9 +28,9 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('screen-builder/{screen}/edit', 'ScreenBuilderController@edit')->name('screen-builder.edit');
         
-        Route::get('scripts', 'ScriptController@index')->name('scripts.index');
-        Route::get('scripts/{script}/edit', 'ScriptController@edit')->name('scripts.edit');
-        Route::get('scripts/{script}/builder', 'ScriptController@builder')->name('scripts.builder');
+        Route::get('scripts', 'ScriptController@index')->name('scripts.index')->middleware('can:view-scripts');
+        Route::get('scripts/{script}/edit', 'ScriptController@edit')->name('scripts.edit')->middleware('can:edit-scripts,script');
+        Route::get('scripts/{script}/builder', 'ScriptController@builder')->name('scripts.builder')->middleware('can:edit-scripts,script');
         
         Route::get('categories', 'ProcessCategoryController@index')->name('categories.index');
         Route::get('categories/{processCategory}/edit', 'ProcessCategoryController@edit')->name('categories.edit');
