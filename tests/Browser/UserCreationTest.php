@@ -35,8 +35,8 @@ class UserCreationTest extends DuskTestCase
 
             $browser->resize(1920, 1080);
 
-            $browser->visit('/')
-                ->assertSee('Username');
+//            $browser->visit('/')
+//                ->assertSee('Username');
 //                ->type('#username', 'admin')
 //                ->type('#password', 'admin');
 //                ->press('.btn')
