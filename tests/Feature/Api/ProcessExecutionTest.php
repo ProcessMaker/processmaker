@@ -259,9 +259,15 @@ class ProcessExecutionTest extends TestCase
      */
     public function testTaskAssignedToGroup()
     {
-        $foo = factory(User::class)->create(['firstname' => 'Foo']);
-        $bar = factory(User::class)->create(['firstname' => 'Bar']);
-        $group = factory(Group::class)->create(['id'=>999]);
+        $foo = factory(User::class)->create(
+            ['firstname' => 'Foo', 'status' => 'ACTIVE']
+        );
+        $bar = factory(User::class)->create(
+            ['firstname' => 'Bar', 'status' => 'ACTIVE']
+        );
+        $group = factory(Group::class)->create(
+            ['id' => 999, 'status' => 'ACTIVE']
+        );
         
         foreach([$foo, $bar] as $user) {
             factory(GroupMember::class)->create([
@@ -271,7 +277,7 @@ class ProcessExecutionTest extends TestCase
             ]);
         }
 
-        $group_process = factory(Process::class)->create();
+        $group_process = factory(Process::class)->create(['status' => 'ACTIVE']);
         $data['bpmn'] = Process::getProcessTemplate('SingleTaskAssignedToGroup.bpmn');
         $group_process->update($data);
 
@@ -282,7 +288,7 @@ class ProcessExecutionTest extends TestCase
             'assignment_id' => $group->id,
             'assignment_type' => Group::class
         ]);
-        
+
         //Start a process request
         $route = route('api.process_events.trigger', [$group_process->id, 'event' => 'node_2']);
         $response = $this->apiCall('POST', $route, []);
@@ -291,7 +297,7 @@ class ProcessExecutionTest extends TestCase
         $route = route('api.tasks.index');
         $response = $this->actingAs($foo, 'api')->json('GET', $route);
         $tasks = $response->json('data');
-        
+
         // Assert the first user "foo" got the task
         $this->assertEquals(count($tasks), 1);
         $task_id = $tasks[0]['id'];
@@ -319,6 +325,10 @@ class ProcessExecutionTest extends TestCase
 
         // Assert the next user "bar" got the task
         $this->assertEquals(count($tasks), 1);
+        
+        // Complete the task
+        $route = route('api.tasks.update', [$tasks[0]['id'], 'status' => 'COMPLETED']);
+        $response = $this->apiCall('PUT', $route, $data);
         
         // Start another request
         $route = route('api.process_events.trigger', [$group_process->id, 'event' => 'node_2']);
