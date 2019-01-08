@@ -11,6 +11,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 use ProcessMaker\Traits\SerializeToIso8601;
+use ProcessMaker\Traits\HasAuthorization;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
@@ -19,6 +20,7 @@ class User extends Authenticatable implements HasMedia
     use HasApiTokens;
     use Notifiable;
     use HasMediaTrait;
+    use HasAuthorization;
     use SerializeToIso8601;
 
     //Disk
