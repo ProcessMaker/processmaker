@@ -23,10 +23,9 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('documents', 'DocumentController@index')->name('documents.index');
 
-        Route::get('screens', 'ScreenController@index')->name('screens.index');
-        Route::get('screens/{screen}/edit', 'ScreenController@edit')->name('screens.edit');
-
-        Route::get('screen-builder/{screen}/edit', 'ScreenBuilderController@edit')->name('screen-builder.edit');
+        Route::get('screens', 'ScreenController@index')->name('screens.index')->middleware('can:view-screens');
+        Route::get('screens/{screen}/edit', 'ScreenController@edit')->name('screens.edit')->middleware('can:edit-screens');
+        Route::get('screen-builder/{screen}/edit', 'ScreenBuilderController@edit')->name('screen-builder.edit')->middleware('can:edit-screens');
         
         Route::get('scripts', 'ScriptController@index')->name('scripts.index')->middleware('can:view-scripts');
         Route::get('scripts/{script}/edit', 'ScriptController@edit')->name('scripts.edit')->middleware('can:edit-scripts,script');
