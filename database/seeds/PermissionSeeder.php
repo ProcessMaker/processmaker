@@ -18,7 +18,15 @@ class PermissionSeeder extends Seeder
         'view-categories',
         'edit-categories',
         'view-screens',
-        'edit-screens'
+        'edit-screens',
+        'view-environment_variables',
+        'edit-environment_variables',
+        'view-processes',
+        'view-users',
+        'create-users',
+        'show-users',
+        'edit-users'
+
     ];
 
     private $resourcePermissions = [
