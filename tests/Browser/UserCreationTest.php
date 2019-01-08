@@ -38,8 +38,8 @@ class UserCreationTest extends DuskTestCase
             $browser->visit('/')
                 ->assertSee('Username')
                 ->type('#username', 'admin')
-                ->type('#password', 'admin')
-                ->press('.btn');
+                ->type('#password', 'admin');
+//                ->press('.btn')
 //                ->clickLink('Admin')
 //                ->pause(5000)
 //                ->waitFor('.vuetable-body', 5)
