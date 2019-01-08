@@ -31,7 +31,7 @@ class UserCreationTest extends DuskTestCase
         ]);
         factory(User::class, 99)->create();
         // Test login
-        $this->browse(function (Browser $browser) {
+//        $this->browse(function (Browser $browser) {
 
             //$browser->resize(1920, 1080);
 
@@ -58,7 +58,7 @@ class UserCreationTest extends DuskTestCase
 //            $browser->press('.btn.btn-secondary')
 //                ->pause(5000)
 //                ->assertSee('successfully created');
-        });
+//        });
 
     }
 }
