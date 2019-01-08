@@ -318,6 +318,9 @@ class Process extends Model implements HasMedia
     {
         $groupMembers = GroupMember::where('group_id', $group_id)->get();
         foreach ($groupMembers as $groupMember) {
+            if ($groupMember->member->status !== 'ACTIVE') {
+                continue;
+            }
             if ($groupMember->member_type === User::class) {
                 $users[$groupMember->member_id] = $groupMember->member_id;
             } else {
