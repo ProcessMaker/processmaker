@@ -33,7 +33,7 @@ class UserCreationTest extends DuskTestCase
         // Test login
         $this->browse(function (Browser $browser) {
 
-            $browser->resize(1920, 1080);
+            //$browser->resize(1920, 1080);
 
 //            $browser->visit('/')
 //                ->assertSee('Username');
