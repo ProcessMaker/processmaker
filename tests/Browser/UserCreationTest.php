@@ -14,7 +14,7 @@ class UserListTest extends DuskTestCase
     /**
      * @throws \Throwable
      */
-    public function testLogin()
+    public function testUserCreation()
     {
         //Factory 100 users
         Artisan::call('migrate:fresh', []);
