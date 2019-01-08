@@ -24,7 +24,8 @@
 
             </div>
             <div class="col-8" align="right">
-                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#addUser">
+                <button type="button" class="btn btn-action text-light" data-toggle="modal" data-target="#addUser"
+                        id="addUserBtn">
                     <i class="fas fa-plus"></i>
                     {{__('User')}}</button>
             </div>
@@ -34,7 +35,7 @@
         </div>
     </div>
 
-    <div class="modal" tabindex="-1" role="dialog" id="addUser">
+    <div class="modal" tabindex="-10" role="dialog" id="addUser">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
