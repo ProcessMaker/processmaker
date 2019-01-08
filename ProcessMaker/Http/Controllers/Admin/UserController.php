@@ -37,7 +37,7 @@ class UserController extends Controller
         $user->memberships = $user->groupMembersFromMemberable()->get();
         $groups = $this->getAllGroups();
         $permission_ids = $user->permissionAssignments()->pluck('permission_id')->toArray();
-        $all_permissions = Permission::routes()->get();
+        $all_permissions = Permission::all();
         $users_permission_ids = $this->user_permission_ids($user);
 
         $currentUser = $user;
