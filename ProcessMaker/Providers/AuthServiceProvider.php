@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Passport\Passport;
 use ProcessMaker\Models\Script;
-use ProcessMaker\Policies\ScriptPolicy;
+
 
 /**
  * Our AuthService Provider binds our base processmaker provider and registers any policies, if defined.
@@ -24,7 +24,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [        
-        Script::class => ScriptPolicy::class,
+        
     ];
 
     /**
