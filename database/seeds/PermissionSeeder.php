@@ -16,7 +16,9 @@ class PermissionSeeder extends Seeder
         'edit-scripts',
         'delete-scripts',
         'view-categories',
-        'edit-categories'
+        'edit-categories',
+        'view-screens',
+        'edit-screens'
     ];
 
     private $resourcePermissions = [
