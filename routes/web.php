@@ -11,32 +11,30 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('groups/{group}', 'GroupController@create')->name('groups.show');
         Route::get('groups/{group}/edit', 'GroupController@create')->name('groups.edit');
 
-        Route::get('users', 'UserController@index')->name('users.index');
-        Route::get('users/create', 'UserController@create')->name('users.create');
-        Route::get('users/{user}', 'UserController@show')->name('users.show');
-        Route::get('users/{user}/edit', 'UserController@edit')->name('users.edit');
+        Route::get('users', 'UserController@index')->name('users.index')->middleware('can:view-users');
+        Route::get('users/create', 'UserController@create')->name('users.create')->middleware('can:create-users');
+        Route::get('users/{user}', 'UserController@show')->name('users.show')->middleware('can:show-users, user');
+        Route::get('users/{user}/edit', 'UserController@edit')->name('users.edit')->middleware('can:edit-users,user');
     });
 
     Route::namespace('Process')->prefix('processes')->group(function () {
-        Route::get('environment-variables', 'EnvironmentVariablesController@index')->name('environment-variables.index');
-        Route::get('environment-variables/{environment_variable}/edit', 'EnvironmentVariablesController@edit')->name('environment-variables.edit');
-
-        Route::get('documents', 'DocumentController@index')->name('documents.index');
+        Route::get('environment-variables', 'EnvironmentVariablesController@index')->name('environment-variables.index')->middleware('can:view-environment_variables');
+        Route::get('environment-variables/{environment_variable}/edit', 'EnvironmentVariablesController@edit')->name('environment-variables.edit')->middleware('can:edit-environment_variables,environment_variable ');
 
         Route::get('screens', 'ScreenController@index')->name('screens.index')->middleware('can:view-screens');
-        Route::get('screens/{screen}/edit', 'ScreenController@edit')->name('screens.edit')->middleware('can:edit-screens');
-        Route::get('screen-builder/{screen}/edit', 'ScreenBuilderController@edit')->name('screen-builder.edit')->middleware('can:edit-screens');
+        Route::get('screens/{screen}/edit', 'ScreenController@edit')->name('screens.edit')->middleware('can:edit-screens,screen');
+        Route::get('screen-builder/{screen}/edit', 'ScreenBuilderController@edit')->name('screen-builder.edit')->middleware('can:edit-screens,screen');
         
         Route::get('scripts', 'ScriptController@index')->name('scripts.index')->middleware('can:view-scripts');
         Route::get('scripts/{script}/edit', 'ScriptController@edit')->name('scripts.edit')->middleware('can:edit-scripts,script');
         Route::get('scripts/{script}/builder', 'ScriptController@builder')->name('scripts.builder')->middleware('can:edit-scripts,script');
         
         Route::get('categories', 'ProcessCategoryController@index')->name('categories.index')->middleware('can:view-categories');
-        Route::get('categories/{processCategory}/edit', 'ProcessCategoryController@edit')->name('categories.edit')->middleware('can:edit-categories');
+        Route::get('categories/{processCategory}/edit', 'ProcessCategoryController@edit')->name('categories.edit')->middleware('can:edit-categories,processCategory');
     });
 
-    Route::get('processes', 'ProcessController@index')->name('processes.index');
-    Route::get('processes{process}/edit', 'ProcessController@edit')->name('processes.edit');
+    Route::get('processes', 'ProcessController@index')->name('processes.index')->middleware('can:view-processes');
+    Route::get('processes/{process}/edit', 'ProcessController@edit')->name('processes.edit');
     Route::get('processes/create', 'ProcessController@create')->name('processes.create');
     Route::post('processes', 'ProcessController@store')->name('processes.store');
     Route::get('processes/{processes}', 'ProcessController@show')->name('processes.show');
