@@ -11,10 +11,10 @@ class PermissionSeeder extends Seeder
 {
 
     private $permissions = [
-        'view-script',
-        'create-script',
-        'edit-script',
-        'delete-script',
+        'view-scripts',
+        'create-scripts',
+        'edit-scripts',
+        'delete-scripts',
     ];
 
     private $resourcePermissions = [
