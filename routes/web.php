@@ -19,7 +19,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::namespace('Process')->prefix('processes')->group(function () {
         Route::get('environment-variables', 'EnvironmentVariablesController@index')->name('environment-variables.index');
-        Route::get('environment-variables/{environment-variable}/edit', 'EnvironmentVariablesController@edit')->name('environment-variables.edit');
+        Route::get('environment-variables/{environment_variable}/edit', 'EnvironmentVariablesController@edit')->name('environment-variables.edit');
 
         Route::get('documents', 'DocumentController@index')->name('documents.index');
 
