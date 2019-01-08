@@ -32,8 +32,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('scripts/{script}/edit', 'ScriptController@edit')->name('scripts.edit')->middleware('can:edit-scripts,script');
         Route::get('scripts/{script}/builder', 'ScriptController@builder')->name('scripts.builder')->middleware('can:edit-scripts,script');
         
-        Route::get('categories', 'ProcessCategoryController@index')->name('categories.index');
-        Route::get('categories/{processCategory}/edit', 'ProcessCategoryController@edit')->name('categories.edit');
+        Route::get('categories', 'ProcessCategoryController@index')->name('categories.index')->middleware('can:view-categories');
+        Route::get('categories/{processCategory}/edit', 'ProcessCategoryController@edit')->name('categories.edit')->middleware('can:edit-categories');
     });
 
     Route::get('processes', 'ProcessController@index')->name('processes.index');
