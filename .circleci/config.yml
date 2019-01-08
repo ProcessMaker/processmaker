@@ -184,46 +184,46 @@ jobs:
             # Copy over our test oauth keys. Regular install will create new ones
             cp tests/storage/keys/* storage/keys/
 
-      - run:
-          name: "Add Email-Connector Plugin"
-          command: |
-            echo "MAIL_DRIVER=smtp" >> .env
-            echo "MAIL_HOST=smtp.mailtrap.io" >> .env
-            echo "MAIL_PORT=2525" >> .env
-            echo "MAIL_USERNAME=26108c384589d1" >> .env
-            echo "MAIL_PASSWORD=d9da3f11960069" >> .env
-            composer require processmaker/bpm-package-email-connector -n --prefer-dist
+#      - run:
+#          name: "Add Email-Connector Plugin"
+#          command: |
+#            echo "MAIL_DRIVER=smtp" >> .env
+#            echo "MAIL_HOST=smtp.mailtrap.io" >> .env
+#            echo "MAIL_PORT=2525" >> .env
+#            echo "MAIL_USERNAME=26108c384589d1" >> .env
+#            echo "MAIL_PASSWORD=d9da3f11960069" >> .env
+#            composer require processmaker/bpm-package-email-connector -n --prefer-dist
 
-      - run:
-          name: "QA Package"
-          command: "./vendor/bin/phing package -Dpackage_name=processmaker-qa-${BUILD_NAME}.tar.gz"
-
-      - run:
-          name: "QA Deploy"
-          command: |
-            # Delete existing target QA directory, if it exists
-            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "rm -Rf ~/builds/$BUILD_NAME"
-            # Create new target QA directory
-            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "mkdir ~/builds/$BUILD_NAME"
-            # Copy over packaged qa deployment
-            scp -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" ./processmaker-qa-$BUILD_NAME.tar.gz qa-pm4builds:~/builds/$BUILD_NAME/
-            # Extract to qa deployment dir
-            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "tar zxf ~/builds/$BUILD_NAME/processmaker-qa-$BUILD_NAME.tar.gz -C ~/builds/$BUILD_NAME/"
-            # Restart nginx and php-fpm to clear cache
-            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "sudo service nginx restart"
-            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "sudo service php-fpm restart"
-            # Create MYSQL Database
-            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "mysql -h ${QA_RDS_HOST} -u ${QA_RDS_USERNAME} -p${QA_RDS_PASSWORD} -e \"CREATE DATABASE IF NOT EXISTS ${QA_DB_NAME}\""
-            # Run php artisan migrate:fresh --seed to have a clean installed database in RDS
-            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "php ~/builds/$BUILD_NAME/artisan migrate:fresh --seed --force"
-            # Setup Media Link
-            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "rm -Rf ~/builds/$BUILD_NAME/public/storage"
-            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "php ~/builds/$BUILD_NAME/artisan storage:link"
-            echo "Deployed to https://${BUILD_NAME}.bpm4.qa.processmaker.net/"
-            # Run containerDeploy.sh script to spin up Redis docker container, laravel-echo-server, and horizon. Excluding QUEUE for now.
-            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "sudo /bin/bash /root/cloudops/containerDeploy.sh $BUILD_NAME"
-            # Generate Passport Keys
-            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "cd ~/builds/$BUILD_NAME && php artisan passport:keys"
+#      - run:
+#          name: "QA Package"
+#          command: "./vendor/bin/phing package -Dpackage_name=processmaker-qa-${BUILD_NAME}.tar.gz"
+#
+#      - run:
+#          name: "QA Deploy"
+#          command: |
+#            # Delete existing target QA directory, if it exists
+#            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "rm -Rf ~/builds/$BUILD_NAME"
+#            # Create new target QA directory
+#            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "mkdir ~/builds/$BUILD_NAME"
+#            # Copy over packaged qa deployment
+#            scp -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" ./processmaker-qa-$BUILD_NAME.tar.gz qa-pm4builds:~/builds/$BUILD_NAME/
+#            # Extract to qa deployment dir
+#            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "tar zxf ~/builds/$BUILD_NAME/processmaker-qa-$BUILD_NAME.tar.gz -C ~/builds/$BUILD_NAME/"
+#            # Restart nginx and php-fpm to clear cache
+#            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "sudo service nginx restart"
+#            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "sudo service php-fpm restart"
+#            # Create MYSQL Database
+#            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "mysql -h ${QA_RDS_HOST} -u ${QA_RDS_USERNAME} -p${QA_RDS_PASSWORD} -e \"CREATE DATABASE IF NOT EXISTS ${QA_DB_NAME}\""
+#            # Run php artisan migrate:fresh --seed to have a clean installed database in RDS
+#            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "php ~/builds/$BUILD_NAME/artisan migrate:fresh --seed --force"
+#            # Setup Media Link
+#            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "rm -Rf ~/builds/$BUILD_NAME/public/storage"
+#            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "php ~/builds/$BUILD_NAME/artisan storage:link"
+#            echo "Deployed to https://${BUILD_NAME}.bpm4.qa.processmaker.net/"
+#            # Run containerDeploy.sh script to spin up Redis docker container, laravel-echo-server, and horizon. Excluding QUEUE for now.
+#            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "sudo /bin/bash /root/cloudops/containerDeploy.sh $BUILD_NAME"
+#            # Generate Passport Keys
+#            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "cd ~/builds/$BUILD_NAME && php artisan passport:keys"
             
       - run:
           name: "SauceLabs Browser Tests: Chrome"
@@ -260,6 +260,6 @@ jobs:
 #            SAUCELABS_PLATFORM: "macOS 10.13"
 #            SAUCELABS_BROWSER_VERSION: "11.0"
 
-      - run:
-          name: "Final QA Artisan DB Migration"
-          command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"php ~/builds/$BUILD_NAME/artisan migrate:fresh --seed --force\""
+#      - run:
+#          name: "Final QA Artisan DB Migration"
+#          command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"php ~/builds/$BUILD_NAME/artisan migrate:fresh --seed --force\""
