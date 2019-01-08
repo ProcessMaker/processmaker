@@ -43,12 +43,12 @@ class ProcessController extends Controller
             ->get()
             ->pluck('name', 'id')
             ->toArray();
-
+        
         $screens = Screen::orderBy('title')
             ->get()
             ->pluck('title', 'id')
             ->toArray();
-
+        
         //list users and groups with permissions requests.cancel
         $listCancel = [
             'Users' => $this->assignee('requests.cancel', User::class),
@@ -76,7 +76,7 @@ class ProcessController extends Controller
      */
     private function assignee($permission, $type)
     {
-        $items = PermissionAssignment::where('permission_id', Permission::byGuardName($permission)->id)
+        $items = PermissionAssignment::where('permission_id', Permission::byName($permission)->id)
             ->where('assignable_type', $type)
             ->get();
         $data = [];
