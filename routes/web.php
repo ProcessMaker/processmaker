@@ -7,9 +7,9 @@ Route::group(['middleware' => ['auth']], function () {
 // Routes related to Authentication (password reset, etc)
 // Auth::routes();
     Route::namespace('Admin')->prefix('admin')->group(function () {
-        Route::get('groups', 'GroupController@index')->name('groups.index');
-        Route::get('groups/{group}', 'GroupController@create')->name('groups.show');
-        Route::get('groups/{group}/edit', 'GroupController@create')->name('groups.edit');
+        Route::get('groups', 'GroupController@index')->name('groups.index')->middleware('can:view-groups');
+        // Route::get('groups/{group}', 'GroupController@show')->name('groups.show')->middleware('can:show-groups,group');
+        Route::get('groups/{group}/edit', 'GroupController@edit')->name('groups.edit')->middleware('can:edit-groups,group');
 
         Route::get('users', 'UserController@index')->name('users.index')->middleware('can:view-users');
         Route::get('users/create', 'UserController@create')->name('users.create')->middleware('can:create-users');

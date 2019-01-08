@@ -25,7 +25,10 @@ class PermissionSeeder extends Seeder
         'view-users',
         'create-users',
         'show-users',
-        'edit-users'
+        'edit-users',
+        'view-groups',
+        'edit-groups',
+        'show-groups'
 
     ];
 
