@@ -22,7 +22,7 @@ Follow these steps to search for a Request within the displayed tab:
    * [In Progress](view-in-progress-requests.md) tab
    * [Completed](view-completed-requests.md) tab
    * [All Requests](view-all-requests.md) tab
-3. Click the **Search** field and then enter text to filter Requests using any of the following criteria:
+3. Select the **Search** field and then enter text to filter Requests using any of the following criteria:
    * **Process name:** Search for the Process name associated with the Request.
    * **Status:** Search by the Request status.
 

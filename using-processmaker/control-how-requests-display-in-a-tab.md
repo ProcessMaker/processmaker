@@ -30,3 +30,9 @@ If there are fewer than 10 rows to display in the table, pagination functions do
 
 {% page-ref page="requests/request-details.md" %}
 
+{% page-ref page="task-management/view-tasks-you-need-to-do.md" %}
+
+{% page-ref page="task-management/view-completed-tasks.md" %}
+
+{% page-ref page="../designing-processes/viewing-processes/view-the-list-of-processes/view-your-processes.md" %}
+

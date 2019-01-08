@@ -28,7 +28,7 @@ To [view information](request-details.md) about a Request, do one of the followi
 Use the [Search](search-for-a-request.md) field to filter Requests that display in this tab.
 {% endhint %}
 
-The **In Progress** tab displays the following information:
+The **In Progress** tab displays the following information in tabular format:
 
 * **Name:** The **Name** column displays the name of the Process associated with the Request. Click the Process name to [view information](request-details.md#information-for-in-progress-requests) about that Request.
 * **Status:** The **Status** column displays the **In Progress** status.

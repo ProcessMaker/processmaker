@@ -1,13 +1,13 @@
 ---
-description: View the business processes from all Process Owners in your organization.
+description: View the Processes from all Process Owners in your organization.
 ---
 
 # View All Processes
 
-ProcessMaker displays all processes in one table that Process Owners throughout your organization have created. This makes it easy to manage processes.
+ProcessMaker displays all Processes in one table that Process Owners have created throughout your organization. This makes it easy to manage Processes.
 
 {% hint style="info" %}
-To view processes, you must be a member of the Process Owner group. Otherwise, the **Processes** option is not available from the top menu that allows you to perform process management activities.
+To view Processes, you must be a member of the Process Owner group. Otherwise, the **Processes** option is not available from the top menu that allows you to perform process management activities.
 {% endhint %}
 
 ## View All Processes

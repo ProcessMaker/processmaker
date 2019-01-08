@@ -14,9 +14,9 @@ Follow these steps to view all completed Tasks from all users in your organizati
 
 ![Completed Tasks in the Tasks page](../../.gitbook/assets/completed-tasks-tasks.png)
 
-The **Completed Tasks** page displays the following information about all completed Tasks in your organization:
+The **Completed Tasks** page displays the following information about all completed Tasks in your organization in tabular format:
 
-* **Task:** The **Task** column displays the name of the completed Task. Click the Task name to [view information about the selected task](view-completed-tasks.md#view-information-about-a-completed-task).
+* **Task:** The **Task** column displays the name of the completed Task. If you click the Task name, the Task title displays with the following message: **Task Completed** along with [information about the completed Task](view-completed-tasks.md#view-information-about-a-completed-task).
 * **Request:** The **Request** column displays the name of the Process associated with the Request. Click the Process name to [view information about that Request](../requests/request-details.md).
 * **Assignee:** The **Assignee** column displays the avatar for the username to whom the Task was assigned.
 * **Due:** The **Due** column displays the date the Task was due. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
@@ -34,7 +34,11 @@ If there are no completed Tasks by anyone in your organization, the following me
 Follow these steps to view information about a completed Task:
 
 1. [View all completed tasks.](view-completed-tasks.md#view-completed-tasks) The **Tasks** screen displays.
-2. Click the name of the Task from the **Tasks** column. Information displays about the selected completed Task.
+2. Click the name of the Task from the **Tasks** column. The following message displays to the left of the completed Task: **Task Completed**.  
+
+   ![](../../.gitbook/assets/task-completed-message-tasks.png)
+
+   Information displays about the selected completed Task.
 
 ![Information about a completed Task](../../.gitbook/assets/completed-task-information-tasks.png)
 

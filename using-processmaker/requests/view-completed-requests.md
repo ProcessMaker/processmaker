@@ -28,7 +28,7 @@ To [view information](request-details.md) about a Request, do one of the followi
 Use the [Search](search-for-a-request.md) field to filter Requests that display in this tab.
 {% endhint %}
 
-The **Completed** tab displays the following information:
+The **Completed** tab displays the following information in tabular format:
 
 * **Name:** The **Name** column displays the name of the Process associated with the Request. Click the Process name to [view information](request-details.md#information-for-completed-requests) about that Request.
 * **Status:** The **Status** column displays the **Completed** status.

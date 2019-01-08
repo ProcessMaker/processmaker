@@ -21,7 +21,7 @@ The **Tasks** tab displays summary information for all upcoming Tasks in the Req
 
 ![&quot;Tasks&quot; tab for an in-progress Request&apos;s information](../../.gitbook/assets/tasks-tab-request-information-request.png)
 
-The **Tasks** tab displays the following information:
+The **Tasks** tab displays the following information in tabular format:
 
 * **Task:** The **Task** column displays the name of each Task to be completed for the selected Request for all Request participants. If a Task is assigned to you, a hyperlink displays in the Task name.
 * **Assigned:** The **Assigned** column displays the avatar for the username to whom the Task is assigned.
@@ -61,7 +61,7 @@ The **Summary** tab displays a summary of all information entered into the compl
 
 ![&quot;Summary&quot; tab in a completed Request&apos;s information](../../.gitbook/assets/summary-tab-request-information-request.png)
 
-Process Owners can specify how information displays in the **Summary** tab. By default, the **Summary** tab displays the JSON-formatted key/value pairs that represents ProcessMaker Screens:
+Process Owners can specify how information displays in the **Summary** tab. By default, the **Summary** tab displays the JSON-formatted key/value pairs that represents ProcessMaker Screens. Information is displayed in tabular format:
 
 * **KEY:** The **KEY** column displays the JSON key name that represents the ProcessMaker Screen control name the Request participant entered data or specified through the ProcessMaker 4 [REST API](https://develop.bpm4.qa.processmaker.net/api/documentation).
 * **VALUE:** The **VALUE** column displays that key's value as entered by a person manually interacting with a form or specified through the ProcessMaker 4 [REST API](https://develop.bpm4.qa.processmaker.net/api/documentation).
