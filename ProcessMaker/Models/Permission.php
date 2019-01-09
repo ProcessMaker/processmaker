@@ -13,6 +13,40 @@ class Permission extends Model
         'name',
     ];
     
+    public function getResourceTitleAttribute()
+    {
+        $match = preg_match("/(.+)-(.+)/", $this->name, $matches);
+        if ($match === 1) {
+            return ucwords(preg_replace('/(\-|_)/', ' ', $matches[2]));
+        }
+    }
+
+    public function getResourceNameAttribute()
+    {
+        $match = preg_match("/(.+)-(.+)/", $this->name, $matches);
+        if ($match === 1) {
+            return $matches[2];
+        }
+    }
+
+    static public function resourceTitleList()
+    {
+        //Grab all of our permissions
+        $all = self::all();
+        
+        $grouped = $all->groupBy('resource_title');
+        return $grouped;
+    }
+
+    static public function resourceNameList()
+    {
+        //Grab all of our permissions
+        $all = self::all();
+        
+        $grouped = $all->groupBy('resource_name');
+        return $grouped;
+    }
+    
     static public function for($resource)
     {
         return self::byResource($resource)->pluck('name');
