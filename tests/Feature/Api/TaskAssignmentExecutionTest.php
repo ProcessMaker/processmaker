@@ -48,26 +48,22 @@ class TaskAssignmentExecutionTest extends TestCase
      */
     private function loadTestProcessUserAssignment()
     {
-        // Create a single task process
-        $this->process = factory(Process::class)->create([
-            'bpmn' => file_get_contents(__DIR__ . '/processes/SingleTask.bpmn'),
-        ]);
+        // Create a new process
+        $this->process = factory(Process::class)->create();
 
-        // Assign user to the task
+        // Load a single task process
+        $this->process->bpmn = file_get_contents(__DIR__ . '/processes/SingleTask.bpmn');
+
+        // Create user to be assigned to the task
         $task_uid = 'UserTaskUID';
         $this->task = $this->process->getDefinitions()->getActivity($task_uid);
-
         $this->assigned = factory(User::class)->create([
             'id' => $this->task->getProperty('assignedUsers'),
             'status' => 'ACTIVE',
         ]);
-        factory(ProcessTaskAssignment::class)->create([
-            'process_id' => $this->process->id,
-            'process_task_id' => $task_uid,
-            'assignment_id' => $this->assigned->id,
-            'assignment_type' => User::class,
-            ]
-        );
+
+        // When save the process creates the assignments
+        $this->process->save();
     }
 
     /**
