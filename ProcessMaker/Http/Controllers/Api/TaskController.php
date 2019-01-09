@@ -100,6 +100,7 @@ class TaskController extends Controller
             // Reassign user
             $task->user_id = $request->input('user_id');
             $task->save();
+            return new Resource($task->refresh());
         } else {
             return abort(422);
         }

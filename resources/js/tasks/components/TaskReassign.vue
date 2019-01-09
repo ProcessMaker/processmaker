@@ -66,6 +66,7 @@
                     }).then(response => {
                         this.showReassignment = false;
                         this.selectedItem(null, -1);
+                        window.location.href='/requests/' + response.data.process_request_id;
                     });
                 }
             },
