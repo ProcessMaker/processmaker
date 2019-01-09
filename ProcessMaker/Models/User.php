@@ -148,6 +148,19 @@ class User extends Authenticatable implements HasMedia
             $this->lastname
         ]);
     }
+    
+    public function hasPermissionsFor($resource)
+    {
+        $perms = collect(session('permissions'));
+        return $perms->filter(function($value) use($resource) {
+            $match = preg_match("/(.+)-{$resource}/", $value);
+            if ($match === 1) {
+                return true;
+            } else {
+                return false;
+            }
+        });
+    }
 
     public function groupMembersFromMemberable()
     {
