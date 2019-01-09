@@ -19,6 +19,8 @@
                            aria-controls="nav-home" aria-selected="true">Group Details</a>
                         <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-users" role="tab"
                            aria-controls="nav-profile" aria-selected="false">Group Members</a>
+                        <a class="nav-item nav-link" id="nav-permissions-tab" data-toggle="tab" href="#nav-permissions" role="tab"
+                           aria-controls="nav-permissions" aria-selected="false">Group Permissions</a>
                     </div>
                 </nav>
 
@@ -69,6 +71,17 @@
                             </div>
                         </div>
                         <users-in-group ref="listing" :filter="filter" :group-id="formData.id"></users-in-group>
+                    </div>
+                    <div class="tab-pane fade" id="nav-permissions" role="tabpanel" aria-labelledby="nav-permissions">
+                        <div class="card">
+                            <div class="card-body">
+                                @include('admin.shared.permissions')
+                                <div class="text-right mt-2">
+                                    {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose'])!!}
+                                    {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'profileUpdate'])!!}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
