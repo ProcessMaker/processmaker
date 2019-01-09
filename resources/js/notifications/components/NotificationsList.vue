@@ -9,6 +9,7 @@
                 <i class="fas fa-ban" v-if="props.rowData.type==='PROCESS_CANCELED'"></i>
                 <i class="fas fa-check-circle" v-if="props.rowData.type==='PROCESS_COMPLETED'"></i>
                 <i class="fas fa-play-circle" v-if="props.rowData.type==='TASK_CREATED'"></i>
+                <img class="icon" :src="reassignment" v-if="props.rowData.type==='TASK_REASSIGNED'">
                 <i class="fas fa-comment-alt" v-if="props.rowData.type==='MESSAGE'"></i>
                 &nbsp;<a v-bind:href="props.rowData.url">{{props.rowData.name}}</a>
                 &nbsp;
@@ -43,6 +44,7 @@
         props: ["filter"],
         data() {
             return {
+                reassignment: require('../../../img/reassign.svg'),
 
                 orderBy: "",
 
@@ -150,6 +152,9 @@
 </script>
 
 <style lang="scss" scoped>
+    .icon {
+        width:1em;
+    }
     /deep/ .vuetable-th-slot-subject {
         min-width: 450px;
         white-space: nowrap;
