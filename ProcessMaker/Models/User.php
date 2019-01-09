@@ -152,7 +152,8 @@ class User extends Authenticatable implements HasMedia
     public function hasPermissionsFor($resource)
     {
         $perms = collect(session('permissions'));
-        return $perms->filter(function($value) use($resource) {
+        
+        $filtered = $perms->filter(function($value) use($resource) {
             $match = preg_match("/(.+)-{$resource}/", $value);
             if ($match === 1) {
                 return true;
@@ -160,6 +161,8 @@ class User extends Authenticatable implements HasMedia
                 return false;
             }
         });
+        
+        return $filtered->values();
     }
 
     public function groupMembersFromMemberable()
