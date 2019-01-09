@@ -33,10 +33,10 @@ class PermissionSeeder extends Seeder
         'create-users',
         'show-users',
         'edit-users',
+        'create-groups',
         'view-groups',
         'edit-groups',
-        'show-groups'
-
+        'delete-groups',
     ];
 
     private $resourcePermissions = [
