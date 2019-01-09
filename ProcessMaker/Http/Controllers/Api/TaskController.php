@@ -3,12 +3,13 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Task as Resource;
 use ProcessMaker\Models\ProcessRequestToken;
-use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Notifications\TaskReassignmentNotification;
 
 class TaskController extends Controller
 {
@@ -98,11 +99,15 @@ class TaskController extends Controller
             return new Resource($task->refresh());
         } elseif (!empty($request->input('user_id'))) {
             // Validate if user can reassign
-            $task->authorizeReassign(Auth::user());
+            $task->authorizeReassignment(Auth::user());
 
             // Reassign user
             $task->user_id = $request->input('user_id');
             $task->save();
+            
+            // Send a notification to the user
+            $notification = new TaskReassignmentNotification($task);
+            $task->user->notify($notification);
             return new Resource($task->refresh());
         } else {
             return abort(422);
