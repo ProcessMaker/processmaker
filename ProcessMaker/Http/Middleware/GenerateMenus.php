@@ -39,21 +39,24 @@ class GenerateMenus
         // Build the menus
         Menu::make('sidebar_admin', function ($menu) {
             $submenu = $menu->add(__('menus.sidebar_admin.organization'));
-            $submenu->add(__('menus.sidebar_admin.users'), [
-              'route' => 'users.index',
-              'icon' => 'fa-user',
-              'id' => 'homeid'
-          ]);
-            $submenu->add(__('menus.sidebar_admin.groups'), [
-              'route' => 'groups.index',
-              'icon' => 'fa-users',
-              'id' => 'homeid'
-          ]);
-
-          $submenu->add(__('menus.sidebar_admin.queue_management'), [
+            if (\Auth::check() && \Auth::user()->can('view-users')) {
+                $submenu->add(__('menus.sidebar_admin.users'), [
+                'route' => 'users.index',
+                'icon' => 'fa-user',
+                'id' => 'homeid'
+                ]);
+            }
+            if(\Auth::check() && \Auth::user()->can('view-groups')) {
+                $submenu->add(__('menus.sidebar_admin.groups'), [
+                'route' => 'groups.index',
+                'icon' => 'fa-users',
+                'id' => 'homeid'
+                ]);
+            }
+            $submenu->add(__('menus.sidebar_admin.queue_management'), [
                 'route' => 'horizon.index',
                 'icon' => 'fa-infinity',
-          ]);
+            ]);
 
         });
         Menu::make('sidebar_task', function ($menu) {
