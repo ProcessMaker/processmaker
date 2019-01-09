@@ -4,7 +4,6 @@ namespace Tests\Feature\Api;
 
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;

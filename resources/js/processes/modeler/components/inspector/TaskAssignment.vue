@@ -25,6 +25,7 @@
             </select>
         </div>
 
+        <form-checkbox label="Allow Reassignment" :checked="allowReassignmentGetter" @change="allowReassignmentSetter"></form-checkbox>
     </div>
 </template>
 
@@ -40,6 +41,19 @@
             };
         },
         computed: {
+            /**
+             * Get the value of the edited property
+             */
+            allowReassignmentGetter() {
+                const node = this.$parent.$parent.highlightedNode.definition;
+                const value = _.get(node, 'allowReassignment');
+                return value;
+            },
+            /**
+             * Get owner process.
+             *
+             * @returns {object}
+             */
             process() {
                 return this.$parent.$parent.$parent.process;
             },
@@ -75,6 +89,13 @@
             }
         },
         methods: {
+            /**
+             * Update allowReassignment property
+             */
+            allowReassignmentSetter(value) {
+                this.$set(this.node, 'allowReassignment', value);
+                this.$emit('input', this.value);
+            },
             /**
              * Load the list of assigned users
              */
