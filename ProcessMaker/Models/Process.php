@@ -244,6 +244,7 @@ class Process extends Model implements HasMedia
         $last = ProcessRequestToken::where('process_id', $this->id)
             ->where('element_id', $processTaskUuid)
             ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
             ->first();
         $users = $this->getAssignableUsers($processTaskUuid);
         if (empty($users)) {

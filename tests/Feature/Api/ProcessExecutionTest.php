@@ -340,6 +340,7 @@ class ProcessExecutionTest extends TestCase
         $tasks = $response->json('data');
 
         // Assert the next user, "foo" again, got the task
-        $this->assertEquals(count($tasks), 1);
+        $this->assertEquals($tasks[0]['advanceStatus'], 'completed');
+        $this->assertEquals($tasks[1]['advanceStatus'], 'open');
     }
 }
