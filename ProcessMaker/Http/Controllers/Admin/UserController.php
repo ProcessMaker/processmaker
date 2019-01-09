@@ -39,6 +39,7 @@ class UserController extends Controller
         $permission_ids = $user->permissionAssignments()->pluck('permission_id')->toArray();
         $all_permissions = Permission::all();
         $users_permission_ids = $this->user_permission_ids($user);
+        $groupedPermissions = Permission::resourceTitleList();
 
         $currentUser = $user;
         $states = JsonData::states();
@@ -59,7 +60,7 @@ class UserController extends Controller
         );
 
         return view('admin.users.edit', compact(['user', 'groups', 'all_permissions', 'users_permission_ids', 'permission_ids',
-             'states', 'timezones', 'countries', 'datetimeFormats'
+             'states', 'timezones', 'countries', 'datetimeFormats', 'groupedPermissions'
             ]));
     }
 
