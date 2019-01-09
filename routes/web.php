@@ -13,7 +13,7 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('users', 'UserController@index')->name('users.index')->middleware('can:view-users');
         Route::get('users/create', 'UserController@create')->name('users.create')->middleware('can:create-users');
-        Route::get('users/{user}', 'UserController@show')->name('users.show')->middleware('can:show-users, user');
+        Route::get('users/{user}', 'UserController@show')->name('users.show')->middleware('can:view-users, user');
         Route::get('users/{user}/edit', 'UserController@edit')->name('users.edit')->middleware('can:edit-users,user');
     });
 
