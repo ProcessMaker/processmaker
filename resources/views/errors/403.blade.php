@@ -12,7 +12,7 @@
  <div class="container mr-5 mt-5">
      <img class="ml-5" src="/img/robot.png"/>
     <h1>{{__('Not Authorized')}}</h1>
-    <p>{{__('See the Permissions page to make changes')}}</p>
+    <p>{{__('Contact your administrator for more information')}}</p>
 </div>
 @endsection
 
