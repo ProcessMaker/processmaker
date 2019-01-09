@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\User;
+use ProcessMaker\Models\Permission;
 
 class GroupController extends Controller
 {
@@ -26,8 +27,9 @@ class GroupController extends Controller
      */
     public function edit(Group $group)
     {
+        $groupedPermissions = Permission::resourceTitleList();
         $users = User::where('status', 'ACTIVE')->get();
-        return view('admin.groups.edit', compact('group', 'users'));
+        return view('admin.groups.edit', compact('group', 'users', 'groupedPermissions'));
     }
 
     public function show(Group $group)
