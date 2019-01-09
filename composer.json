@@ -68,7 +68,6 @@
   "extra": {
     "laravel": {
       "dont-discover": [
-        "laravel/dusk",
         "laravel/passport"
       ]
     }
