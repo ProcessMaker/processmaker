@@ -1,47 +1,49 @@
 <template>
   <div class="data-table">
-    <vuetable
-      :dataManager="dataManager"
-      :sortOrder="sortOrder"
-      :css="css"
-      :api-mode="false"
-      @vuetable:pagination-data="onPaginationData"
-      :fields="fields"
-      :data="data"
-      data-path="data"
-      pagination-path="meta"
-    >
-      <template slot="actions" slot-scope="props">
-        <div class="actions">
-          <div class="popout">
-            <b-btn
-              variant="action"
-              @click="onEdit(props.rowData, props.rowIndex)"
-              v-b-tooltip.hover
-              title="Edit"
-            >
-              <i class="fas fa-edit"></i>
-            </b-btn>
-            <b-btn
-              variant="action"
-              @click="onDelete( props.rowData, props.rowIndex)"
-              v-b-tooltip.hover
-              title="Remove"
-            >
-              <i class="fas fa-trash-alt"></i>
-            </b-btn>
+    <div class="card card-body table-card">
+      <vuetable
+        :dataManager="dataManager"
+        :sortOrder="sortOrder"
+        :css="css"
+        :api-mode="false"
+        @vuetable:pagination-data="onPaginationData"
+        :fields="fields"
+        :data="data"
+        data-path="data"
+        pagination-path="meta"
+      >
+        <template slot="actions" slot-scope="props">
+          <div class="actions">
+            <div class="popout">
+              <b-btn
+                variant="link"
+                @click="onEdit(props.rowData, props.rowIndex)"
+                v-b-tooltip.hover
+                title="Edit"
+              >
+                <i class="fas fa-pen-square fa-lg fa-fw"></i>
+              </b-btn>
+              <b-btn
+                variant="link"
+                @click="onDelete( props.rowData, props.rowIndex)"
+                v-b-tooltip.hover
+                title="Remove"
+              >
+                <i class="fas fa-trash-alt fa-lg fa-fw"></i>
+              </b-btn>
+            </div>
           </div>
-        </div>
-      </template>
-    </vuetable>
-    <pagination
-      single="Group"
-      plural="Groups"
-      :perPageSelectEnabled="true"
-      @changePerPage="changePerPage"
-      @vuetable-pagination:change-page="onPageChange"
-      ref="pagination"
-    ></pagination>
+        </template>
+      </vuetable>
+      <pagination
+        single="Group"
+        plural="Groups"
+        :perPageSelectEnabled="true"
+        @changePerPage="changePerPage"
+        @vuetable-pagination:change-page="onPageChange"
+        ref="pagination"
+      ></pagination>
+    </div>
   </div>
 </template>
 
@@ -186,5 +188,12 @@ export default {
 
 /deep/ .vuetable-th-members_count {
   min-width: 90px;
+}
+
+/deep/ th#_updated_at {
+  width: 14%;
+}
+/deep/ th#_created_at {
+  width: 14%;
 }
 </style>

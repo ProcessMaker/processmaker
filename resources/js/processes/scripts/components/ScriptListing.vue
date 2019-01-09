@@ -1,51 +1,61 @@
 <template>
   <div class="data-table">
-    <vuetable
-      :dataManager="dataManager"
-      :sortOrder="sortOrder"
-      :css="css"
-      :api-mode="false"
-      @vuetable:pagination-data="onPaginationData"
-      :fields="fields"
-      :data="data"
-      data-path="data"
-      pagination-path="meta"
-    >
-      <template slot="title" slot-scope="props">
-        <b-link @click="onAction('edit', props.rowData, props.rowIndex)">{{props.rowData.title}}</b-link>
-      </template>
+    <div class="card card-body table-card">
+      <vuetable
+        :dataManager="dataManager"
+        :sortOrder="sortOrder"
+        :css="css"
+        :api-mode="false"
+        @vuetable:pagination-data="onPaginationData"
+        :fields="fields"
+        :data="data"
+        data-path="data"
+        pagination-path="meta"
+      >
+        <template slot="title" slot-scope="props">
+          <b-link @click="onAction('edit-script', props.rowData, props.rowIndex)">{{props.rowData.title}}</b-link>
+        </template>
 
-      <template slot="actions" slot-scope="props">
-        <div class="actions">
-          <div class="popout">
-            <b-btn
-              variant="action"
-              @click="onAction('edit-item', props.rowData, props.rowIndex)"
-              v-b-tooltip.hover
-              title="Edit"
-            >
-              <i class="fas fa-edit"></i>
-            </b-btn>
-            <b-btn
-              variant="action"
-              @click="onAction('remove-item', props.rowData, props.rowIndex)"
-              v-b-tooltip.hover
-              title="Remove"
-            >
-              <i class="fas fa-trash-alt"></i>
-            </b-btn>
+        <template slot="actions" slot-scope="props">
+          <div class="actions">
+            <div class="popout">
+              <b-btn
+                variant="link"
+                @click="onAction('edit-script', props.rowData, props.rowIndex)"
+                v-b-tooltip.hover
+                title="Edit"
+              >
+                <i class="fas fa-pen-square fa-lg fa-fw"></i>
+              </b-btn>
+              <b-btn
+                variant="link"
+                @click="onAction('edit-item', props.rowData, props.rowIndex)"
+                v-b-tooltip.hover
+                title="Config"
+              >
+                <i class="fas fa-cog fa-lg fa-fw"></i>
+              </b-btn>
+              <b-btn
+                variant="link"
+                @click="onAction('remove-item', props.rowData, props.rowIndex)"
+                v-b-tooltip.hover
+                title="Remove"
+              >
+                <i class="fas fa-trash-alt fa-lg fa-fw"></i>
+              </b-btn>
+            </div>
           </div>
-        </div>
-      </template>
-    </vuetable>
-    <pagination
-      single="Script"
-      plural="Scripts"
-      :perPageSelectEnabled="true"
-      @changePerPage="changePerPage"
-      @vuetable-pagination:change-page="onPageChange"
-      ref="pagination"
-    ></pagination>
+        </template>
+      </vuetable>
+      <pagination
+        single="Script"
+        plural="Scripts"
+        :perPageSelectEnabled="true"
+        @changePerPage="changePerPage"
+        @vuetable-pagination:change-page="onPageChange"
+        ref="pagination"
+      ></pagination>
+    </div>
   </div>
 </template>
 
@@ -70,7 +80,8 @@ export default {
       fields: [
         {
           title: "Name",
-          name: "title",
+          name: "__slot:title",
+          field: "title",
           sortField: "title"
         },
         {
@@ -110,6 +121,9 @@ export default {
     },
     onAction(action, data, index) {
       switch (action) {
+        case "edit-script":
+          window.location.href = "/processes/scripts/" + data.id + "/builder";
+          break;
         case "edit-item":
           this.goToEdit(data.id);
           break;

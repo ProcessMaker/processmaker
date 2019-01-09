@@ -17,7 +17,7 @@
       <font-awesome-icon :style="{color: statusColor}" :icon="statusIcon" />
     </status-bar>
 
-  </div>
+  </div>    
 </template>
 
 
@@ -54,6 +54,9 @@ export default {
       lastSaved() {
           return moment(this.process.updated_at).fromNow()
       }
+  },
+  mounted() {
+    ProcessMaker.$modeler = this.$refs.modeler;
   },
   methods: {
     saveBpmn() {

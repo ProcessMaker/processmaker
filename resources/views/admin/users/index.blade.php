@@ -24,7 +24,7 @@
 
             </div>
             <div class="col-8" align="right">
-                <button type="button" class="btn btn-action text-light" data-toggle="modal" data-target="#addUser">
+                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#addUser">
                     <i class="fas fa-plus"></i>
                     {{__('User')}}</button>
             </div>
@@ -47,7 +47,7 @@
                     <div class="form-group">
                         {!!Form::label('username', __('Username'))!!}
                         {!!Form::text('username', null, ['class'=> 'form-control', 'v-model'=> 'username', 'v-bind:class'
-                        => '{\'form-control\':true, \'is-invalid\':addError.username}'])!!}
+                        => '{\'form-control\':true, \'is-invalid\':addError.username}', 'autocomplete' => 'off']) !!}
                         <div class="invalid-feedback" v-for="username in addError.username">@{{username}}</div>
                     </div>
                     <div class="form-group">
@@ -71,20 +71,24 @@
                     <div class="form-group">
                         {!!Form::label('email', __('Email'))!!}
                         {!!Form::email('email', null, ['class'=> 'form-control', 'v-model'=> 'email', 'v-bind:class' =>
-                        '{\'form-control\':true, \'is-invalid\':addError.email}'])!!}
+                        '{\'form-control\':true, \'is-invalid\':addError.email}', 'autocomplete' => 'off'])!!}
                         <div class="invalid-feedback" v-for="email in addError.email">@{{email}}</div>
                     </div>
                     <div class="form-group">
                         {!!Form::label('password', __('Password'))!!}
-                        {!!Form::password('password', ['class'=> 'form-control', 'v-model'=> 'password', 'v-bind:class' =>
-                        '{\'form-control\':true, \'is-invalid\':addError.password}'])!!}
-                        <div class="invalid-feedback" v-for="password in addError.password">@{{password}}</div>
+                        <vue-password v-model="password" :disable-toggle=true ref="passwordStrength">
+                            <div slot="password-input" slot-scope="props">
+                                {!!Form::password('password', ['class'=> 'form-control', 'v-model'=> 'password',
+                                '@input' => 'props.updatePassword($event.target.value)', 'autocomplete' => 'new-password',
+                                'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.password}'])!!}
+                            </div>
+                        </vue-password>
                     </div>
                     <div class="form-group">
                         {!!Form::label('confpassword', __('Confirm Password'))!!}
                         {!!Form::password('confpassword', ['class'=> 'form-control', 'v-model'=> 'confpassword',
-                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.password}'])!!}
-
+                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.password}', 'autocomplete' => 'new-password'])!!}
+                        <div class="invalid-feedback" v-for="password in addError.password">@{{password}}</div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -117,9 +121,19 @@
             },
             methods: {
                 validatePassword() {
+                    if (this.password.trim().length > 0 && this.password.trim().length < 8) {
+                        this.addError.password = ['Password must be at least 8 characters']
+                        this.$refs.passwordStrength.updatePassword('')
+                        this.password = ''
+                        this.confpassword = ''
+                        this.submitted = false
+                        return false
+                    }
                     if (this.password !== this.confpassword) {
                         this.addError.password = ['Passwords must match']
+                        this.$refs.passwordStrength.updatePassword('')
                         this.password = ''
+                        this.confpassword = ''
                         this.submitted = false
                         return false
                     }
@@ -137,6 +151,9 @@
                             password: this.password
                         }).then(function (response) {
                             window.location = "/admin/users/" + response.data.id + '/edit'
+                        }).catch(error => {
+                           this.addError = error.response.data.errors
+                            
                         });
                     }
                 }

@@ -114,6 +114,9 @@ trait ScriptDockerCopyingFilesTrait
     {
         $cmd = config('app.bpm_scripts_docker') . sprintf(' start %s -a 2>&1', $container);
         $line = exec($cmd, $output, $returnCode);
+        if ($returnCode) {
+            throw new RuntimeException(implode("\n", $output));
+        }
         return compact('line', 'output', 'returnCode');
     }
 }

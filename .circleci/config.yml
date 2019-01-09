@@ -185,6 +185,16 @@ jobs:
             cp tests/storage/keys/* storage/keys/
 
       - run:
+          name: "Add Email-Connector Plugin"
+          command: |
+            echo "MAIL_DRIVER=smtp" >> .env
+            echo "MAIL_HOST=smtp.mailtrap.io" >> .env
+            echo "MAIL_PORT=2525" >> .env
+            echo "MAIL_USERNAME=26108c384589d1" >> .env
+            echo "MAIL_PASSWORD=d9da3f11960069" >> .env
+            composer require processmaker/bpm-package-email-connector -n --prefer-dist
+
+      - run:
           name: "QA Package"
           command: "./vendor/bin/phing package -Dpackage_name=processmaker-qa-${BUILD_NAME}.tar.gz"
 

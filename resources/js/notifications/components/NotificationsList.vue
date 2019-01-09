@@ -11,6 +11,8 @@
                 <i class="fas fa-play-circle" v-if="props.rowData.type==='TASK_CREATED'"></i>
                 <i class="fas fa-comment-alt" v-if="props.rowData.type==='MESSAGE'"></i>
                 &nbsp;<a v-bind:href="props.rowData.url">{{props.rowData.name}}</a>
+                &nbsp;
+                ({{props.rowData.processName}})
             </template>
 
             <template slot="changeStatus" slot-scope="props">
@@ -54,6 +56,11 @@
                         width:"80px"
                     },
                     {
+                        title: "USER",
+                        name: "userName",
+                        sortField: "userName",
+                    },
+                    {
                         title: "SUBJECT",
                         name: "__slot:subject",
                         sortField: "name",
@@ -75,13 +82,15 @@
         },
         methods: {
             read(id) {
-                ProcessMaker.removeNotifications([id]);
-                this.fetch();
+                ProcessMaker.removeNotifications([id]).then(() => {
+                    this.fetch();
+                });
             },
 
             unread(id){
-                ProcessMaker.unreadNotifications([id]);
-                this.fetch();
+                ProcessMaker.unreadNotifications([id]).then(() => {
+                    this.fetch();
+                });
             },
 
             getSortParam: function () {
@@ -122,6 +131,8 @@
                         this.perPage +
                         "&filter=" +
                         this.filter +
+                        "&status=" +
+                        new URLSearchParams(window.location.search).get('status') +
                         this.getSortParam()
                         , {
                             cancelToken: new CancelToken(c => {

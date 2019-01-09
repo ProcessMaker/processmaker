@@ -219,5 +219,5 @@ class ScreenController extends Controller
         $screen->delete();
         return response([], 204);
     }
-
+    
 }

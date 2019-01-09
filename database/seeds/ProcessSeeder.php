@@ -33,6 +33,9 @@ class ProcessSeeder extends Seeder
      */
     public function run()
     {
+        if (Process::count() !== 0) {
+            return;
+        }
         //load user admin
         $admin = User::where('username', 'admin')->firstOrFail();
 

@@ -56,6 +56,10 @@ return [
     'bpm_scripts_docker' => env('BPM_SCRIPTS_DOCKER', '/usr/bin/docker'),
     'bpm_scripts_docker_mode' => env('BPM_SCRIPTS_DOCKER_MODE', 'binding'),
 
+    // The url of our host from inside the docker
+    'docker_host_url' => env('DOCKER_HOST_URL', preg_replace('/(\w+):\/\/([^:\/]+)(\:\d+)?/', '$1://172.17.0.1$3',
+                env('APP_URL', 'http://localhost'))),
+
     'providers' => [
         Illuminate\Auth\AuthServiceProvider::class,
         Illuminate\Broadcasting\BroadcastServiceProvider::class,

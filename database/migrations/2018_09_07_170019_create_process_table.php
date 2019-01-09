@@ -22,6 +22,7 @@ class CreateProcessTable extends Migration
             $table->text('description');
             $table->string('name');
             $table->enum('status', ['ACTIVE', 'INACTIVE']);
+            $table->softDeletes();
             $table->timestamps();
 
             // Indexes

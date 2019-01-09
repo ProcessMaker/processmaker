@@ -51,10 +51,10 @@ abstract class DuskTestCase extends BaseTestCase
             ]);
 
             return RemoteWebDriver::create(
-                'http://localhost:9515', DesiredCapabilities::chrome()
-                    ->setCapability(ChromeOptions::CAPABILITY, $options
-                )
-                ->setCapability('acceptInsecureCerts', true)
+                'http://localhost:9515',
+                DesiredCapabilities::chrome()
+                    ->setCapability(ChromeOptions::CAPABILITY, $options)
+                    ->setCapability('acceptInsecureCerts', true)
             );
         } else {
             // We currently support SauceLabs based cloud testing

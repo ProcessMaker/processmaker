@@ -7,8 +7,7 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
 // Routes related to Authentication (password reset, etc)
 // Auth::routes();
     Route::namespace('Admin')->prefix('admin')->group(function () {
-        Route::resource('groups', 'GroupController')->only(['index', 'edit', 'show']);
-        Route::resource('preferences', 'PreferenceController');
+        Route::resource('groups', 'GroupController')->only(['index', 'edit']);
         Route::resource('users', 'UserController');
     });
 
@@ -20,6 +19,7 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
             'screen-builder' => 'screen'
         ])->only(['edit']);
         Route::resource('scripts', 'ScriptController');
+        Route::get('scripts/{script}/builder', 'ScriptController@builder');
         Route::resource('categories', 'ProcessCategoryController')->parameters([
             'categories' => 'processCategory'
         ]);
@@ -31,7 +31,7 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
     Route::get('profile/{id}', 'ProfileController@show');
     Route::put('profile/{id}', 'ProfileController@update')->name('profile.update');
     // Ensure our modeler loads at a distinct url
-    Route::get('modeler/{process}', 'Process\ModelerController')->name('modeler');
+    Route::get('modeler/{process}', 'Process\ModelerController')->name('modeler.show');
 
     Route::get('/', 'HomeController@index')->name('home');
 

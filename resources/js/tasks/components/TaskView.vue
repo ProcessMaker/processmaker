@@ -21,7 +21,7 @@
         </dl>
       </div>
     </div>
-    <vue-form-renderer v-model="formData" v-bind:config="json" />
+    <vue-form-renderer v-model="formData" v-bind:config="json"/>
     <a class="btn btn-primary" :href="statusURL">Back</a>
   </div>
 </template>

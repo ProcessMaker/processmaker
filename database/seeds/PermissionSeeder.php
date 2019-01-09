@@ -9,6 +9,7 @@ use ProcessMaker\Models\PermissionAssignment;
 
 class PermissionSeeder extends Seeder
 {
+
     private $permissions = [
         'documents.index',
         'documents.create',
@@ -45,11 +46,11 @@ class PermissionSeeder extends Seeder
         'processes.destroy',
         'processes.edit',
         'processes.show',
-        'requests.index',
-        'requests.create',
-        'requests.destroy',
-        'requests.cancel',
-        'requests.edit',
+        'requests.index',	
+        'requests.create',	
+        'requests.destroy',	
+        'requests.cancel',	
+        'requests.edit',	
         'requests.show',
         'scripts.index',
         'scripts.create',
@@ -60,11 +61,19 @@ class PermissionSeeder extends Seeder
         'users.create',
         'users.destroy',
         'users.edit',
-        'users.show'
+        'users.show',
+        'modeler.show'
+    ];
+
+    private $resourcePermissions = [
+        'requests'
     ];
 
     public function run($user = null)
     {
+        if (Permission::count() !== 0) {
+            return;
+        }
         $group = factory(Group::class)->create([
             'name' => 'All Permissions',
         ]);
@@ -80,8 +89,16 @@ class PermissionSeeder extends Seeder
         ]);
 
         foreach ($this->permissions as $permissionString) {
+            $type = 'ROUTE';
+            $resource = explode('.', $permissionString)[0];
+            if (in_array($resource, $this->resourcePermissions)) {
+                $type = 'RESOURCE';
+            }
+
             $permission = factory(Permission::class)->create([
-                'name' => ucwords(preg_replace('/(\.|_)/', ' ', $permissionString)),
+                'name' => ucwords(preg_replace('/(\.|_)/', ' ',
+                        $permissionString)),
+                'type' => $type,
                 'guard_name' => $permissionString,
             ]);
             factory(PermissionAssignment::class)->create([

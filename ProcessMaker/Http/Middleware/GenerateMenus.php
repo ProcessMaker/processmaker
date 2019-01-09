@@ -21,18 +21,18 @@ class GenerateMenus
 
         Menu::make('topnav', function ($menu) {
             $menu->group(['prefix' => 'requests'], function($request_items) {
-                $request_items->add(__('menus.topnav.requests'), ['route' => 'requests.index']);
+                $request_items->add(__('menus.topnav.requests'), ['route' => 'requests.index'])->active('requests/*');
             });
             //@TODO change the index to the correct blade
             $menu->group(['prefix' => 'tasks'], function($request_items) {
-                $request_items->add(__('menus.topnav.tasks'), ['route' => 'tasks.index']);
+                $request_items->add(__('menus.topnav.tasks'), ['route' => 'tasks.index'])->active('tasks/*');
             });
             //@TODO change the index to the correct blade
             $menu->group(['prefix' => 'processes'], function($request_items) {
-                $request_items->add(__('menus.topnav.processes'), ['route' => 'processes.index']);
+                $request_items->add(__('menus.topnav.processes'), ['route' => 'processes.index'])->active('processes/*');
             });
             $menu->group(['prefix' => 'admin'], function($admin_items) {
-                $admin_items->add(__('menus.topnav.admin'), ['route' => 'users.index']);
+                $admin_items->add(__('menus.topnav.admin'), ['route' => 'users.index'])->active('admin/*');
             });
         });
 
@@ -50,11 +50,6 @@ class GenerateMenus
               'id' => 'homeid'
           ]);
 
-          $submenu->add(__('menus.sidebar_admin.preferences'), [
-                'route' => 'preferences.index',
-                'icon' => 'fa-globe',
-                'id' => 'homeid'
-          ]);
           $submenu->add(__('menus.sidebar_admin.queue_management'), [
                 'route' => 'horizon.index',
                 'icon' => 'fa-infinity',
@@ -106,6 +101,11 @@ class GenerateMenus
               'icon' => 'fa-sitemap',
               'id' => 'process-categories'
           ]);
+          $submenu->add(__('menus.sidebar_processes.archived_processes'), [
+              'route' => ['processes.index', 'status' => 'deleted'],
+              'icon' => 'fa-archive',
+              'id' => 'process-environment'
+          ]);
           $submenu->add(__('menus.sidebar_processes.scripts'), [
               'route' => 'scripts.index',
               'icon' => 'fa-code',
@@ -121,9 +121,25 @@ class GenerateMenus
               'icon' => 'fa-cogs',
               'id' => 'process-environment'
           ]);
-        });
+
+
+    });
 
         Menu::make('sidebar_designer', function ($menu) {});
+
+        Menu::make('sidebar_notifications', function ($menu) {
+            $submenu = $menu->add(__('menus.sidebar_notifications.notifications'));
+            $submenu->add(__('Unread Notifications'), [
+                'route' => ['notifications.index', 'status' => 'unread'],
+                'icon' => 'fa-inbox',
+                'id' => 'notifications-unread'
+            ]);
+            $submenu->add(__('All Notifications'), [
+                'route' => 'notifications.index',
+                'icon' => 'fa-archive',
+                'id' => 'notifications-all'
+            ]);
+        });
 
         Menu::make('dropdown_nav', function ($menu) {
           $task_items = [

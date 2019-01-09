@@ -1,6 +1,7 @@
 import FormText from "@processmaker/vue-form-builder/src/components/renderer/form-text";
 import FormMultiColumn from "@processmaker/vue-form-builder/src/components/renderer/form-multi-column"
 import FormRecordList from "@processmaker/vue-form-builder/src/components/renderer/form-record-list"
+import FileDownload from "./components/file-download"
 
 import {
     FormInput,
@@ -81,6 +82,38 @@ let initialControls = [{
 
 
             ]
+        }
+    },
+    {
+        builderComponent: FormText,
+        builderBinding: 'FormText',
+        rendererComponent: FileDownload,
+        rendererBinding: 'FileDownload',
+        control: {
+            label: 'File Download',
+            component: 'FileDownload',
+            'editor-component': 'FormText',
+            'editor-icon': require('./components/file-download.png'),
+            config: {
+                label: 'Download File',
+            },
+            inspector: [{
+                type: "FormInput",
+                field: "label",
+                config: {
+                    label: "Text Label",
+                    helper: "The text to display",
+                }
+            },
+            {
+                type: "FormInput",
+                field: "name",
+                config: {
+                    label: 'Download Name',
+                    helper: "The name of the Download",
+                }
+            }
+          ]
         }
     },
     {

@@ -73,7 +73,10 @@ export default {
         {
           src: user.avatar,
           title: "",
-          initials: user.firstname[0] + user.lastname[0]
+          initials:
+            user.firstname && user.lastname
+              ? user.firstname.match(/./u)[0] + user.lastname.match(/./u)[0]
+              : ""
         }
       ];
     },

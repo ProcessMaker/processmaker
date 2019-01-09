@@ -29,10 +29,14 @@ class RequestController extends Controller
     public function index($type = null)
     {
         //load counters
-        $allRequest = ProcessRequest::count();
+        $query = ProcessRequest::query();
+        if (!Auth::user()->is_administrator) {
+            $query->startedMe(Auth::user()->id);
+        }
+        $allRequest = $query->count();
         $startedMe = ProcessRequest::startedMe(Auth::user()->id)->count();
-        $inProgress = ProcessRequest::inProgress()->count();
-        $completed = ProcessRequest::completed()->count();
+        $inProgress = $query->inProgress()->count();
+        $completed = $query->completed()->count();
 
         $title = 'My Requests';
 
@@ -66,7 +70,9 @@ class RequestController extends Controller
         } else {
             $canCancel = Auth::user()->hasProcessPermission($request->process, 'requests.cancel');
         }
+
         $files = $request->getMedia();
+
         return view('requests.show', compact('request', 'files', 'canCancel'));
     }
 
