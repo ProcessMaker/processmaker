@@ -196,7 +196,7 @@ class ProcessRequestToken extends Model implements TokenInterface
      * 
      * @param \ProcessMaker\Models\User $user
      */
-    public function authorizeReassign(User $user)
+    public function authorizeReassignment(User $user)
     {
         $this->authorize($user);
         $definitions = $this->getDefinition();

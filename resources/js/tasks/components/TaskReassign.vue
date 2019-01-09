@@ -3,7 +3,7 @@
         <button class="btn btn-outline-secondary" @click="show">
             <img class="icon" :src="icon"> Reassign
         </button>
-        <b-modal v-model="showReassignment" size="md" centered title="Reassign Task" v-cloak>
+        <b-modal v-model="showReassignment" size="md" centered title="Reassign to" v-cloak>
             <div class="list-users-groups">
                 <span v-for="(row, index) in usersList"
                       class="list-group-item list-group-item-action pt-1 pb-1"

@@ -55,10 +55,12 @@
                             <h5>{{__('Assigned To')}}</h5>
                             <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
                                       :input-data="userAssigned"></avatar-image>
+                            @if(!empty($task->getDefinition()['allowReassignment']))
                             <div>
                             <br>
                                 <task-reassign :task="task"></task-reassign>
                             </div>
+                            @endif
                         </li>
                         <li class="list-group-item">
                             <i class="far fa-calendar-alt"></i>
