@@ -188,11 +188,17 @@ jobs:
           name: "Add Email-Connector Plugin"
           command: |
             echo "MAIL_DRIVER=smtp" >> .env
-            echo "MAIL_HOST=smtp.mailtrap.io" >> .env
-            echo "MAIL_PORT=2525" >> .env
-            echo "MAIL_USERNAME=26108c384589d1" >> .env
-            echo "MAIL_PASSWORD=d9da3f11960069" >> .env
+            echo "MAIL_FROM_NAME=no-reply@processmaker.net" >> .env
+            echo "MAIL_FROM_ADDRESS=no-reply@processmaker.net" >> .env
+            echo "MAIL_HOST=email-smtp.us-east-1.amazonaws.com" >> .env
+            echo "MAIL_PORT=25" >> .env
+            echo "MAIL_USERNAME=AKIAJQBQQPACRVG7JTYQ" >> .env
+            echo "MAIL_PASSWORD=AiioZItOJwgoVo8s8jd2+f+TrgpeKJEBMYYxgh6Qc0KG" >> .env
+            echo "DOCKER_HOST_URL=https://${BUILD_NAME}.bpm4.qa.processmaker.net" >> .env
             composer require processmaker/bpm-package-email-connector -n --prefer-dist
+            php artisan vendor:publish --tag=bpm-package-email-connector --force
+            php artisan db:seed --class="ProcessMaker\Packages\Connectors\Email\Seeds\EmailSendSeeder"
+            php artisan cache:clear
 
       - run:
           name: "QA Package"
