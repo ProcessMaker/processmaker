@@ -20,6 +20,7 @@
                 @click="onEdit(props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
                 title="Edit"
+                v-if="permission.includes('edit-groups')"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
               </b-btn>
@@ -28,6 +29,7 @@
                 @click="onDelete( props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
                 title="Remove"
+                v-if="permission.includes('delete-groups')"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
               </b-btn>
@@ -52,7 +54,7 @@ import datatableMixin from "../../../components/common/mixins/datatable";
 
 export default {
   mixins: [datatableMixin],
-  props: ["filter"],
+  props: ["filter", "permission"],
   data() {
     return {
       orderBy: "name",
