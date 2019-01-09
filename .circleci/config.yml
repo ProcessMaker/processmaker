@@ -227,10 +227,6 @@ jobs:
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "sudo /bin/bash /root/cloudops/containerDeploy.sh $BUILD_NAME"
             # Generate Passport Keys
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "cd ~/builds/$BUILD_NAME && php artisan passport:keys"
-            # Run email-connector commands
-            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "cd ~/builds/$BUILDS_NAME/ && php artisan vendor:publish --tag=bpm-package-email-connector --force"
-            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "cd ~/builds/$BUILDS_NAME/ && php artisan db:seed --class="ProcessMaker\Packages\Connectors\Email\Seeds\EmailSendSeeder"
-            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "cd ~/builds/$BUILDS_NAME/ && php artisan cache:clear"
             
       - run:
           name: "SauceLabs Browser Tests: Chrome"
@@ -267,3 +263,11 @@ jobs:
       - run:
           name: "Final QA Artisan DB Migration"
           command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"php ~/builds/$BUILD_NAME/artisan migrate:fresh --seed --force\""
+
+      - run:
+          name: "Install Email-Connector Package"
+          command: |
+            # Run email-connector commands once final migration has completed
+            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "cd ~/builds/$BUILDS_NAME/ && php artisan vendor:publish --tag=bpm-package-email-connector --force"
+            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "cd ~/builds/$BUILDS_NAME/ && php artisan db:seed --class="ProcessMaker\Packages\Connectors\Email\Seeds\EmailSendSeeder"
+            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "cd ~/builds/$BUILDS_NAME/ && php artisan cache:clear"
