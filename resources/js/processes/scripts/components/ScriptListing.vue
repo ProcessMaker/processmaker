@@ -13,7 +13,8 @@
         pagination-path="meta"
       >
         <template slot="title" slot-scope="props">
-          <b-link @click="onAction('edit-script', props.rowData, props.rowIndex)">{{props.rowData.title}}</b-link>
+          <b-link v-if="permission.includes('edit-scripts')" @click="onAction('edit-script', props.rowData, props.rowIndex)">{{props.rowData.title}}</b-link>
+          <span v-else="permission.includes('edit-scripts')">{{props.rowData.title}}</span>
         </template>
 
         <template slot="actions" slot-scope="props">
@@ -24,6 +25,7 @@
                 @click="onAction('edit-script', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
                 title="Edit"
+                v-if="permission.includes('edit-scripts')"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
               </b-btn>
@@ -32,6 +34,7 @@
                 @click="onAction('edit-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
                 title="Config"
+                v-if="permission.includes('edit-scripts')"
               >
                 <i class="fas fa-cog fa-lg fa-fw"></i>
               </b-btn>
@@ -40,6 +43,7 @@
                 @click="onAction('remove-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
                 title="Remove"
+                v-if="permission.includes('delete-scripts')"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
               </b-btn>
@@ -64,7 +68,7 @@ import datatableMixin from "../../../components/common/mixins/datatable";
 
 export default {
   mixins: [datatableMixin],
-  props: ["filter", "id"],
+  props: ["filter", "id", "permission"],
   data() {
     return {
       orderBy: "title",
