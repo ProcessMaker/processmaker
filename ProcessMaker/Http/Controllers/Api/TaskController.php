@@ -97,6 +97,9 @@ class TaskController extends Controller
             WorkflowManager::completeTask($process, $instance, $task, $data);
             return new Resource($task->refresh());
         } elseif (!empty($request->input('user_id'))) {
+            // Validate if user can reassign
+            $task->authorizeReassign(Auth::user());
+
             // Reassign user
             $task->user_id = $request->input('user_id');
             $task->save();

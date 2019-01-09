@@ -190,4 +190,19 @@ class ProcessRequestToken extends Model implements TokenInterface
         }
         throw new AuthorizationException("Not authorized to view this task");
     }
+
+    /**
+     * Check if the user has access to reassign this task
+     * 
+     * @param \ProcessMaker\Models\User $user
+     */
+    public function authorizeReassign(User $user)
+    {
+        $this->authorize($user);
+        $definitions = $this->getDefinition();
+        if (empty($definitions['allowReassignment'])) {
+            throw new AuthorizationException("Not authorized to reassign this task");
+        }
+        return true;
+    }
 }
