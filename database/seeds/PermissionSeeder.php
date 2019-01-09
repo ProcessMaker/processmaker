@@ -11,6 +11,7 @@ class PermissionSeeder extends Seeder
 {
 
     private $permissions = [
+        'view-all_requests',
         'view-scripts',
         'create-scripts',
         'edit-scripts',

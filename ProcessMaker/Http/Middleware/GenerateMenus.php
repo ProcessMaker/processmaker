@@ -83,10 +83,12 @@ class GenerateMenus
               'route' => ['requests_by_type', 'completed'],
               'icon' => 'fa-clipboard-check',
           ]);
-          $submenu->add(__('menus.sidebar_request.all'), [
-              'route' => ['requests_by_type', 'all'],
-              'icon' => 'fa-clipboard',
-          ]);
+          if (\Auth::check() && \Auth::user()->can('view-all_requests')) {
+              $submenu->add(__('menus.sidebar_request.all'), [
+                  'route' => 'requests.all',
+                  'icon' => 'fa-clipboard',
+              ]);
+          }
        });
 
         Menu::make('sidebar_processes', function ($menu) {
