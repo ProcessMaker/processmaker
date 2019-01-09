@@ -196,9 +196,6 @@ jobs:
             echo "MAIL_PASSWORD=AiioZItOJwgoVo8s8jd2+f+TrgpeKJEBMYYxgh6Qc0KG" >> .env
             echo "DOCKER_HOST_URL=https://${BUILD_NAME}.bpm4.qa.processmaker.net" >> .env
             composer require processmaker/bpm-package-email-connector -n --prefer-dist
-            php artisan vendor:publish --tag=bpm-package-email-connector --force
-            php artisan db:seed --class="ProcessMaker\Packages\Connectors\Email\Seeds\EmailSendSeeder"
-            php artisan cache:clear
 
       - run:
           name: "QA Package"
@@ -230,6 +227,10 @@ jobs:
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "sudo /bin/bash /root/cloudops/containerDeploy.sh $BUILD_NAME"
             # Generate Passport Keys
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "cd ~/builds/$BUILD_NAME && php artisan passport:keys"
+            # Run email-connector commands
+            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "cd ~/builds/$BUILDS_NAME/ && php artisan vendor:publish --tag=bpm-package-email-connector --force"
+            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "cd ~/builds/$BUILDS_NAME/ && php artisan db:seed --class="ProcessMaker\Packages\Connectors\Email\Seeds\EmailSendSeeder"
+            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "cd ~/builds/$BUILDS_NAME/ && php artisan cache:clear"
             
       - run:
           name: "SauceLabs Browser Tests: Chrome"
