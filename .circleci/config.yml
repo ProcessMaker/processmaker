@@ -265,7 +265,7 @@ jobs:
           command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"php ~/builds/$BUILD_NAME/artisan migrate:fresh --seed --force\""
 
       - run:
-          name: "Install Email-Connector Package"
+          name: "Install Email-Connector Package and Script-Task"
           command: |
             # Run email-connector commands once final migration has completed
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "cd ~/builds/$BUILDS_NAME/ && php artisan vendor:publish --tag=bpm-package-email-connector --force"
