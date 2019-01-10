@@ -48,7 +48,7 @@ trait HasAuthorization
     public function giveDirectPermission($permission_names)
     {
         foreach ((array) $permission_names as $permission_name) {
-            $perm_id = Permission::byGuardName($permission_name)->id;
+            $perm_id = Permission::byName($permission_name)->id;
             PermissionAssignment::create([
                 'permission_id' => $perm_id,
                 'assignable_type' => User::class,
