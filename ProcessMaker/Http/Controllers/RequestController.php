@@ -68,7 +68,7 @@ class RequestController extends Controller
         if (Auth::user()->is_administrator === true) {
             $canCancel = true;
         } else {
-            $canCancel = Auth::user()->hasProcessPermission($request->process, 'requests.cancel');
+            $canCancel = Auth::user()->hasPermissionsFor($request->process, 'requests.cancel');
         }
 
         $files = $request->getMedia();

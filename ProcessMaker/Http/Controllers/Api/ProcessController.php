@@ -445,7 +445,7 @@ class ProcessController extends Controller
             return abort(404);
         }
 
-        if (!\Auth::user()->hasProcessPermission($process, 'requests.create')) {
+        if (!\Auth::user()->hasPermissionsFor($process, 'requests.create')) {
             throw new AuthorizationException("Not authorized to start this process");
         }
 
