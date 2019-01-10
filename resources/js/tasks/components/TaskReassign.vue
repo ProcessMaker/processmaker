@@ -39,7 +39,6 @@ export default {
       usersList: [],
       filter: "",
       showReassignment: false,
-      icon: require("../../../img/reassign.svg")
     };
   },
   watch: {
