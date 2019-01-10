@@ -225,16 +225,16 @@ jobs:
 #            # Generate Passport Keys
 #            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "cd ~/builds/$BUILD_NAME && php artisan passport:keys"
             
-#      - run:
-#          name: "SauceLabs Browser Tests: Chrome"
-#          command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"cd ~/builds/$BUILD_NAME && php artisan dusk\""
-#          environment:
-#            DB_DATABASE: "circle_test"
-#            RUN_MSSQL_TESTS: "true"
-#            MSSQL_HOST: "127.0.0.1"
-#
-#      - store_artifacts:
-#          path: tests/Browser
+      - run:
+          name: "SauceLabs Browser Tests: Chrome"
+          command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"cd ~/builds/$BUILD_NAME && php artisan dusk\""
+          environment:
+            DB_DATABASE: "circle_test"
+            RUN_MSSQL_TESTS: "true"
+            MSSQL_HOST: "127.0.0.1"
+
+      - store_artifacts:
+          path: tests/Browser
 
 #      - run:
 #          name: "SauceLabs Browser Tests: Firefox"
