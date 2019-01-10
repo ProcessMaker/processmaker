@@ -126,30 +126,30 @@ jobs:
           command: "php artisan storage:link"
 
       # run tests!
-#      - run:
-#          name: "PHPUnit"
-#          command: "./vendor/bin/phpunit -d memory_limit=-1 --coverage-html coverage"
-#          environment:
-#            DB_DATABASE: "circle_test"
-#            DB_PASSWORD: "P4ssW0rd1!"
-#            DB_USERNAME: "root"
-#            RUN_MSSQL_TESTS: "true"
-#            MSSQL_HOST: "127.0.0.1"
-#            MSSQL_PORT: "1433"
-#            MSSQL_DATABASE: "test"
-#            MSSQL_USERNAME: "sa"
-#            MSSQL_PASSWORD: "P4ssW0rd1!"
-#            BPM_SCRIPTS_HOME: "/opt/executor"
-#            BPM_SCRIPTS_DOCKER_MODE: "copying"
-#      - run:
-#          name: "Jest"
-#          command: "npm run test"
-#
-#      - store_artifacts:
-#          path: coverage
-#
-#      - store_artifacts:
-#          path: tests/js/coverage
+      - run:
+          name: "PHPUnit"
+          command: "./vendor/bin/phpunit -d memory_limit=-1 --coverage-html coverage"
+          environment:
+            DB_DATABASE: "circle_test"
+            DB_PASSWORD: "P4ssW0rd1!"
+            DB_USERNAME: "root"
+            RUN_MSSQL_TESTS: "true"
+            MSSQL_HOST: "127.0.0.1"
+            MSSQL_PORT: "1433"
+            MSSQL_DATABASE: "test"
+            MSSQL_USERNAME: "sa"
+            MSSQL_PASSWORD: "P4ssW0rd1!"
+            BPM_SCRIPTS_HOME: "/opt/executor"
+            BPM_SCRIPTS_DOCKER_MODE: "copying"
+      - run:
+          name: "Jest"
+          command: "npm run test"
+
+      - store_artifacts:
+          path: coverage
+
+      - store_artifacts:
+          path: tests/js/coverage
 
       # Prepare for packaging for QA environment
 
