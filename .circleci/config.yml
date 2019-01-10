@@ -269,5 +269,5 @@ jobs:
           command: |
             # Run email-connector commands once final migration has completed
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "cd ~/builds/$BUILD_NAME/ && php artisan vendor:publish --tag=bpm-package-email-connector --force"
-            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "cd ~/builds/$BUILD_NAME/ && php artisan db:seed --class="ProcessMaker\Packages\Connectors\Email\Seeds\EmailSendSeeder"
+            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "cd ~/builds/$BUILD_NAME/ && php artisan db:seed --class="ProcessMaker\Packages\Connectors\Email\Seeds\EmailSendSeeder""
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "cd ~/builds/$BUILD_NAME/ && php artisan cache:clear"
