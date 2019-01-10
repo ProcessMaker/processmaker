@@ -136,6 +136,16 @@ class User extends Authenticatable implements HasMedia
     ];
 
     /**
+     * Scope to only return active users.
+     *
+     * @var Builder
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'ACTIVE');
+    }
+
+    /**
      * Return the full name for this user which is the first name and last
      * name separated with a space.
      *

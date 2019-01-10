@@ -64,6 +64,16 @@ class Group extends Model
         return $this->hasMany(GroupMember::class);
     }
 
+    /**
+     * Scope to only return active groups.
+     *
+     * @var Builder
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'ACTIVE');
+    }
+
     public function permissions()
     {
         $permissions = [];
