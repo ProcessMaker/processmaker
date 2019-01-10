@@ -31,34 +31,34 @@ class UserCreationTest extends DuskTestCase
         ]);
         factory(User::class, 99)->create();
         // Test login
-//        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser) {
 
-            //$browser->resize(1920, 1080);
+            $browser->resize(1920, 1080);
 
-//            $browser->visit('/')
-//                ->assertSee('Username');
-//                ->type('#username', 'admin')
-//                ->type('#password', 'admin');
-//                ->press('.btn')
-//                ->clickLink('Admin')
-//                ->pause(5000)
-//                ->waitFor('.vuetable-body', 5)
-//                ->assertSee('1 - 10 of 100 Users');
-//
-//            $browser->press('#addUserBtn')
-//                ->type('#username', 'user1')
-//                ->type('#firstname', 'user1')
-//                ->type('#lastname', 'last1')
-//                ->select('select[name="size"]', 'ACTIVE')
-//                ->type('#email', 'user1@hotmail.com')
-//                ->type('#password', 'password123')
-//                ->type('#confpassword', 'password123');
-//
-//            $browser->maximize();
-//            $browser->press('.btn.btn-secondary')
-//                ->pause(5000)
-//                ->assertSee('successfully created');
-//        });
+            $browser->visit('/')
+                ->assertSee('Username')
+                ->type('#username', 'admin')
+                ->type('#password', 'admin')
+                ->press('.btn')
+                ->clickLink('Admin')
+                ->pause(5000)
+                ->waitFor('.vuetable-body', 5)
+                ->assertSee('1 - 10 of 100 Users');
+
+            $browser->press('#addUserBtn')
+                ->type('#username', 'user1')
+                ->type('#firstname', 'user1')
+                ->type('#lastname', 'last1')
+                ->select('select[name="size"]', 'ACTIVE')
+                ->type('#email', 'user1@hotmail.com')
+                ->type('#password', 'password123')
+                ->type('#confpassword', 'password123');
+
+            $browser->maximize();
+            $browser->press('.btn.btn-secondary')
+                ->pause(5000)
+                ->assertSee('successfully created');
+        });
 
     }
 }
