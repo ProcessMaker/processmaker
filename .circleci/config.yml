@@ -271,5 +271,5 @@ jobs:
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "cd ~/builds/$BUILD_NAME/ && php artisan vendor:publish --tag=bpm-package-email-connector --force"
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "cd ~/builds/$BUILD_NAME/ && php artisan db:seed --class=\"ProcessMaker\\Packages\\Connectors\\Email\\Seeds\\EmailSendSeeder\""
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "cd ~/builds/$BUILD_NAME/ && php artisan cache:clear"
-            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "sudo supervisorctl restart processmaker-horizon-$BUILD_NAME:processmaker-horizon-$BUILD_NAME_00"
-            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "sudo supervisorctl restart processmaker-echo-server-$BUILD_NAME:processmaker-echo-server-$BUILD_NAME_00"
+            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "sudo supervisorctl restart processmaker-horizon-$BUILD_NAME:processmaker-horizon-$BUILD_NAME\_00"
+            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "sudo supervisorctl restart processmaker-echo-server-$BUILD_NAME:processmaker-echo-server-$BUILD_NAME\_00"
