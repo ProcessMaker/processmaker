@@ -49,7 +49,7 @@ return [
     */
 
     // When route-bound breadcrumbs are used but the current route doesn't have a name (UnnamedRouteException)
-    'unnamed-route-exception' => true,
+    'unnamed-route-exception' => false,
 
     // When route-bound breadcrumbs are used and the matching breadcrumb doesn't exist (InvalidBreadcrumbException)
     'missing-route-bound-breadcrumb-exception' => false,
