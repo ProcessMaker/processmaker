@@ -276,7 +276,7 @@ class User extends Authenticatable implements HasMedia
         if (!$user->hasPermission('requests.create')) {
             return [];
         }
-        $permission = Permission::byGuardName('requests.create');
+        $permission = Permission::byName('requests.create');
 
         $processUser = ProcessPermission::where('permission_id', $permission->id)
             ->where('assignable_id', $user->id)
