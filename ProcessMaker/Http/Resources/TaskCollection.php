@@ -7,7 +7,7 @@ use Illuminate\Pagination\AbstractPaginator;
 
 /**
  *  @OA\Schema(
- *    schema="metadata",
+ *    schema="taskMetadata",
  *    @OA\Property(property="filter", type="string"),
  *    @OA\Property(property="sort_by", type="string"),
  *    @OA\Property(property="sort_order", type="string", enum={"ASC", "DESC"}),
