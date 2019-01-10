@@ -1,12 +1,14 @@
 <?php
 namespace ProcessMaker\Http\Controllers\Api;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Task as Resource;
+use ProcessMaker\Http\Resources\TaskCollection;
 use ProcessMaker\Models\ProcessRequestToken;
 use Illuminate\Support\Facades\Auth;
 
@@ -58,8 +60,16 @@ class TaskController extends Controller
         if (!Auth::user()->is_administrator) {
             $query->where('process_request_tokens.user_id', Auth::user()->id);
         }
+
+        $inOverdueQuery = clone $query;
+        $inOverdueQuery->where('due_at', '<', Carbon::now());
+        $inOverdue = $inOverdueQuery->count();
+
         $response = $query->paginate($request->input('per_page', 10));
-        return new ApiCollection($response);
+
+        $response->inOverdue = $inOverdue;
+
+        return new TaskCollection($response);
     }
 
     /**
