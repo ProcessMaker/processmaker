@@ -54,6 +54,11 @@ class Group extends Model
         return $this->morphMany(PermissionAssignment::class, 'assignable', null, 'assignable_id');
     }
 
+    public function processesFromProcessable()
+    {
+        return $this->morphToMany('ProcessMaker\Models\Process', 'processable');
+    }
+
     public function groupMembersFromMemberable()
     {
         return $this->morphMany(GroupMember::class, 'member', null, 'member_id');

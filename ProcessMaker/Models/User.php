@@ -185,6 +185,11 @@ class User extends Authenticatable implements HasMedia
         return $this->morphMany(PermissionAssignment::class, 'assignable', null, 'assignable_id');
     }
 
+    public function processesFromProcessable()
+    {
+        return $this->morphToMany('ProcessMaker\Models\Process', 'processable');
+    }
+
     /**
      * Get the full name as an attribute.
      *
