@@ -3200,49 +3200,6 @@
             "time": "2016-06-16T16:22:20+00:00"
         },
         {
-            "name": "processmaker/bpm-package-email-connector",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ProcessMaker/pm4-connector-send-email.git",
-                "reference": "4e4b79f72a2bb24b4e1f7884c3b8c3177f8c4686"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/pm4-connector-send-email/zipball/4e4b79f72a2bb24b4e1f7884c3b8c3177f8c4686",
-                "reference": "4e4b79f72a2bb24b4e1f7884c3b8c3177f8c4686",
-                "shasum": ""
-            },
-            "require": {
-                "processmaker/bpm": "4.0.*",
-                "spatie/server-side-rendering": "^0.2.5"
-            },
-            "type": "project",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "ProcessMaker\\Packages\\Connectors\\Email\\PluginServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "ProcessMaker\\Packages\\Connectors\\Email\\": "src/"
-                }
-            },
-            "scripts": {
-                "post-autoload-dump": [
-                    "@php artisan vendor:publish --tag=bpm-package-email-connector"
-                ]
-            },
-            "description": "ProcessMaker BPM Connectors that provide Email service",
-            "support": {
-                "source": "https://github.com/ProcessMaker/pm4-connector-send-email/tree/master",
-                "issues": "https://github.com/ProcessMaker/pm4-connector-send-email/issues"
-            },
-            "time": "2019-01-04T20:23:52+00:00"
-        },
-        {
             "name": "processmaker/nayra",
             "version": "dev-master",
             "source": {
@@ -7916,7 +7873,6 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "pion/laravel-chunk-upload": 20,
-        "processmaker/bpm-package-email-connector": 20,
         "processmaker/nayra": 20
     },
     "prefer-stable": true,
