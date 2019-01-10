@@ -38,7 +38,7 @@ The **Processes** page displays the following information about Processes:
 * **Modified:** The **Modified** column displays the date and time the Process was last modified. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 * **Created:** The **Created** column displays the date and time the process was created. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
-### Manage Your Processes
+## Manage Your Processes
 
 If your user account has the appropriate permissions, use the **Processes** page to manage Processes. If a function described below is not visible~~/enabled~~ to~~/for~~ you, ask your ProcessMaker Administrator for the appropriate user permission.
 
