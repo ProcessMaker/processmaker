@@ -29,12 +29,12 @@ class ProcessPermissionsTest extends TestCase
 
         //Permission to use api
         factory(PermissionAssignment::class)->create([
-            'permission_id' => Permission::byGuardName('requests.edit')->id,
+            'permission_id' => Permission::byName('requests.edit')->id,
             'assignable_type' => User::class,
             'assignable_id' => $this->user->id
         ]);
         factory(PermissionAssignment::class)->create([
-            'permission_id' => Permission::byGuardName('requests.cancel')->id,
+            'permission_id' => Permission::byName('requests.cancel')->id,
             'assignable_type' => User::class,
             'assignable_id' => $this->user->id
         ]);
@@ -58,10 +58,10 @@ class ProcessPermissionsTest extends TestCase
         $response->assertStatus(200, $response);
 
         //Verify if user has a permission requests cancel
-        $this->assertTrue($normal_user->hasProcessPermission($process, 'requests.cancel'));
+        $this->assertTrue($normal_user->hasPermissionsFor($process, 'requests.cancel'));
 
         //Verify Process Permission
-        $response = ProcessPermission::where('permission_id', Permission::byGuardName('requests.cancel')->id)
+        $response = ProcessPermission::where('permission_id', Permission::byName('requests.cancel')->id)
             ->where('process_id', $process->id)
             ->where('assignable_id', $normal_user->id)
             ->where('assignable_type', User::class)
@@ -100,10 +100,10 @@ class ProcessPermissionsTest extends TestCase
         $response->assertStatus(200, $response);
 
         //Verify if user has a permission requests cancel
-        $this->assertTrue($normal_user->hasProcessPermission($process, 'requests.cancel'));
+        $this->assertTrue($normal_user->hasPermissionsFor($process, 'requests.cancel'));
 
         //Verify Process Permission
-        $response = ProcessPermission::where('permission_id', Permission::byGuardName('requests.cancel')->id)
+        $response = ProcessPermission::where('permission_id', Permission::byName('requests.cancel')->id)
             ->where('process_id', $process->id)
             ->where('assignable_id', $group->id)
             ->where('assignable_type', Group::class)
@@ -136,7 +136,7 @@ class ProcessPermissionsTest extends TestCase
         //Add Process Permission
         factory(ProcessPermission::class)->create([
             'process_id' => $process->id,
-            'permission_id' => Permission::byGuardName('requests.cancel')->id,
+            'permission_id' => Permission::byName('requests.cancel')->id,
             'assignable_type' => User::class,
             'assignable_id' => $this->user->id
         ]);

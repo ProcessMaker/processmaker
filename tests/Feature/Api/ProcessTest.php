@@ -90,7 +90,7 @@ class ProcessTest extends TestCase
             ->create(
                 [
                     'process_id' => $process->id,
-                    'permission_id' => Permission::byGuardName('requests.create'),
+                    'permission_id' => Permission::byName('requests.create'),
                     'assignable_type' => User::class,
                     'assignable_id' => $userId
                 ]);
@@ -98,7 +98,7 @@ class ProcessTest extends TestCase
         factory(PermissionAssignment::class)
             ->create(
                 [
-                    'permission_id' => Permission::byGuardName('requests.create'),
+                    'permission_id' => Permission::byName('requests.create'),
                     'assignable_type' => User::class,
                     'assignable_id' => $userId
                 ]);
@@ -106,7 +106,7 @@ class ProcessTest extends TestCase
         factory(PermissionAssignment::class)
             ->create(
                 [
-                    'permission_id' => Permission::byGuardName('processes.index'),
+                    'permission_id' => Permission::byName('processes.index'),
                     'assignable_type' => User::class,
                     'assignable_id' => $userId
                 ]);
@@ -160,7 +160,7 @@ class ProcessTest extends TestCase
             ->create(
                 [
                     'process_id' => $process->id,
-                    'permission_id' => Permission::byGuardName('requests.create'),
+                    'permission_id' => Permission::byName('requests.create'),
                     'assignable_type' => Group::class,
                     'assignable_id' => $groupId
                 ]);
@@ -168,7 +168,7 @@ class ProcessTest extends TestCase
         factory(PermissionAssignment::class)
             ->create(
                 [
-                    'permission_id' => Permission::byGuardName('requests.create'),
+                    'permission_id' => Permission::byName('requests.create'),
                     'assignable_type' => User::class,
                     'assignable_id' => $this->user->id
                 ]);
@@ -176,7 +176,7 @@ class ProcessTest extends TestCase
         factory(PermissionAssignment::class)
             ->create(
                 [
-                    'permission_id' => Permission::byGuardName('processes.index'),
+                    'permission_id' => Permission::byName('processes.index'),
                     'assignable_type' => Group::class,
                     'assignable_id' => $groupId
                 ]);

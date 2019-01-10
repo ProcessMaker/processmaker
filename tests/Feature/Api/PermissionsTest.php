@@ -22,9 +22,9 @@ class PermissionsTest extends TestCase
 
         (new PermissionSeeder)->run($this->user);
 
-        $create_process_perm = Permission::byGuardName('processes.create');
-        $show_process_perm   = Permission::byGuardName('processes.show');
-        $edit_process_perm = Permission::byGuardName('processes.edit');
+        $create_process_perm = Permission::byName('processes.create');
+        $show_process_perm   = Permission::byName('processes.show');
+        $edit_process_perm = Permission::byName('processes.edit');
 
         $admin_group = $this->admin_group =
             factory(Group::class)->create(['name' => 'Admin']);
@@ -70,7 +70,7 @@ class PermissionsTest extends TestCase
         $response = $this->apiCall('GET', '/processes/' . $this->process->id);
         $response->assertStatus(200);
 
-        $destroy_process_perm = Permission::byGuardName('processes.destroy');
+        $destroy_process_perm = Permission::byName('processes.destroy');
         Group::where('name', 'All Permissions')
             ->firstOrFail()
             ->permissionAssignments()
@@ -87,7 +87,7 @@ class PermissionsTest extends TestCase
         factory(PermissionAssignment::class)->create([
             'assignable_type' => Group::class,
             'assignable_id' => $this->admin_group->id,
-            'permission_id' => Permission::byGuardName('processes.destroy')->id,
+            'permission_id' => Permission::byName('processes.destroy')->id,
         ]);
 
         $this->user->refresh();
