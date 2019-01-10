@@ -19,7 +19,7 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
             'screen-builder' => 'screen'
         ])->only(['edit']);
         Route::resource('scripts', 'ScriptController');
-        Route::get('scripts/{script}/builder', 'ScriptController@builder');
+        Route::get('scripts/{script}/builder', 'ScriptController@builder')->name('scripts.builder');
         Route::resource('categories', 'ProcessCategoryController')->parameters([
             'categories' => 'processCategory'
         ]);
