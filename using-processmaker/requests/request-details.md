@@ -67,7 +67,7 @@ Process Owners can specify how information displays in the **Summary** tab. By d
 * **VALUE:** The **VALUE** column displays that key's value as entered by a person manually interacting with a form or specified through the ProcessMaker 4 [REST API](https://develop.bpm4.qa.processmaker.net/api/documentation).
 
 {% hint style="info" %}
-The **Summary** tab only displays information for completed Requests. If you select the Summary tab for an in-progress Request, the following message displays: **Request In Progress: This Request is currently in progress. This screen will be populated once the Request is completed.**
+The **Summary** tab only displays information for completed Requests. If you select the **Summary** tab for an in-progress Request, the following message displays: **Request In Progress: This Request is currently in progress. This screen will be populated once the Request is completed.**
 
 ![](../../.gitbook/assets/summary-tab-request-in-progress-request-information-request.png)
 {% endhint %}

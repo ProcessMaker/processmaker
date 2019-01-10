@@ -19,7 +19,7 @@ Did you forget your password? See [Reset Your Password](log-in.md#reset-your-pas
 
 Follow these steps to log in to ProcessMaker:
 
-1. Enter the IP address \(or domain name\) and port number for the server or instance hosting ProcessMaker in a [supported web browser](). Follow these guidelines:
+1. Enter the IP address \(or domain name\) and port number for the server or instance hosting ProcessMaker in a [supported web browser](../install-processmaker/prerequisites.md#supported-browsers). Follow these guidelines:
 
    `http://<IP-Address>:<Port-Number>`
 
@@ -51,7 +51,7 @@ Follow these steps to log in to ProcessMaker:
 
    If you enter an email address which your ProcessMaker instance does not recognize, the following message displays in red-colored text below the **Email Address** field: **We can't find a user with that email address**.
 
-4. Click **REQUEST RESET LINK**.
+4. Click **Request Reset Link**.
 5. Check your email for the instructions to reset your password.
 6. After you click the link in that email to reset your password, click the **Back to Login link** to return to the log in page.
 7. Log in to ProcessMaker as described in [Log In](log-in.md#log-in).

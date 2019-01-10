@@ -21,23 +21,38 @@ Follow these steps to view all Processes in your organization:
 Click the **Processes** ![](../../../.gitbook/assets/processses-icon-processes.png) icon when you are in other Process-related pages to view the **Processes** page.
 {% endhint %}
 
-![Processes page](../../../.gitbook/assets/processes.png)
+![Processes page displays all Processes in your organization](../../../.gitbook/assets/processes.png)
 
 The **Processes** page displays the following information about Processes:
 
 * **Name:** The **Name** column displays the Process name.
 * **Category:** The **Category** column displays in which Process category the Process is assigned. See [Process Categories](../process-categories.md) for more information.
-* **Status:** The **Status** column displays the status of the Process. See [Edit the Name, Description, Category, or Status of a Process](edit-the-name-description-category-or-status-of-a-process.md#edit-general-information-about-a-process) for more information.
+* **Status:** The **Status** column displays the status of the Process:
+
+  * **Active:** The Process is active and is represented by the![](../../../.gitbook/assets/active-status-icon-processes.png)icon.
+  * **Inactive:** The Process is inactive and is represented by the![](../../../.gitbook/assets/inactive-status-icon-processes.png)icon.
+
+  See [Activate or Deactivate a Process](activate-or-deactivate-a-process.md#process-status-descriptions) for more information.
+
 * **Owner:** The **Owner** column displays the Process Owner who maintains the Process. See [Profile Settings](../../../using-processmaker/profile-settings.md#view-another-users-profile-information) for information how to view the Process Owner's profile information.
 * **Modified:** The **Modified** column displays the date and time the Process was last modified. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 * **Created:** The **Created** column displays the date and time the process was created. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
+### Manage Your Processes
+
+If your user account has the appropriate permissions, use the **Processes** page to manage Processes. If a function described below is not visible~~/enabled~~ to~~/for~~ you, ask your ProcessMaker Administrator for the appropriate user permission.
+
+* **Edit a Process:** Select the
+* **Configure a Process:** 
+* **Archive a Process:** 
+* **Restore a Process:** 
+
 {% hint style="info" %}
-For information how to search for a process, see [Search for a Process](../../../using-processmaker/requests/search-for-a-request.md#search-for-a-request).
+Use the [Search](search-for-a-process.md) field to filter Processes that display.
 {% endhint %}
 
 {% hint style="info" %}
-If no processes exist, the following message displays: **You don't have any processes. Please click on '+PROCESS' to get started.**
+If no Processes exist, the following message displays: **You don't have any processes. Please click on '+PROCESS' to get started.**
 {% endhint %}
 
 {% hint style="info" %}

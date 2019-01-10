@@ -46,7 +46,7 @@ Canceled Requests display in the **All Requests** tab.
 ![Canceled Request in the All Requests tab](../../.gitbook/assets/canceled-request-in-all-requests-tab-requests.png)
 
 {% hint style="info" %}
-For information how to view all Requests, see [View All Requests](view-all-requests.md).
+See [View All Requests](view-all-requests.md) for more information.
 {% endhint %}
 
 ## Related Topics
