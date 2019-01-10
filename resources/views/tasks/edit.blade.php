@@ -58,7 +58,32 @@
                             @if(!empty($task->getDefinition()['allowReassignment']))
                             <div>
                             <br>
-                                <task-reassign :task="task"></task-reassign>
+                            <span>
+                                <button class="btn btn-outline-secondary btn-block" @click="show">
+                                    <i class="fas fa-user-friends"></i> {{__('Reassign')}}
+                                </button>
+                                <b-modal v-model="showReassignment" size="md" centered title="{{__('Reassign to')}}" v-cloak>
+                                    <div class="list-users-groups">
+                                        <span
+                                            v-for="(row, index) in usersList"
+                                            class="list-group-item list-group-item-action pt-1 pb-1"
+                                            :class="{'bg-primary': selectedIndex == index}"
+                                            @click="selectedItem(row, index)"
+                                            @dblclick="selectedItem(row, index);reassignUser();"
+                                            >
+                                            <avatar-image class-container size="12" class-image :input-data="row"></avatar-image>
+                                        </span>
+                                    </div>
+                                    <div slot="modal-footer">
+                                        <b-button
+                                            :disabled="selectedIndex < 0"
+                                            @click="reassignUser"
+                                            class="btn btn-outline-success btn-sm text-uppercase"
+                                            >{{__('Reassign')}}</b-button>
+                                        <b-button @click="cancelReassign" class="btn btn-success btn-sm text-uppercase">{{__('Cancel')}}</b-button>
+                                    </div>
+                                </b-modal>
+                            </span>
                             </div>
                             @endif
                         </li>
@@ -93,12 +118,24 @@
         new Vue({
             el: '#task',
             data: {
+                // Reassignment
+                selected: null,
+                selectedIndex: -1,
+                usersList: [],
+                filter: "",
+                showReassignment: false,
+                
                 task: @json($task),
                 assigned: @json($task->user),
                 requested: @json($task->processRequest->user),
                 statusCard: 'card-header text-capitalize text-white bg-success',
                 userAssigned: [],
                 userRequested: []
+            },
+            watch: {
+                showReassignment(show) {
+                    show ? this.loadUsers() : null;
+                }
             },
             computed: {
                 dateDueAt() {
@@ -109,6 +146,42 @@
                 }
             },
             methods: {
+                // Reassign methods
+                show() {
+                    this.showReassignment = true;
+                },
+                cancelReassign() {
+                    this.showReassignment = false;
+                    this.selectedItem(null, -1);
+                },
+                reassignUser() {
+                    if (this.selected) {
+                        ProcessMaker.apiClient
+                                .put("tasks/" + this.task.id, {
+                                    user_id: this.selected.id
+                                })
+                                .then(response => {
+                                    this.showReassignment = false;
+                                    this.selectedItem(null, -1);
+                                    window.location.href =
+                                            "/requests/" + response.data.process_request_id;
+                                });
+                    }
+                },
+                selectedItem(selected, index) {
+                    this.selected = selected;
+                    this.selectedIndex = index;
+                },
+                loadUsers() {
+                    ProcessMaker.apiClient.get("tasks/" + this.task.id, {
+                        params: {
+                            include: "assignableUsers"
+                        }
+                    }).then(response => {
+                        this.$set(this, "usersList", response.data.assignableUsers);
+                    });
+                },
+
                 classHeaderCard(status) {
                     let header = 'bg-success';
                     switch (status) {
@@ -138,4 +211,11 @@
 @endsection
 
 @section('css')
+<style>
+    .list-users-groups {
+        border: 1px solid #b6bfc6;
+        border-radius: 2px;
+        height: 10em;
+    }
+</style>
 @endsection
