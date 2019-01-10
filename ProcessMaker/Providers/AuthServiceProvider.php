@@ -39,13 +39,15 @@ class AuthServiceProvider extends ServiceProvider
         
         $permissions = Permission::all();
         
-        $permissions->each(function($permission) {
-            Gate::define($permission->name, function ($user, $model = false) use($permission) {
+        Gate::before(function ($user) {
                 if ($user->is_administrator) {
                     return true;
-                } else {
-                    return $user->hasPermission($permission->name);
                 }
+        });
+
+        $permissions->each(function($permission) {
+            Gate::define($permission->name, function ($user, $model = false) use($permission) {
+                return $user->hasPermission($permission->name);
             });
         });
     }
