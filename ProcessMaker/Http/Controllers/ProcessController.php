@@ -49,61 +49,72 @@ class ProcessController extends Controller
             ->pluck('title', 'id')
             ->toArray();
         
-        //list users and groups with permissions requests.cancel
-        $listCancel = [
-            'Users' => $this->assignee('requests.cancel', User::class),
-            'Groups' => $this->assignee('requests.cancel', Group::class)
-        ];
+        $list = $this->listUsersAndGroups();
+        
+        $canStart = $this->listCan('Start', $process);
+        $canCancel = $this->listCan('Cancel', $process);
 
-        //list users and groups with permission requests.create
-        $listStart = [
-            'Users' => $this->assignee('requests.create', User::class),
-            'Groups' => $this->assignee('requests.create', Group::class)
-        ];
-        $process->cancel_request_id = $this->loadAssigneeProcess('requests.cancel',  $process->id);
-        $process->start_request_id = $this->loadAssigneeProcess('requests.create',  $process->id);
-
-        return view('processes.edit', compact(['process', 'categories', 'screens', 'listCancel', 'listStart']));
+        return view('processes.edit', compact(['process', 'categories', 'screens', 'list', 'canCancel', 'canStart']));
     }
 
     /**
-     * Load users or groups assigned with the permission
+     * Listing users & groups that can edit a particular process
      *
-     * @param $permission
-     * @param $type
+     * @param $method
+     * @param $process
      *
-     * @return array Users|Groups assigned
-     */
-    private function assignee($permission, $type)
+     * @return array Users|Groups
+     */        
+    private function listCan($method, Process $process)
     {
-        $items = PermissionAssignment::where('permission_id', Permission::byName($permission)->id)
-            ->where('assignable_type', $type)
-            ->get();
-        $data = [];
-        foreach ($items as $assigned) {
-            $item = $type::find($assigned->assignable_id);
-            $data[($item->fullname ? 'user-' : 'group-') . $item->id] = $item->fullname ?: $item->name;
-        }
-        return $data;
-    }
+        $users = $process->{"usersCan$method"}()->select('id', 'firstname', 'lastname')->get();
+        $groups = $process->{"groupsCan$method"}()->select('id', 'name as fullname')->get();
 
+        $merge = collect([]);
+        
+        $users->map(function ($item) use ($merge) {
+            $item->type = 'user';
+            $merge->push($item);
+        });
+        
+        $groups->map(function ($item) use ($merge) {
+            $item->type = 'group';
+            $merge->push($item);
+        });
+        
+        return $merge;
+    }
+    
     /**
-     * Load users and groups assigned to process
+     * List active users and groups
      *
-     * @param $permission
-     * @param $processId
-     *
-     * @return string|null
-     */
-    private function loadAssigneeProcess($permission, $processId)
+     * @return array Users|Groups
+     */    
+    private function listUsersAndGroups()
     {
-        $assignee = ProcessPermission::where('permission_id', Permission::byGuardName($permission)->id)
-            ->where('process_id', $processId)
-            ->first();
-        if ($assignee) {
-            $assignee = ($assignee->assignable_type === User::class ? 'user-' : 'group-') . $assignee->assignable_id;
-        }
-        return $assignee;
+        $users = User::active()->select('id', 'firstname', 'lastname')->get();
+        $groups = Group::active()->select('id', 'name as fullname')->get();
+        
+        $users->map(function ($item) {
+            $item->type = 'user';
+            return $item;
+        });
+        
+        $groups->map(function ($item) {
+            $item->type = 'group';
+            return $item;
+        });
+        
+        return [
+            [
+                'label' => 'Users',
+                'items' => $users,
+            ],
+            [
+                'label' => 'Groups',
+                'items' => $groups,            
+            ],
+        ];
     }
 
     public function create() // create new process
