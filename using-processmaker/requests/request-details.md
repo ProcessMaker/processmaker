@@ -19,7 +19,7 @@ This section discusses how information displays for in-progress Requests.
 
 The **Tasks** tab displays summary information for all upcoming Tasks in the Request.
 
-![&quot;Tasks&quot; tab for an in-progress Request&apos;s information](../../.gitbook/assets/tasks-tab-request-information-request.png)
+![Tasks tab for an in-progress Request&apos;s information](../../.gitbook/assets/tasks-tab-request-information-request.png)
 
 The **Tasks** tab displays the following information in tabular format:
 
@@ -44,7 +44,7 @@ In-progress Requests display information about the participants in a selected Re
 The following information displays about participants in a selected in-progress Request:
 
 * **Requested By:** The **Requested By** field displays the avatar and full name of the person who started the selected Request. The Request may have been started from a person manually interacting with a form or as an authenticated user to the ProcessMaker 4 [REST API](https://develop.bpm4.qa.processmaker.net/api/documentation).
-* **Cancel Request:** The **Cancel Request** field allows a Request participant or ProcessMaker Administrator to cancel the Request if that Request participant's user account has the appropriate permission to cancel Requests for that process. If your user account does not have the permission\(s\) to cancel Requests for that process, the **Cancel Request** field does not display. For more information, see [Cancel a Request](delete-a-request.md).
+* **Cancel Request:** The **Cancel Request** field allows a Request participant or ProcessMaker Administrator to cancel the Request if that Request participant's user account has the appropriate permission to cancel Requests for that process. If your user account does not have the permission\(s\) to cancel Requests for that process, the **Cancel Request** field does not display. See [Cancel a Request](delete-a-request.md) for more information.
 * **Participants:** The **Participants** field displays the avatars of all participants in the selected Request to that time.
 * **Request creation date:** The date and time the Request was created displays below the **Participants** field. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
@@ -59,7 +59,7 @@ The **Summary** tab displays a summary of all information entered into the compl
 * Request participants manually enter information into ProcessMaker Screens. ProcessMaker Screens are digital forms.
 * Authenticated users submit data through the ProcessMaker 4 [REST API](https://develop.bpm4.qa.processmaker.net/api/documentation).
 
-![&quot;Summary&quot; tab in a completed Request&apos;s information](../../.gitbook/assets/summary-tab-request-information-request.png)
+![Summary tab in a completed Request&apos;s information](../../.gitbook/assets/summary-tab-request-information-request.png)
 
 Process Owners can specify how information displays in the **Summary** tab. By default, the **Summary** tab displays the JSON-formatted key/value pairs that represents ProcessMaker Screens. Information is displayed in tabular format:
 
@@ -80,7 +80,7 @@ The **Summary** tab only displays information for completed Requests. If you sel
 
 The **Completed** tab displays a summary of all tasks for the selected completed Request.
 
-![&quot;Completed&quot; tab for a completed Request&apos;s information](../../.gitbook/assets/completed-tab-request-information-request.png)
+![Completed tab for a completed Request&apos;s information](../../.gitbook/assets/completed-tab-request-information-request.png)
 
 The **Completed** tab displays the following information:
 
@@ -114,7 +114,7 @@ The following information displays about participants in a selected completed Re
 
 The **Errors** tab displays summary information about an error for a selected Request if an error occurred. If a Request error has not occurred, the **Errors** tab does not display.
 
-![Summary information for a Request error](../../.gitbook/assets/error-tab-information-requests.png)
+![Error tab displays information about a Request error](../../.gitbook/assets/error-tab-information-requests.png)
 
 The **Errors** tab displays the following information:
 

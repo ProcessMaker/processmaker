@@ -22,7 +22,7 @@ Follow these steps to start a Request:
 3. Do one of the following:
 
    * Select the Process for which to start a new Request.
-   * From the **Search** field, enter text to filter the list of Processes, and then select the Process to start a new Request. For more information about searching for a Request, see [Search for a Request](search-for-a-request.md).
+   * From the **Search** field, enter text to filter the list of Processes, and then select the Process to start a new Request. See [Search for a Request](search-for-a-request.md) for more information.
 
    The Process you selected starts a Request.
 
