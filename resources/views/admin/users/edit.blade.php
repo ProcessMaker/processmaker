@@ -247,6 +247,20 @@
                                     </div>
                                 </div>
                             </div>
+                             <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">
+                                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#allPermissions">
+                                            All Permissions
+                                        </button>
+                                    </h5>
+                                </div>
+                                <div id="allPermissions" class="collapse" >
+                                    <div class="card-body">
+                                        <label><input type="checkbox" v-model="selectAll" @click="select" :disabled="formData.is_administrator">  Select All Permissions </label>
+                                    </div>
+                                </div>
+                            </div>
                            @include('admin.shared.permissions')
                         </div>
                         <div class="text-right mt-2">

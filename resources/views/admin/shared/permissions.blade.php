@@ -10,7 +10,7 @@
         <div id="{{camel_case($groupTitle)}}" class="collapse" >
             <div class="card-body">
                 @foreach ($permissions as $permission)
-                <div><input type="checkbox" name="{{$groupTitle}}" value="{{$permission}}">  {{ $permission->title }}</div>
+                <div><input type="checkbox" name="{{$groupTitle}}" value="{{$permission->id}}" v-model="selected">  {{ $permission->title }}</div>
                 @endforeach
             </div>
         </div>
