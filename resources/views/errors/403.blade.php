@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-  {{__('About ProcessMaker 4')}}
+  {{__('Unauthorized - ProcessMaker')}}
 @endsection
 
 @section('sidebar')
