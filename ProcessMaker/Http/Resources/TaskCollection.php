@@ -21,6 +21,7 @@ use Illuminate\Pagination\AbstractPaginator;
  *    @OA\Property(property="per_page", type="integer"),
  *    @OA\Property(property="to", type="integer"),
  *    @OA\Property(property="total", type="integer"),
+ *    @OA\Property(property="in_overdue", type="integer"),
  *  )
  */
 class TaskCollection extends ResourceCollection
