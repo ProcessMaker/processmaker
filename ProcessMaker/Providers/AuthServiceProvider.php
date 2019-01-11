@@ -40,9 +40,9 @@ class AuthServiceProvider extends ServiceProvider
         $permissions = Permission::all();
         
         Gate::before(function ($user) {
-                if ($user->is_administrator) {
-                    return true;
-                }
+            if ($user->is_administrator) {
+                return true;
+            }
         });
 
         $permissions->each(function($permission) {
