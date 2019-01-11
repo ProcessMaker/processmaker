@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
@@ -100,7 +101,7 @@ class PermissionsTest extends TestCase
     public function testSetPermissionsForUser()
     {
         $this->user = factory(User::class)->create([
-            'password' => 'password',
+            'password' => Hash::make('password'),
             'is_administrator' => true,
         ]);
 

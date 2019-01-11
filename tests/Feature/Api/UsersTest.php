@@ -258,7 +258,7 @@ class UsersTest extends TestCase
             'country' => $faker->country,
             'timezone' => $faker->timezone,
             'birthdate' => $faker->dateTimeThisCentury->format('Y-m-d'),
-            'password' => Hash::make($faker->password(6, 6)),
+            'password' => $faker->password(6, 6),
         ]);
 
         //Validate the header status code
