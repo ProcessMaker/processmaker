@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Api;
 
-use Carbon\Carbon;
 use Faker\Factory as Faker;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
@@ -259,7 +258,7 @@ class UsersTest extends TestCase
             'country' => $faker->country,
             'timezone' => $faker->timezone,
             'birthdate' => $faker->dateTimeThisCentury->format('Y-m-d'),
-            'password' => $faker->password(6, 6),
+            'password' => Hash::make($faker->password(6, 6)),
         ]);
 
         //Validate the header status code

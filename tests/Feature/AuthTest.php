@@ -34,7 +34,7 @@ class AuthTest extends TestCase
         // Build a user with a specified password
         $user = factory(User::class)->create([
             'username' =>'newuser',
-            'password' => 'password'
+            'password' => Hash::make('password')
         ]);
         // Make sure we have a failed attempt with a bad password
         $this->assertFalse(Auth::attempt([
