@@ -477,6 +477,10 @@
                 },
             },
             mounted() {
+                let created = (new URLSearchParams(window.location.search)).get('created');
+                if (created) {
+                    ProcessMaker.alert('{{__('The user was successfully created')}}', 'success');
+                }
                 this.loadTokens();
             },
             methods: {
