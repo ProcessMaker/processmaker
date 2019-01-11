@@ -113,7 +113,11 @@ class UserController extends Controller
     {
         $request->validate(User::rules());
         $user = new User();
-        $user->fill($request->json()->all());
+        $fields = $request->json()->all();
+        if (isset($fields['password'])) {
+            $fields['password'] = Hash::make($fields['password']);
+        }
+        $user->fill($fields);
         $user->saveOrFail();
         return new UserResource($user->refresh());
     }
