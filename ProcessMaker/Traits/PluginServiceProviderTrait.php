@@ -56,7 +56,10 @@ trait PluginServiceProviderTrait
      * Executed once when the plug-in version was changed.
      *
      */
-    abstract protected function updateVersion();
+    protected function updateVersion()
+    {
+        
+    }
 
     /**
      * Check if the plug-in was updated
