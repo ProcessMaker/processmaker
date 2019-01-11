@@ -10,6 +10,7 @@ use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
+use ProcessMaker\Models\Permission;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\HasAuthorization;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
@@ -161,8 +162,12 @@ class User extends Authenticatable implements HasMedia
     
     public function hasPermissionsFor($resource)
     {
-        $perms = collect(session('permissions'));
-        
+        if ($this->is_administrator) {
+            $perms = Permission::all(['name'])->pluck('name');
+        } else {
+            $perms = collect(session('permissions'));
+        }
+
         $filtered = $perms->filter(function($value) use($resource) {
             $match = preg_match("/(.+)-{$resource}/", $value);
             if ($match === 1) {
