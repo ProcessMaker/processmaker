@@ -63,24 +63,26 @@
                                     <i class="fas fa-user-friends"></i> {{__('Reassign')}}
                                 </button>
                                 <b-modal v-model="showReassignment" size="md" centered title="{{__('Reassign to')}}" v-cloak>
-                                    <div class="list-users-groups">
+                                    <div class="list-users-groups" style="overflow: auto; height:100px">
                                         <span
                                             v-for="(row, index) in usersList"
                                             class="list-group-item list-group-item-action pt-1 pb-1"
                                             :class="{'bg-primary': selectedIndex == index}"
                                             @click="selectedItem(row, index)"
                                             @dblclick="selectedItem(row, index);reassignUser();"
+                                            
                                             >
                                             <avatar-image class-container size="12" class-image :input-data="row"></avatar-image>
                                         </span>
                                     </div>
                                     <div slot="modal-footer">
+                                            <b-button @click="cancelReassign" class="btn btn-outline-success btn-sm text-uppercase">{{__('Cancel')}}</b-button>
                                         <b-button
                                             :disabled="selectedIndex < 0"
                                             @click="reassignUser"
-                                            class="btn btn-outline-success btn-sm text-uppercase"
+                                            class="btn btn-success btn-sm text-uppercase"
                                             >{{__('Reassign')}}</b-button>
-                                        <b-button @click="cancelReassign" class="btn btn-success btn-sm text-uppercase">{{__('Cancel')}}</b-button>
+                                        
                                     </div>
                                 </b-modal>
                             </span>
