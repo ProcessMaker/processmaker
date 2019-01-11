@@ -27,6 +27,9 @@ trait ProcessTaskAssignmentsTrait
 
     public static function updateTaskAssignments(Process $process)
     {
+        if (!$process->exists) {
+            return;
+        }
         $process->assignments()->delete();
         $definitions = $process->getDefinitions(true);
         if ($definitions) {
