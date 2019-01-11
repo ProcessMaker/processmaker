@@ -70,10 +70,14 @@ class GroupController extends Controller
             $filter = '%' . $filter . '%';
             $query->where(function ($query) use ($filter) {
                 $query->Where('name', 'like', $filter)
-                    ->orWhere('description', 'like', $filter)
-                    ->orWhere('status', 'like', $filter);
+                    ->orWhere('description', 'like', $filter);
             });
         }
+        $status = $request->input('status', null);
+        if ($status) {
+            $query->where('status', $status);
+        }
+
         $response =
             $query->orderBy(
                 $request->input('order_by', 'name'),
