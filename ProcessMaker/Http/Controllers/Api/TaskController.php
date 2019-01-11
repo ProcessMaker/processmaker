@@ -60,8 +60,10 @@ class TaskController extends Controller
             $query->where('process_request_tokens.user_id', Auth::user()->id);
         }
 
-        $inOverdueQuery = clone $query;
-        $inOverdueQuery->where('due_at', '<', Carbon::now());
+        $inOverdueQuery = ProcessRequestToken::where('user_id', Auth::user()->id)
+            ->where('status', 'ACTIVE')
+            ->where('due_at', '<', Carbon::now());
+
         $inOverdue = $inOverdueQuery->count();
 
         $response = $query->paginate($request->input('per_page', 10));
