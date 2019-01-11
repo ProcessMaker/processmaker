@@ -12,7 +12,7 @@ Follow these steps to view all completed Tasks from all users in your organizati
 2. Click the **Tasks** option from the top menu. The **Completed Tasks** page displays.
 3. Click the **Completed** icon ![](../../.gitbook/assets/completed-icon-request%20%281%29.png). All completed Tasks display for all users in your organization.
 
-![Completed Tasks in the Tasks page](../../.gitbook/assets/completed-tasks-tasks.png)
+![&quot;Completed Tasks&quot; page displays Tasks you have completed](../../.gitbook/assets/completed-tasks-tasks.png)
 
 The **Completed Tasks** page displays the following information about all completed Tasks in your organization in tabular format:
 

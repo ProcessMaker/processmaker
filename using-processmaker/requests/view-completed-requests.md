@@ -1,5 +1,5 @@
 ---
-description: View completed Requests in which you started or participated.
+description: View complebusiness ped Requests in which you started or participated.
 ---
 
 # View Completed Requests
@@ -17,17 +17,6 @@ Follow these steps to view completed Requests: ~~UPDATE SCREENSHOT AFTER "COMPLE
 
 ![&quot;Completed&quot; Request tab](../../.gitbook/assets/completed-request.png)
 
-{% hint style="info" %}
-To [view information](request-details.md) about a Request, do one of the following:
-
-* From the **Name** column, click the Process name associated with the Request that you want to view.
-* Click the Open Request icon ![](../../.gitbook/assets/open-request-icon-requests.png) for the Request in which you want to view information.
-{% endhint %}
-
-{% hint style="info" %}
-Use the [Search](search-for-a-request.md) field to filter Requests that display in this tab.
-{% endhint %}
-
 The **Completed** tab displays the following information in tabular format:
 
 * **Name:** The **Name** column displays the name of the Process associated with the Request. Click the Process name to [view information](request-details.md#information-for-completed-requests) about that Request.
@@ -37,11 +26,24 @@ The **Completed** tab displays the following information in tabular format:
 * **Completed:** The **Completed** column displays the date and time the Request was completed. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
 {% hint style="info" %}
-If there are no completed Requests in which you are a participant, the following message displays: **No Data Available**.
-{% endhint %}
+### View Information About A Request
 
-{% hint style="info" %}
-[Control how Request information displays.](../control-how-requests-display-in-a-tab.md)
+To [view information](request-details.md) about a Request, do one of the following:
+
+* From the **Name** column, click the Process name associated with the Request that you want to view.
+* Click the **Open Request** icon![](../../.gitbook/assets/open-request-icon-requests.png)for the Request in which you want to view information.
+
+### Search for a Request
+
+Use the [Search](search-for-a-request.md) field to filter Requests that display in this tab.
+
+### No Requests?
+
+If there are no Requests in this tab, the following message displays: **No Data Available**.
+
+### Make Information Work for You
+
+[Control how tabular information displays](../control-how-requests-display-in-a-tab.md), including how to sort columns or how many items display per page.
 {% endhint %}
 
 ## Related Topics

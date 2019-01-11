@@ -44,7 +44,7 @@ To view all of your read and unread notifications, click the Notifications icona
 
 The **All Notifications** page displays all your read and unread notifications.
 
-![All Notifications page displays your read and unread notifications](../.gitbook/assets/all-notifications-page.png)
+![&quot;All Notifications&quot; page displays your read and unread notifications](../.gitbook/assets/all-notifications-page.png)
 
 The **All Notifications** page displays the following information in tabular format:
 

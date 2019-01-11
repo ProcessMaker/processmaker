@@ -10,7 +10,7 @@ Request participants can cancel a Request in the following circumstances:
 * Any ProcessMaker Administrator can cancel a Request associated with any active Process.
 
 {% hint style="info" %}
-If your user account does not have the permission\(s\) to cancel Requests for that Process, functionality does not display to cancel those Requests.
+If your user account or group membership does not have the permission\(s\) to cancel Requests for that Process, functionality does not display to cancel those Requests.
 {% endhint %}
 
 ## Cancel a Request

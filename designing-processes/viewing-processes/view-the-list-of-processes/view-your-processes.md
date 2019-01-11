@@ -23,7 +23,7 @@ Follow these steps to view all Processes in your organization:
 Click the **Processes** ![](../../../.gitbook/assets/processses-icon-processes.png) icon when you are in other Process-related pages to view the **Processes** page.
 {% endhint %}
 
-![Processes page displays all Processes in your organization](../../../.gitbook/assets/processes.png)
+![&quot;Processes&quot; page displays all Processes in your organization](../../../.gitbook/assets/processes.png)
 
 The **Processes** page displays the following information about Processes:
 
