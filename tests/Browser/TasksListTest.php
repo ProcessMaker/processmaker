@@ -9,7 +9,7 @@ use ProcessMaker\Models\User;
 use Tests\DuskTestCase;
 use Laravel\Dusk\Browser;
 
-class UserCreationTest extends DuskTestCase
+class TasksListTest extends DuskTestCase
 {
     /**
      * @throws \Throwable
