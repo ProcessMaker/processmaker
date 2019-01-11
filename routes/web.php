@@ -9,6 +9,7 @@ Route::group(['middleware' => ['auth', 'authorize']], function () {
     Route::namespace('Admin')->prefix('admin')->group(function () {
         Route::resource('groups', 'GroupController')->only(['index', 'edit']);
         Route::resource('users', 'UserController');
+        Route::resource('auth-clients', 'AuthClientController');
     });
 
     Route::namespace('Process')->prefix('processes')->group(function () {
