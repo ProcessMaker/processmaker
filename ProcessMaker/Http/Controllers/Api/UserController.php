@@ -4,10 +4,11 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
-use ProcessMaker\Models\User;
 use ProcessMaker\Http\Resources\Users as UserResource;
+use ProcessMaker\Models\User;
 
 class UserController extends Controller
 {
@@ -112,7 +113,11 @@ class UserController extends Controller
     {
         $request->validate(User::rules());
         $user = new User();
-        $user->fill($request->json()->all());
+        $fields = $request->json()->all();
+        if (isset($fields['password'])) {
+            $fields['password'] = Hash::make($fields['password']);
+        }
+        $user->fill($fields);
         $user->saveOrFail();
         return new UserResource($user->refresh());
     }
@@ -180,7 +185,11 @@ class UserController extends Controller
     public function update(User $user, Request $request)
     {
         $request->validate(User::rules($user));
-        $user->fill($request->json()->all());
+        $fields = $request->json()->all();
+        if (isset($fields['password'])) {
+            $fields['password'] = Hash::make($fields['password']);
+        }
+        $user->fill($fields);
         if (Auth::user()->is_administrator && $request->has('is_administrator')) {
             // user must be an admin to make another user an admin
             $user->is_administrator = $request->get('is_administrator');
