@@ -7,6 +7,8 @@ use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
+use ProcessMaker\Models\Group;
+use ProcessMaker\Models\GroupMember;
 
 /**
  * Test the process execution with requests
@@ -55,7 +57,7 @@ class ProcessExecutionTest extends TestCase
             'process_id' => $process->id,
             'process_task_id' => $taskId,
             'assignment_id' => $this->user->id,
-            'assignment_type' => 'user',
+            'assignment_type' => User::class,
         ]);
         return $process;
     }
@@ -250,5 +252,95 @@ class ProcessExecutionTest extends TestCase
                 'name'
             ]
         ]);
+    }
+
+    /**
+     * Test that the task gets assigned to the correct person in a group
+     */
+    public function testTaskAssignedToGroup()
+    {
+        $foo = factory(User::class)->create(
+            ['firstname' => 'Foo', 'status' => 'ACTIVE']
+        );
+        $bar = factory(User::class)->create(
+            ['firstname' => 'Bar', 'status' => 'ACTIVE']
+        );
+        $group = factory(Group::class)->create(
+            ['id' => 999, 'status' => 'ACTIVE']
+        );
+        
+        foreach([$foo, $bar] as $user) {
+            factory(GroupMember::class)->create([
+                'member_id' => $user->id,
+                'member_type' => User::class,
+                'group_id' => $group->id
+            ]);
+        }
+
+        $group_process = factory(Process::class)->create(['status' => 'ACTIVE']);
+        $data['bpmn'] = Process::getProcessTemplate('SingleTaskAssignedToGroup.bpmn');
+        $group_process->update($data);
+
+        $taskId = 'node_3';
+        factory(ProcessTaskAssignment::class)->create([
+            'process_id' => $group_process->id,
+            'process_task_id' => $taskId,
+            'assignment_id' => $group->id,
+            'assignment_type' => Group::class
+        ]);
+
+        //Start a process request
+        $route = route('api.process_events.trigger', [$group_process->id, 'event' => 'node_2']);
+        $response = $this->apiCall('POST', $route, []);
+
+        //Get the active tasks of the request
+        $route = route('api.tasks.index');
+        $response = $this->actingAs($foo, 'api')->json('GET', $route);
+        $tasks = $response->json('data');
+
+        // Assert the first user "foo" got the task
+        $this->assertEquals(count($tasks), 1);
+        $task_id = $tasks[0]['id'];
+        
+        //Get the active tasks of the request for the other user
+        $route = route('api.tasks.index');
+        $response = $this->actingAs($bar, 'api')->json('GET', $route);
+        $tasks = $response->json('data');
+        
+        // Assert that "bar" did NOT get the task
+        $this->assertEquals(count($tasks), 0);
+
+        // Complete the task
+        $route = route('api.tasks.update', [$task_id, 'status' => 'COMPLETED']);
+        $response = $this->apiCall('PUT', $route, $data);
+
+        // Start another request
+        $route = route('api.process_events.trigger', [$group_process->id, 'event' => 'node_2']);
+        $response = $this->apiCall('POST', $route, []);
+
+        //Get the active tasks of the request
+        $route = route('api.tasks.index');
+        $response = $this->actingAs($bar, 'api')->json('GET', $route);
+        $tasks = $response->json('data');
+
+        // Assert the next user "bar" got the task
+        $this->assertEquals(count($tasks), 1);
+        
+        // Complete the task
+        $route = route('api.tasks.update', [$tasks[0]['id'], 'status' => 'COMPLETED']);
+        $response = $this->apiCall('PUT', $route, $data);
+        
+        // Start another request
+        $route = route('api.process_events.trigger', [$group_process->id, 'event' => 'node_2']);
+        $response = $this->apiCall('POST', $route, []);
+
+        //Get the active tasks of the request
+        $route = route('api.tasks.index');
+        $response = $this->actingAs($foo, 'api')->json('GET', $route);
+        $tasks = $response->json('data');
+
+        // Assert the next user, "foo" again, got the task
+        $this->assertEquals($tasks[0]['advanceStatus'], 'completed');
+        $this->assertEquals($tasks[1]['advanceStatus'], 'open');
     }
 }

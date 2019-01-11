@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions
+    xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:pm="http://processmaker.com/BPMN/2.0/Schema.xsd"
+    targetNamespace="http://sourceforge.net/bpmn/definitions/_1537370422571"
+    xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+  <process id="ProcessIdGroup" name="ProcessName" isExecutable="true">
+    <startEvent id="node_2" name="Start Event">
+      <outgoing>node_5</outgoing>
+    </startEvent>
+    <task id="node_3" name="test task" screenRef="5" assignment="group" assignedGroups="999">
+      <incoming>node_5</incoming>
+      <outgoing>node_6</outgoing>
+    </task>
+    <endEvent id="node_4" name="End Event">
+      <incoming>node_6</incoming>
+    </endEvent>
+    <sequenceFlow id="node_5" name="" sourceRef="node_2" targetRef="node_3" />
+    <sequenceFlow id="node_6" name="" sourceRef="node_3" targetRef="node_4" />
+  </process>
+  <BPMNDiagram id="BPMNDiagramId">
+    <BPMNPlane id="BPMNPlaneId" bpmnElement="ProcessIdGroup">
+      <BPMNShape id="node_2_di" bpmnElement="node_2">
+        <Bounds x="119" y="140" width="36" height="36" />
+      </BPMNShape>
+      <BPMNShape id="node_3_di" bpmnElement="node_3">
+        <Bounds x="280" y="140" width="116" height="76" />
+      </BPMNShape>
+      <BPMNShape id="node_4_di" bpmnElement="node_4">
+        <Bounds x="490" y="240" width="36" height="36" />
+      </BPMNShape>
+      <BPMNEdge id="node_5_di" bpmnElement="node_5">
+        <waypoint x="155" y="158" />
+        <waypoint x="226.22265625" y="158" />
+        <waypoint x="226.22265625" y="178" />
+        <waypoint x="280" y="178" />
+      </BPMNEdge>
+      <BPMNEdge id="node_6_di" bpmnElement="node_6">
+        <waypoint x="396" y="178" />
+        <waypoint x="508" y="178" />
+        <waypoint x="508" y="240" />
+      </BPMNEdge>
+    </BPMNPlane>
+  </BPMNDiagram>
+</definitions>

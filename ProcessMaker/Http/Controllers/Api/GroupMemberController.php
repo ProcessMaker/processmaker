@@ -9,12 +9,14 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
-
+use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\GroupMembers as GroupMemberResource;
 
 class GroupMemberController extends Controller
 {
+    public $skipPermissionCheckFor = ['index'];
+
     /**
      * Display a listing of the resource.
      *
@@ -22,14 +24,13 @@ class GroupMemberController extends Controller
      *
      *     @OA\Get(
      *     path="/group_members",
-     *     summary="Returns all group_members that the user has access to",
+     *     summary="Returns all groups for a given member",
      *     operationId="getGroupMembers",
      *     tags={"Group members"},
-     *     @OA\Parameter(ref="#/components/parameters/filter"),
+     *     @OA\Parameter(ref="#/components/parameters/member_id"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
-     *     @OA\Parameter(ref="#/components/parameters/include"),
      *
      *     @OA\Response(
      *         response=200,
@@ -52,22 +53,24 @@ class GroupMemberController extends Controller
      */
     public function index(Request $request)
     {
-        $query = GroupMember::query();
+        $query = GroupMember::query()
+            ->join('groups', 'groups.id', '=', 'group_members.group_id')
+            ->select('group_members.*', 'groups.name', 'groups.description');
 
-        $filter = $request->input('filter', '');
-        if (!empty($filter)) {
-            $filter = '%' . $filter . '%';
-            $query->where(function ($query) use ($filter) {
-                $query->Where('member_id', '=', $filter);
-            });
+        if (\Auth::user()->is_administrator) {
+            $member_id = $request->input('member_id', null);
+            if ($member_id) {
+                $query->where('member_id', $member_id);
+            }
+        } else {
+            $query->where('member_id', Auth::user()->id);
         }
 
         $response =
             $query->orderBy(
             $request->input('order_by', 'created_at'),
             $request->input('order_direction', 'ASC')
-        )
-            ->paginate($request->input('per_page', 10));
+        )->paginate($request->input('per_page', 10));
 
         return new ApiCollection($response);
     }
@@ -153,7 +156,7 @@ class GroupMemberController extends Controller
     }
 
     /**
-     * Delete a user
+     * Delete a group membership
      *
      * @param GroupMember $user
      *
