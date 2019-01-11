@@ -6,11 +6,13 @@ description: View the Processes from all Process Owners in your organization.
 
 ProcessMaker displays all Processes in one table that Process Owners have created throughout your organization. This makes it easy to manage Processes.
 
-{% hint style="info" %}
-To view Processes, you must be a member of the Process Owner group. Otherwise, the **Processes** option is not available from the top menu that allows you to perform Process management activities.
-{% endhint %}
-
 ## View All Processes
+
+{% hint style="info" %}
+Your user account or group membership must have the "Processes: List" permission to view the list of Processes.
+
+Otherwise, the **Processes** option is not available from the top menu that allows you to perform Process management activities.
+{% endhint %}
 
 Follow these steps to view all Processes in your organization:
 
@@ -38,15 +40,6 @@ The **Processes** page displays the following information about Processes:
 * **Modified:** The **Modified** column displays the date and time the Process was last modified. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 * **Created:** The **Created** column displays the date and time the process was created. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
-## Manage Your Processes
-
-If your user account has the appropriate permissions, use the **Processes** page to manage Processes. If a function described below is not visible~~/enabled~~ to~~/for~~ you, ask your ProcessMaker Administrator for the appropriate user permission.
-
-* **Edit a Process:** Select the
-* **Configure a Process:** 
-* **Archive a Process:** 
-* **Restore a Process:** 
-
 {% hint style="info" %}
 Use the [Search](search-for-a-process.md) field to filter Processes that display.
 {% endhint %}
@@ -58,6 +51,54 @@ If no Processes exist, the following message displays: **You don't have any proc
 {% hint style="info" %}
 [Control how tabular information displays.](../../../using-processmaker/control-how-requests-display-in-a-tab.md)
 {% endhint %}
+
+## Manage Your Processes
+
+If your user account or group membership has the appropriate permission\(s\), use the **Processes** page to manage Processes. If a function described below is not visible~~/enabled~~ to~~/for~~ you, ask your ProcessMaker Administrator for the appropriate permission\(s\).
+
+### Edit the Process Model
+
+{% hint style="info" %}
+Your user account or group membership must have the following permissions to edit a Process model:
+
+* Processes: List
+* Processes: View
+{% endhint %}
+
+Click the **Open Modeler** icon![](../../../.gitbook/assets/open-modeler-edit-icon-processes-page-processes.png)to edit the selected Process model. See [Process Modeling](../../process-design/) for topics about Process modeling.
+
+### Edit Process Information
+
+{% hint style="info" %}
+Your user account or group membership must have the following permissions to edit process information:
+
+* Processes: List
+* Processes: Edit
+{% endhint %}
+
+Click the **Config** icon![](../../../.gitbook/assets/configure-process-icon-processes-page-processes.png)to edit the general information for the selected Process. See [Edit Process Information](edit-the-name-description-category-or-status-of-a-process.md#edit-general-information-about-a-process) for more information.
+
+### Archive a Process
+
+{% hint style="info" %}
+Your user account or group membership must have the following permissions to archive a Process:
+
+* Processes: List
+* Processes: ~~Archive~~
+{% endhint %}
+
+Click the **Archive** icon![](../../../.gitbook/assets/archive-process-icon-processes-page-processes.png)to archive the selected Process. See [Archive a Process](remove-a-process.md#archive-a-process) for more information.
+
+### Restore a Process
+
+{% hint style="info" %}
+Your user account or group membership must have the following permissions to restore a Process:
+
+* Processes: List
+* Processes: ~~Restore~~
+{% endhint %}
+
+Click the **Restore** icon![](../../../.gitbook/assets/restore-process-icon-processes-page-processes.png)to restore the selected Process. See [Restore a Process](restore-a-process.md#restore-a-process) for more information.
 
 ## Related Topics
 

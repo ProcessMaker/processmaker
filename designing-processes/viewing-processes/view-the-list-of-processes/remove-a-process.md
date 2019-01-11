@@ -1,25 +1,23 @@
 ---
-description: Remove a process to no longer use it in your organization.
+description: Archive a Process that is no longer needed in your organization.
 ---
 
-# Remove a Process
+# Archive a Process
 
 {% hint style="info" %}
-To remove a process, you must be a member of the Process Owner group. Otherwise, the **Processes** option is not available from the top menu that allows you to perform process management activities.
+To archive a Process, you must be a member of the Process Owner group. Otherwise, the **Processes** option is not available from the top menu that allows you to perform Process management activities.
 {% endhint %}
 
-## Remove a Process
+## Archive a Process
 
 {% hint style="warning" %}
-When a process is removed ~~describe what happens and in which conditions a process can be removed.~~
-
-Removing a process from the **Processes** page cannot be undone.
+When a Process is archived ~~describe what happens and in which conditions a process can be removed.~~
 {% endhint %}
 
-Follow these steps to remove a process:
+Follow these steps to archive a Process:
 
-1. [View your processes.](./#view-your-processes) The **Processes** page displays.
-2. Hover your cursor over the process to preview and then select the **Remove** icon![](../../../.gitbook/assets/remove-icon.png). ~~What happens?~~
+1. [View your Processes.](./#view-your-processes) The **Processes** page displays.
+2. Hover your cursor over the process to archive and then select the **Remove** icon![](../../../.gitbook/assets/remove-icon.png). ~~What happens?~~
 
 ## Related Topics
 
