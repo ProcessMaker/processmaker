@@ -10,6 +10,28 @@
         :data="data"
         data-path="data"
       >
+        <template slot="actions" slot-scope="props">
+          <div class="actions">
+            <div class="popout">
+              <b-btn
+                variant="link"
+                @click="onEdit(props.rowData, props.rowIndex)"
+                v-b-tooltip.hover
+                title="Edit"
+              >
+                <i class="fas fa-pen-square fa-lg fa-fw"></i>
+              </b-btn>
+              <b-btn
+                variant="link"
+                @click="onDelete( props.rowData, props.rowIndex)"
+                v-b-tooltip.hover
+                title="Remove"
+              >
+                <i class="fas fa-trash-alt fa-lg fa-fw"></i>
+              </b-btn>
+            </div>
+          </div>
+        </template>
       </vuetable>
     </div>
   </div>
@@ -39,6 +61,25 @@ export default {
           sortField: "Name"
         },
         {
+          title: "Redirect",
+          name: "redirect",
+          sortField: "redirect",
+          callback(val) { return val.substr(0, 20) + '...' }
+        },
+        {
+          title: "Active",
+          name: "revoked",
+          sortField: "revoked",
+          callback(val) { return !val }
+        },
+        {
+          title: "Secret",
+          name: "secret",
+          callback(val) {
+            return val.substr(0, 10) + '...'
+          }
+        },
+        {
           name: "__slot:actions",
           title: ""
         }
@@ -55,6 +96,9 @@ export default {
           this.data = response.data;
           this.loading = false;
         });
+    },
+    onEdit(row, index) {
+      this.$emit('edit', row);
     }
   }
 };
