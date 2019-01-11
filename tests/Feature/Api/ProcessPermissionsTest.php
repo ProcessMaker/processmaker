@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\User;
@@ -44,7 +45,7 @@ class ProcessPermissionsTest extends TestCase
     {
         $process = factory(Process::class)->create();
         $normal_user = factory(User::class)->create([
-            'password' => 'password'
+            'password' => Hash::make('password')
         ]);
         // User needs the 'global' requests.cancel first
         $normal_user->giveDirectPermission('requests.cancel');
@@ -74,7 +75,7 @@ class ProcessPermissionsTest extends TestCase
     {
         $this->user->is_administrator = true;
         $normal_user = factory(User::class)->create([
-            'password' => 'password'
+            'password' => Hash::make('password')
         ]);
         // User needs the 'global' requests.cancel first
         $normal_user->giveDirectPermission('requests.cancel');

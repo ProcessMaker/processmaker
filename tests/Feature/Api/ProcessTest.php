@@ -4,6 +4,7 @@ namespace Tests\Feature\Api;
 
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Permission;
@@ -73,7 +74,7 @@ class ProcessTest extends TestCase
     {
         // We create an user that isn't administrator
         $this->user = factory(User::class)->create([
-            'password' => 'password',
+            'password' => Hash::make('password'),
             'is_administrator' => false,
         ]);
 
@@ -133,7 +134,7 @@ class ProcessTest extends TestCase
     {
         // We create an user that isn't administrator
         $this->user = factory(User::class)->create([
-            'password' => 'password',
+            'password' => Hash::make('password'),
             'is_administrator' => false,
         ]);
 
@@ -203,7 +204,7 @@ class ProcessTest extends TestCase
         ]);
 
         $this->user = factory(User::class)->create([
-            'password' => 'password',
+            'password' => Hash::make('password'),
             'is_administrator' => false,
         ]);
 

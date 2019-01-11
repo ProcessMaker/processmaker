@@ -2,7 +2,7 @@
     <div class="notifications">
         <a class="count-info" data-toggle="dropdown" href="#" aria-expanded="false" id="exPopover1-bottom">
             <i class="fas fa-bell fa-lg font-size-23"></i>
-            <b-badge pill variant="danger" v-show="messages.length>0">{{totalMessages}}</b-badge>
+            <b-badge pill variant="danger" v-show="totalMessages>0">{{totalMessages}}</b-badge>
         </a>
         <b-popover :target="'exPopover1-bottom'"
                    :placement="'bottomleft'"
@@ -49,12 +49,12 @@
         watch: {
             messages(value, mutation) {
                 //update the number of messages just whe the number has been initialized (in mounted)
-                if (this.incrementTotalMessages === true) {
-                    this.totalMessages++;
+                if (this.incrementTotalMessages) {
+                    this.updateTotalMessages();
+                    $(this.$el)
+                        .find(".dropdown")
+                        .dropdown("toggle");
                 }
-                $(this.$el)
-                    .find(".dropdown")
-                    .dropdown("toggle");
             }
         },
         data() {
@@ -68,6 +68,20 @@
             };
         },
         methods: {
+            updateTotalMessages(){
+                this.incrementTotalMessages = false;
+                ProcessMaker.apiClient.get('/notifications?per_page=5&filter=unread')
+                    .then( response => {
+                        ProcessMaker.notifications.splice(0);
+                        response.data.data.forEach(function (element) {
+                            ProcessMaker.pushNotification(element);
+                        });
+                        this.totalMessages = response.data.meta.total;
+                        this.$nextTick(()=>{
+                            this.incrementTotalMessages = true;
+                        });
+                    });
+            },
             remove(message) {
                 ProcessMaker.removeNotifications([message.id]);
                 if (this.totalMessages > 0) {
@@ -90,18 +104,7 @@
                     $("#navbar-request-button").offset().left + 32 + "px";
             });
 
-            let self = this;
-            ProcessMaker.apiClient.get('/notifications?per_page=5&filter=unread')
-                .then(function (response) {
-                    response.data.data.forEach(function (element) {
-                        ProcessMaker.pushNotification(element);
-                    });
-                    self.totalMessages = response.data.meta.total
-
-                    setTimeout(function() {
-                       self.incrementTotalMessages=true;
-                    }, 2000)
-                });
+            this.updateTotalMessages();
         }
     };
 </script>
