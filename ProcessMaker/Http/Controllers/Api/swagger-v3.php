@@ -48,6 +48,12 @@
  *             description="Include data from related models in payload. Comma seperated list.",
  *             @OA\Schema(type="string", default=""),
  *         ),
+ *         @OA\Parameter(
+ *             parameter="member_id",
+ *             name="member_id",
+ *             in="query",
+ *             @OA\Schema(type="integer"),
+ *         ),
  *     ),
  *     security={{"pm_api_bearer": {}}},
  * )
