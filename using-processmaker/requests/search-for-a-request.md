@@ -23,16 +23,16 @@ Search for any Request that you started or participated in from any tab in the *
 As you enter text into the **Search** field, Requests display that match your entered text.
 
 {% hint style="info" %}
+### Scope of Search Results <a id="search-for-a-request"></a>
+
+Search results display only for Requests within the **Request** page tab you are viewing. For example, performing a search from within the **Started by Me** tab displays results only for Requests within that tab.
+
 ### View Information About A Request <a id="view-information-about-a-request"></a>
 
 To [view information](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/~/drafts/-LVxrObuWev9g7I96C2A/primary/using-processmaker/requests/request-details) about a Request, do one of the following:
 
 * From the **Name** column, click the Process name associated with the Request that you want to view.
 * Click the **Open Request** icon![](https://firebasestorage.googleapis.com/v0/b/gitbook-28427.appspot.com/o/assets%2F-LJ0aNaVW1m7sNsxVJLV%2F-LVEg50XN0-PSaV6jG0a%2F-LVEzGdlTxxh1B2FNuS7%2FOpen%20Request%20Icon%20-%20Requests.png?alt=media&token=006d03ea-98dd-4227-b702-31f7e709df10)for the Request in which you want to view information.
-
-### Scope of Search Results <a id="search-for-a-request"></a>
-
-Search results display only for Requests within the **Request** page tab you are viewing. For example, performing a search from within the **Started by Me** tab displays results only for Requests within that tab.
 
 ### No Search Results?
 
