@@ -18,6 +18,7 @@
                 <xsd:attribute name="notifyToRequestCreator" type="xsd:boolean" default="false"/>
                 <xsd:attribute name="assignment" type="xsd:string" default="requestor"/>
                 <xsd:attribute name="assignedUsers" type="xsd:string"/>
+                <xsd:attribute name="assignedGroups" type="xsd:string"/>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
@@ -32,6 +33,7 @@
                 <xsd:attribute name="notifyToRequestCreator" type="xsd:boolean" default="false"/>
                 <xsd:attribute name="assignment" type="xsd:string" default="requestor"/>
                 <xsd:attribute name="assignedUsers" type="xsd:string"/>
+                <xsd:attribute name="assignedGroups" type="xsd:string"/>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
