@@ -187,7 +187,6 @@
                     }
                 },
                 select() {
-                    console.log(this.selectedPermissions)
                     this.selectedPermissions = [];
                     if (!this.selectAll) {
                         for (let permission in this.permissions) {
