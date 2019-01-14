@@ -31,9 +31,11 @@ class GenerateMenus
             $menu->group(['prefix' => 'processes'], function($request_items) {
                 $request_items->add(__('menus.topnav.processes'), ['route' => 'processes.index'])->active('processes/*');
             });
-            $menu->group(['prefix' => 'admin'], function($admin_items) {
-                $admin_items->add(__('menus.topnav.admin'), ['route' => 'users.index'])->active('admin/*');
-            });
+            if (\Auth::check() && (\Auth::user()->can('view-users') || \Auth::user()->can('view-groups') || \Auth::user()->is_administrator)) {
+                $menu->group(['prefix' => 'admin'], function($admin_items) {
+                    $admin_items->add(__('menus.topnav.admin'), ['route' => 'users.index'])->active('admin/*');
+                });
+            }
         });
 
         // Build the menus
@@ -53,11 +55,12 @@ class GenerateMenus
                 'id' => 'homeid'
                 ]);
             }
-            $submenu->add(__('menus.sidebar_admin.queue_management'), [
-                'route' => 'horizon.index',
-                'icon' => 'fa-infinity',
-            ]);
-
+            if(\Auth::check() && \Auth::user()->is_administrator) {
+                $submenu->add(__('menus.sidebar_admin.queue_management'), [
+                    'route' => 'horizon.index',
+                    'icon' => 'fa-infinity',
+                ]);
+            }
         });
         Menu::make('sidebar_task', function ($menu) {
           $submenu = $menu->add(__('Tasks'));
