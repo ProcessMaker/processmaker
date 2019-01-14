@@ -47,11 +47,9 @@ Follow these steps to edit the configuration information about a Process:
 
 {% page-ref page="search-for-a-process.md" %}
 
-{% page-ref page="activate-or-deactivate-a-process.md" %}
-
-{% page-ref page="preview-a-process.md" %}
-
 {% page-ref page="remove-a-process.md" %}
+
+{% page-ref page="restore-a-process.md" %}
 
 {% page-ref page="../create-a-process.md" %}
 

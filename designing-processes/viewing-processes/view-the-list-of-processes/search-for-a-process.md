@@ -39,11 +39,9 @@ See [View All Processes](view-your-processes.md#manage-your-processes) for ways 
 
 {% page-ref page="edit-the-name-description-category-or-status-of-a-process.md" %}
 
-{% page-ref page="activate-or-deactivate-a-process.md" %}
-
-{% page-ref page="preview-a-process.md" %}
-
 {% page-ref page="remove-a-process.md" %}
+
+{% page-ref page="restore-a-process.md" %}
 
 {% page-ref page="../process-categories.md" %}
 

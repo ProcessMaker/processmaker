@@ -16,10 +16,6 @@ Any Process designed in ~~or exported from~~ ProcessMaker 4 is BPMN 2.0 complian
 
 {% page-ref page="view-the-list-of-processes/edit-the-name-description-category-or-status-of-a-process.md" %}
 
-{% page-ref page="view-the-list-of-processes/activate-or-deactivate-a-process.md" %}
-
-{% page-ref page="view-the-list-of-processes/preview-a-process.md" %}
-
 {% page-ref page="view-the-list-of-processes/remove-a-process.md" %}
 
 {% page-ref page="process-categories.md" %}

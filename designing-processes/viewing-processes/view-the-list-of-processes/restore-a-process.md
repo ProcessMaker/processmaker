@@ -4,9 +4,9 @@ description: Restore an archived Process to use again in your organization.
 
 # Restore a Process
 
-## Restore a Process
+## Restore an Archived Process
 
-Restore an archived Process so Requests can be started using it.
+Restore an archived Process so Requests can be started against it. After a Process is restored, that Process moves from the **Process Archive** page to the **Processes** page. A restored Process is automatically set to active status.
 
 {% hint style="info" %}
 Your user account or group membership must have the following permissions to archive a Process:
@@ -17,14 +17,10 @@ Your user account or group membership must have the following permissions to arc
 Ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
-Follow these steps to restore a Process:
+Follow these steps to restore an archived Process:
 
-1. [View your Processes.](./#view-your-processes) The **Processes** page displays.
-2. Select the **Restore** icon![](../../../.gitbook/assets/restore-process-icon-processes-page-processes.png)for your Process.
-
-{% hint style="info" %}
-Ensure to set your restored Process to active status. Otherwise, Requests cannot be started using it. See [Edit Process Configuration](edit-the-name-description-category-or-status-of-a-process.md#edit-configuration-information-about-a-process).
-{% endhint %}
+1. [View your archived Processes](remove-a-process.md#view-archived-processes). The **Process Archive** page displays.
+2. Select the **Restore** icon![](../../../.gitbook/assets/restore-process-icon-processes-page-processes.png)for your Process. The following message displays: **The process was restored successfully**. The Process moves from the **Process Archive** page to the **Processes** page. See [View Active and Inactive Processes](view-your-processes.md#view-all-processes).
 
 ## Related Topics
 
@@ -35,10 +31,6 @@ Ensure to set your restored Process to active status. Otherwise, Requests cannot
 {% page-ref page="search-for-a-process.md" %}
 
 {% page-ref page="edit-the-name-description-category-or-status-of-a-process.md" %}
-
-{% page-ref page="activate-or-deactivate-a-process.md" %}
-
-{% page-ref page="preview-a-process.md" %}
 
 {% page-ref page="../process-categories.md" %}
 

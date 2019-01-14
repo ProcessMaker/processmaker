@@ -6,11 +6,21 @@ description: Archive a Process that is no longer needed in your organization.
 
 ## What is an Archived Process?
 
-An archived Process is one in which ~~what?~~ Processes with in-progress Requests cannot be archived.
+An archived Process has the following attributes:
 
-An archived Process is different than an inactive Process.
+* Archived Processes are disabled and inactive until they are [restored](restore-a-process.md#restore-a-process).
+* All archived Processes in the organization are accessible from the **Process Archive** page. See [View Archived Processes](remove-a-process.md#view-archived-processes).
+* A Process with in-progress Requests can be archived. In-progress Requests will complete.
 
+## View Archived Processes
 
+Follow these steps to view all archived Processes in your organization:
+
+1. [Log in](../../../using-processmaker/log-in.md#log-in) to ProcessMaker.
+2. Click the **Processes** option from the top menu. The **Processes** page displays.
+3. Click the **Archived Processes** icon![](../../../.gitbook/assets/archived-processes-icon-processes.png)in the left sidebar. The **Process Archive** page displays all archived Processes in your organization.
+
+![&quot;Process Archive&quot; page contains all archived Processes in your organization](../../../.gitbook/assets/process-archive-page-processes.png)
 
 ## Archive a Process
 
@@ -36,6 +46,8 @@ Follow these steps to archive a Process:
 
 3. Click **Confirm** to archive the Process. Otherwise, click **Cancel** to not archive the Process.
 
+   If **Confirm** is clicked, the following message displays: **Process Archived**. The Process moves from the **Processes** page to the **Process Archive** page. See [View Archived Processes](remove-a-process.md#view-archived-processes). Also see [Restore an Archived Process](restore-a-process.md#restore-a-process).
+
 ## Related Topics
 
 {% page-ref page="../what-is-a-process.md" %}
@@ -46,9 +58,7 @@ Follow these steps to archive a Process:
 
 {% page-ref page="edit-the-name-description-category-or-status-of-a-process.md" %}
 
-{% page-ref page="activate-or-deactivate-a-process.md" %}
-
-{% page-ref page="preview-a-process.md" %}
+{% page-ref page="restore-a-process.md" %}
 
 {% page-ref page="../process-categories.md" %}
 
