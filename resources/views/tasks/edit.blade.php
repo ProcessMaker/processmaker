@@ -13,6 +13,16 @@
 @endsection
 
 @section('content')
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="{{ route('requests.index') }}">{{ __('Requests') }}</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('requests.show', ['id' => $task->processRequest->id]) }}">
+                {{ $task->processRequest->name }}
+            </a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ $task->element_name }}</li>
+        </ol>
+    </nav>
     <div id="task" class="container">
         <h1>{{$task->element_name}}</h1>
         <div class="row">
@@ -55,6 +65,39 @@
                             <h5>{{__('Assigned To')}}</h5>
                             <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
                                       :input-data="userAssigned"></avatar-image>
+                            @if(!empty($task->getDefinition()['allowReassignment']))
+                            <div>
+                            <br>
+                            <span>
+                                <button class="btn btn-outline-secondary btn-block" @click="show">
+                                    <i class="fas fa-user-friends"></i> {{__('Reassign')}}
+                                </button>
+                                <b-modal v-model="showReassignment" size="md" centered title="{{__('Reassign to')}}" v-cloak>
+                                    <div class="list-users-groups" style="overflow: auto; height:100px">
+                                        <span
+                                            v-for="(row, index) in usersList"
+                                            class="list-group-item list-group-item-action pt-1 pb-1"
+                                            :class="{'bg-primary': selectedIndex == index}"
+                                            @click="selectedItem(row, index)"
+                                            @dblclick="selectedItem(row, index);reassignUser();"
+                                            
+                                            >
+                                            <avatar-image class-container size="12" class-image :input-data="row"></avatar-image>
+                                        </span>
+                                    </div>
+                                    <div slot="modal-footer">
+                                            <b-button @click="cancelReassign" class="btn btn-outline-success btn-sm text-uppercase">{{__('Cancel')}}</b-button>
+                                        <b-button
+                                            :disabled="selectedIndex < 0"
+                                            @click="reassignUser"
+                                            class="btn btn-success btn-sm text-uppercase"
+                                            >{{__('Reassign')}}</b-button>
+                                        
+                                    </div>
+                                </b-modal>
+                            </span>
+                            </div>
+                            @endif
                         </li>
                         <li class="list-group-item">
                             <i class="far fa-calendar-alt"></i>
@@ -87,12 +130,24 @@
         new Vue({
             el: '#task',
             data: {
+                // Reassignment
+                selected: null,
+                selectedIndex: -1,
+                usersList: [],
+                filter: "",
+                showReassignment: false,
+                
                 task: @json($task),
                 assigned: @json($task->user),
                 requested: @json($task->processRequest->user),
                 statusCard: 'card-header text-capitalize text-white bg-success',
                 userAssigned: [],
                 userRequested: []
+            },
+            watch: {
+                showReassignment(show) {
+                    show ? this.loadUsers() : null;
+                }
             },
             computed: {
                 dateDueAt() {
@@ -103,6 +158,42 @@
                 }
             },
             methods: {
+                // Reassign methods
+                show() {
+                    this.showReassignment = true;
+                },
+                cancelReassign() {
+                    this.showReassignment = false;
+                    this.selectedItem(null, -1);
+                },
+                reassignUser() {
+                    if (this.selected) {
+                        ProcessMaker.apiClient
+                                .put("tasks/" + this.task.id, {
+                                    user_id: this.selected.id
+                                })
+                                .then(response => {
+                                    this.showReassignment = false;
+                                    this.selectedItem(null, -1);
+                                    window.location.href =
+                                            "/requests/" + response.data.process_request_id;
+                                });
+                    }
+                },
+                selectedItem(selected, index) {
+                    this.selected = selected;
+                    this.selectedIndex = index;
+                },
+                loadUsers() {
+                    ProcessMaker.apiClient.get("tasks/" + this.task.id, {
+                        params: {
+                            include: "assignableUsers"
+                        }
+                    }).then(response => {
+                        this.$set(this, "usersList", response.data.assignableUsers);
+                    });
+                },
+
                 classHeaderCard(status) {
                     let header = 'bg-success';
                     switch (status) {
@@ -132,4 +223,11 @@
 @endsection
 
 @section('css')
+<style>
+    .list-users-groups {
+        border: 1px solid #b6bfc6;
+        border-radius: 2px;
+        height: 10em;
+    }
+</style>
 @endsection
