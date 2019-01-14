@@ -37,8 +37,8 @@ class StartEvent extends BpmnAction
         $dataStorage = $process->getRepository()->createDataStore();
         $dataStorage->setData($this->data);
         $instance = $process->getEngine()->createExecutionInstance($process, $dataStorage);
-        $element->start();
-        
+        $element->start($instance);
+
         //Return the instance created
         return $instance;
     }
