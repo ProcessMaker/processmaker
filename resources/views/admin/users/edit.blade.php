@@ -433,6 +433,7 @@
                     status: null,
                     is_administrator: null,
                 },
+                permissions: @json($all_permissions),
                 userPermissionNames: @json($permissionNames),
                 selectedPermissions: [],
                 selectAll: false,

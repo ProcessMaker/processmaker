@@ -36,6 +36,7 @@ class UserController extends Controller
         //include memberships
         $user->memberships = $user->groupMembersFromMemberable()->get();
         $groups = $this->getAllGroups();
+        $all_permissions = Permission::all();
         $permissionNames = $user->permissions()->pluck('name')->toArray();
 
         $currentUser = $user;
@@ -56,7 +57,7 @@ class UserController extends Controller
             }
         );
 
-        return view('admin.users.edit', compact(['user', 'groups', 'permissionNames',
+        return view('admin.users.edit', compact(['user', 'groups', 'all_permissions','permissionNames',
              'states', 'timezones', 'countries', 'datetimeFormats',
             ]));
     }

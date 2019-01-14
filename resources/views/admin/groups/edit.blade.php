@@ -12,7 +12,7 @@
     <div class="container" id="editGroup">
         <h1>{{__('Edit Group')}}</h1>
         <div class="row">
-            <div class="col-8">
+            <div class="col-12">
                 <nav>
                     <div class="nav nav-tabs" id="nav-tab" role="tablist">
                         <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab"
@@ -75,6 +75,18 @@
                     <div class="tab-pane fade" id="nav-permissions" role="tabpanel" aria-labelledby="nav-permissions">
                         <div class="card">
                             <div class="card-body">
+                                <div class="card-header">
+                                    <h5 class="mb-0">
+                                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#allPermissions">
+                                            All Permissions
+                                        </button>
+                                    </h5>
+                                </div>
+                                <div id="allPermissions" class="collapse" >
+                                    <div class="card-body">
+                                        <label><input type="checkbox" v-model="selectAll" @click="select" :disabled="formData.is_administrator">  Select All Permissions </label>
+                                    </div>
+                                </div>
                                 @include('admin.shared.permissions')
                                 <div class="text-right mt-2">
                                     {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose'])!!}
@@ -129,17 +141,6 @@
                     </div>
                 </div>
             </div>
-
-
-            <div class="col-4">
-                <div class="card card-body">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore
-                    et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                    aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-                    culpa qui officia deserunt mollit anim id est laborum.
-                </div>
-            </div>
         </div>
     </div>
 @endsection
@@ -160,6 +161,8 @@
                         'status': null
                     },
                     groupPermissionNames: @json($permissionNames),
+                    permissions: @json($all_permissions),
+                    selectAll: false,
                     selectedPermissions: [],
                     selectedUsers: [],
                     availableUsers: @json($users)
@@ -181,6 +184,15 @@
                         this.selectedPermissions = this.selectedPermissions.filter(function(el) {
                             return el !== sibling;
                         });
+                    }
+                },
+                select() {
+                    console.log(this.selectedPermissions)
+                    this.selectedPermissions = [];
+                    if (!this.selectAll) {
+                        for (let permission in this.permissions) {
+                            this.selectedPermissions.push(this.permissions[permission].name);
+                        }
                     }
                 },
                 customLabel(options) {
