@@ -233,35 +233,9 @@
                     </div>
                     <div class="tab-pane fade" id="nav-profile" role="tabpanel">
                         <div class="accordion" id="accordionExample">
-                             <div class="card">
-                                <div class="card-header">
-                                    <h5 class="mb-0">
-                                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#isAdmin">
-                                            Admin
-                                        </button>
-                                    </h5>
-                                </div>
-                                <div id="isAdmin" class="collapse" >
-                                    <div class="card-body">
-                                        <label><input type="checkbox" v-model="formData.is_administrator">  Would you like to make this user an admin? </label>
-                                    </div>
-                                </div>
-                            </div>
-                             <div class="card">
-                                <div class="card-header">
-                                    <h5 class="mb-0">
-                                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#allPermissions">
-                                            All Permissions
-                                        </button>
-                                    </h5>
-                                </div>
-                                <div id="allPermissions" class="collapse" >
-                                    <div class="card-body">
-                                        <label><input type="checkbox" v-model="selectAll" @click="select" :disabled="formData.is_administrator">  Select All Permissions </label>
-                                    </div>
-                                </div>
-                            </div>
-                           @include('admin.shared.permissions')
+                            <label><input type="checkbox" v-model="formData.is_administrator">  {{__('Make this user an admin')}} </label>
+                            <label class="mb-3"><input type="checkbox" v-model="selectAll" @click="select" :disabled="formData.is_administrator">  {{__('Assign all permisssions to this user')}} </label>
+                            @include('admin.shared.permissions')
                         </div>
                         <div class="text-right mt-2">
                             {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose'])!!}
@@ -271,7 +245,7 @@
 
                     <div class="tab-pane fade" id="nav-tokens" role="tabpanel" aria-labelledby="nav-tokens-tab">
                         <div v-if="!isCurrentUser">
-                            Only the logged in user can create API tokens
+                            {{__('Only the logged in user can create API tokens')}}
                         </div>
                         <div v-if="isCurrentUser">
                             <table class="table">
