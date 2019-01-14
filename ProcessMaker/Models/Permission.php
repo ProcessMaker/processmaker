@@ -78,4 +78,14 @@ class Permission extends Model
             throw new ModelNotFoundException($name . " permission does not exist");
         }
     }
+    
+    public function users()
+    {
+        return $this->morphedByMany('ProcessMaker\Models\User', 'assignable');
+    }
+    
+    public function groups()
+    {
+        return $this->morphedByMany('ProcessMaker\Models\Group', 'assignable');
+    }
 }

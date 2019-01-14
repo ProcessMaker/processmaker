@@ -185,9 +185,9 @@ class User extends Authenticatable implements HasMedia
         return $this->morphMany(GroupMember::class, 'member', null, 'member_id');
     }
 
-    public function permissionAssignments()
+    public function permissions()
     {
-        return $this->morphMany(PermissionAssignment::class, 'assignable', null, 'assignable_id');
+        return $this->morphToMany('ProcessMaker\Models\Permission', 'assignable');
     }
 
     public function processesFromProcessable()

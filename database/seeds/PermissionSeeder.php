@@ -5,7 +5,6 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Permission;
-use ProcessMaker\Models\PermissionAssignment;
 
 class PermissionSeeder extends Seeder
 {
@@ -70,13 +69,7 @@ class PermissionSeeder extends Seeder
                 'title' => ucwords(preg_replace('/(\-|_)/', ' ',
                         $permissionString)),
                 'name' => $permissionString,
-            ]);
-            
-            factory(PermissionAssignment::class)->create([
-                'permission_id' => $permission->id,
-                'assignable_type' => Group::class,
-                'assignable_id' => $group->id,
-            ]);
+            ]);            
         }
     }
 }

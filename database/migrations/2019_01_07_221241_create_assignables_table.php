@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class RecreatePermissionAssignmentsTable extends Migration
+class CreateAssignablesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,9 @@ class RecreatePermissionAssignmentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('permission_assignments', function (Blueprint $table) {
-          $table->increments('id');
+        Schema::create('assignables', function (Blueprint $table) {
           $table->unsignedInteger('permission_id');
           $table->morphs('assignable');
-          $table->timestamps();
 
           $table->foreign('permission_id')->references('id')->on('permissions')->onDelete('cascade');
         });
@@ -30,6 +28,6 @@ class RecreatePermissionAssignmentsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('permission_assignments');
+        Schema::drop('assignables');
     }
 }

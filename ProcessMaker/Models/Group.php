@@ -53,6 +53,11 @@ class Group extends Model
     {
         return $this->morphMany(PermissionAssignment::class, 'assignable', null, 'assignable_id');
     }
+    
+    public function permissions()
+    {
+        return $this->morphToMany('ProcessMaker\Models\Permission', 'assignable');
+    }
 
     public function processesFromProcessable()
     {
@@ -77,20 +82,6 @@ class Group extends Model
     public function scopeActive($query)
     {
         return $query->where('status', 'ACTIVE');
-    }
-
-    public function permissions()
-    {
-        $permissions = [];
-        foreach ($this->groupMembersFromMemberable as $gm) {
-            $group = $gm->group;
-            $permissions =
-                array_merge($permissions, $group->permissions());
-        }
-        foreach ($this->permissionAssignments as $pa) {
-            $permissions[] = $pa->permission;
-        }
-        return $permissions;
     }
 
     /**
