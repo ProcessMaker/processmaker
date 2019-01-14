@@ -13,18 +13,21 @@
 @endsection
 
 @section('content')
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
+
+<nav aria-label="breadcrumb">
+        <ol class="breadcrumb bg-light text-primary">
             <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
-            <li class="breadcrumb-item"><a href="{{ route('requests.index') }}">{{ __('Requests') }}</a></li>
+            <li class="breadcrumb-item">Tasks</li>
+            <li class="breadcrumb-item">To Do</li>
             <li class="breadcrumb-item"><a href="{{ route('requests.show', ['id' => $task->processRequest->id]) }}">
                 {{ $task->processRequest->name }}
             </a></li>
             <li class="breadcrumb-item active" aria-current="page">{{ $task->element_name }}</li>
         </ol>
-    </nav>
+    </nav>      
+
     <div id="task" class="container">
-        <h1>{{$task->element_name}}</h1>
+        
         <div class="row">
             @if ($task->getScreen() && ($task->advanceStatus==='open' || $task->advanceStatus==='overdue'))
             <div class="col-md-8">
