@@ -59,7 +59,7 @@ export default {
           sortField: "user.lastname"
         },
         {
-          title: "DUE DATE",
+          title: "DUE",
           name: "due_at",
           sortField: "due_at"
         }

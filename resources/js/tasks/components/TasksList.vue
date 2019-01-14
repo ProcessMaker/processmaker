@@ -103,7 +103,7 @@ export default {
           field: "user"
         },
         {
-          title: "Due Date",
+          title: "Due",
           name: "due_at",
           callback: this.formatDueDate,
           sortField: "due_at"
