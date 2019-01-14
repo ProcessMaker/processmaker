@@ -32,7 +32,19 @@
             </div>
           </div>
         </template>
+        <template slot="secret" slot-scope="props">
+          <b-btn
+            variant="link"
+            @click="copySecret(props.rowData.secret)"
+            v-b-tooltip.hover
+            title="Copy Client Secret To Clipboard"
+          >
+            <i class="fas fa-clipboard fa-lg fa-fw"></i>
+          </b-btn>
+          {{ props.rowData.secret.substr(0, 10) }}...
+        </template>
       </vuetable>
+      <textarea style="position: absolute; left: -1000px; top: -1000px" ref="copytext"></textarea>
     </div>
   </div>
 </template>
@@ -45,6 +57,7 @@ export default {
   props: ["filter"],
   data() {
     return {
+      copytext: "",
       orderBy: "name",
 
       sortOrder: [
@@ -73,11 +86,8 @@ export default {
           callback(val) { return !val }
         },
         {
-          title: "Secret",
-          name: "secret",
-          callback(val) {
-            return val.substr(0, 10) + '...'
-          }
+          title: "Client Secret",
+          name: "__slot:secret",
         },
         {
           name: "__slot:actions",
@@ -99,6 +109,14 @@ export default {
     },
     onEdit(row, index) {
       this.$emit('edit', row);
+    },
+    copySecret(secret) {
+      this.$refs.copytext.value = secret
+      this.$refs.copytext.select()
+      document.execCommand('copy')
+    },
+    doIt() {
+      console.log("DOING IT")
     }
   }
 };

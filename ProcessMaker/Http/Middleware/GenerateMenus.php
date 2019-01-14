@@ -43,17 +43,22 @@ class GenerateMenus
               'route' => 'users.index',
               'icon' => 'fa-user',
               'id' => 'homeid'
-          ]);
+            ]);
             $submenu->add(__('menus.sidebar_admin.groups'), [
               'route' => 'groups.index',
               'icon' => 'fa-users',
               'id' => 'homeid'
-          ]);
+            ]);
+            $submenu->add(__('menus.sidebar_admin.auth-clients'), [
+              'route' => 'auth-clients.index',
+              'icon' => 'fa-key',
+              'id' => 'auth-login'
+            ]);
 
-          $submenu->add(__('menus.sidebar_admin.queue_management'), [
+            $submenu->add(__('menus.sidebar_admin.queue_management'), [
                 'route' => 'horizon.index',
                 'icon' => 'fa-infinity',
-          ]);
+            ]);
 
         });
         Menu::make('sidebar_task', function ($menu) {

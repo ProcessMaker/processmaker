@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-{{__('Groups')}}
+{{__('Auth Clients')}}
 @endsection
 
 @section('sidebar')
@@ -22,7 +22,7 @@
         </div>
     </div>
     <div>
-        <b-modal ref="createEditAuthClient" :title="modalTitle">
+        <b-modal ref="createEditAuthClient" :title="modalTitle" @ok="save">
             <div class="form-group">
                 <label for="authClientName">Name</label>
                 <b-form-input id="authClientName" v-model="authClient.name" type="text" placeholder="Enter a name for this auth client"></b-form-input>
@@ -31,8 +31,12 @@
                 <label for="authClientName">Redirect URL</label>
                 <b-form-input v-model="authClient.redirect" type="text" placeholder="Enter the URL to redirect to"></b-form-input>
             </div>
+            <div v-if="authClient.secret != ''" class="form-group">
+                <label for="authClientName">Client Secret</label>
+                @{{ authClient.secret }}
+            </div>
         </b-modal>
-        <auth-clients-listing ref="groupList" @edit="edit" />
+        <auth-clients-listing ref="authClientList" @edit="edit" />
     </div>
 </div>
 @endsection
