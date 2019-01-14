@@ -11,19 +11,18 @@
   "prefer-stable": true,
   "repositories": [
     {
-        "type": "vcs",
-        "url": "https://github.com/ProcessMaker/laravel-chunk-upload"
+      "type": "vcs",
+      "url": "https://github.com/ProcessMaker/laravel-chunk-upload"
     },
     {
-        "type": "vcs",
-        "url": "https://github.com/ProcessMaker/pm4-connector-send-email.git"
+      "type": "vcs",
+      "url": "https://github.com/ProcessMaker/pm4-connector-send-email.git"
     }
   ],
   "require": {
     "php": ">=7.2.0",
     "TYPO3/class-alias-loader": "^1.0",
     "darkaonline/l5-swagger": "5.7.*",
-    "davejamesmiller/laravel-breadcrumbs": "5.x",
     "doctrine/dbal": "^2.5",
     "fideloper/proxy": "^4.0",
     "igaster/laravel-theme": "2.0.*",
@@ -57,7 +56,7 @@
     "squizlabs/php_codesniffer": "^3.0.2"
   },
   "autoload": {
-   "classmap": [
+    "classmap": [
       "database/seeds",
       "database/factories"
     ],

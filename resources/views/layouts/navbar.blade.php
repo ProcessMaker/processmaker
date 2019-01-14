@@ -57,8 +57,6 @@
         </li>
     </b-navbar-nav>
 </b-navbar>
-{{ Breadcrumbs::render() }}
-
 <style lang="scss" scoped>
     .seperator {
         border-left: 1px solid rgb(227, 231, 236);
