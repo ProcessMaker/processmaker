@@ -1,28 +1,41 @@
 ---
-description: Edit general information about a business process.
+description: Edit the configuration for a Process.
 ---
 
-# Edit Process Information
+# Edit Process Configuration
+
+## Edit Configuration Information About a Process
 
 {% hint style="info" %}
-To edit general process information, you must be a member of the Process Owner group. Otherwise, the **Processes** option is not available from the top menu that allows you to perform process management activities.
+Your user account or group membership must have the following permissions to edit a Process's configuration:
+
+* Processes: List
+* Processes: Edit
+
+Ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
-## Edit General Information About a Process
+Follow these steps to edit the configuration information about a Process:
 
-Follow these steps to edit the name, description, category, or status of a process:
-
-1. [View your processes.](./#view-your-processes) The **Processes** page displays.
-2. Hover your cursor over the process in which to edit its information and then select the **Edit** icon![](../../../.gitbook/assets/edit-icon.png). The **Edit Process** page displays.  
+1. [View your Processes.](./#view-your-processes) The **Processes** page displays.
+2. Select the **Config** icon![](../../../.gitbook/assets/configure-process-icon-processes-page-processes.png)for your Process. The **Edit Process** page displays.  
 
    ![](../../../.gitbook/assets/edit-process-page-processes.png)
 
-3. Edit the process name in the **Process title** field if necessary.
-4. Edit the description of the process in the **Description** field if necessary.
-5. Select to which category to assign the process from the **Category** drop-down. For more information about process categories and how they affect processes assigned to them, see [Process Categories](../process-categories.md).
-6. Select from which step in the process ~~to display its form as an avatar~~ from the **Summary screen** drop-down.
-7. Change the status of the process from the **Status** drop-down if necessary. For more information about process statuses, see [Process Status Descriptions](activate-or-deactivate-a-process.md#process-status-descriptions).
-8. Click **Update**. Otherwise, click **Cancel** to cancel any changes.
+3. Edit the following information about the Process as necessary:
+   * In the **Process title** field, edit the Process name. This is a required field.
+   * In the **Description** field, edit the description of the Process. This is a required field.
+   * From the **Category** drop-down, select to which category to assign the Process. This is a required field. See [Process Categories](../process-categories.md) for more information how this affects the Process.
+   * From the **Start Request** drop-down, use the following guidelines to select from which users or groups have permission to start Requests of this Process:
+     * **Users:** Select which user\(s\) from the **Users** section of the drop-down have permission to start Requests of this Process.
+     * **Groups:** Select which group\(s\) from the Groups section of the drop-down have permission to start Requests of the Process.
+   * From the **Cancel Request** drop-down, use the following guidelines to select from which users or groups have permission to cancel Requests of this Process:
+     * **Users:** Select which user\(s\) from the **Users** section of the drop-down have permission to cancel Requests of this Process.
+     * **Groups:** Select which group\(s\) from the **Groups** section of the drop-down have permission to cancel Requests of the Process.
+   * From the **Status** drop-down, select the status of the Process. This is a required field. Below is a description of each Process status:
+     * **Active:** An active Process is one in which Requests can be started using that Process.
+     * **Inactive:** An inactive Process is one in which Requests cannot be started using that Process. ~~However, active Requests using that inactive Process can be completed.~~
+4. Click **Update**. Otherwise, click **Cancel** to cancel any changes.
 
 ## Related Topics
 

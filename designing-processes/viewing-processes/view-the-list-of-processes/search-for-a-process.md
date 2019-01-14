@@ -11,7 +11,7 @@ Use the **Search** function to filter all Processes from the **Processes** page 
 {% hint style="info" %}
 Your user account or group membership must have the "Processes: List" permission to view the list of Processes.
 
-Otherwise, the **Processes** option is not available from the top menu that allows you to perform Process management activities.
+Ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 Follow these steps to search for a Process:
@@ -22,11 +22,13 @@ Follow these steps to search for a Process:
 As you enter text into the **Search** field, Processes display that match your entered text.
 
 {% hint style="info" %}
-If there are no search results, the following message displays: **No data available**.
-{% endhint %}
+### No Search Results?
 
-{% hint style="info" %}
-Click the Process name from the **Process** column to [edit the process in Process Modeler](../../process-design/model-your-process/).
+If there are no search results, the following message displays: **No data available**.
+
+### Manage Your Processes
+
+See [View All Processes](view-your-processes.md#manage-your-processes) for ways to manage your Processes.
 {% endhint %}
 
 ## Related Topics

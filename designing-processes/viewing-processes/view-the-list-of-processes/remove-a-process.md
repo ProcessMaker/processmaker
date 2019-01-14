@@ -4,11 +4,24 @@ description: Archive a Process that is no longer needed in your organization.
 
 # Archive a Process
 
-{% hint style="info" %}
-To archive a Process, you must be a member of the Process Owner group. Otherwise, the **Processes** option is not available from the top menu that allows you to perform Process management activities.
-{% endhint %}
+## What is an Archived Process?
+
+An archived Process is one in which ~~what?~~ Processes with in-progress Requests cannot be archived.
+
+An archived Process is different than an inactive Process.
+
+
 
 ## Archive a Process
+
+{% hint style="info" %}
+Your user account or group membership must have the following permissions to archive a Process:
+
+* Processes: List
+* Processes: Edit
+
+Ask your ProcessMaker Administrator for assistance.
+{% endhint %}
 
 {% hint style="warning" %}
 When a Process is archived ~~describe what happens and in which conditions a process can be removed.~~
@@ -17,7 +30,11 @@ When a Process is archived ~~describe what happens and in which conditions a pro
 Follow these steps to archive a Process:
 
 1. [View your Processes.](./#view-your-processes) The **Processes** page displays.
-2. Hover your cursor over the process to archive and then select the **Remove** icon![](../../../.gitbook/assets/remove-icon.png). ~~What happens?~~
+2. Select the **Archive** icon![](../../../.gitbook/assets/archive-process-icon-processes-page-processes.png)for your Process. A message displays to confirm archiving the Process.  
+
+   ![](../../../.gitbook/assets/archive-process-confirmation-processes.png)
+
+3. Click **Confirm** to archive the Process. Otherwise, click **Cancel** to not archive the Process.
 
 ## Related Topics
 

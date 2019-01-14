@@ -25,11 +25,13 @@ The **To Do Tasks** page displays the following information about your assigned 
 * **Due:** The **Due** column displays the date and time the Task is due. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
 {% hint style="info" %}
-If there are no assigned Tasks, the following message displays: **No data available**.
-{% endhint %}
+### No Assigned Tasks?
 
-{% hint style="info" %}
-[Control how tabular information displays.](../control-how-requests-display-in-a-tab.md)
+If there are no assigned Tasks, the following message displays: **No data available**.
+
+### Display Information the Way You Want It
+
+[Control how tabular information displays](../control-how-requests-display-in-a-tab.md), including how to sort columns or how many items display per page.
 {% endhint %}
 
 ## Related Topics

@@ -41,7 +41,7 @@ Use the [Search](search-for-a-request.md) field to filter Requests that display 
 
 If there are no Requests in this tab, the following message displays: **No Data Available**.
 
-### Make Information Work for You
+### Display Information the Way You Want It
 
 [Control how tabular information displays](../control-how-requests-display-in-a-tab.md), including how to sort columns or how many items display per page.
 {% endhint %}

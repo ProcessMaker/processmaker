@@ -11,7 +11,7 @@ ProcessMaker displays all Processes in one table that Process Owners have create
 {% hint style="info" %}
 Your user account or group membership must have the "Processes: List" permission to view the list of Processes.
 
-Otherwise, the **Processes** option is not available from the top menu that allows you to perform Process management activities.
+Ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 Follow these steps to view all Processes in your organization:
@@ -41,15 +41,17 @@ The **Processes** page displays the following information about Processes:
 * **Created:** The **Created** column displays the date and time the process was created. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
 {% hint style="info" %}
-Use the [Search](search-for-a-process.md) field to filter Processes that display.
-{% endhint %}
+### Search for a Request
 
-{% hint style="info" %}
+Use the [Search](../../../using-processmaker/requests/search-for-a-request.md) field to filter Requests that display.
+
+### No Processes?
+
 If no Processes exist, the following message displays: **You don't have any processes. Please click on '+PROCESS' to get started.**
-{% endhint %}
 
-{% hint style="info" %}
-[Control how tabular information displays.](../../../using-processmaker/control-how-requests-display-in-a-tab.md)
+### Display Information the Way You Want It
+
+[Control how tabular information displays](../../../using-processmaker/control-how-requests-display-in-a-tab.md), including how to sort columns or how many items display per page.
 {% endhint %}
 
 ## Manage Your Processes

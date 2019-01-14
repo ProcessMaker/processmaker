@@ -22,11 +22,13 @@ The **Completed Tasks** page displays the following information about all comple
 * **Due:** The **Due** column displays the date the Task was due. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
 {% hint style="info" %}
-If there are no completed Tasks by anyone in your organization, the following message displays: **No data available**.
-{% endhint %}
+### No Completed Tasks?
 
-{% hint style="info" %}
-[Control how tabular information displays.](../control-how-requests-display-in-a-tab.md)
+If there are no completed Tasks by anyone in your organization, the following message displays: **No data available**.
+
+### Display Information the Way You Want It
+
+[Control how tabular information displays](../control-how-requests-display-in-a-tab.md), including how to sort columns or how many items display per page.
 {% endhint %}
 
 ## View Information About a Completed Task

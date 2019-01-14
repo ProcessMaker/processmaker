@@ -19,7 +19,7 @@ This section discusses how information displays for in-progress Requests.
 
 The **Tasks** tab displays summary information for all upcoming Tasks in the Request.
 
-![Tasks tab for an in-progress Request&apos;s information](../../.gitbook/assets/tasks-tab-request-information-request.png)
+![&quot;Tasks&quot; tab displaying an in-progress Request&apos;s information](../../.gitbook/assets/tasks-tab-request-information-request.png)
 
 The **Tasks** tab displays the following information in tabular format:
 
@@ -28,11 +28,13 @@ The **Tasks** tab displays the following information in tabular format:
 * **Due Date:** The **Due Date** column displays the date the Task is due. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
 {% hint style="info" %}
-If there are no Tasks for the selected Request, the following message displays: **No Data Available**.
-{% endhint %}
+### No Tasks?
 
-{% hint style="info" %}
-[Control how tabular information displays.](../control-how-requests-display-in-a-tab.md)
+If there are no Tasks for the selected Request, the following message displays: **No Data Available**.
+
+### Display Information the Way You Want It
+
+[Control how tabular information displays](../control-how-requests-display-in-a-tab.md), including how to sort columns or how many items display per page.
 {% endhint %}
 
 ### Request Participants
@@ -59,7 +61,7 @@ The **Summary** tab displays a summary of all information entered into the compl
 * Request participants manually enter information into ProcessMaker Screens. ProcessMaker Screens are digital forms.
 * Authenticated users submit data through the ProcessMaker 4 [REST API](https://develop.bpm4.qa.processmaker.net/api/documentation).
 
-![Summary tab in a completed Request&apos;s information](../../.gitbook/assets/summary-tab-request-information-request.png)
+![&quot;Summary&quot; tab in a completed Request&apos;s information](../../.gitbook/assets/summary-tab-request-information-request.png)
 
 Process Owners can specify how information displays in the **Summary** tab. By default, the **Summary** tab displays the JSON-formatted key/value pairs that represents ProcessMaker Screens. Information is displayed in tabular format:
 
@@ -67,20 +69,22 @@ Process Owners can specify how information displays in the **Summary** tab. By d
 * **VALUE:** The **VALUE** column displays that key's value as entered by a person manually interacting with a form or specified through the ProcessMaker 4 [REST API](https://develop.bpm4.qa.processmaker.net/api/documentation).
 
 {% hint style="info" %}
+### Summary Tab Displays Information for Completed Requests
+
 The **Summary** tab only displays information for completed Requests. If you select the **Summary** tab for an in-progress Request, the following message displays: **Request In Progress: This Request is currently in progress. This screen will be populated once the Request is completed.**
 
 ![](../../.gitbook/assets/summary-tab-request-in-progress-request-information-request.png)
-{% endhint %}
 
-{% hint style="info" %}
-[Control how tabular information displays.](../control-how-requests-display-in-a-tab.md)
+### Display Information the Way You Want It
+
+[Control how tabular information displays](../control-how-requests-display-in-a-tab.md), including how to sort columns or how many items display per page.
 {% endhint %}
 
 ### Summary of Tasks for the Completed Request
 
 The **Completed** tab displays a summary of all tasks for the selected completed Request.
 
-![Completed tab for a completed Request&apos;s information](../../.gitbook/assets/completed-tab-request-information-request.png)
+![&quot;Completed&quot; tab for a completed Request&apos;s information](../../.gitbook/assets/completed-tab-request-information-request.png)
 
 The **Completed** tab displays the following information:
 
@@ -89,11 +93,13 @@ The **Completed** tab displays the following information:
 * **Due Date:** The **Due Date** column displays the date the Task is due. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
 {% hint style="info" %}
-If the selected Request is not completed, the following message displays: **No Data Available**.
-{% endhint %}
+### Not a Completed Request?
 
-{% hint style="info" %}
-[Control how tabular information displays.](../control-how-requests-display-in-a-tab.md)
+If the selected Request is not completed, the following message displays: **No Data Available**.
+
+### Display Information the Way You Want It
+
+[Control how tabular information displays](../control-how-requests-display-in-a-tab.md), including how to sort columns or how many items display per page.
 {% endhint %}
 
 ### Request Participants
@@ -114,7 +120,7 @@ The following information displays about participants in a selected completed Re
 
 The **Errors** tab displays summary information about an error for a selected Request if an error occurred. If a Request error has not occurred, the **Errors** tab does not display.
 
-![Error tab displays information about a Request error](../../.gitbook/assets/error-tab-information-requests.png)
+![&quot;Errors&quot; tab displays information about a Request error](../../.gitbook/assets/error-tab-information-requests.png)
 
 The **Errors** tab displays the following information:
 
