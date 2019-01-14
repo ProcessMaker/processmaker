@@ -22,11 +22,7 @@ class PermissionsTest extends TestCase
 
     public function testApiPermissions()
     {
-<<<<<<< Updated upstream
         $this->markTestSkipped('API permissions not yet implemented');
-=======
-        $this->markTestSkipped();
->>>>>>> Stashed changes
         $response = $this->apiCall('GET', '/processes');
         $response->assertStatus(200);
 
@@ -62,15 +58,6 @@ class PermissionsTest extends TestCase
 
     public function testSetPermissionsForUser()
     {
-<<<<<<< Updated upstream
-=======
-        $this->markTestSkipped();
-        $this->user = factory(User::class)->create([
-            'password' => 'password',
-            'is_administrator' => true,
-        ]);
-
->>>>>>> Stashed changes
         $testUser = factory(User::class)->create();
         $testPermission = factory(Permission::class)->create();
         $response = $this->apiCall('PUT', '/permissions', [
