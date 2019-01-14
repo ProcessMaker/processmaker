@@ -78,7 +78,7 @@
                                 @include('admin.shared.permissions')
                                 <div class="text-right mt-2">
                                     {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose'])!!}
-                                    {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'profileUpdate'])!!}
+                                    {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'permissionUpdate'])!!}
                                 </div>
                             </div>
                         </div>
@@ -159,13 +159,37 @@
                         'description': null,
                         'status': null
                     },
+                    groupPermissionNames: @json($permissionNames),
+                    selectedPermissions: [],
                     selectedUsers: [],
                     availableUsers: @json($users)
                 }
             },
+            created() {
+                this.hasPermission()
+            },
             methods: {
+                checkCreate(sibling, $event) {
+                    let self = $event.target.value;
+                    if (this.selectedPermissions.includes(self)) {
+                        this.selectedPermissions.push(sibling);
+                    }
+                },
+                checkEdit(sibling, $event) {
+                    let self = $event.target.value;
+                    if (! this.selectedPermissions.includes(self)) {
+                        this.selectedPermissions = this.selectedPermissions.filter(function(el) {
+                            return el !== sibling;
+                        });
+                    }
+                },
                 customLabel(options) {
                     return `${options.fullname}`
+                },
+                hasPermission() {
+                    if (this.groupPermissionNames) {
+                        this.selectedPermissions = this.groupPermissionNames;
+                    }
                 },
                 onSave() {
                     let that = this;
@@ -204,6 +228,16 @@
                                 this.errors = error.response.data.errors;
                             }
                         });
+                },
+                permissionUpdate() {
+                    ProcessMaker.apiClient.put("/permissions", {
+                            permission_names: this.selectedPermissions,
+                            group_id: this.formData.id
+                        })
+                        .then(response => {
+                            ProcessMaker.alert('{{__('Group Permissions Updated Successfully ')}}', 'success');
+                            this.onClose();
+                        })
                 }
             }
         });

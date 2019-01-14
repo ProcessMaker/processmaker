@@ -265,7 +265,7 @@
                         </div>
                         <div class="text-right mt-2">
                             {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose'])!!}
-                            {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'profileUpdate'])!!}
+                            {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'permissionUpdate'])!!}
                         </div>
                     </div>
 
@@ -433,9 +433,8 @@
                     status: null,
                     is_administrator: null,
                 },
-                permissions: @json($all_permissions),
-                userPermissionIds: @json($permission_ids),
-                selected: [],
+                userPermissionNames: @json($permissionNames),
+                selectedPermissions: [],
                 selectAll: false,
                 newToken: null,
                 apiTokens: [],
@@ -459,6 +458,20 @@
             this.loadTokens();
         },
         methods: {
+            checkCreate(sibling, $event) {
+                let self = $event.target.value;
+                if (this.selectedPermissions.includes(self)) {
+                    this.selectedPermissions.push(sibling);
+                }
+            },
+            checkEdit(sibling, $event) {
+                let self = $event.target.value;
+                if (! this.selectedPermissions.includes(self)) {
+                    this.selectedPermissions = this.selectedPermissions.filter(function(el) {
+                        return el !== sibling;
+                    });
+                }
+            },
             copyTextArea() {
                 this.$refs.text.select();
                 document.execCommand('copy');
@@ -502,34 +515,35 @@
                 if (!this.validatePassword()) return false;
                 ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
                     .then(response => {
-                        this.permissionUpdate()
+                        ProcessMaker.alert('{{__('User Updated Successfully ')}}', 'success');
+                        this.onClose();
                     })
                     .catch(error => {
                         ProcessMaker.alert('{{__('An error occurred while saving the Groups.')}}', 'danger');
                     });
             },
-            hasPermission() {
-                if (this.userPermissionIds) {
-                    this.selected = this.userPermissionIds
-                }
-            },
-            select() {
-                this.selected = [];
-                if (!this.selectAll) {
-                    for (let permission in this.permissions) {
-                        this.selected.push(this.permissions[permission].id);
-                    }
-                }
-            },
             permissionUpdate() {
                 ProcessMaker.apiClient.put("/permissions", {
-                        permission_ids: this.selected,
+                        permission_names: this.selectedPermissions,
                         user_id: this.formData.id
                     })
                     .then(response => {
-                        ProcessMaker.alert('{{__('User Updated Successfully ')}}', 'success');
+                        ProcessMaker.alert('{{__('User Permissions Updated Successfully ')}}', 'success');
                         this.onClose();
                     })
+            },
+            hasPermission() {
+                if (this.userPermissionNames) {
+                    this.selectedPermissions = this.userPermissionNames;
+                }
+            },
+            select() {
+                this.selectedPermissions = [];
+                if (!this.selectAll) {
+                    for (let permission in this.permissions) {
+                        this.selectedPermissions.push(this.permissions[permission].name);
+                    }
+                }
             },
             loadTokens() {
                 ProcessMaker.apiClient({

@@ -36,10 +36,7 @@ class UserController extends Controller
         //include memberships
         $user->memberships = $user->groupMembersFromMemberable()->get();
         $groups = $this->getAllGroups();
-        $permission_ids = $user->permissionAssignments()->pluck('permission_id')->toArray();
-        $all_permissions = Permission::all();
-        $users_permission_ids = $this->user_permission_ids($user);
-        $groupedPermissions = Permission::resourceTitleList();
+        $permissionNames = $user->permissions()->pluck('name')->toArray();
 
         $currentUser = $user;
         $states = JsonData::states();
@@ -59,8 +56,8 @@ class UserController extends Controller
             }
         );
 
-        return view('admin.users.edit', compact(['user', 'groups', 'all_permissions', 'users_permission_ids', 'permission_ids',
-             'states', 'timezones', 'countries', 'datetimeFormats', 'groupedPermissions'
+        return view('admin.users.edit', compact(['user', 'groups', 'permissionNames',
+             'states', 'timezones', 'countries', 'datetimeFormats',
             ]));
     }
 
@@ -82,10 +79,5 @@ class UserController extends Controller
     private function getAllGroups()
     {
         return Group::where('status', 'ACTIVE')->get();
-    }
-
-    private function user_permission_ids($user) 
-    {
-        return $user->permissionAssignments()->pluck('permission_id')->toArray();
     }
 }
