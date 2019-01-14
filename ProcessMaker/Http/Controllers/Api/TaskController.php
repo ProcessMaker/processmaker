@@ -56,9 +56,7 @@ class TaskController extends Controller
         );
 
         // only show tasks that the user is assigned to
-        if (!Auth::user()->is_administrator) {
-            $query->where('process_request_tokens.user_id', Auth::user()->id);
-        }
+        $query->where('process_request_tokens.user_id', Auth::user()->id);
 
         $inOverdueQuery = ProcessRequestToken::where('user_id', Auth::user()->id)
             ->where('status', 'ACTIVE')
