@@ -8,8 +8,6 @@ use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Permission;
-use ProcessMaker\Models\PermissionAssignment;
-
 
 class PermissionController extends Controller
 {

@@ -4,7 +4,6 @@ namespace ProcessMaker\Http\Controllers;
 
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Permission;
-use ProcessMaker\Models\PermissionAssignment;
 use ProcessMaker\Models\Process;
 use Illuminate\Http\Request;
 use ProcessMaker\Models\ProcessCategory;

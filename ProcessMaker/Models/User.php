@@ -133,7 +133,7 @@ class User extends Authenticatable implements HasMedia
     protected $hidden = [
         'password',
         'groupMembersFromMemberable',
-        'permissionAssignments',
+        'permissions',
     ];
 
     /**

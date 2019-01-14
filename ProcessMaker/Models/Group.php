@@ -48,11 +48,6 @@ class Group extends Model
             'status' => 'in:ACTIVE,INACTIVE'
         ];
     }
-
-    public function permissionAssignments()
-    {
-        return $this->morphMany(PermissionAssignment::class, 'assignable', null, 'assignable_id');
-    }
     
     public function permissions()
     {

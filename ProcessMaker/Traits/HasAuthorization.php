@@ -4,7 +4,6 @@ namespace ProcessMaker\Traits;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Permission;
-use ProcessMaker\Models\PermissionAssignment;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessPermission;
 use ProcessMaker\Models\User;
@@ -13,20 +12,28 @@ trait HasAuthorization
 {
     public function loadPermissions()
     {
+        return array_merge(
+            $this->loadUserPermissions(),
+            $this->loadGroupPermissions()
+        );
+    }
+    
+    public function loadUserPermissions()
+    {
+        return $this->permissions->pluck('name')->toArray();
+    }
+    
+    public function loadGroupPermissions()
+    {
         $permissions = [];
+        
         foreach ($this->groupMembersFromMemberable as $gm) {
             $group = $gm->group;
-            $permissions =
-                array_merge($permissions, $group->permissions());
+            $names = $group->permissions->pluck('name')->toArray();
+            $permissions = array_merge($permissions, $names);
         }
-        foreach ($this->permissionAssignments as $pa) {
-            $permissions[] = $pa->permission;
-        }
-        $permissionStrings = array_map(
-            function($p) { return $p->name; },
-            $permissions
-        );
-        return $permissionStrings;
+        
+        return $permissions;
     }
 
     public function hasPermission($permissionString)
@@ -45,15 +52,11 @@ trait HasAuthorization
         return in_array($permissionString, $permissionStrings);
     }
 
-    public function giveDirectPermission($permission_names)
+    public function giveDirectPermission($permissionNames)
     {
-        foreach ((array) $permission_names as $permission_name) {
-            $perm_id = Permission::byName($permission_name)->id;
-            PermissionAssignment::create([
-                'permission_id' => $perm_id,
-                'assignable_type' => User::class,
-                'assignable_id' => $this->id,
-            ]);
+        foreach ((array) $permissionNames as $permissionName) {
+            $permissionId = Permission::byName($permissionName)->id;            
+            $this->permissions()->attach($permissionId);
         }
     }
 

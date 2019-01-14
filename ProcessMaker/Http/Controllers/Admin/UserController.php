@@ -10,7 +10,6 @@ use ProcessMaker\Models\Group;
 use ProcessMaker\Models\JsonData;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Permission;
-use ProcessMaker\Models\PermissionAssignment;
 
 class UserController extends Controller
 {
