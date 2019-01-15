@@ -51,7 +51,7 @@ class Comment extends Model
         return [
             'user_id' => 'required',
             'commentable_id' => 'required',
-            'commentable_type' => 'required|in:' . ProcessRequestToken::class . ',' . ProcessRequest::class . ',' . Message::class,
+            'commentable_type' => 'required|in:' . ProcessRequestToken::class . ',' . ProcessRequest::class,
             'subject' => 'required',
             'body' => 'required',
             'hidden' => 'required|boolean',
