@@ -9,6 +9,11 @@
 @endsection
 
 @section('content')
+    @include('shared.breadcrumbs', ['routes' => [
+        'Admin' => null,
+        'Groups' => route('groups.index'),
+        'Edit' => null,
+    ]])
     <div class="container" id="editGroup">
         <h1>{{__('Edit Group')}}</h1>
         <div class="row">
@@ -21,7 +26,6 @@
                            aria-controls="nav-profile" aria-selected="false">Group Members</a>
                     </div>
                 </nav>
-
 
                 <div class="tab-content mt-3" id="nav-tabContent">
                     <div class="card card-body tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
