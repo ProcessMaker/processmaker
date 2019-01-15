@@ -9,6 +9,12 @@
 @endsection
 
 @section('content')
+@include('shared.breadcrumbs', ['routes' => [
+    'Processes' => route('processes.index'),
+    'Scripts' => route('scripts.index'),
+    $script->title => null,
+    'Edit' => null,
+]])
 <div id="script-container">
     <script-editor :script="{{$script}}"></script-editor>
 </div>
@@ -26,6 +32,11 @@ div.main {
   height: 100%;
   max-height: 100%;
   overflow: hidden;
+}
+
+ol.breadcrumb {
+  margin-bottom: 0;
+  border-bottom: 0;
 }
 </style>
 @endsection
