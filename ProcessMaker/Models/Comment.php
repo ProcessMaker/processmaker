@@ -61,6 +61,29 @@ class Comment extends Model
     }
 
     /**
+     * Scope comments hidden
+     *
+     * @param $query
+     * @param $parameter hidden, visible, all
+     *
+     * @return mixed
+     */
+    public function scopeHidden($query, $parameter)
+    {
+        switch ($parameter) {
+            case 'visible':
+                return $query->where('hidden', true);
+                break;
+            case 'hidden':
+                return $query->where('hidden', false);
+                break;
+            case 'ALL':
+                return $query;
+                break;
+        }
+    }
+
+    /**
      * @return \Illuminate\Database\Eloquent\Relations\MorphTo
      */
     public function commentable()

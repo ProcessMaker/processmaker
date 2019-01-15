@@ -8,7 +8,7 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 
 /**
- * Model factory for a Group
+ * Model factory for a Comment
  */
 $factory->define(Comment::class, function (Faker $faker) {
 
