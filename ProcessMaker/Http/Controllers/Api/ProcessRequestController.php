@@ -31,7 +31,7 @@ class ProcessRequestController extends Controller
      *     path="/requests",
      *     summary="Returns all process Requests that the user has access to",
      *     operationId="getProcessesRequests",
-     *     tags={"ProcessRequests"},
+     *     tags={"Process Requests"},
      *     @OA\Parameter(
      *         name="type",
      *         in="query",
@@ -77,7 +77,7 @@ class ProcessRequestController extends Controller
 
         if (!Auth::user()->is_administrator) {
             $query->startedMe(Auth::user()->id);
-        } 
+        }
 
         // type filter
         switch ($request->input('type')) {
@@ -124,7 +124,7 @@ class ProcessRequestController extends Controller
      *     path="/requests/process_request_id",
      *     summary="Get single process request by ID",
      *     operationId="getProcessRequestById",
-     *     tags={"ProcessRequests"},
+     *     tags={"Process Requests"},
      *     @OA\Parameter(
      *         description="ID of process request to return",
      *         in="path",
@@ -158,7 +158,7 @@ class ProcessRequestController extends Controller
      *     path="/requests",
      *     summary="Save a new process request",
      *     operationId="createProcessRequest",
-     *     tags={"ProcessRequests"},
+     *     tags={"Process Requests"},
      *     @OA\RequestBody(
      *       required=true,
      *       @OA\JsonContent(ref="#/components/schemas/requestsEditable")
@@ -191,7 +191,7 @@ class ProcessRequestController extends Controller
      *     path="/requests/process_request_id",
      *     summary="Update a process request",
      *     operationId="updateProcessRequest",
-     *     tags={"ProcessRequests"},
+     *     tags={"Process Requests"},
      *     @OA\Parameter(
      *         description="ID of process request to return",
      *         in="path",
@@ -216,7 +216,7 @@ class ProcessRequestController extends Controller
     {
         if ($httpRequest->status === 'CANCELED') {
             $permission = 'requests.cancel';
-            
+
             if (!Auth::user()->hasProcessPermission($request->process, $permission)) {
                 throw new AuthorizationException('Not authorized: ' . $permission);
             }
@@ -241,7 +241,7 @@ class ProcessRequestController extends Controller
      *     path="/requests/process_request_id",
      *     summary="Delete a process request",
      *     operationId="deleteProcessRequest",
-     *     tags={"ProcessRequests"},
+     *     tags={"Process Requests"},
      *     @OA\Parameter(
      *         description="ID of process request to return",
      *         in="path",
