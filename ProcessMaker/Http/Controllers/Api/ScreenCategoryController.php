@@ -19,7 +19,7 @@ class ScreenCategoryController extends Controller
      *     path="/screen_categories",
      *     summary="Returns all screens categories that the user has access to",
      *     operationId="getScreenCategories",
-     *     tags={"ScreenCategories"},
+     *     tags={"Screen Categories"},
      *     @OA\Parameter(ref="#/components/parameters/filter"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
@@ -78,7 +78,7 @@ class ScreenCategoryController extends Controller
      *     path="/screen_categories/screen_category_id",
      *     summary="Get single screen category by ID",
      *     operationId="getScreenCategoryById",
-     *     tags={"ScreenCategories"},
+     *     tags={"Screen Categories"},
      *     @OA\Parameter(
      *         description="ID of screen category to return",
      *         in="path",
@@ -111,7 +111,7 @@ class ScreenCategoryController extends Controller
      *     path="/screen_categories",
      *     summary="Save a new Screen Category",
      *     operationId="createScreenCategory",
-     *     tags={"ScreenCategories"},
+     *     tags={"Screen Categories"},
      *     @OA\RequestBody(
      *       required=true,
      *       @OA\JsonContent(ref="#/components/schemas/ScreenCategoryEditable")
@@ -143,7 +143,7 @@ class ScreenCategoryController extends Controller
      *     path="/screen_categories/screen_category_id",
      *     summary="Update a screen Category",
      *     operationId="updateScreenCategory",
-     *     tags={"ScreenCategories"},
+     *     tags={"Screen Categories"},
      *     @OA\Parameter(
      *         description="ID of screen category to return",
      *         in="path",
@@ -183,7 +183,7 @@ class ScreenCategoryController extends Controller
      *     path="/screen_categories/screen_category_id",
      *     summary="Delete a screen category",
      *     operationId="deleteScreenCategory",
-     *     tags={"ScreenCategories"},
+     *     tags={"Screen Categories"},
      *     @OA\Parameter(
      *         description="ID of screen category to return",
      *         in="path",
