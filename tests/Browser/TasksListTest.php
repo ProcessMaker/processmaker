@@ -4,6 +4,7 @@ namespace Tests\Browser;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 use Tests\DuskTestCase;
@@ -20,7 +21,7 @@ class TasksListTest extends DuskTestCase
 
         $user = factory(User::class)->create([
             'username' => 'admin',
-            'password' => 'admin',
+            'password' => Hash::make('admin'),
             'email' => 'any@gmail.com',
             'firstname' => 'admin',
             'lastname' => 'admin',
@@ -47,6 +48,7 @@ class TasksListTest extends DuskTestCase
                 ->type('#username', 'admin')
                 ->type('#password', 'admin')
                 ->press('.btn')
+                ->screenshot('antes.png')
                 ->clickLink('Tasks')
                 ->pause(5000)
                 ->waitFor('.vuetable-body', 5)
