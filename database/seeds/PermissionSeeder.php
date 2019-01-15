@@ -46,11 +46,11 @@ class PermissionSeeder extends Seeder
         'processes.destroy',
         'processes.edit',
         'processes.show',
-        'requests.index',	
-        'requests.create',	
-        'requests.destroy',	
-        'requests.cancel',	
-        'requests.edit',	
+        'requests.index',
+        'requests.create',
+        'requests.destroy',
+        'requests.cancel',
+        'requests.edit',
         'requests.show',
         'scripts.index',
         'scripts.create',
@@ -62,7 +62,12 @@ class PermissionSeeder extends Seeder
         'users.destroy',
         'users.edit',
         'users.show',
-        'modeler.show'
+        'modeler.show',
+        'comments.index',
+        'comments.create',
+        'comments.destroy',
+        'comments.edit',
+        'comments.show',
     ];
 
     private $resourcePermissions = [

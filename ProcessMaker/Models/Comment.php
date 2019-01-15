@@ -72,10 +72,10 @@ class Comment extends Model
     {
         switch ($parameter) {
             case 'visible':
-                return $query->where('hidden', true);
+                return $query->where('hidden', false);
                 break;
             case 'hidden':
-                return $query->where('hidden', false);
+                return $query->where('hidden', true);
                 break;
             case 'ALL':
                 return $query;
