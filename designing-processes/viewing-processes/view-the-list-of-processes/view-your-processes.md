@@ -32,15 +32,11 @@ The **Processes** page displays the following information about active and inact
 * **Name:** The **Name** column displays the Process name.
 * **Category:** The **Category** column displays in which Process Category the Process is assigned. See [Process Categories](../process-categories.md).
 * **Status:** The **Status** column displays the status of the Process:
-
   * **Active:** The Process is active and is represented by the![](../../../.gitbook/assets/active-status-icon-processes.png)icon.
   * **Inactive:** The Process is inactive and is represented by the![](../../../.gitbook/assets/inactive-status-icon-processes.png)icon.
-
-  See [Activate or Deactivate a Process]() for more information.
-
 * **Owner:** The **Owner** column displays the Process Owner who maintains the Process. See [Profile Settings](../../../using-processmaker/profile-settings.md#view-another-users-profile-information) for information how to view the Process Owner's profile information.
 * **Modified:** The **Modified** column displays the date and time the Process was last modified. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
-* **Created:** The **Created** column displays the date and time the process was created. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
+* **Created:** The **Created** column displays the date and time the Process was created. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
 {% hint style="info" %}
 ### Search for a Request

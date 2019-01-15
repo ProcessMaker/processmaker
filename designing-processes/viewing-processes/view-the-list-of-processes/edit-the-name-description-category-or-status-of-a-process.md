@@ -26,12 +26,12 @@ Follow these steps to edit the configuration information about a Process:
    * In the **Process title** field, edit the Process name. This is a required field.
    * In the **Description** field, edit the description of the Process. This is a required field.
    * From the **Category** drop-down, select to which category to assign the Process. This is a required field. See [Process Categories](../process-categories.md) for more information how this affects the Process.
-   * From the **Start Request** drop-down, use the following guidelines to select from which users or groups have permission to start Requests of this Process:
+   * From the **Start Request** drop-down, specify from which users or groups have permission to start Requests from this Process. If no users or groups are selected, no one can start a Request from this Process. Use the following guidelines:
      * **Users:** Select which user\(s\) from the **Users** section of the drop-down have permission to start Requests of this Process.
      * **Groups:** Select which group\(s\) from the Groups section of the drop-down have permission to start Requests of the Process.
-   * From the **Cancel Request** drop-down, use the following guidelines to select from which users or groups have permission to cancel Requests of this Process:
-     * **Users:** Select which user\(s\) from the **Users** section of the drop-down have permission to cancel Requests of this Process.
-     * **Groups:** Select which group\(s\) from the **Groups** section of the drop-down have permission to cancel Requests of the Process.
+   * From the **Cancel Request** drop-down, specify from which users or groups have permission to cancel Requests from this Process. If no users or groups are selected, no one can cancel a Request from this Process. Use the following guidelines:
+     * **Users:** Select which user\(s\) from the **Users** section of the drop-down have permission to cancel Requests of this Process. Multiple users can be selected. Use **Shift** to select multiple consecutive users or use **Ctrl** to select multiple non-consecutive users.
+     * **Groups:** Select which group\(s\) from the **Groups** section of the drop-down have permission to cancel Requests of the Process. Multiple groups can be selected. Use **Shift** to select multiple consecutive groups or use **Ctrl** to select multiple non-consecutive groups.
    * From the **Status** drop-down, select the status of the Process. This is a required field. Below is a description of each Process status:
      * **Active:** An active Process is one in which Requests can be started using that Process.
      * **Inactive:** An inactive Process is one in which Requests cannot be started using that Process. ~~However, active Requests using that inactive Process can be completed.~~
