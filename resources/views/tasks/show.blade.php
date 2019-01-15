@@ -45,8 +45,8 @@
             <p>01/01/1001 11:11</p>
             <div class="text-secondary mt-5">Date Created:</div>
             <p>3 days ago</p>
-            <div class="text-secondary ">Due Date:</div>
-            <p>10 mins ago</dipv>
+            <div class="text-secondary ">Due:</div>
+            <p>10 mins ago</div>
             <div class="text-secondary">Last Modified:</div>
             <p class="mb-4">24hrs</p>
         </div>

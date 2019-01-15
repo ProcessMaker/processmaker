@@ -19,7 +19,7 @@ class ProcessCategoryController extends Controller
      *     path="/process_categories",
      *     summary="Returns all processes categories that the user has access to",
      *     operationId="getProcessCategories",
-     *     tags={"ProcessCategories"},
+     *     tags={"Process Categories"},
      *     @OA\Parameter(ref="#/components/parameters/filter"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
@@ -90,7 +90,7 @@ class ProcessCategoryController extends Controller
      *     path="/process_categories/process_category_id",
      *     summary="Get single process category by ID",
      *     operationId="getProcessCategoryById",
-     *     tags={"ProcessCategories"},
+     *     tags={"Process Categories"},
      *     @OA\Parameter(
      *         description="ID of process category to return",
      *         in="path",
@@ -123,7 +123,7 @@ class ProcessCategoryController extends Controller
      *     path="/process_categories",
      *     summary="Save a new process Category",
      *     operationId="createProcessCategory",
-     *     tags={"ProcessCategories"},
+     *     tags={"Process Categories"},
      *     @OA\RequestBody(
      *       required=true,
      *       @OA\JsonContent(ref="#/components/schemas/ProcessCategoryEditable")
@@ -155,7 +155,7 @@ class ProcessCategoryController extends Controller
      *     path="/process_categories/process_category_id",
      *     summary="Update a process Category",
      *     operationId="updateProcessCategory",
-     *     tags={"ProcessCategories"},
+     *     tags={"Process Categories"},
      *     @OA\Parameter(
      *         description="ID of process category to return",
      *         in="path",
@@ -195,7 +195,7 @@ class ProcessCategoryController extends Controller
      *     path="/process_categories/process_category_id",
      *     summary="Delete a process category",
      *     operationId="deleteProcessCategory",
-     *     tags={"ProcessCategories"},
+     *     tags={"Process Categories"},
      *     @OA\Parameter(
      *         description="ID of process category to return",
      *         in="path",

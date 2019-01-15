@@ -17,6 +17,8 @@
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
                     <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab"
                         aria-controls="nav-home" aria-selected="true">Information</a>
+                        <a class="nav-item nav-link" id="nav-groups-tab" data-toggle="tab" href="#nav-groups" role="tab"
+                           aria-controls="nav-groups" aria-selected="true">Groups</a>
                     <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab"
                         aria-controls="nav-profile" aria-selected="false">Permissions</a>
                     <a class="nav-item nav-link" id="nav-tokens-tab" data-toggle="tab" href="#nav-tokens" role="tab"
@@ -174,9 +176,9 @@
                             </div>
                             <div class="col-4">
                                 <div class="card card-body">
-
-                                    <div align="center" data-toggle="modal" data-target="#exampleModal">
-                                        <avatar-image size="150" class-image="m-1" :input-data="options"></avatar-image>
+                                    <div align="center" data-toggle="modal" data-target="#updateAvatarModal">
+                                        <avatar-image size="150" class-image="m-1"
+                                                      :input-data="options"></avatar-image>
                                     </div>
                                     <div class="form-group">
                                         {!! Form::label('username', 'Username') !!}
@@ -227,11 +229,30 @@
                         </div>
                         <div class="text-right">
                             {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose']) !!}
-                            {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'profileUpdate'])
-                            !!}
+                            {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'profileUpdate']) !!}
                         </div>
                     </div>
-                    <div class="tab-pane fade" id="nav-profile" role="tabpanel">
+                    <div class="tab-pane fade show" id="nav-groups" role="tabpanel" aria-labelledby="nav-groups-tab">
+
+                        <b-modal size="md" id="modal2" ref="addUserToGroup" title="{{ __('Add User To Group') }}" @ok="saveUserToGroup" {{'@'}}show="loadGroups">
+                            <b-form-select v-if="groups.length > 0" v-model="selectedGroup" :options="groups" class="mb-3"></b-form-select>
+                            <div v-if="groups.length == 0">
+                                Loading groups...
+                            </div>
+                        </b-modal>
+
+                        <div class="col-12" align="right">
+                            <b-btn v-b-modal.modal2>
+                                <i class="fas fa-plus"></i>
+                                {{ __('Add User To Group') }}
+                            </b-btn>
+                        </div>
+                        
+                        <div id="groups-listing">
+                            <groups-listing ref="groupsListing" filter="" :member_id="formData.id" />
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
                         <div class="accordion" id="accordionExample">
                             <label><input type="checkbox" v-model="formData.is_administrator">  {{__('Make this user an admin')}} </label>
                             <label class="mb-3"><input type="checkbox" v-model="selectAll" @click="select" :disabled="formData.is_administrator">  {{__('Assign all permisssions to this user')}} </label>
@@ -242,7 +263,6 @@
                             {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'permissionUpdate'])!!}
                         </div>
                     </div>
-
                     <div class="tab-pane fade" id="nav-tokens" role="tabpanel" aria-labelledby="nav-tokens-tab">
                         <div v-if="!isCurrentUser">
                             {{__('Only the logged in user can create API tokens')}}
@@ -291,11 +311,10 @@
     </div>
 </div>
 
-<div class="modal" tabindex="-1" role="dialog" id="exampleModal" ref="exampleModal">
+    <div class="modal" tabindex="-1" role="dialog" id="updateAvatarModal" ref="updateAvatarModal">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Modal title</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -334,7 +353,7 @@
 
 <script>
     new Vue({
-        el: '#exampleModal',
+            el: '#updateAvatarModal',
         data() {
             return {
                 image: "",
@@ -363,10 +382,10 @@
                 this.$refs.customFile.click();
             },
             openModal() {
-                this.$refs.exampleModal.hidden = false;
+                    this.$refs.updateAvatarModal.hidden = false;
             },
             hideModal() {
-                $('#exampleModal').modal("hide")
+                    $('#updateAvatarModal').modal("hide")
             },
             onFileChange(e) {
                 let files = e.target.files || e.dataTransfer.files;
@@ -419,6 +438,8 @@
                     title: @json($user['fullname']),
                     initials: @json($user['firstname'][0]) + @json($user['lastname'][0])
                 }],
+                selectedGroup: null,
+                groups: [],
             }
         },
         created() {
@@ -430,6 +451,10 @@
             },
         },
         mounted() {
+                let created = (new URLSearchParams(window.location.search)).get('created');
+                if (created) {
+                    ProcessMaker.alert('{{__('The user was successfully created')}}', 'success');
+                }
             this.loadTokens();
         },
         methods: {
@@ -498,6 +523,7 @@
                     });
             },
             permissionUpdate() {
+                console.log('YOOOOOO', this.selectedPermissions);
                 ProcessMaker.apiClient.put("/permissions", {
                         permission_names: this.selectedPermissions,
                         user_id: this.formData.id
@@ -564,6 +590,27 @@
                             })
                     }
                 );
+                },
+                loadGroups() {
+                    ProcessMaker.apiClient({method: 'GET', url: '/groups'})
+                        .then((result) => {
+                            this.groups = [{ value: null, text: 'Select a group' }]
+                            result.data.data.forEach((group) => {
+                                this.groups.push({value: group.id, text: group.name })
+                            });
+                        })
+                },
+                saveUserToGroup(event) {
+                    if (!this.selectedGroup) { event.preventDefault(); return; }
+                    // ProcessMaker.apiClient({method: 'POST', url: '/group_members'}, {
+                    ProcessMaker.apiClient.post('/group_members', {
+                        member_type: 'ProcessMaker\\Models\\User',
+                        member_id: this.formData.id,
+                        group_id: this.selectedGroup,
+                    }).then((result) => {
+                        ProcessMaker.alert("User successfully added to group", "success");
+                        this.$refs.groupsListing.fetch();
+                    })
             }
         }
     });

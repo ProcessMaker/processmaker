@@ -247,8 +247,8 @@ class Process extends Model implements HasMedia
         || $activity instanceof ServiceTaskInterface ? 'script' : 'requestor';
         $assignmentType = $activity->getProperty('assignment', $default);
         switch ($assignmentType) {
-            case 'cyclical':
-                $user = $this->getNextUserCyclicalAssignment($activity->getId());
+            case 'group':
+                $user = $this->getNextUserFromGroupAssignment($activity->getId());
                 break;
             case 'user':
                 $user = $this->getNextUserAssignment($activity->getId());
@@ -275,11 +275,12 @@ class Process extends Model implements HasMedia
      * @return binary
      * @throws TaskDoesNotHaveUsersException
      */
-    private function getNextUserCyclicalAssignment($processTaskUuid)
+    private function getNextUserFromGroupAssignment($processTaskUuid)
     {
         $last = ProcessRequestToken::where('process_id', $this->id)
             ->where('element_id', $processTaskUuid)
             ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
             ->first();
         $users = $this->getAssignableUsers($processTaskUuid);
         if (empty($users)) {
@@ -335,7 +336,7 @@ class Process extends Model implements HasMedia
         foreach ($assignments as $assignment) {
             if ($assignment->assignment_type === User::class) {
                 $users[$assignment->assignment_id] = $assignment->assignment_id;
-            } else {
+            } else { // Group::class
                 $this->getConsolidatedUsers($assignment->assignment_id, $users);
             }
         }
@@ -354,6 +355,9 @@ class Process extends Model implements HasMedia
     {
         $groupMembers = GroupMember::where('group_id', $group_id)->get();
         foreach ($groupMembers as $groupMember) {
+            if ($groupMember->member->status !== 'ACTIVE') {
+                continue;
+            }
             if ($groupMember->member_type === User::class) {
                 $users[$groupMember->member_id] = $groupMember->member_id;
             } else {

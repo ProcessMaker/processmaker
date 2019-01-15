@@ -25,7 +25,8 @@
             </div>
             <div class="col-8" align="right">
                 @can('create-users')
-                    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#addUser">
+                <button type="button" class="btn btn-action text-light" data-toggle="modal" data-target="#addUser"
+                        id="addUserBtn">
                         <i class="fas fa-plus"></i>
                         {{__('User')}}</button>
                 @endcan
@@ -37,7 +38,7 @@
     </div>
 
     @can('create-users')
-        <div class="modal" tabindex="-1" role="dialog" id="addUser">
+        <div class="modal" tabindex="-10" role="dialog" id="addUser">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -145,19 +146,19 @@
                         return true
                     },
                     onSubmit() {
-                        this.submitted = true;
-                        if (this.validatePassword()) {
-                            ProcessMaker.apiClient.post("/users", {
-                                username: this.username,
-                                firstname: this.firstname,
-                                lastname: this.lastname,
-                                status: this.status,
-                                email: this.email,
-                                password: this.password
-                            }).then(function (response) {
-                                window.location = "/admin/users/" + response.data.id + '/edit'
-                            }).catch(error => {
-                               this.addError = error.response.data.errors
+                    this.submitted = true;
+                    if (this.validatePassword()) {
+                        ProcessMaker.apiClient.post("/users", {
+                            username: this.username,
+                            firstname: this.firstname,
+                            lastname: this.lastname,
+                            status: this.status,
+                            email: this.email,
+                            password: this.password
+                        }).then(function (response) {
+                            window.location = "/admin/users/" + response.data.id + '/edit?created=true'
+                        }).catch(error => {
+                           this.addError = error.response.data.errors
                                 
                             });
                         }

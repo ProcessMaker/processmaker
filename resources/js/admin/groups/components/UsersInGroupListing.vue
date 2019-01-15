@@ -64,7 +64,7 @@ export default {
         },
         {
           title: "Full Name",
-          name: "firstname",
+          name: "fullname",
           sortField: "firstname"
         },
         {
@@ -128,6 +128,7 @@ export default {
     },
     fetch() {
       this.loading = true;
+      this.orderBy = this.orderBy === "fullname" ? "firstname" : this.orderBy;
       // Load from our api client
       ProcessMaker.apiClient
         .get(
