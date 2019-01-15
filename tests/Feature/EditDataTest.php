@@ -9,6 +9,7 @@ use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\PermissionAssignment;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\User;
 use ProcessMaker\Providers\WorkflowServiceProvider;
@@ -138,22 +139,20 @@ class EditDataTest extends TestCase
     }
 
     /**
-     * Test edit data with permissions
+     * Complete task
+     *
+     * @param \ProcessMaker\Models\ProcessRequestToken $task
+     * @param array $data
+     *
+     * @return \ProcessMaker\Models\ProcessRequestToken
      */
-    public function testEditDataWithPermissions()
+    private function completeTask(ProcessRequestToken $task, $data = [])
     {
-        $this->actingAs($this->user);
-        $this->assignPermissions();
-        $this->assertTrue($this->user->hasPermission('requests.edit_data'));
-
-        $process = $this->createSingleTaskProcessUserAssignment($this->user);
-        $request = $this->startProcess($process, 'StartEventUID');
-
-        $response = $this->call('GET', 'requests/' . $request->id);
-        $response->assertStatus(200);
-        $response->assertViewIs('requests.show');
-        $response->assertSee('Summary');
-        //$response->assertSee('Data');
+        //Call the manager to trigger the start event
+        $process = $task->process;
+        $instance = $task->processRequest;
+        WorkflowManager::completeTask($process, $instance, $task, $data);
+        return $task->refresh();
     }
 
     /**
@@ -166,6 +165,8 @@ class EditDataTest extends TestCase
 
         $process = $this->createSingleTaskProcessUserAssignment($this->user);
         $request = $this->startProcess($process, 'StartEventUID');
+        $task = $request->tokens()->where('element_id', 'UserTaskUID')->first();
+        $this->completeTask($task);
 
         $response = $this->call('GET', 'requests/' . $request->id);
         $response->assertStatus(200);
@@ -184,10 +185,71 @@ class EditDataTest extends TestCase
 
         $process = $this->createSingleTaskProcessUserAssignment($this->user);
         $request = $this->startProcess($process, 'StartEventUID');
+        $task = $request->tokens()->where('element_id', 'UserTaskUID')->first();
+        $this->completeTask($task);
 
         $response = $this->call('GET', 'requests/' . $request->id);
         $response->assertStatus(200);
         $response->assertViewIs('requests.show');
+        $response->assertSee('Summary');
+        //$response->assertSee('Data');
+    }
+
+    /**
+     * Test edit data with permissions from "In progress" task
+     */
+    public function testEditDataTaskViewWithoutPermissions()
+    {
+        $this->actingAs($this->user);
+
+        $process = $this->createSingleTaskProcessUserAssignment($this->user);
+        $request = $this->startProcess($process, 'StartEventUID');
+        $task = $request->tokens()->where('element_id', 'UserTaskUID')->first();
+
+        $response = $this->call('GET', 'tasks/' . $task->id . '/edit');
+        $response->assertStatus(200);
+        $response->assertViewIs('tasks.edit');
+        $response->assertDontSee('Data');
+    }
+
+    /**
+     * Test edit data with permissions from "In progress" task
+     */
+    public function testEditDataWithPermissions()
+    {
+        $this->actingAs($this->user);
+        $this->assignPermissions();
+        $this->assertTrue($this->user->hasPermission('requests.edit_data'));
+
+        $process = $this->createSingleTaskProcessUserAssignment($this->user);
+        $request = $this->startProcess($process, 'StartEventUID');
+        $task = $request->tokens()->where('element_id', 'UserTaskUID')->first();
+
+        $response = $this->call('GET', 'tasks/' . $task->id . '/edit');
+        $response->assertStatus(200);
+        $response->assertViewIs('tasks.edit');
+        //$response->assertSee('Form');
+        //$response->assertSee('Data');
+    }
+
+    /**
+     * Test edit data with permissions from Request "Completed"
+     */
+    public function testEditDataRequestCompleted()
+    {
+        $this->actingAs($this->user);
+        $this->assignPermissions();
+        $this->assertTrue($this->user->hasPermission('requests.edit_data'));
+
+        $process = $this->createSingleTaskProcessUserAssignment($this->user);
+        $request = $this->startProcess($process, 'StartEventUID');
+        $task = $request->tokens()->where('element_id', 'UserTaskUID')->first();
+        $this->completeTask($task);
+
+        $response = $this->call('GET', 'requests/' . $request->id);
+        $response->assertStatus(200);
+        $response->assertViewIs('requests.show');
+        $response->assertSee('Completed');
         $response->assertSee('Summary');
         //$response->assertSee('Data');
     }
