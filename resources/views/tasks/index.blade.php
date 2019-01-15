@@ -9,6 +9,10 @@
 @endsection
 
 @section('content')
+@include('shared.breadcrumbs', ['routes' => [
+    __('Tasks') => null,
+    __($title) => null,
+]])
 <div class="container page-content" id="tasks">
   <h1>{{__($title)}}</h1>
   <div class="row">

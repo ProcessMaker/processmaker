@@ -15,7 +15,12 @@
 @section('content')
     @include('shared.breadcrumbs', ['routes' => [
         __('Tasks') => route('tasks.index'),
-        __('To Do') => null,
+        function() use ($task) {
+            if ($task->advanceStatus == 'completed') {
+                return ['Completed Tasks', route('tasks.index', ['status' => 'CLOSED'])];
+            }
+            return ['To Do Tasks', route('tasks.index')];
+        },
         $task->processRequest->name => route('requests.show', ['id' => $task->processRequest->id]),
         $task->element_name => null,
     ]])
