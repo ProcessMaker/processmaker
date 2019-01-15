@@ -13,7 +13,7 @@
     <startEvent id="node_2" name="Start Event">
       <outgoing>node_5</outgoing>
     </startEvent>
-    <task id="node_3" name="test task" screenRef="5" assignment="group" assignedGroups="999">
+    <task id="node_3" name="test task" pm:screenRef="5" pm:assignment="group" pm:assignedGroups="999">
       <incoming>node_5</incoming>
       <outgoing>node_6</outgoing>
     </task>
@@ -23,28 +23,28 @@
     <sequenceFlow id="node_5" name="" sourceRef="node_2" targetRef="node_3" />
     <sequenceFlow id="node_6" name="" sourceRef="node_3" targetRef="node_4" />
   </process>
-  <BPMNDiagram id="BPMNDiagramId">
-    <BPMNPlane id="BPMNPlaneId" bpmnElement="ProcessIdGroup">
-      <BPMNShape id="node_2_di" bpmnElement="node_2">
-        <Bounds x="119" y="140" width="36" height="36" />
-      </BPMNShape>
-      <BPMNShape id="node_3_di" bpmnElement="node_3">
-        <Bounds x="280" y="140" width="116" height="76" />
-      </BPMNShape>
-      <BPMNShape id="node_4_di" bpmnElement="node_4">
-        <Bounds x="490" y="240" width="36" height="36" />
-      </BPMNShape>
-      <BPMNEdge id="node_5_di" bpmnElement="node_5">
-        <waypoint x="155" y="158" />
-        <waypoint x="226.22265625" y="158" />
-        <waypoint x="226.22265625" y="178" />
-        <waypoint x="280" y="178" />
-      </BPMNEdge>
-      <BPMNEdge id="node_6_di" bpmnElement="node_6">
-        <waypoint x="396" y="178" />
-        <waypoint x="508" y="178" />
-        <waypoint x="508" y="240" />
-      </BPMNEdge>
-    </BPMNPlane>
-  </BPMNDiagram>
+  <bpmndi:BPMNDiagram id="BPMNDiagramId">
+    <bpmndi:BPMNPlane id="BPMNPlaneId" bpmnElement="ProcessIdGroup">
+      <bpmndi:BPMNShape id="node_2_di" bpmnElement="node_2">
+        <dc:Bounds x="119" y="140" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_3_di" bpmnElement="node_3">
+        <dc:Bounds x="280" y="140" width="116" height="76" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_4_di" bpmnElement="node_4">
+        <dc:Bounds x="490" y="240" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_5_di" bpmnElement="node_5">
+        <di:waypoint x="155" y="158" />
+        <di:waypoint x="226.22265625" y="158" />
+        <di:waypoint x="226.22265625" y="178" />
+        <di:waypoint x="280" y="178" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="node_6_di" bpmnElement="node_6">
+        <di:waypoint x="396" y="178" />
+        <di:waypoint x="508" y="178" />
+        <di:waypoint x="508" y="240" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
 </definitions>
