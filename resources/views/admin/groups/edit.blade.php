@@ -12,6 +12,7 @@
     @include('shared.breadcrumbs', ['routes' => [
         __('Admin') => null,
         __('Groups') => route('groups.index'),
+        $group->name => null,
         __('Edit') => null,
     ]])
     <div class="container" id="editGroup">
