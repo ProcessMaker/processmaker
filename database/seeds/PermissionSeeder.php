@@ -45,24 +45,23 @@ class PermissionSeeder extends Seeder
         'requests'
     ];
 
-    public function run($user = null)
+    public function run()
     {
         if (Permission::count() !== 0) {
             return;
         }
+        
         $group = factory(Group::class)->create([
             'name' => 'All Permissions',
         ]);
 
-        if (!$user) {
-            $user = User::first()->id;
+        if ($user = User::first()) {
+            factory(GroupMember::class)->create([
+                'group_id' => $group->id,
+                'member_type' => User::class,
+                'member_id' => $user->id,
+            ]);
         }
-
-        factory(GroupMember::class)->create([
-            'group_id' => $group->id,
-            'member_type' => User::class,
-            'member_id' => User::first()->id,
-        ]);
 
         foreach ($this->permissions as $permissionString) {
             $permission = factory(Permission::class)->create([
