@@ -52,6 +52,7 @@ class PermissionSeeder extends Seeder
         'requests.cancel',	
         'requests.edit',	
         'requests.show',
+        'requests.edit_data',
         'scripts.index',
         'scripts.create',
         'scripts.destroy',
