@@ -71,17 +71,25 @@ class EditDataTest extends TestCase
     /**
      * Test edit data with permissions
      */
-    public function testWithPermissions()
+    public function testEditDataWithPermissions()
     {
         $this->assignPermissions();
         $this->assertTrue($this->user->hasPermission('requests.edit_data'));
     }
 
     /**
-     * Test edit data with permissions
+     * Test edit data without permissions
      */
-    public function testWithoutPermissions()
+    public function testEditDataWithoutPermissions()
     {
         $this->assertFalse($this->user->hasPermission('requests.edit_data'));
+    }
+
+    /**
+     * Test edit data with admin user
+     */
+    public function testEditDataWithAdmin()
+    {
+        $this->assertTrue($this->admin->hasPermission('requests.edit_data'));
     }
 }
