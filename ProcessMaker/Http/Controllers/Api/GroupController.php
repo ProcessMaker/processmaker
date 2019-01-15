@@ -239,7 +239,7 @@ class GroupController extends Controller
      *     path="/group_users",
      *     summary="Returns all users of a group",
      *     operationId="getMembers",
-     *     tags={"Group_users"},
+     *     tags={"Group Users"},
      *     @OA\Parameter(ref="#/components/parameters/filter"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),

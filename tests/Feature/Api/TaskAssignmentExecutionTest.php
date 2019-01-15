@@ -89,6 +89,10 @@ class TaskAssignmentExecutionTest extends TestCase
 
         $request = ProcessRequest::find($requestId);
 
-        $this->assertEquals($request->tokens[0]->user_id, $this->assigned->id);
+        //Token 0: user of event start
+        $this->assertEquals($request->tokens[0]->user_id, $this->user->id);
+
+        //Token 1: user of task
+        $this->assertEquals($request->tokens[1]->user_id, $this->assigned->id);
     }
 }
