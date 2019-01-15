@@ -48,13 +48,13 @@ class CommentTest extends TestCase
         factory(Comment::class, 10)->create([
             'commentable_id' => $model->getKey(),
             'commentable_type' => get_class($model),
-            'hidden'=> false
+            'hidden' => false
         ]);
 
         factory(Comment::class, 5)->create([
             'commentable_id' => $model->getKey(),
             'commentable_type' => get_class($model),
-            'hidden'=> true
+            'hidden' => true
         ]);
 
         $response = $this->apiCall('GET', self::API_TEST_URL);
@@ -74,13 +74,13 @@ class CommentTest extends TestCase
         factory(Comment::class, 10)->create([
             'commentable_id' => $model->getKey(),
             'commentable_type' => get_class($model),
-            'hidden'=> false
+            'hidden' => false
         ]);
 
         factory(Comment::class, 5)->create([
             'commentable_id' => $model->getKey(),
             'commentable_type' => get_class($model),
-            'hidden'=> true
+            'hidden' => true
         ]);
 
         $this->user = factory(User::class)->create([
@@ -96,6 +96,53 @@ class CommentTest extends TestCase
         ]);
 
         $response = $this->apiCall('GET', self::API_TEST_URL);
+        $json = $response->json('data');
+        $this->assertCount(10, $json);
+    }
+
+    public function testGetCommentByType()
+    {
+        $model = factory(ProcessRequestToken::class)->create();
+
+        factory(Comment::class, 10)->create([
+            'commentable_id' => $model->getKey(),
+            'commentable_type' => get_class($model),
+            'hidden' => false
+        ]);
+
+        factory(Comment::class, 5)->create([
+            'commentable_id' => $model->getKey(),
+            'commentable_type' => get_class($model),
+            'hidden' => true
+        ]);
+
+        $model2 = factory(ProcessRequest::class)->create();
+
+        factory(Comment::class, 10)->create([
+            'commentable_id' => $model2->getKey(),
+            'commentable_type' => get_class($model2),
+            'hidden' => false
+        ]);
+
+        factory(Comment::class, 5)->create([
+            'commentable_id' => $model2->getKey(),
+            'commentable_type' => get_class($model2),
+            'hidden' => true
+        ]);
+
+        $this->user = factory(User::class)->create([
+            'password' => Hash::make('password'),
+            'is_administrator' => false,
+        ]);
+        $permission = factory(Permission::class)->create(['guard_name' => 'comments.index']);
+
+        factory(PermissionAssignment::class)->create([
+            'permission_id' => $permission->id,
+            'assignable_type' => User::class,
+            'assignable_id' => $this->user->id,
+        ]);
+
+        $response = $this->apiCall('GET', self::API_TEST_URL . '?commentable_type=' . get_class($model2));
         $json = $response->json('data');
         $this->assertCount(10, $json);
     }
