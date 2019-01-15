@@ -14,8 +14,8 @@
 
 @section('content')
     @include('shared.breadcrumbs', ['routes' => [
-        'Tasks' => route('tasks.index'),
-        'To Do' => null,
+        __('Tasks') => route('tasks.index'),
+        __('To Do') => null,
         $task->processRequest->name => route('requests.show', ['id' => $task->processRequest->id]),
         $task->element_name => null,
     ]])

@@ -10,8 +10,8 @@
 
 @section('content')
     @include('shared.breadcrumbs', ['routes' => [
-        'Admin' => null,
-        'Users' => null,
+        __('Admin') => null,
+        __('Users') => null,
     ]])
 
     <div class="container page-content" id="users-listing">

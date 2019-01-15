@@ -11,9 +11,9 @@
 
 @section('content')
     @include('shared.breadcrumbs', ['routes' => [
-        'Processes' => route('processes.index'),
+        __('Processes') => route('processes.index'),
         $process->name => null,
-        'Modeler' => null,
+        __('Modeler') => null,
     ]])
     <div id="modeler-app">
     </div>

@@ -10,8 +10,8 @@
 
 @section('content')
     @include('shared.breadcrumbs', ['routes' => [
-        'Processes' => route('processes.index'),
-        'Screens' => null,
+        __('Processes') => route('processes.index'),
+        __('Screens') => null,
     ]])
     <div class="container page-content" id="screenIndex">
         <h1>{{__('Screens')}}</h1>

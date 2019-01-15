@@ -10,10 +10,10 @@
 
 @section('content')
     @include('shared.breadcrumbs', ['routes' => [
-        'Processes' => route('processes.index'),
-        'Screens' => route('screens.index'),
+        __('Processes') => route('processes.index'),
+        __('Screens') => route('screens.index'),
         $screen->title => null,
-        'Screen Builder' => null,
+        __('Screen Builder') => null,
     ]])
     <div id="screen-container">
         <screen-builder :screen="{{$screen}}"></screen-builder>

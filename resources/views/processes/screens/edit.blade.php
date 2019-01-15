@@ -10,10 +10,10 @@
 
 @section('content')
     @include('shared.breadcrumbs', ['routes' => [
-        'Processes' => route('processes.index'),
-        'Screens' => route('screens.index'),
+        __('Processes') => route('processes.index'),
+        __('Screens') => route('screens.index'),
         $screen->title => null,
-        'Edit' => null,
+        __('Edit') => null,
     ]])
     <div class="container" id="editGroup">
         <h1>{{__('Edit Screen')}}</h1>

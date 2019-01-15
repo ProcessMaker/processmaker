@@ -17,7 +17,7 @@
 
 @section('content')
 @include('shared.breadcrumbs', ['routes' => [
-    'Processes' => null,
+    __('Processes') => null,
 ]])
 <div class="container page-content" id="processIndex">
 	<h1>{{$title}}</h1>

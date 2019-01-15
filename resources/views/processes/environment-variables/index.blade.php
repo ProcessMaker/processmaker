@@ -10,8 +10,8 @@
 
 @section('content')
     @include('shared.breadcrumbs', ['routes' => [
-        'Processes' => route('processes.index'),
-        'Environment Variables' => null,
+        __('Processes') => route('processes.index'),
+        __('Environment Variables') => null,
     ]])
     <div class="container page-content" id="process-variables-listing">
         <h1>{{__('Environment Variables')}}</h1>

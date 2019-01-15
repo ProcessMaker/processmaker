@@ -10,9 +10,9 @@
 
 @section('content')
 @include('shared.breadcrumbs', ['routes' => [
-    'Processes' => route('processes.index'),
+    __('Processes') => route('processes.index'),
     $process->name => null,
-    'Edit' => null,
+    __('Edit') => null,
 ]])
 <div class="container" id="editProcess">
     <h1>{{__('Edit Process')}}</h1>

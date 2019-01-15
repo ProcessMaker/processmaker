@@ -10,10 +10,10 @@
 
 @section('content')
 @include('shared.breadcrumbs', ['routes' => [
-    'Processes' => route('processes.index'),
-    'Scripts' => route('scripts.index'),
+    __('Processes') => route('processes.index'),
+    __('Scripts') => route('scripts.index'),
     $script->title => null,
-    'Edit' => null,
+    __('Script Editor') => null,
 ]])
 <div id="script-container">
     <script-editor :script="{{$script}}"></script-editor>
