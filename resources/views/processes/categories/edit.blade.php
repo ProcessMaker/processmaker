@@ -9,6 +9,12 @@
 @endsection
 
 @section('content')
+    @include('shared.breadcrumbs', ['routes' => [
+        'Processes' => route('processes.index'),
+        'Categories' => route('categories.index'),
+        $processCategory->name => null,
+        'Edit' => null,
+    ]])
     <div class="container" id="editProcessCategory">
         <h1>{{__('Edit Process Category')}}</h1>
         <div class="row">
