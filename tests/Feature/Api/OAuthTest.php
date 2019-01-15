@@ -3,8 +3,6 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
-// use Illuminate\Foundation\Testing\WithFaker;
-// use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 
 class OAuthTest extends TestCase

@@ -44,8 +44,16 @@ class UserSeeder extends Seeder
             'group_id' => $group_id,
         ]);
 
+        // Create personal access token
         $clients->createPersonalAccessClient(
             null, 'PmApi', 'http://localhost'
+        );
+        
+        // Create client OAuth (for 3-legged auth)
+        $clients->create(
+            $user->id,
+            'Swagger UI Auth',
+            env('APP_URL', 'http://localhost') . '/api/documentation'
         );
     }
 }
