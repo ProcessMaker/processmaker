@@ -24,15 +24,15 @@
     <div>
         <b-modal ref="createEditAuthClient" :title="modalTitle" @ok="save">
             <div class="form-group">
-                <label for="authClientName">Name</label>
+                <label for="authClientName">{{__('Name')}}</label>
                 <b-form-input id="authClientName" v-model="authClient.name" type="text" placeholder="Enter a name for this auth client"></b-form-input>
             </div>
             <div class="form-group">
-                <label for="authClientName">Redirect URL</label>
+                <label for="authClientName">{{__('Redirect URL')}}</label>
                 <b-form-input v-model="authClient.redirect" type="text" placeholder="Enter the URL to redirect to"></b-form-input>
             </div>
-            <div v-if="authClient.secret != ''" class="form-group">
-                <label for="authClientName">Client Secret</label>
+            <div v-if="authClient.secret" class="form-group">
+                <label for="authClientName">{{__('Client Secret')}}</label>
                 @{{ authClient.secret }}
             </div>
         </b-modal>

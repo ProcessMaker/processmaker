@@ -9,6 +9,7 @@ new Vue({
                 id: null,
                 name: "",
                 redirect: "",
+                secret: "",
             },
         }
     },
@@ -19,7 +20,7 @@ new Vue({
             this.$refs.createEditAuthClient.show()
         },
         create() {
-            this.authClient = {id: null, name: '', redirect: ''}
+            this.authClient = {id: null, name: '', redirect: '', secret: null}
             this.$refs.createEditAuthClient.show()
         },
         save() {
