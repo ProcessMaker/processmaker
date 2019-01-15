@@ -35,6 +35,7 @@
         <template slot="secret" slot-scope="props">
           <b-btn
             variant="link"
+            class="copylink"
             @click="copySecret(props.rowData.secret)"
             v-b-tooltip.hover
             title="Copy Client Secret To Clipboard"
@@ -44,7 +45,7 @@
           {{ props.rowData.secret.substr(0, 10) }}...
         </template>
       </vuetable>
-      <textarea style="position: absolute; left: -1000px; top: -1000px" ref="copytext"></textarea>
+      <textarea class="copytext" ref="copytext"></textarea>
     </div>
   </div>
 </template>
@@ -69,9 +70,14 @@ export default {
       ],
       fields: [
         {
+          title: "Client ID",
+          name: "id",
+          sortField: "id"
+        },
+        {
           title: "Name",
           name: "name",
-          sortField: "Name"
+          sortField: "name"
         },
         {
           title: "Redirect",
@@ -125,3 +131,15 @@ export default {
   }
 };
 </script>
+
+<style>
+.copytext {
+  position: absolute;
+  left: -1000px;
+  top: -1000px
+}
+
+.copylink {
+  padding: 0;
+}
+</style>
