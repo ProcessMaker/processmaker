@@ -13,18 +13,12 @@
 @endsection
 
 @section('content')
-
-<nav aria-label="breadcrumb">
-        <ol class="breadcrumb bg-light text-primary">
-            <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
-            <li class="breadcrumb-item">Tasks</li>
-            <li class="breadcrumb-item">To Do</li>
-            <li class="breadcrumb-item"><a href="{{ route('requests.show', ['id' => $task->processRequest->id]) }}">
-                {{ $task->processRequest->name }}
-            </a></li>
-            <li class="breadcrumb-item active" aria-current="page">{{ $task->element_name }}</li>
-        </ol>
-    </nav>      
+    @include('shared.breadcrumbs', ['routes' => [
+        'Tasks' => route('tasks.index'),
+        'To Do' => null,
+        $task->processRequest->name => route('requests.show', ['id' => $task->processRequest->id]),
+        $task->element_name => null,
+    ]])
 
     <div id="task" class="container">
         
