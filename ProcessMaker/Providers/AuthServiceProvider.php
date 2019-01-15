@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Passport\Passport;
 use ProcessMaker\Models\Script;
+use Illuminate\Support\Facades\Log;
 
 
 /**
@@ -36,20 +37,23 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
         Passport::routes();
-        
-        $permissions = Permission::all();
-        
+
         Gate::before(function ($user) {
             if ($user->is_administrator) {
                 return true;
             }
         });
-
-        $permissions->each(function($permission) {
-            Gate::define($permission->name, function ($user, $model = false) use($permission) {
-                return $user->hasPermission($permission->name);
+        
+        try {
+            Permission::all()->each(function($permission) {
+                Gate::define($permission->name, function ($user, $model = false) use($permission) {
+                    return $user->hasPermission($permission->name);
+                });
             });
-        });
+        } catch (\Exception $e) {
+            Log::notice('Unable to register gates. Either no database connection or no permissions table exists.');
+        }
+
     }
 
 }
