@@ -104,32 +104,39 @@ class GenerateMenus
               'icon' => 'fa-play-circle',
               'id' => 'processes'
           ]);
-          $submenu->add(__('menus.sidebar_processes.categories'), [
-              'route' => 'categories.index',
-              'icon' => 'fa-sitemap',
-              'id' => 'process-categories'
-          ]);
+          if(\Auth::check() && \Auth::user()->can('view-categories')) {
+              $submenu->add(__('menus.sidebar_processes.categories'), [
+                  'route' => 'categories.index',
+                  'icon' => 'fa-sitemap',
+                  'id' => 'process-categories'
+              ]);
+          }
           $submenu->add(__('menus.sidebar_processes.archived_processes'), [
               'route' => ['processes.index', 'status' => 'deleted'],
               'icon' => 'fa-archive',
               'id' => 'process-environment'
           ]);
-          $submenu->add(__('menus.sidebar_processes.scripts'), [
-              'route' => 'scripts.index',
-              'icon' => 'fa-code',
-              'id' => 'process-scripts'
-          ]);
-          $submenu->add(__('menus.sidebar_processes.screens'), [
-              'route' => 'screens.index',
-              'icon' => 'fa-file-alt',
-              'id' => 'process-screens'
-          ]);
-          $submenu->add(__('menus.sidebar_processes.environment_variables'), [
-              'route' => 'environment-variables.index',
-              'icon' => 'fa-cogs',
-              'id' => 'process-environment'
-          ]);
-
+          if(\Auth::check() && \Auth::user()->can('view-scripts')) {
+              $submenu->add(__('menus.sidebar_processes.scripts'), [
+                  'route' => 'scripts.index',
+                  'icon' => 'fa-code',
+                  'id' => 'process-scripts'
+              ]);
+          }
+          if(\Auth::check() && \Auth::user()->can('view-screens')) {
+              $submenu->add(__('menus.sidebar_processes.screens'), [
+                  'route' => 'screens.index',
+                  'icon' => 'fa-file-alt',
+                  'id' => 'process-screens'
+              ]);
+          }
+          if(\Auth::check() && \Auth::user()->can('view-environment_variables')) {
+              $submenu->add(__('menus.sidebar_processes.environment_variables'), [
+                  'route' => 'environment-variables.index',
+                  'icon' => 'fa-cogs',
+                  'id' => 'process-environment'
+              ]);
+          }
 
     });
 
