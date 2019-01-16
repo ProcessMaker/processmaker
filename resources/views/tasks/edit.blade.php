@@ -132,6 +132,7 @@
             el: '#task',
             data: {
                 //Edit data
+                fieldsToUpdate: [],
                 jsonData: "",
                 selectedData: null,
                 monacoLargeOptions: {
@@ -168,8 +169,19 @@
                 }
             },
             methods: {
-                updateData(name, target){
-                    console.log(name, target);
+                updateRequestData() {
+                    const data = {};
+                    this.fieldsToUpdate.forEach(name=>{
+                        data[name] = this.data[name];
+                    });
+                    this.fieldsToUpdate.splice(0);
+                },
+                updateData(name, value) {
+                    if (name) {
+                        this.$set(this.data, name, value);
+                        this.fieldsToUpdate.indexOf(name) === -1 ? this.fieldsToUpdate.push(name) : null;
+                        this.updateRequestData();
+                    }
                 },
                 saveJsonData() {
                     try{
@@ -248,6 +260,7 @@
                 this.statusCard = this.classHeaderCard(this.task.advanceStatus)
                 this.userAssigned = this.assigned
                 this.userRequested = this.requested
+                this.updateRequestData = debounce(this.updateRequestData, 1000);
             }
         });
     </script>
