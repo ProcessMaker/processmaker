@@ -21,7 +21,9 @@
                 <div class="container-fluid">
                     <ul id="tabHeader" role="tablist" class="nav nav-tabs">
                         <li class="nav-item"><a id="pending-tab" data-toggle="tab" href="#tab-form" role="tab" aria-controls="tab-form" aria-selected="true" class="nav-link active">{{__('Form')}}</a></li>
+                        @if ($task->processRequest->status === 'ACTIVE')
                         <li class="nav-item"><a id="summary-tab" data-toggle="tab" href="#tab-data" role="tab" aria-controls="tab-data" aria-selected="false" class="nav-link">{{__('Data')}}</a></li>
+                        @endif
                     </ul>
                     <div id="tabContent" class="tab-content">
                         <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show">
@@ -34,9 +36,11 @@
                                     :data="{{json_encode($task->processRequest->data)}}"/>
                             </div>
                         </div>
+                        @if ($task->processRequest->status === 'ACTIVE')
                         <div id="tab-data" role="tabpanel" aria-labelledby="tab-data" class="tab-pane">
                             @include('tasks.editdata')
                         </div>
+                        @endif
                     </div>
                 </div>
             </div>
