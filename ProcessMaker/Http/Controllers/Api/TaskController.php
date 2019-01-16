@@ -54,12 +54,12 @@ class TaskController extends Controller
         $query->orderBy(
             $request->input('order_by', 'updated_at'), $request->input('order_direction', 'asc')
         );
+        $response = $query->get();
 
-        // only show tasks that the user is assigned to
-        if (!Auth::user()->is_administrator) {
-            $query->where('process_request_tokens.user_id', Auth::user()->id);
-        }
-        $response = $query->paginate($request->input('per_page', 10));
+        $response = $response->filter(function($processRequestToken) {
+            return Auth::user()->can('view', $processRequestToken);
+        });
+
         return new ApiCollection($response);
     }
 
