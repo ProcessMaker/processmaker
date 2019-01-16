@@ -18,14 +18,17 @@
     </tbody>
 </table>
 
-<b-modal v-model="showJSONEditor" size="lg" centered title="{{__('Change value')}}" v-cloak>
+<b-modal v-model="showJSONEditor" size="lg" centered :title="selectedData" v-cloak>
     <div class="editor-container">
         <monaco-editor :options="monacoLargeOptions" v-model="jsonData"
-            language="json" style="height: 12em;"></monaco-editor>
+            language="json" style="height: 12em;border:1px solid gray;"></monaco-editor>
     </div>
     <div slot="modal-footer">
         <b-button @click="saveJsonData" class="btn btn-outline-secondary btn-sm text-uppercase">
             UPDATE
+        </b-button>
+        <b-button @click="closeJsonData" class="btn btn-secondary btn-sm text-uppercase">
+            CLOSE
         </b-button>
     </div>
 

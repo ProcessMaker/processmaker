@@ -134,7 +134,7 @@
                 //Edit data
                 fieldsToUpdate: [],
                 jsonData: "",
-                selectedData: null,
+                selectedData: '',
                 monacoLargeOptions: {
                     automaticLayout: true,
                 },
@@ -189,6 +189,10 @@
                         this.updateRequestData();
                     }
                 },
+                closeJsonData() {
+                    this.selectedData = '';
+                    this.showJSONEditor = false;
+                },
                 saveJsonData() {
                     try{
                         if (this.selectedData) {
@@ -204,7 +208,7 @@
                 editJsonData(name) {
                     if (this.data[name] !== undefined) {
                         this.selectedData = name;
-                        this.jsonData = JSON.stringify(this.data[name]);
+                        this.jsonData = JSON.stringify(this.data[name], null, 4);
                         this.showJSONEditor = true;
                     }
                 },
