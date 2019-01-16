@@ -3,7 +3,9 @@
 namespace ProcessMaker\Http\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\AbstractPaginator;
+use Illuminate\Support\Collection;
 
 /**
  *  @OA\Schema(
@@ -61,6 +63,14 @@ class ApiCollection extends ResourceCollection
      */
     public function toResponse($request)
     {
+        if ($this->resource instanceof Collection) {
+            $this->resource = new LengthAwarePaginator(
+                $this->resource,
+                $this->resource->count(),
+                $request->input('per_page', 10)
+            );
+        }
+        
         return $this->resource instanceof AbstractPaginator
                     ? (new ApiPaginatedResourceResponse($this))->toResponse($request)
                     : parent::toResponse($request);
