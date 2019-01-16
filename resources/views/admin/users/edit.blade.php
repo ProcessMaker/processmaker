@@ -254,7 +254,7 @@
                     </div>
                     <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
                         <div class="accordion" id="accordionExample">
-                            <label><input type="checkbox" v-model="formData.is_administrator">  {{__('Make this user an admin')}} </label>
+                            <label><input type="checkbox" v-model="formData.is_administrator" @input="adminHasChanged = true">  {{__('Make this user an admin')}} </label>
                             <label class="mb-3"><input type="checkbox" v-model="selectAll" @click="select" :disabled="formData.is_administrator">  {{__('Assign all permisssions to this user')}} </label>
                             @include('admin.shared.permissions')
                         </div>
@@ -431,6 +431,7 @@
                 selectedPermissions: [],
                 selectAll: false,
                 newToken: null,
+                adminHasChanged: false,
                 apiTokens: [],
                 currentUserId: {{ Auth::user()->id }},
                 options: [{
@@ -517,28 +518,35 @@
                 }
                 return true
             },
-            profileUpdate() {
+            profileUpdate(close) {
+                if(close === undefined) {
+                    let close = true
+                } 
                 this.resetErrors();
                 if (!this.validatePassword()) return false;
                 ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
                     .then(response => {
                         ProcessMaker.alert('{{__('User Updated Successfully ')}}', 'success');
-                        this.onClose();
+                        if(close === true) {
+                            this.onClose();
+                        } 
                     })
                     .catch(error => {
                         ProcessMaker.alert('{{__('An error occurred while saving the Groups.')}}', 'danger');
                     });
             },
             permissionUpdate() {
-                console.log('YOOOOOO', this.selectedPermissions);
+                if(this.adminHasChanged){
+                    this.profileUpdate(false)
+                } 
                 ProcessMaker.apiClient.put("/permissions", {
-                        permission_names: this.selectedPermissions,
-                        user_id: this.formData.id
-                    })
-                    .then(response => {
-                        ProcessMaker.alert('{{__('User Permissions Updated Successfully ')}}', 'success');
-                        this.onClose();
-                    })
+                    permission_names: this.selectedPermissions,
+                    user_id: this.formData.id
+                })
+                .then(response => {
+                    ProcessMaker.alert('{{__('User Permissions Updated Successfully ')}}', 'success');
+                    this.onClose();
+                })
             },
             hasPermission() {
                 if (this.userPermissionNames) {
