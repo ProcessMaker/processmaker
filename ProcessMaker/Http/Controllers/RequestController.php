@@ -60,7 +60,7 @@ class RequestController extends Controller
      */
     public function show(ProcessRequest $request, Media $mediaItems)
     {
-        $request->authorize(Auth::user());
+        $this->authorize('view', $request);
         $request->participants;
         $request->user;
         $request->summary = $request->summary();
