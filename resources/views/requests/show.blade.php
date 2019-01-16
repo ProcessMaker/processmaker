@@ -40,7 +40,11 @@
                             </li>
                             @if ($request->status === 'COMPLETED')
                             <li>
-                                <a>Data</a>
+                                <a id="editdata-tab" data-toggle="tab" href="#editdata" role="tab"
+                                   aria-controls="editdata" aria-selected="false"
+                                   class="nav-link">
+                                    {{__('Data')}}
+                                </a>
                             </li>
                             @endif
                             <li class="nav-item">
@@ -108,6 +112,11 @@
                                 </div>
                             </template>
                         </div>
+                        @if ($request->status === 'COMPLETED')
+                        <div id="editdata" role="tabpanel" aria-labelledby="editdata" class="tab-pane">
+                            @include('tasks.editdata')
+                        </div>
+                        @endif
                         <div class="tab-pane fade" id="completed" role="tabpanel" aria-labelledby="completed-tab">
                             <request-detail ref="completed" :process-request-id="requestId" status="CLOSED">
                             </request-detail>
@@ -191,6 +200,15 @@
             el: "#request",
             data() {
                 return {
+                    //Edit data
+                    fieldsToUpdate: [],
+                    jsonData: "",
+                    selectedData: '',
+                    monacoLargeOptions: {
+                        automaticLayout: true,
+                    },
+                    showJSONEditor: false,
+                    data: @json($request->data),
                     requestId: @json($request->getKey()),
                     request: @json($request),
                     files: @json($files),
@@ -301,6 +319,50 @@
                 },
             },
             methods: {
+                // Data editor
+                updateRequestData() {
+                    const data = {};
+                    this.fieldsToUpdate.forEach(name=>{
+                        data[name] = this.data[name];
+                    });
+                    ProcessMaker.apiClient
+                        .put("requests/" + this.requestId, {
+                            data: data
+                        })
+                        .then(response => {
+                            this.fieldsToUpdate.splice(0);
+                        });
+                },
+                updateData(name, value) {
+                    if (name) {
+                        this.$set(this.data, name, value);
+                        this.fieldsToUpdate.indexOf(name) === -1 ? this.fieldsToUpdate.push(name) : null;
+                        this.updateRequestData();
+                    }
+                },
+                closeJsonData() {
+                    this.selectedData = '';
+                    this.showJSONEditor = false;
+                },
+                saveJsonData() {
+                    try{
+                        if (this.selectedData) {
+                            const value = JSON.parse(this.jsonData);
+                            this.$set(this.data, this.selectedData, value);
+                            this.showJSONEditor = false;
+                            this.fieldsToUpdate.indexOf(this.selectedData) === -1 ? this.fieldsToUpdate.push(this.selectedData) : null;
+                            this.updateRequestData();
+                        }
+                    } catch (e) {
+                    }
+                },
+                editJsonData(name) {
+                    if (this.data[name] !== undefined) {
+                        this.selectedData = name;
+                        this.jsonData = JSON.stringify(this.data[name], null, 4);
+                        this.showJSONEditor = true;
+                    }
+                },
                 /**
                  * Refresh the Request details.
                  *

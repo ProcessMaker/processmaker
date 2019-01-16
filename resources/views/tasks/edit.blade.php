@@ -173,6 +173,7 @@
                 }
             },
             methods: {
+                // Data editor
                 updateRequestData() {
                     const data = {};
                     this.fieldsToUpdate.forEach(name=>{
@@ -216,6 +217,7 @@
                         this.showJSONEditor = true;
                     }
                 },
+
                 // Reassign methods
                 show() {
                     this.showReassignment = true;
