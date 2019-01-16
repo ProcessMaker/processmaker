@@ -37,4 +37,19 @@ class ProcessRequestTokenPolicy
             return true;
         }
     }
+
+    /**
+     * Determine whether the user can update the process request token.
+     *
+     * @param  \ProcessMaker\Models\User  $user
+     * @param  \ProcessMaker\Models\ProcessRequestToken  $processRequestToken
+     * @return mixed
+     */
+    public function update(User $user, ProcessRequestToken $processRequestToken)
+    {
+        if ($processRequestToken->user_id == $user->id) {
+            return true;
+        }
+    }    
+    
 }
