@@ -223,10 +223,17 @@ class ProcessRequestController extends Controller
             $this->cancelRequestToken($request);
             return response([], 204);
         }
-
-        $httpRequest->validate(ProcessRequest::rules($request));
-        $request->fill($httpRequest->json()->all());
-        $request->saveOrFail();
+        $fields = $httpRequest->json()->all();
+        if (array_keys($fields) === ['data']) {
+            // Update data edited
+            $data = array_merge($request->data, $fields['data']);
+            $request->data = $data;
+            $request->saveOrFail();
+        } else {
+            $httpRequest->validate(ProcessRequest::rules($request));
+            $request->fill($fields);
+            $request->saveOrFail();
+        }
         return response([], 204);
     }
 

@@ -174,7 +174,13 @@
                     this.fieldsToUpdate.forEach(name=>{
                         data[name] = this.data[name];
                     });
-                    this.fieldsToUpdate.splice(0);
+                    ProcessMaker.apiClient
+                        .put("requests/" + this.task.process_request_id, {
+                            data: data
+                        })
+                        .then(response => {
+                            this.fieldsToUpdate.splice(0);
+                        });
                 },
                 updateData(name, value) {
                     if (name) {
@@ -187,9 +193,10 @@
                     try{
                         if (this.selectedData) {
                             const value = JSON.parse(this.jsonData);
-                            console.log(this.data, this.selectedData, value);
                             this.$set(this.data, this.selectedData, value);
                             this.showJSONEditor = false;
+                            this.fieldsToUpdate.indexOf(this.selectedData) === -1 ? this.fieldsToUpdate.push(this.selectedData) : null;
+                            this.updateRequestData();
                         }
                     } catch (e) {
                     }
