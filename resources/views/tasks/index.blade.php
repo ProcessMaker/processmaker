@@ -14,7 +14,22 @@
     __($title) => null,
 ]])
 <div class="container page-content" id="tasks">
-  <h1>{{__($title)}}</h1>
+
+  <div class="row">
+    <div class="col" align="right">
+      <b-alert class="align-middle" show variant="danger" v-cloak v-if="inOverdueMessage.length>0"
+               style="text-align: center; margin-top:20px;" >
+        @{{ inOverdueMessage }}
+      </b-alert>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <h1>{{__($title)}}</h1>
+    </div>
+  </div>
+
   <div class="row">
     <div class="col">
       <div class="input-group">
@@ -27,12 +42,14 @@
       </div>
 
     </div>
-    <div class="col-8" align="right">
-      
+    <div class="col-6" align="right">
+      {{--<b-alert show variant="warning" v-cloak v-if="inOverdueMessage.length>0" style="text-align: left;">--}}
+        {{--@{{ inOverdueMessage }}--}}
+      {{--</b-alert>--}}
     </div>
   </div>
   <div class="container-fluid">
-    <tasks-list :filter="filter"></tasks-list>
+    <tasks-list :filter="filter" @in-overdue="setInOverdueMessage"></tasks-list>
   </div>
 </div>
 @endsection

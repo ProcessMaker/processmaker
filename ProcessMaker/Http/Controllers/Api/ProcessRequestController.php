@@ -77,7 +77,7 @@ class ProcessRequestController extends Controller
 
         if (!Auth::user()->is_administrator) {
             $query->startedMe(Auth::user()->id);
-        }
+        } 
 
         // type filter
         switch ($request->input('type')) {
@@ -216,8 +216,8 @@ class ProcessRequestController extends Controller
     {
         if ($httpRequest->status === 'CANCELED') {
             $permission = 'requests.cancel';
-
-            if (!Auth::user()->hasProcessPermission($request->process, $permission)) {
+            
+            if (!Auth::user()->hasPermissionsFor($request->process, $permission)) {
                 throw new AuthorizationException('Not authorized: ' . $permission);
             }
             $this->cancelRequestToken($request);

@@ -27,17 +27,20 @@
             </div>
 
             <div class="col-8" align="right">
-                <a href="#" class="btn btn-secondary" data-toggle="modal" data-target="#addScript"><i
-                            class="fas fa-plus"></i>
-                    {{__('Script')}}</a>
+                @can('create-scripts')
+                    <a href="#" class="btn btn-secondary" data-toggle="modal" data-target="#addScript"><i
+                                class="fas fa-plus"></i>
+                        {{__('Script')}}</a>
+                @endcan
             </div>
         </div>
         <div class="container-fluid">
-            <script-listing :filter="filter" ref="listScript" @delete="deleteScript"></script-listing>
+            <script-listing :filter="filter" :permission="{{ \Auth::user()->hasPermissionsFor('scripts') }}" ref="listScript" @delete="deleteScript"></script-listing>
         </div>
     </div>
 
-    <div class="modal" tabindex="-1" role="dialog" id="addScript">
+    @can('create-scripts')
+        <div class="modal" tabindex="-1" role="dialog" id="addScript">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -78,42 +81,46 @@
             </div>
         </div>
     </div>
+    @endcan
 @endsection
 
 @section('js')
     <script src="{{mix('js/processes/scripts/index.js')}}"></script>
-    <script>
-        new Vue({
-            el: '#addScript',
-            data: {
-                title: '',
-                language: '',
-                description: '',
-                code: '',
-                addError: {},
-            },
-            methods: {
-                onSubmit() {
-                    this.errors = Object.assign({}, {
-                        name: null,
-                        description: null,
-                        status: null
-                    });
-                    ProcessMaker.apiClient.post("/scripts", {
-                        title: this.title,
-                        language: this.language,
-                        description: this.description,
-                        code: "[]"
-                    })
-                    .then(response => {
-                        ProcessMaker.alert('{{__('Script successfully added')}}', 'success');
-                        window.location = "/processes/scripts/" + response.data.id + "/builder";
-                    })
-                    .catch(error => {
-                        this.errors = error.response.data.errors;
-                    })
+    
+    @can('create-scripts')
+        <script>
+            new Vue({
+                el: '#addScript',
+                data: {
+                    title: '',
+                    language: '',
+                    description: '',
+                    code: '',
+                    addError: {}
+                },
+                methods: {
+                    onSubmit() {
+                        this.errors = Object.assign({}, {
+                            name: null,
+                            description: null,
+                            status: null
+                        });
+                        ProcessMaker.apiClient.post("/scripts", {
+                            title: this.title,
+                            language: this.language,
+                            description: this.description,
+                            code: "[]"
+                        })
+                        .then(response => {
+                            ProcessMaker.alert('{{__('Script successfully added')}}', 'success');
+                            window.location = "/processes/scripts/" + response.data.id + "/builder";
+                        })
+                        .catch(error => {
+                            this.errors = error.response.data.errors;
+                        })
+                    }
                 }
-            }
-        })
-    </script>
+            })
+        </script>
+    @endcan
 @endsection
