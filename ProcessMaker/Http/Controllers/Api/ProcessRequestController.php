@@ -74,17 +74,11 @@ class ProcessRequestController extends Controller
                 $query->with($include);
             }
         }
-
-        if (!Auth::user()->is_administrator) {
-            $query->startedMe(Auth::user()->id);
-        } 
-
+        
         // type filter
         switch ($request->input('type')) {
             case 'started_me':
-                if (Auth::user()->is_administrator) {
-                    $query->startedMe(Auth::user()->id);
-                }
+                $query->startedMe(Auth::user()->id);
                 break;
             case 'in_progress':
                 $query->inProgress();
@@ -108,7 +102,11 @@ class ProcessRequestController extends Controller
                 $request->input('order_by', 'name'),
                 $request->input('order_direction', 'ASC')
             )
-            ->paginate($request->input('per_page', 10));
+            ->get();
+        
+        $response = $response->filter(function($processRequest) {
+            return Auth::user()->can('view', $processRequest);
+        });
 
         return new ApiCollection($response);
     }
