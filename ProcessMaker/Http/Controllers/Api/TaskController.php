@@ -58,7 +58,7 @@ class TaskController extends Controller
 
         $response = $response->filter(function($processRequestToken) {
             return Auth::user()->can('view', $processRequestToken);
-        });
+        })->values();
 
         return new ApiCollection($response);
     }

@@ -106,7 +106,7 @@ class ProcessRequestController extends Controller
         
         $response = $response->filter(function($processRequest) {
             return Auth::user()->can('view', $processRequest);
-        });
+        })->values();
 
         return new ApiCollection($response);
     }
