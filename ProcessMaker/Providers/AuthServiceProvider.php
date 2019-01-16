@@ -6,6 +6,8 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Policies\ProcessPolicy;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Policies\ProcessRequestPolicy;
+use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Policies\ProcessRequestTokenPolicy;
 use ProcessMaker\Models\Permission;
 use Illuminate\Auth\RequestGuard;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -31,6 +33,7 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [        
         Process::class => ProcessPolicy::class,
         ProcessRequest::class => ProcessRequestPolicy::class,
+        ProcessRequestToken::class => ProcessRequestTokenPolicy::class,
     ];
 
     /**
