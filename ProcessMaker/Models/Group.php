@@ -48,10 +48,15 @@ class Group extends Model
             'status' => 'in:ACTIVE,INACTIVE'
         ];
     }
-
-    public function permissionAssignments()
+    
+    public function permissions()
     {
-        return $this->morphMany(PermissionAssignment::class, 'assignable', null, 'assignable_id');
+        return $this->morphToMany('ProcessMaker\Models\Permission', 'assignable');
+    }
+
+    public function processesFromProcessable()
+    {
+        return $this->morphToMany('ProcessMaker\Models\Process', 'processable');
     }
 
     public function groupMembersFromMemberable()
@@ -64,18 +69,14 @@ class Group extends Model
         return $this->hasMany(GroupMember::class);
     }
 
-    public function permissions()
+    /**
+     * Scope to only return active groups.
+     *
+     * @var Builder
+     */
+    public function scopeActive($query)
     {
-        $permissions = [];
-        foreach ($this->groupMembersFromMemberable as $gm) {
-            $group = $gm->group;
-            $permissions =
-                array_merge($permissions, $group->permissions());
-        }
-        foreach ($this->permissionAssignments as $pa) {
-            $permissions[] = $pa->permission;
-        }
-        return $permissions;
+        return $query->where('status', 'ACTIVE');
     }
 
     /**

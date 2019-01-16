@@ -223,28 +223,44 @@ class ProcessController extends Controller
         );
         $process->versions()->create($original_attributes);
 
-        ProcessPermission::where('process_id', $process->id)->delete();
-        $cancelId = Permission::byGuardName('requests.cancel')->id;
-        $startId = Permission::byGuardName('requests.create')->id;
+        //If we are specifying start assignments...
+        if ($request->has('start_request')) {    
+            //Adding method to users array
+            $startUsers = [];
+            foreach ($request->input('start_request')['users'] as $item) {
+                $startUsers[$item] = ['method' => 'START'];
+            }
+            
+            //Adding method to groups array
+            $startGroups = [];
+            foreach ($request->input('start_request')['groups'] as $item) {
+                $startGroups[$item] = ['method' => 'START'];
+            }
+
+            //Syncing users and groups that can start this process
+            $process->usersCanStart()->sync($startUsers, ['method' => 'START']);
+            $process->groupsCanStart()->sync($startGroups, ['method' => 'START']);    
+        }
+
+        //If we are specifying cancel assignments...
         if ($request->has('cancel_request')) {
-            foreach ($request->input('cancel_request')['users'] as $id) {
-                $this->savePermission($process, User::class, $id, $cancelId);
+            //Adding method to users array
+            $cancelUsers = [];
+            foreach ($request->input('cancel_request')['users'] as $item) {
+                $cancelUsers[$item] = ['method' => 'CANCEL'];
             }
 
-            foreach ($request->input('cancel_request')['groups'] as $id) {
-                $this->savePermission($process, Group::class, $id, $cancelId);
+            //Adding method to groups array            
+            $cancelGroups = [];
+            foreach ($request->input('cancel_request')['groups'] as $item) {
+                $cancelGroups[$item] = ['method' => 'CANCEL'];
             }
+            
+            //Syncing users and groups that can cancel this process            
+            $process->usersCanCancel()->sync($cancelUsers, ['method' => 'CANCEL']);
+            $process->groupsCanCancel()->sync($cancelGroups, ['method' => 'CANCEL']);
         }
-
-        if ($request->has('start_request')) {
-            foreach ($request->input('start_request')['users'] as $id) {
-                $this->savePermission($process, User::class, $id, $startId);
-            }
-
-            foreach ($request->input('start_request')['groups'] as $id) {
-                $this->savePermission($process, Group::class, $id, $startId);
-            }
-        }
+               
 
         return new Resource($process->refresh());
     }
@@ -429,7 +445,7 @@ class ProcessController extends Controller
             return abort(404);
         }
 
-        if (!\Auth::user()->hasProcessPermission($process, 'requests.create')) {
+        if (!\Auth::user()->hasPermissionsFor($process, 'requests.create')) {
             throw new AuthorizationException("Not authorized to start this process");
         }
 

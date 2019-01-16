@@ -6,9 +6,8 @@ use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Models\User;
+use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Permission;
-use ProcessMaker\Models\PermissionAssignment;
-
 
 class PermissionController extends Controller
 {
@@ -33,7 +32,11 @@ class PermissionController extends Controller
      *              type="integer",
      *              description="Id of the user whose permissions are configured"),
      *          @OA\Property(
-     *              property="permissions_ids",
+     *              property="group_id",
+     *              type="integer",
+     *              description="Id of the group whose permissions are configured"),
+     *          @OA\Property(
+     *              property="permissions_names",
      *              type="array",
      *              collectionFormat="multi",
      *              @OA\Items (type="integer"))
@@ -48,42 +51,23 @@ class PermissionController extends Controller
      */
     public function update(Request $request) 
     {
-        // find the user
-        $user = User::findOrFail($request->input('user_id'));
-        $selected_permission_ids = $request->input('permission_ids');
-
-        $user->update();
-
-        // assign the users permissions ids
-        $users_permission_ids = $this->user_permission_ids($user);
-        foreach(Permission::all() as $permission) {
-            //if the request has the ids present
-            if (in_array($permission->id, $selected_permission_ids)) {
-                // and the id is not in the array
-                if(!in_array($permission->id,$users_permission_ids)){
-                    // the user needs to add permissions 
-                    PermissionAssignment::create([
-                        'permission_id' => $permission->id, 
-                        'assignable_type' => User::class, 
-                        'assignable_id' => $user->id
-                    ]);
-                }
-            } else { 
-                if(in_array($permission->id,$users_permission_ids)){
-                    //user needs to delete this permission 
-                    PermissionAssignment::where([
-                        'permission_id' => $permission->id, 
-                        'assignable_type' => User::class, 
-                        'assignable_id' => $user->id
-                    ])->delete();
-                }
-            }
+        //Obtain the requested user or group
+        if ($request->input('user_id')) {
+            $entity = User::findOrFail($request->input('user_id'));
+        } elseif ($request->input('group_id')) {
+            $entity = Group::findOrFail($request->input('group_id'));
         }
+        
+        //Obtain the requested permission names for that entity
+        $requestPermissions = $request->input('permission_names');    
+
+        //Convert permission names into a collection of Permission models
+        $permissions = Permission::whereIn('name', $requestPermissions)->get();
+
+        //Sync the entity's permissions with the database
+        $entity->permissions()->sync($permissions->pluck('id')->toArray());
 
         return response([], 204);
     }
-    private function user_permission_ids($user) 
-    {
-        return $user->permissionAssignments()->pluck('permission_id')->toArray();
-    }
+
 }

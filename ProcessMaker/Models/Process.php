@@ -133,6 +133,42 @@ class Process extends Model implements HasMedia
     }
 
     /**
+     * Get the users who can start this process
+     *
+     */    
+    public function usersCanStart()
+    {
+        return $this->morphedByMany('ProcessMaker\Models\User', 'processable')->wherePivot('method', 'START');
+    }
+
+    /**
+     * Get the groups who can start this process
+     *
+     */    
+    public function groupsCanStart()
+    {
+        return $this->morphedByMany('ProcessMaker\Models\Group', 'processable')->wherePivot('method', 'START');
+    }
+
+    /**
+     * Get the users who can start this process
+     *
+     */    
+    public function usersCanCancel()
+    {
+        return $this->morphedByMany('ProcessMaker\Models\User', 'processable')->wherePivot('method', 'CANCEL');
+    }
+
+    /**
+     * Get the groups who can start this process
+     *
+     */    
+    public function groupsCanCancel()
+    {
+        return $this->morphedByMany('ProcessMaker\Models\Group', 'processable')->wherePivot('method', 'CANCEL');
+    }
+
+    /**
      * Get the process definitions from BPMN field.
      *
      * @param bool $forceParse
