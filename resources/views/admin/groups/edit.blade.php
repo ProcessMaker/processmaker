@@ -160,6 +160,13 @@
             created() {
                 this.hasPermission()
             },
+            watch: {
+                selectedPermissions: function () {
+                    if(this.selectedPermissions.length !== this.permissions.length) {
+                        this.selectAll = false;
+                    }
+                }
+            },
             methods: {
                 checkCreate(sibling, $event) {
                     let self = $event.target.value;
