@@ -9,6 +9,9 @@
 @endsection
 
 @section('content')
+  @include('shared.breadcrumbs', ['routes' => [
+      __('About ProcessMaker 4') => null,
+  ]])
  <div class="container">
     <h1>{{__('About ProcessMaker 4')}}</h1>
     <div class="row">

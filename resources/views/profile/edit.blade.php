@@ -5,7 +5,11 @@
 @endsection
 
 @section('content')
-
+    @include('shared.breadcrumbs', ['routes' => [
+        __('Profile') => null,
+        $currentUser->fullname => route('profile.show', $currentUser->id),
+        __('Edit') => null,
+    ]])
     <div class="container" id="profileForm">
         <h1>{{__('Profile')}}</h1>
         <div class="row">
