@@ -45,4 +45,26 @@ class ProcessPolicy
 
         return false;
     }
+
+    /**
+     * Determine whether the user can cancel the process.
+     *
+     * @param  \ProcessMaker\Models\User  $user
+     * @param  \ProcessMaker\Process  $process
+     * @return mixed
+     */
+    public function cancel(User $user, Process $process)
+    {
+        $groupIds = $user->groups->pluck('id');
+        
+        if ($process->groupsCanCancel->whereIn('id', $groupIds)->count()) {
+            return true;
+        }
+        
+        if ($process->usersCanCancel->where('id', $user->id)->count()) {
+            return true;
+        }
+
+        return false;
+    }
 }
