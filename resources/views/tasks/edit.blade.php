@@ -16,9 +16,10 @@
     <div id="task" class="container">
         <h1>{{$task->element_name}}</h1>
         <div class="row">
-            @if ($task->getScreen() && ($task->advanceStatus==='open' || $task->advanceStatus==='overdue'))
             <div class="col-md-8">
                 <div class="container-fluid">
+
+                    @if ($task->getScreen() && ($task->advanceStatus==='open' || $task->advanceStatus==='overdue'))
                     <div class="card card-body">
                         <task-screen process-id="{{$task->processRequest->process->getKey()}}"
                                    instance-id="{{$task->processRequest->getKey()}}"
@@ -27,17 +28,18 @@
                                    :computed="{{json_encode($task->getScreen()->computed)}}"
                                    :data="{{json_encode($task->processRequest->data)}}"/>
                     </div>
-                </div>
-            </div>
-            @elseif ($task->advanceStatus==='completed')
-            <div class="col-md-8">
-                <div class="container-fluid">
+                    @elseif ($task->advanceStatus==='completed')
                     <div class="card card-body" align="center">
                         <h1>Task Completed <i class="fas fa-clipboard-check"></i></h1>
                     </div>
+                    @endif
+
+                    <div class="card card-body mt-2 mb-4">
+                        <comment-task commentable_id="{{$task->getKey()}}" commentable_type="{{get_class($task)}}"></comment-task>
+                    </div>
+
                 </div>
             </div>
-            @endif
             <div class="col-md-4">
                 <template v-if="dateDueAt">
                 <div class="card">
@@ -70,7 +72,6 @@
                                             :class="{'bg-primary': selectedIndex == index}"
                                             @click="selectedItem(row, index)"
                                             @dblclick="selectedItem(row, index);reassignUser();"
-                                            
                                             >
                                             <avatar-image class-container size="12" class-image :input-data="row"></avatar-image>
                                         </span>
@@ -82,7 +83,6 @@
                                             @click="reassignUser"
                                             class="btn btn-success btn-sm text-uppercase"
                                             >{{__('Reassign')}}</b-button>
-                                        
                                     </div>
                                 </b-modal>
                             </span>
@@ -126,7 +126,7 @@
                 usersList: [],
                 filter: "",
                 showReassignment: false,
-                
+
                 task: @json($task),
                 assigned: @json($task->user),
                 requested: @json($task->processRequest->user),
