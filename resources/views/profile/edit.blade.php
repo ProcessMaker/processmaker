@@ -6,8 +6,7 @@
 
 @section('content')
     @include('shared.breadcrumbs', ['routes' => [
-        __('Profile') => null,
-        $currentUser->fullname => route('profile.show', $currentUser->id),
+        __('Profile') => route('profile.show', $currentUser->id),
         __('Edit') => null,
     ]])
     <div class="container" id="profileForm">

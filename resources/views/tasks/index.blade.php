@@ -10,7 +10,7 @@
 
 @section('content')
 @include('shared.breadcrumbs', ['routes' => [
-    __('Tasks') => null,
+    __('Tasks') => route('tasks.index'),
     __($title) => null,
 ]])
 <div class="container page-content" id="tasks">

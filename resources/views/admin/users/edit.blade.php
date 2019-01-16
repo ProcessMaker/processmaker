@@ -10,10 +10,9 @@
 
 @section('content')
 @include('shared.breadcrumbs', ['routes' => [
-    __('Admin') => null,
+    __('Admin') => route('users.index'),
     __('Users') => route('users.index'),
-    $user->fullname => null,
-    __('Edit') => null,
+    __('Edit') . " " . $user->fullname => null,
 ]])
 <div class="container" id="editUser">
     <h1>{{__('Edit User')}}</h1>

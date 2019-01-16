@@ -12,8 +12,7 @@
     @include('shared.breadcrumbs', ['routes' => [
         __('Processes') => route('processes.index'),
         __('Screens') => route('screens.index'),
-        $screen->title => null,
-        __('Screen Builder') => null,
+        __('Edit') . " " . $screen->title => null,
     ]])
     <div id="screen-container">
         <screen-builder :screen="{{$screen}}"></screen-builder>

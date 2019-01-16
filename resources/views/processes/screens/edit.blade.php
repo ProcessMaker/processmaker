@@ -12,8 +12,7 @@
     @include('shared.breadcrumbs', ['routes' => [
         __('Processes') => route('processes.index'),
         __('Screens') => route('screens.index'),
-        $screen->title => null,
-        __('Edit') => null,
+        __('Edit') . " " . $screen->title => null,
     ]])
     <div class="container" id="editGroup">
         <h1>{{__('Edit Screen')}}</h1>

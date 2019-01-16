@@ -11,8 +11,7 @@
 @section('content')
 @include('shared.breadcrumbs', ['routes' => [
     __('Processes') => route('processes.index'),
-    $process->name => null,
-    __('Edit') => null,
+    __('Edit') . " " . $process->name => null,
 ]])
 <div class="container" id="editProcess">
     <h1>{{__('Edit Process')}}</h1>

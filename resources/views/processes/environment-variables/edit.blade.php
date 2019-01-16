@@ -12,8 +12,7 @@
     @include('shared.breadcrumbs', ['routes' => [
         __('Processes') => route('processes.index'),
         __('Environment Variables') => route('environment-variables.index'),
-        $environmentVariable->name => null,
-        __('Edit') => null,
+        __('Edit') . " " . $environmentVariable->name => null,
     ]])
     <div class="container" id="editEnvironmentVariable">
         <h1>{{__('Edit Environment Variable')}}</h1>

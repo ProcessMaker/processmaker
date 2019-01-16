@@ -10,7 +10,7 @@
 
 @section('content')
     @include('shared.breadcrumbs', ['routes' => [
-        __('Admin') => null,
+        __('Admin') => route('users.index'),
         __('Users') => null,
     ]])
 

@@ -10,7 +10,7 @@
 
 @section('content')
 @include('shared.breadcrumbs', ['routes' => [
-    __('Requests') => null,
+    __('Requests') => route('requests.index'),
     function() use ($title) { return [__($title), null]; }
 ]])
 <div class="container page-content mt-2" id="requests-listing">

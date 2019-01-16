@@ -12,8 +12,7 @@
 @section('content')
     @include('shared.breadcrumbs', ['routes' => [
         __('Processes') => route('processes.index'),
-        $process->name => null,
-        __('Modeler') => null,
+        __('Edit') . " " . $process->name => null,
     ]])
     <div id="modeler-app">
     </div>

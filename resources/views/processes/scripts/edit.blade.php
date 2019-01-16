@@ -12,8 +12,7 @@
     @include('shared.breadcrumbs', ['routes' => [
         __('Processes') => route('processes.index'),
         __('Scripts') => route('scripts.index'),
-        $script->title => null,
-        __('Edit') => null,
+        __('Edit') . " " . $script->title => null,
     ]])
     <div class="container" id="editScript">
         <h1>{{__('Edit Script')}}</h1>
