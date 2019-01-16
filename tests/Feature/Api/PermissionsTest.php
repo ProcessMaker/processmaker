@@ -23,7 +23,6 @@ class PermissionsTest extends TestCase
 
     public function testApiPermissions()
     {
-        $this->markTestSkipped('API permissions not yet implemented');
         $response = $this->apiCall('GET', '/processes');
         $response->assertStatus(200);
 
@@ -81,7 +80,6 @@ class PermissionsTest extends TestCase
 
     public function testRoutePermissionAliases()
     {
-        $this->markTestSkipped('API permissions not yet implemented');
         
         // update route is an alias for edit permission
         $response = $this->apiCall('PUT', '/processes/' . $this->process->id, [

@@ -55,7 +55,6 @@ class ProcessesTest extends TestCase
 
     public function testUpdate()
     {
-        $this->markTestSkipped();
         $process = factory(Process::class)->create(['name' => 'Test Update']);
         $response = $this->webCall('PUT', 'processes/' . $process->id . '', [
             'name' => 'Update Name',
@@ -67,7 +66,6 @@ class ProcessesTest extends TestCase
 
     public function testDestroy()
     {
-        $this->markTestSkipped();
         $process = factory(Process::class)->create();
         $response = $this->webCall('DELETE', 'processes/' . $process->id . '');
         $this->assertDatabaseMissing('processes', ['id' => $process->id, 'deleted_at' => null]);
