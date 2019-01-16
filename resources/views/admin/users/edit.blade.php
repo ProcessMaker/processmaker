@@ -518,18 +518,15 @@
                 }
                 return true
             },
-            profileUpdate(close) {
-                if(close === undefined) {
-                    let close = true
-                } 
+            profileUpdate($event) {
                 this.resetErrors();
                 if (!this.validatePassword()) return false;
                 ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
                     .then(response => {
                         ProcessMaker.alert('{{__('User Updated Successfully ')}}', 'success');
-                        if(close === true) {
-                            this.onClose();
-                        } 
+                          if($event !== false) {
+                              this.onClose();
+                          } 
                     })
                     .catch(error => {
                         ProcessMaker.alert('{{__('An error occurred while saving the Groups.')}}', 'danger');
