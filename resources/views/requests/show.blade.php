@@ -38,6 +38,11 @@
                                     {{__('Summary')}}
                                 </a>
                             </li>
+                            @if ($request->status === 'COMPLETED')
+                            <li>
+                                <a>Data</a>
+                            </li>
+                            @endif
                             <li class="nav-item">
                                 <a class="nav-link" id="completed-tab" data-toggle="tab" href="#completed" role="tab"
                                    aria-controls="completed" aria-selected="false">{{__('Completed')}}</a>

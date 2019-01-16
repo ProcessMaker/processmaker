@@ -19,13 +19,21 @@
             @if ($task->getScreen() && ($task->advanceStatus==='open' || $task->advanceStatus==='overdue'))
             <div class="col-md-8">
                 <div class="container-fluid">
-                    <div class="card card-body">
-                        <task-screen process-id="{{$task->processRequest->process->getKey()}}"
-                                   instance-id="{{$task->processRequest->getKey()}}"
-                                   token-id="{{$task->getKey()}}"
-                                   :screen="{{json_encode($task->getScreen()->config)}}"
-                                   :computed="{{json_encode($task->getScreen()->computed)}}"
-                                   :data="{{json_encode($task->processRequest->data)}}"/>
+                    <ul id="tabHeader" role="tablist" class="nav nav-tabs">
+                        <li class="nav-item"><a id="pending-tab" data-toggle="tab" href="#tab-form" role="tab" aria-controls="tab-form" aria-selected="true" class="nav-link active">{{__('Form')}}</a></li>
+                        <li class="nav-item"><a id="summary-tab" data-toggle="tab" href="#tab-data" role="tab" aria-controls="tab-data" aria-selected="false" class="nav-link">{{__('Data')}}</a></li>
+                    </ul>
+                    <div id="tabContent" class="tab-content">
+                        <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show">
+                            <div class="card card-body">
+                                <task-screen process-id="{{$task->processRequest->process->getKey()}}"
+                                             instance-id="{{$task->processRequest->getKey()}}"
+                                             token-id="{{$task->getKey()}}"
+                                             :screen="{{json_encode($task->getScreen()->config)}}"
+                                    :computed="{{json_encode($task->getScreen()->computed)}}"
+                                    :data="{{json_encode($task->processRequest->data)}}"/>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
