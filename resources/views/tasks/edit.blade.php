@@ -34,6 +34,9 @@
                                     :data="{{json_encode($task->processRequest->data)}}"/>
                             </div>
                         </div>
+                        <div id="tab-data" role="tabpanel" aria-labelledby="tab-data" class="tab-pane">
+                            @include('tasks.editdata')
+                        </div>
                     </div>
                 </div>
             </div>
@@ -128,6 +131,14 @@
         new Vue({
             el: '#task',
             data: {
+                //Edit data
+                jsonData: "",
+                selectedData: null,
+                monacoLargeOptions: {
+                    automaticLayout: true,
+                },
+                showJSONEditor: false,
+
                 // Reassignment
                 selected: null,
                 selectedIndex: -1,
@@ -138,6 +149,7 @@
                 task: @json($task),
                 assigned: @json($task->user),
                 requested: @json($task->processRequest->user),
+                data: @json($task->processRequest->data),
                 statusCard: 'card-header text-capitalize text-white bg-success',
                 userAssigned: [],
                 userRequested: []
@@ -156,6 +168,27 @@
                 }
             },
             methods: {
+                updateData(name, target){
+                    console.log(name, target);
+                },
+                saveJsonData() {
+                    try{
+                        if (this.selectedData) {
+                            const value = JSON.parse(this.jsonData);
+                            console.log(this.data, this.selectedData, value);
+                            this.$set(this.data, this.selectedData, value);
+                            this.showJSONEditor = false;
+                        }
+                    } catch (e) {
+                    }
+                },
+                editJsonData(name) {
+                    if (this.data[name] !== undefined) {
+                        this.selectedData = name;
+                        this.jsonData = JSON.stringify(this.data[name]);
+                        this.showJSONEditor = true;
+                    }
+                },
                 // Reassign methods
                 show() {
                     this.showReassignment = true;

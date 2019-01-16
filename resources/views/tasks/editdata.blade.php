@@ -1,0 +1,32 @@
+<table class="vuetable table table-hover">
+    <thead>
+        <tr>
+            <th scope="col">{{ __('Key') }}</th>
+            <th scope="col">{{ __('Value') }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr v-for="(value, name) in data">
+            <td>@{{name}}</td>
+            <td v-if="value instanceof Object">
+                <div class="form-control">
+                    <a href="javascript:void(0)" @click="editJsonData(name)">{...}</a>
+                </div>
+            </td>
+            <td v-else><input :value="data[name]" @input="updateData(name, $event.target.value)" class="form-control" ></td>
+        </tr>
+    </tbody>
+</table>
+
+<b-modal v-model="showJSONEditor" size="lg" centered title="{{__('Change value')}}" v-cloak>
+    <div class="editor-container">
+        <monaco-editor :options="monacoLargeOptions" v-model="jsonData"
+            language="json" style="height: 12em;"></monaco-editor>
+    </div>
+    <div slot="modal-footer">
+        <b-button @click="saveJsonData" class="btn btn-outline-secondary btn-sm text-uppercase">
+            UPDATE
+        </b-button>
+    </div>
+
+</b-modal>
