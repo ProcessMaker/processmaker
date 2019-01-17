@@ -15,6 +15,7 @@ use ProcessMaker\Nayra\Bpmn\Events\ProcessInstanceCompletedEvent;
 use ProcessMaker\Notifications\ProcessCompletedNotification;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Models\Comment;
 
 /**
  * Description of BpmnSubscriber
@@ -85,7 +86,15 @@ class BpmnSubscriber
      */
     public function onActivityCompleted(ActivityCompletedEvent $event)
     {
-        // Log::info('ActivityCompleted: ' . json_encode($event->token->getProperties()));
+        $token = $event->token;
+        Comment::create([
+            'type' => 'LOG',
+            'user_id' => $token->user_id,
+            'commentable_type' => get_class($token),
+            'commentable_id' => $token->id,
+            'subject' => 'Task Complete',
+            'body' => $token->user->fullname . " has completed the task " . $token->element_name,
+        ]);
     }
 
     /**
