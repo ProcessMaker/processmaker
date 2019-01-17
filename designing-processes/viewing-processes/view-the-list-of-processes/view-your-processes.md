@@ -39,9 +39,9 @@ The **Processes** page displays the following information about active and inact
 * **Created:** The **Created** column displays the date and time the Process was created. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
 {% hint style="info" %}
-### Search for a Request
+### Search for a Process
 
-Use the [Search](../../../using-processmaker/requests/search-for-a-request.md) field to filter Requests that display.
+Use the [Search](../../../using-processmaker/requests/search-for-a-request.md) field to filter Processes that display.
 
 ### No Processes?
 

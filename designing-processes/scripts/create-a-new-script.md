@@ -6,11 +6,16 @@ description: >-
 
 # Create a New Script
 
-{% hint style="info" %}
-To create a new ProcessMaker Script, you must be a member of the Process Owner group. Otherwise, the **Processes** option is not available from the top menu that allows you to perform Script management activities.
-{% endhint %}
-
 ## Create a New ProcessMaker Script
+
+{% hint style="info" %}
+Your user account or group membership must have the following permissions to create a ProcessMaker Script:
+
+* Scripts: View Scripts
+* Scripts: Create Scripts
+
+Ask your ProcessMaker Administrator for assistance.
+{% endhint %}
 
 Follow these steps to create a new ProcessMaker Script:
 
@@ -24,7 +29,7 @@ Follow these steps to create a new ProcessMaker Script:
 5. Select from the **Language** drop-down one of the following programming languages to specify with which the ProcessMaker Script is written:
    * PHP
    * Lua
-6. Click **Save**. Scripts Editor displays. For information how to develop and test your ProcessMaker Script, see [Scripts Editor](scripts-editor.md).
+6. Click **Save**. Scripts Editor displays. See [Scripts Editor](scripts-editor.md).
 
 ## Related Topics
 
@@ -32,11 +37,9 @@ Follow these steps to create a new ProcessMaker Script:
 
 {% page-ref page="manage-scripts/search-for-a-script.md" %}
 
+{% page-ref page="manage-scripts/edit-script-configuration.md" %}
+
 {% page-ref page="manage-scripts/edit-a-script.md" %}
-
-{% page-ref page="manage-scripts/stop-a-script.md" %}
-
-{% page-ref page="manage-scripts/preview-a-script.md" %}
 
 {% page-ref page="manage-scripts/remove-a-script.md" %}
 

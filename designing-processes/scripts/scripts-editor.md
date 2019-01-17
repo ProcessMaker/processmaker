@@ -6,15 +6,21 @@ description: >-
 
 # Scripts Editor
 
-{% hint style="info" %}
-To use Scripts Editor, you must be a member of the Process Owner group. Otherwise, the **Processes** option is not available from the top menu that allows you to develop and test ProcessMaker Scripts.
-{% endhint %}
-
 ## Overview
 
-Use Scripts Editor to develop and test your ProcessMaker Scripts. Any ProcessMaker Script can be used in any process in your organization. Scripts Editor supports Lua and PHP languages out-of-the-box.
+{% hint style="info" %}
+Your user account or group membership must have the following permissions to create or edit a ProcessMaker Script:
 
-Scripts Editor evaluates a ProcessMaker Script securely and in isolation. This ensures that any malicious script that anyone in your organization might introduce to ProcessMaker does not affect the ProcessMaker application or its environment.
+* Scripts: View Scripts
+* Scripts: Create Scripts
+* Scripts: Edit Scripts
+
+Ask your ProcessMaker Administrator for assistance.
+{% endhint %}
+
+Use Scripts Editor to develop and test your ProcessMaker Scripts. Any ProcessMaker Script can be used in any Process in your organization. Scripts Editor supports Lua and PHP languages out-of-the-box.
+
+Scripts Editor evaluates a ProcessMaker Script securely and in isolation. This ensures that any malicious script that anyone in your organization might introduce to ProcessMaker 4 does not affect the ProcessMaker application or its environment.
 
 ProcessMaker Scripts are developed and tested in the same environment.
 
@@ -46,7 +52,7 @@ Develop the ProcessMaker Script below the script's name and language. Use the sc
 Use the **Input Data JSON** panel to include the JSON data model variables from ProcessMaker Screens.
 
 {% hint style="info" %}
-ProcessMaker Screens are independent of any business process. They can be used in any process in your organization. Furthermore, variables used in processes are defined in the ProcessMaker Screens those processes use. You can use ProcessMaker Screens that other Process Owners designed in your business process.
+ProcessMaker Screens are independent of any Process. They can be used in any Process in your organization. Furthermore, variables used in Processes are defined in the ProcessMaker Screens those Process use. You can use ProcessMaker Screens in your Process that other Process Owners designed.
 
 Define the variables in a ProcessMaker Screen in the **Inspector** panel when you configure controls in that Screen. For information how to view the **Inspector** panel, see [View the Inspector Panel](../design-forms/screens-builder/view-the-inspector-pane.md). For information about each control's Inspector settings, see [information about each control](../design-forms/screens-builder/control-descriptions/).
 {% endhint %}
@@ -94,11 +100,9 @@ Follow these best practices when developing ProcessMaker Scripts.
 
 {% page-ref page="manage-scripts/search-for-a-script.md" %}
 
+{% page-ref page="manage-scripts/edit-script-configuration.md" %}
+
 {% page-ref page="manage-scripts/edit-a-script.md" %}
-
-{% page-ref page="manage-scripts/stop-a-script.md" %}
-
-{% page-ref page="manage-scripts/preview-a-script.md" %}
 
 {% page-ref page="manage-scripts/remove-a-script.md" %}
 

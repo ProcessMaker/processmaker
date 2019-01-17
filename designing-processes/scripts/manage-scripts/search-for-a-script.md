@@ -8,11 +8,13 @@ description: >-
 
 Use the **Search** function to filter all ProcessMaker Scripts from the **Scripts** page based on your entered text.
 
-{% hint style="info" %}
-To search for a ProcessMaker Script, you must be a member of the Process Owner group. Otherwise, the **Processes** option is not available from the top menu that allows you to perform Script management activities.
-{% endhint %}
-
 ## Search for a ProcessMaker Script
+
+{% hint style="info" %}
+Your user account or group membership must have the "Scripts: View Scripts" permission to view the list of ProcessMaker Scripts.
+
+Ask your ProcessMaker Administrator for assistance.
+{% endhint %}
 
 Follow these steps to search for a ProcessMaker Script:
 
@@ -32,10 +34,6 @@ If there are no search results, the following message displays: **No data availa
 {% page-ref page="view-all-scripts.md" %}
 
 {% page-ref page="edit-a-script.md" %}
-
-{% page-ref page="stop-a-script.md" %}
-
-{% page-ref page="preview-a-script.md" %}
 
 {% page-ref page="remove-a-script.md" %}
 

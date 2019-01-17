@@ -22,29 +22,34 @@ Follow these steps to view all ProcessMaker Scripts in your organization:
 2. Click the **Processes** option from the top menu. The **Processes** page displays.
 3. Click the **Scripts** icon![](../../../.gitbook/assets/scripts-icon-processes.png) from the left sidebar. The **Scripts** page displays all ProcessMaker Scripts created by all Process Owners and ProcessMaker Developers in your organization.
 
-![&quot;Scripts&quot; page displays all ProcessMaker Scripts created in your organization](../../../.gitbook/assets/scripts-page-processes.png)
+![](../../../.gitbook/assets/chrome_2019-01-17_14-38-34.png)
 
 The **Scripts** page displays the following information about ProcessMaker Scripts:
 
-* **Title:** The **Title** column displays the name of the ProcessMaker Script.
+* **Name:** The **Name** column displays the name of the ProcessMaker Script.
+* Description: The Description column displays the description of the ProcessMaker Script.
 * **Language:** The **Language** column displays the programming language with which the ProcessMaker Script was written. Lua and PHP languages are supported out-of-the-box.
-* **Modified:** The **Modified** column displays the date and time the ProcessMaker Script was last modified.
-* **Created:** The **Created** column displays the date and time the ProcessMaker Script was created.
+* **Modified:** The **Modified** column displays the date and time the ProcessMaker Script was last modified. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
+* **Created:** The **Created** column displays the date and time the ProcessMaker Script was created. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
 {% hint style="info" %}
-For information how to search for a ProcessMaker Script, see [Search for a Script](search-for-a-script.md).
-{% endhint %}
+### Search for a ProcessMaker Script
 
-{% hint style="info" %}
+Use the [Search](search-for-a-script.md#search-for-a-processmaker-script) field to filter ProcessMaker Scripts that display.
+
+### No ProcessMaker Scripts?
+
+If no ProcessMaker Scripts exist, the following message displays: 
+
+~~**You don't have any scripts. Please click on '+SCRIPT' to get started**~~.
+
+### Edit a ProcessMaker Script
+
 For information how to edit a ProcessMaker Script, see [Edit a Script](edit-a-script.md).
-{% endhint %}
 
-{% hint style="info" %}
-If no ProcessMaker Scripts exist, the following message displays: ~~**You don't have any scripts. Please click on '+SCRIPT' to get started**~~**.**
-{% endhint %}
+### Display Information the Way You Want It
 
-{% hint style="info" %}
-[Control how tabular information displays.](../../../using-processmaker/control-how-requests-display-in-a-tab.md)
+[Control how tabular information displays](../../../using-processmaker/control-how-requests-display-in-a-tab.md), including how to sort columns or how many items display per page.
 {% endhint %}
 
 ## Related Topics
@@ -54,10 +59,6 @@ If no ProcessMaker Scripts exist, the following message displays: ~~**You don't 
 {% page-ref page="search-for-a-script.md" %}
 
 {% page-ref page="edit-a-script.md" %}
-
-{% page-ref page="stop-a-script.md" %}
-
-{% page-ref page="preview-a-script.md" %}
 
 {% page-ref page="remove-a-script.md" %}
 

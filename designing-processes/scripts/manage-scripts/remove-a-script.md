@@ -1,31 +1,38 @@
 ---
 description: >-
-  Remove a ProcessMaker Script from being used in all processes in your
+  Delete a ProcessMaker Script from being used in all Processes in your
   organization.
 ---
 
-# Remove a Script
+# Delete a Script
+
+## Delete a ProcessMaker Script
 
 {% hint style="info" %}
-To remove a ProcessMaker Script, you must be a member of the Process Owner group. Otherwise, the **Processes** option is not available from the top menu that allows you to perform Script management activities.
-{% endhint %}
+Your user account or group membership must have the following permissions to delete a ProcessMaker Script:
 
-## Remove a ProcessMaker Script
+* Scripts: View Scripts
+* Scripts: Delete Scripts
+
+Ask your ProcessMaker Administrator for assistance.
+{% endhint %}
 
 {% hint style="warning" %}
-When a ProcessMaker Script is removed ~~describe what happens and in which conditions a process can be removed.~~
+When a ProcessMaker Script is deleted, Process models that use that ProcessMaker Script in Script Task elements are not affected. However, that ProcessMaker Script can no longer be added to other Process models.
 
-Removing a ProcessMaker Script from the **Scripts** page cannot be undone.
+Deleting a ProcessMaker Script from the **Scripts** page cannot be undone.
 {% endhint %}
 
-Follow these steps to remove a ProcessMaker Script:
+Follow these steps to delete a ProcessMaker Script:
 
 1. [View your ProcessMaker Scripts](view-all-scripts.md). The **Scripts** page displays.
-2. Hover your cursor over the ProcessMaker Script to remove and then click the **Remove** icon![](../../../.gitbook/assets/remove-icon.png). The **Caution** screen displays to confirm the removal of the ProcessMaker Script.  
+2. Select the **Delete** icon![](../../../.gitbook/assets/trash-icon-process-modeler-processes.png)for your ProcessMaker Script.
+
+    The **Caution** screen displays to confirm the deletion of the ProcessMaker Script.  
 
    ![](../../../.gitbook/assets/caution-script-removal-screen-processes.png)
 
-3. Click **Confirm** to remove the ProcessMaker Script. Otherwise, click **Cancel** to not remove the ProcessMaker Script.
+3. Click **Confirm** to delete the ProcessMaker Script. Otherwise, click **Cancel** to not delete the ProcessMaker Script.
 
 ## Related Topics
 
@@ -36,8 +43,6 @@ Follow these steps to remove a ProcessMaker Script:
 {% page-ref page="search-for-a-script.md" %}
 
 {% page-ref page="edit-a-script.md" %}
-
-{% page-ref page="preview-a-script.md" %}
 
 {% page-ref page="../create-a-new-script.md" %}
 
