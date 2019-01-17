@@ -1,25 +1,28 @@
 <template>
     <span>
+        <template v-for="value in comments">
+        <div class="card border-0">
+            <div class="card-body p-0 ml-2 d-inline-flex float-left align-items-center">
+                <avatar-image size="35" :input-data="value.user" hide-name="true"></avatar-image>
+                <p class="card-text ml-3">
+                    {{moment(value.updated_at).format()}}
+                    {{value.user.username}}
+                    {{value.subject}}
+                    {{value.body}}
+                </p>
+            </div>
+        </div>
+        <hr>
+        </template>
+
         <template>
-            <div v-for="value in comments" class="card-group">
-                <div class="card">
-                    <div class="card-body">
-                        <avatar-image size="32" class="d-inline-flex pull-left align-items-center" :input-data="value.user"></avatar-image>
-                        <h5 class="card-title">{{value.subject}}</h5>
-                        <p class="card-text">{{value.body}}</p>
-                    </div>
-                </div>
+            <form-input v-model="form.subject" label="Subject" name="subject"></form-input>
+            <div class='form-group'>
+                <label>Body</label>
+                <textarea v-model="form.body" class='form-control' rows='4' name='body'></textarea>
             </div>
-            <hr>
-            <div>
-                <form-input v-model="form.subject" label="Subject" name="subject"></form-input>
-                <div class='form-group'>
-                    <label>Body</label>
-                    <textarea v-model="form.body" class='form-control' rows='4' name='body' ></textarea>
-                </div>
-                <button class="btn btn-success float-right m-1" @click="save" :disabled="disabled">Save
-                </button>
-            </div>
+            <button class="btn btn-success float-right m-1" @click="save" :disabled="disabled">Save
+            </button>
         </template>
     </span>
 </template>
@@ -37,7 +40,7 @@
                     hidden: false,
                     type: 'MESSAGE'
                 },
-                comments : []
+                comments: []
             }
         },
         watch: {},
