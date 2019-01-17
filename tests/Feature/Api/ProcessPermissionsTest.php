@@ -43,6 +43,7 @@ class ProcessPermissionsTest extends TestCase
 
     public function testUpdateProcessPermissionRequestCancelTypeUser()
     {
+        $this->markTestSkipped('API permissions not yet implemented');
         $process = factory(Process::class)->create();
         $normal_user = factory(User::class)->create([
             'password' => Hash::make('password')
