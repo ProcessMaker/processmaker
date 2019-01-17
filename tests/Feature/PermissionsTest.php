@@ -34,6 +34,9 @@ class PermissionsTest extends TestCase
 
     public function testSetPermissionsForUser()
     {
+        $this->user = factory(User::class)->create([
+            'is_administrator' => false,
+        ]);
         // Set the URL & permission to test.
         $url = '/processes/scripts';
         $permission = 'view-scripts';
