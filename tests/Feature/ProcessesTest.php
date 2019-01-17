@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\User;
 use ProcessMaker\Models\ProcessCategory;
 
 class ProcessesTest extends TestCase
@@ -19,6 +20,15 @@ class ProcessesTest extends TestCase
         $response->assertSee('Processes');
     }
 
+    public function testIndexWithOutPermission()
+    {
+        $this->user = factory(User::class)->create([
+            'is_administrator' => false,
+        ]);
+        $response = $this->webGet('/processes');
+        $response->assertStatus(403);
+    }
+
     public function testEdit()
     {
         //Seeder Permissions
@@ -31,12 +41,36 @@ class ProcessesTest extends TestCase
         $response->assertSee('Test Edit');
     }
 
+    public function testEditWithOutPermission()
+    {
+        
+        $this->user = factory(User::class)->create([
+            'is_administrator' => false,
+        ]);
+        (new \PermissionSeeder())->run($this->user);
+
+        $process = factory(Process::class)->create(['name' => 'Test Edit']);
+        $response = $this->webGet('processes/' . $process->id . '/edit');
+        $response->assertStatus(403);
+    }
+
     public function testCreate()
     {
         $process = factory(Process::class)->create(['name' => 'Test Create']);
         $response = $this->webGet('/processes/create');
         $response->assertViewIs('processes.create');
         $response->assertStatus(200);
+    }
+
+    public function testCreateWithOutPermission()
+    {
+        
+        $this->user = factory(User::class)->create([
+            'is_administrator' => false,
+        ]);
+        $process = factory(Process::class)->create(['name' => 'Test Create']);
+        $response = $this->webGet('/processes/create');
+        $response->assertStatus(403);
     }
 
     public function testStore()
@@ -70,5 +104,16 @@ class ProcessesTest extends TestCase
         $response = $this->webCall('DELETE', 'processes/' . $process->id . '');
         $this->assertDatabaseMissing('processes', ['id' => $process->id, 'deleted_at' => null]);
         $response->assertRedirect('/processes');
+    }
+
+    public function testArchiveWithOutPermission()
+    {
+        
+        $this->user = factory(User::class)->create([
+            'is_administrator' => false,
+        ]);
+        $process = factory(Process::class)->create();
+        $response = $this->webCall('DELETE', 'processes/' . $process->id . '');
+        $response->assertStatus(403);
     }
 }
