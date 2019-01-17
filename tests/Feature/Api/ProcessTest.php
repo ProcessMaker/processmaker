@@ -62,7 +62,7 @@ class ProcessTest extends TestCase
                 'count' => $perPage,
                 'per_page' => $perPage,
                 'current_page' => $page,
-                'total_pages' => ceil(($initialCount + $countProcesses) / $perPage),
+                'total_pages' => (int) ceil(($initialCount + $countProcesses) / $perPage),
             ]
         );
     }

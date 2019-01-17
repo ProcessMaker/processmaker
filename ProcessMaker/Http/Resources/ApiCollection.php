@@ -67,7 +67,7 @@ class ApiCollection extends ResourceCollection
             $this->resource = new LengthAwarePaginator(
                 $this->resource,
                 $this->resource->count(),
-                $request->input('per_page', 10)
+                (int) $request->input('per_page', 10)
             );
         }
         
