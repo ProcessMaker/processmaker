@@ -7,14 +7,48 @@ use Tests\Feature\Shared\RequestHelper;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\ProcessCategory;
+use Illuminate\Support\Facades\Artisan;
+use ProcessMaker\Providers\AuthServiceProvider;
+use ProcessMaker\Models\Permission;
 
 class ProcessesTest extends TestCase
 {
     use RequestHelper;
 
+    protected function withUserSetup()
+    {
+        // Our user should not be an admin.
+        $this->user->is_administrator = false;
+        $this->user->save();
+
+        // Seed the permissions table.
+        Artisan::call('db:seed', ['--class' => 'PermissionSeeder']);
+        
+        // Reboot our AuthServiceProvider. This is necessary so that it can
+        // pick up the new permissions and setup gates for each of them.
+        $asp = new AuthServiceProvider(app());
+        $asp->boot();
+    }
+
     public function testIndex()
     {
-        $response = $this->webGet('/processes');
+        $this->user = factory(User::class)->create([
+            'is_administrator' => false,
+        ]);
+        // Set the URL & permission to test.
+        $url = '/processes';
+        $permission = 'view-processes';
+        
+        // Our user has no permissions, so this should return 403.
+        $response = $this->webCall('GET', $url);
+        $response->assertStatus(403);
+
+        // Attach the permission to our user.
+        $this->user->permissions()->attach(Permission::byName($permission)->id);
+        $this->user->refresh();
+
+        // Our user now has permissions, so this should return 200.
+        $response = $this->webCall('GET', $url);
         $response->assertStatus(200);
         $response->assertViewIs('processes.index');
         $response->assertSee('Processes');
