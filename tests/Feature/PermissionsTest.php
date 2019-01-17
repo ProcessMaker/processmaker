@@ -53,6 +53,9 @@ class PermissionsTest extends TestCase
     
     public function testSetPermissionsForGroup()
     {
+        $this->user = factory(User::class)->create([
+            'is_administrator' => false,
+        ]);
         // Create a group.
         $group = factory(Group::class)->create([
             'name' => 'Test Permissions',
