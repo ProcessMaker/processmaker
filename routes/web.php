@@ -37,9 +37,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('processes/{process}/edit', 'ProcessController@edit')->name('processes.edit');
     Route::get('processes/create', 'ProcessController@create')->name('processes.create');
     Route::post('processes', 'ProcessController@store')->name('processes.store');
-    Route::get('processes/{processes}', 'ProcessController@show')->name('processes.show');
-    Route::put('processes/{processes}', 'ProcessController@update')->name('processes.edit');
-    Route::delete('processes/{processes}', 'ProcessController@destroy')->name('processes.destroy');
+    Route::get('processes/{process}', 'ProcessController@show')->name('processes.show');
+    Route::put('processes/{process}', 'ProcessController@update')->name('processes.edit');
+    Route::delete('processes/{process}', 'ProcessController@destroy')->name('processes.destroy');
 
     Route::get('about', 'AboutController@index')->name('about.index');
 
