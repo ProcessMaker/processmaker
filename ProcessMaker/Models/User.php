@@ -220,6 +220,21 @@ class User extends Authenticatable implements HasMedia
     }
 
     /**
+     * Define the avatar mutator. Within, we set the avatar attribute only if
+     * it is not null. This prevents the model from attempting to send an
+     * avatar field to the database on update, which has been known to
+     * cause errors from time to time.
+     *
+     * @return string
+     */    
+    public function setAvatarAttribute($value = null)
+    {
+        if ($value) {
+            $this->attributes['avatar'] = $value;
+        }
+    }
+
+    /**
      * Get url Avatar
      *
      * @return string
