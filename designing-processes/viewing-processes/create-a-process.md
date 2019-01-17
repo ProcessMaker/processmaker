@@ -7,10 +7,10 @@ description: Create a new Process to begin your Process modeling.
 ## Create a New Process
 
 {% hint style="info" %}
-Your user account or group membership must have the following permissions to edit a Process's configuration:
+Your user account or group membership must have the following permissions to create a new Process:
 
-* Processes: List
-* Processes: Edit
+* Processes: View Processes
+* Processes: Create Processes
 
 Ask your ProcessMaker Administrator for assistance.
 {% endhint %}

@@ -9,8 +9,8 @@ description: Edit the configuration for a Process.
 {% hint style="info" %}
 Your user account or group membership must have the following permissions to edit a Process's configuration:
 
-* Processes: List
-* Processes: Edit
+* Processes: View Processes
+* Processes: Edit Processes
 
 Ask your ProcessMaker Administrator for assistance.
 {% endhint %}

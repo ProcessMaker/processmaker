@@ -13,11 +13,11 @@ Follow these steps to view in-progress Requests:
 1. Do one of the following:
    * [Log in](../log-in.md#log-in) to ProcessMaker. The **Started by Me** tab in the **Requests** page displays.
    * Click the **Requests** option from the top menu if it is not currently displayed. The **Started by Me** tab displays.
-2. Click the **In Progress** tab or click the **In Progress** icon![](../../.gitbook/assets/in-progress-icon-request.png)from the left sidebar.
+2. Click the **In Progress** tab or click the **In Progress** icon![](../../.gitbook/assets/in-progress-icon-request.png)from the left sidebar. The **Requests In Progress** content displays.
 
-![&quot;In Progress&quot; Request tab](../../.gitbook/assets/in-progress-request.png)
+![&quot;In Progress&quot; content displays in-progress Requests in which you are a participant](../../.gitbook/assets/in-progress-request.png)
 
-The **In Progress** tab displays the following information in tabular format:
+The **In Progress** content displays the following information in tabular format:
 
 * **Name:** The **Name** column displays the name of the Process associated with the Request. Click the Process name to [view information](request-details.md#information-for-in-progress-requests) about that Request.
 * **Status:** The **Status** column displays the **In Progress** status.

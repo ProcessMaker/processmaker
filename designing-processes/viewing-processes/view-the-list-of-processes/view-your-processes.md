@@ -11,7 +11,7 @@ ProcessMaker displays all active and inactive Processes in one table that Proces
 ## View All Active and Inactive Processes
 
 {% hint style="info" %}
-Your user account or group membership must have the "Processes: List" permission to view the list of Processes.
+Your user account or group membership must have the "Processes: View Processes" permission to view the list of Processes.
 
 Ask your ProcessMaker Administrator for assistance.
 {% endhint %}
@@ -22,7 +22,7 @@ Follow these steps to view all active and inactive Processes in your organizatio
 2. Click the **Processes** option from the top menu. The **Processes** page displays all active and inactive Processes created by all Process Owners in your organization.
 
 {% hint style="info" %}
-Click the **Processes** ![](../../../.gitbook/assets/processses-icon-processes.png) icon in the left sidebar when you are in other Process-related pages to view the **Processes** page.
+Click the **Processes** icon![](../../../.gitbook/assets/processses-icon-processes.png)in the left sidebar when you are in other Process-related pages to view the **Processes** page.
 {% endhint %}
 
 ![&quot;Processes&quot; page displays all Processes in your organization](../../../.gitbook/assets/processes.png)

@@ -11,8 +11,8 @@ Restore an archived Process so Requests can be started against it. After a Proce
 {% hint style="info" %}
 Your user account or group membership must have the following permissions to archive a Process:
 
-* Processes: List
-* Processes: Edit
+* Processes: View Processes
+* Processes: Edit Processes
 
 Ask your ProcessMaker Administrator for assistance.
 {% endhint %}

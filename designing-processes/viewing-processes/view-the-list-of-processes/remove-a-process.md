@@ -20,6 +20,10 @@ Follow these steps to view all archived Processes in your organization:
 2. Click the **Processes** option from the top menu. The **Processes** page displays.
 3. Click the **Archived Processes** icon![](../../../.gitbook/assets/archived-processes-icon-processes.png)in the left sidebar. The **Process Archive** page displays all archived Processes in your organization.
 
+{% hint style="info" %}
+Click the **Archived Processes** icon![](../../../.gitbook/assets/archived-processes-icon-processes.png)in the left sidebar when you are in other Process-related pages to view the **Process Archive** page.
+{% endhint %}
+
 ![&quot;Process Archive&quot; page contains all archived Processes in your organization](../../../.gitbook/assets/process-archive-page-processes.png)
 
 ## Archive a Process
@@ -27,8 +31,8 @@ Follow these steps to view all archived Processes in your organization:
 {% hint style="info" %}
 Your user account or group membership must have the following permissions to archive a Process:
 
-* Processes: List
-* Processes: Edit
+* Processes: View Processes
+* Processes: Edit Processes
 
 Ask your ProcessMaker Administrator for assistance.
 {% endhint %}

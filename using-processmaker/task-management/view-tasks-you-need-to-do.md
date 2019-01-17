@@ -15,7 +15,7 @@ Follow these steps to view your assigned Tasks:
 If you are viewing your completed Tasks, click the **To Do** icon![](../../.gitbook/assets/to-do-icon-tasks.png) in the left sidebar.
 {% endhint %}
 
-![&quot;To Do Tasks&quot; page displays Your assigned Tasks](../../.gitbook/assets/to-do-tasks-tasks.png)
+![&quot;To Do Tasks&quot; page displays your assigned Tasks](../../.gitbook/assets/to-do-tasks-tasks.png)
 
 The **To Do Tasks** page displays the following information about your assigned Tasks in tabular format:
 

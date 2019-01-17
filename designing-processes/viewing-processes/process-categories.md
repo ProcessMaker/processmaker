@@ -12,6 +12,12 @@ A Process can be assigned to only one Category.
 
 ## View Process Categories
 
+{% hint style="info" %}
+Your user account or group membership must have the "Categories: View Categories" permission to view the list of Process Categories.
+
+Ask your ProcessMaker Administrator for assistance.
+{% endhint %}
+
 Follow these steps to view Process Categories:
 
 1. [Log in](../../using-processmaker/log-in.md#log-in) to ProcessMaker.
@@ -42,6 +48,15 @@ If no Process Categories exist, the following message displays: **No Data Availa
 
 ## Add a New Process Category
 
+{% hint style="info" %}
+Your user account or group membership must have the following permissions to add a new Process Category:
+
+* Categories: View Categories
+* Categories: Create Categories
+
+Ask your ProcessMaker Administrator for assistance.
+{% endhint %}
+
 Follow these steps to add a new Process Category:
 
 1. [View your Process Categories.](process-categories.md#view-process-categories)
@@ -53,6 +68,16 @@ Follow these steps to add a new Process Category:
 4. Click **Save**. The **Edit Process Category** page displays. Use this page to edit the Process Category's name or set its status. See [Edit a Process Category](process-categories.md#edit-a-process-category).
 
 ## Edit a Process Category
+
+{% hint style="info" %}
+Your user account or group membership must have the following permissions to edit a Process Category:
+
+* Categories: View Categories
+* Categories: Create Categories
+* Categories: Edit Categories
+
+Ask your ProcessMaker Administrator for assistance.
+{% endhint %}
 
 Follow these steps to edit a Process Category:
 
@@ -66,6 +91,17 @@ Follow these steps to edit a Process Category:
 5. Click **Update**. Otherwise, click **Cancel** to cancel any changes.
 
 ## Delete a Process Category
+
+{% hint style="info" %}
+Your user account or group membership must have the following permissions to delete a Process Category:
+
+* Categories: View Categories
+* Categories: Create Categories
+* Categories: Edit Categories
+* Categories: Delete Categories
+
+Ask your ProcessMaker Administrator for assistance.
+{% endhint %}
 
 {% hint style="warning" %}
 To delete a Process Category, no Processes can be assigned to it. Reassign those Processes to another Category.

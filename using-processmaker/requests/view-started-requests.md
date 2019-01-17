@@ -10,12 +10,16 @@ The **Started by Me** tab in the **Requests** page displays all Requests you sta
 
 Do one of the following to view Requests that you started:
 
-* [Log in](../log-in.md#log-in) to ProcessMaker. The **Started by Me** tab in the **Requests** page displays.
-* Click the **Requests** option from the top menu if it is not currently displayed. The **Started by Me** tab displays.
+* [Log in](../log-in.md#log-in) to ProcessMaker. The **My Requests** tab in the **Requests** page displays.
+* Click the **Requests** option from the top menu if it is not currently displayed. The **My Requests** content displays.
 
-![&quot;Started By Me&quot; Request tab](../../.gitbook/assets/started-by-me-request.png)
+{% hint style="info" %}
+Click the **Started By Me** icon![](../../.gitbook/assets/started-by-me-icon-requests.png)in the left sidebar when you are in other Request-related pages to view the **My Requests** content.
+{% endhint %}
 
-The **Started by Me** tab displays the following information in tabular format:
+![&quot;My Requests&quot; content displays Requests that you have started](../../.gitbook/assets/started-by-me-request.png)
+
+The **My Requests** content displays the following information in tabular format:
 
 * **Name:** The **Name** column displays the name of the Process associated with the Request. Click the Process name to [view information](request-details.md) about that Request.
 * **Status:** The **Status** column displays the status of the Process associated with the Request. The following are possible statuses:

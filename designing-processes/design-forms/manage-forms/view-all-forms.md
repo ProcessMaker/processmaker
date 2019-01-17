@@ -6,7 +6,7 @@ description: >-
 
 # View All Screens
 
-ProcessMaker displays all Screens designed for any process in one table that Process Owners throughout your organization have created. Any ProcessMaker Screen developed by any Process Owner can be used in any process in your organization. This makes it easy to manage ProcessMaker Screens.
+ProcessMaker displays all Screens designed for any process in one page that Process Owners throughout your organization have created. Any ProcessMaker Screen developed by any Process Owner can be used in any process in your organization. This makes it easy to manage ProcessMaker Screens.
 
 {% hint style="info" %}
 To view ProcessMaker Screens, you must be a member of the Process Owner group. Otherwise, the **Processes** option is not available from the top menu that allows you to perform Screen management activities.

@@ -6,21 +6,23 @@ description: >-
 
 # View All Scripts
 
-ProcessMaker displays all ProcessMaker Scripts in one table that Process Owners throughout your organization have created. Any ProcessMaker Script developed by any Process Owner or ProcessMaker Developer can be used in any process in your organization. This makes it easy to manage ProcessMaker Scripts.
-
-{% hint style="info" %}
-To view ProcessMaker Scripts, you must be a member of the Process Owner group. Otherwise, the **Processes** option is not available from the top menu that allows you to perform Script management activities.
-{% endhint %}
+ProcessMaker displays all ProcessMaker Scripts in one page that Process Owners throughout your organization have created. Any ProcessMaker Script developed by any Process Owner or ProcessMaker Developer can be used in any Process in your organization. This makes it easy to manage ProcessMaker Scripts.
 
 ## View All ProcessMaker Scripts
+
+{% hint style="info" %}
+Your user account or group membership must have the "Scripts: View Scripts" permission to view the list of ProcessMaker Scripts.
+
+Ask your ProcessMaker Administrator for assistance.
+{% endhint %}
 
 Follow these steps to view all ProcessMaker Scripts in your organization:
 
 1. [Log in](../../../using-processmaker/log-in.md#log-in) to ProcessMaker.
 2. Click the **Processes** option from the top menu. The **Processes** page displays.
-3. Click the **Scripts** icon![](../../../.gitbook/assets/scripts-icon-processes.png). The **Scripts** page displays all ProcessMaker Scripts created by all Process Owners and ProcessMaker Developers in your organization.
+3. Click the **Scripts** icon![](../../../.gitbook/assets/scripts-icon-processes.png) from the left sidebar. The **Scripts** page displays all ProcessMaker Scripts created by all Process Owners and ProcessMaker Developers in your organization.
 
-![Scripts page](../../../.gitbook/assets/scripts-page-processes.png)
+![&quot;Scripts&quot; page displays all ProcessMaker Scripts created in your organization](../../../.gitbook/assets/scripts-page-processes.png)
 
 The **Scripts** page displays the following information about ProcessMaker Scripts:
 
