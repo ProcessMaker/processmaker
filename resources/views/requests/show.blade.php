@@ -133,6 +133,12 @@
                     </div>
                     </div>
                 </div>
+
+                <div>
+                    <comment-task commentable_id="{{$request->getKey()}}" commentable_type="{{get_class($request)
+                }}"></comment-task>
+                </div>
+
             </div>
             <div class="col-md-4">
                 <template v-if="statusLabel">
@@ -173,6 +179,7 @@
                     </div>
                 </template>
             </div>
+
 
         </div>
     </div>

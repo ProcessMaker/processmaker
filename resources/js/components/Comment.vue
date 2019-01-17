@@ -1,28 +1,18 @@
 <template>
-    <span>
+    <span v-if="comments.length > 0">
+        <h5>Comments</h5>
         <template v-for="value in comments">
         <div class="card border-0">
             <div class="card-body p-0 ml-2 d-inline-flex float-left align-items-center">
                 <avatar-image size="35" :input-data="value.user" hide-name="true"></avatar-image>
                 <p class="card-text ml-3">
                     {{moment(value.updated_at).format()}}
-                    {{value.user.username}}
-                    {{value.subject}}
+                    <span style="font-weight: bold">{{value.user.username}}</span>
                     {{value.body}}
                 </p>
             </div>
         </div>
         <hr>
-        </template>
-
-        <template>
-            <form-input v-model="form.subject" label="Subject" name="subject"></form-input>
-            <div class='form-group'>
-                <label>Body</label>
-                <textarea v-model="form.body" class='form-control' rows='4' name='body'></textarea>
-            </div>
-            <button class="btn btn-success float-right m-1" @click="save" :disabled="disabled">Save
-            </button>
         </template>
     </span>
 </template>

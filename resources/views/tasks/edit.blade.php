@@ -34,10 +34,6 @@
                     </div>
                     @endif
 
-                    <div class="card card-body mt-2 mb-4">
-                        <comment-task commentable_id="{{$task->getKey()}}" commentable_type="{{get_class($task)}}"></comment-task>
-                    </div>
-
                 </div>
             </div>
             <div class="col-md-4">

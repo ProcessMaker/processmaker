@@ -91,7 +91,7 @@ class BpmnSubscriber
             'type' => 'LOG',
             'user_id' => $token->user_id,
             'commentable_type' => get_class($token->getInstance()),
-            'commentable_id' => $token->getInstance()->id,
+            'commentable_id' => $token->getInstance()->getId(),
             'subject' => 'Task Complete',
             'body' => $token->user->fullname . " has completed the task " . $token->element_name,
         ]);
