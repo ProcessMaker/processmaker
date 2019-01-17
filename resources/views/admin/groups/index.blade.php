@@ -9,8 +9,11 @@
 @endsection
 
 @section('content')
+@include('shared.breadcrumbs', ['routes' => [
+    __('Admin') => route('users.index'),
+    __('Groups') => null,
+]])
 <div class="container page-content" id="listGroups">
-    <h1>{{__('Groups')}}</h1>
     <div class="row">
         <div class="col">
             <div class="input-group">

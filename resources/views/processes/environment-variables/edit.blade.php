@@ -9,8 +9,12 @@
 @endsection
 
 @section('content')
+    @include('shared.breadcrumbs', ['routes' => [
+        __('Processes') => route('processes.index'),
+        __('Environment Variables') => route('environment-variables.index'),
+        __('Edit') . " " . $environmentVariable->name => null,
+    ]])
     <div class="container" id="editEnvironmentVariable">
-        <h1>{{__('Edit Environment Variable')}}</h1>
         <div class="row">
             <div class="col-8">
                 <div class="card card-body">
