@@ -90,8 +90,8 @@ class BpmnSubscriber
         Comment::create([
             'type' => 'LOG',
             'user_id' => $token->user_id,
-            'commentable_type' => get_class($token),
-            'commentable_id' => $token->id,
+            'commentable_type' => get_class($token->getInstance()),
+            'commentable_id' => $token->getInstance()->id,
             'subject' => 'Task Complete',
             'body' => $token->user->fullname . " has completed the task " . $token->element_name,
         ]);
