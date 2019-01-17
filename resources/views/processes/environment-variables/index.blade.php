@@ -14,7 +14,6 @@
         __('Environment Variables') => null,
     ]])
     <div class="container page-content" id="process-variables-listing">
-        <h1>{{__('Environment Variables')}}</h1>
         <div class="row">
             <div class="col">
                 <div class="input-group">

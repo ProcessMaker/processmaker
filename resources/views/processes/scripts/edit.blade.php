@@ -15,7 +15,6 @@
         __('Edit') . " " . $script->title => null,
     ]])
     <div class="container" id="editScript">
-        <h1>{{__('Edit Script')}}</h1>
         <div class="row">
             <div class="col-8">
                 <div class="card card-body">

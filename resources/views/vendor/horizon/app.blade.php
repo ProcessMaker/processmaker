@@ -18,7 +18,6 @@ Menu::get('sidebar_admin')])
                 <div class="col-sm-12">
                         <div class="row">
                                 <div class="col-md-8 d-flex align-items-center col-sm-12">
-                                        <h1 class="page-title">Queue Management</h1>
                                         <img src="/vendor/horizon/img/horizon.svg">
                                 </div>
                                 <div id="root"></div>

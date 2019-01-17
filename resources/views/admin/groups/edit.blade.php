@@ -15,7 +15,6 @@
         __('Edit') . " " . $group->name => null,
     ]])
     <div class="container" id="editGroup">
-        <h1>{{__('Edit Group')}}</h1>
         <div class="row">
             <div class="col-12">
                 <nav>

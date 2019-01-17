@@ -14,7 +14,6 @@
     function() use ($title) { return [__($title), null]; }
 ]])
 <div class="container page-content mt-2" id="requests-listing">
-    <h1>{{__($title)}}</h1>
     <div class="row">
         <div class="col-sm-12">
             <template v-if="title">

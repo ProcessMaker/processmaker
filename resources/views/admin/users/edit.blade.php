@@ -15,7 +15,6 @@
     __('Edit') . " " . $user->fullname => null,
 ]])
 <div class="container" id="editUser">
-    <h1>{{__('Edit User')}}</h1>
     <div class="row">
         <div class="col-12">
             <nav>

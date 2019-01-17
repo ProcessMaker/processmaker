@@ -13,7 +13,6 @@
         __('Scripts') => null,
     ]])
     <div class="container page-content" id="scriptIndex">
-        <h1>{{__('Scripts')}}</h1>
         <div class="row">
             <div class="col">
                 <div class="input-group">

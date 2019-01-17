@@ -26,12 +26,6 @@
 
   <div class="row">
     <div class="col">
-      <h1>{{__($title)}}</h1>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col">
       <div class="input-group">
         <div class="input-group-prepend">
           <span class="input-group-text" id="basic-addon1">

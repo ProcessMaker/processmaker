@@ -15,7 +15,6 @@
         __('Edit') . " " . $environmentVariable->name => null,
     ]])
     <div class="container" id="editEnvironmentVariable">
-        <h1>{{__('Edit Environment Variable')}}</h1>
         <div class="row">
             <div class="col-8">
                 <div class="card card-body">

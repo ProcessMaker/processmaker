@@ -13,7 +13,6 @@
       __('About ProcessMaker 4') => null,
   ]])
  <div class="container">
-    <h1>{{__('About ProcessMaker 4')}}</h1>
     <div class="row">
       <div class="col-8">
         <div class="card card-body">
