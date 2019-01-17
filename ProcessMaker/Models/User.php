@@ -4,16 +4,16 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
+use ProcessMaker\Models\Permission;
 use ProcessMaker\Traits\SerializeToIso8601;
+use ProcessMaker\Traits\HasAuthorization;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
-use ProcessMaker\Traits\HasAuthorization;
 
 class User extends Authenticatable implements HasMedia
 {
@@ -132,8 +132,18 @@ class User extends Authenticatable implements HasMedia
     protected $hidden = [
         'password',
         'groupMembersFromMemberable',
-        'permissionAssignments',
+        'permissions',
     ];
+
+    /**
+     * Scope to only return active users.
+     *
+     * @var Builder
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'ACTIVE');
+    }
 
     /**
      * Return the full name for this user which is the first name and last
@@ -148,15 +158,40 @@ class User extends Authenticatable implements HasMedia
             $this->lastname
         ]);
     }
+    
+    public function hasPermissionsFor($resource)
+    {
+        if ($this->is_administrator) {
+            $perms = Permission::all(['name'])->pluck('name');
+        } else {
+            $perms = collect(session('permissions'));
+        }
+
+        $filtered = $perms->filter(function($value) use($resource) {
+            $match = preg_match("/(.+)-{$resource}/", $value);
+            if ($match === 1) {
+                return true;
+            } else {
+                return false;
+            }
+        });
+        
+        return $filtered->values();
+    }
 
     public function groupMembersFromMemberable()
     {
         return $this->morphMany(GroupMember::class, 'member', null, 'member_id');
     }
 
-    public function permissionAssignments()
+    public function permissions()
     {
-        return $this->morphMany(PermissionAssignment::class, 'assignable', null, 'assignable_id');
+        return $this->morphToMany('ProcessMaker\Models\Permission', 'assignable');
+    }
+
+    public function processesFromProcessable()
+    {
+        return $this->morphToMany('ProcessMaker\Models\Process', 'processable');
     }
 
     /**
@@ -167,18 +202,6 @@ class User extends Authenticatable implements HasMedia
     public function getFullnameAttribute()
     {
         return $this->getFullName();
-    }
-
-    /**
-     * Hashes the password passed as a clear text
-     *
-     * @param $pass
-     */
-    public function setPasswordAttribute($pass)
-    {
-
-        $this->attributes['password'] = Hash::make($pass);
-
     }
 
     /**
@@ -245,7 +268,7 @@ class User extends Authenticatable implements HasMedia
         if (!$user->hasPermission('requests.create')) {
             return [];
         }
-        $permission = Permission::byGuardName('requests.create');
+        $permission = Permission::byName('requests.create');
 
         $processUser = ProcessPermission::where('permission_id', $permission->id)
             ->where('assignable_id', $user->id)

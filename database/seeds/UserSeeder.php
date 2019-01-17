@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
@@ -28,7 +29,7 @@ class UserSeeder extends Seeder
         //Create admin user
         $user = factory(User::class)->create([
             'username' => 'admin',
-            'password' => 'admin',
+            'password' => Hash::make('admin'),
             'firstname' => 'admin',
             'lastname' => 'admin',
             'timezone' => null,

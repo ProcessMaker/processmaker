@@ -1,6 +1,7 @@
 <?php
 namespace Tests\Model;
 
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
@@ -12,9 +13,9 @@ class UserTest extends TestCase
 {
 
     public function testPermissions() {
-        $president_user = factory(User::class)->create(['password' => 'password']);
-        $technician_user = factory(User::class)->create(['password' => 'password']);
-        $mom_user = factory(User::class)->create(['password' => 'password']);
+        $president_user = factory(User::class)->create(['password' => Hash::make('password')]);
+        $technician_user = factory(User::class)->create(['password' => Hash::make('password')]);
+        $mom_user = factory(User::class)->create(['password' => Hash::make('password')]);
 
         $ln_permission = factory(Permission::class)->create([
             'guard_name' => 'launch.nukes',

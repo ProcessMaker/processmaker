@@ -31,7 +31,7 @@
                                     @click="onAction('edit-designer', props.rowData, props.rowIndex)"
                                     v-b-tooltip.hover
                                     title="Open Modeler"
-                                    v-if="props.rowData.status === 'ACTIVE'"
+                                    v-if="permission.includes('edit-processes') && props.rowData.status === 'ACTIVE'"
                             >
                                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
                             </b-btn>
@@ -40,7 +40,7 @@
                                     @click="onAction('edit-item', props.rowData, props.rowIndex)"
                                     v-b-tooltip.hover
                                     title="Config"
-                                    v-if="props.rowData.status === 'ACTIVE'"
+                                    v-if="permission.includes('edit-processes') && props.rowData.status === 'ACTIVE'"
                             >
                                 <i class="fas fa-cog fa-lg fa-fw"></i>
                             </b-btn>
@@ -49,7 +49,7 @@
                                     @click="onAction('remove-item', props.rowData, props.rowIndex)"
                                     v-b-tooltip.hover
                                     title="Archive"
-                                    v-if="props.rowData.status === 'ACTIVE'"
+                                    v-if="permission.includes('archive-processes') && props.rowData.status === 'ACTIVE'"
                             >
                                 <i class="fas fa-download fa-lg fa-fw"></i>
                             </b-btn>
@@ -58,7 +58,7 @@
                                     @click="onAction('restore-item', props.rowData, props.rowIndex)"
                                     v-b-tooltip.hover
                                     title="Restore"
-                                    v-if="props.rowData.status === 'INACTIVE'"
+                                    v-if="permission.includes('archive-processes') && props.rowData.status === 'INACTIVE'"
                             >
                                 <i class="fas fa-upload fa-lg fa-fw"></i>
                             </b-btn>
@@ -85,7 +85,7 @@
 
     export default {
         mixins: [datatableMixin],
-        props: ["filter", "id", "status"],
+        props: ["filter", "id", "status", "permission"],
         data() {
             return {
                 orderBy: "name",
@@ -225,7 +225,6 @@
                 let url = (this.status === null || this.status === '' || this.status === undefined)
                     ? 'processes?'
                     : 'processes?status=' + this.status + '&';
-                console.log(url);
 
                 // Load from our api client
                 ProcessMaker.apiClient

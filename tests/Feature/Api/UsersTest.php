@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Api;
 
-use Carbon\Carbon;
 use Faker\Factory as Faker;
 use ProcessMaker\Models\User;
 use Tests\TestCase;

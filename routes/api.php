@@ -1,7 +1,7 @@
 <?php
 Route::group(
     [
-        'middleware' => ['auth:api', 'bindings', 'authorize'],
+        'middleware' => ['auth:api', 'bindings'],
         'prefix' => 'api/1.0',
         'namespace' => 'ProcessMaker\Http\Controllers\Api',
         'as' => 'api.',

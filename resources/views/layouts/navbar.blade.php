@@ -57,7 +57,6 @@
         </li>
     </b-navbar-nav>
 </b-navbar>
-
 <style lang="scss" scoped>
     .seperator {
         border-left: 1px solid rgb(227, 231, 236);
