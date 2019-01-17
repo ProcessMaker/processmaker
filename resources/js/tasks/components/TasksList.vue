@@ -193,6 +193,9 @@ export default {
         .then(response => {
           this.data = this.transform(response.data);
           this.loading = false;
+          if (response.data.meta.in_overdue > 0) {
+              this.$emit('in-overdue', response.data.meta.in_overdue);
+          }
         });
     }
   }

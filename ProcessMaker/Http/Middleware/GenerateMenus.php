@@ -31,30 +31,36 @@ class GenerateMenus
             $menu->group(['prefix' => 'processes'], function($request_items) {
                 $request_items->add(__('menus.topnav.processes'), ['route' => 'processes.index'])->active('processes/*');
             });
-            $menu->group(['prefix' => 'admin'], function($admin_items) {
-                $admin_items->add(__('menus.topnav.admin'), ['route' => 'users.index'])->active('admin/*');
-            });
+            if (\Auth::check() && (\Auth::user()->can('view-users') || \Auth::user()->can('view-groups') || \Auth::user()->is_administrator)) {
+                $menu->group(['prefix' => 'admin'], function($admin_items) {
+                    $admin_items->add(__('menus.topnav.admin'), ['route' => 'users.index'])->active('admin/*');
+                });
+            }
         });
 
         // Build the menus
         Menu::make('sidebar_admin', function ($menu) {
             $submenu = $menu->add(__('menus.sidebar_admin.organization'));
-            $submenu->add(__('menus.sidebar_admin.users'), [
-              'route' => 'users.index',
-              'icon' => 'fa-user',
-              'id' => 'homeid'
-          ]);
-            $submenu->add(__('menus.sidebar_admin.groups'), [
-              'route' => 'groups.index',
-              'icon' => 'fa-users',
-              'id' => 'homeid'
-          ]);
-
-          $submenu->add(__('menus.sidebar_admin.queue_management'), [
-                'route' => 'horizon.index',
-                'icon' => 'fa-infinity',
-          ]);
-
+            if (\Auth::check() && \Auth::user()->can('view-users')) {
+                $submenu->add(__('menus.sidebar_admin.users'), [
+                'route' => 'users.index',
+                'icon' => 'fa-user',
+                'id' => 'homeid'
+                ]);
+            }
+            if(\Auth::check() && \Auth::user()->can('view-groups')) {
+                $submenu->add(__('menus.sidebar_admin.groups'), [
+                'route' => 'groups.index',
+                'icon' => 'fa-users',
+                'id' => 'homeid'
+                ]);
+            }
+            if(\Auth::check() && \Auth::user()->is_administrator) {
+                $submenu->add(__('menus.sidebar_admin.queue_management'), [
+                    'route' => 'horizon.index',
+                    'icon' => 'fa-infinity',
+                ]);
+            }
         });
         Menu::make('sidebar_task', function ($menu) {
           $submenu = $menu->add(__('Tasks'));
@@ -83,10 +89,12 @@ class GenerateMenus
               'route' => ['requests_by_type', 'completed'],
               'icon' => 'fa-clipboard-check',
           ]);
-          $submenu->add(__('menus.sidebar_request.all'), [
-              'route' => ['requests_by_type', 'all'],
-              'icon' => 'fa-clipboard',
-          ]);
+          if (\Auth::check() && \Auth::user()->can('view-all_requests')) {
+              $submenu->add(__('menus.sidebar_request.all'), [
+                  'route' => 'requests.all',
+                  'icon' => 'fa-clipboard',
+              ]);
+          }
        });
 
         Menu::make('sidebar_processes', function ($menu) {
@@ -96,32 +104,39 @@ class GenerateMenus
               'icon' => 'fa-play-circle',
               'id' => 'processes'
           ]);
-          $submenu->add(__('menus.sidebar_processes.categories'), [
-              'route' => 'categories.index',
-              'icon' => 'fa-sitemap',
-              'id' => 'process-categories'
-          ]);
+          if(\Auth::check() && \Auth::user()->can('view-categories')) {
+              $submenu->add(__('menus.sidebar_processes.categories'), [
+                  'route' => 'categories.index',
+                  'icon' => 'fa-sitemap',
+                  'id' => 'process-categories'
+              ]);
+          }
           $submenu->add(__('menus.sidebar_processes.archived_processes'), [
               'route' => ['processes.index', 'status' => 'deleted'],
               'icon' => 'fa-archive',
               'id' => 'process-environment'
           ]);
-          $submenu->add(__('menus.sidebar_processes.scripts'), [
-              'route' => 'scripts.index',
-              'icon' => 'fa-code',
-              'id' => 'process-scripts'
-          ]);
-          $submenu->add(__('menus.sidebar_processes.screens'), [
-              'route' => 'screens.index',
-              'icon' => 'fa-file-alt',
-              'id' => 'process-screens'
-          ]);
-          $submenu->add(__('menus.sidebar_processes.environment_variables'), [
-              'route' => 'environment-variables.index',
-              'icon' => 'fa-cogs',
-              'id' => 'process-environment'
-          ]);
-
+          if(\Auth::check() && \Auth::user()->can('view-scripts')) {
+              $submenu->add(__('menus.sidebar_processes.scripts'), [
+                  'route' => 'scripts.index',
+                  'icon' => 'fa-code',
+                  'id' => 'process-scripts'
+              ]);
+          }
+          if(\Auth::check() && \Auth::user()->can('view-screens')) {
+              $submenu->add(__('menus.sidebar_processes.screens'), [
+                  'route' => 'screens.index',
+                  'icon' => 'fa-file-alt',
+                  'id' => 'process-screens'
+              ]);
+          }
+          if(\Auth::check() && \Auth::user()->can('view-environment_variables')) {
+              $submenu->add(__('menus.sidebar_processes.environment_variables'), [
+                  'route' => 'environment-variables.index',
+                  'icon' => 'fa-cogs',
+                  'id' => 'process-environment'
+              ]);
+          }
 
     });
 
