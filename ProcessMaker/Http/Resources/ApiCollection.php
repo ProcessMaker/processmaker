@@ -6,6 +6,7 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Http\Request;
 
 /**
  *  @OA\Schema(
@@ -64,15 +65,33 @@ class ApiCollection extends ResourceCollection
     public function toResponse($request)
     {
         if ($this->resource instanceof Collection) {
-            $this->resource = new LengthAwarePaginator(
-                $this->resource,
-                $this->resource->count(),
-                (int) $request->input('per_page', 10)
-            );
+            $this->resource = $this->collectionToPaginator($this->resource, $request);
         }
         
         return $this->resource instanceof AbstractPaginator
                     ? (new ApiPaginatedResourceResponse($this))->toResponse($request)
                     : parent::toResponse($request);
     }
+
+    /**
+     * Convert a Collection to a LengthAwarePaginator
+     *
+     * @param  \Illuminate\Support\Collection  $collection
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Pagination\LengthAwarePaginator
+     */
+    public function collectionToPaginator(Collection $collection, Request $request)
+    {
+        $count = $collection->count();
+        $page = (int) $request->input('page', 1);
+        $perPage = (int) $request->input('per_page', 10);
+        
+        $startIndex = ($page - 1) * $perPage;
+        $limit = $perPage;
+
+        $this->collection = $collection->slice($startIndex, $limit);
+        
+        return new LengthAwarePaginator($this->collection, $count, $perPage);
+    }    
+    
 }
