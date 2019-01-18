@@ -1,7 +1,7 @@
 <template>
   <div v-if="comments.length > 0" class="row px-3 my-2 timeline">
-    <template v-for="value in comments">
-      <div class="col px-2 pb-2">
+    <template>
+      <div class="px-2 py-3" v-for="value in comments">
         <avatar-image v-if="value.user" size="24" :input-data="value.user" hide-name="true"></avatar-image>
         <avatar-image v-else size="24" :input-data="systemCommentUser" hide-name="true"></avatar-image>
         <strong>{{moment(value.updated_at).format()}}</strong>
