@@ -209,10 +209,12 @@
                                 'group_id': that.formData.id,
                                 'member_type': 'ProcessMaker\\Models\\User',
                                 'member_id': user.id
+                            })
+                            .then(response => {
+                                that.$refs['listing'].fetch();
+                                $('#addUser').modal('hide');
                             });
                     })
-                    this.$refs['listing'].fetch();
-                    $('#addUser').modal('hide');
                 },
                 resetErrors() {
                     this.errors = Object.assign({}, {
