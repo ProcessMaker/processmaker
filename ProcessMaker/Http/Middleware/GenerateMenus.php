@@ -56,6 +56,13 @@ class GenerateMenus
                 'id' => 'homeid'
                 ]);
             }
+            if(\Auth::check() && \Auth::user()->can('view-auth-clients')) {
+                $submenu->add(__('menus.sidebar_admin.auth-clients'), [
+                    'route' => 'auth-clients.index',
+                    'icon' => 'fa-key',
+                    'id' => 'auth-login'
+                ]);
+            }
             if(\Auth::check() && \Auth::user()->is_administrator) {
                 $submenu->add(__('menus.sidebar_admin.queue_management'), [
                     'route' => 'horizon.index',
