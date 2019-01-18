@@ -184,6 +184,11 @@ class User extends Authenticatable implements HasMedia
     {
         return $this->morphMany(GroupMember::class, 'member', null, 'member_id');
     }
+    
+    public function groups()
+    {
+        return $this->morphToMany('ProcessMaker\Models\Group', 'member', 'group_members', 'group_id', 'member_id', 'id', 'id');
+    }
 
     public function permissions()
     {
@@ -213,6 +218,21 @@ class User extends Authenticatable implements HasMedia
     public function getAvatarAttribute()
     {
         return $this->getAvatar();
+    }
+
+    /**
+     * Define the avatar mutator. Within, we set the avatar attribute only if
+     * it is not null. This prevents the model from attempting to send an
+     * avatar field to the database on update, which has been known to
+     * cause errors from time to time.
+     *
+     * @return string
+     */    
+    public function setAvatarAttribute($value = null)
+    {
+        if ($value) {
+            $this->attributes['avatar'] = $value;
+        }
     }
 
     /**
@@ -261,29 +281,6 @@ class User extends Authenticatable implements HasMedia
     public function assigned()
     {
         return $this->morphMany(ProcessTaskAssignment::class, 'assigned', 'assignment_type', 'assignment_id');
-    }
-
-    public function startProcesses()
-    {
-        $user = Auth::user();
-        if (!$user->hasPermission('requests.create')) {
-            return [];
-        }
-        $permission = Permission::byName('requests.create');
-
-        $processUser = ProcessPermission::where('permission_id', $permission->id)
-            ->where('assignable_id', $user->id)
-            ->where('assignable_type', User::class)
-            ->pluck('process_id');
-
-        $processGroup = ProcessPermission::where('permission_id', $permission->id)
-            ->whereIn('assignable_id', $user->groupMembersFromMemberable()->pluck('group_id')->toArray())
-            ->where('assignable_type', Group::class)
-            ->pluck('process_id');
-
-        return array_values(array_unique(array_merge(
-            $processUser->toArray(), $processGroup->toArray()
-        ), SORT_REGULAR));
     }
 
 }

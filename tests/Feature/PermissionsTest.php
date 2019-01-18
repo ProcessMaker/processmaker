@@ -34,6 +34,9 @@ class PermissionsTest extends TestCase
 
     public function testSetPermissionsForUser()
     {
+        $this->user = factory(User::class)->create([
+            'is_administrator' => false,
+        ]);
         // Set the URL & permission to test.
         $url = '/processes/scripts';
         $permission = 'view-scripts';
@@ -53,6 +56,9 @@ class PermissionsTest extends TestCase
     
     public function testSetPermissionsForGroup()
     {
+        $this->user = factory(User::class)->create([
+            'is_administrator' => false,
+        ]);
         // Create a group.
         $group = factory(Group::class)->create([
             'name' => 'Test Permissions',
@@ -84,6 +90,9 @@ class PermissionsTest extends TestCase
 
     public function testAdminPermissions()
     {
+        $this->user = factory(User::class)->create([
+            'is_administrator' => false,
+        ]);
         // Set the URL & permission to test.
         $url = '/processes/environment-variables';
         $permission = 'view-environment_variables';

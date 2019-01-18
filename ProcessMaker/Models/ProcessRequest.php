@@ -296,20 +296,6 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     }
 
     /**
-     * Check if the user has access to this request
-     *
-     * @param User $user
-     * @return void
-     */
-    public function authorize(User $user)
-    {
-        if ($this->user_id === $user->id || $user->is_administrator) {
-            return true;
-        }
-        throw new AuthorizationException("Not authorized to view this request");
-    }
-
-    /**
      * Records an error occurred during the execution of the process.
      *
      * @param Throwable $exception

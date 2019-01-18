@@ -15,6 +15,8 @@ use ProcessMaker\Nayra\Bpmn\Events\ProcessInstanceCompletedEvent;
 use ProcessMaker\Notifications\ProcessCompletedNotification;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Models\Comment;
+use ProcessMaker\Models\ProcessRequest;
 
 /**
  * Description of BpmnSubscriber
@@ -85,7 +87,7 @@ class BpmnSubscriber
      */
     public function onActivityCompleted(ActivityCompletedEvent $event)
     {
-        // Log::info('ActivityCompleted: ' . json_encode($event->token->getProperties()));
+        //log
     }
 
     /**

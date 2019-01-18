@@ -62,7 +62,7 @@ class ProcessTest extends TestCase
                 'count' => $perPage,
                 'per_page' => $perPage,
                 'current_page' => $page,
-                'total_pages' => ceil(($initialCount + $countProcesses) / $perPage),
+                'total_pages' => (int) ceil(($initialCount + $countProcesses) / $perPage),
             ]
         );
     }
@@ -72,7 +72,7 @@ class ProcessTest extends TestCase
      */
     public function testProcessesListingWithNoAdminUser()
     {
-        $this->markTestSkipped();
+        $this->markTestSkipped('API permissions not yet implemented');
         // We create an user that isn't administrator
         $this->user = factory(User::class)->create([
             'password' => Hash::make('password'),
@@ -133,7 +133,7 @@ class ProcessTest extends TestCase
      */
     public function testProcessesListingWithNoAdminGroup()
     {
-        $this->markTestSkipped();
+        $this->markTestSkipped('API permissions not yet implemented');
         // We create an user that isn't administrator
         $this->user = factory(User::class)->create([
             'password' => Hash::make('password'),
@@ -201,7 +201,7 @@ class ProcessTest extends TestCase
 
     public function testProcessEventsTrigger()
     {
-        $this->markTestSkipped();
+        $this->markTestSkipped('API permissions not yet implemented');
         $process = factory(Process::class)->create([
             'bpmn' => Process::getProcessTemplate('SingleTask.bpmn')
         ]);

@@ -136,6 +136,11 @@
                     </div>
                     </div>
                 </div>
+
+                <div>
+                    <comments commentable_id="{{ $request->getKey() }}" commentable_type="{{ get_class($request) }}" />
+                </div>
+
             </div>
             <div class="col-md-4">
                 <template v-if="statusLabel">
@@ -176,6 +181,7 @@
                     </div>
                 </template>
             </div>
+
 
         </div>
     </div>
