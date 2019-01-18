@@ -1,13 +1,14 @@
 <?php
 namespace ProcessMaker\Http\Controllers\Api;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Task as Resource;
+use ProcessMaker\Http\Resources\TaskCollection;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Notifications\TaskReassignmentNotification;
 
@@ -54,13 +55,25 @@ class TaskController extends Controller
         $query->orderBy(
             $request->input('order_by', 'updated_at'), $request->input('order_direction', 'asc')
         );
+
+        // only show tasks that the user is assigned to
+        $query->where('process_request_tokens.user_id', Auth::user()->id);
+
+        $inOverdueQuery = ProcessRequestToken::where('user_id', Auth::user()->id)
+            ->where('status', 'ACTIVE')
+            ->where('due_at', '<', Carbon::now());
+
+        $inOverdue = $inOverdueQuery->count();
+
         $response = $query->get();
 
         $response = $response->filter(function($processRequestToken) {
             return Auth::user()->can('view', $processRequestToken);
         })->values();
 
-        return new ApiCollection($response);
+        $response->inOverdue = $inOverdue;
+
+        return new TaskCollection($response);
     }
 
     /**

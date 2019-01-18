@@ -10,6 +10,10 @@
 
 
 @section('content')
+    @include('shared.breadcrumbs', ['routes' => [
+        __('Processes') => route('processes.index'),
+        __('Edit') . " " . $process->name => null,
+    ]])
     <div id="modeler-app">
     </div>
 @endsection
@@ -27,6 +31,12 @@ div.main {
   height: 100%;
   max-height: 100%;
 }
+
+ol.breadcrumb {
+  margin-bottom: 0;
+  border-bottom: 0;
+}
+
 </style>
 @endsection
 

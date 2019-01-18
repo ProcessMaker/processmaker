@@ -13,8 +13,20 @@
 @endsection
 
 @section('content')
+    @include('shared.breadcrumbs', ['routes' => [
+        __('Tasks') => route('tasks.index'),
+        function() use ($task) {
+            if ($task->advanceStatus == 'completed') {
+                return ['Completed Tasks', route('tasks.index', ['status' => 'CLOSED'])];
+            }
+            return ['To Do Tasks', route('tasks.index')];
+        },
+        $task->processRequest->name => route('requests.show', ['id' => $task->processRequest->id]),
+        $task->element_name => null,
+    ]])
+
     <div id="task" class="container">
-        <h1>{{$task->element_name}}</h1>
+        
         <div class="row">
             @if ($task->getScreen() && ($task->advanceStatus==='open' || $task->advanceStatus==='overdue'))
             <div class="col-md-8">

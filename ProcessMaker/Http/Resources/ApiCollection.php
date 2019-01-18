@@ -28,6 +28,29 @@ use Illuminate\Http\Request;
  */
 class ApiCollection extends ResourceCollection
 {
+    public $appends = [];
+    
+    protected $appended;
+    
+    /**
+     * Create a new resource instance.
+     *
+     * @param  mixed  $resource
+     * @return void
+     */
+    public function __construct($resource)
+    {
+        parent::__construct($resource);
+        
+        $this->appended = (object) [];
+        
+        foreach ($this->appends as $property) {            
+            if (property_exists($resource, $property)) {
+                $this->appended->{$property} = $resource->{$property};
+            }
+        }
+    }
+
     /**
      * Generic collection to add sorting and filtering metadata.
      *
@@ -64,6 +87,7 @@ class ApiCollection extends ResourceCollection
      */
     public function toResponse($request)
     {
+        // dd($this->resource);
         if ($this->resource instanceof Collection) {
             $this->resource = $this->collectionToPaginator($this->resource, $request);
         }
