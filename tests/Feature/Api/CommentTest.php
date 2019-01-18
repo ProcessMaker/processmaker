@@ -3,10 +3,10 @@
 namespace Tests\Feature\Api;
 
 use Faker\Factory as Faker;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\Permission;
-use ProcessMaker\Models\PermissionAssignment;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
@@ -64,6 +64,10 @@ class CommentTest extends TestCase
 
     public function testGetCommentListNoAdministrator()
     {
+        // Seed the permissions table.
+        Artisan::call('db:seed', ['--class' => 'PermissionSeeder']);
+        $permission = 'view-comments';
+
         $faker = Faker::create();
 
         $model = factory($faker->randomElement([
@@ -87,13 +91,8 @@ class CommentTest extends TestCase
             'password' => Hash::make('password'),
             'is_administrator' => false,
         ]);
-        $permission = factory(Permission::class)->create(['guard_name' => 'comments.index']);
 
-        factory(PermissionAssignment::class)->create([
-            'permission_id' => $permission->id,
-            'assignable_type' => User::class,
-            'assignable_id' => $this->user->id,
-        ]);
+        $this->user->permissions()->attach(Permission::byName($permission)->id);
 
         $response = $this->apiCall('GET', self::API_TEST_URL);
         $json = $response->json('data');
@@ -102,6 +101,10 @@ class CommentTest extends TestCase
 
     public function testGetCommentByType()
     {
+        // Seed the permissions table.
+        Artisan::call('db:seed', ['--class' => 'PermissionSeeder']);
+        $permission = 'view-comments';
+
         $model = factory(ProcessRequestToken::class)->create();
 
         factory(Comment::class, 10)->create([
@@ -134,13 +137,8 @@ class CommentTest extends TestCase
             'password' => Hash::make('password'),
             'is_administrator' => false,
         ]);
-        $permission = factory(Permission::class)->create(['guard_name' => 'comments.index']);
 
-        factory(PermissionAssignment::class)->create([
-            'permission_id' => $permission->id,
-            'assignable_type' => User::class,
-            'assignable_id' => $this->user->id,
-        ]);
+        $this->user->permissions()->attach(Permission::byName($permission)->id);
 
         $response = $this->apiCall('GET', self::API_TEST_URL . '?commentable_type=' . get_class($model2));
         $json = $response->json('data');
