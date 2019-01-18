@@ -225,7 +225,6 @@
                 let url = (this.status === null || this.status === '' || this.status === undefined)
                     ? 'processes?'
                     : 'processes?status=' + this.status + '&';
-                console.log(url);
 
                 // Load from our api client
                 ProcessMaker.apiClient

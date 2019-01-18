@@ -9,8 +9,11 @@
 @endsection
 
 @section('content')
+    @include('shared.breadcrumbs', ['routes' => [
+        __('Processes') => route('processes.index'),
+        __('Environment Variables') => null,
+    ]])
     <div class="container page-content" id="process-variables-listing">
-        <h1>{{__('Environment Variables')}}</h1>
         <div class="row">
             <div class="col">
                 <div class="input-group">

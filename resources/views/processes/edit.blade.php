@@ -9,10 +9,11 @@
 @endsection
 
 @section('content')
-        <!doctype html>
-
+@include('shared.breadcrumbs', ['routes' => [
+    __('Processes') => route('processes.index'),
+    __('Edit') . " " . $process->name => null,
+]])
 <div class="container" id="editProcess">
-    <h1>{{__('Edit Process')}}</h1>
     <div class="row">
         <div class="col-8">
             <div class="card card-body">

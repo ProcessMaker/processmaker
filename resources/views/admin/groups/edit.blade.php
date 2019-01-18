@@ -9,8 +9,12 @@
 @endsection
 
 @section('content')
+    @include('shared.breadcrumbs', ['routes' => [
+        __('Admin') => route('users.index'),
+        __('Groups') => route('groups.index'),
+        __('Edit') . " " . $group->name => null,
+    ]])
     <div class="container" id="editGroup">
-        <h1>{{__('Edit Group')}}</h1>
         <div class="row">
             <div class="col-12">
                 <nav>
@@ -23,7 +27,6 @@
                            aria-controls="nav-permissions" aria-selected="false">Group Permissions</a>
                     </div>
                 </nav>
-
 
                 <div class="tab-content mt-3" id="nav-tabContent">
                     <div class="card card-body tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
