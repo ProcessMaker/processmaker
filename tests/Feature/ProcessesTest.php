@@ -65,11 +65,25 @@ class ProcessesTest extends TestCase
 
     public function testEdit()
     {
-        //Seeder Permissions
-        (new \PermissionSeeder())->run($this->user);
-
         $process = factory(Process::class)->create(['name' => 'Test Edit']);
-        $response = $this->webGet('processes/' . $process->id . '/edit');
+
+        $this->user = factory(User::class)->create([
+            'is_administrator' => false,
+        ]);
+        // Set the URL & permission to test.
+        $url = 'processes/' . $process->id . '/edit';
+        $permission = 'edit-processes';
+        
+        // Our user has no permissions, so this should return 403.
+        $response = $this->webCall('GET', $url);
+        $response->assertStatus(403);
+
+        // Attach the permission to our user.
+        $this->user->permissions()->attach(Permission::byName($permission)->id);
+        $this->user->refresh();
+
+        // Our user now has permissions, so this should return 200.
+        $response = $this->webCall('GET', $url);
         $response->assertStatus(200);
         $response->assertViewIs('processes.edit');
         $response->assertSee('Test Edit');
