@@ -1,29 +1,31 @@
 <template>
   <div class="data-table">
-    <vuetable
-      :dataManager="dataManager"
-      :sortOrder="sortOrder"
-      :css="css"
-      :api-mode="false"
-      :fields="fields"
-      :data="data"
-      data-path="data"
-      pagination-path="meta"
-    >
-      <template slot="name" slot-scope="props">
-        <b-link
-          @click="onAction('edit', props.rowData, props.rowIndex)"
-        >{{props.rowData.element_name}}</b-link>
-      </template>
+    <div class="card card-body table-card">
+      <vuetable
+        :dataManager="dataManager"
+        :sortOrder="sortOrder"
+        :css="css"
+        :api-mode="false"
+        :fields="fields"
+        :data="data"
+        data-path="data"
+        pagination-path="meta"
+      >
+        <template slot="name" slot-scope="props">
+          <b-link
+            @click="onAction('edit', props.rowData, props.rowIndex)"
+          >{{props.rowData.element_name}}</b-link>
+        </template>
 
-      <template slot="participants" slot-scope="props">
-        <avatar-image
-          class="d-inline-flex pull-left align-items-center"
-          size="25"
-          :input-data="props.rowData.participants"
-        ></avatar-image>
-      </template>
-    </vuetable>
+        <template slot="participants" slot-scope="props">
+          <avatar-image
+            class="d-inline-flex pull-left align-items-center"
+            size="25"
+            :input-data="props.rowData.participants"
+          ></avatar-image>
+        </template>
+      </vuetable>
+    </div>
   </div>
 </template>
 

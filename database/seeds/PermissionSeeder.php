@@ -8,7 +8,6 @@ use ProcessMaker\Models\Permission;
 
 class PermissionSeeder extends Seeder
 {
-
     private $permissions = [
         'view-all_requests',
         'view-scripts',
@@ -39,6 +38,10 @@ class PermissionSeeder extends Seeder
         'view-groups',
         'edit-groups',
         'delete-groups',
+        'create-comments',
+        'view-comments',
+        'edit-comments',
+        'delete-comments',
     ];
 
     private $resourcePermissions = [
@@ -65,10 +68,10 @@ class PermissionSeeder extends Seeder
                     'title' => ucwords(preg_replace('/(\-|_)/', ' ',
                             $permissionString)),
                     'name' => $permissionString,
-                ]);            
+                ]);
             }
         }
-        
+
         if ($user) {
             $permissions = Permission::all()->pluck('id');
             $user->permissions()->attach($permissions);
