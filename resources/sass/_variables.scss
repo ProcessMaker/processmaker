@@ -3,18 +3,11 @@ $body-bg: #f7f9fb;
 
 // Fonts
 
-$font-family-sans-serif: "Open Sans" !default;
-$font-family-serif: Georgia,
-"Times New Roman",
-Times,
-serif !default;
+$font-family-sans-serif: 'Open Sans' !default;
+$font-family-serif: Georgia, 'Times New Roman', Times, serif !default;
 
 //** Default monospace fonts for `<code>`, `<kbd>`, and `<pre>`.
-$font-family-monospace: Menlo,
-Monaco,
-Consolas,
-"Courier New",
-monospace !default;
+$font-family-monospace: Menlo, Monaco, Consolas, 'Courier New', monospace !default;
 $font-family-base: $font-family-sans-serif !default;
 
 $font-size-base: 1rem !default;
@@ -45,6 +38,7 @@ $input-border-width: 1px;
 $input-focus-border-color: #dddddd;
 // border radius
 $border-radius: 0.125em;
+$border-dark: $input-border-color;
 
 //link-decoration
 $link-hover-decoration: none;
@@ -71,9 +65,14 @@ $tooltip-bg: white;
 $tooltip-color: $secondary;
 
 //breadcrumbs
-$breadcrumb-active-color: $primary;
-$breadcrumb-divider-color: $primary;
-$breadcrumb-item: $secondary;
+// $breadcrumb-active-color: $primary;
+// $breadcrumb-divider-color: $primary;
+// $breadcrumb-item: $secondary;
+$breadcrumb-bg: #fff;
+$breadcrumb-color: #000;
+$breadcrumb-active-color: #000;
+$breadcrumb-border-color: $grey-bg;
+$breadcrumb-separator: '>';
 
 //table
 // $table-cell-padding:            10px !default;

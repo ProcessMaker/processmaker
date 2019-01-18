@@ -9,6 +9,10 @@
 @endsection
 
 @section('content')
+@include('shared.breadcrumbs', ['routes' => [
+    __('Tasks') => route('tasks.index'),
+    __($title) => null,
+]])
 <div class="container page-content" id="tasks">
 
   <div class="row">
@@ -17,12 +21,6 @@
                style="text-align: center; margin-top:20px;" >
         @{{ inOverdueMessage }}
       </b-alert>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col">
-      <h1>{{__($title)}}</h1>
     </div>
   </div>
 

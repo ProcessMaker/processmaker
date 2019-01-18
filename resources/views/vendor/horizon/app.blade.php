@@ -5,6 +5,10 @@ Menu::get('sidebar_admin')])
 @endsection
  
 @section('content')
+@include('shared.breadcrumbs', ['routes' => [
+        __('Admin') => route('users.index'),
+        __('Queue Management') => null,
+]])
 <div style="height: 0; width: 0; position: absolute; display: none;">
 {!! file_get_contents(public_path('/vendor/horizon/img/sprite.svg')) !!}
 </div>
@@ -14,7 +18,6 @@ Menu::get('sidebar_admin')])
                 <div class="col-sm-12">
                         <div class="row">
                                 <div class="col-md-8 d-flex align-items-center col-sm-12">
-                                        <h1 class="page-title">Queue Management</h1>
                                         <img src="/vendor/horizon/img/horizon.svg">
                                 </div>
                                 <div id="root"></div>

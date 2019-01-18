@@ -5,8 +5,10 @@
 @endsection
 
 @section('content')
+@include('shared.breadcrumbs', ['routes' => [
+    __('Profile') => null,
+]])
 <div class="container" id="profileForm">
-    <h1>{{__('Profile')}}</h1>
     <div class="row">
         <div class="col-8">
             <div class="card card-body mt-3">
