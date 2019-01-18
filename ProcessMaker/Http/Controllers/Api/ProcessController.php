@@ -71,19 +71,18 @@ class ProcessController extends Controller
                         ? Process::onlyTrashed()->with($include)
                         : Process::with($include);
 
-        $processes->select('processes.*')
+        $processes = $processes->select('processes.*')
             ->leftJoin('process_categories as category', 'processes.process_category_id', '=', 'category.id')
             ->leftJoin('users as user', 'processes.user_id', '=', 'user.id')
-            ->where($where);
+            ->orderBy(...$orderBy)
+            ->where($where)
+            ->get();
 
-        //Verify what processes the current user can initiate, user Administrator can start everything.
-        if (!Auth::user()->is_administrator) {
-            $processId = Auth::user()->startProcesses();
-            $processes->whereIn('processes.id', $processId);
-        }
-        $processes->orderBy(...$orderBy);
+        $processes = $processes->filter(function($process) {
+            return Auth::user()->can('start', $process);
+        })->values();
 
-        return new ApiCollection($processes->paginate($perPage));
+        return new ApiCollection($processes);
     }
 
     /**
@@ -312,16 +311,15 @@ class ProcessController extends Controller
             ->leftJoin('process_categories as category', 'processes.process_category_id', '=', 'category.id')
             ->leftJoin('users as user', 'processes.user_id', '=', 'user.id')
             ->where('processes.status', 'ACTIVE')
-            ->where('category.status', 'ACTIVE');
+            ->where('category.status', 'ACTIVE')
+            ->orderBy(...$orderBy)
+            ->get();
 
-        //Verify what processes the current user can initiate, user Administrator can start everything.
-        if (!Auth::user()->is_administrator) {
-            $processId = Auth::user()->startProcesses();
-            $processes->whereIn('processes.id', $processId);
-        }
-        $processes->orderBy(...$orderBy);
+        $processes = $processes->filter(function($process) {
+            return Auth::user()->can('start', $process);
+        });
 
-        return new ApiCollection($processes->paginate($perPage));
+        return new ApiCollection($processes);
     }
 
     /**
@@ -445,7 +443,7 @@ class ProcessController extends Controller
             return abort(404);
         }
 
-        if (!\Auth::user()->hasPermissionsFor($process, 'requests.create')) {
+        if (! Auth::user()->can('start', $request->process)) {
             throw new AuthorizationException("Not authorized to start this process");
         }
 

@@ -47,29 +47,35 @@ class PermissionSeeder extends Seeder
     private $resourcePermissions = [
         'requests'
     ];
-    
-    public function run()
+
+    public function run(User $user = null)
     {
-        if (Permission::count() !== 0) {
-            return;
+        if (Permission::count() === 0) {
+            $group = factory(Group::class)->create([
+                'name' => 'All Permissions',
+            ]);
+
+            if ($user = User::first()) {
+                factory(GroupMember::class)->create([
+                    'group_id' => $group->id,
+                    'member_type' => User::class,
+                    'member_id' => $user->id,
+                ]);
+            }
+
+            foreach ($this->permissions as $permissionString) {
+                $permission = factory(Permission::class)->create([
+                    'title' => ucwords(preg_replace('/(\-|_)/', ' ',
+                            $permissionString)),
+                    'name' => $permissionString,
+                ]);
+            }
         }
 
-        $group = factory(Group::class)->create([
-            'name' => 'All Permissions',
-        ]);
-        if ($user = User::first()) {
-            factory(GroupMember::class)->create([
-                'group_id' => $group->id,
-                'member_type' => User::class,
-                'member_id' => $user->id,
-            ]);
-        }
-        foreach ($this->permissions as $permissionString) {
-            $permission = factory(Permission::class)->create([
-                'title' => ucwords(preg_replace('/(\-|_)/', ' ',
-                    $permissionString)),
-                'name' => $permissionString,
-            ]);
+        if ($user) {
+            $permissions = Permission::all()->pluck('id');
+            $user->permissions()->attach($permissions);
+            $user->save();
         }
     }
 }

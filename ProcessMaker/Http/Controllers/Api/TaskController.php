@@ -65,7 +65,11 @@ class TaskController extends Controller
 
         $inOverdue = $inOverdueQuery->count();
 
-        $response = $query->paginate($request->input('per_page', 10));
+        $response = $query->get();
+
+        $response = $response->filter(function($processRequestToken) {
+            return Auth::user()->can('view', $processRequestToken);
+        })->values();
 
         $response->inOverdue = $inOverdue;
 
@@ -95,7 +99,7 @@ class TaskController extends Controller
      */
     public function update(Request $request, ProcessRequestToken $task)
     {
-        $task->authorize(Auth::user());
+        $this->authorize('update', $task);
         if ($request->input('status') === 'COMPLETED') {
             if ($task->status === 'CLOSED') {
                 return abort(422, __('Task already closed'));

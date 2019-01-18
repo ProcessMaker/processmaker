@@ -74,17 +74,11 @@ class ProcessRequestController extends Controller
                 $query->with($include);
             }
         }
-
-        if (!Auth::user()->is_administrator) {
-            $query->startedMe(Auth::user()->id);
-        } 
-
+        
         // type filter
         switch ($request->input('type')) {
             case 'started_me':
-                if (Auth::user()->is_administrator) {
-                    $query->startedMe(Auth::user()->id);
-                }
+                $query->startedMe(Auth::user()->id);
                 break;
             case 'in_progress':
                 $query->inProgress();
@@ -108,7 +102,11 @@ class ProcessRequestController extends Controller
                 $request->input('order_by', 'name'),
                 $request->input('order_direction', 'ASC')
             )
-            ->paginate($request->input('per_page', 10));
+            ->get();
+        
+        $response = $response->filter(function($processRequest) {
+            return Auth::user()->can('view', $processRequest);
+        })->values();
 
         return new ApiCollection($response);
     }
@@ -215,10 +213,8 @@ class ProcessRequestController extends Controller
     public function update(ProcessRequest $request, Request $httpRequest)
     {
         if ($httpRequest->status === 'CANCELED') {
-            $permission = 'requests.cancel';
-            
-            if (!Auth::user()->hasPermissionsFor($request->process, $permission)) {
-                throw new AuthorizationException('Not authorized: ' . $permission);
+            if (! Auth::user()->can('cancel', $request->process)) {
+                throw new AuthorizationException('Not authorized to cancel this request.');
             }
             $this->cancelRequestToken($request);
             return response([], 204);
