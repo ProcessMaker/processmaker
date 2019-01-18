@@ -20,9 +20,9 @@ Follow these steps to view all ProcessMaker Scripts in your organization:
 
 1. [Log in](../../../using-processmaker/log-in.md#log-in) to ProcessMaker.
 2. Click the **Processes** option from the top menu. The **Processes** page displays.
-3. Click the **Scripts** icon![](../../../.gitbook/assets/scripts-icon-processes.png) from the left sidebar. The **Scripts** page displays all ProcessMaker Scripts created by all Process Owners and ProcessMaker Developers in your organization.
+3. Click the **Scripts** icon![](../../../.gitbook/assets/scripts-icon-processes.png) from the left sidebar. The **Scripts** page displays all ProcessMaker Scripts in your organization.
 
-![](../../../.gitbook/assets/chrome_2019-01-17_14-38-34.png)
+![&quot;Scripts&quot; page displays all ProcessMaker Scripts in your organization](../../../.gitbook/assets/chrome_2019-01-17_14-38-34.png)
 
 The **Scripts** page displays the following information about ProcessMaker Scripts:
 

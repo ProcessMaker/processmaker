@@ -6,21 +6,23 @@ description: >-
 
 # View All Screens
 
-ProcessMaker displays all Screens designed for any process in one page that Process Owners throughout your organization have created. Any ProcessMaker Screen developed by any Process Owner can be used in any process in your organization. This makes it easy to manage ProcessMaker Screens.
-
-{% hint style="info" %}
-To view ProcessMaker Screens, you must be a member of the Process Owner group. Otherwise, the **Processes** option is not available from the top menu that allows you to perform Screen management activities.
-{% endhint %}
+ProcessMaker displays all Screens in one page that Process Owners throughout your organization have created. Any ProcessMaker Screen developed by any Process Owner can be used in any Process model. This makes it easy to manage ProcessMaker Screens.
 
 ## View All ProcessMaker Screens <a id="view-all-scripts"></a>
+
+{% hint style="info" %}
+Your user account or group membership must have the "Screens: View Screens" permission to view the list of ProcessMaker Screens.
+
+Ask your ProcessMaker Administrator for assistance.
+{% endhint %}
 
 Follow these steps to view all ProcessMaker Screens in your organization:
 
 1. ​[Log in](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/using-processmaker/log-in#log-in) to ProcessMaker.
 2. Click the **Processes** option from the top menu. The **Processes** page displays.
-3. Click the **Screens** icon![](../../../.gitbook/assets/screens-icon-processes.png). The **Screens** page displays all ProcessMaker Screens created by all Process Owners in your organization.
+3. Click the **Screens** icon![](../../../.gitbook/assets/screens-icon-processes.png). The **Screens** page displays all ProcessMaker Screens in your organization.
 
-![Screens page](../../../.gitbook/assets/screens-page-processes.png)
+![&quot;Screens&quot; page displays all ProcessMaker Screens in your organization](../../../.gitbook/assets/screens-page-processes.png)
 
 The **Screens** page displays the following information about ProcessMaker Screens:
 

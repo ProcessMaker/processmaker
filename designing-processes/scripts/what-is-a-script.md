@@ -4,7 +4,7 @@ description: Understand what a Script does in ProcessMaker 4.
 
 # What is a Script?
 
-In ProcessMaker 4, Scripts allow Process Owners and ProcessMaker Developers to write self-contained programmatic actions that can be called from any Process at run-time. The same ProcessMaker Script can be deployed in any Process created in your organization. In other words, "write once, use anywhere."
+In ProcessMaker 4, Scripts allow Process Owners and ProcessMaker Developers to write self-contained programmatic actions that can be called from any Process at run-time. The same ProcessMaker Script can be deployed in any Process model. In other words, "write once, use anywhere."
 
 While writing a ProcessMaker Script, test it before you deploy it. ProcessMaker Scripts are tested within the authoring environment to ensure they function as intended. While testing, do the following:
 
