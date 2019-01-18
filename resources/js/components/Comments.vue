@@ -1,7 +1,7 @@
 <template>
-  <div v-if="comments.length > 0" class="row px-3">
+  <div v-if="comments.length > 0" class="row px-3 my-2 timeline">
     <template v-for="value in comments">
-      <div class="col px-2 pb-5">
+      <div class="col px-2 pb-2">
         <avatar-image v-if="value.user" size="24" :input-data="value.user" hide-name="true"></avatar-image>
         <avatar-image v-else size="24" :input-data="systemCommentUser" hide-name="true"></avatar-image>
         <strong>{{moment(value.updated_at).format()}}</strong>
@@ -86,5 +86,17 @@ export default {
 
 .comment-body {
   line-height: 1.2em;
+}
+
+.timeline {
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    transparent calc(5% - 0.81px),
+    rgb(230, 230, 230) calc(5% - 0.8px),
+    rgb(230, 230, 230) calc(5% + 0.8px),
+    transparent calc(5% + 0.81px),
+    transparent 100%
+  );
 }
 </style>
