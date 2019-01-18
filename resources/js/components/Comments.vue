@@ -1,19 +1,30 @@
 <template>
-    <span v-if="comments.length > 0">
-        <h5>Comments</h5>
-        <template v-for="value in comments">
-        <div class="card border-0">
-            <div class="card-body p-0 ml-2 d-inline-flex float-left align-items-center">
-                <avatar-image size="35" :input-data="value.user" hide-name="true"></avatar-image>
-                <p class="card-text ml-3">
-                    {{moment(value.updated_at).format()}}
-                    <span style="font-weight: bold">{{value.user.username}}</span>
-                    {{value.body}}
-                </p>
+    <span>
+        <div class="">
+            <h5>Comments</h5>
+            <div class="timeline-background">
+                <template v-for="value in comments">
+                    <div class="row align-items-center pb-2">
+                        <div class="col-auto d-flex align-items-center pr-1">
+                            <avatar-image v-if="value.user" size="35" :input-data="value.user" hide-name="true"></avatar-image>
+                            <avatar-image v-else size="35" :input-data="systemCommentUser" hide-name="true"></avatar-image>
+                        </div>
+                        <div class="col pl-0">
+                            <div class="row">
+                                <div class="col date">
+                                    {{moment(value.updated_at).format()}}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col comment-body">
+                                    {{value.body}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
             </div>
         </div>
-        <hr>
-        </template>
     </span>
 </template>
 
@@ -30,7 +41,11 @@
                     hidden: false,
                     type: 'MESSAGE'
                 },
-                comments: []
+                comments: [],
+                systemCommentUser: {
+                    id: null,
+                    initials: 'S',
+                }
             }
         },
         watch: {},
@@ -74,3 +89,18 @@
         }
     };
 </script>
+
+<style>
+.row .col-auto {
+    height: 3em;
+}
+
+.date {
+    color: #848484;
+    font-size: 0.8em;
+}
+
+.comment-body {
+    line-height: 1.2em;
+}
+</style>

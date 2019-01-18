@@ -67,7 +67,7 @@
             },
             formatValue(value) {
                 return {
-                    id: value.id ? '/profile/' + value.id : '#',
+                    id: value.id ? '/profile/' + value.id : null,
                     src: value.src ? value.src : value.avatar ? value.avatar : '',
                     tooltip: value.tooltip ? value.tooltip : (!this.displayTitle ? value.title : (value.fullname ? value.fullname : '')),
                     name: value.name !== undefined ? value.name : (value.fullname ? value.fullname : ''),

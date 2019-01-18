@@ -135,8 +135,7 @@
                 </div>
 
                 <div>
-                    <comment-task commentable_id="{{$request->getKey()}}" commentable_type="{{get_class($request)
-                }}"></comment-task>
+                    <comments commentable_id="{{ $request->getKey() }}" commentable_type="{{ get_class($request) }}" />
                 </div>
 
             </div>
