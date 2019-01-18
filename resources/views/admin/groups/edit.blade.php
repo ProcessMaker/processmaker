@@ -213,6 +213,7 @@
                             .then(response => {
                                 that.$refs['listing'].fetch();
                                 $('#addUser').modal('hide');
+                                that.selectedUsers = [];
                             });
                     })
                 },
