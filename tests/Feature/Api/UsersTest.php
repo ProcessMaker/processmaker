@@ -67,6 +67,7 @@ class UsersTest extends TestCase
             'firstname' => 'name',
             'lastname' => 'name',
             'email' => $faker->email,
+            'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
             'password' => $faker->sentence(10)
         ]);
 
@@ -257,6 +258,7 @@ class UsersTest extends TestCase
             'postal' => $faker->postcode,
             'country' => $faker->country,
             'timezone' => $faker->timezone,
+            'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
             'birthdate' => $faker->dateTimeThisCentury->format('Y-m-d'),
             'password' => $faker->password(6, 6),
         ]);
@@ -318,7 +320,7 @@ class UsersTest extends TestCase
         //Validate the header status code
         $response->assertStatus(405);
     }
-    
+
     /**
      * The user can upload an avatar
      */
@@ -328,10 +330,10 @@ class UsersTest extends TestCase
         $user = factory(User::class)->create([
             'username' => 'AvatarUser',
         ]);
-        
+
         //Set our API url for this users
         $url = self::API_TEST_URL . '/' . $user->id;
-        
+
         //Create a fake image and encode it to base64
         $fakeImage = UploadedFile::fake()
                                  ->image('avatar.jpg', 1200, 1200)
@@ -345,18 +347,19 @@ class UsersTest extends TestCase
             'firstname' => 'name',
             'lastname' => 'name',
             'email' => $user->email,
+            'status' => 'ACTIVE',
             'avatar' => $avatar,
         ]);
-        
+
         //Validate the header status code
         $putResponse->assertStatus(204);
-        
+
         //Request the user from the API
         $getResponse = $this->apiCall('GET', $url);
-        
+
         //Assert that the 'avatar' key exists
         $getResponse->assertJsonStructure(['avatar']);
-        
+
         //Assert that the file exists in the correct location
         $json = $getResponse->json();
         $path = parse_url($json['avatar'], PHP_URL_PATH);

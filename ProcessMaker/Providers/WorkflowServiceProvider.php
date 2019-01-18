@@ -4,6 +4,7 @@ namespace ProcessMaker\Providers;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use ProcessMaker\BpmnEngine;
 use ProcessMaker\Listeners\BpmnSubscriber;
+use ProcessMaker\Listeners\CommentsSubscriber;
 use ProcessMaker\Managers\WorkflowManager;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
@@ -23,6 +24,7 @@ class WorkflowServiceProvider extends ServiceProvider
      */
     protected $subscribe = [
         BpmnSubscriber::class,
+        CommentsSubscriber::class,
     ];
 
     /**
@@ -38,7 +40,7 @@ class WorkflowServiceProvider extends ServiceProvider
         $this->app->singleton('workflow.manager', function ($app) {
             return new WorkflowManager();
         });
-        /** 
+        /**
          * BpmnDocument Process Context
          */
         $this->app->bind(BpmnDocumentInterface::class, function ($app, $params) {

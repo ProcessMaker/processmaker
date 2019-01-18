@@ -9,6 +9,7 @@ use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
+use ProcessMaker\Models\ProcessRequest;
 
 /**
  * Test the process execution with requests
@@ -90,6 +91,18 @@ class ProcessExecutionTest extends TestCase
         //Check the request is completed
         $this->assertEquals('COMPLETED', $task['process_request']['status']);
         $this->assertNotNull($task['process_request']['completed_at']);
+
+        // Check that a log comment was created
+        $response = $this->apiCall('GET', '/comments', [
+            'commentable_type' => ProcessRequest::class,
+            'commentable_id' => $tasks[0]['process_request_id'],
+        ]);
+        $message = $response->json()['data'][0]['body'];
+        $this->assertEquals(
+            $this->user->fullname . " has completed the task " . $task['element_name'],
+            $message
+        );
+
     }
 
     /**

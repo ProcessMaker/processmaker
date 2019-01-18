@@ -36,12 +36,12 @@ Route::group(['middleware' => ['auth']], function () {
     });
 
     Route::get('processes', 'ProcessController@index')->name('processes.index')->middleware('can:view-processes');
-    Route::get('processes/{process}/edit', 'ProcessController@edit')->name('processes.edit');
-    Route::get('processes/create', 'ProcessController@create')->name('processes.create');
-    Route::post('processes', 'ProcessController@store')->name('processes.store');
-    Route::get('processes/{processes}', 'ProcessController@show')->name('processes.show');
-    Route::put('processes/{processes}', 'ProcessController@update')->name('processes.edit');
-    Route::delete('processes/{processes}', 'ProcessController@destroy')->name('processes.destroy');
+    Route::get('processes/{process}/edit', 'ProcessController@edit')->name('processes.edit')->middleware('can:edit-processes');
+    Route::get('processes/create', 'ProcessController@create')->name('processes.create')->middleware('can:create-processes');
+    Route::post('processes', 'ProcessController@store')->name('processes.store')->middleware('can:edit-processes');
+    Route::get('processes/{process}', 'ProcessController@show')->name('processes.show')->middleware('can:view-processes');
+    Route::put('processes/{process}', 'ProcessController@update')->name('processes.edit')->middleware('can:edit-processes');
+    Route::delete('processes/{process}', 'ProcessController@destroy')->name('processes.destroy')->middleware('can:archive-processes');
 
     Route::get('about', 'AboutController@index')->name('about.index');
 
@@ -49,7 +49,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('profile/{id}', 'ProfileController@show')->name('profile.show');
     Route::put('profile/{id}', 'ProfileController@update')->name('profile.update');
     // Ensure our modeler loads at a distinct url
-    Route::get('modeler/{process}', 'Process\ModelerController')->name('modeler.show');
+    Route::get('modeler/{process}', 'Process\ModelerController')->name('modeler.show')->middleware('can:edit-processes');
 
     Route::get('/', 'HomeController@index')->name('home');
 
