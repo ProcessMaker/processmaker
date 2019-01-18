@@ -33,10 +33,15 @@ class RequestController extends Controller
         if (!Auth::user()->is_administrator) {
             $query->startedMe(Auth::user()->id);
         }
-        $allRequest = $query->count();
-        $startedMe = ProcessRequest::startedMe(Auth::user()->id)->count();
-        $inProgress = $query->inProgress()->count();
-        $completed = $query->completed()->count();
+//        $allRequest = $query->count();
+//        $startedMe = ProcessRequest::startedMe(Auth::user()->id)->count();
+//        $inProgress = $query->inProgress()->count();
+        //$completed = $query->completed()->count();
+
+        $allRequest = $this->calculate('allRequest');
+        $startedMe = $this->calculate('startedMe');
+        $inProgress = $this->calculate('inProgress');
+        $completed = $this->calculate('completed');
 
         $title = 'My Requests';
 
@@ -49,6 +54,30 @@ class RequestController extends Controller
         return view('requests.index', compact(
             ['allRequest', 'startedMe', 'inProgress', 'completed', 'type','title']
         ));
+    }
+    private function calculate($type)
+    {
+        $result = 0;
+        $query = ProcessRequest::query();
+        if (!Auth::user()->is_administrator) {
+            $query->startedMe(Auth::user()->id);
+        }
+
+        switch ($type) {
+            case 'allRequest':
+               $result = $query->count();
+               break;
+            case 'startedMe':
+                $result = ProcessRequest::startedMe(Auth::user()->id)->count();
+                break;
+            case 'inProgress':
+                $result =$query->inProgress()->count();
+                break;
+            case 'completed':
+                $result = $query->completed()->count();
+                break;
+        }
+        return $result;
     }
 
     /**
