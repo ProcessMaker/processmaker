@@ -120,7 +120,8 @@ class User extends Authenticatable implements HasMedia
 
         return [
             'username' => ['required', $unique],
-            'email' => ['required', 'email', $unique]
+            'email' => ['required', 'email', $unique],
+            'status' => ['required', 'in:ACTIVE,INACTIVE']
         ];
     }
 
@@ -158,7 +159,7 @@ class User extends Authenticatable implements HasMedia
             $this->lastname
         ]);
     }
-    
+
     public function hasPermissionsFor($resource)
     {
         if ($this->is_administrator) {
@@ -175,7 +176,7 @@ class User extends Authenticatable implements HasMedia
                 return false;
             }
         });
-        
+
         return $filtered->values();
     }
 
