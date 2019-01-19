@@ -4,22 +4,22 @@ description: View the status of Requests you've started.
 
 # View Requests You Started
 
-The **Started by Me** tab in the **Requests** page displays all Requests you started. Request information displays in tabular format.
+The **My Requests** page displays all Requests you started. Request information displays in tabular format.
 
 ## View Requests You Started
 
 Do one of the following to view Requests that you started:
 
-* [Log in](../log-in.md#log-in) to ProcessMaker. The **My Requests** tab in the **Requests** page displays.
-* Click the **Requests** option from the top menu if it is not currently displayed. The **My Requests** content displays.
+* [Log in](../log-in.md#log-in) to ProcessMaker. The **My Requests** page displays.
+* Click the **Requests** option from the top menu if it is not currently displayed. The **My Requests** page displays.
 
 {% hint style="info" %}
-Click the **Started By Me** icon![](../../.gitbook/assets/started-by-me-icon-requests.png)in the left sidebar when you are in other Request-related pages to view the **My Requests** content.
+Click the **Started By Me** icon![](../../.gitbook/assets/started-by-me-icon-requests.png)in the left sidebar when you are in other Request-related pages to view the **My Requests** page.
 {% endhint %}
 
-![&quot;My Requests&quot; content displays Requests that you have started](../../.gitbook/assets/started-by-me-request.png)
+![&quot;My Requests&quot; page displays Requests that you have started](../../.gitbook/assets/started-by-me-request.png)
 
-The **My Requests** content displays the following information in tabular format:
+The **My Requests** page displays the following information in tabular format:
 
 * **Name:** The **Name** column displays the name of the Process associated with the Request. Click the Process name to [view information](request-details.md) about that Request.
 * **Status:** The **Status** column displays the status of the Process associated with the Request. The following are possible statuses:

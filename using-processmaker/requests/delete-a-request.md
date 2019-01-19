@@ -18,9 +18,9 @@ If your user account or group membership does not have the permission\(s\) to ca
 Follow these steps to cancel a Request:
 
 1. Do one of the following:
-   * [Log in](../log-in.md#log-in) to ProcessMaker. The **Started by Me** tab in the **Requests** page displays.
-   * Click the **Requests** page if it is not currently displayed. The **Started by Me** tab displays.
-2. Click the **In Progress** tab or click the **In Progress** icon![](../../.gitbook/assets/in-progress-icon-request.png)from the left sidebar. The **In Progress** tab displays.  
+   * [Log in](../log-in.md#log-in) to ProcessMaker. The **My Requests** page displays.
+   * Click the **Requests** page if it is not currently displayed. The **My Requests** page displays.
+2. Click the **In Progress** tab or click the **In Progress** icon![](../../.gitbook/assets/in-progress-icon-request.png)from the left sidebar. The **In Progress** page displays.  
 
    ![](../../.gitbook/assets/in-progress-request.png)
 
@@ -41,9 +41,9 @@ Follow these steps to cancel a Request:
 
    ![](../../.gitbook/assets/canceled-request-requests.png)
 
-Canceled Requests display in the **All Requests** tab.
+Canceled Requests display in the **All Requests** page.
 
-![Canceled Request in the All Requests tab](../../.gitbook/assets/canceled-request-in-all-requests-tab-requests.png)
+![Canceled Request in the &quot;All Requests&quot; page](../../.gitbook/assets/canceled-request-in-all-requests-tab-requests.png)
 
 {% hint style="info" %}
 See [View All Requests](view-all-requests.md) for more information.

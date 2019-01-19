@@ -4,20 +4,20 @@ description: View all Requests that you've started or in which you're a particip
 
 # View All Requests
 
-The **All Requests** tab in the **Requests** page displays all Requests that you started or in which you are a participant. Request information display in tabular format.
+The **All Requests** page displays all Requests that you started or in which you are a participant. Request information display in tabular format.
 
 ## View All Requests You Started or in Which You Are a Participant
 
 Follow these steps to view all Requests you started or in which you are a participant: ~~UPDATE SCREENSHOT AFTER "COMPLETED" COUNT INDICATOR BUG IS FIXED~~
 
 1. Do one of the following:
-   * [Log in](../log-in.md#log-in) to ProcessMaker. The **Started by Me** tab in the **Requests** page displays.
-   * Click the **Requests** option from the top menu if it is not currently displayed. The **Started by Me** tab displays.
-2. Click the **All Requests** tab or click the **All** icon![](../../.gitbook/assets/all-icon-request.png)from the left sidebar. The **All Requests** content displays.
+   * [Log in](../log-in.md#log-in) to ProcessMaker. The **My Requests** page displays.
+   * Click the **Requests** option from the top menu if it is not currently displayed. The **My Requests** page displays.
+2. Click the **All Requests** tab or click the **All** icon![](../../.gitbook/assets/all-icon-request.png)from the left sidebar. The **All Requests** page displays.
 
-![&quot;All Requests&quot; content displays all Requests in which you started or are a participant](../../.gitbook/assets/all-requests-request.png)
+![&quot;All Requests&quot; page displays all Requests in which you started or are a participant](../../.gitbook/assets/all-requests-request.png)
 
-The **All Requests** content displays the following information in tabular format:
+The **All Requests** page displays the following information in tabular format:
 
 * **Name:** The **Name** column displays the name of the Process associated with the Request. Click the Process name to [view information](request-details.md) about that Request.
 * **Status:** The **Status** column displays the status of the Process associated with the Request. The following are possible statuses:

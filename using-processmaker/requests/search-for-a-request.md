@@ -9,7 +9,7 @@ description: Search for any Request in which you started or participated.
 Search for any Request that you started or participated in from any tab in the **Request** page. Follow these steps to search for a Request within the displayed tab:
 
 1. Do one of the following:
-   * [Log in](../log-in.md#log-in) to ProcessMaker. The **Started by Me** tab in the **Requests** page displays.
+   * [Log in](../log-in.md#log-in) to ProcessMaker. The **My Requests** page displays.
    * Click the **Requests** option from the top menu if it is not currently displayed.
 2. Go to any of the following tabs in the **Requests** page in which to search its Requests:
    * [Started by Me](make-a-request.md) tab \(if it is not currently displayed\)
@@ -17,7 +17,7 @@ Search for any Request that you started or participated in from any tab in the *
    * [Completed](view-completed-requests.md) tab
    * [All Requests](view-all-requests.md) tab
 3. Select the **Search** field and then enter text to filter Requests using any of the following criteria:
-   * **Process name:** Search for the Process name associated with the Request.
+   * **Name:** Search for the Process name associated with the Request.
    * **Status:** Search by the Request status.
 
 As you enter text into the **Search** field, Requests display that match your entered text.
@@ -25,7 +25,7 @@ As you enter text into the **Search** field, Requests display that match your en
 {% hint style="info" %}
 ### Scope of Search Results <a id="search-for-a-request"></a>
 
-Search results display only for Requests within the **Request** page tab you are viewing. For example, performing a search from within the **Started by Me** tab displays results only for Requests within that tab.
+Search results display only for Requests within the Request page you are viewing. For example, performing a search from within the **My Requests** page displays results only for Requests within that page.
 
 ### View Information About A Request <a id="view-information-about-a-request"></a>
 

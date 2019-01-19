@@ -6,7 +6,7 @@ description: >-
 
 # View All Scripts
 
-ProcessMaker displays all ProcessMaker Scripts in one page that Process Owners throughout your organization have created. Any ProcessMaker Script developed by any Process Owner or ProcessMaker Developer can be used in any Process in your organization. This makes it easy to manage ProcessMaker Scripts.
+ProcessMaker displays all ProcessMaker Scripts in one location. Any ProcessMaker Script developed by any Process Owner or ProcessMaker Developer can be used in any Process model. This makes it easy to manage ProcessMaker Scripts.
 
 ## View All ProcessMaker Scripts
 
@@ -20,7 +20,7 @@ Follow these steps to view all ProcessMaker Scripts in your organization:
 
 1. [Log in](../../../using-processmaker/log-in.md#log-in) to ProcessMaker.
 2. Click the **Processes** option from the top menu. The **Processes** page displays.
-3. Click the **Scripts** icon![](../../../.gitbook/assets/scripts-icon-processes.png) from the left sidebar. The **Scripts** page displays all ProcessMaker Scripts in your organization.
+3. Click the **Scripts** icon![](../../../.gitbook/assets/scripts-icon-processes.png) from the left sidebar. The **Scripts** page displays all ProcessMaker Scripts.
 
 ![&quot;Scripts&quot; page displays all ProcessMaker Scripts in your organization](../../../.gitbook/assets/chrome_2019-01-17_14-38-34.png)
 

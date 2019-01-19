@@ -4,20 +4,20 @@ description: View complebusiness ped Requests in which you started or participat
 
 # View Completed Requests
 
-The **Completed** tab in the **Requests** page displays all Requests that have completed in which you participated. Request information display in tabular format.
+The **Completed** page displays all Requests that have completed in which you participated. Request information display in tabular format.
 
 ## View Completed Requests in Which You Are a Participant
 
 Follow these steps to view completed Requests: ~~UPDATE SCREENSHOT AFTER "COMPLETED" COUNT INDICATOR BUG IS FIXED~~
 
 1. Do one of the following:
-   * [Log in](../log-in.md#log-in) to ProcessMaker. The **Started by Me** tab in the **Requests** page displays.
-   * Click the **Requests** option from the top menu if it is not currently displayed. The **Started by Me** tab displays.
-2. Click the **Completed** tab or click the **Completed** icon![](../../.gitbook/assets/completed-icon-request.png)from the left sidebar. The **Completed Requests** content displays.
+   * [Log in](../log-in.md#log-in) to ProcessMaker. The **My Requests** page displays.
+   * Click the **Requests** option from the top menu if it is not currently displayed. The **My Requests** page displays.
+2. Click the **Completed** tab or click the **Completed** icon![](../../.gitbook/assets/completed-icon-request.png)from the left sidebar. The **Completed** page displays.
 
-![&quot;Completed&quot; content displays completed Requests in which you are a participant](../../.gitbook/assets/completed-request.png)
+![&quot;Completed&quot; page displays completed Requests in which you are a participant](../../.gitbook/assets/completed-request.png)
 
-The **Completed** content displays the following information in tabular format:
+The **Completed** page displays the following information in tabular format:
 
 * **Name:** The **Name** column displays the name of the Process associated with the Request. Click the Process name to [view information](request-details.md#information-for-completed-requests) about that Request.
 * **Status:** The **Status** column displays the **Completed** status.

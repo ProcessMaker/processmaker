@@ -30,7 +30,7 @@ Follow these steps to start a Request:
 If there are no active Processes or you do not have authorization to start a Request for a Process, the following message displays: **At this time there are no Requests available**.
 {% endhint %}
 
-After the Request starts, the new Request displays in the **Started by Me** tab in the **Requests** page.
+After the Request starts, the new Request displays in the **My Requests** page.
 
 ## Related Topics
 

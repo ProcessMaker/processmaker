@@ -6,7 +6,7 @@ description: >-
 
 # View All Screens
 
-ProcessMaker displays all Screens in one page that Process Owners throughout your organization have created. Any ProcessMaker Screen developed by any Process Owner can be used in any Process model. This makes it easy to manage ProcessMaker Screens.
+ProcessMaker displays all Screens in one location. Any ProcessMaker Screen developed by any Process Owner can be used in any Process model. This makes it easy to manage ProcessMaker Screens.
 
 ## View All ProcessMaker Screens <a id="view-all-scripts"></a>
 
@@ -20,7 +20,7 @@ Follow these steps to view all ProcessMaker Screens in your organization:
 
 1. ​[Log in](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/using-processmaker/log-in#log-in) to ProcessMaker.
 2. Click the **Processes** option from the top menu. The **Processes** page displays.
-3. Click the **Screens** icon![](../../../.gitbook/assets/screens-icon-processes.png). The **Screens** page displays all ProcessMaker Screens in your organization.
+3. Click the **Screens** icon![](../../../.gitbook/assets/screens-icon-processes.png). The **Screens** page displays all ProcessMaker Screens.
 
 ![&quot;Screens&quot; page displays all ProcessMaker Screens in your organization](../../../.gitbook/assets/screens-page-processes.png)
 
