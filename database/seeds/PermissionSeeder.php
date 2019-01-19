@@ -64,10 +64,6 @@ class PermissionSeeder extends Seeder
         'view-task_assignments',
         'edit-task_assignments',
         'delete-task_assignments',
-        'create-comments',
-        'view-comments',
-        'edit-comments',
-        'delete-comments',
     ];
 
     private $resourcePermissions = [

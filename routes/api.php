@@ -119,11 +119,11 @@ Route::group(
     Route::delete('task_assignments/{task_assignment}', 'TaskAssignmentController@destroy')->name('task_assignments.destroy')->middleware('can:api.delete-task_assignments');
     
     // Comments
-    Route::get('comments', 'CommentController@index')->name('comments.index')->middleware('can:api.view-comments');
-    Route::get('comments/{comment}', 'CommentController@show')->name('comments.show')->middleware('can:api.view-comments');
-    Route::post('comments', 'CommentController@store')->name('comments.store')->middleware('can:api.create-comments');
-    Route::put('comments/{comment}', 'CommentController@update')->name('comments.update')->middleware('can:api.edit-comments');
-    Route::delete('comments/{comment}', 'CommentController@destroy')->name('comments.destroy')->middleware('can:api.delete-comments');
+    Route::get('comments', 'CommentController@index')->name('comments.index')->middleware('can:view-comments');
+    Route::get('comments/{comment}', 'CommentController@show')->name('comments.show')->middleware('can:view-comments');
+    Route::post('comments', 'CommentController@store')->name('comments.store')->middleware('can:create-comments');
+    Route::put('comments/{comment}', 'CommentController@update')->name('comments.update')->middleware('can:edit-comments');
+    Route::delete('comments/{comment}', 'CommentController@destroy')->name('comments.destroy')->middleware('can:delete-comments');
 
 }
 );

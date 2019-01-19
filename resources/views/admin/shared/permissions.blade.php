@@ -224,10 +224,10 @@
     </div>
     <div id="comments" class="collapse" >
         <div class="card-body">
-            <label><input type="checkbox" :disabled="formData.is_administrator" value="api.view-comments" v-model="selectedPermissions">   {{__('View Comments')}}</label>
-            <label><input type="checkbox" :disabled="formData.is_administrator" value="api.create-comments" v-model="selectedPermissions" @change="checkCreate('edit-comments', $event)">   {{__('Create Comments')}}</label>
-            <label><input type="checkbox" :disabled="formData.is_administrator" value="api.edit-comments" v-model="selectedPermissions" @change="checkEdit('create-comments', $event)">   {{__('Edit Comments')}}</label>
-            <label><input type="checkbox" :disabled="formData.is_administrator" value="api.delete-comments" v-model="selectedPermissions">   {{__('Delete Comments')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="view-comments" v-model="selectedPermissions">   {{__('View Comments')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="create-comments" v-model="selectedPermissions" @change="checkCreate('edit-comments', $event)">   {{__('Create Comments')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="edit-comments" v-model="selectedPermissions" @change="checkEdit('create-comments', $event)">   {{__('Edit Comments')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="delete-comments" v-model="selectedPermissions">   {{__('Delete Comments')}}</label>
         </div>
     </div>
 </div>
