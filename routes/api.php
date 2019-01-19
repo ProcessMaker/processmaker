@@ -78,23 +78,23 @@ Route::group(
     Route::put('permissions', 'PermissionController@update')->name('permissions.update')->middleware('can:edit-users');
     
     // Tasks
-    Route::get('tasks', 'TaskController@index')->name('tasks.index')->middleware('can:api.view-tasks');
-    Route::get('tasks/{task}', 'TaskController@show')->name('tasks.show')->middleware('can:api.view-tasks');
-    Route::put('tasks/{task}', 'TaskController@update')->name('tasks.update')->middleware('can:api.edit-tasks');
+    Route::get('tasks', 'TaskController@index')->name('tasks.index'); //Already filtered in controller
+    Route::get('tasks/{task}', 'TaskController@show')->name('tasks.show')->middleware('can:view,task');
+    Route::put('tasks/{task}', 'TaskController@update')->name('tasks.update')->middleware('can:edit,task');
     
     // Requests
-    Route::get('requests', 'ProcessRequestController@index')->name('requests.index')->middleware('can:api.view-requests');
-    Route::get('requests/{request}', 'ProcessRequestController@show')->name('requests.show')->middleware('can:api.view-requests');
-    Route::post('requests', 'ProcessRequestController@store')->name('requests.store')->middleware('can:api.create-requests');
-    Route::put('requests/{request}', 'ProcessRequestController@update')->name('requests.update')->middleware('can:api.edit-requests');
-    Route::delete('requests/{request}', 'ProcessRequestController@destroy')->name('requests.destroy')->middleware('can:api.delete-requests');
+    Route::get('requests', 'ProcessRequestController@index')->name('requests.index'); //Already filtered in controller
+    Route::get('requests/{request}', 'ProcessRequestController@show')->name('requests.show')->middleware('can:view,request');
+    Route::post('requests', 'ProcessRequestController@store')->name('requests.store')->middleware('can:update,request');
+    Route::put('requests/{request}', 'ProcessRequestController@update')->name('requests.update')->middleware('can:update,request');
+    Route::delete('requests/{request}', 'ProcessRequestController@destroy')->name('requests.destroy')->middleware('can:destroy,request');
     
     // Request Files
-    Route::get('requests/{request}/files', 'ProcessRequestFileController@index')->name('requests.files.index')->middleware('can:api.view-requests');
-    Route::get('requests/{request}/files/{file}', 'ProcessRequestFileController@show')->name('requests.files.show')->middleware('can:api.view-requests');
-    Route::post('requests/{request}/files', 'ProcessRequestFileController@store')->name('requests.files.store')->middleware('can:api.edit-requests');
-    Route::put('requests/{request}/files/{file}', 'ProcessRequestFileController@update')->name('requests.files.update')->middleware('can:api.edit-requests');
-    Route::delete('requests/{request}/files/{file}', 'ProcessRequestFileController@destroy')->name('requests.filesrequests.files.destroy')->middleware('can:api.edit-requests');
+    Route::get('requests/{request}/files', 'ProcessRequestFileController@index')->name('requests.files.index')->middleware('can:view,request');
+    Route::get('requests/{request}/files/{file}', 'ProcessRequestFileController@show')->name('requests.files.show')->middleware('can:view,request');
+    Route::post('requests/{request}/files', 'ProcessRequestFileController@store')->name('requests.files.store')->middleware('can:update,request');
+    Route::put('requests/{request}/files/{file}', 'ProcessRequestFileController@update')->name('requests.files.update')->middleware('can:update,request');
+    Route::delete('requests/{request}/files/{file}', 'ProcessRequestFileController@destroy')->name('requests.filesrequests.files.destroy')->middleware('can:update,request');
 
     // Files
     Route::get('files', 'FileController@index')->name('files.index')->middleware('can:api.view-files');
@@ -104,13 +104,13 @@ Route::group(
     Route::delete('files/{file}', 'FileController@destroy')->name('files.destroy')->middleware('can:api.delete-files');
     
     // Notifications
-    Route::get('notifications', 'NotificationController@index')->name('notifications.index')->middleware('can:api.view-notifications');
-    Route::get('notifications/{notification}', 'NotificationController@show')->name('notifications.show')->middleware('can:api.view-notifications');
-    Route::post('notifications', 'NotificationController@store')->name('notifications.store')->middleware('can:api.create-notifications');
-    Route::put('notifications/{notification}', 'NotificationController@update')->name('notifications.update')->middleware('can:api.edit-notifications');
-    Route::delete('notifications/{notification}', 'NotificationController@destroy')->name('notifications.destroy')->middleware('can:api.delete-notifications');
-    Route::put('read_notifications', 'NotificationController@updateAsRead')->name('notifications.update_as_read')->middleware('can:api.edit-notifications');
-    Route::put('unread_notifications', 'NotificationController@updateAsUnread')->name('notifications.update_as_unread')->middleware('can:api.edit-notifications');
+    Route::get('notifications', 'NotificationController@index')->name('notifications.index');  //Already filtered in controller
+    Route::get('notifications/{notification}', 'NotificationController@show')->name('notifications.show')->middleware('can:view,notification');
+    Route::post('notifications', 'NotificationController@store')->name('notifications.store')->middleware('can:create,ProcessMaker\Models\Notification');
+    Route::put('notifications/{notification}', 'NotificationController@update')->name('notifications.update')->middleware('can:edit,notification');
+    Route::delete('notifications/{notification}', 'NotificationController@destroy')->name('notifications.destroy')->middleware('can:delete,notification');
+    Route::put('read_notifications', 'NotificationController@updateAsRead')->name('notifications.update_as_read')->middleware('can:edit,notification');
+    Route::put('unread_notifications', 'NotificationController@updateAsUnread')->name('notifications.update_as_unread')->middleware('can:edit,notification');
     
     // Task Assignments
     Route::get('task_assignments', 'TaskAssignmentController@index')->name('task_assignments.index')->middleware('can:api.view-task_assignments');

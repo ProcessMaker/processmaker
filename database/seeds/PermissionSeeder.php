@@ -46,12 +46,6 @@ class PermissionSeeder extends Seeder
     ];
     
     private $apiPermissions = [
-        'view-tasks',
-        'edit-tasks',
-        'create-requests',
-        'view-requests',
-        'edit-requests',
-        'delete-requests',
         'create-files',
         'view-files',
         'edit-files',
