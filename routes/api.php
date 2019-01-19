@@ -23,7 +23,7 @@ Route::group(
     Route::get('group_users/{group}', 'GroupController@members')->name('groups.members')->middleware('can:view-groups');
     
     // Group Members
-    Route::get('group_members', 'GroupMemberController@index')->name('group_members.index')->middleware('can:view-groups');
+    Route::get('group_members', 'GroupMemberController@index')->name('group_members.index'); //Already filtered in controller
     Route::get('group_members/{group_member}', 'GroupMemberController@show')->name('group_members.show')->middleware('can:view-groups');
     Route::post('group_members', 'GroupMemberController@store')->name('group_members.store')->middleware('can:edit-groups');
     Route::delete('group_members/{group_member}', 'GroupMemberController@destroy')->name('group_members.destroy')->middleware('can:edit-groups');
@@ -80,7 +80,7 @@ Route::group(
     // Tasks
     Route::get('tasks', 'TaskController@index')->name('tasks.index'); //Already filtered in controller
     Route::get('tasks/{task}', 'TaskController@show')->name('tasks.show')->middleware('can:view,task');
-    Route::put('tasks/{task}', 'TaskController@update')->name('tasks.update')->middleware('can:edit,task');
+    Route::put('tasks/{task}', 'TaskController@update')->name('tasks.update')->middleware('can:update,task');
     
     // Requests
     Route::get('requests', 'ProcessRequestController@index')->name('requests.index'); //Already filtered in controller
