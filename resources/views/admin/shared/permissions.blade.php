@@ -131,6 +131,106 @@
         </div>
     </div>
 </div>
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#tasks">
+                {{__('Tasks')}}
+            </button>
+        </h5>
+    </div>
+    <div id="tasks" class="collapse" >
+        <div class="card-body">
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="api.view-tasks" v-model="selectedPermissions">   {{__('View Tasks')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="api.edit-tasks" v-model="selectedPermissions">   {{__('Edit Tasks')}}</label>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#requests">
+                {{__('Requests')}}
+            </button>
+        </h5>
+    </div>
+    <div id="requests" class="collapse" >
+        <div class="card-body">
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="api.view-requests" v-model="selectedPermissions">   {{__('View Requests')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="api.create-requests" v-model="selectedPermissions" @change="checkCreate('edit-requests', $event)">   {{__('Create Requests')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="api.edit-requests" v-model="selectedPermissions" @change="checkEdit('create-requests', $event)">   {{__('Edit Requests')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="api.delete-requests" v-model="selectedPermissions">   {{__('Delete Requests')}}</label>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#files">
+                {{__('Files')}}
+            </button>
+        </h5>
+    </div>
+    <div id="files" class="collapse" >
+        <div class="card-body">
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="api.view-files" v-model="selectedPermissions">   {{__('View Files')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="api.create-files" v-model="selectedPermissions" @change="checkCreate('edit-files', $event)">   {{__('Create Files')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="api.edit-files" v-model="selectedPermissions" @change="checkEdit('create-files', $event)">   {{__('Edit Files')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="api.delete-files" v-model="selectedPermissions">   {{__('Delete Files')}}</label>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#notifications">
+                {{__('Notifications')}}
+            </button>
+        </h5>
+    </div>
+    <div id="notifications" class="collapse" >
+        <div class="card-body">
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="api.view-notifications" v-model="selectedPermissions">   {{__('View Notifications')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="api.create-notifications" v-model="selectedPermissions" @change="checkCreate('edit-notifications', $event)">   {{__('Create Notifications')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="api.edit-notifications" v-model="selectedPermissions" @change="checkEdit('create-notifications', $event)">   {{__('Edit Notifications')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="api.delete-notifications" v-model="selectedPermissions">   {{__('Delete Notifications')}}</label>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#task_assignments">
+                {{__('Task Assignments')}}
+            </button>
+        </h5>
+    </div>
+    <div id="task_assignments" class="collapse" >
+        <div class="card-body">
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="api.view-task_assignments" v-model="selectedPermissions">   {{__('View Task Assignments')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="api.create-task_assignments" v-model="selectedPermissions" @change="checkCreate('edit-task_assignments', $event)">   {{__('Create Task Assignments')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="api.edit-task_assignments" v-model="selectedPermissions" @change="checkEdit('create-task_assignments', $event)">   {{__('Edit Task Assignments')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="api.delete-task_assignments" v-model="selectedPermissions">   {{__('Delete Task Assignments')}}</label>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#comments">
+                {{__('Comments')}}
+            </button>
+        </h5>
+    </div>
+    <div id="comments" class="collapse" >
+        <div class="card-body">
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="api.view-comments" v-model="selectedPermissions">   {{__('View Comments')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="api.create-comments" v-model="selectedPermissions" @change="checkCreate('edit-comments', $event)">   {{__('Create Comments')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="api.edit-comments" v-model="selectedPermissions" @change="checkEdit('create-comments', $event)">   {{__('Edit Comments')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="api.delete-comments" v-model="selectedPermissions">   {{__('Delete Comments')}}</label>
+        </div>
+    </div>
+</div>
 
 @section('css')
     <style scoped>
