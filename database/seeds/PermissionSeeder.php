@@ -64,7 +64,7 @@ class PermissionSeeder extends Seeder
         'requests'
     ];
 
-    public function run(User $user = null)
+    public function run($seedUser = null)
     {
         if (Permission::count() === 0) {
             $group = factory(Group::class)->create([
@@ -96,10 +96,14 @@ class PermissionSeeder extends Seeder
             }
         }
 
-        if ($user) {
-            $permissions = Permission::all()->pluck('id');
-            $user->permissions()->attach($permissions);
-            $user->save();
+        $permissions = Permission::all()->pluck('id');
+
+        if ($seedUser) {
+            $seedUser->permissions()->attach($permissions);
+            $seedUser->save();
+        } else {
+            $group->permissions()->attach($permissions);
+            $group->save();
         }
     }
 }
