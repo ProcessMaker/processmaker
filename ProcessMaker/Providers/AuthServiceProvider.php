@@ -2,6 +2,8 @@
 
 namespace ProcessMaker\Providers;
 
+use ProcessMaker\Models\Notification;
+use ProcessMaker\Policies\NotificationPolicy;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Policies\ProcessPolicy;
 use ProcessMaker\Models\ProcessRequest;
@@ -30,7 +32,8 @@ class AuthServiceProvider extends ServiceProvider
      *
      * @var array
      */
-    protected $policies = [        
+    protected $policies = [
+        Notification::class => NotificationPolicy::class,
         Process::class => ProcessPolicy::class,
         ProcessRequest::class => ProcessRequestPolicy::class,
         ProcessRequestToken::class => ProcessRequestTokenPolicy::class,
