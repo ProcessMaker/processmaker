@@ -8,14 +8,14 @@ The **All Requests** page displays all Requests that you started or in which you
 
 ## View All Requests You Started or in Which You Are a Participant
 
-Follow these steps to view all Requests you started or in which you are a participant: ~~UPDATE SCREENSHOT AFTER "COMPLETED" COUNT INDICATOR BUG IS FIXED~~
+Follow these steps to view all Requests you started or in which you are a participant:
 
 1. Do one of the following:
    * [Log in](../log-in.md#log-in) to ProcessMaker. The **My Requests** page displays.
    * Click the **Requests** option from the top menu if it is not currently displayed. The **My Requests** page displays.
-2. Click the **All Requests** tab or click the **All** icon![](../../.gitbook/assets/all-icon-request.png)from the left sidebar. The **All Requests** page displays.
+2. Click the **All Requests** tab or click the **All** icon![](../../.gitbook/assets/all-icon-request.png)from the left sidebar. The **All Requests** page displays. ~~UPDATE SCREENSHOT AFTER NUMBER OF "COMPLETED" NUMBER AND THE "ALL REQUESTS" BREADCRUMBS LABEL BUGS ARE FIXED.~~
 
-![&quot;All Requests&quot; page displays all Requests in which you started or are a participant](../../.gitbook/assets/all-requests-request.png)
+![&quot;All Requests&quot; page displays all Requests in which you are a participant](../../.gitbook/assets/canceled-request-in-all-requests-tab-requests.png)
 
 The **All Requests** page displays the following information in tabular format:
 

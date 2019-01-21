@@ -17,7 +17,7 @@ Do one of the following to view Requests that you started:
 Click the **Started By Me** icon![](../../.gitbook/assets/started-by-me-icon-requests.png)in the left sidebar when you are in other Request-related pages to view the **My Requests** page.
 {% endhint %}
 
-![&quot;My Requests&quot; page displays Requests that you have started](../../.gitbook/assets/started-by-me-request.png)
+![&quot;My Requests&quot; page displays Requests that you started](../../.gitbook/assets/started-by-me-request.png)
 
 The **My Requests** page displays the following information in tabular format:
 

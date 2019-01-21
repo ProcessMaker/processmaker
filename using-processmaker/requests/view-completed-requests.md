@@ -13,9 +13,9 @@ Follow these steps to view completed Requests: ~~UPDATE SCREENSHOT AFTER "COMPLE
 1. Do one of the following:
    * [Log in](../log-in.md#log-in) to ProcessMaker. The **My Requests** page displays.
    * Click the **Requests** option from the top menu if it is not currently displayed. The **My Requests** page displays.
-2. Click the **Completed** tab or click the **Completed** icon![](../../.gitbook/assets/completed-icon-request.png)from the left sidebar. The **Completed** page displays.
+2. Click the **Completed** tab or click the **Completed** icon![](../../.gitbook/assets/completed-icon-request.png)from the left sidebar. The **Completed** page displays. ~~UPDATE THE SCREENSHOT AFTER THE "COMPLETED" NUMBER BUG IS FIXED.~~
 
-![&quot;Completed&quot; page displays completed Requests in which you are a participant](../../.gitbook/assets/completed-request.png)
+![&quot;Completed&quot; page displays completed Requests in which participated](../../.gitbook/assets/completed-request.png)
 
 The **Completed** page displays the following information in tabular format:
 

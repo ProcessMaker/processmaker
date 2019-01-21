@@ -8,11 +8,13 @@ description: >-
 
 Use the **Search** function to filter all ProcessMaker Screens from the **Screens** page based on your entered text.
 
-{% hint style="info" %}
-To search for a ProcessMaker Screen, you must be a member of the Process Owner group. Otherwise, the **Processes** option is not available from the top menu that allows you to perform Screen management activities.
-{% endhint %}
-
 ## Search for a ProcessMaker Screen
+
+{% hint style="info" %}
+Your user account or group membership must have the "Screens: View Screens" permission to view the list of ProcessMaker Screens.
+
+Ask your ProcessMaker Administrator for assistance.
+{% endhint %}
 
 Follow these steps to search for a ProcessMaker Screen:
 

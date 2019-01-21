@@ -22,11 +22,11 @@ Follow these steps to view Process Categories:
 
 1. [Log in](../../using-processmaker/log-in.md#log-in) to ProcessMaker.
 2. Click the **Processes** option from the top menu. The **Processes** page displays.
-3. Click the **Process Categories** icon![](../../.gitbook/assets/process-categories-icon-processes.png) in the left sidebar. The **Process Categories** page displays.
+3. Click the **Process Categories** icon![](../../.gitbook/assets/process-categories-icon-processes.png) in the left sidebar. The **Categories** page displays.
 
 ![&quot;Process Categories&quot; page displays categories by which to organize Processes for Requesters](../../.gitbook/assets/process-categories-page-processes.png)
 
-The **Process Categories** page displays the following information about Process Categories:
+The **Categories** page displays the following information about Process Categories:
 
 * **Name:** The **Name** column displays the name of the Process Category.
 * **Status:** The **Status** column displays the status of the Process Category. Below is a description of each status:
@@ -64,8 +64,8 @@ Follow these steps to add a new Process Category:
 
    ![](../../.gitbook/assets/create-new-process-category-screen-processes.png)
 
-3. In the Category Name field, enter the name of the new Process Category. The Category name must be unique from all other Process Category names in your organization. This is a required field.
-4. Click **Save**. The **Edit Process Category** page displays. Use this page to edit the Process Category's name or set its status. See [Edit a Process Category](process-categories.md#edit-a-process-category).
+3. In the **Category Name** field, enter the name of the new Category. The Category name must be unique from all other Category names in your organization. This is a required field.
+4. Click **Save**. The **Edit Process Category** page displays. Use this page to edit the Category's name or set its status. See [Edit a Process Category](process-categories.md#edit-a-process-category).
 
 ## Edit a Process Category
 
@@ -86,9 +86,10 @@ Follow these steps to edit a Process Category:
 
    ![](../../.gitbook/assets/edit-process-category-page-processes.png)
 
-3. Edit the name of the process category in the **Category Name** field if necessary. The process category name must be unique from all other process category names in your organization.
-4. Change the status of the process category from the **Status** drop-down if necessary. See [View Process Categories](process-categories.md#view-process-categories) for a description of each status.
-5. Click **Update**. Otherwise, click **Cancel** to cancel any changes.
+3. Edit the following information about the Category as necessary:
+   * In the **Category Name** field, edit the name of the Category if necessary. The Category name must be unique from all other Category names in your organization.
+   * From the **Status** drop-down, change the status of the Category if necessary. See [View Process Categories](process-categories.md#view-process-categories).
+4. Click **Update**. Otherwise, click **Cancel** to cancel any changes.
 
 ## Delete a Process Category
 
@@ -112,11 +113,11 @@ Furthermore, deleting a Process Category cannot be undone.
 Follow these steps to delete a Process Category:
 
 1. [View your Process Categories.](process-categories.md#view-process-categories)
-2. Select the **Delete** icon![](../../.gitbook/assets/trash-icon-process-modeler-processes.png). A message displays to confirm deletion of the Process Category.  
+2. Select the **Delete** icon![](../../.gitbook/assets/trash-icon-process-modeler-processes.png). A message displays to confirm deletion of the Category. ~~UPDATE SCREENSHOT AFTER THE CONFIRMATION MESSAGE IS FIXED.~~  
 
    ![](../../.gitbook/assets/remove-process-category-screen-processes.png)
 
-3. Click **Confirm** to delete the Process Category. Otherwise, click **Cancel** to not remove the Process Category.
+3. Click **Confirm** to delete the Category. Otherwise, click **Cancel** to not remove the Category.
 
    If Confirm is selected, the following message displays: **Category Successfully Deleted**.
 

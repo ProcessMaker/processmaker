@@ -18,7 +18,7 @@ Ask your ProcessMaker Administrator for assistance.
 Follow these steps to edit the configuration information about a ProcessMaker Script:
 
 1. [View your ProcessMaker Scripts.](view-all-scripts.md#view-all-processmaker-scripts) The **Scripts** page displays.
-2. Select the **Config** icon![](../../../.gitbook/assets/configure-process-icon-processes-page-processes.png)for your ProcessMaker Script. The **Edit Script** page displays.  
+2. Select the **Config** icon![](../../../.gitbook/assets/configure-process-icon-processes-page-processes.png)for your ProcessMaker Script. The **Edit** page displays.  
 
    ![](../../../.gitbook/assets/edit-script-page-processes.png)
 

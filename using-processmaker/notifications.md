@@ -35,16 +35,45 @@ Each notification displays the following information:
 If you have no notifications when you select the Notifications icon![](../.gitbook/assets/notification-icon-notifications.png), the following message displays: **No Tasks Found**.
 {% endhint %}
 
-## View All Notifications
+## View Unread Notifications
 
-To view all of your read and unread notifications, click the Notifications iconand then do one of the following:
+The **Unread Notifications** page displays all your unread notifications. To view all of your unread notifications, click the Notifications icon![](../.gitbook/assets/notification-icon-notifications.png)and then do one of the following:
 
 * Select **View All Notifications**. This text displays only if you have no new notifications.
 * Select **All Unread Notifications**. This text displays only if you have two or more notifications.
 
-The **All Notifications** page displays all your read and unread notifications.
+{% hint style="info" %}
+Click the **Unread Notifications** icon![](../.gitbook/assets/unread-notifications-icon-notifications.png)in the left sidebar when you are viewing the **All Notifications** page.
+{% endhint %}
 
-![&quot;All Notifications&quot; page displays your read and unread notifications](../.gitbook/assets/all-notifications-page.png)
+![&quot;Unread Notifications&quot; page displays your unread notifications](../.gitbook/assets/all-notifications-page.png)
+
+The **Unread Notifications** page displays the following information in tabular format:
+
+* **Status:** The **Status** column displays the unread status icon![](../.gitbook/assets/unread-notification-icon-notifications.png)to indicate the notification is unread.
+* **User:** The **User** column displays to whom the notification applies. This user is often you, but it might also include others such as a person who canceled a Request.
+* **Subject:** The **Subject** column displays the subject of the notification. If the subject pertains to an assigned Task, the subject includes the following:
+  * The name of the Task displays in blue-colored text. Select the Task name to open the Task.
+  * The name of the Request associated with the Task displays in parentheses.
+* **Date Created:** The **Date Created** column displays when the notification was sent to you. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
+
+### Search for a Notification
+
+Search for any notification displaying in the **Unread Notifications** page.
+
+To search for a notification in the **Unread Notifications** page, select the **Search** field and then enter text to filter notifications using any of the following criteria:
+
+* **Username:** Search for the user associated with the notification.
+* **Subject:** Search by the subject of the notification.
+
+## View All Notifications
+
+Follow these steps to view all your notifications:
+
+1. [View your unread notifications.](notifications.md#view-unread-notifications) The **Unread Notifications** page displays.
+2. Click the **All Notifications** icon![](../.gitbook/assets/archived-processes-icon-processes.png)in the left sidebar. The **All Notifications** page displays.
+
+![&quot;All Notifications&quot; page displays your read and unread notifications](../.gitbook/assets/all-notifications-page-notifications.png)
 
 The **All Notifications** page displays the following information in tabular format:
 
@@ -63,7 +92,7 @@ Search for any notification displaying in the **All Notifications** page.
 
 To search for a notification in the **All Notifications** page, select the **Search** field and then enter text to filter notifications using any of the following criteria:
 
-* **User name:** Search for the user associated with the notification.
+* **Username:** Search for the user associated with the notification.
 * **Subject:** Search by the subject of the notification.
 
 ## Related Topics

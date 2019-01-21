@@ -4,22 +4,29 @@ description: Edit general information about a ProcessMaker Screen.
 
 # Edit Screen Configuration
 
-{% hint style="info" %}
-To edit a ProcessMaker Screen, you must be a member of the Process Owner group. Otherwise, the **Processes** option is not available from the top menu that allows you to perform Screen management activities.
-{% endhint %}
-
 ## Edit Configuration Information About a ProcessMaker Screen
 
-Follow these steps to edit a ProcessMaker Screen:
+{% hint style="info" %}
+Your user account or group membership must have the following permissions to edit a ProcessMaker Screen's configuration:
+
+* Screens: View Screens
+* Screens: Edit Screens
+
+Ask your ProcessMaker Administrator for assistance.
+{% endhint %}
+
+Follow these steps to edit the configuration information about a ProcessMaker Screen:
 
 1. [View your ProcessMaker Screens.](view-all-forms.md) The **Screens** page displays.
-2. Hover your cursor over the ProcessMaker Screen to edit and then click the **Edit** icon![](../../../.gitbook/assets/edit-icon.png). The **Edit Screen** page displays.  
+2. Select the **Config** icon![](../../../.gitbook/assets/configure-process-icon-processes-page-processes.png)for your ProcessMaker Screen. The **Edit** page displays.  
 
    ![](../../../.gitbook/assets/edit-screen-page-processes.png)
 
-3. Edit the name of the ProcessMaker Screen in the **Name** field if necessary.
-4. Edit the description of the ProcessMaker Screen in the **Description** field if necessary.
-5. Click **Update**. Otherwise, click **Cancel** to cancel any changes.
+3. Edit the following information about the ProcessMaker Screen as necessary:
+   * In the **Name** field, edit the name of the ProcessMaker Screen. This is a required field.
+   * In the **Type** drop-down, select the type of ProcessMaker Screen. This is a required field. See [Screen Types](../screens-builder/types-for-screens.md).
+   * In the **Description** field, edit the description of the ProcessMaker Screen. This is a required field.
+4. Click **Update**. Otherwise, click **Cancel** to cancel any changes.
 
 ## Related Topics
 

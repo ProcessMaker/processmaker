@@ -18,7 +18,7 @@ Ask your ProcessMaker Administrator for assistance.
 Follow these steps to edit the configuration information about a Process:
 
 1. [View your Processes.](./#view-your-processes) The **Processes** page displays.
-2. Select the **Config** icon![](../../../.gitbook/assets/configure-process-icon-processes-page-processes.png)for your Process. The **Edit Process** page displays.  
+2. Select the **Config** icon![](../../../.gitbook/assets/configure-process-icon-processes-page-processes.png)for your Process. The **Edit** page displays.  
 
    ![](../../../.gitbook/assets/edit-process-page-processes.png)
 
