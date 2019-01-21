@@ -82,9 +82,7 @@ class ProcessRequestController extends Controller
         // type filter
         switch ($request->input('type')) {
             case 'started_me':
-                if (Auth::user()->is_administrator) {
-                    $query->startedMe(Auth::user()->id);
-                }
+                $query->startedMe(Auth::user()->id);
                 break;
             case 'in_progress':
                 $query->inProgress();
