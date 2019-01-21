@@ -2,13 +2,13 @@
 description: Edit general information about a ProcessMaker Screen.
 ---
 
-# Edit a Screen
+# Edit Screen Configuration
 
 {% hint style="info" %}
 To edit a ProcessMaker Screen, you must be a member of the Process Owner group. Otherwise, the **Processes** option is not available from the top menu that allows you to perform Screen management activities.
 {% endhint %}
 
-## Edit a ProcessMaker Screen
+## Edit Configuration Information About a ProcessMaker Screen
 
 Follow these steps to edit a ProcessMaker Screen:
 

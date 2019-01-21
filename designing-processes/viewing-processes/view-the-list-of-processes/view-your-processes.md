@@ -45,7 +45,14 @@ Use the [Search](../../../using-processmaker/requests/search-for-a-request.md) f
 
 ### No Processes?
 
-If no active or inactive Processes exist, the following message displays: **You don't have any processes. Please click on '+PROCESS' to get started**.
+If no active or inactive Processes exist, the following message displays: ~~**You don't have any processes. Please click on '+PROCESS' to get started**.~~
+
+### Edit a Process
+
+Do one of the following:
+
+* **Edit the Process model:** Click the **Open Modeler** icon![](../../../.gitbook/assets/edit-icon.png). See [Model Your Process](../../process-design/model-your-process/) for topics.
+* **Edit the Process configuration:** Click the **Config** icon![](../../../.gitbook/assets/configure-process-icon-processes-page-processes.png). See [Edit Process Configuration](edit-the-name-description-category-or-status-of-a-process.md#edit-configuration-information-about-a-process).
 
 ### Display Information the Way You Want It
 

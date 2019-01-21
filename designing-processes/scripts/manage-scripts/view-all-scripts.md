@@ -26,8 +26,8 @@ Follow these steps to view all ProcessMaker Scripts in your organization:
 
 The **Scripts** page displays the following information about ProcessMaker Scripts:
 
-* **Name:** The **Name** column displays the name of the ProcessMaker Script.
-* Description: The Description column displays the description of the ProcessMaker Script.
+* **Name:** The **Name** column displays the name of the ProcessMaker Script. Click the name to edit the ProcessMaker Screen in [Scripts Editor](../scripts-editor.md).
+* **Description:** The **Description** column displays the description of the ProcessMaker Script. See [Edit Script Configuration](edit-script-configuration.md#edit-configuration-information-about-a-processmaker-script) for more information.
 * **Language:** The **Language** column displays the programming language with which the ProcessMaker Script was written. Lua and PHP languages are supported out-of-the-box.
 * **Modified:** The **Modified** column displays the date and time the ProcessMaker Script was last modified. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 * **Created:** The **Created** column displays the date and time the ProcessMaker Script was created. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
@@ -45,7 +45,10 @@ If no ProcessMaker Scripts exist, the following message displays:
 
 ### Edit a ProcessMaker Script
 
-For information how to edit a ProcessMaker Script, see [Edit a Script](edit-a-script.md).
+Do one of the following:
+
+* **Edit the ProcessMaker Script:** Click the **Edit** icon![](../../../.gitbook/assets/edit-icon.png). See [Edit a Script](edit-a-script.md).
+* **Edit the Script Configuration:** Click the **Config** icon![](../../../.gitbook/assets/configure-process-icon-processes-page-processes.png). See [Edit Script Configuration](edit-script-configuration.md#edit-configuration-information-about-a-processmaker-script).
 
 ### Display Information the Way You Want It
 

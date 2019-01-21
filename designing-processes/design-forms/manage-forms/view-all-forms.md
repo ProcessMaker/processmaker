@@ -26,22 +26,31 @@ Follow these steps to view all ProcessMaker Screens in your organization:
 
 The **Screens** page displays the following information about ProcessMaker Screens:
 
-* **Title:** The **Title** column displays the name of the ProcessMaker Screen. Click the ProcessMaker Screen to to edit the ProcessMaker Screen in Screen Builder. For more information how to set the name for a ProcessMaker Screen, see [Create a New Screen](../create-a-new-form.md). For information how to change the name for a ProcessMaker Screen, see [Rename or Close a Screen Page]().
-* **Description:** The **Description** column displays the description about the ProcessMaker Screen. For information how to edit the ProcessMaker Screen description, see [Edit a Screen](edit-a-screen.md).
-* **Type:** The **Type** column displays which type the ProcessMaker Screen is. For information about ProcessMaker Screen types, see [Screen Types](../screens-builder/types-for-screens.md).
-* **Modified:** The **Modified** column displays the date and time the ProcessMaker Screen was last modified.
-* **Created:** The **Created** column displays the date and time the ProcessMaker Screen was created.
+* **Name:** The **Name** column displays the name of the ProcessMaker Screen. Click the name to edit the ProcessMaker Screen in [Screens Builder](../screens-builder/).
+* **Description:** The **Description** column displays the description of the ProcessMaker Screen. See [Edit Script Configuration](../../scripts/manage-scripts/edit-script-configuration.md#edit-configuration-information-about-a-processmaker-script) for more information.
+* **Type:** The **Type** column displays which type the ProcessMaker Screen is. See [Screen Types](../screens-builder/types-for-screens.md).
+* **Modified:** The **Modified** column displays the date and time the ProcessMaker Screen was last modified. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
+* **Created:** The **Created** column displays the date and time the ProcessMaker Screen was created. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
 {% hint style="info" %}
-For information how to search for a ProcessMaker Screen, see [Search for a Screen](search-for-a-screen.md).
-{% endhint %}
+### Search for a ProcessMaker Screen
 
-{% hint style="info" %}
-If no ProcessMaker Screens exist, the following message displays: ~~**You don't have any screens. Please click on '+SCREEN' to get started**~~**.**
-{% endhint %}
+Use the [Search](search-for-a-screen.md#search-for-a-processmaker-screen) field to filter ProcessMaker Screens that display.
 
-{% hint style="info" %}
-[Control how tabular information displays.](../../../using-processmaker/control-how-requests-display-in-a-tab.md)
+### No ProcessMaker Screens?
+
+If no ProcessMaker Screens exist, the following message displays: ~~**You don't have any screens. Please click on '+SCREEN' to get started**~~.
+
+### Edit a ProcessMaker Screen
+
+Do one of the following:
+
+* **Edit the ProcessMaker Screen:** Click the **Open Editor** icon![](../../../.gitbook/assets/edit-icon.png). See [Screens Builder](../screens-builder/) for topics.
+* **Edit the Screen Configuration:** Click the **Config** icon![](../../../.gitbook/assets/configure-process-icon-processes-page-processes.png). See [Edit Screen Configuration](edit-a-screen.md#edit-configuration-information-about-a-processmaker-screen).
+
+### Display Information the Way You Want It
+
+[Control how tabular information displays](../../../using-processmaker/control-how-requests-display-in-a-tab.md), including how to sort columns or how many items display per page.
 {% endhint %}
 
 ## Related Topics
