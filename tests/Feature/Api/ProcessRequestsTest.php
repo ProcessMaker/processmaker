@@ -23,6 +23,8 @@ class ProcessRequestsTest extends TestCase
 
     use RequestHelper;
     use WithFaker;
+    
+    public $withPermissions = true;
 
     const API_TEST_URL = '/requests';
 
@@ -308,38 +310,44 @@ class ProcessRequestsTest extends TestCase
      */
     public function testCancelRequestWithPermissions()
     {
-        $this->markTestSkipped('API permissions not yet implemented');
-        //This user is being created so it is NOT an admin
-        $this->user = factory(User::class)->create(['is_administrator' => false]);
-        factory(Permission::class)->create(['guard_name' => 'requests.edit']);
-        $this->user->giveDirectPermission('requests.edit');
-        //the user needs both global permissions AND process permissions
-        $cancelPermission = factory(Permission::class)->create(['guard_name' => 'requests.cancel']);
-        $this->user->giveDirectPermission('requests.cancel');
-        
-        $process = factory(Process::class)->create();
-        $request = factory(ProcessRequest::class)->create(['user_id' => $this->user->id, 'process_id' => $process->id]);
+        // We need an admin user and a non-admin user
+        $admin = $this->user;
+        $nonAdmin = factory(User::class)->create(['is_administrator' => false]);
 
+        // Create a process and a process request       
+        $process = factory(Process::class)->create();
+        $request = factory(ProcessRequest::class)->create(['user_id' => $nonAdmin->id, 'process_id' => $process->id]);
+
+        // Attempt to cancel a request
+        $this->user = $nonAdmin;
         $route = route('api.requests.update', [$request->id]);
-        //attempt to cancel a request
         $response = $this->apiCall('PUT', $route, [
                     'status' => 'CANCELED',
                 ]);
 
-        //confirm the user does not have access
+        // Confirm the user does not have access
         $response->assertStatus(403);
-        
-        $processPermission = factory(ProcessPermission::class)->create([
-            'process_id' => $process->id,
-            'permission_id' => $cancelPermission->id,
-            'assignable_type' => User::class,
-            'assignable_id' => $this->user->id
+    
+        // Add the user to the list of users that can cancel
+        $this->user = $admin;
+        $route = route('api.processes.update', [$process->id]);
+        $response = $this->apiCall('PUT', $route, [
+            'name' => 'Update Process',
+            'description' => 'Update Test',
+            'cancel_request' => ['users' => [$nonAdmin->id], 'groups' => []]
         ]);
         
+        // Assert that the API returned a valid response
+        $response->assertStatus(200, $response);
+        
+        // Attempt to cancel the request
+        $this->user = $nonAdmin;
+        $route = route('api.requests.update', [$request->id]);
         $response = $this->apiCall('PUT', $route, [
             'status' => 'CANCELED',
         ]);
-
+        
+        // Assert that the API updated
         $response->assertStatus(204);
     }
 
