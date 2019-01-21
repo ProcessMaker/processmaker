@@ -443,10 +443,6 @@ class ProcessController extends Controller
             return abort(404);
         }
 
-        if (! Auth::user()->can('start', $request->process)) {
-            throw new AuthorizationException("Not authorized to start this process");
-        }
-
         $definitions = $process->getDefinitions();
         if (!$definitions->findElementById($id)) {
             return abort(404);
