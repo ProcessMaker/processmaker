@@ -79,6 +79,7 @@
       * [Record List Control Settings](designing-processes/design-forms/screens-builder/control-descriptions/record-list-control-settings.md)
     * [Add, Delete or Rename a Page](designing-processes/design-forms/screens-builder/add-a-new-page-to-a-screen.md)
     * [Preview a Screen and Its JSON Data Model](designing-processes/design-forms/screens-builder/preview-a-screen.md)
+    * [Manage Computed Properties](designing-processes/design-forms/screens-builder/manage-computed-properties.md)
     * [Save a Screen](designing-processes/design-forms/screens-builder/save-a-screen.md)
     * [Close Screens Builder](designing-processes/design-forms/screens-builder/close-screens-builder.md)
     * [Screens Builder Best Practices](designing-processes/design-forms/screens-builder/best-practices.md)

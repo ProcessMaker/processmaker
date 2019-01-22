@@ -30,7 +30,7 @@ Furthermore, use Preview mode to view how the ProcessMaker Screen's controls you
 
 ## Computed Properties Mode
 
-Use Computed Properties mode to add JavaScript-formatted mathematical calculations and formulas into a ProcessMaker Screen's JSON data model via properties. A property represents any value or calculation that influences or changes Process routing.
+Use Computed Properties mode to add Properties to a ProcessMaker Screen's JSON data model. A Property represents any value, mathematical calculation, or formula that affects the Request routing in a Process model. ~~WHY ARE PROPERTIES USEFUL? WHAT IS A BUSINESS USE CASE?~~ See [Manage Computed Properties](manage-computed-properties.md).
 
 ## Related Topics
 
