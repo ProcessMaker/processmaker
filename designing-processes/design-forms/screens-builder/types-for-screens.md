@@ -1,5 +1,7 @@
 ---
-description: Understand the types of screens you can design in Screens Builder.
+description: >-
+  Understand the types of ProcessMaker Screens you can design in Screens
+  Builder.
 ---
 
 # Screen Types
@@ -25,10 +27,6 @@ The Display type only displays information. The Display type only has the follow
 * [Text](control-descriptions/textarea-control-settings.md)
 * [Multi Column Button](control-descriptions/multi-column-button-control-settings.md)
 * [Record List](control-descriptions/record-list-control-settings.md)
-
-### Email
-
-
 
 ## Related Topics
 

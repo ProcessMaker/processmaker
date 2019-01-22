@@ -8,7 +8,7 @@ description: >-
 
 ## Overview
 
-Use Screen Builder's Preview mode to view how your ProcessMaker Screen displays. Furthermore, Preview mode allows you to view how the ProcessMaker Screen's controls you configured in Editor mode contain data in the form of a JSON data model.
+Use Preview mode to view how the ProcessMaker Screen's controls you configured in Editor mode use data in a JSON data model. To allow ProcessMaker Screens to be used among any Process, they are represented in JSON format. You can view the JSON data model in Preview mode as you enter information into your previewed ProcessMaker Screen. Viewing the JSON data model can be helpful to see how values are entered into the ProcessMaker Screen.
 
 The JSON data model displays in the **Data Preview** panel when in Preview mode.
 
