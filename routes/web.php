@@ -56,9 +56,8 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/', 'HomeController@index')->name('home');
 
-    Route::get('requests/all', 'RequestController@index')->name('requests.all')->middleware('can:view-all_requests');
     Route::get('requests/{type}', 'RequestController@index')
-        ->where('type', 'in_progress|completed')
+        ->where('type', 'all|in_progress|completed')
         ->name('requests_by_type');
     Route::get('request/{requestID}/files/{fileID}', 'RequestController@downloadFiles');
     Route::get('requests', 'RequestController@index')->name('requests.index');

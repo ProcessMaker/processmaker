@@ -28,6 +28,10 @@ class RequestController extends Controller
      */
     public function index($type = null)
     {
+        if ($type === 'all') {
+            $this->authorize('view-all_requests');
+        }
+        
         //load counters
         $query = ProcessRequest::query();
         if (!Auth::user()->is_administrator) {

@@ -99,7 +99,7 @@ class GenerateMenus
           ]);
           if (\Auth::check() && \Auth::user()->can('view-all_requests')) {
               $submenu->add(__('menus.sidebar_request.all'), [
-                  'route' => 'requests.all',
+                  'route' => ['requests_by_type', 'all'],
                   'icon' => 'fa-clipboard',
               ]);
           }
