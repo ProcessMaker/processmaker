@@ -1,12 +1,12 @@
 ---
-description: View the Inspector pane where you set control settings.
+description: Use the Inspector panel to set control settings.
 ---
 
 # View the Inspector Panel
 
 ## Overview
 
-The **Inspector** panel in Screens Builder displays settings for a selected control when displaying a ProcessMaker Screen in Editor mode. Editor mode is the default mode when a ProcessMaker Screen is edited. The **Inspector** panel displays to the right of a displayed ProcessMaker Screen. Use the **Inspector** panel to [configure settings for controls](control-descriptions/) you place into a ProcessMaker Screen.
+The **Inspector** panel in Screens Builder displays settings for a selected control when displaying a ProcessMaker Screen in Editor mode. Editor mode is the default mode when a ProcessMaker Screen is edited. The **Inspector** panel displays to the right of a displayed ProcessMaker Screen. Use the **Inspector** panel to [configure control settings](control-descriptions/) you place into a ProcessMaker Screen.
 
 ![Screens Builder displaying the Inspector panel in Editor mode ](../../../.gitbook/assets/screens-editor-mode-processes.png)
 

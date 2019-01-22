@@ -8,7 +8,7 @@ description: >-
 
 ## Screen Types
 
-Use Screens Builder to design the following types for ProcessMaker Screens.
+Use Screens Builder to design different types of ProcessMaker Screens. Savvy developers can design custom ProcessMaker Screen types in [packages](../../../package-development-distribution/first-topic.md). However, ProcessMaker 4 Community edition provides the following ProcessMaker Screen types by default.
 
 ### Forms
 
@@ -18,14 +18,15 @@ The Form type allows people to interact with a Request in which those ProcessMak
 * Approve a request.
 * Upload or download documents.
 
-All ProcessMaker Screen [controls](control-descriptions/) in Screens Builder are available for the Form type.
+All ProcessMaker 4 Community edition Screen [controls](control-descriptions/) in Screens Builder are available for the Form type.
 
 ### Display
 
 The Display type only displays information. The Display type only has the following controls available in Screens Builder:
 
 * [Text](control-descriptions/textarea-control-settings.md)
-* [Multi Column Button](control-descriptions/multi-column-button-control-settings.md)
+* File Download
+* [Multi Column](control-descriptions/multi-column-button-control-settings.md)
 * [Record List](control-descriptions/record-list-control-settings.md)
 
 ## Related Topics
@@ -39,4 +40,6 @@ The Display type only displays information. The Display type only has the follow
 {% page-ref page="control-descriptions/multi-column-button-control-settings.md" %}
 
 {% page-ref page="control-descriptions/record-list-control-settings.md" %}
+
+{% page-ref page="../../../package-development-distribution/first-topic.md" %}
 
