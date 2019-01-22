@@ -124,9 +124,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
                 case 'DISPLAY':
                     $event->manager->addScript(mix('js/processes/screen-builder/typeDisplay.js'));
                     break;
-                case 'EMAIL':
-                    $event->manager->addScript(mix('js/processes/screen-builder/typeEmail.js'));
-                    break;
             }
         });
 
