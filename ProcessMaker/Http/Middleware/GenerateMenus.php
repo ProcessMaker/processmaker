@@ -34,7 +34,7 @@ class GenerateMenus
             }
             if (\Auth::check() && (\Auth::user()->can('view-users') || \Auth::user()->can('view-groups') || \Auth::user()->is_administrator)) {
                 $menu->group(['prefix' => 'admin'], function($admin_items) {
-                    $admin_items->add(__('menus.topnav.admin'), ['route' => 'users.index'])->active('admin/*');
+                    $admin_items->add(__('menus.topnav.admin'), ['route' => 'admin.dashboard'])->active('admin/*');
                 });
             }
         });

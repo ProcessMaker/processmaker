@@ -19,6 +19,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('auth-clients', 'AuthClientController@index')->name('auth-clients.index')->middleware('can:view-auth-clients');
     });
 
+    Route::get('admin', 'AdminController@dashboard')->name('admin.dashboard');
+
     Route::namespace('Process')->prefix('processes')->group(function () {
         Route::get('environment-variables', 'EnvironmentVariablesController@index')->name('environment-variables.index')->middleware('can:view-environment_variables');
         Route::get('environment-variables/{environment_variable}/edit', 'EnvironmentVariablesController@edit')->name('environment-variables.edit')->middleware('can:edit-environment_variables,environment_variable ');
