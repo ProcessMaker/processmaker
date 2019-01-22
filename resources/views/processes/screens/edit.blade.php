@@ -27,10 +27,7 @@
                         <div class="invalid-feedback" v-if="errors.title">@{{errors.title[0]}}</div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('type', 'Type') !!}
-                        {!! Form::select('type', ['DISPLAY' => 'Display', 'FORM' => 'Form', 'EMAIL' => 'Email'], 'null', ['id' => 'type','class'=> 'form-control', 'v-model' => 'formData.type',
-                        'v-bind:class' => '{"form-control":true, "is-invalid":errors.type}']) !!}
-                        <div class="invalid-feedback" v-for="type in errors.type">@{{type}}</div>
+                        <label>Type: <strong>{{ $screen->type }}</strong></label>
                     </div>
                     <div class="form-group">
                         {!! Form::label('description', 'Description') !!}
