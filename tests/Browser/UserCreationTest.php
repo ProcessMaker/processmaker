@@ -43,6 +43,8 @@ class UserCreationTest extends DuskTestCase
                 ->press('.btn')
                 ->clickLink('Admin')
                 ->pause(5000)
+                ->clickLink('Users')
+                ->pause(5000)
                 ->waitFor('.vuetable-body', 5)
                 ->assertSee('1 - 10 of 100 Users');
 
