@@ -111,8 +111,10 @@ Route::group(
     Route::post('notifications', 'NotificationController@store')->name('notifications.store')->middleware('can:create,ProcessMaker\Models\Notification');
     Route::put('notifications/{notification}', 'NotificationController@update')->name('notifications.update')->middleware('can:edit,notification');
     Route::delete('notifications/{notification}', 'NotificationController@destroy')->name('notifications.destroy')->middleware('can:delete,notification');
-    Route::put('read_notifications', 'NotificationController@updateAsRead')->name('notifications.update_as_read')->middleware('can:edit,notification');
-    Route::put('unread_notifications', 'NotificationController@updateAsUnread')->name('notifications.update_as_unread')->middleware('can:edit,notification');
+    
+    // Mark Notifications as Read & Unread
+    Route::put('read_notifications', 'NotificationController@updateAsRead')->name('notifications.update_as_read'); //No permissions necessary
+    Route::put('unread_notifications', 'NotificationController@updateAsUnread')->name('notifications.update_as_unread'); //No permissions necessary
     
     // Task Assignments
     Route::get('task_assignments', 'TaskAssignmentController@index')->name('task_assignments.index')->middleware('can:view-task_assignments');

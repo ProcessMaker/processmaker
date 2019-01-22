@@ -49,7 +49,7 @@ class NotificationPolicy
             return true;
         }
         
-        return Gate::allows('api.view-notifications', $post);
+        return Gate::allows('view-notifications', $post);
     }
 
     /**
@@ -60,7 +60,7 @@ class NotificationPolicy
      */
     public function create(User $user)
     {
-        return Gate::allows('api.create-notifications', $post);
+        return Gate::allows('create-notifications', $post);
     }
 
     /**
@@ -76,7 +76,7 @@ class NotificationPolicy
             return true;
         }
 
-        return Gate::allows('api.create-notifications', $post);
+        return Gate::allows('create-notifications', $post);
     }
 
     /**
@@ -92,6 +92,6 @@ class NotificationPolicy
             return true;
         }
         
-        return Gate::allows('api.delete-notifications', $post);
+        return Gate::allows('delete-notifications', $post);
     }
 }
