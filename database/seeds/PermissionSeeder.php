@@ -43,9 +43,6 @@ class PermissionSeeder extends Seeder
         'view-screens',
         'view-scripts',
         'view-users',
-    ];
-    
-    private $apiPermissions = [
         'create-files',
         'view-files',
         'edit-files',
@@ -59,7 +56,7 @@ class PermissionSeeder extends Seeder
         'edit-task_assignments',
         'delete-task_assignments',
     ];
-
+    
     private $resourcePermissions = [
         'requests'
     ];
@@ -84,14 +81,6 @@ class PermissionSeeder extends Seeder
                     'title' => ucwords(preg_replace('/(\-|_)/', ' ',
                             $permissionString)),
                     'name' => $permissionString,
-                ]);
-            }
-            
-            foreach ($this->apiPermissions as $permissionString) {
-                $permission = factory(Permission::class)->create([
-                    'title' => ucwords(preg_replace('/(\-|_)/', ' ',
-                            $permissionString)),
-                    'name' => 'api.' . $permissionString,
                 ]);
             }
         }

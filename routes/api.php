@@ -97,11 +97,11 @@ Route::group(
     Route::delete('requests/{request}/files/{file}', 'ProcessRequestFileController@destroy')->name('requests.filesrequests.files.destroy')->middleware('can:update,request');
 
     // Files
-    Route::get('files', 'FileController@index')->name('files.index')->middleware('can:api.view-files');
-    Route::get('files/{file}', 'FileController@show')->name('files.show')->middleware('can:api.view-files');
-    Route::post('files', 'FileController@store')->name('files.store')->middleware('can:api.create-files');
-    Route::put('files/{file}', 'FileController@update')->name('files.update')->middleware('can:api.edit-files');
-    Route::delete('files/{file}', 'FileController@destroy')->name('files.destroy')->middleware('can:api.delete-files');
+    Route::get('files', 'FileController@index')->name('files.index')->middleware('can:view-files');
+    Route::get('files/{file}', 'FileController@show')->name('files.show')->middleware('can:view-files');
+    Route::post('files', 'FileController@store')->name('files.store')->middleware('can:create-files');
+    Route::put('files/{file}', 'FileController@update')->name('files.update')->middleware('can:edit-files');
+    Route::delete('files/{file}', 'FileController@destroy')->name('files.destroy')->middleware('can:delete-files');
     
     // Notifications
     Route::get('notifications', 'NotificationController@index')->name('notifications.index');  //Already filtered in controller
@@ -113,10 +113,10 @@ Route::group(
     Route::put('unread_notifications', 'NotificationController@updateAsUnread')->name('notifications.update_as_unread')->middleware('can:edit,notification');
     
     // Task Assignments
-    Route::get('task_assignments', 'TaskAssignmentController@index')->name('task_assignments.index')->middleware('can:api.view-task_assignments');
-    Route::post('task_assignments', 'TaskAssignmentController@store')->name('task_assignments.store')->middleware('can:api.create-task_assignments');
-    Route::put('task_assignments/{task_assignment}', 'TaskAssignmentController@update')->name('task_assignments.update')->middleware('can:api.edit-task_assignments');
-    Route::delete('task_assignments/{task_assignment}', 'TaskAssignmentController@destroy')->name('task_assignments.destroy')->middleware('can:api.delete-task_assignments');
+    Route::get('task_assignments', 'TaskAssignmentController@index')->name('task_assignments.index')->middleware('can:view-task_assignments');
+    Route::post('task_assignments', 'TaskAssignmentController@store')->name('task_assignments.store')->middleware('can:create-task_assignments');
+    Route::put('task_assignments/{task_assignment}', 'TaskAssignmentController@update')->name('task_assignments.update')->middleware('can:edit-task_assignments');
+    Route::delete('task_assignments/{task_assignment}', 'TaskAssignmentController@destroy')->name('task_assignments.destroy')->middleware('can:delete-task_assignments');
     
     // Comments
     Route::get('comments', 'CommentController@index')->name('comments.index')->middleware('can:view-comments');
