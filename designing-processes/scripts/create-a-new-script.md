@@ -1,7 +1,7 @@
 ---
 description: >-
   Create a new ProcessMaker Script to automate or add functionality to any
-  process.
+  Process.
 ---
 
 # Create a New Script
@@ -24,9 +24,9 @@ Follow these steps to create a new ProcessMaker Script:
 
    ![](../../.gitbook/assets/add-a-script-screen-processes.png)
 
-3. Enter the name in the **Title** field of the ProcessMaker Script. ~~Character length limitation and/or unsupported characters?~~ This is a required field.
-4. Enter a description in the **Description** field for the ProcessMaker Script. ~~This does not seem to be a required field. Character length limitation and/or unsupported characters?~~
-5. Select from the **Language** drop-down one of the following programming languages to specify with which the ProcessMaker Script is written:
+3. In the **Title** field, enter the title of the ProcessMaker Script. ~~Character length limitation and/or unsupported characters?~~ This is a required field.
+4. In the **Description** field, enter the description of the ProcessMaker Script. ~~This does not seem to be a required field. Character length limitation and/or unsupported characters?~~
+5. From the **Language** drop-down, select one of the following programming languages to specify with which the ProcessMaker Script is written:
    * PHP
    * Lua
 6. Click **Save**. Scripts Editor displays. See [Scripts Editor](scripts-editor.md).

@@ -58,7 +58,7 @@
     * [View All Screens](designing-processes/design-forms/manage-forms/view-all-forms.md)
     * [Search for a Screen](designing-processes/design-forms/manage-forms/search-for-a-screen.md)
     * [Edit Screen Configuration](designing-processes/design-forms/manage-forms/edit-a-screen.md)
-    * [Remove a Screen](designing-processes/design-forms/manage-forms/remove-a-screen.md)
+    * [Delete a Screen](designing-processes/design-forms/manage-forms/remove-a-screen.md)
   * [Create a New Screen](designing-processes/design-forms/create-a-new-form.md)
   * [Screens Builder](designing-processes/design-forms/screens-builder/README.md)
     * [What is Screens Builder?](designing-processes/design-forms/screens-builder/what-is-screens-builder.md)

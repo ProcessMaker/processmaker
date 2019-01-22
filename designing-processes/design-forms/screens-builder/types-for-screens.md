@@ -26,6 +26,10 @@ The Display type only displays information. The Display type only has the follow
 * [Multi Column Button](control-descriptions/multi-column-button-control-settings.md)
 * [Record List](control-descriptions/record-list-control-settings.md)
 
+### Email
+
+
+
 ## Related Topics
 
 {% page-ref page="what-is-screens-builder.md" %}
