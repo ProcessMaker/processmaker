@@ -35,6 +35,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('categories/{processCategory}/edit', 'ProcessCategoryController@edit')->name('categories.edit')->middleware('can:edit-categories,processCategory');
     });
 
+    Route::get('processes/dashboard', 'ProcessController@dashboard')->name('processes.dashboard');
     Route::get('processes', 'ProcessController@index')->name('processes.index')->middleware('can:view-processes');
     Route::get('processes/{process}/edit', 'ProcessController@edit')->name('processes.edit')->middleware('can:edit-processes');
     Route::get('processes/create', 'ProcessController@create')->name('processes.create')->middleware('can:create-processes');
