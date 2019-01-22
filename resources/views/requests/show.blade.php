@@ -172,10 +172,11 @@
                                               :input-data="participants" hide-name="true"></avatar-image>
                             </li>
                             <li class="list-group-item">
+                                <h5>{{__('Completed')}}</h5>
                                 <i class="far fa-calendar-alt"></i>
-                                <small>@{{ labelDate }} @{{ moment(statusDate).fromNow() }}</small>
+                                <small>@{{ moment(statusDate).format() }}</small>
                                 <br>
-                                @{{ moment(statusDate).format() }}
+                                
                             </li>
                         </ul>
                     </div>
