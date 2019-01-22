@@ -26,15 +26,27 @@ See [Add a New Page to a Screen](add-a-new-page-to-a-screen.md).
 
 Use Preview mode to view how your ProcessMaker Screen displays.
 
-Furthermore, use Preview mode to view how the ProcessMaker Screen's controls you configured in Editor mode use data in a JSON data model. To allow ProcessMaker Screens to be used among any Process, they are represented in JSON data models. You can [view the JSON data model in Preview mode](preview-a-screen.md) as you enter information into your previewed ProcessMaker Screen. Viewing the JSON data model can be helpful to see how values are entered into the ProcessMaker Screen.
+Furthermore, use Preview mode to view how the ProcessMaker Screen's controls you configured in Editor mode use data in a JSON data model. To allow ProcessMaker Screens to be used among any Process, they are represented in JSON data models. You can view the JSON data model in Preview mode as you enter information into your previewed ProcessMaker Screen. Viewing the JSON data model can be helpful to see how values are entered into the ProcessMaker Screen.
+
+{% hint style="info" %}
+ See [Preview a Screen and Its JSON Data Model](preview-a-screen.md).
+{% endhint %}
 
 ## Computed Properties Mode
 
-Use Computed Properties mode to add Properties to a ProcessMaker Screen's JSON data model. A Property represents any value, mathematical calculation, or formula that affects the Request routing in a Process model. ~~WHY ARE PROPERTIES USEFUL? WHAT IS A BUSINESS USE CASE?~~ See [Manage Computed Properties](manage-computed-properties.md).
+Use Computed Properties mode to add Properties to a ProcessMaker Screen's JSON data model. A Property represents any value, mathematical calculation, or formula that affects the Request routing in a Process model. Since ProcessMaker Screens are independent of Process models, use Properties to maintain variables that only affect the ProcessMaker Screen.
+
+Property calculations and formulas can include the value from a control. Likewise, a computed Property's value can be displayed in a ProcessMaker Screen control.
+
+{% hint style="info" %}
+See [Manage Computed Properties](manage-computed-properties.md).
+{% endhint %}
 
 ## Related Topics
 
 {% page-ref page="control-descriptions/" %}
 
 {% page-ref page="preview-a-screen.md" %}
+
+{% page-ref page="manage-computed-properties.md" %}
 
