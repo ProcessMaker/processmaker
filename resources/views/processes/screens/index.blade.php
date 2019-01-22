@@ -58,7 +58,7 @@
                         </div>
                         <div class="form-group">
                             {!! Form::label('type', 'Type') !!}
-                            {!! Form::select('type', ['' => __('Select Type'), 'DISPLAY' => 'Display', 'FORM' => 'Form', 'EMAIL' => 'Email'], '', ['id' => 'type','class'=> 'form-control', 'v-model' => 'formData.type',
+                            {!! Form::select('type', $types, '', ['id' => 'type','class'=> 'form-control', 'v-model' => 'formData.type',
                             'v-bind:class' => '{"form-control":true, "is-invalid":errors.type}']) !!}
                             <div class="invalid-feedback" v-for="type in errors.type">@{{type}}</div>
                         </div>
