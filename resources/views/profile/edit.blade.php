@@ -127,7 +127,7 @@
 
                         <div class="form-group col">
                             {!! Form::label('language', 'Language') !!}
-                            {!! Form::select('language', ['us_en' => 'us_en'], $currentUser->language, ['id' => 'language','class'=>
+                            {!! Form::select('language', ['us_en' => 'English (US)'], $currentUser->language, ['id' => 'language','class'=>
                             'form-control',
                             'v-model' => 'formData.language',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.language}']) !!}
