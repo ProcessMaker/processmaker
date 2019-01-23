@@ -120,6 +120,32 @@ class ProcessRequestsTest extends TestCase
     }
 
     /**
+     * Test that paged values are returned as expected
+     */
+    public function testWithPagination()
+    {
+        $process = factory(Process::class)->create();
+        factory(ProcessRequest::class, 5)->create([
+            'name' => $process->name,
+            'process_id' => $process->id,
+        ]);
+        $query = '?page=2&per_page=3&order_by=name';
+        
+        $response = $this->apiCall('GET', self::API_TEST_URL . $query);
+
+        //Validate the header status code
+        $response->assertStatus(200);
+        $json = $response->json();
+
+        // 2 items on 2nd page
+        $this->assertCount(2, $json['data']);
+
+        // keys should be re-indexed so they get converted to
+        // arrays instead of objects on json_encode
+        $this->assertEquals([0,1], array_keys($json['data']));
+    }
+
+    /**
      * Get a list of Request by type
      */
     public function testListRequestWithType()

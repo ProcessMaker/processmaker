@@ -112,7 +112,7 @@ class ApiCollection extends ResourceCollection
         $startIndex = ($page - 1) * $perPage;
         $limit = $perPage;
 
-        $this->collection = $collection->slice($startIndex, $limit);
+        $this->collection = $collection->slice($startIndex, $limit)->values();
         
         return new LengthAwarePaginator($this->collection, $count, $perPage);
     }    
