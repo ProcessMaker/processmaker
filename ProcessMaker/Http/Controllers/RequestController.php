@@ -33,10 +33,6 @@ class RequestController extends Controller
         if (!Auth::user()->is_administrator) {
             $query->startedMe(Auth::user()->id);
         }
-//        $allRequest = $query->count();
-//        $startedMe = ProcessRequest::startedMe(Auth::user()->id)->count();
-//        $inProgress = $query->inProgress()->count();
-        //$completed = $query->completed()->count();
 
         $allRequest = $this->calculate('allRequest');
         $startedMe = $this->calculate('startedMe');
