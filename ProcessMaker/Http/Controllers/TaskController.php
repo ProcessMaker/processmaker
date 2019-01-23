@@ -11,8 +11,6 @@ use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
-    public $skipPermissionCheckFor = ['index', 'show', 'edit'];
-
     private static $dueLabels = [
         'open' => 'Due ',
         'completed' => 'Completed ',

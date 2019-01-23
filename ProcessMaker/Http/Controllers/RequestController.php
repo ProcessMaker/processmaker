@@ -13,13 +13,6 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 class RequestController extends Controller
 {
     use HasMediaTrait;
-    /**
-     * A user should always be able to see their
-     * started requests.
-     * 
-     * @var array
-     */
-    public $skipPermissionCheckFor = ['index', 'show'];
 
     /**
      * Get the list of requests.

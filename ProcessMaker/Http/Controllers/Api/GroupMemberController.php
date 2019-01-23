@@ -15,8 +15,6 @@ use ProcessMaker\Http\Resources\GroupMembers as GroupMemberResource;
 
 class GroupMemberController extends Controller
 {
-    public $skipPermissionCheckFor = ['index'];
-
     /**
      * Display a listing of the resource.
      *
