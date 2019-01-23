@@ -43,64 +43,6 @@ class ProcessRequestsTest extends TestCase
     ];
 
     /**
-     * Test verify the parameter required for create form
-     */
-    public function testNotCreatedForParameterRequired()
-    {
-        //Post should have the parameter required
-        $response = $this->apiCall('POST', self::API_TEST_URL, []);
-
-        //Validate the header status code
-        $response->assertStatus(422);
-        $this->assertArrayHasKey('message', $response->json());
-    }
-
-    /**
-     * Create new request successfully
-     */
-    public function testCreateRequest()
-    {
-        $process = factory(Process::class)->create();
-
-        $response = $this->apiCall('POST', self::API_TEST_URL, [
-            'process_id' => $process->id,
-            'process_collaboration_id' => null,
-            'callable_id' => $this->faker->randomDigit,
-            'status' => 'ACTIVE',
-            'name' => 'RequestName',
-            'data' => '{}'
-        ]);
-
-        //Validate the header status code
-        $response->assertStatus(201);
-    }
-
-    /**
-     * Can not create a request with an existing requestname
-     */
-    public function testNotCreateRequestWithRequestNameExists()
-    {
-        factory(ProcessRequest::class)->create([
-            'name' => 'duplicated name',
-        ]);
-
-        $process = factory(Process::class)->create();
-
-        //Post request name duplicated
-        $response = $this->apiCall('POST', self::API_TEST_URL, [
-            'process_id' => $process->id,
-            'process_collaboration_id' => null,
-            'status' => 'ACTIVE',
-            'name' => 'duplicated name',
-            'data' => '{}'
-        ]);
-
-        //Validate the header status code
-        $response->assertStatus(422);
-        $this->assertArrayHasKey('message', $response->json());
-    }
-
-    /**
      * Get a list of Requests without query parameters.
      */
     public function testListRequest()
