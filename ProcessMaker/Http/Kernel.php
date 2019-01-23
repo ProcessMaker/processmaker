@@ -36,13 +36,12 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \ProcessMaker\Http\Middleware\GenerateMenus::class,
             \Laravel\Passport\Http\Middleware\CreateFreshApiToken::class,
+            \ProcessMaker\Http\Middleware\SanitizeInput::class,
 
 
         ],
         'api' => [
-            // Empty middleware for api
-            // @todo Determine if we need throttling.  Currently it interrupts test suites
-            // However, we haven't had a product decision on utilizing throttling or not
+            \ProcessMaker\Http\Middleware\SanitizeInput::class,
         ],
     ];
     /**
