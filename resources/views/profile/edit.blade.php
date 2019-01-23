@@ -183,7 +183,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Modal title</h5>
+                    <h5 class="modal-title">Upload Avatar</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -202,17 +202,22 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button @click="browse" class="btn btn-success btn-sm text-uppercase"><i class="fas fa-upload"></i>
-                        Browse
-                    </button>
+                    <div style="width:50%">
+                        <button @click="browse" class="btn btn-success ml-2" style="margin-left: 0px !important;">
+                            <i class="fas fa-upload"></i>
+                            Browse
+                        </button>
+                    </div>
 
-                    <button @click="hideModal" class="btn btn-outline-success btn-md">
-                        Cancel
-                    </button>
+                    <div>
+                        <button @click="hideModal" class="btn btn-outline-success">
+                            Cancel
+                        </button>
 
-                    <button @click="saveAndEmit" class="btn btn-success btn-sm text-uppercase">
-                        Continue
-                    </button>
+                        <button @click="saveAndEmit" class="btn btn-success ml-2">
+                            Continue
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
