@@ -84,6 +84,10 @@ class ProcessRequestController extends Controller
             case 'completed':
                 $query->completed();
                 break;
+            case 'all':
+                $query->getQuery()->wheres = [];
+                $query->get();
+                break;
         }
 
         $filter = $request->input('filter', '');

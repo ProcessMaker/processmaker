@@ -76,10 +76,6 @@ class ProcessController extends Controller
             ->where($where)
             ->get();
 
-        $processes = $processes->filter(function($process) {
-            return Auth::user()->can('start', $process);
-        })->values();
-
         return new ApiCollection($processes);
     }
 

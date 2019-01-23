@@ -17,6 +17,8 @@ class TasksListTest extends DuskTestCase
      */
     public function testOverDueTasksNotification()
     {
+        $this->markTestSkipped('Skipping Dusk tests temporarily');
+
         Artisan::call('migrate:fresh', []);
 
         $user = factory(User::class)->create([
