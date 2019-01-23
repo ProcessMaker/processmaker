@@ -61,7 +61,7 @@ Route::group(
     Route::get('processes', 'ProcessController@index')->name('processes.index')->middleware('can:view-processes');
     Route::get('processes/{process}', 'ProcessController@show')->name('processes.show')->middleware('can:view-processes');
     Route::post('processes', 'ProcessController@store')->name('processes.store')->middleware('can:create-processes');
-    Route::put('processes/{process}', 'ProcessController@update')->name('processes.update')->middleware('can:edit,process');
+    Route::put('processes/{process}', 'ProcessController@update')->name('processes.update')->middleware('can:edit-processes');
     Route::delete('processes/{process}', 'ProcessController@destroy')->name('processes.destroy')->middleware('can:archive-processes');
     Route::put('processes/{processId}/restore', 'ProcessController@restore')->name('processes.restore')->middleware('can:archive-processes');
     Route::post('process_events/{process}', 'ProcessController@triggerStartEvent')->name('process_events.trigger')->middleware('can:start,process');

@@ -24,11 +24,6 @@ class ProcessPolicy
         }
     }
     
-    public function edit()
-    {
-        return true;
-    }
-
     /**
      * Determine whether the user can start the process.
      *
