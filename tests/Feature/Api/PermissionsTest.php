@@ -2,13 +2,16 @@
 
 namespace Tests\Feature\Api;
 
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Permission;
+use ProcessMaker\Models\Process;
 use Tests\Feature\Shared\RequestHelper;
+use ProcessMaker\Providers\AuthServiceProvider;
 use \PermissionSeeder;
 
 class PermissionsTest extends TestCase
@@ -19,41 +22,43 @@ class PermissionsTest extends TestCase
     {
         $this->user->is_administrator = false;
         $this->user->save();
+    
+        // Seed our tables.
+        Artisan::call('db:seed', ['--class' => 'PermissionSeeder']);
+    
+        // Reboot our AuthServiceProvider. This is necessary so that it can
+        // pick up the new permissions and setup gates for each of them.
+        $asp = new AuthServiceProvider(app());
+        $asp->boot();
     }
 
     public function testApiPermissions()
     {
-        $this->markTestSkipped('API permissions not yet implemented');
+        $process = factory(Process::class)->create([
+            'user_id' => $this->user->id,
+            'status' => 'ACTIVE',
+        ]);
+        
         $response = $this->apiCall('GET', '/processes');
         $response->assertStatus(200);
-
-        $response = $this->apiCall('GET', '/processes/' . $this->process->id);
+        
+        $response = $this->apiCall('GET', '/processes/' . $process->id);
         $response->assertStatus(200);
-
-        $destroy_process_perm = Permission::byName('processes.destroy');
-        Group::where('name', 'All Permissions')
-            ->firstOrFail()
-            ->permissionAssignments()
-            ->where('permission_id', $destroy_process_perm->id)
-            ->delete();
-
+        
+        $permission = Permission::byName('archive-processes');
+        $group = Group::where('name', 'All Permissions')->firstOrFail();        
+        $group->permissions()->detach($permission->id);
         $this->user->refresh();
         $this->flushSession();
 
-        $response = $this->apiCall('DELETE', '/processes/' . $this->process->id);
+        $response = $this->apiCall('DELETE', '/processes/' . $process->id);
         $response->assertStatus(403);
-        $response->assertSee('Not authorized');
-
-        factory(PermissionAssignment::class)->create([
-            'assignable_type' => Group::class,
-            'assignable_id' => $this->admin_group->id,
-            'permission_id' => Permission::byName('processes.destroy')->id,
-        ]);
-
+        
+        $this->user->permissions()->attach($permission->id);
         $this->user->refresh();
         $this->flushSession();
-
-        $response = $this->apiCall('DELETE', '/processes/' . $this->process->id);
+        
+        $response = $this->apiCall('DELETE', '/processes/' . $process->id);
         $response->assertStatus(204);
     }
 
@@ -63,37 +68,18 @@ class PermissionsTest extends TestCase
             'password' => Hash::make('password'),
             'is_administrator' => true,
         ]);
-
+    
         $testUser = factory(User::class)->create();
         $testPermission = factory(Permission::class)->create();
         $response = $this->apiCall('PUT', '/permissions', [
             'user_id' => $testUser->id,
             'permission_names' => [$testPermission->name]
         ]);
-
+    
         $response->assertStatus(204);
-
-        //Assert that the permissions has benn set
+    
+        //Assert that the permissions has been set
         $this->assertEquals($testUser->permissions->count(), 1);
         $this->assertEquals($testUser->permissions->first()->id, $testPermission->id);
-    }
-
-
-    public function testRoutePermissionAliases()
-    {
-        $this->markTestSkipped('API permissions not yet implemented');
-        // update route is an alias for edit permission
-        $response = $this->apiCall('PUT', '/processes/' . $this->process->id, [
-            'name' => 'foo',
-            'description' => 'foo',
-        ]);
-        $response->assertStatus(200);
-        
-        // store route is an alias for create permission
-        $response = $this->apiCall('POST', '/processes', [
-            'name' => 'foo2',
-            'description' => 'foo',
-        ]);
-        $response->assertStatus(201);
     }
 }

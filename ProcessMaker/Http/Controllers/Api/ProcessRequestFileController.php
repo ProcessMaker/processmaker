@@ -25,8 +25,6 @@ use Illuminate\Http\JsonResponse;
 
 class ProcessRequestFileController extends Controller
 {
-    public $skipPermissionCheckFor = ['index', 'store', 'update', 'destroy'];
-
     use HasMediaTrait;
     /*
     * return list of Process Request files

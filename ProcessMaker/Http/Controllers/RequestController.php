@@ -13,13 +13,6 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 class RequestController extends Controller
 {
     use HasMediaTrait;
-    /**
-     * A user should always be able to see their
-     * started requests.
-     * 
-     * @var array
-     */
-    public $skipPermissionCheckFor = ['index', 'show'];
 
     /**
      * Get the list of requests.
@@ -28,6 +21,10 @@ class RequestController extends Controller
      */
     public function index($type = null)
     {
+        if ($type === 'all') {
+            $this->authorize('view-all_requests');
+        }
+        
         //load counters
         $query = ProcessRequest::query();
         if (!Auth::user()->is_administrator) {

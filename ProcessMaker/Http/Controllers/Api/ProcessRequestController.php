@@ -17,8 +17,6 @@ use ProcessMaker\Notifications\ProcessCanceledNotification;
 
 class ProcessRequestController extends Controller
 {
-    public $skipPermissionCheckFor = ['index', 'show', 'store', 'destroy'];
-
     /**
      * Display a listing of the resource.
      *
@@ -146,39 +144,6 @@ class ProcessRequestController extends Controller
     public function show(ProcessRequest $request)
     {
         return new ProcessRequestResource($request);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param Request $httpRequest
-     *
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Illuminate\Validation\ValidationException
-     *
-     * @OA\Post(
-     *     path="/requests",
-     *     summary="Save a new process request",
-     *     operationId="createProcessRequest",
-     *     tags={"Process Requests"},
-     *     @OA\RequestBody(
-     *       required=true,
-     *       @OA\JsonContent(ref="#/components/schemas/requestsEditable")
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/requests")
-     *     ),
-     * )
-     */
-    public function store(Request $httpRequest)
-    {
-        $httpRequest->validate(ProcessRequest::rules());
-        $processRequest = new ProcessRequest();
-        $processRequest->fill($httpRequest->input());
-        $processRequest->saveOrFail();
-        return new ProcessRequests($processRequest);
     }
 
     /**

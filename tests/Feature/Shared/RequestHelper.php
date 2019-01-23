@@ -4,6 +4,8 @@ namespace Tests\Feature\Shared;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Permission;
+use ProcessMaker\Providers\AuthServiceProvider;
+use \PermissionSeeder;
 
 trait RequestHelper
 {
@@ -19,6 +21,16 @@ trait RequestHelper
             'password' => Hash::make('password'),
             'is_administrator' => true,
         ]);
+        
+        if ($this->withPermissions === true) {
+            //Run the permission seeder
+            (new PermissionSeeder)->run();
+
+            // Reboot our AuthServiceProvider. This is necessary so that it can
+            // pick up the new permissions and setup gates for each of them.
+            $asp = new AuthServiceProvider(app());
+            $asp->boot();
+        }        
 
         if (method_exists($this, 'withUserSetUp')) {
             $this->withUserSetup();

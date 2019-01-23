@@ -23,7 +23,7 @@ class ProcessPolicy
             return true;
         }
     }
-
+    
     /**
      * Determine whether the user can start the process.
      *

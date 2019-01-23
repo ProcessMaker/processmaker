@@ -30,6 +30,8 @@ class ProcessTest extends TestCase
     use WithFaker;
     use RequestHelper;
     use ResourceAssertionsTrait;
+    
+    public $withPermissions = true;
 
     protected $resource = 'processes';
     protected $structure = [
@@ -72,46 +74,21 @@ class ProcessTest extends TestCase
      */
     public function testProcessesListingWithNoAdminUser()
     {
-        $this->markTestSkipped('API permissions not yet implemented');
-        // We create an user that isn't administrator
+        // We create a user that isn't administrator
         $this->user = factory(User::class)->create([
             'password' => Hash::make('password'),
             'is_administrator' => false,
         ]);
+        
+        // Add process permission to user
+        $this->user->permissions()->attach(Permission::byName('view-processes'));
 
-        // Create create process permission for the user
-        $userId = $this->user->id;
-        factory(Permission::class)->create(['guard_name' => 'requests.create']);
-        factory(Permission::class)->create(['guard_name' => 'processes.index']);
-
+        // Get the initial count
         $initialCount = Process::count();
+
         // Create some processes
         $process = factory(Process::class)->create();
-
-        factory(ProcessPermission::class)
-            ->create(
-                [
-                    'process_id' => $process->id,
-                    'permission_id' => Permission::byName('requests.create'),
-                    'assignable_type' => User::class,
-                    'assignable_id' => $userId
-                ]);
-
-        factory(PermissionAssignment::class)
-            ->create(
-                [
-                    'permission_id' => Permission::byName('requests.create'),
-                    'assignable_type' => User::class,
-                    'assignable_id' => $userId
-                ]);
-
-        factory(PermissionAssignment::class)
-            ->create(
-                [
-                    'permission_id' => Permission::byName('processes.index'),
-                    'assignable_type' => User::class,
-                    'assignable_id' => $userId
-                ]);
+        $process->usersCanStart()->attach($this->user->id);
 
         //Get a page of processes
         $page = 1;
@@ -133,56 +110,38 @@ class ProcessTest extends TestCase
      */
     public function testProcessesListingWithNoAdminGroup()
     {
-        $this->markTestSkipped('API permissions not yet implemented');
-        // We create an user that isn't administrator
+        // We create a user that isn't administrator
         $this->user = factory(User::class)->create([
             'password' => Hash::make('password'),
             'is_administrator' => false,
         ]);
 
         //Create default All Users group
-        $groupId = factory(Group::class)->create([
+        $group = factory(Group::class)->create([
             'name' => 'Test Group',
             'status' => 'ACTIVE'
-        ])->id;
+        ]);
+        $group->save();
+        $group->refresh();
 
+        //Add user to group
         factory(GroupMember::class)->create([
             'member_id' => $this->user->id,
             'member_type' => User::class,
-            'group_id' => $groupId,
+            'group_id' => $group->id,
         ]);
+        $this->user->save();
+        $this->user->refresh();
 
         // Create process permissions for the group
-        factory(Permission::class)->create(['guard_name' => 'requests.create']);
-        factory(Permission::class)->create(['guard_name' => 'processes.index']);
+        $group->permissions()->attach(Permission::byName('view-processes'));
 
+        // Get the initial count
         $initialCount = Process::count();
-        // Create some processes
+
+        // Create a process
         $process = factory(Process::class)->create();
-        factory(ProcessPermission::class)
-            ->create(
-                [
-                    'process_id' => $process->id,
-                    'permission_id' => Permission::byName('requests.create'),
-                    'assignable_type' => Group::class,
-                    'assignable_id' => $groupId
-                ]);
-
-        factory(PermissionAssignment::class)
-            ->create(
-                [
-                    'permission_id' => Permission::byName('requests.create'),
-                    'assignable_type' => User::class,
-                    'assignable_id' => $this->user->id
-                ]);
-
-        factory(PermissionAssignment::class)
-            ->create(
-                [
-                    'permission_id' => Permission::byName('processes.index'),
-                    'assignable_type' => Group::class,
-                    'assignable_id' => $groupId
-                ]);
+        $process->groupsCanStart()->attach($group->id);
 
         //Get a page of processes
         $page = 1;
@@ -201,7 +160,6 @@ class ProcessTest extends TestCase
 
     public function testProcessEventsTrigger()
     {
-        $this->markTestSkipped('API permissions not yet implemented');
         $process = factory(Process::class)->create([
             'bpmn' => Process::getProcessTemplate('SingleTask.bpmn')
         ]);
@@ -211,35 +169,13 @@ class ProcessTest extends TestCase
             'is_administrator' => false,
         ]);
 
-        $permission = factory(Permission::class)
-            ->create(['guard_name' => 'requests.create']);
-
-        factory(PermissionAssignment::class)
-            ->create(
-                [
-                    'permission_id' => $permission->id,
-                    'assignable_type' => User::class,
-                    'assignable_id' => $this->user->id
-                ]);
-
         $route = route('api.process_events.trigger', $process);
 
         $response = $this->apiCall('POST', $route . '?event=StartEventUID');
         $this->assertStatus(403, $response);
-        $this->assertEquals(
-            $response->json()['message'],
-            'Not authorized to start this process'
-        );
 
-        factory(ProcessPermission::class)
-            ->create(
-                [
-                    'process_id' => $process->id,
-                    'permission_id' => $permission->id,
-                    'assignable_type' => User::class,
-                    'assignable_id' => $this->user->id,
-                ]);
-
+        $process->usersCanStart()->attach($this->user->id);
+        
         $response = $this->apiCall('POST', $route . '?event=StartEventUID');
         $this->assertStatus(201, $response);
     }

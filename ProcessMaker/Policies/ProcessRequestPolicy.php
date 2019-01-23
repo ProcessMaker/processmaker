@@ -51,4 +51,18 @@ class ProcessRequestPolicy
             return true;
         }
     }    
+
+    /**
+     * Determine whether the user can update the process request.
+     *
+     * @param  \ProcessMaker\Models\User  $user
+     * @param  \ProcessMaker\Models\ProcessRequest  $processRequest
+     * @return mixed
+     */
+    public function destroy(User $user, ProcessRequest $processRequest)
+    {
+        if ($processRequest->user_id == $user->id) {
+            return true;
+        }
+    }
 }

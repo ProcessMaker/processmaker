@@ -29,12 +29,12 @@ class GenerateMenus
             });
             if (\Auth::check() && (\Auth::user()->can('view-processes') || \Auth::user()->can('view-categories') || \Auth::user()->can('view-scripts') || \Auth::user()->can('view-screens') || \Auth::user()->can('view-environment_variables')|| \Auth::user()->is_administrator)) {
                 $menu->group(['prefix' => 'processes'], function($request_items) {
-                    $request_items->add(__('menus.topnav.processes'), ['route' => 'processes.index'])->active('processes/*');
+                    $request_items->add(__('menus.topnav.processes'), ['route' => 'processes.dashboard'])->active('processes/*');
                 });
             }
             if (\Auth::check() && (\Auth::user()->can('view-users') || \Auth::user()->can('view-groups') || \Auth::user()->is_administrator)) {
                 $menu->group(['prefix' => 'admin'], function($admin_items) {
-                    $admin_items->add(__('menus.topnav.admin'), ['route' => 'users.index'])->active('admin/*');
+                    $admin_items->add(__('menus.topnav.admin'), ['route' => 'admin.dashboard'])->active('admin/*');
                 });
             }
         });
@@ -99,7 +99,7 @@ class GenerateMenus
           ]);
           if (\Auth::check() && \Auth::user()->can('view-all_requests')) {
               $submenu->add(__('menus.sidebar_request.all'), [
-                  'route' => 'requests.all',
+                  'route' => ['requests_by_type', 'all'],
                   'icon' => 'fa-clipboard',
               ]);
           }

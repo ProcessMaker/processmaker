@@ -11,6 +11,7 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
+use ProcessMaker\Providers\AuthServiceProvider;
 use Tests\TestCase;
 
 class CommentTest extends TestCase
@@ -32,6 +33,17 @@ class CommentTest extends TestCase
         'updated_at',
         'created_at'
     ];
+
+    protected function withUserSetup()
+    {
+        // Seed the permissions table.
+        Artisan::call('db:seed', ['--class' => 'PermissionSeeder']);
+        
+        // Reboot our AuthServiceProvider. This is necessary so that it can
+        // pick up the new permissions and setup gates for each of them.
+        $asp = new AuthServiceProvider(app());
+        $asp->boot();
+    }
 
     public function testGetCommentListAdministrator()
     {
@@ -64,8 +76,6 @@ class CommentTest extends TestCase
 
     public function testGetCommentListNoAdministrator()
     {
-        // Seed the permissions table.
-        Artisan::call('db:seed', ['--class' => 'PermissionSeeder']);
         $permission = 'view-comments';
 
         $faker = Faker::create();
@@ -101,8 +111,6 @@ class CommentTest extends TestCase
 
     public function testGetCommentByType()
     {
-        // Seed the permissions table.
-        Artisan::call('db:seed', ['--class' => 'PermissionSeeder']);
         $permission = 'view-comments';
 
         $model = factory(ProcessRequestToken::class)->create();
