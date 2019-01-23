@@ -171,7 +171,7 @@
 
                     ProcessMaker.apiClient.put('processes/' + that.formData.id, that.formData)
                         .then(response => {
-                            ProcessMaker.alert('{{__('Update User Successfully')}}', 'success');
+                            ProcessMaker.alert('{{__('Process Updated Successfully')}}', 'success');
                             that.onClose();
                         })
                         .catch(error => {
