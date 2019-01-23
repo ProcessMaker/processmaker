@@ -57,10 +57,6 @@ class PermissionSeeder extends Seeder
         'delete-task_assignments',
     ];
     
-    private $resourcePermissions = [
-        'requests'
-    ];
-
     public function run($seedUser = null)
     {
         if (Permission::count() === 0) {
