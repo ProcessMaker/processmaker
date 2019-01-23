@@ -56,7 +56,7 @@ class UserCreationTest extends DuskTestCase
                 ->type('#confpassword', 'password123');
 
             $browser->maximize();
-            $browser->press('.btn.btn-secondary')
+            $browser->press('#disabledForNow')
                 ->pause(5000)
                 ->assertSee('successfully created');
         });
