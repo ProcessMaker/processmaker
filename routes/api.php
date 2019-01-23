@@ -87,7 +87,6 @@ Route::group(
     // Requests
     Route::get('requests', 'ProcessRequestController@index')->name('requests.index'); //Already filtered in controller
     Route::get('requests/{request}', 'ProcessRequestController@show')->name('requests.show')->middleware('can:view,request');
-    Route::post('requests', 'ProcessRequestController@store')->name('requests.store')->middleware('can:create,ProcessMaker\Models\ProcessRequest');
     Route::put('requests/{request}', 'ProcessRequestController@update')->name('requests.update')->middleware('can:update,request');
     Route::delete('requests/{request}', 'ProcessRequestController@destroy')->name('requests.destroy')->middleware('can:destroy,request');
     

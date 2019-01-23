@@ -39,18 +39,6 @@ class ProcessRequestPolicy
     }
 
     /**
-     * Determine whether the user can create a process request.
-     *
-     * @param  \ProcessMaker\Models\User  $user
-     * @param  \ProcessMaker\Models\ProcessRequest  $processRequest
-     * @return mixed
-     */
-    public function create(User $user)
-    {
-        return false;
-    }
-
-    /**
      * Determine whether the user can update the process request.
      *
      * @param  \ProcessMaker\Models\User  $user
