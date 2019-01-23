@@ -166,7 +166,7 @@
 
                                         <div class="form-group col">
                                             {!! Form::label('language', 'Language') !!}
-                                            {!! Form::select('language', ['us_en' => 'us_en'], $user->language,
+                                            {!! Form::select('language', ['us_en' => 'English (US)'], $user->language,
                                             ['id' =>
                                             'language','class'=>
                                             'form-control',
