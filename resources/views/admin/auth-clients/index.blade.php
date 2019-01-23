@@ -22,7 +22,7 @@
         </div>
     </div>
     <div>
-        <b-modal ref="createEditAuthClient" :title="modalTitle" @ok="save">
+        <b-modal ref="createEditAuthClient" :title="modalTitle" @ok="save" ok-title="Save" cancel-title="Close">
             <div class="form-group">
                 <label for="authClientName">{{__('Name')}}</label>
                 <b-form-input id="authClientName" v-model="authClient.name" type="text" placeholder="Enter a name for this auth client"></b-form-input>
@@ -43,4 +43,20 @@
 
 @section('js')
 <script src="{{mix('js/admin/auth-clients/index.js')}}"></script>
+@endsection
+
+@section('css')
+<style>
+    .btn-primary {
+        color: #fff !important;
+        background-color: #00bf9c !important;
+        border-color: #00bf9c !important;
+    }
+
+    .modal-footer > .btn-secondary {
+        color: #00bf9c !important;
+        background-color: transparent !important;
+        border-color: #00bf9c !important;
+    }
+</style>
 @endsection
