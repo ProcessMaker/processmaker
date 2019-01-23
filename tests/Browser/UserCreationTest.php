@@ -17,6 +17,8 @@ class UserCreationTest extends DuskTestCase
      */
     public function testUserCreation()
     {
+        $this->markTestSkipped('Skipping Dusk tests temporarily');
+
         //Factory 100 users
         Artisan::call('migrate:fresh', []);
         $user = factory(User::class)->create([
