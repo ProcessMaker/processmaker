@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.minimal')
 
 @section('title')
   {{__('Page not found - ProcessMaker')}}

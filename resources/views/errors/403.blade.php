@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.minimal')
 
 @section('title')
   {{__('Unauthorized - ProcessMaker')}}

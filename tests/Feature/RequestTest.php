@@ -36,7 +36,6 @@ class RequestTest extends TestCase
      */
     public function testRequestAllRouteAsAdmin()
     {
-        $this->markTestSkipped();
         $this->user = factory(User::class)->create();
         $request = factory(ProcessRequest::class)->create();
 

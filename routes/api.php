@@ -30,5 +30,6 @@ Route::group(
     Route::put('read_notifications', 'NotificationController@updateAsRead');
     Route::put('unread_notifications', 'NotificationController@updateAsUnread');
     Route::apiResource('task_assignments', 'TaskAssignmentController')->only(['index', 'store', 'update', 'destroy']);
+    Route::apiResource('comments', 'CommentController');
 }
 );

@@ -24,8 +24,10 @@ use Illuminate\Pagination\AbstractPaginator;
  *    @OA\Property(property="in_overdue", type="integer")
  *  )
  */
-class TaskCollection extends ResourceCollection
+class TaskCollection extends ApiCollection
 {
+    public $appends = ['inOverdue'];
+    
     /**
      * Generic collection to add sorting and filtering metadata.
      *
@@ -48,23 +50,10 @@ class TaskCollection extends ResourceCollection
                  * total_pages: (integer, the total number of pages available, based on per_page and total)
                  */
                 'total_pages' => ceil($this->resource->total() / $this->resource->perPage()),
-                'in_overdue' => $this->resource->inOverdue
+                'in_overdue' => $this->appended->inOverdue
             ]
         ];
 
         return $payload;
-    }
-
-    /**
-     * Create an HTTP response that represents the object.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function toResponse($request)
-    {
-        return $this->resource instanceof AbstractPaginator
-                    ? (new ApiPaginatedResourceResponse($this))->toResponse($request)
-                    : parent::toResponse($request);
     }
 }

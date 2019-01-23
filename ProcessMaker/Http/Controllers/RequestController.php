@@ -89,16 +89,12 @@ class RequestController extends Controller
      */
     public function show(ProcessRequest $request, Media $mediaItems)
     {
-        $request->authorize(Auth::user());
+        $this->authorize('view', $request);
         $request->participants;
         $request->user;
         $request->summary = $request->summary();
         $request->summary_screen = $request->getSummaryScreenId();
-        if (Auth::user()->is_administrator === true) {
-            $canCancel = true;
-        } else {
-            $canCancel = Auth::user()->hasPermissionsFor($request->process, 'requests.cancel');
-        }
+        $canCancel = Auth::user()->can('cancel', $request->process);
 
         $files = $request->getMedia();
 
