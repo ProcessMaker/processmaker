@@ -19,6 +19,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('auth-clients', 'AuthClientController@index')->name('auth-clients.index')->middleware('can:view-auth-clients');
     });
 
+    Route::get('admin', 'AdminController@dashboard')->name('admin.dashboard');
+
     Route::namespace('Process')->prefix('processes')->group(function () {
         Route::get('environment-variables', 'EnvironmentVariablesController@index')->name('environment-variables.index')->middleware('can:view-environment_variables');
         Route::get('environment-variables/{environment_variable}/edit', 'EnvironmentVariablesController@edit')->name('environment-variables.edit')->middleware('can:edit-environment_variables,environment_variable ');
@@ -35,6 +37,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('categories/{processCategory}/edit', 'ProcessCategoryController@edit')->name('categories.edit')->middleware('can:edit-categories,processCategory');
     });
 
+    Route::get('processes/dashboard', 'ProcessController@dashboard')->name('processes.dashboard');
     Route::get('processes', 'ProcessController@index')->name('processes.index')->middleware('can:view-processes');
     Route::get('processes/{process}/edit', 'ProcessController@edit')->name('processes.edit')->middleware('can:edit-processes');
     Route::get('processes/create', 'ProcessController@create')->name('processes.create')->middleware('can:create-processes');
@@ -53,9 +56,8 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/', 'HomeController@index')->name('home');
 
-    Route::get('requests/all', 'RequestController@index')->name('requests.all')->middleware('can:view-all_requests');
     Route::get('requests/{type}', 'RequestController@index')
-        ->where('type', 'in_progress|completed')
+        ->where('type', 'all|in_progress|completed')
         ->name('requests_by_type');
     Route::get('request/{requestID}/files/{fileID}', 'RequestController@downloadFiles');
     Route::get('requests', 'RequestController@index')->name('requests.index');

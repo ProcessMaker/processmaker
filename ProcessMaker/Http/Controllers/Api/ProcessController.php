@@ -20,8 +20,6 @@ use ProcessMaker\Models\User;
 
 class ProcessController extends Controller
 {
-    public $skipPermissionCheckFor = ['triggerStartEvent', 'startProcesses'];
-
     /**
      * Get list Process
      *
@@ -77,10 +75,6 @@ class ProcessController extends Controller
             ->orderBy(...$orderBy)
             ->where($where)
             ->get();
-
-        $processes = $processes->filter(function($process) {
-            return Auth::user()->can('start', $process);
-        })->values();
 
         return new ApiCollection($processes);
     }
@@ -441,10 +435,6 @@ class ProcessController extends Controller
         $id = $request->input('event');
         if (!$id) {
             return abort(404);
-        }
-
-        if (! Auth::user()->can('start', $request->process)) {
-            throw new AuthorizationException("Not authorized to start this process");
         }
 
         $definitions = $process->getDefinitions();

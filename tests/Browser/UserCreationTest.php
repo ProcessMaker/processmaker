@@ -17,6 +17,8 @@ class UserCreationTest extends DuskTestCase
      */
     public function testUserCreation()
     {
+        $this->markTestSkipped('Skipping Dusk tests temporarily');
+
         //Factory 100 users
         Artisan::call('migrate:fresh', []);
         $user = factory(User::class)->create([
@@ -42,6 +44,8 @@ class UserCreationTest extends DuskTestCase
                 ->type('#password', 'admin')
                 ->press('.btn')
                 ->clickLink('Admin')
+                ->pause(5000)
+                ->clickLink('Users')
                 ->pause(5000)
                 ->waitFor('.vuetable-body', 5)
                 ->assertSee('1 - 10 of 100 Users');

@@ -9,10 +9,14 @@
 @endsection
 
 @section('content')
+@include('shared.breadcrumbs', ['routes' => [
+        __('Admin') => route('users.index'),
+        __('Auth Clients') => null,
+    ]])
 <div class="container page-content" id="listAuthClients">
     <div class="row align-items-center">
         <div class="col-8">
-            <h1>{{__('Auth Clients')}}</h1>
+            
         </div>
         <div class="col-4" align="right">
             <b-button @click="create">

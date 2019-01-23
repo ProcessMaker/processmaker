@@ -131,6 +131,74 @@
         </div>
     </div>
 </div>
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#comments">
+                {{__('Comments')}}
+            </button>
+        </h5>
+    </div>
+    <div id="comments" class="collapse" >
+        <div class="card-body">
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="view-comments" v-model="selectedPermissions">   {{__('View Comments')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="create-comments" v-model="selectedPermissions" @change="checkCreate('edit-comments', $event)">   {{__('Create Comments')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="edit-comments" v-model="selectedPermissions" @change="checkEdit('create-comments', $event)">   {{__('Edit Comments')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="delete-comments" v-model="selectedPermissions">   {{__('Delete Comments')}}</label>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#files">
+                {{__('Files (API)')}}
+            </button>
+        </h5>
+    </div>
+    <div id="files" class="collapse" >
+        <div class="card-body">
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="view-files" v-model="selectedPermissions">   {{__('View Files')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="create-files" v-model="selectedPermissions">   {{__('Create Files')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="edit-files" v-model="selectedPermissions">   {{__('Edit Files')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="delete-files" v-model="selectedPermissions">   {{__('Delete Files')}}</label>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#notifications">
+                {{__('Notifications (API)')}}
+            </button>
+        </h5>
+    </div>
+    <div id="notifications" class="collapse" >
+        <div class="card-body">
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="view-notifications" v-model="selectedPermissions">   {{__('View Notifications')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="create-notifications" v-model="selectedPermissions">   {{__('Create Notifications')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="edit-notifications" v-model="selectedPermissions">   {{__('Edit Notifications')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="delete-notifications" v-model="selectedPermissions">   {{__('Delete Notifications')}}</label>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#task_assignments">
+                {{__('Task Assignments (API)')}}
+            </button>
+        </h5>
+    </div>
+    <div id="task_assignments" class="collapse" >
+        <div class="card-body">
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="view-task_assignments" v-model="selectedPermissions">   {{__('View Task Assignments')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="create-task_assignments" v-model="selectedPermissions">   {{__('Create Task Assignments')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="edit-task_assignments" v-model="selectedPermissions">   {{__('Edit Task Assignments')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="delete-task_assignments" v-model="selectedPermissions">   {{__('Delete Task Assignments')}}</label>
+        </div>
+    </div>
+</div>
 
 @section('css')
     <style scoped>

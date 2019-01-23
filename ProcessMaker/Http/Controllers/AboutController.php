@@ -7,8 +7,6 @@ use ProcessMaker\Http\Controllers\Controller;
 
 class AboutController extends Controller
 {
-    public $skipPermissionCheckFor = ['index'];
-
     /**
      * Get the list of users.
      *

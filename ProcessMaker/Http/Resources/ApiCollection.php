@@ -87,7 +87,6 @@ class ApiCollection extends ResourceCollection
      */
     public function toResponse($request)
     {
-        // dd($this->resource);
         if ($this->resource instanceof Collection) {
             $this->resource = $this->collectionToPaginator($this->resource, $request);
         }

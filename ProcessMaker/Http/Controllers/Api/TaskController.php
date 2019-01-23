@@ -14,8 +14,6 @@ use ProcessMaker\Notifications\TaskReassignmentNotification;
 
 class TaskController extends Controller
 {
-    public $skipPermissionCheckFor = ['index', 'show', 'update'];
-
     /**
      * Display a listing of the resource.
      *

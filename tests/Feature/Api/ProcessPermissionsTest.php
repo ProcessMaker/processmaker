@@ -20,56 +20,51 @@ class ProcessPermissionsTest extends TestCase
     use RequestHelper;
 
     protected $resource = 'requests';
+    
+    public $withPermissions = true;
 
     protected function withUserSetup()
     {
         $this->user->is_administrator = false;
         $this->user->save();
-
-        // (new PermissionSeeder)->run($this->user);
-
-        // //Permission to use api
-        // factory(PermissionAssignment::class)->create([
-        //     'permission_id' => Permission::byName('requests.edit')->id,
-        //     'assignable_type' => User::class,
-        //     'assignable_id' => $this->user->id
-        // ]);
-        // factory(PermissionAssignment::class)->create([
-        //     'permission_id' => Permission::byName('requests.cancel')->id,
-        //     'assignable_type' => User::class,
-        //     'assignable_id' => $this->user->id
-        // ]);
+        
+        (new PermissionSeeder)->run($this->user);
     }
 
     public function testUpdateProcessPermissionRequestCancelTypeUser()
     {
-        $this->markTestSkipped('API permissions not yet implemented');
+        // Create a process
         $process = factory(Process::class)->create();
-        $normal_user = factory(User::class)->create([
+        
+        // Create a "normal" user
+        $normalUser = factory(User::class)->create([
             'password' => Hash::make('password')
         ]);
-        // User needs the 'global' requests.cancel first
-        $normal_user->giveDirectPermission('requests.cancel');
+        
+        // We haven't assigned cancel permissions to this process, so let's
+        // assert that our "normal" user cannot cancel it
+        $this->assertFalse($normalUser->can('cancel', $process));
 
+        // Ensure our primary user can edit processes
+        $this->user->giveDirectPermission('edit-processes');
+        $this->user->refresh();
+        $this->flushSession();
+
+        // Add the "normal" user to the list of users that have permission to
+        // cancel the process
         $route = route('api.processes.update', [$process->id]);
         $response = $this->apiCall('PUT', $route, [
             'name' => 'Update Process',
             'description' => 'Update Test',
-            'cancel_request' => ['users' => [$normal_user->id], 'groups' => []]
+            'cancel_request' => ['users' => [$normalUser->id], 'groups' => []]
         ]);
+        
+        // Assert that the API returned a valid response
         $response->assertStatus(200, $response);
 
-        //Verify if user has a permission requests cancel
-        $this->assertTrue($normal_user->hasPermissionsFor($process, 'requests.cancel'));
-
-        //Verify Process Permission
-        $response = ProcessPermission::where('permission_id', Permission::byName('requests.cancel')->id)
-            ->where('process_id', $process->id)
-            ->where('assignable_id', $normal_user->id)
-            ->where('assignable_type', User::class)
-            ->exists();
-
-        $this->assertTrue($response);
+        // Assert that our "normal user" can now cancel the process
+        $process->refresh();
+        $this->assertTrue($normalUser->can('cancel', $process));
     }
 
 }

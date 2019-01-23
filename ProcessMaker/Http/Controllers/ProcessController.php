@@ -30,6 +30,10 @@ class ProcessController extends Controller
             ]);
     }
 
+    public function dashboard(){
+        return view('processes.dashboard');
+    }
+
     /**
      * @param Process $process
      *
