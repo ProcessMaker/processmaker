@@ -58,9 +58,9 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary"
+                        <button type="button" class="btn btn-outline-success"
                                 data-dismiss="modal">{{__('Close')}}</button>
-                        <button type="button" class="btn btn-secondary" @click="onSubmit"
+                        <button type="button" class="btn btn-success ml-2" @click="onSubmit"
                                 id="disabledForNow">{{__('Save')}}</button>
                     </div>
                 </div>
