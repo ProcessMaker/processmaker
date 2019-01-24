@@ -50,46 +50,45 @@ class EditDataTest extends TestCase
 
         // Seed the permissions
         (new PermissionSeeder)->run($this->admin);
-
-        // Add create request permission
-        $permission = Permission::byGuardName('requests.create');
-        factory(PermissionAssignment::class)->create([
-            'assignable_type' => User::class,
-            'assignable_id' => $this->user->id,
-            'permission_id' => $permission->id,
-        ]);
-        factory(PermissionAssignment::class)->create([
-            'assignable_type' => User::class,
-            'assignable_id' => $this->admin->id,
-            'permission_id' => $permission->id,
-        ]);
-        $this->admin->refresh();
-        $this->user->refresh();
-        $this->flushSession();
     }
 
     /**
      * Assign the required permission to the user and group.
      *
      */
-    private function assignPermissions()
+    private function assignPermissions(Process $process)
     {
-        // Add edit data permission
-        $permission = Permission::byGuardName('requests.edit_data');
-        // Assign to user
-        factory(PermissionAssignment::class)->create([
-            'assignable_type' => User::class,
-            'assignable_id' => $this->user->id,
-            'permission_id' => $permission->id,
-        ]);
-        // Assign to group
-        factory(PermissionAssignment::class)->create([
-            'assignable_type' => Group::class,
-            'assignable_id' => $this->group->id,
-            'permission_id' => $permission->id,
-        ]);
+        $this->addProcessPermission($process, [$this->user->id], [$this->group->id]);
         $this->user->refresh();
         $this->flushSession();
+    }
+
+    /**
+     * Add edit data process permission.
+     *
+     * @param Process $process
+     * @param array $users
+     * @param array $groups
+     */
+    private function addProcessPermission(Process $process, array $users, array $groups)
+    {
+        //Adding method to users array
+        $editDataUsers = [];
+        foreach ($users as $item) {
+            $editDataUsers[$item] = ['method' => 'EDIT_DATA'];
+        }
+
+        //Adding method to groups array            
+        $editDataGroups = [];
+        foreach ($groups as $item) {
+            $editDataGroups[$item] = ['method' => 'EDIT_DATA'];
+        }
+
+        //Syncing users and groups that can cancel this process            
+        $process->usersCanEditData()->sync($editDataUsers,
+            ['method' => 'EDIT_DATA']);
+        $process->groupsCanEditData()->sync($editDataGroups,
+            ['method' => 'EDIT_DATA']);
     }
 
     /**
@@ -156,7 +155,7 @@ class EditDataTest extends TestCase
     }
 
     /**
-     * Test edit data without permissions
+     * Verify edit data disabled without permissions
      */
     public function testEditDataWithoutPermissions()
     {
@@ -172,7 +171,7 @@ class EditDataTest extends TestCase
         $response->assertStatus(200);
         $response->assertViewIs('requests.show');
         $response->assertSee('Summary');
-        $response->assertDontSee('Data');
+        $response->assertDontSee('<!-- data edit -->');
     }
 
     /**
@@ -181,7 +180,6 @@ class EditDataTest extends TestCase
     public function testEditDataWithAdmin()
     {
         $this->actingAs($this->admin);
-        $this->assertTrue($this->admin->hasPermission('requests.edit_data'));
 
         $process = $this->createSingleTaskProcessUserAssignment($this->user);
         $request = $this->startProcess($process, 'StartEventUID');
@@ -192,11 +190,11 @@ class EditDataTest extends TestCase
         $response->assertStatus(200);
         $response->assertViewIs('requests.show');
         $response->assertSee('Summary');
-        //$response->assertSee('Data');
+        $response->assertSee('<!-- data edit -->');
     }
 
     /**
-     * Test edit data with permissions from "In progress" task
+     * Verify edit data disabled without permissions from "In progress" task
      */
     public function testEditDataTaskViewWithoutPermissions()
     {
@@ -209,7 +207,7 @@ class EditDataTest extends TestCase
         $response = $this->call('GET', 'tasks/' . $task->id . '/edit');
         $response->assertStatus(200);
         $response->assertViewIs('tasks.edit');
-        $response->assertDontSee('Data');
+        $response->assertDontSee('<!-- data edit -->');
     }
 
     /**
@@ -218,30 +216,48 @@ class EditDataTest extends TestCase
     public function testEditDataWithPermissions()
     {
         $this->actingAs($this->user);
-        $this->assignPermissions();
-        $this->assertTrue($this->user->hasPermission('requests.edit_data'));
 
         $process = $this->createSingleTaskProcessUserAssignment($this->user);
+        $this->assignPermissions($process);
         $request = $this->startProcess($process, 'StartEventUID');
         $task = $request->tokens()->where('element_id', 'UserTaskUID')->first();
 
         $response = $this->call('GET', 'tasks/' . $task->id . '/edit');
         $response->assertStatus(200);
         $response->assertViewIs('tasks.edit');
-        //$response->assertSee('Form');
-        //$response->assertSee('Data');
+        $response->assertSee('Form');
+        $response->assertSee('<!-- data edit -->');
     }
 
     /**
-     * Test edit data with permissions from Request "Completed"
+     * Verify Request screen edit data disabled with permissions but request is "Active"
+     */
+    public function testEditDataRequestActive()
+    {
+        $this->actingAs($this->user);
+
+        $process = $this->createSingleTaskProcessUserAssignment($this->user);
+        $this->assignPermissions($process);
+        $request = $this->startProcess($process, 'StartEventUID');
+        $task = $request->tokens()->where('element_id', 'UserTaskUID')->first();
+
+        $response = $this->call('GET', 'requests/' . $request->id);
+        $response->assertStatus(200);
+        $response->assertViewIs('requests.show');
+        $response->assertSee('Completed');
+        $response->assertSee('Summary');
+        $response->assertDontSee('<!-- data edit -->');
+    }
+
+    /**
+     * Test Request screen edit data with permissions and request is "Completed"
      */
     public function testEditDataRequestCompleted()
     {
         $this->actingAs($this->user);
-        $this->assignPermissions();
-        $this->assertTrue($this->user->hasPermission('requests.edit_data'));
 
         $process = $this->createSingleTaskProcessUserAssignment($this->user);
+        $this->assignPermissions($process);
         $request = $this->startProcess($process, 'StartEventUID');
         $task = $request->tokens()->where('element_id', 'UserTaskUID')->first();
         $this->completeTask($task);
@@ -251,6 +267,6 @@ class EditDataTest extends TestCase
         $response->assertViewIs('requests.show');
         $response->assertSee('Completed');
         $response->assertSee('Summary');
-        //$response->assertSee('Data');
+        $response->assertSee('<!-- data edit -->');
     }
 }
