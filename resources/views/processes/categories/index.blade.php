@@ -44,7 +44,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">{{__('Create New Process Category')}}</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onClose">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
@@ -59,7 +59,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-success"
-                                data-dismiss="modal">{{__('Close')}}</button>
+                                data-dismiss="modal" @click="onClose">{{__('Close')}}</button>
                         <button type="button" class="btn btn-success ml-2" @click="onSubmit"
                                 id="disabledForNow">{{__('Save')}}</button>
                     </div>
@@ -72,7 +72,7 @@
 
 @section('js')
     <script src="{{mix('js/processes/categories/index.js')}}"></script>
-    
+
     @can('create-categories')
         <script>
             new Vue({
@@ -83,6 +83,11 @@
                     status: 'ACTIVE',
                 },
                 methods: {
+                    onClose() {
+                        this.name = '';
+                        this.status = 'ACTIVE';
+                        this.errors = {};
+                    },
                     onSubmit() {
                         this.errors = {};
                         let that = this;
