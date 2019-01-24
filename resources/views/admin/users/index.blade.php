@@ -47,7 +47,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">{{__('Add A User')}}</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onClose">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
@@ -101,7 +101,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-success"
-                                data-dismiss="modal">{{__('Close')}}</button>
+                                data-dismiss="modal" @click="onClose">{{__('Close')}}</button>
                         <button type="button" class="btn btn-success ml-2" @click="onSubmit"
                                 id="disabledForNow">{{__('Save')}}</button>
                     </div>
@@ -130,6 +130,17 @@
                     submitted: false,
                 },
                 methods: {
+                    onClose () {
+                        this.username = '';
+                        this.firstname = '';
+                        this.lastname = '';
+                        this.status = '';
+                        this.email = '';
+                        this.password = '';
+                        this.confpassword = '';
+                        this.addError = {};
+                        this.submitted = false;
+                    },
                     validatePassword() {
                         if (this.password.trim().length > 0 && this.password.trim().length < 8) {
                             this.addError.password = ['Password must be at least 8 characters']
@@ -163,7 +174,7 @@
                             window.location = "/admin/users/" + response.data.id + '/edit?created=true'
                         }).catch(error => {
                            this.addError = error.response.data.errors
-                                
+
                             });
                         }
                     }
