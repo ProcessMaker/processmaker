@@ -36,14 +36,14 @@
         </div>
         <variables-listing ref="listVariable" :filter="filter" :permission="{{ \Auth::user()->hasPermissionsFor('environment_variables') }}" @delete="deleteVariable"></variables-listing>
     </div>
-    
+
     @can('create-environment_variables')
         <div class="modal" tabindex="-1" role="dialog" id="createEnvironmentVariable">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">{{__('Create Environment Variable')}}</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onClose">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
@@ -70,7 +70,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-success"
-                                data-dismiss="modal">{{__('Close')}}</button>
+                                data-dismiss="modal" @click="onClose">{{__('Close')}}</button>
                         <button type="button" class="btn btn-success ml-2" @click="onSubmit"
                                 id="disabledForNow">{{__('Save')}}</button>
                     </div>
@@ -83,7 +83,7 @@
 
 @section('js')
     <script src="{{mix('js/processes/environment-variables/index.js')}}"></script>
-    
+
     @can('create-environment_variables')
         <script>
             new Vue({
@@ -95,6 +95,12 @@
                     value: ''
                 },
                 methods: {
+                    onClose() {
+                        this.name = '';
+                        this.description = '';
+                        this.value = '';
+                        this.errors = {};
+                    },
                     onSubmit() {
                         this.errors = {};
                         let that = this;
