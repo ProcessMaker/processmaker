@@ -30,7 +30,7 @@ class SanitizeInput extends TransformsRequest
         
             // If the controller has a doNotSanitize property,
             // add it to our exceptions array.
-            if (property_exists($controller, 'doNotSanitize')) {
+            if ($controller && property_exists($controller, 'doNotSanitize')) {
                 if (is_array($controller->doNotSanitize)) {
                     $this->except = array_merge($this->except, $controller->doNotSanitize);
                 }

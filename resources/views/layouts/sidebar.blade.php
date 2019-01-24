@@ -12,16 +12,16 @@
         </a>
       </li>
     </ul>
-      <ul class="nav flex-column">
-    @foreach($sidebar->topMenu()->items as $section)
-      <li class="section">{{$section->title}}</li>
-      @foreach($section->children() as $item)
-        <li class="nav-item">
-          <a href="{{ $item->url() }}" class="nav-link" title="{{$item->title}}">
-                <i class="fas {{$item->attr('icon')}} nav-icon"></i> <span class="nav-text">{{$item->title}}</span>
-              </a>
-        </li>
+    <ul class="nav flex-column">
+      @foreach($sidebar->topMenu()->items as $section)
+        <li class="section">{{$section->title}}</li>
+        @foreach($section->children() as $item)
+          <li class="nav-item">
+            <a href="{{ $item->url() }}" class="nav-link" title="{{$item->title}}">
+              <i class="fas {{$item->attr('icon')}} nav-icon"></i> <span class="nav-text">{{$item->title}}</span>
+            </a>
+          </li>
         @endforeach
-        @endforeach
-  </ul>
+      @endforeach
+    </ul>
 </div>

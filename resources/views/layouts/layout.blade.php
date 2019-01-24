@@ -34,6 +34,7 @@
     {{-- <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.min.css"> --}}
     @yield('css')
     <script type="text/javascript">
+    @if(Auth::user())
     window.Processmaker = {
       csrfToken: "{{csrf_token()}}",
       userId: "{{\Auth::user()->id}}",
@@ -44,6 +45,7 @@
         key: "{{config('broadcasting.key')}}"
       }
     }
+    @endif
   </script>
 </head>
 
