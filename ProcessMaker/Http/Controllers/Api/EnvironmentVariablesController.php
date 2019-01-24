@@ -11,6 +11,16 @@ use Illuminate\Http\Request;
 
 class EnvironmentVariablesController extends Controller
 {
+    /**
+     * A whitelist of attributes that should not be
+     * sanitized by our SanitizeInput middleware.
+     *
+     * @var array
+     */
+    public $doNotSanitize = [
+        'value',
+    ];
+
   /**
    * Fetch a collection of variables based on paged request and filter if provided
    *

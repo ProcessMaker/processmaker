@@ -15,6 +15,16 @@ use ProcessMaker\Models\User;
 class NotificationController extends Controller
 {
     /**
+     * A whitelist of attributes that should not be
+     * sanitized by our SanitizeInput middleware.
+     *
+     * @var array
+     */
+    public $doNotSanitize = [
+        'data'
+    ];
+
+    /**
      * Display a listing of the resource.
      *
      * @param Request $request
