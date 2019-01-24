@@ -182,13 +182,16 @@ class ProcessRequestController extends Controller
     {
         if ($httpRequest->status === 'CANCELED') {
             if (! Auth::user()->can('cancel', $request->process)) {
-                throw new AuthorizationException('Not authorized to cancel this request.');
+                throw new AuthorizationException(__('Not authorized to cancel this request.'));
             }
             $this->cancelRequestToken($request);
             return response([], 204);
         }
         $fields = $httpRequest->json()->all();
         if (array_keys($fields) === ['data']) {
+            if (! Auth::user()->can('editData', $request->process)) {
+                throw new AuthorizationException(__('Not authorized to edit request data.'));
+            }
             // Update data edited
             $data = array_merge($request->data, $fields['data']);
             $request->data = $data;
