@@ -27,7 +27,9 @@
                         <div class="invalid-feedback" v-if="errors.title">@{{errors.title[0]}}</div>
                     </div>
                     <div class="form-group">
-                        <label>Type: <strong>{{ $screen->type }}</strong></label>
+                        {!! Form::label('type', 'Type') !!}
+                        {!! Form::select('type', [$screen->type => mb_convert_case($screen->type, MB_CASE_TITLE)], 'null',
+                        ['id' => 'type', 'class'=> 'form-control disabled', 'disabled' => 'disabled']) !!}
                     </div>
                     <div class="form-group">
                         {!! Form::label('description', 'Description') !!}
