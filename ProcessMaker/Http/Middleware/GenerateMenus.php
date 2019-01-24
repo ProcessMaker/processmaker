@@ -103,7 +103,7 @@ class GenerateMenus
                   'icon' => 'fa-clipboard',
               ]);
           }
-       });
+        });
 
         Menu::make('sidebar_processes', function ($menu) {
           $submenu = $menu->add(__('menus.sidebar_processes.processes'));
@@ -150,7 +150,7 @@ class GenerateMenus
               ]);
           }
 
-    });
+        });
 
         Menu::make('sidebar_designer', function ($menu) {});
 
