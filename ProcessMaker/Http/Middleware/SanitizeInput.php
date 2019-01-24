@@ -50,7 +50,15 @@ class SanitizeInput extends TransformsRequest
         // If this is a string and is not in the exceptions
         // array, return it after sanitization.
         if (is_string($value) && !in_array($key, $this->except, true)) {
-            return e($value);
+            // Remove most injectable code
+            $value = strip_tags($value);
+            
+            // Run this for double safety, but we do allow quotes, for example
+            // to allow for users who have names such as Conan O'Brien
+            $value = htmlspecialchars($value, ENT_NOQUOTES, null, true); 
+            
+            // Return the sanitized string
+            return $value;
         }
         
         // Return the original value.

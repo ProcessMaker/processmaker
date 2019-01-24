@@ -47,9 +47,6 @@ class SanitizationTest extends TestCase
         // Description should not match since we used restricted characters
         $this->assertNotEquals($description, $data->description);
         
-        // Description should match if we run it through our sanitizer first
-        $this->assertEquals(e($description), $data->description);
-
         // Code should match despite using restricted characters since it is
         // on the sanitization blacklist within the Script API controller
         $this->assertEquals($code, $data->code);
