@@ -131,5 +131,5 @@ Route::group(
     // Returns a json error message instead of HTML
     Route::fallback(function(){
         return response()->json(['error' => 'Not Found'], 404);
-    });
+    })->name('fallback');
 });

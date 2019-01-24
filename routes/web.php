@@ -72,7 +72,7 @@ Route::group(['middleware' => ['auth', 'sanitize']], function () {
     // Allows for a logged in user to see navigation on a 404 page
     Route::fallback(function(){
         return response()->view('errors.404', [], 404);
-    });
+    })->name('fallback');
 });
 
 // Add our broadcasting routes
