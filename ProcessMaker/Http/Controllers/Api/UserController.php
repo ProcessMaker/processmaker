@@ -13,6 +13,17 @@ use ProcessMaker\Models\User;
 class UserController extends Controller
 {
     /**
+     * A whitelist of attributes that should not be
+     * sanitized by our SanitizeInput middleware.
+     *
+     * @var array
+     */
+    public $doNotSanitize = [
+        'password',
+        'password_confirmation',
+    ];
+
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response

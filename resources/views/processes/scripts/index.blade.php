@@ -9,7 +9,7 @@
 
 @section('content')
     @include('shared.breadcrumbs', ['routes' => [
-        __('Processes') => route('processes.index'),
+        __('Processes') => route('processes.dashboard'),
         __('Scripts') => null,
     ]])
     <div class="container page-content" id="scriptIndex">
