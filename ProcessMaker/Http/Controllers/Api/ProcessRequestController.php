@@ -9,10 +9,9 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
-use ProcessMaker\Http\Resources\ProcessRequests;
-use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Http\Resources\ProcessRequests as ProcessRequestResource;
+use ProcessMaker\Models\Comment;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Notifications\ProcessCanceledNotification;
 
 class ProcessRequestController extends Controller
@@ -194,6 +193,17 @@ class ProcessRequestController extends Controller
             $data = array_merge($request->data, $fields['data']);
             $request->data = $data;
             $request->saveOrFail();
+            // Log the data edition
+            $user_id   = Auth::id();
+            $user_name = $user_id ? Auth::user()->fullname : 'The System';
+            Comment::create([
+                'type' => 'LOG',
+                'user_id' => $user_id,
+                'commentable_type' => ProcessRequest::class,
+                'commentable_id' => $request->id,
+                'subject' => 'Data edited',
+                'body' => $user_name . " " . __('has edited the request data'),
+            ]);
         } else {
             $httpRequest->validate(ProcessRequest::rules($request));
             $request->fill($fields);
