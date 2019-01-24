@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 class EnvironmentVariablesController extends Controller
 {
     /**
-     * A blacklist of attributes that should not be
+     * A whitelist of attributes that should not be
      * sanitized by our SanitizeInput middleware.
      *
      * @var array
