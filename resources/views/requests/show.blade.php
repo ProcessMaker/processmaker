@@ -13,8 +13,11 @@
 @endsection
 
 @section('content')
+    @include('shared.breadcrumbs', ['routes' => [
+        __('Requests') => route('requests.index'),
+        $request->name . ' # '. $request->getKey() => null,
+    ]])
     <div id="request" class="container">
-        <h1>{{$request->name}} # {{$request->getKey()}}</h1>
         <div class="row">
             <div class="col-md-8">
 
@@ -147,6 +150,11 @@
                     </div>
                     </div>
                 </div>
+
+                <div>
+                    <comments commentable_id="{{ $request->getKey() }}" commentable_type="{{ get_class($request) }}" />
+                </div>
+
             </div>
             <div class="col-md-4">
                 <template v-if="statusLabel">
@@ -178,15 +186,17 @@
                                               :input-data="participants" hide-name="true"></avatar-image>
                             </li>
                             <li class="list-group-item">
+                                <h5>{{__('Completed')}}</h5>
                                 <i class="far fa-calendar-alt"></i>
-                                <small>@{{ labelDate }} @{{ moment(statusDate).fromNow() }}</small>
+                                <small>@{{ moment(statusDate).format() }}</small>
                                 <br>
-                                @{{ moment(statusDate).format() }}
+                                
                             </li>
                         </ul>
                     </div>
                 </template>
             </div>
+
 
         </div>
     </div>

@@ -15,8 +15,6 @@ use ProcessMaker\Http\Resources\GroupMembers as GroupMemberResource;
 
 class GroupMemberController extends Controller
 {
-    public $skipPermissionCheckFor = ['index'];
-
     /**
      * Display a listing of the resource.
      *
@@ -26,7 +24,7 @@ class GroupMemberController extends Controller
      *     path="/group_members",
      *     summary="Returns all groups for a given member",
      *     operationId="getGroupMembers",
-     *     tags={"Group members"},
+     *     tags={"Group Members"},
      *     @OA\Parameter(ref="#/components/parameters/member_id"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
@@ -86,7 +84,7 @@ class GroupMemberController extends Controller
      *     path="/group_members",
      *     summary="Save a new group_members",
      *     operationId="createGroupMembers",
-     *     tags={"Group members"},
+     *     tags={"Group Members"},
      *     @OA\RequestBody(
      *       required=true,
      *       @OA\JsonContent(ref="#/components/schemas/group_membersEditable")
@@ -133,7 +131,7 @@ class GroupMemberController extends Controller
      *     path="/group_members/group_memberId",
      *     summary="Get single group_member by ID",
      *     operationId="getGroupMemberById",
-     *     tags={"Group members"},
+     *     tags={"Group Members"},
      *     @OA\Parameter(
      *         description="ID of group_members to return",
      *         in="path",
@@ -166,7 +164,7 @@ class GroupMemberController extends Controller
      *     path="/group_members/group_memberId",
      *     summary="Delete a group_members",
      *     operationId="deleteGroupMembers",
-     *     tags={"Group members"},
+     *     tags={"Group Members"},
      *     @OA\Parameter(
      *         description="ID of group_members to return",
      *         in="path",

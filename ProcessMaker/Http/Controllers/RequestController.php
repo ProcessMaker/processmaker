@@ -13,13 +13,6 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 class RequestController extends Controller
 {
     use HasMediaTrait;
-    /**
-     * A user should always be able to see their
-     * started requests.
-     * 
-     * @var array
-     */
-    public $skipPermissionCheckFor = ['index', 'show'];
 
     /**
      * Get the list of requests.
@@ -28,15 +21,20 @@ class RequestController extends Controller
      */
     public function index($type = null)
     {
+        if ($type === 'all') {
+            $this->authorize('view-all_requests');
+        }
+        
         //load counters
         $query = ProcessRequest::query();
         if (!Auth::user()->is_administrator) {
             $query->startedMe(Auth::user()->id);
         }
-        $allRequest = $query->count();
-        $startedMe = ProcessRequest::startedMe(Auth::user()->id)->count();
-        $inProgress = $query->inProgress()->count();
-        $completed = $query->completed()->count();
+
+        $allRequest = $this->calculate('allRequest');
+        $startedMe = $this->calculate('startedMe');
+        $inProgress = $this->calculate('inProgress');
+        $completed = $this->calculate('completed');
 
         $title = 'My Requests';
 
@@ -50,6 +48,30 @@ class RequestController extends Controller
             ['allRequest', 'startedMe', 'inProgress', 'completed', 'type','title']
         ));
     }
+    private function calculate($type)
+    {
+        $result = 0;
+        $query = ProcessRequest::query();
+        if (!Auth::user()->is_administrator) {
+            $query->startedMe(Auth::user()->id);
+        }
+
+        switch ($type) {
+            case 'allRequest':
+               $result = $query->count();
+               break;
+            case 'startedMe':
+                $result = ProcessRequest::startedMe(Auth::user()->id)->count();
+                break;
+            case 'inProgress':
+                $result =$query->inProgress()->count();
+                break;
+            case 'completed':
+                $result = $query->completed()->count();
+                break;
+        }
+        return $result;
+    }
 
     /**
      * Request Show
@@ -60,16 +82,12 @@ class RequestController extends Controller
      */
     public function show(ProcessRequest $request, Media $mediaItems)
     {
-        $request->authorize(Auth::user());
+        $this->authorize('view', $request);
         $request->participants;
         $request->user;
         $request->summary = $request->summary();
         $request->summary_screen = $request->getSummaryScreenId();
-        if (Auth::user()->is_administrator === true) {
-            $canCancel = true;
-        } else {
-            $canCancel = Auth::user()->hasProcessPermission($request->process, 'requests.cancel');
-        }
+        $canCancel = Auth::user()->can('cancel', $request->process);
 
         $files = $request->getMedia();
 

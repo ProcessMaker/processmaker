@@ -1,20 +1,19 @@
 <?php
 namespace ProcessMaker\Http\Controllers\Api;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Task as Resource;
+use ProcessMaker\Http\Resources\TaskCollection;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Notifications\TaskReassignmentNotification;
 
 class TaskController extends Controller
 {
-    public $skipPermissionCheckFor = ['index', 'show', 'update'];
-
     /**
      * Display a listing of the resource.
      *
@@ -56,11 +55,23 @@ class TaskController extends Controller
         );
 
         // only show tasks that the user is assigned to
-        if (!Auth::user()->is_administrator) {
-            $query->where('process_request_tokens.user_id', Auth::user()->id);
-        }
-        $response = $query->paginate($request->input('per_page', 10));
-        return new ApiCollection($response);
+        $query->where('process_request_tokens.user_id', Auth::user()->id);
+
+        $inOverdueQuery = ProcessRequestToken::where('user_id', Auth::user()->id)
+            ->where('status', 'ACTIVE')
+            ->where('due_at', '<', Carbon::now());
+
+        $inOverdue = $inOverdueQuery->count();
+
+        $response = $query->get();
+
+        $response = $response->filter(function($processRequestToken) {
+            return Auth::user()->can('view', $processRequestToken);
+        })->values();
+
+        $response->inOverdue = $inOverdue;
+
+        return new TaskCollection($response);
     }
 
     /**
@@ -86,7 +97,7 @@ class TaskController extends Controller
      */
     public function update(Request $request, ProcessRequestToken $task)
     {
-        $task->authorize(Auth::user());
+        $this->authorize('update', $task);
         if ($request->input('status') === 'COMPLETED') {
             if ($task->status === 'CLOSED') {
                 return abort(422, __('Task already closed'));

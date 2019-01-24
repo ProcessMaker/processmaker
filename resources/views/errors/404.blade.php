@@ -1,4 +1,13 @@
 @extends('layouts.minimal')
+
+@section('title')
+  {{__('Page not found - ProcessMaker')}}
+@endsection
+
+@section('sidebar')
+@include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_designer')])
+@endsection
+
 @section('content')
 <div class="error-404">
     <div class="error-404-icon">

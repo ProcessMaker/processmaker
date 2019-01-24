@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * @OA\OpenApi(
  *     @OA\Info(
@@ -53,6 +53,18 @@
  *             name="member_id",
  *             in="query",
  *             @OA\Schema(type="integer"),
+ *         ),
+ *         @OA\Parameter(
+ *             parameter="commentable_id",
+ *             name="commentable_id",
+ *             in="query",
+ *             @OA\Schema(type="integer"),
+ *         ),
+ *         @OA\Parameter(
+ *             parameter="commentable_type",
+ *             name="commentable_type",
+ *             in="query",
+ *             @OA\Schema(type="string", default=""),
  *         ),
  *     ),
  *     security={{"pm_api_bearer": {}}},

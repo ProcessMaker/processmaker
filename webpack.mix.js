@@ -36,6 +36,7 @@ mix.webpackConfig({
 	.js('resources/js/admin/users/edit.js', 'public/js/admin/users/edit.js')
     .js('resources/js/admin/groups/index.js', 'public/js/admin/groups')
     .js('resources/js/admin/groups/edit.js', 'public/js/admin/groups/edit.js')
+    .js('resources/js/admin/auth-clients/index.js', 'public/js/admin/auth-clients/index.js')
     .js('resources/js/admin/queues/index.js', 'public/js/admin/queues')
 	.js('resources/js/admin/profile/edit.js', 'public/js/admin/profile/edit.js')
 

@@ -9,10 +9,11 @@
 @endsection
 
 @section('content')
-        <!doctype html>
-
+@include('shared.breadcrumbs', ['routes' => [
+    __('Processes') => route('processes.index'),
+    __('Edit') . " " . $process->name => null,
+]])
 <div class="container" id="editProcess">
-    <h1>{{__('Edit Process')}}</h1>
     <div class="row">
         <div class="col-8">
             <div class="card card-body">
@@ -53,23 +54,31 @@
                 </div>
                 <div class="form-group p-0">
                     {!! Form::label('startRequest', __('Start Request')) !!}
-                    {!! Form::select('startRequest', $listStart, null, [
-                            'id' => 'start_request_id',
-                            'class' => 'form-control',
-                            'v-model' => 'formData.start_request_id',
-                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.screen}'
-                        ])
-                    !!}
+                    <multiselect
+                        v-model="canStart"
+                        :options="activeUsersAndGroups"
+                        :multiple="true"
+                        placeholder="Type to search"
+                        track-by="fullname"
+                        label="fullname"
+                        group-values="items"
+                        group-label="label">
+                            <span slot="noResult">Oops! No elements found. Consider changing the search query.</span>
+                    </multiselect>
                 </div>
                 <div class="form-group p-0">
                     {!! Form::label('cancelRequest', __('Cancel Request')) !!}
-                    {!! Form::select('cancelRequest', $listCancel, null, [
-                            'id' => 'cancel_request_id',
-                            'class' => 'form-control',
-                            'v-model' => 'formData.cancel_request_id',
-                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.screen}'
-                        ])
-                    !!}
+                    <multiselect
+                        v-model="canCancel"
+                        :options="activeUsersAndGroups"
+                        :multiple="true"
+                        placeholder="Type to search"
+                        track-by="fullname"
+                        label="fullname"
+                        group-values="items"
+                        group-label="label">
+                            <span slot="noResult">Oops! No elements found. Consider changing the search query.</span>
+                    </multiselect>
                 </div>
 
                 <div class="form-group p-0">
@@ -118,7 +127,10 @@
                         category: null,
                         status: null,
                         screen: null
-                    }
+                    },
+                    canStart: @json($canStart),
+                    canCancel: @json($canCancel),
+                    activeUsersAndGroups: @json($list)
                 }
             },
             methods: {
@@ -136,19 +148,17 @@
                 },
                 formatAssigneePermissions(data) {
                     let response = {};
+
                     response['users'] = [];
                     response['groups'] = [];
-
-                    data.forEach(value => {
-                        if (value === null) {
-                            return;
+                    
+                    data.forEach(item => {
+                        if (item.type == 'user') {
+                            response['users'].push(parseInt(item.id));
                         }
-                        let option = value.split('-');
-                        if (option[0] === 'user') {
-                            response['users'].push(parseInt(option[1]));
-                        }
-                        if (option[0] === 'group') {
-                            response['groups'].push(parseInt(option[1]));
+                        
+                        if (item.type == 'group') {
+                            response['groups'].push(parseInt(item.id));
                         }
                     });
                     return response;
@@ -156,12 +166,12 @@
                 onUpdate() {
                     this.resetErrors();
                     let that = this;
-                    this.formData.start_request = this.formatAssigneePermissions([this.formData.start_request_id]);
-                    this.formData.cancel_request = this.formatAssigneePermissions([this.formData.cancel_request_id]);
+                    this.formData.start_request = this.formatAssigneePermissions(this.canStart);
+                    this.formData.cancel_request = this.formatAssigneePermissions(this.canCancel);
 
                     ProcessMaker.apiClient.put('processes/' + that.formData.id, that.formData)
                         .then(response => {
-                            ProcessMaker.alert('{{__('Update User Successfully')}}', 'success');
+                            ProcessMaker.alert('{{__('Process Updated Successfully')}}', 'success');
                             that.onClose();
                         })
                         .catch(error => {
@@ -175,4 +185,42 @@
             }
         });
     </script>
+@endsection
+
+@section('css')
+    <style>
+        .inline-input {
+            margin-right: 6px;
+        }
+        .inline-button {
+            background-color: rgb(109, 124, 136);
+            font-weight: 100;
+        }
+        .input-and-select {
+            width: 212px;
+        }
+        .multiselect__tags-wrap {
+            display: flex !important;
+        }
+        .multiselect__tag-icon:after {
+            color: white !important;
+        }
+        .multiselect__option--highlight {
+            background: #00bf9c !important;
+        }
+        .multiselect__option--selected.multiselect__option--highlight {
+            background: #00bf9c !important;
+        }
+        .multiselect__tags {
+            border: 1px solid #b6bfc6 !important;
+            border-radius: 0.125em !important;
+            height: calc(1.875rem + 2px) !important;
+        }
+        .multiselect__tag {
+            background: #788793 !important;
+        }
+        .multiselect__tag-icon:after {
+            color: white !important;
+        }
+    </style>
 @endsection

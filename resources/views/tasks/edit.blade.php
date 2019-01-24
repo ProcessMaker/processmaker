@@ -13,12 +13,24 @@
 @endsection
 
 @section('content')
+    @include('shared.breadcrumbs', ['routes' => [
+        __('Tasks') => route('tasks.index'),
+        function() use ($task) {
+            if ($task->advanceStatus == 'completed') {
+                return ['Completed Tasks', route('tasks.index', ['status' => 'CLOSED'])];
+            }
+            return ['To Do Tasks', route('tasks.index')];
+        },
+        $task->processRequest->name => route('requests.show', ['id' => $task->processRequest->id]),
+        $task->element_name => null,
+    ]])
+
     <div id="task" class="container">
-        <h1>{{$task->element_name}}</h1>
+        
         <div class="row">
-            @if ($task->getScreen() && ($task->advanceStatus==='open' || $task->advanceStatus==='overdue'))
             <div class="col-md-8">
                 <div class="container-fluid">
+
                     <ul id="tabHeader" role="tablist" class="nav nav-tabs">
                         <li class="nav-item"><a id="pending-tab" data-toggle="tab" href="#tab-form" role="tab" aria-controls="tab-form" aria-selected="true" class="nav-link active">{{__('Form')}}</a></li>
                         @if ($task->processRequest->status === 'ACTIVE')
@@ -27,14 +39,20 @@
                     </ul>
                     <div id="tabContent" class="tab-content">
                         <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show">
+                            @if ($task->getScreen() && ($task->advanceStatus==='open' || $task->advanceStatus==='overdue'))
                             <div class="card card-body">
                                 <task-screen process-id="{{$task->processRequest->process->getKey()}}"
-                                             instance-id="{{$task->processRequest->getKey()}}"
-                                             token-id="{{$task->getKey()}}"
-                                             :screen="{{json_encode($task->getScreen()->config)}}"
-                                    :computed="{{json_encode($task->getScreen()->computed)}}"
-                                    :data="{{json_encode($task->processRequest->data)}}"/>
+                                           instance-id="{{$task->processRequest->getKey()}}"
+                                           token-id="{{$task->getKey()}}"
+                                           :screen="{{json_encode($task->getScreen()->config)}}"
+                                           :computed="{{json_encode($task->getScreen()->computed)}}"
+                                           :data="{{json_encode($task->processRequest->data)}}"/>
                             </div>
+                            @elseif ($task->advanceStatus==='completed')
+                            <div class="card card-body" align="center">
+                                <h1>Task Completed <i class="fas fa-clipboard-check"></i></h1>
+                            </div>
+                            @endif
                         </div>
                         @if ($task->processRequest->status === 'ACTIVE')
                         <div id="tab-data" role="tabpanel" aria-labelledby="tab-data" class="tab-pane">
@@ -44,15 +62,6 @@
                     </div>
                 </div>
             </div>
-            @elseif ($task->advanceStatus==='completed')
-            <div class="col-md-8">
-                <div class="container-fluid">
-                    <div class="card card-body" align="center">
-                        <h1>Task Completed <i class="fas fa-clipboard-check"></i></h1>
-                    </div>
-                </div>
-            </div>
-            @endif
             <div class="col-md-4">
                 <template v-if="dateDueAt">
                 <div class="card">
@@ -85,7 +94,6 @@
                                             :class="{'bg-primary': selectedIndex == index}"
                                             @click="selectedItem(row, index)"
                                             @dblclick="selectedItem(row, index);reassignUser();"
-                                            
                                             >
                                             <avatar-image class-container size="12" class-image :input-data="row"></avatar-image>
                                         </span>
@@ -97,7 +105,6 @@
                                             @click="reassignUser"
                                             class="btn btn-success btn-sm text-uppercase"
                                             >{{__('Reassign')}}</b-button>
-                                        
                                     </div>
                                 </b-modal>
                             </span>
@@ -150,7 +157,7 @@
                 usersList: [],
                 filter: "",
                 showReassignment: false,
-                
+
                 task: @json($task),
                 assigned: @json($task->user),
                 requested: @json($task->processRequest->user),

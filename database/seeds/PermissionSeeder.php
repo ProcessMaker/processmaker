@@ -5,108 +5,90 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Permission;
-use ProcessMaker\Models\PermissionAssignment;
 
 class PermissionSeeder extends Seeder
 {
-
     private $permissions = [
-        'documents.index',
-        'documents.create',
-        'documents.destroy',
-        'documents.edit',
-        'documents.show',
-        'environment_variables.index',
-        'environment_variables.create',
-        'environment_variables.destroy',
-        'environment_variables.edit',
-        'environment_variables.show',
-        'screens.index',
-        'screens.create',
-        'screens.destroy',
-        'screens.edit',
-        'screens.show',
-        'group_members.index',
-        'group_members.create',
-        'group_members.destroy',
-        'group_members.edit',
-        'group_members.show',
-        'groups.index',
-        'groups.create',
-        'groups.destroy',
-        'groups.edit',
-        'groups.show',
-        'process_categories.index',
-        'process_categories.create',
-        'process_categories.destroy',
-        'process_categories.edit',
-        'process_categories.show',
-        'processes.index',
-        'processes.create',
-        'processes.destroy',
-        'processes.edit',
-        'processes.show',
-        'requests.index',	
-        'requests.create',	
-        'requests.destroy',	
-        'requests.cancel',	
-        'requests.edit',	
-        'requests.show',
-        'requests.edit_data',
-        'scripts.index',
-        'scripts.create',
-        'scripts.destroy',
-        'scripts.edit',
-        'scripts.show',
-        'users.index',
-        'users.create',
-        'users.destroy',
-        'users.edit',
-        'users.show',
-        'modeler.show'
+        'archive-processes',
+        'create-categories',
+        'create-comments',
+        'create-environment_variables',
+        'create-groups',
+        'create-processes',
+        'create-screens',
+        'create-scripts',
+        'create-users',
+        'delete-categories',
+        'delete-comments',
+        'delete-environment_variables',
+        'delete-groups',
+        'delete-screens',
+        'delete-scripts',
+        'delete-users',
+        'edit-categories',
+        'edit-comments',
+        'edit-environment_variables',
+        'edit-groups',
+        'edit-processes',
+        'edit-screens',
+        'edit-scripts',
+        'edit-users',
+        'view-all_requests',
+        'view-auth-clients',
+        'view-categories',
+        'view-comments',
+        'view-environment_variables',
+        'view-groups',
+        'view-processes',
+        'view-screens',
+        'view-scripts',
+        'view-users',
+        'create-files',
+        'view-files',
+        'edit-files',
+        'delete-files',
+        'create-notifications',
+        'view-notifications',
+        'edit-notifications',
+        'delete-notifications',
+        'create-task_assignments',
+        'view-task_assignments',
+        'edit-task_assignments',
+        'delete-task_assignments',
     ];
-
-    private $resourcePermissions = [
-        'requests'
-    ];
-
-    public function run($user = null)
+    
+    public function run($seedUser = null)
     {
-        if (Permission::count() !== 0) {
-            return;
-        }
-        $group = factory(Group::class)->create([
-            'name' => 'All Permissions',
-        ]);
+        if (Permission::count() === 0) {
+            $group = factory(Group::class)->create([
+                'name' => 'All Permissions',
+            ]);
 
-        if (!$user) {
-            $user = User::first()->id;
-        }
-
-        factory(GroupMember::class)->create([
-            'group_id' => $group->id,
-            'member_type' => User::class,
-            'member_id' => User::first()->id,
-        ]);
-
-        foreach ($this->permissions as $permissionString) {
-            $type = 'ROUTE';
-            $resource = explode('.', $permissionString)[0];
-            if (in_array($resource, $this->resourcePermissions)) {
-                $type = 'RESOURCE';
+            if ($user = User::first()) {
+                factory(GroupMember::class)->create([
+                    'group_id' => $group->id,
+                    'member_type' => User::class,
+                    'member_id' => $user->id,
+                ]);
             }
 
-            $permission = factory(Permission::class)->create([
-                'name' => ucwords(preg_replace('/(\.|_)/', ' ',
-                        $permissionString)),
-                'type' => $type,
-                'guard_name' => $permissionString,
-            ]);
-            factory(PermissionAssignment::class)->create([
-                'permission_id' => $permission->id,
-                'assignable_type' => Group::class,
-                'assignable_id' => $group->id,
-            ]);
+            foreach ($this->permissions as $permissionString) {
+                $permission = factory(Permission::class)->create([
+                    'title' => ucwords(preg_replace('/(\-|_)/', ' ',
+                            $permissionString)),
+                    'name' => $permissionString,
+                ]);
+            }
+        }
+
+        $permissions = Permission::all()->pluck('id');
+
+        if ($seedUser) {
+            $seedUser->permissions()->attach($permissions);
+            $seedUser->save();
+        } else {
+            $group->permissions()->attach($permissions);
+            $group->save();
         }
     }
 }

@@ -17,8 +17,6 @@ use ProcessMaker\Notifications\ProcessCanceledNotification;
 
 class ProcessRequestController extends Controller
 {
-    public $skipPermissionCheckFor = ['index', 'show', 'store', 'destroy'];
-
     /**
      * Display a listing of the resource.
      *
@@ -31,7 +29,7 @@ class ProcessRequestController extends Controller
      *     path="/requests",
      *     summary="Returns all process Requests that the user has access to",
      *     operationId="getProcessesRequests",
-     *     tags={"ProcessRequests"},
+     *     tags={"Process Requests"},
      *     @OA\Parameter(
      *         name="type",
      *         in="query",
@@ -74,23 +72,21 @@ class ProcessRequestController extends Controller
                 $query->with($include);
             }
         }
-
-        if (!Auth::user()->is_administrator) {
-            $query->startedMe(Auth::user()->id);
-        } 
-
+        
         // type filter
         switch ($request->input('type')) {
             case 'started_me':
-                if (Auth::user()->is_administrator) {
-                    $query->startedMe(Auth::user()->id);
-                }
+                $query->startedMe(Auth::user()->id);
                 break;
             case 'in_progress':
                 $query->inProgress();
                 break;
             case 'completed':
                 $query->completed();
+                break;
+            case 'all':
+                $query->getQuery()->wheres = [];
+                $query->get();
                 break;
         }
 
@@ -108,7 +104,11 @@ class ProcessRequestController extends Controller
                 $request->input('order_by', 'name'),
                 $request->input('order_direction', 'ASC')
             )
-            ->paginate($request->input('per_page', 10));
+            ->get();
+        
+        $response = $response->filter(function($processRequest) {
+            return Auth::user()->can('view', $processRequest);
+        })->values();
 
         return new ApiCollection($response);
     }
@@ -124,7 +124,7 @@ class ProcessRequestController extends Controller
      *     path="/requests/process_request_id",
      *     summary="Get single process request by ID",
      *     operationId="getProcessRequestById",
-     *     tags={"ProcessRequests"},
+     *     tags={"Process Requests"},
      *     @OA\Parameter(
      *         description="ID of process request to return",
      *         in="path",
@@ -147,39 +147,6 @@ class ProcessRequestController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param Request $httpRequest
-     *
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Illuminate\Validation\ValidationException
-     *
-     * @OA\Post(
-     *     path="/requests",
-     *     summary="Save a new process request",
-     *     operationId="createProcessRequest",
-     *     tags={"ProcessRequests"},
-     *     @OA\RequestBody(
-     *       required=true,
-     *       @OA\JsonContent(ref="#/components/schemas/requestsEditable")
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/requests")
-     *     ),
-     * )
-     */
-    public function store(Request $httpRequest)
-    {
-        $httpRequest->validate(ProcessRequest::rules());
-        $processRequest = new ProcessRequest();
-        $processRequest->fill($httpRequest->input());
-        $processRequest->saveOrFail();
-        return new ProcessRequests($processRequest);
-    }
-
-    /**
      * Update a request
      *
      * @param ProcessRequest $request
@@ -191,7 +158,7 @@ class ProcessRequestController extends Controller
      *     path="/requests/process_request_id",
      *     summary="Update a process request",
      *     operationId="updateProcessRequest",
-     *     tags={"ProcessRequests"},
+     *     tags={"Process Requests"},
      *     @OA\Parameter(
      *         description="ID of process request to return",
      *         in="path",
@@ -215,10 +182,8 @@ class ProcessRequestController extends Controller
     public function update(ProcessRequest $request, Request $httpRequest)
     {
         if ($httpRequest->status === 'CANCELED') {
-            $permission = 'requests.cancel';
-            
-            if (!Auth::user()->hasProcessPermission($request->process, $permission)) {
-                throw new AuthorizationException('Not authorized: ' . $permission);
+            if (! Auth::user()->can('cancel', $request->process)) {
+                throw new AuthorizationException('Not authorized to cancel this request.');
             }
             $this->cancelRequestToken($request);
             return response([], 204);
@@ -248,7 +213,7 @@ class ProcessRequestController extends Controller
      *     path="/requests/process_request_id",
      *     summary="Delete a process request",
      *     operationId="deleteProcessRequest",
-     *     tags={"ProcessRequests"},
+     *     tags={"Process Requests"},
      *     @OA\Parameter(
      *         description="ID of process request to return",
      *         in="path",

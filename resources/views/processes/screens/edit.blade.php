@@ -9,8 +9,12 @@
 @endsection
 
 @section('content')
+    @include('shared.breadcrumbs', ['routes' => [
+        __('Processes') => route('processes.index'),
+        __('Screens') => route('screens.index'),
+        __('Edit') . " " . $screen->title => null,
+    ]])
     <div class="container" id="editGroup">
-        <h1>{{__('Edit Screen')}}</h1>
         <div class="row">
             <div class="col-8">
                 <div class="card card-body">

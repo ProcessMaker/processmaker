@@ -20,6 +20,7 @@ return[
     'users' => 'Users',
     'groups' => 'Groups',
     'roles' => 'Roles',
+    'auth-clients' => 'Auth Clients',
     'security' => 'Security',
     'login' => 'Login',
     'authentication' => 'Authentication',

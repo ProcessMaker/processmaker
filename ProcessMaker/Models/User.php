@@ -9,10 +9,11 @@ use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
+use ProcessMaker\Models\Permission;
 use ProcessMaker\Traits\SerializeToIso8601;
+use ProcessMaker\Traits\HasAuthorization;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
-use ProcessMaker\Traits\HasAuthorization;
 
 class User extends Authenticatable implements HasMedia
 {
@@ -119,7 +120,8 @@ class User extends Authenticatable implements HasMedia
 
         return [
             'username' => ['required', $unique],
-            'email' => ['required', 'email', $unique]
+            'email' => ['required', 'email', $unique],
+            'status' => ['required', 'in:ACTIVE,INACTIVE']
         ];
     }
 
@@ -131,8 +133,18 @@ class User extends Authenticatable implements HasMedia
     protected $hidden = [
         'password',
         'groupMembersFromMemberable',
-        'permissionAssignments',
+        'permissions',
     ];
+
+    /**
+     * Scope to only return active users.
+     *
+     * @var Builder
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'ACTIVE');
+    }
 
     /**
      * Return the full name for this user which is the first name and last
@@ -148,14 +160,44 @@ class User extends Authenticatable implements HasMedia
         ]);
     }
 
+    public function hasPermissionsFor($resource)
+    {
+        if ($this->is_administrator) {
+            $perms = Permission::all(['name'])->pluck('name');
+        } else {
+            $perms = collect(session('permissions'));
+        }
+
+        $filtered = $perms->filter(function($value) use($resource) {
+            $match = preg_match("/(.+)-{$resource}/", $value);
+            if ($match === 1) {
+                return true;
+            } else {
+                return false;
+            }
+        });
+
+        return $filtered->values();
+    }
+
     public function groupMembersFromMemberable()
     {
         return $this->morphMany(GroupMember::class, 'member', null, 'member_id');
     }
-
-    public function permissionAssignments()
+    
+    public function groups()
     {
-        return $this->morphMany(PermissionAssignment::class, 'assignable', null, 'assignable_id');
+        return $this->morphToMany('ProcessMaker\Models\Group', 'member', 'group_members');
+    }
+
+    public function permissions()
+    {
+        return $this->morphToMany('ProcessMaker\Models\Permission', 'assignable');
+    }
+
+    public function processesFromProcessable()
+    {
+        return $this->morphToMany('ProcessMaker\Models\Process', 'processable');
     }
 
     /**
@@ -176,6 +218,21 @@ class User extends Authenticatable implements HasMedia
     public function getAvatarAttribute()
     {
         return $this->getAvatar();
+    }
+
+    /**
+     * Define the avatar mutator. Within, we set the avatar attribute only if
+     * it is not null. This prevents the model from attempting to send an
+     * avatar field to the database on update, which has been known to
+     * cause errors from time to time.
+     *
+     * @return string
+     */    
+    public function setAvatarAttribute($value = null)
+    {
+        if ($value) {
+            $this->attributes['avatar'] = $value;
+        }
     }
 
     /**
@@ -224,29 +281,6 @@ class User extends Authenticatable implements HasMedia
     public function assigned()
     {
         return $this->morphMany(ProcessTaskAssignment::class, 'assigned', 'assignment_type', 'assignment_id');
-    }
-
-    public function startProcesses()
-    {
-        $user = Auth::user();
-        if (!$user->hasPermission('requests.create')) {
-            return [];
-        }
-        $permission = Permission::byGuardName('requests.create');
-
-        $processUser = ProcessPermission::where('permission_id', $permission->id)
-            ->where('assignable_id', $user->id)
-            ->where('assignable_type', User::class)
-            ->pluck('process_id');
-
-        $processGroup = ProcessPermission::where('permission_id', $permission->id)
-            ->whereIn('assignable_id', $user->groupMembersFromMemberable()->pluck('group_id')->toArray())
-            ->where('assignable_type', Group::class)
-            ->pluck('process_id');
-
-        return array_values(array_unique(array_merge(
-            $processUser->toArray(), $processGroup->toArray()
-        ), SORT_REGULAR));
     }
 
 }

@@ -2,37 +2,23 @@
 
 namespace ProcessMaker\Providers;
 
+use ProcessMaker\Models\Notification;
+use ProcessMaker\Policies\NotificationPolicy;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Policies\ProcessPolicy;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Policies\ProcessRequestPolicy;
+use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Policies\ProcessRequestTokenPolicy;
+use ProcessMaker\Models\Permission;
 use Illuminate\Auth\RequestGuard;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Passport\Passport;
-use ProcessMaker\Model\Application;
-use ProcessMaker\Model\Screen;
-use ProcessMaker\Model\Delegation;
-use ProcessMaker\Model\InputDocument;
-use ProcessMaker\Model\OutputDocument;
-use ProcessMaker\Model\PmTable;
-use ProcessMaker\Model\Process;
-use ProcessMaker\Model\ProcessCategory;
-use ProcessMaker\Model\ProcessVariable;
-use ProcessMaker\Model\ReportTable;
-use ProcessMaker\Model\Role;
-use ProcessMaker\Model\Task;
-use ProcessMaker\Model\TaskUser;
-use ProcessMaker\Model\Script;
-use ProcessMaker\Policies\ApplicationPolicy;
-use ProcessMaker\Policies\AssigneeTaskPolicy;
-use ProcessMaker\Policies\FormPolicy;
-use ProcessMaker\Policies\InputDocumentPolicy;
-use ProcessMaker\Policies\OutputDocumentPolicy;
-use ProcessMaker\Policies\PmTablePolicy;
-use ProcessMaker\Policies\ProcessCategoryPolicy;
-use ProcessMaker\Policies\ProcessPolicy;
-use ProcessMaker\Policies\ProcessVariablePolicy;
-use ProcessMaker\Policies\ReportTablePolicy;
-use ProcessMaker\Policies\TaskPolicy;
-use ProcessMaker\Policies\ScriptPolicy;
+use ProcessMaker\Models\Script;
+use Illuminate\Support\Facades\Log;
+
 
 /**
  * Our AuthService Provider binds our base processmaker provider and registers any policies, if defined.
@@ -47,6 +33,10 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
+        Notification::class => NotificationPolicy::class,
+        Process::class => ProcessPolicy::class,
+        ProcessRequest::class => ProcessRequestPolicy::class,
+        ProcessRequestToken::class => ProcessRequestTokenPolicy::class,
     ];
 
     /**
@@ -58,6 +48,23 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
         Passport::routes();
+
+        Gate::before(function ($user) {
+            if ($user->is_administrator) {
+                return true;
+            }
+        });
+        
+        try {
+            Permission::all()->each(function($permission) {
+                Gate::define($permission->name, function ($user, $model = false) use($permission) {
+                    return $user->hasPermission($permission->name);
+                });
+            });
+        } catch (\Exception $e) {
+            Log::notice('Unable to register gates. Either no database connection or no permissions table exists.');
+        }
+
     }
 
 }
