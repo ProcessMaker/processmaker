@@ -12,6 +12,16 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class FileController extends Controller
 {
     /**
+     * A blacklist of attributes that should not be
+     * sanitized by our SanitizeInput middleware.
+     *
+     * @var array
+     */
+    public $doNotSanitize = [
+        //
+    ];
+
+    /**
      * Display a listing of the resource.
      *
      * @param Request $request

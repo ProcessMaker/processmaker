@@ -10,6 +10,15 @@ use ProcessMaker\Models\ProcessTaskAssignment;
 
 class TaskAssignmentController extends Controller
 {
+    /**
+     * A blacklist of attributes that should not be
+     * sanitized by our SanitizeInput middleware.
+     *
+     * @var array
+     */
+    public $doNotSanitize = [
+        //
+    ];
 
     /**
      * Display a listing of the resource.
