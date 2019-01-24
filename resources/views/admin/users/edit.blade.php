@@ -251,7 +251,7 @@
                                 {{ __('Add User To Group') }}
                             </b-btn>
                         </div>
-                        
+
                         <div id="groups-listing">
                             <groups-listing ref="groupsListing" filter="" :member_id="formData.id" />
                         </div>
@@ -530,7 +530,7 @@
                         ProcessMaker.alert('{{__('User Updated Successfully ')}}', 'success');
                           if($event !== false) {
                               this.onClose();
-                          } 
+                          }
                     })
                     .catch(error => {
                         ProcessMaker.alert('{{__('An error occurred while saving the Groups.')}}', 'danger');
@@ -539,7 +539,7 @@
             permissionUpdate() {
                 if(this.adminHasChanged){
                     this.profileUpdate(false)
-                } 
+                }
                 ProcessMaker.apiClient.put("/permissions", {
                     permission_names: this.selectedPermissions,
                     user_id: this.formData.id
@@ -613,6 +613,7 @@
                             this.groups = [{ value: null, text: 'Select a group' }]
                             result.data.data.forEach((group) => {
                                 this.groups.push({value: group.id, text: group.name })
+                                this.selectedGroup = null;
                             });
                         })
                 },
