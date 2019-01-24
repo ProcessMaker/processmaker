@@ -296,7 +296,14 @@
             el: '#profileForm',
             data: {
                 formData: @json($currentUser),
-                errors: {},
+                errors: {
+                    username: null,
+                    firstname: null,
+                    lastname: null,
+                    email: null,
+                    password: null,
+                    status: null
+                },
 				confPassword: '',
                 image: '',
                 options: [
@@ -310,15 +317,19 @@
             methods: {
                 onUpdate() {
                     this.resetErrors();
+                    let that = this;
                     if (!this.validatePassword()) return false;
                     if (this.image) {
                         this.formData.avatar = this.image;
                     }
-
                     ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
                         .then((response) => {
-                            ProcessMaker.alert('Save profile success', 'success');
+                            ProcessMaker.alert('Save profile success', 'success')
                             window.ProcessMaker.events.$emit('update-profile-avatar');
+                        })
+                        .catch(error => {
+                            console.log(error.response.data.errors)
+                            that.errors = error.response.data.errors;
                         });
                 },
                 onClose() {
