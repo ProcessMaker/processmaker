@@ -44,7 +44,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">{{__('Add A Script')}}</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onClose">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -71,7 +71,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-success"
-                            data-dismiss="modal">{{__('Close')}}
+                            data-dismiss="modal" @click="onClose">{{__('Close')}}
                     </button>
                     <button type="button" class="btn btn-success ml-2" id="disabledForNow" @click="onSubmit">
                         {{__('Save')}}
@@ -85,7 +85,7 @@
 
 @section('js')
     <script src="{{mix('js/processes/scripts/index.js')}}"></script>
-    
+
     @can('create-scripts')
         <script>
             new Vue({
@@ -98,6 +98,13 @@
                     addError: {}
                 },
                 methods: {
+                    onClose() {
+                        this.title = '';
+                        this.language = '';
+                        this.description = '';
+                        this.code = '';
+                        this.addError = {};
+                    },
                     onSubmit() {
                         this.errors = Object.assign({}, {
                             name: null,
@@ -115,7 +122,7 @@
                             window.location = "/processes/scripts/" + response.data.id + "/builder";
                         })
                         .catch(error => {
-                            this.errors = error.response.data.errors;
+                            this.addError = error.response.data.errors;
                         })
                     }
                 }
