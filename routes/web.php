@@ -69,6 +69,10 @@ Route::group(['middleware' => ['auth', 'sanitize']], function () {
 
     Route::get('notifications', 'NotificationController@index')->name('notifications.index');
 
+    // Allows for a logged in user to see navigation on a 404 page
+    Route::fallback(function(){
+        return response()->view('errors.404', [], 404);
+    });
 });
 
 // Add our broadcasting routes

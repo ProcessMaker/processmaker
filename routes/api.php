@@ -128,5 +128,8 @@ Route::group(
     Route::put('comments/{comment}', 'CommentController@update')->name('comments.update')->middleware('can:edit-comments');
     Route::delete('comments/{comment}', 'CommentController@destroy')->name('comments.destroy')->middleware('can:delete-comments');
 
-}
-);
+    // Returns a json error message instead of HTML
+    Route::fallback(function(){
+        return response()->json(['error' => 'Not Found'], 404);
+    });
+});
