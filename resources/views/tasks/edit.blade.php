@@ -79,7 +79,7 @@
                             <h5>{{__('Assigned To')}}</h5>
                             <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
                                       :input-data="userAssigned"></avatar-image>
-                            @if(!empty($task->getDefinition()['allowReassignment']))
+                            @if(!empty($task->getDefinition()['allowReassignment']) && $task->getDefinition()['allowReassignment']==='true')
                             <div>
                             <br>
                             <span>
