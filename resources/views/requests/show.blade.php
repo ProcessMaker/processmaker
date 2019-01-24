@@ -42,6 +42,7 @@
                                 </a>
                             </li>
                             @if ($request->status === 'COMPLETED')
+                            @can('editData', $request->process)
                             <li>
                                 <a id="editdata-tab" data-toggle="tab" href="#editdata" role="tab"
                                    aria-controls="editdata" aria-selected="false"
@@ -49,6 +50,7 @@
                                     {{__('Data')}}
                                 </a>
                             </li>
+                            @endcan
                             @endif
                             <li class="nav-item">
                                 <a class="nav-link" id="completed-tab" data-toggle="tab" href="#completed" role="tab"
@@ -116,9 +118,11 @@
                             </template>
                         </div>
                         @if ($request->status === 'COMPLETED')
+                        @can('editData', $request->process)
                         <div id="editdata" role="tabpanel" aria-labelledby="editdata" class="tab-pane">
                             @include('tasks.editdata')
                         </div>
+                        @endcan
                         @endif
                         <div class="tab-pane fade" id="completed" role="tabpanel" aria-labelledby="completed-tab">
                             <request-detail ref="completed" :process-request-id="requestId" status="CLOSED">
@@ -347,7 +351,6 @@
                     if (name) {
                         this.$set(this.data, name, value);
                         this.fieldsToUpdate.indexOf(name) === -1 ? this.fieldsToUpdate.push(name) : null;
-                        this.updateRequestData();
                     }
                 },
                 closeJsonData() {

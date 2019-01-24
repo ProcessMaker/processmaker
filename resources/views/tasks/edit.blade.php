@@ -34,7 +34,9 @@
                     <ul id="tabHeader" role="tablist" class="nav nav-tabs">
                         <li class="nav-item"><a id="pending-tab" data-toggle="tab" href="#tab-form" role="tab" aria-controls="tab-form" aria-selected="true" class="nav-link active">{{__('Form')}}</a></li>
                         @if ($task->processRequest->status === 'ACTIVE')
+                        @can('editData', $task->processRequest->process)
                         <li class="nav-item"><a id="summary-tab" data-toggle="tab" href="#tab-data" role="tab" aria-controls="tab-data" aria-selected="false" class="nav-link">{{__('Data')}}</a></li>
+                        @endcan
                         @endif
                     </ul>
                     <div id="tabContent" class="tab-content">
@@ -55,9 +57,11 @@
                             @endif
                         </div>
                         @if ($task->processRequest->status === 'ACTIVE')
+                        @can('editData', $task->processRequest->process)
                         <div id="tab-data" role="tabpanel" aria-labelledby="tab-data" class="tab-pane">
                             @include('tasks.editdata')
                         </div>
+                        @endcan
                         @endif
                     </div>
                 </div>
@@ -198,7 +202,6 @@
                     if (name) {
                         this.$set(this.data, name, value);
                         this.fieldsToUpdate.indexOf(name) === -1 ? this.fieldsToUpdate.push(name) : null;
-                        this.updateRequestData();
                     }
                 },
                 closeJsonData() {

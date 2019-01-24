@@ -2,7 +2,13 @@
     <thead>
         <tr>
             <th scope="col">{{ __('Key') }}</th>
-            <th scope="col">{{ __('Value') }}</th>
+            <th scope="col">
+                {{ __('Value') }}
+                <button type="button" class="btn btn-sm float-right btn-success" @click="updateRequestData()">
+                    <i class="fas fa-save"></i>
+                    {{__('Save')}}
+                </button>
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -13,7 +19,7 @@
                     <a href="javascript:void(0)" @click="editJsonData(name)">{...}</a>
                 </div>
             </td>
-            <td v-else><input :value="data[name]" @input="updateData(name, $event.target.value)" class="form-control" ></td>
+            <td v-else><input :value="data[name]" @input="updateData(name, $event.target.value)" class="form-control" :class="{'border-warning': fieldsToUpdate.indexOf(name)>-1}"></td>
         </tr>
     </tbody>
 </table>
