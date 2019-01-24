@@ -2,7 +2,7 @@
 
 use ProcessMaker\Http\Controllers\Api\Requests\RequestsController;
 
-Route::group(['middleware' => ['auth']], function () {
+Route::group(['middleware' => ['auth', 'sanitize']], function () {
 
 // Routes related to Authentication (password reset, etc)
 // Auth::routes();

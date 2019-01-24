@@ -36,12 +36,13 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \ProcessMaker\Http\Middleware\GenerateMenus::class,
             \Laravel\Passport\Http\Middleware\CreateFreshApiToken::class,
-            \ProcessMaker\Http\Middleware\SanitizeInput::class,
 
 
         ],
         'api' => [
-            \ProcessMaker\Http\Middleware\SanitizeInput::class,
+            // Empty middleware for api
+            // @todo Determine if we need throttling.  Currently it interrupts test suites
+            // However, we haven't had a product decision on utilizing throttling or not
         ],
     ];
     /**
@@ -59,6 +60,7 @@ class Kernel extends HttpKernel
         'guest' => \ProcessMaker\Http\Middleware\RedirectIfAuthenticated::class,
         'permission' => \ProcessMaker\Http\Middleware\PermissionCheck::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        'sanitize' => \ProcessMaker\Http\Middleware\SanitizeInput::class,
         'setlang' => \ProcessMaker\Http\Middleware\SetLanguage::class,
         'setskin' => \ProcessMaker\Http\Middleware\SetSkin::class,
         'session' => \Illuminate\Session\Middleware\StartSession::class,
