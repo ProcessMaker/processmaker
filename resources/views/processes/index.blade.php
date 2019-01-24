@@ -120,15 +120,17 @@
                     this.description = '';
                     this.process_category_id = '';
                     this.status = '';
+                    this.addError = {};
                 },
                 onSubmit() {
                     this.errors = Object.assign({}, {
                         name: null,
                         description: null,
+                        process_category_id: null,
                         status: null
                     });
                     if (this.process_category_id === '') {
-                        // this.addError.process_category_id = "Process Category is required";
+                        this.addError = {"process_category_id":  ["Process Category is required"]};
                         ProcessMaker.alert('{{__('Process Category is required')}}', 'danger');
                     } else {
                         ProcessMaker.apiClient.post("/processes", {
@@ -142,7 +144,7 @@
                                 window.location = "/modeler/" + response.data.id
                             })
                             .catch(error => {
-                                this.errors = error.response.data.errors;
+                                this.addError = error.response.data.errors;
                             })
                     }
                 }
