@@ -6,7 +6,7 @@ Menu::get('sidebar_admin')])
  
 @section('content')
 @include('shared.breadcrumbs', ['routes' => [
-        __('Admin') => route('users.index'),
+        __('Admin') => route('admin.dashboard'),
         __('Queue Management') => null,
 ]])
 <div style="height: 0; width: 0; position: absolute; display: none;">
