@@ -497,7 +497,7 @@ class ProcessTest extends TestCase
         (new \PermissionSeeder())->run($this->user);
 
         //Test update process category to null
-        $this->assertModelUpdate(
+        $this->assertModelUpdateFails(
             Process::class,
             [
                 'user_id' => static::$DO_NOT_SEND,
