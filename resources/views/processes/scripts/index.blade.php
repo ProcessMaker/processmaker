@@ -70,10 +70,10 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary"
+                    <button type="button" class="btn btn-outline-success"
                             data-dismiss="modal">{{__('Close')}}
                     </button>
-                    <button type="button" class="btn btn-secondary" id="disabledForNow" @click="onSubmit">
+                    <button type="button" class="btn btn-success ml-2" id="disabledForNow" @click="onSubmit">
                         {{__('Save')}}
                     </button>
                 </div>

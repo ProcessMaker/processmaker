@@ -90,8 +90,8 @@
                 </a>
             </div>
         	<div class="modal-footer">
-    			<button type="button" class="btn btn-outline-secondary" data-dismiss="modal" v-if='processCategories'>Close</button>
-    			<button type="button" class="btn btn-secondary" id="disabledForNow" @click="onSubmit" v-if='processCategories'>Save</button>
+    			<button type="button" class="btn btn-outline-success" data-dismiss="modal" v-if='processCategories'>Close</button>
+    			<button type="button" class="btn btn-success ml-2" id="disabledForNow" @click="onSubmit" v-if='processCategories'>Save</button>
             </div>
         </div>
         </div>

@@ -3,7 +3,6 @@
     <div class="card card-body table-card">
       <vuetable
         :dataManager="dataManager"
-        :sortOrder="sortOrder"
         :css="css"
         :api-mode="false"
         :fields="fields"
@@ -59,30 +58,19 @@ export default {
   data() {
     return {
       copytext: "",
-      orderBy: "name",
 
-      sortOrder: [
-        {
-          field: "name",
-          sortField: "name",
-          direction: "asc"
-        }
-      ],
       fields: [
         {
           title: "Client ID",
           name: "id",
-          sortField: "id"
         },
         {
           title: "Name",
           name: "name",
-          sortField: "name"
         },
         {
           title: "Redirect",
           name: "redirect",
-          sortField: "redirect",
           callback(val) { return val.substr(0, 20) + '...' }
         },
         {

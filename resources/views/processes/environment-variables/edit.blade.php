@@ -16,7 +16,7 @@
     ]])
     <div class="container" id="editEnvironmentVariable">
         <div class="row">
-            <div class="col-8">
+            <div class="col">
                 <div class="card card-body">
                     {!! Form::open() !!}
                     <div class="form-group">
@@ -34,8 +34,9 @@
                     </div>
                     <div class="form-group">
                         {!!Form::label('value', __('Value'))!!}
-                        {!!Form::text('value', null, ['class'=> 'form-control', 'v-model'=> 'formData.value',
+                        {!!Form::text('value', null,['class'=> 'form-control', 'v-model'=> 'formData.value',
                         'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.value}'])!!}
+                        <small class="form-text text-muted">{{ __('For security purposes, this field will always appear empty') }}</small>
                         <div class="invalid-feedback" v-for="value in errors.value">@{{value}}</div>
                     </div>
                     <br>
