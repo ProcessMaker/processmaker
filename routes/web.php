@@ -50,7 +50,6 @@ Route::group(['middleware' => ['auth', 'sanitize']], function () {
 
     Route::get('profile/edit', 'ProfileController@edit')->name('profile.edit');
     Route::get('profile/{id}', 'ProfileController@show')->name('profile.show');
-    Route::put('profile/{id}', 'ProfileController@update')->name('profile.update');
     // Ensure our modeler loads at a distinct url
     Route::get('modeler/{process}', 'Process\ModelerController')->name('modeler.show')->middleware('can:edit-processes');
 

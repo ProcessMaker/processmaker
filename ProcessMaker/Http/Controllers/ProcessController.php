@@ -13,6 +13,16 @@ use ProcessMaker\Models\User;
 
 class ProcessController extends Controller
 {
+    /**
+     * A blacklist of attributes that should not be
+     * sanitized by our SanitizeInput middleware.
+     *
+     * @var array
+     */
+    public $doNotSanitize = [
+        'bpmn',
+    ];
+
     public function index(Request $request)
     {
         $status = $request->input('status');
