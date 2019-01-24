@@ -16,6 +16,16 @@ use ProcessMaker\Http\Resources\GroupMembers as GroupMemberResource;
 class GroupMemberController extends Controller
 {
     /**
+     * A blacklist of attributes that should not be
+     * sanitized by our SanitizeInput middleware.
+     *
+     * @var array
+     */
+    public $doNotSanitize = [
+        //        
+    ];
+
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response

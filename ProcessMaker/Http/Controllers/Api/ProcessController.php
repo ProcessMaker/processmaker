@@ -21,6 +21,16 @@ use ProcessMaker\Models\User;
 class ProcessController extends Controller
 {
     /**
+     * A blacklist of attributes that should not be
+     * sanitized by our SanitizeInput middleware.
+     *
+     * @var array
+     */
+    public $doNotSanitize = [
+        'bpmn',
+    ];
+
+    /**
      * Get list Process
      *
      * @param Request $request
