@@ -608,4 +608,48 @@ class ProcessTest extends TestCase
         $this->assertStatus(422, $response);
         $response->assertJsonStructure($this->errorStructure);
     }
+
+    /**
+     * Tests the archiving and restoration of a process
+     */
+    public function testArchiveRestore()
+    {
+        // Generate an active process and get its ID
+        $process = factory(Process::class)->create([
+            'status' => 'ACTIVE'
+        ]);
+        $id = $process->id;
+        
+        // Assert that the process is listed
+        $response = $this->apiCall('GET', '/processes');
+        $response->assertJsonFragment(['id' => $id]);
+        
+        // Assert that the process is not listed in the archive
+        $response = $this->apiCall('GET', '/processes?status=inactive');
+        $response->assertJsonMissing(['id' => $id]);
+        
+        // Archive the process
+        $response = $this->apiCall('DELETE', "/processes/{$id}");
+        $response->assertStatus(204);
+        
+        // Assert that the process is listed in the archive
+        $response = $this->apiCall('GET', '/processes?status=inactive');
+        $response->assertJsonFragment(['id' => $id]);
+        
+        // Assert that the process is not listed on the main index
+        $response = $this->apiCall('GET', '/processes');
+        $response->assertJsonMissing(['id' => $id]);
+        
+        // Restore the process
+        $response = $this->apiCall('PUT', "/processes/{$id}/restore");
+        $response->assertStatus(200);
+        
+        // Assert that the process is listed
+        $response = $this->apiCall('GET', '/processes');
+        $response->assertJsonFragment(['id' => $id]);
+        
+        // Assert that the process is not listed in the archive
+        $response = $this->apiCall('GET', '/processes?status=inactive');
+        $response->assertJsonMissing(['id' => $id]);
+    }
 }
