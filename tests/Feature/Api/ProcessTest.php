@@ -53,10 +53,7 @@ class ProcessTest extends TestCase
         $initialCount = Process::count();
         // Create some processes
         $countProcesses = 20;
-        factory(Process::class, $countProcesses)->create([
-            'status' => 'ACTIVE'
-        ]);
-        
+        factory(Process::class, $countProcesses)->create();
         //Get a page of processes
         $page = 2;
         $perPage = 10;
@@ -90,9 +87,7 @@ class ProcessTest extends TestCase
         $initialCount = Process::count();
 
         // Create some processes
-        $process = factory(Process::class)->create([
-            'status' => 'ACTIVE'
-        ]);
+        $process = factory(Process::class)->create();
         $process->usersCanStart()->attach($this->user->id);
 
         //Get a page of processes
@@ -145,9 +140,7 @@ class ProcessTest extends TestCase
         $initialCount = Process::count();
 
         // Create a process
-        $process = factory(Process::class)->create([
-            'status' => 'ACTIVE'
-        ]);
+        $process = factory(Process::class)->create();
         $process->groupsCanStart()->attach($group->id);
 
         //Get a page of processes
@@ -168,8 +161,7 @@ class ProcessTest extends TestCase
     public function testProcessEventsTrigger()
     {
         $process = factory(Process::class)->create([
-            'bpmn' => Process::getProcessTemplate('SingleTask.bpmn'),
-            'status' => 'ACTIVE'
+            'bpmn' => Process::getProcessTemplate('SingleTask.bpmn')
         ]);
 
         $this->user = factory(User::class)->create([
@@ -194,10 +186,7 @@ class ProcessTest extends TestCase
     public function testProcessListDates()
     {
         $processName = 'processTestTimezone';
-        $newEntity = factory(Process::class)->create([
-            'name' => $processName,
-            'status' => 'ACTIVE'
-        ]);
+        $newEntity = factory(Process::class)->create(['name' => $processName]);
         $route = route('api.' . $this->resource . '.index', ['filter' => $processName]);
         $response = $this->apiCall('GET', $route);
 
@@ -218,8 +207,8 @@ class ProcessTest extends TestCase
     public function testFiltering()
     {
         $perPage = 10;
-        $initialActiveCount = Process::where('status', 'ACTIVE')->count();
-        $initialInactiveCount = Process::where('status', 'INACTIVE')->count();
+        $initialActiveCount = Process::active()->count();
+        $initialInactiveCount = Process::inactive()->count();
 
         // Create some processes
         $processActive = [
@@ -266,13 +255,11 @@ class ProcessTest extends TestCase
         // Create some processes
         factory(Process::class)->create([
             'name' => 'aaaaaa',
-            'description' => 'bbbbbb',
-            'status' => 'ACTIVE'
+            'description' => 'bbbbbb'
         ]);
         factory(Process::class)->create([
             'name' => 'zzzzz',
-            'description' => 'yyyyy',
-            'status' => 'ACTIVE'
+            'description' => 'yyyyy'
         ]);
 
         //Test the list sorted by name returns as first row {"name": "aaaaaa"}
@@ -298,15 +285,13 @@ class ProcessTest extends TestCase
     public function testPagination()
     {
         // Number of processes in the tables at the moment of starting the test
-        $initialRows = Process::active()->count();
+        $initialRows = Process::all()->count();
 
         // Number of rows to be created for the test
         $rowsToAdd = 7;
 
         // Now we create the specified number of processes
-        factory(Process::class, $rowsToAdd)->create([
-            'status' => 'ACTIVE'
-        ]);
+        factory(Process::class, $rowsToAdd)->create();
 
         // The first page should have 5 items;
         $response = $this->apiCall('GET', route('api.processes.index', ['per_page' => 5, 'page' => 1]));
@@ -391,17 +376,13 @@ class ProcessTest extends TestCase
 
         //Test to create a process with duplicate name
         $name = 'Some name';
-        factory(Process::class)->create([
-            'name' => $name,
-            'status' => 'ACTIVE'
-        ]);
+        factory(Process::class)->create(['name' => $name]);
         $this->assertModelCreationFails(
             Process::class,
             [
                 'name' => $name,
                 'user_id' => static::$DO_NOT_SEND,
-                'process_category_id' => static::$DO_NOT_SEND,
-                'status' => 'ACTIVE'
+                'process_category_id' => static::$DO_NOT_SEND
             ],
             //Fields that should fail
             [
@@ -431,8 +412,7 @@ class ProcessTest extends TestCase
     {
         //Create a new process without category
         $process = factory(Process::class)->create([
-            'process_category_id' => null,
-            'status' => 'ACTIVE'
+            'process_category_id' => null
         ]);
 
         //Test that is correctly displayed
@@ -443,9 +423,7 @@ class ProcessTest extends TestCase
             ->assertJsonFragment(['category' => null]);
 
         //Create a new process with category
-        $process = factory(Process::class)->create([
-            'status' => 'ACTIVE'
-        ]);
+        $process = factory(Process::class)->create();
 
         //Test that is correctly displayed including category and user
         $this->assertModelShow($process->id, ['category', 'user']);
@@ -546,10 +524,7 @@ class ProcessTest extends TestCase
 
         //Test validate name is unique
         $name = 'Some name';
-        factory(Process::class)->create([
-            'name' => $name,
-            'status' => 'ACTIVE'
-        ]);
+        factory(Process::class)->create(['name' => $name]);
         $this->assertModelUpdateFails(
             Process::class,
             [
@@ -572,8 +547,7 @@ class ProcessTest extends TestCase
         (new \PermissionSeeder())->run($this->user);
 
         $process = factory(Process::class)->create([
-            'bpmn' => Process::getProcessTemplate('OnlyStartElement.bpmn'),
-            'status' => 'ACTIVE'
+            'bpmn' => Process::getProcessTemplate('OnlyStartElement.bpmn')
         ]);
         $id = $process->id;
         $newBpmn = trim(Process::getProcessTemplate('SingleTask.bpmn'));
@@ -595,9 +569,7 @@ class ProcessTest extends TestCase
      */
     public function testUpdateInvalidBPMN()
     {
-        $process = factory(Process::class)->create([
-            'status' => 'ACTIVE'
-        ]);
+        $process = factory(Process::class)->create();
         $id = $process->id;
         $newBpmn = 'Invalid BPMN content';
         $route = route('api.' . $this->resource . '.update', [$id]);
