@@ -9,10 +9,9 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
-use ProcessMaker\Http\Resources\ProcessRequests;
-use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Http\Resources\ProcessRequests as ProcessRequestResource;
+use ProcessMaker\Models\Comment;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Notifications\ProcessCanceledNotification;
 
 class ProcessRequestController extends Controller
@@ -191,17 +190,38 @@ class ProcessRequestController extends Controller
      */
     public function update(ProcessRequest $request, Request $httpRequest)
     {
-        if ($httpRequest->status === 'CANCELED') {
+        if ($httpRequest->post('status') === 'CANCELED') {
             if (! Auth::user()->can('cancel', $request->process)) {
-                throw new AuthorizationException('Not authorized to cancel this request.');
+                throw new AuthorizationException(__('Not authorized to cancel this request.'));
             }
             $this->cancelRequestToken($request);
             return response([], 204);
         }
-
-        $httpRequest->validate(ProcessRequest::rules($request));
-        $request->fill($httpRequest->json()->all());
-        $request->saveOrFail();
+        $fields = $httpRequest->json()->all();
+        if (array_keys($fields) === ['data']) {
+            if (! Auth::user()->can('editData', $request->process)) {
+                throw new AuthorizationException(__('Not authorized to edit request data.'));
+            }
+            // Update data edited
+            $data = array_merge($request->data, $fields['data']);
+            $request->data = $data;
+            $request->saveOrFail();
+            // Log the data edition
+            $user_id   = Auth::id();
+            $user_name = $user_id ? Auth::user()->fullname : 'The System';
+            Comment::create([
+                'type' => 'LOG',
+                'user_id' => $user_id,
+                'commentable_type' => ProcessRequest::class,
+                'commentable_id' => $request->id,
+                'subject' => 'Data edited',
+                'body' => $user_name . " " . __('has edited the request data'),
+            ]);
+        } else {
+            $httpRequest->validate(ProcessRequest::rules($request));
+            $request->fill($fields);
+            $request->saveOrFail();
+        }
         return response([], 204);
     }
 

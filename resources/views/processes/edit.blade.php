@@ -80,6 +80,20 @@
                             <span slot="noResult">Oops! No elements found. Consider changing the search query.</span>
                     </multiselect>
                 </div>
+                <div class="form-group p-0">
+                    {!! Form::label('editData', __('Edit Data')) !!}
+                    <multiselect
+                        v-model="canEditData"
+                        :options="activeUsersAndGroups"
+                        :multiple="true"
+                        placeholder="Type to search"
+                        track-by="fullname"
+                        label="fullname"
+                        group-values="items"
+                        group-label="label">
+                            <span slot="noResult">Oops! No elements found. Consider changing the search query.</span>
+                    </multiselect>
+                </div>
 
                 <div class="form-group p-0">
                     {!! Form::label('status', __('Status')) !!}
@@ -130,6 +144,7 @@
                     },
                     canStart: @json($canStart),
                     canCancel: @json($canCancel),
+                    canEditData: @json($canEditData),
                     activeUsersAndGroups: @json($list)
                 }
             },
@@ -168,6 +183,7 @@
                     let that = this;
                     this.formData.start_request = this.formatAssigneePermissions(this.canStart);
                     this.formData.cancel_request = this.formatAssigneePermissions(this.canCancel);
+                    this.formData.edit_data = this.formatAssigneePermissions(this.canEditData);
 
                     ProcessMaker.apiClient.put('processes/' + that.formData.id, that.formData)
                         .then(response => {

@@ -66,8 +66,9 @@ class ProcessController extends Controller
         
         $canStart = $this->listCan('Start', $process);
         $canCancel = $this->listCan('Cancel', $process);
+        $canEditData = $this->listCan('EditData', $process);
 
-        return view('processes.edit', compact(['process', 'categories', 'screens', 'list', 'canCancel', 'canStart']));
+        return view('processes.edit', compact(['process', 'categories', 'screens', 'list', 'canCancel', 'canStart', 'canEditData']));
     }
 
     /**

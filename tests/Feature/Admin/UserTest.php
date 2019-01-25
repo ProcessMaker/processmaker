@@ -63,21 +63,4 @@ class UserTest extends TestCase
 
     }
 
-    /**
-     * Test to make sure the controller and route work with the view
-     *
-     * @return void
-     */
-    public function testShowRoute()
-    {
-        $user = factory(User::class)->create();
-        // get the URL
-        $response = $this->webCall('GET', '/admin/users/' . $user->id);
-        $response->assertStatus(200);
-        // check the correct view is called
-        $response->assertViewIs('admin.users.show');
-        $response->assertSee($user->firstname);
-
-    }
-
 }

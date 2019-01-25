@@ -66,10 +66,6 @@ class UserController extends Controller
         return view('admin.users.create');
     }
 
-    public function show(User $user)
-    {
-        return view('admin.users.show', compact('user'));
-    }
 
     /**
      * Get all groups actives

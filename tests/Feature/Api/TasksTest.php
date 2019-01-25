@@ -263,10 +263,10 @@ class TasksTest extends TestCase
             'user_id' => $this->user->id,
             'status' => 'ACTIVE',
         ]);
-        $params = ['status' => 'COMPLETED', 'foo' => 'bar'];
+        $params = ['status' => 'COMPLETED', 'data' => ['foo' => 'bar']];
         WorkflowManager::shouldReceive('completeTask')
             ->once()
-            ->with(\Mockery::any(), \Mockery::any(), \Mockery::any(), $params);
+            ->with(\Mockery::any(), \Mockery::any(), \Mockery::any(), $params['data']);
         $response = $this->apiCall('PUT', '/tasks/' . $token->id, $params);
         $this->assertStatus(200, $response);
     }
