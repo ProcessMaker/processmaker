@@ -353,7 +353,7 @@ class ProcessController extends Controller
      *
      * @OA\Put(
      *     path="/processes/processId/restore",
-     *     summary="Restore a soft deleted process",
+     *     summary="Restore an inactive process",
      *     operationId="restoreProcess",
      *     tags={"Process"},
      *     @OA\Parameter(
@@ -378,10 +378,9 @@ class ProcessController extends Controller
      */
     public function restore(Request $request, $processId)
     {
-        $process = Process::withTrashed()->find($processId);
+        $process = Process::find($processId);
         $process->status='ACTIVE';
         $process->save();
-        $process->restore();
         return new Resource($process->refresh());
     }
 
