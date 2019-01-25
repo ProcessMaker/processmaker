@@ -46,6 +46,7 @@ class ProcessController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
+     *     @OA\Parameter(ref="#/components/parameters/status"),
      *     @OA\Parameter(ref="#/components/parameters/include"),
      *
      *     @OA\Response(
@@ -75,9 +76,9 @@ class ProcessController extends Controller
         $include = $this->getRequestInclude($request);
         $status = $request->input('status');
 
-        $processes = ($status === 'deleted')
-                        ? Process::onlyTrashed()->with($include)
-                        : Process::with($include);
+        $processes = ($status === 'inactive')
+                        ? Process::inactive()->with($include)
+                        : Process::active()->with($include);
 
         $processes = $processes->select('processes.*')
             ->leftJoin('process_categories as category', 'processes.process_category_id', '=', 'category.id')
@@ -150,6 +151,10 @@ class ProcessController extends Controller
     {
         $request->validate(Process::rules());
         $data = $request->json()->all();
+
+        if (! isset($data['status'])) {
+            $data['status'] = 'ACTIVE';
+        }
 
         $process = new Process();
         $process->fill($data);
@@ -353,7 +358,7 @@ class ProcessController extends Controller
      *
      * @OA\Put(
      *     path="/processes/processId/restore",
-     *     summary="Restore a soft deleted process",
+     *     summary="Restore an inactive process",
      *     operationId="restoreProcess",
      *     tags={"Process"},
      *     @OA\Parameter(
@@ -378,10 +383,9 @@ class ProcessController extends Controller
      */
     public function restore(Request $request, $processId)
     {
-        $process = Process::withTrashed()->find($processId);
+        $process = Process::find($processId);
         $process->status='ACTIVE';
         $process->save();
-        $process->restore();
         return new Resource($process->refresh());
     }
 
@@ -429,22 +433,6 @@ class ProcessController extends Controller
         $process->status='INACTIVE';
         $process->save();
 
-        if ($process->collaborations->count() !== 0) {
-            return response(
-                ['message' => 'The item should not have associated collaboration',
-                    'errors' => ['collaborations' => $process->collaborations->count()]],
-                422);
-        }
-
-        if ($process->requests->count() !== 0) {
-            return response(
-                ['message' => 'The item should not have associated requests',
-                    'errors' => ['requests' => $process->requests->count()]],
-                422);
-        }
-
-
-        $process->delete();
         return response('', 204);
     }
 

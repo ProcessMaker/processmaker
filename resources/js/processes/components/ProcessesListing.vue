@@ -110,12 +110,6 @@
                         sortField: "category.name"
                     },
                     {
-                        title: "Status",
-                        name: "status",
-                        sortField: "status",
-                        callback: this.formatStatus
-                    },
-                    {
                         title: "Owner",
                         name: "__slot:owner",
                         callback: this.formatUserName

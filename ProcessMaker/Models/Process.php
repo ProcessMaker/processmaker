@@ -118,7 +118,7 @@ class Process extends Model implements HasMedia
             'name' => ['required', $unique],
             'description' => 'required',
             'status' => 'in:ACTIVE,INACTIVE',
-            'process_category_id' => 'nullable|exists:process_categories,id',
+            'process_category_id' => 'exists:process_categories,id',
             'bpmn' => 'nullable',
         ];
     }
@@ -185,6 +185,24 @@ class Process extends Model implements HasMedia
     {
         return $this->morphedByMany('ProcessMaker\Models\Group', 'processable')->wherePivot('method', 'EDIT_DATA');
     }
+
+    /**
+     * Scope a query to include only active processes
+     *
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('processes.status', 'ACTIVE');
+    }
+
+    /**
+     * Scope a query to include only inactive processes
+     *
+     */    
+    public function scopeInactive($query)
+    {
+        return $query->where('processes.status', 'INACTIVE');
+    }    
 
     /**
      * Get the process definitions from BPMN field.

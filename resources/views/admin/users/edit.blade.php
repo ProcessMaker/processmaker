@@ -10,7 +10,7 @@
 
 @section('content')
 @include('shared.breadcrumbs', ['routes' => [
-    __('Admin') => route('admin.dashboard'),
+    __('Admin') => route('admin.index'),
     __('Users') => route('users.index'),
     __('Edit') . " " . $user->fullname => null,
 ]])
