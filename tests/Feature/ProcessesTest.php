@@ -188,4 +188,33 @@ class ProcessesTest extends TestCase
         $response->assertRedirect('/processes');
         $this->assertDatabaseMissing('processes', ['id' => $process->id, 'deleted_at' => null]);
     }
+    
+    public function testIndexPermissionRedirect()
+    {
+        $this->user = factory(User::class)->create();
+        $response = $this->webCall('GET', '/processes');
+        $response->assertStatus(403);
+
+        foreach(explode('|',
+            'view-processes|view-categories|view-scripts|view-screens|view-environment_variables'
+        ) as $perm) {
+            $this->user->permissions()->attach(Permission::byName($perm));
+        }
+        $this->user->refresh();
+
+        $response = $this->webCall('GET', '/processes');
+        $response->assertViewIs('processes.index');
+
+        $checkNextAuth = function($perm, $nextRoute) {
+            $this->user->permissions()->detach(Permission::byName($perm));
+            $this->user->refresh();
+            $this->flushSession();
+            $response = $this->webCall('GET', '/processes');
+            $response->assertRedirect(route($nextRoute));
+        };
+        $checkNextAuth('view-processes', 'categories.index');
+        $checkNextAuth('view-categories', 'scripts.index');
+        $checkNextAuth('view-scripts', 'screens.index');
+        $checkNextAuth('view-screens', 'environment-variables.index');
+    }
 }

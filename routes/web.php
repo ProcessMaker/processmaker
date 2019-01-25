@@ -18,7 +18,7 @@ Route::group(['middleware' => ['auth', 'sanitize']], function () {
         Route::get('auth-clients', 'AuthClientController@index')->name('auth-clients.index')->middleware('can:view-auth-clients');
     });
 
-    Route::get('admin', 'AdminController@dashboard')->name('admin.dashboard');
+    Route::get('admin', 'AdminController@index')->name('admin.index');
 
     Route::namespace('Process')->prefix('processes')->group(function () {
         Route::get('environment-variables', 'EnvironmentVariablesController@index')->name('environment-variables.index')->middleware('can:view-environment_variables');
@@ -36,8 +36,7 @@ Route::group(['middleware' => ['auth', 'sanitize']], function () {
         Route::get('categories/{processCategory}/edit', 'ProcessCategoryController@edit')->name('categories.edit')->middleware('can:edit-categories,processCategory');
     });
 
-    Route::get('processes/dashboard', 'ProcessController@dashboard')->name('processes.dashboard');
-    Route::get('processes', 'ProcessController@index')->name('processes.index')->middleware('can:view-processes');
+    Route::get('processes', 'ProcessController@index')->name('processes.index');
     Route::get('processes/{process}/edit', 'ProcessController@edit')->name('processes.edit')->middleware('can:edit-processes');
     Route::get('processes/create', 'ProcessController@create')->name('processes.create')->middleware('can:create-processes');
     Route::post('processes', 'ProcessController@store')->name('processes.store')->middleware('can:edit-processes');

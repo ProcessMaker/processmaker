@@ -10,7 +10,7 @@
 
 @section('content')
 @include('shared.breadcrumbs', ['routes' => [
-        __('Admin') => route('admin.dashboard'),
+        __('Admin') => route('admin.index'),
         __('Auth Clients') => null,
     ]])
 <div class="container page-content" id="listAuthClients">

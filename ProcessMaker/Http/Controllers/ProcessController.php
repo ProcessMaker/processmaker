@@ -10,6 +10,7 @@ use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessPermission;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
+use Illuminate\Auth\Access\AuthorizationException;
 
 class ProcessController extends Controller
 {
@@ -25,6 +26,11 @@ class ProcessController extends Controller
 
     public function index(Request $request)
     {
+        $redirect = $this->checkAuth();
+        if ($redirect !== false) {
+            return redirect()->route($redirect);
+        }
+
         $status = $request->input('status');
         $processes = Process::all(); //what will be in the database = Model
         $processCategories = ProcessCategory::where('status', 'ACTIVE')->get();
@@ -38,10 +44,6 @@ class ProcessController extends Controller
                 "processCategories" => $processCategoryArray,
                 "status" => $status
             ]);
-    }
-
-    public function dashboard(){
-        return view('processes.dashboard');
     }
 
     /**
@@ -165,5 +167,24 @@ class ProcessController extends Controller
     {
         $process->delete();
         return redirect('/processes');
+    }
+
+    private function checkAuth()
+    {
+        $perm = 'view-processes|view-categories|view-scripts|view-screens|view-environment_variables';
+        switch (\Auth::user()->canAny($perm)) {
+            case 'view-processes':
+                return false; // already on index, continue with it
+            case 'view-categories':
+                return 'categories.index';
+            case 'view-scripts':
+                return 'scripts.index';
+            case 'view-screens':
+                return 'screens.index';
+            case 'view-environment_variables':
+                return 'environment-variables.index';
+            default:
+                throw new AuthorizationException();
+        }
     }
 }
