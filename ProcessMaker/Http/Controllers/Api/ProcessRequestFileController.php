@@ -25,6 +25,18 @@ use Illuminate\Http\JsonResponse;
 
 class ProcessRequestFileController extends Controller
 {
+    /**
+     * A whitelist of attributes that should not be
+     * sanitized by our SanitizeInput middleware.
+     *
+     * @var array
+     */
+    public $doNotSanitize = [
+       'custom_properties',
+       'manipulations',
+       'responsive_images'
+    ];
+
     use HasMediaTrait;
     /*
     * return list of Process Request files

@@ -2,7 +2,7 @@
 
 use ProcessMaker\Http\Controllers\Api\Requests\RequestsController;
 
-Route::group(['middleware' => ['auth']], function () {
+Route::group(['middleware' => ['auth', 'sanitize']], function () {
 
 // Routes related to Authentication (password reset, etc)
 // Auth::routes();
@@ -13,7 +13,6 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('users', 'UserController@index')->name('users.index')->middleware('can:view-users');
         Route::get('users/create', 'UserController@create')->name('users.create')->middleware('can:create-users');
-        Route::get('users/{user}', 'UserController@show')->name('users.show')->middleware('can:view-users, user');
         Route::get('users/{user}/edit', 'UserController@edit')->name('users.edit')->middleware('can:edit-users,user');
 
         Route::get('auth-clients', 'AuthClientController@index')->name('auth-clients.index')->middleware('can:view-auth-clients');
@@ -50,7 +49,6 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('profile/edit', 'ProfileController@edit')->name('profile.edit');
     Route::get('profile/{id}', 'ProfileController@show')->name('profile.show');
-    Route::put('profile/{id}', 'ProfileController@update')->name('profile.update');
     // Ensure our modeler loads at a distinct url
     Route::get('modeler/{process}', 'Process\ModelerController')->name('modeler.show')->middleware('can:edit-processes');
 
@@ -70,6 +68,10 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('notifications', 'NotificationController@index')->name('notifications.index');
 
+    // Allows for a logged in user to see navigation on a 404 page
+    Route::fallback(function(){
+        return response()->view('errors.404', [], 404);
+    })->name('fallback');
 });
 
 // Add our broadcasting routes

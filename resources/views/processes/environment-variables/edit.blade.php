@@ -10,7 +10,7 @@
 
 @section('content')
     @include('shared.breadcrumbs', ['routes' => [
-        __('Processes') => route('processes.index'),
+        __('Processes') => route('processes.dashboard'),
         __('Environment Variables') => route('environment-variables.index'),
         __('Edit') . " " . $environmentVariable->name => null,
     ]])

@@ -14,16 +14,20 @@
             <div class="card card-body mt-3">
                 <h4 class="mt-2">{{__('Contact Information')}}</h4>
                 <table class="table">
+                    @if($user->email)
                     <tr>
                         <td align="center"><i class="fas fa-envelope fa-lg text-secondary pr-1"></i></td>
                         <td>{{__('Email')}}</td>
                         <td width="100%"><a href="mailto:{{$user->email}}">{{$user->email}}</a></td>
                     </tr>
+                    @endif
+                    @if($user->phone)
                     <tr>
                         <td align="center"><i class="fas fa-phone fa-lg text-secondary pr-1"></i></td>
                         <td>{{__('Phone')}}</td>
                         <td><a href="{{'tel:' . $user->phone}}">{{$user->phone}}</a></td>
                     </tr>
+                    @endif
                     @if ($user->fax)
                     <tr>
                         <td align="center"><i class="fas fa-fax fa-lg text-secondary pr-1"></i></td>

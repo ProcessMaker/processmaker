@@ -6,6 +6,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\View\View;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\Script;
 
 class ScreenController extends Controller
 {
@@ -16,7 +17,16 @@ class ScreenController extends Controller
      */
     public function index()
     {
-        return view('processes.screens.index');
+        $types = [
+            '' => __('Select Type'),
+            'DISPLAY' => 'Display',
+            'FORM' => 'Form',
+        ];
+
+        if (Script::where('key', 'processmaker-communication-email-send')->exists()) {
+            $types['EMAIL'] = 'Email';
+        }
+        return view('processes.screens.index', compact('types'));
     }
 
     /**

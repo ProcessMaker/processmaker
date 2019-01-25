@@ -10,7 +10,7 @@
 
 @section('content')
     @include('shared.breadcrumbs', ['routes' => [
-        __('Processes') => route('processes.index'),
+        __('Processes') => route('processes.dashboard'),
         __('Screens') => null,
     ]])
     <div class="container page-content" id="screenIndex">
@@ -44,7 +44,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h1>{{__('Create New Screen')}}</h1>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onClose">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
@@ -58,7 +58,7 @@
                         </div>
                         <div class="form-group">
                             {!! Form::label('type', 'Type') !!}
-                            {!! Form::select('type', ['' => __('Select Type'), 'DISPLAY' => 'Display', 'FORM' => 'Form', 'EMAIL' => 'Email'], '', ['id' => 'type','class'=> 'form-control', 'v-model' => 'formData.type',
+                            {!! Form::select('type', $types, '', ['id' => 'type','class'=> 'form-control', 'v-model' => 'formData.type',
                             'v-bind:class' => '{"form-control":true, "is-invalid":errors.type}']) !!}
                             <div class="invalid-feedback" v-for="type in errors.type">@{{type}}</div>
                         </div>
@@ -70,7 +70,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-success" data-dismiss="modal">{{__('Close')}}</button>
+                        <button type="button" class="btn btn-outline-success" data-dismiss="modal" @click="onClose">{{__('Close')}}</button>
                         <button type="button" @click="onSubmit" class="btn btn-success ml-2">{{__('Save')}}</button>
                     </div>
                 </div>
@@ -81,7 +81,7 @@
 
 @section('js')
     <script src="{{mix('js/processes/screens/index.js')}}"></script>
-    
+
     @can('create-screens')
         <script>
             new Vue({
@@ -114,6 +114,10 @@
                             type: null,
                             description: null,
                         });
+                    },
+                    onClose() {
+                        this.resetFormData();
+                        this.resetErrors();
                     },
                     onSubmit() {
                         this.resetErrors();

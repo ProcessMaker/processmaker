@@ -10,7 +10,7 @@
 
 @section('content')
     @include('shared.breadcrumbs', ['routes' => [
-        __('Admin') => route('users.index'),
+        __('Admin') => route('admin.dashboard'),
         __('Groups') => route('groups.index'),
         __('Edit') . " " . $group->name => null,
     ]])
@@ -95,7 +95,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">{{__('Add Users')}}</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onCloseAddUser">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
@@ -126,7 +126,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-outline-success"
-                                    data-dismiss="modal">{{__('Close')}}</button>
+                                    data-dismiss="modal" @click="onCloseAddUser">{{__('Close')}}</button>
                             <button type="button" class="btn btn-success ml-2" @click="onSave"
                                     id="disabledForNow">{{__('Save')}}</button>
                         </div>
@@ -200,6 +200,9 @@
                     if (this.groupPermissionNames) {
                         this.selectedPermissions = this.groupPermissionNames;
                     }
+                },
+                onCloseAddUser() {
+                    this.selectedUsers = [];
                 },
                 onSave() {
                     let that = this;

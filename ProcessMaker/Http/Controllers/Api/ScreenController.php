@@ -12,6 +12,16 @@ use ProcessMaker\Http\Resources\ApiCollection;
 class ScreenController extends Controller
 {
     /**
+     * A whitelist of attributes that should not be
+     * sanitized by our SanitizeInput middleware.
+     *
+     * @var array
+     */
+    public $doNotSanitize = [
+        'config',
+    ];
+
+    /**
      * Get a list of Screens.
      *
      * @param Request $request

@@ -57,7 +57,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">{{__('Add A Process')}}</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onClose">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
@@ -90,7 +90,7 @@
                 </a>
             </div>
         	<div class="modal-footer">
-    			<button type="button" class="btn btn-outline-success" data-dismiss="modal" v-if='processCategories'>Close</button>
+    			<button type="button" class="btn btn-outline-success" data-dismiss="modal" v-if='processCategories' @click="onClose">Close</button>
     			<button type="button" class="btn btn-success ml-2" id="disabledForNow" @click="onSubmit" v-if='processCategories'>Save</button>
             </div>
         </div>
@@ -103,7 +103,7 @@
 
 @can('create-processes')
     <script>
-    	new Vue({
+        new Vue({
             el: '#addProcess',
             data: {
                 name: '',
@@ -115,29 +115,41 @@
                 processCategories: @json($processCategories)
             },
             methods: {
+                onClose() {
+                    this.name = '';
+                    this.description = '';
+                    this.process_category_id = '';
+                    this.status = '';
+                    this.addError = {};
+                },
                 onSubmit() {
                     this.errors = Object.assign({}, {
                         name: null,
                         description: null,
+                        process_category_id: null,
                         status: null
                     });
-
-                    ProcessMaker.apiClient.post("/processes", {
-                        name: this.name,
-                        description: this.description,
-                        process_category_id: this.process_category_id,
-                        status: this.status
-                    })
-                    .then(response => {
-                        ProcessMaker.alert('{{__('Process successfully added')}}', 'success')
-                        window.location = "/modeler/" + response.data.id
-                    })
-                    .catch(error => {
-                        this.addError = error.response.data.errors;
-                    })
+                    if (this.process_category_id === '') {
+                        this.addError = {"process_category_id":  ["Process Category is required"]};
+                        ProcessMaker.alert('{{__('Process Category is required')}}', 'danger');
+                    } else {
+                        ProcessMaker.apiClient.post("/processes", {
+                            name: this.name,
+                            description: this.description,
+                            process_category_id: this.process_category_id,
+                            status: this.status
+                        })
+                            .then(response => {
+                                ProcessMaker.alert('{{__('Process successfully added')}}', 'success')
+                                window.location = "/modeler/" + response.data.id
+                            })
+                            .catch(error => {
+                                this.addError = error.response.data.errors;
+                            })
+                    }
                 }
             }
-    	})
+        })
     </script>
 @endcan
 

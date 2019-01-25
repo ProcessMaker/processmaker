@@ -10,7 +10,7 @@
 
 @section('content')
 @include('shared.breadcrumbs', ['routes' => [
-    __('Admin') => route('users.index'),
+    __('Admin') => route('admin.dashboard'),
     __('Groups') => null,
 ]])
 <div class="container page-content" id="listGroups">
@@ -44,7 +44,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h1>{{__('Create New Group')}}</h1>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onClose">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
@@ -65,7 +65,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-success" data-dismiss="modal">{{__('Close')}}</button>
+                        <button type="button" class="btn btn-outline-success" data-dismiss="modal" @click="onClose">{{__('Close')}}</button>
                         <button type="button" @click="onSubmit" class="btn btn-success ml-2">{{__('Save')}}</button>
                     </div>
                 </div>
@@ -76,7 +76,7 @@
 
 @section('js')
     <script src="{{mix('js/admin/groups/index.js')}}"></script>
-    
+
     @can('create-groups')
         <script>
             new Vue({
@@ -96,6 +96,10 @@
                     this.resetErrors();
                 },
                 methods: {
+                    onClose() {
+                        this.resetFormData();
+                        this.resetErrors();
+                    },
                     resetFormData() {
                         this.formData = Object.assign({}, {
                             name: null,
