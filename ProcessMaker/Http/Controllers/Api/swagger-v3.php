@@ -30,6 +30,12 @@
  *             @OA\Schema(type="string"),
  *         ),
  *         @OA\Parameter(
+ *             parameter="status",
+ *             name="status",
+ *             in="query",
+ *             @OA\Schema(type="string", enum={"active", "inactive"}, default="active"),
+ *         ),
+ *         @OA\Parameter(
  *             parameter="order_direction",
  *             name="order_direction",
  *             in="query",
