@@ -429,22 +429,6 @@ class ProcessController extends Controller
         $process->status='INACTIVE';
         $process->save();
 
-        if ($process->collaborations->count() !== 0) {
-            return response(
-                ['message' => 'The item should not have associated collaboration',
-                    'errors' => ['collaborations' => $process->collaborations->count()]],
-                422);
-        }
-
-        if ($process->requests->count() !== 0) {
-            return response(
-                ['message' => 'The item should not have associated requests',
-                    'errors' => ['requests' => $process->requests->count()]],
-                422);
-        }
-
-
-        $process->delete();
         return response('', 204);
     }
 
