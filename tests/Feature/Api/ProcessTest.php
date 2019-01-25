@@ -207,8 +207,8 @@ class ProcessTest extends TestCase
     public function testFiltering()
     {
         $perPage = 10;
-        $initialActiveCount = Process::where('status', 'ACTIVE')->count();
-        $initialInactiveCount = Process::where('status', 'INACTIVE')->count();
+        $initialActiveCount = Process::active()->count();
+        $initialInactiveCount = Process::inactive()->count();
 
         // Create some processes
         $processActive = [
@@ -224,7 +224,7 @@ class ProcessTest extends TestCase
 
         //Get active processes
         $response = $this->assertCorrectModelListing(
-            '?filter=ACTIVE&include=category&per_page=' . $perPage,
+            '?status=active&include=category&per_page=' . $perPage,
             [
                 'total' => $initialActiveCount + $processActive['num'],
                 'count' => $perPage,
@@ -236,7 +236,7 @@ class ProcessTest extends TestCase
 
         //Get active processes
         $response = $this->assertCorrectModelListing(
-            '?filter=INACTIVE&include=category,user&per_page=' . $perPage,
+            '?status=inactive&include=category,user&per_page=' . $perPage,
             [
                 'total' => $initialInactiveCount + $processInactive['num'],
                 'count' => $perPage,
@@ -430,44 +430,6 @@ class ProcessTest extends TestCase
     }
 
     /**
-     * Process deletion
-     *
-     * Test the process deletion
-     */
-    public function testsProcessDeletion()
-    {
-        //Create a new process
-        $process = factory(Process::class)->create();
-
-        //Delete the process created
-        $this->assertCorrectModelDeletion($process->id);
-
-        //Create a request without collaboration
-        $request = factory(ProcessRequest::class)->create([
-            'process_collaboration_id' => null
-        ]);
-        $process = $request->process;
-
-        //Delete the process created
-        $this->assertModelDeletionFails($process->id, [
-            'requests'
-        ]);
-
-        //Create a request with collaboration
-        $process = factory(Process::class)->create([
-            'process_category_id' => null
-        ]);
-        factory(ProcessCollaboration::class)->create([
-            'process_id' => $process->id
-        ]);
-
-        //Delete the process created
-        $this->assertModelDeletionFails($process->id, [
-            'collaborations'
-        ]);
-    }
-
-    /**
      * Test update process
      */
     public function testUpdateProcess()
@@ -620,17 +582,46 @@ class ProcessTest extends TestCase
     }
 
     /**
-     * Tests the deletion and restore of a process
+     * Tests the archiving and restoration of a process
      */
-    public function testDeleteRestore()
+    public function testArchiveRestore()
     {
-        $process = factory(Process::class)->create();
-        $response = $this->apiCall('DELETE', '/processes/' . $process->id . '');
-        $this->assertDatabaseMissing('processes', ['id' => $process->id, 'deleted_at' => null]);
-
-        //now we restore the process
-        $responseRestore = $this->apiCall('PUT', '/processes/' . $process->id . '/restore');
-        $responseRestore->assertStatus(200);
-        $this->assertDatabaseHas('processes', ['id' => $process->id, 'deleted_at' => null]);
+        // Generate an active process and get its ID
+        $process = factory(Process::class)->create([
+            'status' => 'ACTIVE'
+        ]);
+        $id = $process->id;
+        
+        // Assert that the process is listed
+        $response = $this->apiCall('GET', '/processes');
+        $response->assertJsonFragment(['id' => $id]);
+        
+        // Assert that the process is not listed in the archive
+        $response = $this->apiCall('GET', '/processes?status=inactive');
+        $response->assertJsonMissing(['id' => $id]);
+        
+        // Archive the process
+        $response = $this->apiCall('DELETE', "/processes/{$id}");
+        $response->assertStatus(204);
+        
+        // Assert that the process is listed in the archive
+        $response = $this->apiCall('GET', '/processes?status=inactive');
+        $response->assertJsonFragment(['id' => $id]);
+        
+        // Assert that the process is not listed on the main index
+        $response = $this->apiCall('GET', '/processes');
+        $response->assertJsonMissing(['id' => $id]);
+        
+        // Restore the process
+        $response = $this->apiCall('PUT', "/processes/{$id}/restore");
+        $response->assertStatus(200);
+        
+        // Assert that the process is listed
+        $response = $this->apiCall('GET', '/processes');
+        $response->assertJsonFragment(['id' => $id]);
+        
+        // Assert that the process is not listed in the archive
+        $response = $this->apiCall('GET', '/processes?status=inactive');
+        $response->assertJsonMissing(['id' => $id]);
     }
 }

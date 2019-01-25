@@ -14,7 +14,7 @@ $factory->define(Process::class, function (Faker $faker) {
         'name' => $faker->unique()->sentence(3),
         'bpmn' => file_get_contents($emptyProcess),
         'description' => $faker->unique()->name,
-        'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
+        'status' => 'ACTIVE',
         'user_id' => function () {
             return factory(User::class)->create()->getKey();
         },

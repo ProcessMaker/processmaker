@@ -187,6 +187,24 @@ class Process extends Model implements HasMedia
     }
 
     /**
+     * Scope a query to include only active processes
+     *
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('processes.status', 'ACTIVE');
+    }
+
+    /**
+     * Scope a query to include only inactive processes
+     *
+     */    
+    public function scopeInactive($query)
+    {
+        return $query->where('processes.status', 'INACTIVE');
+    }    
+
+    /**
      * Get the process definitions from BPMN field.
      *
      * @param bool $forceParse
