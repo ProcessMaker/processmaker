@@ -449,7 +449,7 @@ class ProcessController extends Controller
     public function triggerStartEvent(Process $process, Request $request)
     {
         //Get the event BPMN element
-        $id = $request->input('event');
+        $id = $request->query('event');
         if (!$id) {
             return abort(404);
         }
@@ -459,7 +459,7 @@ class ProcessController extends Controller
             return abort(404);
         }
         $event = $definitions->getEvent($id);
-        $data = request()->input();
+        $data = request()->post();
         //Trigger the start event
         $processRequest = WorkflowManager::triggerStartEvent($process, $event, $data);
         return new ProcessRequests($processRequest);

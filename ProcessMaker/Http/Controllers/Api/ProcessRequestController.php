@@ -180,7 +180,7 @@ class ProcessRequestController extends Controller
      */
     public function update(ProcessRequest $request, Request $httpRequest)
     {
-        if ($httpRequest->status === 'CANCELED') {
+        if ($httpRequest->query('status') === 'CANCELED') {
             if (! Auth::user()->can('cancel', $request->process)) {
                 throw new AuthorizationException(__('Not authorized to cancel this request.'));
             }
