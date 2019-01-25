@@ -95,16 +95,6 @@
                     </multiselect>
                 </div>
 
-                <div class="form-group p-0">
-                    {!! Form::label('status', __('Status')) !!}
-                    {!! Form::select('status', ['ACTIVE' => 'Active', 'INACTIVE' => 'Inactive'], null,
-                        ['id' => 'status',
-                        'class' => 'form-control',
-                        'v-model' => 'formData.status',
-                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.status}'])
-                    !!}
-                    <div class="invalid-feedback" v-if="errors.status">@{{errors.status[0]}}</div>
-                </div>
                 <div class="d-flex justify-content-end mt-2">
                     {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose']) !!}
                     {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'onUpdate']) !!}
