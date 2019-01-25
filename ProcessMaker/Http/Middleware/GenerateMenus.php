@@ -123,7 +123,7 @@ class GenerateMenus
           }
           if(\Auth::check() && \Auth::user()->can('archive-processes')) {
             $submenu->add(__('menus.sidebar_processes.archived_processes'), [
-                'route' => ['processes.index', 'status' => 'deleted'],
+                'route' => ['processes.index', 'status' => 'inactive'],
                 'icon' => 'fa-archive',
                 'id' => 'process-environment'
             ]);

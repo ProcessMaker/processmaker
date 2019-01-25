@@ -75,9 +75,9 @@ class ProcessController extends Controller
         $include = $this->getRequestInclude($request);
         $status = $request->input('status');
 
-        $processes = ($status === 'deleted')
-                        ? Process::onlyTrashed()->with($include)
-                        : Process::with($include);
+        $processes = ($status === 'inactive')
+                        ? Process::inactive()->with($include)
+                        : Process::active()->with($include);
 
         $processes = $processes->select('processes.*')
             ->leftJoin('process_categories as category', 'processes.process_category_id', '=', 'category.id')
