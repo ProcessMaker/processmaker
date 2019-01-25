@@ -53,7 +53,10 @@ class ProcessTest extends TestCase
         $initialCount = Process::count();
         // Create some processes
         $countProcesses = 20;
-        factory(Process::class, $countProcesses)->create();
+        factory(Process::class, $countProcesses)->create([
+            'status' => 'ACTIVE'
+        ]);
+        
         //Get a page of processes
         $page = 2;
         $perPage = 10;
@@ -87,7 +90,9 @@ class ProcessTest extends TestCase
         $initialCount = Process::count();
 
         // Create some processes
-        $process = factory(Process::class)->create();
+        $process = factory(Process::class)->create([
+            'status' => 'ACTIVE'
+        ]);
         $process->usersCanStart()->attach($this->user->id);
 
         //Get a page of processes
@@ -140,7 +145,9 @@ class ProcessTest extends TestCase
         $initialCount = Process::count();
 
         // Create a process
-        $process = factory(Process::class)->create();
+        $process = factory(Process::class)->create([
+            'status' => 'ACTIVE'
+        ]);
         $process->groupsCanStart()->attach($group->id);
 
         //Get a page of processes
@@ -161,7 +168,8 @@ class ProcessTest extends TestCase
     public function testProcessEventsTrigger()
     {
         $process = factory(Process::class)->create([
-            'bpmn' => Process::getProcessTemplate('SingleTask.bpmn')
+            'bpmn' => Process::getProcessTemplate('SingleTask.bpmn'),
+            'status' => 'ACTIVE'
         ]);
 
         $this->user = factory(User::class)->create([
@@ -186,7 +194,10 @@ class ProcessTest extends TestCase
     public function testProcessListDates()
     {
         $processName = 'processTestTimezone';
-        $newEntity = factory(Process::class)->create(['name' => $processName]);
+        $newEntity = factory(Process::class)->create([
+            'name' => $processName,
+            'status' => 'ACTIVE'
+        ]);
         $route = route('api.' . $this->resource . '.index', ['filter' => $processName]);
         $response = $this->apiCall('GET', $route);
 
@@ -224,7 +235,7 @@ class ProcessTest extends TestCase
 
         //Get active processes
         $response = $this->assertCorrectModelListing(
-            '?filter=ACTIVE&include=category&per_page=' . $perPage,
+            '?status=active&include=category&per_page=' . $perPage,
             [
                 'total' => $initialActiveCount + $processActive['num'],
                 'count' => $perPage,
@@ -236,7 +247,7 @@ class ProcessTest extends TestCase
 
         //Get active processes
         $response = $this->assertCorrectModelListing(
-            '?filter=INACTIVE&include=category,user&per_page=' . $perPage,
+            '?status=inactive&include=category,user&per_page=' . $perPage,
             [
                 'total' => $initialInactiveCount + $processInactive['num'],
                 'count' => $perPage,
@@ -255,11 +266,13 @@ class ProcessTest extends TestCase
         // Create some processes
         factory(Process::class)->create([
             'name' => 'aaaaaa',
-            'description' => 'bbbbbb'
+            'description' => 'bbbbbb',
+            'status' => 'ACTIVE'
         ]);
         factory(Process::class)->create([
             'name' => 'zzzzz',
-            'description' => 'yyyyy'
+            'description' => 'yyyyy',
+            'status' => 'ACTIVE'
         ]);
 
         //Test the list sorted by name returns as first row {"name": "aaaaaa"}
@@ -285,13 +298,15 @@ class ProcessTest extends TestCase
     public function testPagination()
     {
         // Number of processes in the tables at the moment of starting the test
-        $initialRows = Process::all()->count();
+        $initialRows = Process::active()->count();
 
         // Number of rows to be created for the test
         $rowsToAdd = 7;
 
         // Now we create the specified number of processes
-        factory(Process::class, $rowsToAdd)->create();
+        factory(Process::class, $rowsToAdd)->create([
+            'status' => 'ACTIVE'
+        ]);
 
         // The first page should have 5 items;
         $response = $this->apiCall('GET', route('api.processes.index', ['per_page' => 5, 'page' => 1]));
@@ -376,13 +391,17 @@ class ProcessTest extends TestCase
 
         //Test to create a process with duplicate name
         $name = 'Some name';
-        factory(Process::class)->create(['name' => $name]);
+        factory(Process::class)->create([
+            'name' => $name,
+            'status' => 'ACTIVE'
+        ]);
         $this->assertModelCreationFails(
             Process::class,
             [
                 'name' => $name,
                 'user_id' => static::$DO_NOT_SEND,
-                'process_category_id' => static::$DO_NOT_SEND
+                'process_category_id' => static::$DO_NOT_SEND,
+                'status' => 'ACTIVE'
             ],
             //Fields that should fail
             [
@@ -412,7 +431,8 @@ class ProcessTest extends TestCase
     {
         //Create a new process without category
         $process = factory(Process::class)->create([
-            'process_category_id' => null
+            'process_category_id' => null,
+            'status' => 'ACTIVE'
         ]);
 
         //Test that is correctly displayed
@@ -423,48 +443,12 @@ class ProcessTest extends TestCase
             ->assertJsonFragment(['category' => null]);
 
         //Create a new process with category
-        $process = factory(Process::class)->create();
+        $process = factory(Process::class)->create([
+            'status' => 'ACTIVE'
+        ]);
 
         //Test that is correctly displayed including category and user
         $this->assertModelShow($process->id, ['category', 'user']);
-    }
-
-    /**
-     * Process deletion
-     *
-     * Test the process deletion
-     */
-    public function testsProcessDeletion()
-    {
-        //Create a new process
-        $process = factory(Process::class)->create();
-
-        //Delete the process created
-        $this->assertCorrectModelDeletion($process->id);
-
-        //Create a request without collaboration
-        $request = factory(ProcessRequest::class)->create([
-            'process_collaboration_id' => null
-        ]);
-        $process = $request->process;
-
-        //Delete the process created
-        $this->assertModelDeletionFails($process->id, [
-            'requests'
-        ]);
-
-        //Create a request with collaboration
-        $process = factory(Process::class)->create([
-            'process_category_id' => null
-        ]);
-        factory(ProcessCollaboration::class)->create([
-            'process_id' => $process->id
-        ]);
-
-        //Delete the process created
-        $this->assertModelDeletionFails($process->id, [
-            'collaborations'
-        ]);
     }
 
     /**
@@ -562,7 +546,10 @@ class ProcessTest extends TestCase
 
         //Test validate name is unique
         $name = 'Some name';
-        factory(Process::class)->create(['name' => $name]);
+        factory(Process::class)->create([
+            'name' => $name,
+            'status' => 'ACTIVE'
+        ]);
         $this->assertModelUpdateFails(
             Process::class,
             [
@@ -585,7 +572,8 @@ class ProcessTest extends TestCase
         (new \PermissionSeeder())->run($this->user);
 
         $process = factory(Process::class)->create([
-            'bpmn' => Process::getProcessTemplate('OnlyStartElement.bpmn')
+            'bpmn' => Process::getProcessTemplate('OnlyStartElement.bpmn'),
+            'status' => 'ACTIVE'
         ]);
         $id = $process->id;
         $newBpmn = trim(Process::getProcessTemplate('SingleTask.bpmn'));
@@ -607,7 +595,9 @@ class ProcessTest extends TestCase
      */
     public function testUpdateInvalidBPMN()
     {
-        $process = factory(Process::class)->create();
+        $process = factory(Process::class)->create([
+            'status' => 'ACTIVE'
+        ]);
         $id = $process->id;
         $newBpmn = 'Invalid BPMN content';
         $route = route('api.' . $this->resource . '.update', [$id]);
@@ -617,20 +607,5 @@ class ProcessTest extends TestCase
         //validate status
         $this->assertStatus(422, $response);
         $response->assertJsonStructure($this->errorStructure);
-    }
-
-    /**
-     * Tests the deletion and restore of a process
-     */
-    public function testDeleteRestore()
-    {
-        $process = factory(Process::class)->create();
-        $response = $this->apiCall('DELETE', '/processes/' . $process->id . '');
-        $this->assertDatabaseMissing('processes', ['id' => $process->id, 'deleted_at' => null]);
-
-        //now we restore the process
-        $responseRestore = $this->apiCall('PUT', '/processes/' . $process->id . '/restore');
-        $responseRestore->assertStatus(200);
-        $this->assertDatabaseHas('processes', ['id' => $process->id, 'deleted_at' => null]);
     }
 }
