@@ -328,7 +328,6 @@
                             window.ProcessMaker.events.$emit('update-profile-avatar');
                         })
                         .catch(error => {
-                            console.log(error.response.data.errors)
                             that.errors = error.response.data.errors;
                         });
                 },
