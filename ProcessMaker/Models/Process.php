@@ -169,6 +169,24 @@ class Process extends Model implements HasMedia
     }
 
     /**
+     * Get the users who can start this process
+     *
+     */    
+    public function usersCanEditData()
+    {
+        return $this->morphedByMany('ProcessMaker\Models\User', 'processable')->wherePivot('method', 'EDIT_DATA');
+    }
+
+    /**
+     * Get the groups who can start this process
+     *
+     */    
+    public function groupsCanEditData()
+    {
+        return $this->morphedByMany('ProcessMaker\Models\Group', 'processable')->wherePivot('method', 'EDIT_DATA');
+    }
+
+    /**
      * Get the process definitions from BPMN field.
      *
      * @param bool $forceParse

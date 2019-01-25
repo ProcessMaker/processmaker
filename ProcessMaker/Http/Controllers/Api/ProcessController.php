@@ -216,8 +216,7 @@ class ProcessController extends Controller
                 422);
         }
 
-        //$process->fill($request->except('cancelRequest', 'startRequest')->json()->all());
-        $process->fill($request->except('cancel_request', 'start_request', 'cancel_request_id', 'start_request_id'));
+        $process->fill($request->except('cancel_request', 'start_request', 'cancel_request_id', 'start_request_id', 'edit_data', 'edit_data_id'));
         $process->saveOrFail();
 
         unset(
@@ -263,7 +262,25 @@ class ProcessController extends Controller
             $process->usersCanCancel()->sync($cancelUsers, ['method' => 'CANCEL']);
             $process->groupsCanCancel()->sync($cancelGroups, ['method' => 'CANCEL']);
         }
-               
+
+        //If we are specifying cancel assignments...
+        if ($request->has('edit_data')) {
+            //Adding method to users array
+            $editDataUsers = [];
+            foreach ($request->input('edit_data')['users'] as $item) {
+                $editDataUsers[$item] = ['method' => 'EDIT_DATA'];
+            }
+
+            //Adding method to groups array            
+            $editDataGroups = [];
+            foreach ($request->input('edit_data')['groups'] as $item) {
+                $editDataGroups[$item] = ['method' => 'EDIT_DATA'];
+            }
+            
+            //Syncing users and groups that can cancel this process            
+            $process->usersCanEditData()->sync($editDataUsers, ['method' => 'EDIT_DATA']);
+            $process->groupsCanEditData()->sync($editDataGroups, ['method' => 'EDIT_DATA']);
+        }
 
         return new Resource($process->refresh());
     }
@@ -442,7 +459,7 @@ class ProcessController extends Controller
     public function triggerStartEvent(Process $process, Request $request)
     {
         //Get the event BPMN element
-        $id = $request->input('event');
+        $id = $request->query('event');
         if (!$id) {
             return abort(404);
         }
@@ -452,7 +469,7 @@ class ProcessController extends Controller
             return abort(404);
         }
         $event = $definitions->getEvent($id);
-        $data = request()->input();
+        $data = request()->post();
         //Trigger the start event
         $processRequest = WorkflowManager::triggerStartEvent($process, $event, $data);
         return new ProcessRequests($processRequest);

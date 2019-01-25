@@ -50,6 +50,8 @@ class ProcessRequestPolicy
         if ($processRequest->user_id == $user->id) {
             return true;
         }
+        return $user->can('cancel', $processRequest->process)
+            || $user->can('editData', $processRequest->process);
     }    
 
     /**
