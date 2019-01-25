@@ -151,6 +151,10 @@ class ProcessController extends Controller
         $request->validate(Process::rules());
         $data = $request->json()->all();
 
+        if (! isset($data['status'])) {
+            $data['status'] = 'ACTIVE';
+        }
+
         $process = new Process();
         $process->fill($data);
 
