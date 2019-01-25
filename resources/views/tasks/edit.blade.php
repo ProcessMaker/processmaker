@@ -196,6 +196,7 @@
                         })
                         .then(response => {
                             this.fieldsToUpdate.splice(0);
+                            ProcessMaker.alert("{{__('Request data successfully updated')}}", "success");
                         });
                 },
                 updateData(name, value) {
