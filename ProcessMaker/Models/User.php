@@ -283,4 +283,16 @@ class User extends Authenticatable implements HasMedia
         return $this->morphMany(ProcessTaskAssignment::class, 'assigned', 'assignment_type', 'assignment_id');
     }
 
+    /**
+     * Check if the user can do any of the listed permissions.
+     * If so, return the permission name, otherwise false
+     */
+    public function canAny($permissions) {
+        foreach(explode("|", $permissions) as $permission) {
+            if ($this->can($permission)) {
+                return $permission;
+            }
+        }
+        return false;
+    }
 }
