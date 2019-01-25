@@ -155,9 +155,11 @@
                     </div>
                 </div>
 
+                @if($canViewComments === true)
                 <div>
                     <comments commentable_id="{{ $request->getKey() }}" commentable_type="{{ get_class($request) }}" />
                 </div>
+                @endif
 
             </div>
             <div class="col-md-4">

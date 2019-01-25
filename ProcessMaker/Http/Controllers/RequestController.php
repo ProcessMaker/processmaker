@@ -88,10 +88,11 @@ class RequestController extends Controller
         $request->summary = $request->summary();
         $request->summary_screen = $request->getSummaryScreenId();
         $canCancel = Auth::user()->can('cancel', $request->process);
+        $canViewComments = Auth::user()->hasPermissionsFor('comments')->count() > 0;
 
         $files = $request->getMedia();
 
-        return view('requests.show', compact('request', 'files', 'canCancel'));
+        return view('requests.show', compact('request', 'files', 'canCancel', 'canViewComments'));
     }
 
     public function downloadFiles(ProcessRequest $requestID, Media $fileID)

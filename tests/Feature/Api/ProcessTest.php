@@ -323,7 +323,7 @@ class ProcessTest extends TestCase
     public function testProcessCreation()
     {
         //Create a process without category
-        $this->assertCorrectModelCreation(
+        $this->assertModelCreationFails(
             Process::class, [
                 'user_id' => static::$DO_NOT_SEND,
                 'process_category_id' => null,
@@ -481,7 +481,7 @@ class ProcessTest extends TestCase
         (new \PermissionSeeder())->run($this->user);
 
         //Test update process category to null
-        $this->assertModelUpdate(
+        $this->assertModelUpdateFails(
             Process::class,
             [
                 'user_id' => static::$DO_NOT_SEND,
