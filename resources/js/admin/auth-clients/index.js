@@ -11,6 +11,10 @@ new Vue({
                 redirect: "",
                 secret: "",
             },
+            errors: {
+                name: null,
+                redirect: null,
+            },
         }
     },
     components: {AuthClientsListing},
@@ -23,7 +27,8 @@ new Vue({
             this.authClient = {id: null, name: '', redirect: '', secret: null}
             this.$refs.createEditAuthClient.show()
         },
-        save() {
+        save(event) {
+            event.preventDefault()
             this.loading = true
             let method = 'POST'
             let url = '/oauth/clients'
@@ -40,8 +45,14 @@ new Vue({
             }).then(response => {
                 this.$refs.createEditAuthClient.hide()
                 this.$refs.authClientList.fetch()
+                this.resetValues();
                 this.loading = false
+            }).catch(error => {
+                this.errors = error.response.data.errors
             });
+        },
+        resetValues() {
+            this.errors = { name: null, redirect: null }
         }
     },
     computed: {
