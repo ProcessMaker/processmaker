@@ -111,7 +111,7 @@ class TaskController extends Controller
             if ($task->status === 'CLOSED') {
                 return abort(422, __('Task already closed'));
             }
-            $data = $request->input();
+            $data = $request->json('data');
             //Call the manager to trigger the start event
             $process = $task->process;
             $instance = $task->processRequest;

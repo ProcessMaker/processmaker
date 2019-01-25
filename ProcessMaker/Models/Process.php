@@ -118,7 +118,7 @@ class Process extends Model implements HasMedia
             'name' => ['required', $unique],
             'description' => 'required',
             'status' => 'in:ACTIVE,INACTIVE',
-            'process_category_id' => 'nullable|exists:process_categories,id',
+            'process_category_id' => 'exists:process_categories,id',
             'bpmn' => 'nullable',
         ];
     }
@@ -166,6 +166,24 @@ class Process extends Model implements HasMedia
     public function groupsCanCancel()
     {
         return $this->morphedByMany('ProcessMaker\Models\Group', 'processable')->wherePivot('method', 'CANCEL');
+    }
+
+    /**
+     * Get the users who can start this process
+     *
+     */    
+    public function usersCanEditData()
+    {
+        return $this->morphedByMany('ProcessMaker\Models\User', 'processable')->wherePivot('method', 'EDIT_DATA');
+    }
+
+    /**
+     * Get the groups who can start this process
+     *
+     */    
+    public function groupsCanEditData()
+    {
+        return $this->morphedByMany('ProcessMaker\Models\Group', 'processable')->wherePivot('method', 'EDIT_DATA');
     }
 
     /**

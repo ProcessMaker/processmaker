@@ -67,4 +67,26 @@ class ProcessPolicy
 
         return false;
     }
+
+    /**
+     * Determine whether the user can edit data.
+     *
+     * @param  \ProcessMaker\Models\User  $user
+     * @param  \ProcessMaker\Process  $process
+     * @return mixed
+     */
+    public function editData(User $user, Process $process)
+    {
+        $groupIds = $user->groups->pluck('id');
+        
+        if ($process->groupsCanEditData->whereIn('id', $groupIds)->count()) {
+            return true;
+        }
+
+        if ($process->usersCanEditData->where('id', $user->id)->count()) {
+            return true;
+        }
+
+        return false;
+    }
 }
