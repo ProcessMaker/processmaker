@@ -45,8 +45,8 @@
   border-right: 0;
 }
 
-.navbar-light .navbar-nav .show > .nav-link,
-.navbar-light .navbar-nav .active > .nav-link,
+.navbar-light .navbar-nav .show>.nav-link,
+.navbar-light .navbar-nav .active>.nav-link,
 .navbar-light .navbar-nav .nav-link.show,
 .navbar-light .navbar-nav .nav-link.active {
   color: $primary;
@@ -96,8 +96,8 @@ html {
   margin-right: 0;
   margin-left: 0;
 
-  & > [class^='col-'],
-  & > [class*=' col-'] {
+  &>[class^='col-'],
+  &>[class*=' col-'] {
     padding-right: 0;
     padding-left: 0;
   }
@@ -414,6 +414,7 @@ h1.page-title {
   position: fixed;
   left: 30%;
   right: 30%;
+  z-index: 50000;
 }
 
 .avatar-circle-list {
