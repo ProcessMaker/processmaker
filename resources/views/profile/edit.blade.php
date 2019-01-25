@@ -19,13 +19,13 @@
                             {!! Form::label('firstname', 'First Name') !!}
                             {!! Form::text('firstname', null, ['id' => 'firstname','class'=> 'form-control', 'v-model' => 'formData.firstname',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.firstname}']) !!}
-                            <div class="invalid-feedback" v-if="errors.firstname">@{{errors.firstname[0]}}</div>
+                            <div class="invalid-feedback" v-if="errors.firstname">@{{errors.firstname}}</div>
                         </div>
                         <div class="form-group col">
                             {!! Form::label('lastname', 'Last Name') !!}
                             {!! Form::text('lastname', null, ['id' => 'lastname', 'rows' => 4, 'class'=> 'form-control', 'v-model'
                             => 'formData.lastname', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.lastname}']) !!}
-                            <div class="invalid-feedback" v-if="errors.lastname">@{{errors.description[0]}}</div>
+                            <div class="invalid-feedback" v-if="errors.lastname">@{{errors.description}}</div>
                         </div>
                     </div>
                     <h2 class="mt-2">{{__('Contact Information')}}</h2>
@@ -40,7 +40,7 @@
                             {!! Form::label('phone', 'Phone') !!}
                             {!! Form::text('phone', null, ['id' => 'phone','class'=> 'form-control', 'v-model' => 'formData.phone',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.phone}']) !!}
-                            <div class="invalid-feedback" v-if="errors.phone">@{{errors.phone[0]}}</div>
+                            <div class="invalid-feedback" v-if="errors.phone">@{{errors.phone}}</div>
                         </div>
                     </div>
                     <h2 class="mt-2">{{__('Address')}}</h2>
@@ -49,7 +49,7 @@
                             {!! Form::label('address', 'Address') !!}
                             {!! Form::text('address', null, ['id' => 'address','class'=> 'form-control', 'v-model' => 'formData.address',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.address}']) !!}
-                            <div class="invalid-feedback" v-if="errors.address">@{{errors.address[0]}}</div>
+                            <div class="invalid-feedback" v-if="errors.address">@{{errors.address}}</div>
                         </div>
                     </div>
                     <div class="row">
@@ -57,7 +57,7 @@
                             {!! Form::label('city', 'City') !!}
                             {!! Form::text('city', null, ['id' => 'city', 'rows' => 4, 'class'=> 'form-control', 'v-model'
                             => 'formData.city', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.city}']) !!}
-                            <div class="invalid-feedback" v-if="errors.city">@{{errors.city[0]}}</div>
+                            <div class="invalid-feedback" v-if="errors.city">@{{errors.city}}</div>
                         </div>
                         <div class="form-group col">
                             {!! Form::label('state', 'State or Region') !!}
@@ -70,7 +70,7 @@
                                         'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.state}'
                                     ])
                              !!}
-                            <div class="invalid-feedback" v-if="errors.state">@{{errors.state[0]}}</div>
+                            <div class="invalid-feedback" v-if="errors.state">@{{errors.state}}</div>
                         </div>
                     </div>
                     <div class="row">
@@ -78,7 +78,7 @@
                             {!! Form::label('postal', 'Postal Code') !!}
                             {!! Form::text('postal', null, ['id' => 'postal', 'rows' => 4, 'class'=> 'form-control', 'v-model'
                             => 'formData.postal', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.postal}']) !!}
-                            <div class="invalid-feedback" v-if="errors.postal">@{{errors.postal[0]}}</div>
+                            <div class="invalid-feedback" v-if="errors.postal">@{{errors.postal}}</div>
                         </div>
                         <div class="form-group col">
                             {!! Form::label('country', 'Country') !!}
@@ -91,7 +91,7 @@
                                     'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.country}'
                                 ])
                              !!}
-                            <div class="invalid-feedback" v-if="errors.country">@{{errors.country[0]}}</div>
+                            <div class="invalid-feedback" v-if="errors.country">@{{errors.country}}</div>
                         </div>
                     </div>
                     <h2 class="mt-2">{{__('Localization')}}</h2>
@@ -107,7 +107,7 @@
                                         'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.datetime_format}'
                                 ])
                             !!}
-                            <div class="invalid-feedback" v-if="errors.email">@{{errors.datetime_format[0]}}</div>
+                            <div class="invalid-feedback" v-if="errors.email">@{{errors.datetime_format}}</div>
                         </div>
                     </div>
                     <div class="row">
@@ -122,7 +122,7 @@
                                     'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.datetimeFormat}'
                                  ])
                              !!}
-                            <div class="invalid-feedback" v-if="errors.email">@{{errors.timezone[0]}}</div>
+                            <div class="invalid-feedback" v-if="errors.email">@{{errors.timezone}}</div>
                         </div>
 
                         <div class="form-group col">
@@ -131,7 +131,7 @@
                             'form-control',
                             'v-model' => 'formData.language',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.language}']) !!}
-                            <div class="invalid-feedback" v-if="errors.language">@{{errors.language[0]}}</div>
+                            <div class="invalid-feedback" v-if="errors.language">@{{errors.language}}</div>
                         </div>
                     </div>
                     <div class="text-right">
@@ -296,7 +296,14 @@
             el: '#profileForm',
             data: {
                 formData: @json($currentUser),
-                errors: {},
+                errors: {
+                    username: null,
+                    firstname: null,
+                    lastname: null,
+                    email: null,
+                    password: null,
+                    status: null
+                },
 				confPassword: '',
                 image: '',
                 options: [
@@ -314,11 +321,13 @@
                     if (this.image) {
                         this.formData.avatar = this.image;
                     }
-
                     ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
                         .then((response) => {
-                            ProcessMaker.alert('Save profile success', 'success');
+                            ProcessMaker.alert('Save profile success', 'success')
                             window.ProcessMaker.events.$emit('update-profile-avatar');
+                        })
+                        .catch(error => {
+                            this.errors = error.response.data.errors;
                         });
                 },
                 onClose() {
