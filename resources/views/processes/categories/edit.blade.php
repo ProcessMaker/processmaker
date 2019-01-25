@@ -10,7 +10,7 @@
 
 @section('content')
     @include('shared.breadcrumbs', ['routes' => [
-        __('Processes') => route('processes.dashboard'),
+        __('Processes') => route('processes.index'),
         __('Categories') => route('categories.index'),
         __('Edit') . " " . $processCategory->name => null,
     ]])
