@@ -83,7 +83,7 @@ class ProcessExecutionTest extends TestCase
         $tasks = $response->json('data');
         //Complete the task
         $route = route('api.tasks.update', [$tasks[0]['id'], 'status' => 'COMPLETED']);
-        $response = $this->apiCall('PUT', $route, $data);
+        $response = $this->apiCall('PUT', $route, ['data' => $data]);
         $task = $response->json();
         //Check the task is closed
         $this->assertEquals('CLOSED', $task['status']);
@@ -158,14 +158,14 @@ class ProcessExecutionTest extends TestCase
         $tasks = $response->json('data');
         //Complete the task
         $route = route('api.tasks.update', [$tasks[0]['id'], 'status' => 'COMPLETED']);
-        $response = $this->apiCall('PUT', $route, $data);
+        $response = $this->apiCall('PUT', $route, ['data' => $data]);
         $task = $response->json();
         //Check the task is closed
         $this->assertEquals('CLOSED', $task['status']);
         $this->assertNotNull($task['completed_at']);
         //Try to complete the task again
         $route = route('api.tasks.update', [$tasks[0]['id'], 'status' => 'COMPLETED']);
-        $response = $this->apiCall('PUT', $route, $data);
+        $response = $this->apiCall('PUT', $route, ['data' => $data]);
         $task = $response->json();
         $response->assertStatus(422);
     }
@@ -190,11 +190,11 @@ class ProcessExecutionTest extends TestCase
         $tasks = $response->json('data');
         //Update to a FAILING status
         $route = route('api.tasks.update', [$tasks[0]['id'], 'status' => 'FAILING']);
-        $response = $this->apiCall('PUT', $route, $data);
+        $response = $this->apiCall('PUT', $route, ['data' => $data]);
         $response->assertStatus(422);
         //Update to a *invalid* status
         $route = route('api.tasks.update', [$tasks[0]['id'], 'status' => '*invalid*']);
-        $response = $this->apiCall('PUT', $route, $data);
+        $response = $this->apiCall('PUT', $route, ['data' => $data]);
         $response->assertStatus(422);
     }
 
@@ -325,7 +325,7 @@ class ProcessExecutionTest extends TestCase
 
         // Complete the task
         $route = route('api.tasks.update', [$task_id, 'status' => 'COMPLETED']);
-        $response = $this->apiCall('PUT', $route, $data);
+        $response = $this->apiCall('PUT', $route, ['data' => $data]);
 
         // Start another request
         $route = route('api.process_events.trigger', [$group_process->id, 'event' => 'node_2']);
@@ -341,7 +341,7 @@ class ProcessExecutionTest extends TestCase
         
         // Complete the task
         $route = route('api.tasks.update', [$tasks[0]['id'], 'status' => 'COMPLETED']);
-        $response = $this->apiCall('PUT', $route, $data);
+        $response = $this->apiCall('PUT', $route, ['data' => $data]);
         
         // Start another request
         $route = route('api.process_events.trigger', [$group_process->id, 'event' => 'node_2']);
