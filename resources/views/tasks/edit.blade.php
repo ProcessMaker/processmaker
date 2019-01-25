@@ -31,21 +31,39 @@
             <div class="col-md-8">
                 <div class="container-fluid">
 
-                    @if ($task->getScreen() && ($task->advanceStatus==='open' || $task->advanceStatus==='overdue'))
-                    <div class="card card-body">
-                        <task-screen process-id="{{$task->processRequest->process->getKey()}}"
-                                   instance-id="{{$task->processRequest->getKey()}}"
-                                   token-id="{{$task->getKey()}}"
-                                   :screen="{{json_encode($task->getScreen()->config)}}"
-                                   :computed="{{json_encode($task->getScreen()->computed)}}"
-                                   :data="{{json_encode($task->processRequest->data)}}"/>
+                    <ul id="tabHeader" role="tablist" class="nav nav-tabs">
+                        <li class="nav-item"><a id="pending-tab" data-toggle="tab" href="#tab-form" role="tab" aria-controls="tab-form" aria-selected="true" class="nav-link active">{{__('Form')}}</a></li>
+                        @if ($task->processRequest->status === 'ACTIVE')
+                        @can('editData', $task->processRequest->process)
+                        <li class="nav-item"><a id="summary-tab" data-toggle="tab" href="#tab-data" role="tab" aria-controls="tab-data" aria-selected="false" class="nav-link">{{__('Data')}}</a></li>
+                        @endcan
+                        @endif
+                    </ul>
+                    <div id="tabContent" class="tab-content">
+                        <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show">
+                            @if ($task->getScreen() && ($task->advanceStatus==='open' || $task->advanceStatus==='overdue'))
+                            <div class="card card-body">
+                                <task-screen process-id="{{$task->processRequest->process->getKey()}}"
+                                           instance-id="{{$task->processRequest->getKey()}}"
+                                           token-id="{{$task->getKey()}}"
+                                           :screen="{{json_encode($task->getScreen()->config)}}"
+                                           :computed="{{json_encode($task->getScreen()->computed)}}"
+                                           :data="{{json_encode($task->processRequest->data)}}"/>
+                            </div>
+                            @elseif ($task->advanceStatus==='completed')
+                            <div class="card card-body" align="center">
+                                <h1>Task Completed <i class="fas fa-clipboard-check"></i></h1>
+                            </div>
+                            @endif
+                        </div>
+                        @if ($task->processRequest->status === 'ACTIVE')
+                        @can('editData', $task->processRequest->process)
+                        <div id="tab-data" role="tabpanel" aria-labelledby="tab-data" class="tab-pane">
+                            @include('tasks.editdata')
+                        </div>
+                        @endcan
+                        @endif
                     </div>
-                    @elseif ($task->advanceStatus==='completed')
-                    <div class="card card-body" align="center">
-                        <h1>Task Completed <i class="fas fa-clipboard-check"></i></h1>
-                    </div>
-                    @endif
-
                 </div>
             </div>
             <div class="col-md-4">
@@ -65,7 +83,7 @@
                             <h5>{{__('Assigned To')}}</h5>
                             <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
                                       :input-data="userAssigned"></avatar-image>
-                            @if(!empty($task->getDefinition()['allowReassignment']))
+                            @if(!empty($task->getDefinition()['allowReassignment']) && $task->getDefinition()['allowReassignment']==='true')
                             <div>
                             <br>
                             <span>
@@ -128,6 +146,15 @@
         new Vue({
             el: '#task',
             data: {
+                //Edit data
+                fieldsToUpdate: [],
+                jsonData: "",
+                selectedData: '',
+                monacoLargeOptions: {
+                    automaticLayout: true,
+                },
+                showJSONEditor: false,
+
                 // Reassignment
                 selected: null,
                 selectedIndex: -1,
@@ -138,6 +165,7 @@
                 task: @json($task),
                 assigned: @json($task->user),
                 requested: @json($task->processRequest->user),
+                data: @json($task->processRequest->data),
                 statusCard: 'card-header text-capitalize text-white bg-success',
                 userAssigned: [],
                 userRequested: []
@@ -156,6 +184,51 @@
                 }
             },
             methods: {
+                // Data editor
+                updateRequestData() {
+                    const data = {};
+                    this.fieldsToUpdate.forEach(name=>{
+                        data[name] = this.data[name];
+                    });
+                    ProcessMaker.apiClient
+                        .put("requests/" + this.task.process_request_id, {
+                            data: data
+                        })
+                        .then(response => {
+                            this.fieldsToUpdate.splice(0);
+                            ProcessMaker.alert("{{__('Request data successfully updated')}}", "success");
+                        });
+                },
+                updateData(name, value) {
+                    if (name) {
+                        this.$set(this.data, name, value);
+                        this.fieldsToUpdate.indexOf(name) === -1 ? this.fieldsToUpdate.push(name) : null;
+                    }
+                },
+                closeJsonData() {
+                    this.selectedData = '';
+                    this.showJSONEditor = false;
+                },
+                saveJsonData() {
+                    try{
+                        if (this.selectedData) {
+                            const value = JSON.parse(this.jsonData);
+                            this.$set(this.data, this.selectedData, value);
+                            this.showJSONEditor = false;
+                            this.fieldsToUpdate.indexOf(this.selectedData) === -1 ? this.fieldsToUpdate.push(this.selectedData) : null;
+                            this.updateRequestData();
+                        }
+                    } catch (e) {
+                    }
+                },
+                editJsonData(name) {
+                    if (this.data[name] !== undefined) {
+                        this.selectedData = name;
+                        this.jsonData = JSON.stringify(this.data[name], null, 4);
+                        this.showJSONEditor = true;
+                    }
+                },
+
                 // Reassign methods
                 show() {
                     this.showReassignment = true;
@@ -215,6 +288,7 @@
                 this.statusCard = this.classHeaderCard(this.task.advanceStatus)
                 this.userAssigned = this.assigned
                 this.userRequested = this.requested
+                this.updateRequestData = debounce(this.updateRequestData, 1000);
             }
         });
     </script>

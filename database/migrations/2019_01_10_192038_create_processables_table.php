@@ -17,7 +17,7 @@ class CreateProcessablesTable extends Migration
             $table->unsignedInteger('process_id');
             $table->unsignedInteger('processable_id');
             $table->string('processable_type');
-            $table->enum('method', ['START', 'CANCEL']);
+            $table->enum('method', ['START', 'CANCEL', 'EDIT_DATA']);
             
             $table->foreign('process_id')->references('id')->on('processes')->onDelete('cascade');
         });
