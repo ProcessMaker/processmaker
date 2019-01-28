@@ -48,7 +48,7 @@
                                            token-id="{{$task->getKey()}}"
                                            :screen="{{json_encode($task->getScreen()->config)}}"
                                            :computed="{{json_encode($task->getScreen()->computed)}}"
-                                           :data="{{json_encode($task->processRequest->data)}}"/>
+                                           :data="{{json_encode($task->processRequest->data, JSON_FORCE_OBJECT)}}"/>
                             </div>
                             @elseif ($task->advanceStatus==='completed')
                             <div class="card card-body" align="center">
