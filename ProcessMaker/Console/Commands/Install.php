@@ -113,7 +113,7 @@ class Install extends Command
                     || ($this->env['APP_URL'][strlen($this->env['APP_URL']) - 1] == '/'))
         );
         // Set broadcaster url
-        $this->env['BROADCASTER_HOST'] = $this->env['APP_URL'] . ':6001';
+        $this->env['BROADCASTER_HOST'] = $this->env['APP_URL'] . ':7001';
 
         // Set it as our url in our config
         config(['app.url' => $this->env['APP_URL']]);

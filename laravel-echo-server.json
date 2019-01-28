@@ -15,7 +15,7 @@
 	},
 	"devMode": true,
 	"host": null,
-	"port": "6001",
+	"port": "7001",
 	"protocol": "https",
 	"socketio": {},
 	"sslCertPath": "/etc/nginx/ssl/bpm4.local.processmaker.com.crt",
