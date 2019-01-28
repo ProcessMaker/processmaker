@@ -33,7 +33,8 @@
                         {!! Form::open() !!}
                         <div class="form-group">
                             {!! Form::label('name', 'Name') !!}
-                            {!! Form::text('name', null, ['id' => 'name','class'=> 'form-control', 'v-model' => 'formData.name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}']) !!}
+                            {!! Form::text('name', null, ['id' => 'name','class'=> 'form-control', 'maxlength' => '255',
+                            'v-model' => 'formData.name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}']) !!}
                             <small class="form-text text-muted">Group name must be distinct</small>
                             <div class="invalid-feedback" v-if="errors.name">@{{errors.name[0]}}</div>
                         </div>
