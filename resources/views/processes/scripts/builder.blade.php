@@ -8,12 +8,15 @@
 @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_processes')])
 @endsection
 
+@section('breadcrumbs')
+  @include('shared.breadcrumbs', ['routes' => [
+      __('Processes') => route('processes.index'),
+      __('Scripts') => route('scripts.index'),
+      __('Edit') . " " . $script->title => null,
+  ]])
+@endsection
+
 @section('content')
-@include('shared.breadcrumbs', ['routes' => [
-    __('Processes') => route('processes.index'),
-    __('Scripts') => route('scripts.index'),
-    __('Edit') . " " . $script->title => null,
-]])
 <div id="script-container">
     <script-editor :script="{{$script}}"></script-editor>
 </div>
