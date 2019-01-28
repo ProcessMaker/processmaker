@@ -1,17 +1,15 @@
 ---
-description: >-
-  Add a Radio Group control from which the form user can select only one option
-  among two or more.
+description: Add a Radio Group control from which the form user can select only one option.
 ---
 
 # Radio Group Control Settings
 
 ## Control Description
 
-The Radio Group control provides a set of options from which the user can only select one.
+The Radio Group control provides a set of options from which the form user can only select one.
 
 {% hint style="info" %}
-This control is not available for [Display](../types-for-screens.md#display)-type ProcessMaker Screens. See [Screen Types](../types-for-screens.md) for more information.
+This control is not available for [Display](../types-for-screens.md#display)-type ProcessMaker Screens. See [Screen Types](../types-for-screens.md).
 {% endhint %}
 
 ## Add the Control to a ProcessMaker Screen
@@ -20,7 +18,7 @@ Follow these steps to add this control to the ProcessMaker Screen:
 
 1. View the ProcessMaker Screen page to which to add the control.
 2. Go to the **Controls** panel on the left side of the ProcessMaker Screen.
-3. Drag the **Radio Group** icon ![](../../../../.gitbook/assets/radio-group-control-screens-builder-processes.png) from the **Controls** panel to the ProcessMaker Screen page.
+3. Drag the **Radio Group** icon ![](../../../../.gitbook/assets/radio-group-control-screens-builder-processes.png) from the **Controls** panel anywhere within the ProcessMaker Screen canvas represented by the dotted-lined box. Existing controls on the ProcessMaker Screen canvas adjust positioning based on where you drag the control.
 4. Drop into the ProcessMaker Screen where you want the control to display on the page.  
 
    ![](../../../../.gitbook/assets/radio-group-control-placed-screens-builder-processes.png)
@@ -32,12 +30,12 @@ Below is a Radio Group control in Preview mode.
 ## Inspector Settings <a id="inspector-settings"></a>
 
 {% hint style="info" %}
-For information how to view the **Inspector** panel, see [View the Inspector Panel](../view-the-inspector-pane.md).
+See [View the Inspector Panel](../view-the-inspector-pane.md) for information how to view the **Inspector** panel.
 {% endhint %}
 
 Below are Inspector settings for the Radio Group control:
 
-* **Field Label:** Specify the field label text displayed to the form user. Set by default as **New Radio Button Group**.
+* **Field Label:** Specify the field label text that displays. Set by default as **New Radio Button Group**.
 * **Help Text:** Specify text that provides additional guidance on the field's use.
 * **Option List:** Specify the list of options available in the radio group. Each option has the following settings:
 
