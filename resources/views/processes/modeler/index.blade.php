@@ -9,11 +9,14 @@
 @endsection
 
 
-@section('content')
+@section('breadcrumbs')
     @include('shared.breadcrumbs', ['routes' => [
         __('Processes') => route('processes.index'),
         __('Edit') . " " . $process->name => null,
     ]])
+@endsection
+
+@section('content')
     <div id="modeler-app">
     </div>
 @endsection
