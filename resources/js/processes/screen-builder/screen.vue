@@ -185,6 +185,7 @@
                     .put("screens/" + this.screen.id, {
                         title: this.screen.title,
                         description: this.screen.description,
+                        type: this.screen.type,
                         config: this.config,
                         computed: this.computed
                     })
