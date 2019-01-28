@@ -51,7 +51,13 @@ APP_DEBUG=TRUE
 
 Optionally, trust the self-signed certificate on your host machine so you don't get the "Not Secure" warnings in chrome and postman.
 
-For OSX: 1. In your-repository-root/storage/ssl, double-click on bpm4.local.processmaker.com.crt 1. Click on "Add" to add it to your login keychain 1. In the Keychain Access window click on the Certificates category on the bottom left. 1. Double-click on the bpm4 certificate 1. Open the Trust section. For "When using this certificate", select "always trust" 1. Close the window. You will be asked for your password. Close and reopen the processmaker tab in chrome.
+For macOS:
+1. In your-repository-root/storage/ssl, double-click on bpm4.local.processmaker.com.crt
+2. Click on "Add" to add it to your login keychain
+3. In the Keychain Access window click on the Certificates category on the bottom left.
+4. Double-click on the bpm4 certificate
+5. Open the Trust section. For "When using this certificate", select "always trust"
+6. Close the window. You will be asked for your password. Close and reopen the processmaker tab in chrome.
 
 #### Customize Logos
 
@@ -64,7 +70,7 @@ ICON_PATH_PATH={{ICON LOGO PATH HERE}}
 LOGIN_LOGO_PATH={{LOGIN PAGE LOGO PATH HERE}}
 ```
 
-1. Run npm run dev
+3. Run npm run dev
 
 #### API
 
