@@ -161,20 +161,19 @@
                         return true
                     },
                     onSubmit() {
-                    this.submitted = true;
-                    if (this.validatePassword()) {
-                        ProcessMaker.apiClient.post("/users", {
-                            username: this.username,
-                            firstname: this.firstname,
-                            lastname: this.lastname,
-                            status: this.status,
-                            email: this.email,
-                            password: this.password
-                        }).then(function (response) {
-                            window.location = "/admin/users/" + response.data.id + '/edit?created=true'
-                        }).catch(error => {
-                           this.addError = error.response.data.errors
-
+                        this.submitted = true;
+                        if (this.validatePassword()) {
+                            ProcessMaker.apiClient.post("/users", {
+                                username: this.username,
+                                firstname: this.firstname,
+                                lastname: this.lastname,
+                                status: this.status,
+                                email: this.email,
+                                password: this.password
+                            }).then(function (response) {
+                                window.location = "/admin/users/" + response.data.id + '/edit?created=true'
+                            }).catch(error => {
+                                this.addError = error.response.data.errors
                             });
                         }
                     }
