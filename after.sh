@@ -24,6 +24,12 @@ sudo usermod -a -G docker vagrant
 # Restart PHP, to ensure that it picks up the new group membership
 sudo service php7.2-fpm restart
 
+# Install docker executors
+docker pull processmaker/executor:php
+docker pull processmaker/executor:lua
+sudo mkdir -m777 /opt/executor
+sudo docker-php-ext-enable xdebug
+
 # Install echo server which will help run socket.io locally
 sudo npm install -g laravel-echo-server
 
