@@ -2,27 +2,14 @@
 
 namespace Tests;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Dusk\TestCase as BaseTestCase;
 use Facebook\WebDriver\Chrome\ChromeOptions;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 
-/**
- * The base of our dusk tests. Note it uses database migrations followed 
- * by database seeding.  This is slow but ensures clean execution between 
- * tests.
- */
 abstract class DuskTestCase extends BaseTestCase
 {
     use CreatesApplication;
-    use RefreshDatabase;
-
-    public function setUp()
-    {
-        parent::setUp();
-        $this->artisan('db:seed');
-    }
 
     /**
      * Prepare for Dusk test execution.
@@ -32,9 +19,7 @@ abstract class DuskTestCase extends BaseTestCase
      */
     public static function prepare()
     {
-        if(!env('CLOUD_BROWSER_TESTING', false)) {
-          static::startChromeDriver();
-        }
+        static::startChromeDriver();
     }
 
     /**
@@ -44,28 +29,19 @@ abstract class DuskTestCase extends BaseTestCase
      */
     protected function driver()
     {
-        if(!env('SAUCELABS_BROWSER_TESTING', false)) {
-            $options = (new ChromeOptions)->addArguments([
-                '--disable-gpu',
-                '--headless'
-            ]);
+        $options = (new ChromeOptions)->addArguments([
+            '--disable-gpu',
+            '--headless',
+            '--window-size=1920,1080',
+        ]);
 
-            return RemoteWebDriver::create(
-                'http://localhost:9515',
-                DesiredCapabilities::chrome()
-                    ->setCapability(ChromeOptions::CAPABILITY, $options)
-                    ->setCapability('acceptInsecureCerts', true)
-            );
-        } else {
-            // We currently support SauceLabs based cloud testing
-            return RemoteWebDriver::create(
-                "https://" . env('SAUCELABS_USERNAME') . ":" . env('SAUCELABS_ACCESS_KEY') . "@ondemand.saucelabs.com:443/wd/hub",
-                [
-                    "platform" => env('SAUCELABS_PLATFORM', "Windows 7"), 
-                    "browserName" => env('SAUCELABS_BROWSER', "chrome"), 
-                    "version"=> env('SAUCELABS_BROWSER_VERSION', "67")
-                ]
-            );
-        }
+        return RemoteWebDriver::create(
+            'http://localhost:9515', DesiredCapabilities::chrome()->setCapability(
+                ChromeOptions::CAPABILITY, $options
+            )
+            // The following line allows accepting insecure certificates from 
+            // a homestead environment, for example
+            ->setCapability('acceptInsecureCerts', true)
+        );
     }
 }

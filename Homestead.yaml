@@ -24,8 +24,17 @@ sites:
     -
         map: bpm4.local.processmaker.com
         to: /home/vagrant/processmaker/public
+    -
+        map: bpm4.dusk.processmaker.com
+        to: /home/vagrant/processmaker/public
+        params:
+                - key: APP_ENV
+                  value: testing
+                - key: APP_DEBUG
+                  value: "false"
+                - key: APP_URL
+                  value: https://bpm4.dusk.processmaker.com
 databases:
     - workflow
+    - dusk
     - test
-name: bpm4
-hostname: bpm4

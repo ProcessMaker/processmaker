@@ -23,6 +23,7 @@
   </filter>
 
     <php>
+    fdsfds
       <env name="APP_DEBUG" value="true" />
       <env name="APP_ENV" value="testing" />
       <env name="APP_URL" value="http://localhost" />
