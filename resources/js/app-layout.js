@@ -63,7 +63,7 @@ window.ProcessMaker.navbar = new Vue({
             .then(() => {
                 if (document.querySelector("meta[name='alert']")) {
                     ProcessMaker.alert(
-                        document.querySelector("meta[name='alertMessage']").getAttribute("content"),
+                        document.querySelector("meta[name='alertMessage']").getAttribute("content") + " Sup dawg",
                         document.querySelector("meta[name='alertVariant']").getAttribute("content")
                     );
                 }
@@ -88,13 +88,10 @@ window.ProcessMaker.confirmModal = function (title, message, variant, callback) 
     ProcessMaker.navbar.confirmShow = true;
 };
 
-// Setup our api client interceptor to handle errors and reflect the error
-// in our skin.
-window.ProcessMaker.apiClient.interceptors.response.use(
-    response =>
-    // No need to handle success responses
-    response, (error) => {
+// Display any uncaught promise rejections from axios in the Process Maker alert box
+window.addEventListener('unhandledrejection', function (event) {
         let elem = document.getElementById("content-inner");
+        let error = event.reason;
         if (error.response.status != 422 && error.response.status != 404 && elem !== null) {
             // Replace our content div with our error div
             // Remove our #content-inner
@@ -106,9 +103,7 @@ window.ProcessMaker.apiClient.interceptors.response.use(
         if (error.response.data && error.response.data.message) {
             window.ProcessMaker.alert(error.response.data.message, "danger");
         }
-        return Promise.reject(error);
-    }
-);
+});
 
 new Vue({
     el: "#sidebar",
