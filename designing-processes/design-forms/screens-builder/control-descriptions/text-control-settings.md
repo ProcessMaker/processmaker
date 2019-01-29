@@ -31,7 +31,7 @@ See [View the Inspector Panel](../view-the-inspector-pane.md) for information ho
 
 Below are Inspector settings for the Text Box control:
 
-* **Text Content:** Specify what text displays for the Text Box control. **New Text** is the default. You can change what text will display.
+* **Text Content:** Specify what text displays for the Text Box control. **New Text** is the default value. You can change what text will display.
 * **Font Weight:** Sets the weight of the **Text Content** text. **Normal** is the default option. You can change to **Bold**.
 * **Text Color:** Sets the color of the displayed text. Use any HTML or Hex code. This setting has no default value.
 * **Text Alignment:** Sets the text alignment. **Left** is the default option. Select one of the following options:

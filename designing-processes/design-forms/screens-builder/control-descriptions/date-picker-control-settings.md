@@ -1,6 +1,6 @@
 ---
 description: >-
-  Add a Date Picker control that allows the form user to add dates to a
+  Add a Date Picker control that allows the form user to select dates from a
   ProcessMaker Screen through an interactive calendar.
 ---
 
@@ -20,7 +20,7 @@ Follow these steps to add this control to the ProcessMaker Screen:
 
 1. View the ProcessMaker Screen page to which to add the control.
 2. Go to the **Controls** panel on the left side of the ProcessMaker Screen.
-3. Drag the **Date Picker** icon ![](../../../../.gitbook/assets/date-picker-control-screens-builder-processes.png) from the **Controls** panel anywhere within the ProcessMaker Screen canvas represented by the dotted-lined box. Existing controls on the ProcessMaker Screen canvas adjust positioning based on where you drag the control.
+3. Drag the **Date Picker** icon![](../../../../.gitbook/assets/date-picker-control-screens-builder-processes.png)from the **Controls** panel anywhere within the ProcessMaker Screen canvas represented by the dotted-lined box. Existing controls on the ProcessMaker Screen canvas adjust positioning based on where you drag the control.
 4. Drop into the ProcessMaker Screen where you want the control to display on the page.
 
    ![](../../../../.gitbook/assets/date-picker-control-placed-screens-builder-processes.png)
@@ -38,8 +38,8 @@ See [View the Inspector Panel](../view-the-inspector-pane.md) for information ho
 Below are Inspector settings for the Date Picker control:
 
 * **Field Name:** Specify the internal data name of the control that only the Process Owner views at design time. This is a required setting.
-* **Field Label:** Specify the field label text that displays. Set by default as **New Date Picker**.
-* **Placeholder:** Specify the placeholder text that displays in the field when no value has been provided.
+* **Field Label:** Specify the field label text that displays. **New Date Picker** is the default value.
+* **Placeholder:** Specify the placeholder text that displays in the field when no value has been provided. This setting has no default value.
 
 ## Related Topics <a id="related-topics"></a>
 

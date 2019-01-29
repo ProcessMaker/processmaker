@@ -36,7 +36,7 @@ See [View the Inspector Panel](../view-the-inspector-pane.md) for information ho
 Below are Inspector settings for the Line Input control:
 
 * **Field Name:** Specify the internal data name of the control that only the Process Owner views at design time. This is a required setting.
-* **Field Label:** Specify the field label text that displays. **New Select** is the default.
+* **Field Label:** Specify the field label text that displays. **New Select** is the default value.
 * **Validation:** Specify the validation rules the form user must comply with to properly enter a valid value into this field. This setting has no default value.
 * **Help Text:** Specify text that provides additional guidance on the field's use. This setting has no default value.
 * **Options List:** Specify the list of options available in the select box. Add options in the order they are to display from top to bottom in the drop-down. The default option is called **new** with the content **New Option**.  

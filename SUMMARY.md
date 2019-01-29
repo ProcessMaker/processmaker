@@ -75,7 +75,7 @@
       * [Date Picker Control Settings](designing-processes/design-forms/screens-builder/control-descriptions/date-picker-control-settings.md)
       * [Submit Button Control Settings](designing-processes/design-forms/screens-builder/control-descriptions/submit-button-control-settings.md)
       * [Page Navigation Button Control Settings](designing-processes/design-forms/screens-builder/control-descriptions/page-navigation-button-control-settings.md)
-      * [Multi Column Button Control Settings](designing-processes/design-forms/screens-builder/control-descriptions/multi-column-button-control-settings.md)
+      * [Multi Column Control Settings](designing-processes/design-forms/screens-builder/control-descriptions/multi-column-button-control-settings.md)
       * [Record List Control Settings](designing-processes/design-forms/screens-builder/control-descriptions/record-list-control-settings.md)
     * [Add, Delete or Rename a Page](designing-processes/design-forms/screens-builder/add-a-new-page-to-a-screen.md)
     * [Preview a Screen and Its JSON Data Model](designing-processes/design-forms/screens-builder/preview-a-screen.md)
