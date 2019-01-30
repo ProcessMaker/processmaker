@@ -73,7 +73,7 @@
                     <button type="button" class="btn btn-outline-success"
                             data-dismiss="modal" @click="onClose">{{__('Close')}}
                     </button>
-                    <button type="button" class="btn btn-success ml-2" id="disabledForNow" @click="onSubmit">
+                    <button type="button" class="btn btn-success ml-2" @click="onSubmit">
                         {{__('Save')}}
                     </button>
                 </div>

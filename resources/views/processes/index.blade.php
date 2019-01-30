@@ -86,7 +86,7 @@
             </div>
         	<div class="modal-footer">
     			<button type="button" class="btn btn-outline-success" data-dismiss="modal" v-if='processCategories' @click="onClose">Close</button>
-    			<button type="button" class="btn btn-success ml-2" id="disabledForNow" @click="onSubmit" v-if='processCategories'>Save</button>
+    			<button type="button" class="btn btn-success ml-2" @click="onSubmit" v-if='processCategories'>Save</button>
             </div>
         </div>
         </div>
