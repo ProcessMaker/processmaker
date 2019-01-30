@@ -27,11 +27,11 @@ Route::group(['middleware' => ['auth', 'sanitize']], function () {
         Route::get('screens', 'ScreenController@index')->name('screens.index')->middleware('can:view-screens');
         Route::get('screens/{screen}/edit', 'ScreenController@edit')->name('screens.edit')->middleware('can:edit-screens,screen');
         Route::get('screen-builder/{screen}/edit', 'ScreenBuilderController@edit')->name('screen-builder.edit')->middleware('can:edit-screens,screen');
-        
+
         Route::get('scripts', 'ScriptController@index')->name('scripts.index')->middleware('can:view-scripts');
         Route::get('scripts/{script}/edit', 'ScriptController@edit')->name('scripts.edit')->middleware('can:edit-scripts,script');
         Route::get('scripts/{script}/builder', 'ScriptController@builder')->name('scripts.builder')->middleware('can:edit-scripts,script');
-        
+
         Route::get('categories', 'ProcessCategoryController@index')->name('categories.index')->middleware('can:view-categories');
         Route::get('categories/{processCategory}/edit', 'ProcessCategoryController@edit')->name('categories.edit')->middleware('can:edit-categories,processCategory');
     });
@@ -86,6 +86,10 @@ $this->get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm'
 $this->post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
 $this->get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
 $this->post('password/reset', 'Auth\ResetPasswordController@reset');
+
+//overwrite laravel passport
+$this->post('oauth/clients', 'Auth\ClientController@store')->name('passport.clients.store')->middleware('auth');
+$this->put('oauth/clients/{client_id}', 'Auth\ClientController@update')->name('passport.clients.update')->middleware('auth');
 
 $this->get('password/success', function () {
     return view('auth.passwords.success', ['title' => __('Password Reset')]);

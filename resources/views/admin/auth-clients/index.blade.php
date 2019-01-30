@@ -26,16 +26,26 @@
         </div>
     </div>
     <div>
-        <b-modal ref="createEditAuthClient" :title="modalTitle" @ok="save" @hidden="resetValues" ok-title="Save" cancel-title="Close">
-        <div class="form-group">
+        <b-modal ref="createEditAuthClient" :title="modalTitle" @ok="save" @hidden="resetValues" ok-title="Save"
+                 cancel-title="Close">
+            <div class="form-group">
                 <label for="authClientName">{{__('Name')}}</label>
-                <b-form-input id="authClientName" v-bind:class="{'is-invalid':errors.name}" v-model="authClient.name" type="text" placeholder="Enter a name for this auth client"></b-form-input>
-                <div class="invalid-feedback" v-if="errors.name">@{{ errors.name[0] }}</div>
+                <b-form-input id="authClientName" v-bind:class="{'is-invalid':errors.name}" v-model="authClient.name"
+                              type="text" placeholder="Enter a name for this auth client" maxlength="255">
+                </b-form-input>
+                <template v-for="name in errors.name">
+                    <div class="invalid-feedback">@{{name}}</div>
+                </template>
             </div>
             <div class="form-group">
                 <label for="authClientRedirect">{{__('Redirect URL')}}</label>
-                <b-form-input id="authClientRedirect" v-bind:class="{'is-invalid':errors.redirect}" v-model="authClient.redirect" type="text" placeholder="Enter the URL to redirect to" maxlength="2000"></b-form-input>
-                <div class="invalid-feedback" v-if="errors.redirect">@{{ errors.redirect[0] }}</div>
+                <b-form-input id="authClientRedirect" v-bind:class="{'is-invalid':errors.redirect}"
+                              v-model="authClient.redirect" type="text" placeholder="Enter the URL to redirect to"
+                              maxlength="2000">
+                </b-form-input>
+                <template v-for="redirect in errors.redirect">
+                    <div class="invalid-feedback">@{{redirect}}</div>
+                </template>
             </div>
             <div v-if="authClient.secret" class="form-group">
                 <label for="authClientSecret">{{__('Client Secret')}}</label>
