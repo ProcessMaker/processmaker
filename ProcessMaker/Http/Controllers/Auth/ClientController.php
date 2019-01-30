@@ -18,7 +18,7 @@ class ClientController extends PassportClientController
     {
         $this->validation->make($request->all(), [
             'name' => 'required|max:255',
-            'redirect' => 'required|url|max:10',
+            'redirect' => 'required|url|max:2000',
         ])->validate();
 
         return $this->clients->create(
@@ -43,7 +43,7 @@ class ClientController extends PassportClientController
 
         $this->validation->make($request->all(), [
             'name' => 'required|max:255',
-            'redirect' => 'required|url|max:10',
+            'redirect' => 'required|url|max:2000',
         ])->validate();
 
         return $this->clients->update(
