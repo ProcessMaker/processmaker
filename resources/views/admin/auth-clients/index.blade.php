@@ -16,7 +16,7 @@
 <div class="container page-content" id="listAuthClients">
     <div class="row align-items-center">
         <div class="col-8">
-            
+
         </div>
         <div class="col-4" align="right">
             <b-button @click="create">
@@ -34,7 +34,7 @@
             </div>
             <div class="form-group">
                 <label for="authClientRedirect">{{__('Redirect URL')}}</label>
-                <b-form-input id="authClientRedirect" v-bind:class="{'is-invalid':errors.redirect}" v-model="authClient.redirect" type="text" placeholder="Enter the URL to redirect to"></b-form-input>
+                <b-form-input id="authClientRedirect" v-bind:class="{'is-invalid':errors.redirect}" v-model="authClient.redirect" type="text" placeholder="Enter the URL to redirect to" maxlength="2000"></b-form-input>
                 <div class="invalid-feedback" v-if="errors.redirect">@{{ errors.redirect[0] }}</div>
             </div>
             <div v-if="authClient.secret" class="form-group">
