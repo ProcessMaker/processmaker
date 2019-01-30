@@ -19,15 +19,15 @@
             <div class="card card-body">
 
                 <div class="form-group">
-                    {!!Form::label('name', __('Process title'))!!}
-                    {!!Form::text('name', null,
+                    {!!Form::label('processTitle', __('Process title'))!!}
+                    {!!Form::text('processTitle', null,
                         [ 'id'=> 'name',
                             'class'=> 'form-control',
                             'v-model'=> 'formData.name',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'
                         ])
                     !!}
-                    <div class="invalid-feedback" v-if="errors.name">@{{errors.name[0]}}</div>
+                    <div class="invalid-feedback" v-if="errors.processTitle">@{{errors.name[0]}}</div>
                 </div>
                 <div class="form-group">
                     {!! Form::label('description', __('Description')) !!}
@@ -175,10 +175,17 @@
                     this.formData.cancel_request = this.formatAssigneePermissions(this.canCancel);
                     this.formData.edit_data = this.formatAssigneePermissions(this.canEditData);
 
-                    ProcessMaker.apiClient.put('processes/' + that.formData.id, that.formData, {context: this})
+                    ProcessMaker.apiClient.put('processes/' + that.formData.id, that.formData)
                         .then(response => {
                             ProcessMaker.alert('{{__('Process Updated Successfully')}}', 'success');
                             that.onClose();
+                        })
+                        .catch(error => {
+                            //define how display errors
+                            if (error.response.status && error.response.status === 422) {
+                                // Validation error
+                                that.errors = error.response.data.errors;
+                            }
                         });
                 }
             }
