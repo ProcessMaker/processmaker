@@ -43,7 +43,7 @@
 
     @can('create-users')
         <div class="modal" tabindex="-10" role="dialog" id="addUser">
-            <div class="modal-dialog" role="document">
+            <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">{{__('Add A User')}}</h5>
@@ -100,9 +100,9 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-success"
+                        <button type="button" class="btn btn-outline-secondary"
                                 data-dismiss="modal" @click="onClose">{{__('Close')}}</button>
-                        <button type="button" class="btn btn-success ml-2" @click="onSubmit">{{__('Save')}}</button>
+                        <button type="button" class="btn btn-secondary ml-2" @click="onSubmit">{{__('Save')}}</button>
                     </div>
                 </div>
             </div>
