@@ -232,17 +232,10 @@
                 },
                 onUpdate() {
                     this.resetErrors();
-                    ProcessMaker.apiClient.put('groups/' + this.formData.id, this.formData)
+                    ProcessMaker.apiClient.put('groups/' + this.formData.id, this.formData, {context: this})
                         .then(response => {
                             ProcessMaker.alert('{{__('Update Group Successfully')}}', 'success');
                             this.onClose();
-                        })
-                        .catch(error => {
-                            //define how display errors
-                            if (error.response.status && error.response.status === 422) {
-                                // Validation error
-                                this.errors = error.response.data.errors;
-                            }
                         });
                 },
                 permissionUpdate() {

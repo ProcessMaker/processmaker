@@ -116,18 +116,11 @@
                     },
                     onSubmit() {
                         this.resetErrors();
-                        ProcessMaker.apiClient.post('groups', this.formData)
+                        ProcessMaker.apiClient.post('groups', this.formData, {context: this})
                             .then(response => {
                                 ProcessMaker.alert('{{__('Create Group Successfully')}}', 'success');
                                 //redirect show group
                                 window.location = "/admin/groups/" + response.data.id + "/edit"
-                            })
-                            .catch(error => {
-                                //define how display errors
-                                if (error.response.status && error.response.status === 422) {
-                                    // Validation error
-                                    this.errors = error.response.data.errors;
-                                }
                             });
                     }
                 }

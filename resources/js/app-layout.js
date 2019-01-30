@@ -88,20 +88,34 @@ window.ProcessMaker.confirmModal = function (title, message, variant, callback) 
     ProcessMaker.navbar.confirmShow = true;
 };
 
+window.ProcessMaker.apiClient.interceptors.response.use((response) => {
+    // TODO: this could be used to show a default "created/upated/deleted resource" alert
+    // response.config.method (PUT, POST, DELETE)
+    // response.config.url (extract resource name)
+    return response;
+}, (error) => {
+    if (error.response.status == 422 && error.config.context) {
+        // This is a standard laravel validation error
+        error.config.context.errors = error.response.data.errors;
+        ProcessMaker.alert(
+            'An error occurred. Check the form for errors in red text.',
+            'danger'
+        );
+        error.config._defaultErrorShown = true;
+    }
+    return Promise.reject(error);
+});
+
 // Display any uncaught promise rejections from axios in the Process Maker alert box
 window.addEventListener('unhandledrejection', function (event) {
-        let elem = document.getElementById("content-inner");
         let error = event.reason;
-        if (error.response.status != 422 && error.response.status != 404 && elem !== null) {
-            // Replace our content div with our error div
-            // Remove our #content-inner
-            elem.parentNode.removeChild(elem);
-            // Now show our #api-error div
-            elem = document.getElementById("api-error");
-            elem.setAttribute("style", "display: block");
-        }
-        if (error.response.data && error.response.data.message) {
+        if (error.config._defaultErrorShown) {
+            // Already handeled
+            event.preventDefault(); // stops the unhandled rejection error
+        } else if (error.response.data && error.response.data.message) {
             window.ProcessMaker.alert(error.response.data.message, "danger");
+        } else if (error.message) {
+            window.ProcessMaker.alert(error.message, "danger");
         }
 });
 
