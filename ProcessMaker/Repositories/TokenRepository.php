@@ -79,7 +79,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->process_request_id = $token->getInstance()->getKey();
         $token->user_id = $user ? $user->getKey() : null;
         //Default 3 days of due date
-        $due = $activity->getProperty('dueDate', '72');
+        $due = $activity->getProperty('dueIn', '72');
         $token->due_at = $due ? Carbon::now()->addHours($due) : null;
         $token->initiated_at = null;
         $token->riskchanges_at = $due ? Carbon::now()->addHours($due * 0.7) : null;
