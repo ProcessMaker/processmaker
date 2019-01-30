@@ -63,7 +63,7 @@ window.ProcessMaker.navbar = new Vue({
             .then(() => {
                 if (document.querySelector("meta[name='alert']")) {
                     ProcessMaker.alert(
-                        document.querySelector("meta[name='alertMessage']").getAttribute("content") + " Sup dawg",
+                        document.querySelector("meta[name='alertMessage']").getAttribute("content"),
                         document.querySelector("meta[name='alertVariant']").getAttribute("content")
                     );
                 }

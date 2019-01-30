@@ -102,8 +102,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-success"
                                 data-dismiss="modal" @click="onClose">{{__('Close')}}</button>
-                        <button type="button" class="btn btn-success ml-2" @click="onSubmit"
-                                id="disabledForNow">{{__('Save')}}</button>
+                        <button type="button" class="btn btn-success ml-2" @click="onSubmit">{{__('Save')}}</button>
                     </div>
                 </div>
             </div>
@@ -161,19 +160,20 @@
                         return true
                     },
                     onSubmit() {
-                        this.submitted = true;
-                        if (this.validatePassword()) {
-                            ProcessMaker.apiClient.post("/users", {
-                                username: this.username,
-                                firstname: this.firstname,
-                                lastname: this.lastname,
-                                status: this.status,
-                                email: this.email,
-                                password: this.password
-                            }).then(function (response) {
-                                window.location = "/admin/users/" + response.data.id + '/edit?created=true'
-                            }).catch(error => {
-                                this.addError = error.response.data.errors
+                    this.submitted = true;
+                    if (this.validatePassword()) {
+                        ProcessMaker.apiClient.post("/users", {
+                            username: this.username,
+                            firstname: this.firstname,
+                            lastname: this.lastname,
+                            status: this.status,
+                            email: this.email,
+                            password: this.password
+                        }).then(function (response) {
+                            window.location = "/admin/users/" + response.data.id + '/edit?created=true'
+                        }).catch(error => {
+                           this.addError = error.response.data.errors
+
                             });
                         }
                     }

@@ -127,8 +127,7 @@
                         <div class="modal-footer">
                             <button type="button" class="btn btn-outline-success"
                                     data-dismiss="modal" @click="onCloseAddUser">{{__('Close')}}</button>
-                            <button type="button" class="btn btn-success ml-2" @click="onSave"
-                                    id="disabledForNow">{{__('Save')}}</button>
+                            <button type="button" class="btn btn-success ml-2" @click="onSave">{{__('Save')}}</button>
                         </div>
                     </div>
                 </div>
@@ -232,10 +231,17 @@
                 },
                 onUpdate() {
                     this.resetErrors();
-                    ProcessMaker.apiClient.put('groups/' + this.formData.id, this.formData, {context: this})
+                    ProcessMaker.apiClient.put('groups/' + this.formData.id, this.formData)
                         .then(response => {
                             ProcessMaker.alert('{{__('Update Group Successfully')}}', 'success');
                             this.onClose();
+                        })
+                        .catch(error => {
+                            //define how display errors
+                            if (error.response.status && error.response.status === 422) {
+                                // Validation error
+                                this.errors = error.response.data.errors;
+                            }
                         });
                 },
                 permissionUpdate() {
