@@ -1,4 +1,4 @@
-@if isset($label)
+@if (isset($label))
     {!! Form::label($name, $label) !!}
 @endif
 
