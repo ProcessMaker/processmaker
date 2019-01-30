@@ -38,7 +38,7 @@ See [View the Inspector Panel](../view-the-inspector-pane.md) for information ho
 Below are Inspector settings for the File Upload control:
 
 * **Text Label:** Specify the field label text that displays. **New File Upload** is the default value.
-* **Upload Name:** Specify the name associated with the uploaded file\(s\). This name can be referenced in a later step in the Request. This setting has no default value.
+* **Upload Name:** Specify the unique name associated with the uploaded file\(s\). This name can be referenced in a later step in the Request. This setting has no default value.
 
 ## Related Topics <a id="related-topics"></a>
 
