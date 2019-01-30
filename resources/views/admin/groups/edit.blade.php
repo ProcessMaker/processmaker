@@ -127,8 +127,7 @@
                         <div class="modal-footer">
                             <button type="button" class="btn btn-outline-success"
                                     data-dismiss="modal" @click="onCloseAddUser">{{__('Close')}}</button>
-                            <button type="button" class="btn btn-success ml-2" @click="onSave"
-                                    id="disabledForNow">{{__('Save')}}</button>
+                            <button type="button" class="btn btn-success ml-2" @click="onSave">{{__('Save')}}</button>
                         </div>
                     </div>
                 </div>
