@@ -62,16 +62,6 @@ ProcessMaker.EventBus.$on('modeler-init', ({registerNode, registerBpmnExtension,
         }
     });
     registerInspectorExtension(task, {
-        component: "FormInput",
-        config: {
-            type: "number",
-            label: "Due In",
-            placeholder: "72 hours",
-            helper: "Time when the task will due (hours)",
-            name: "dueIn"
-        }
-    });
-    registerInspectorExtension(task, {
         component: "TaskAssignment",
         config: {
             label: "Task Assignment",

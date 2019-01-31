@@ -31,11 +31,9 @@
             <div class="form-group">
                 <label for="authClientName">{{__('Name')}}</label>
                 <b-form-input id="authClientName" v-bind:class="{'is-invalid':errors.name}" v-model="authClient.name"
-                              type="text" placeholder="Enter a name for this auth client" maxlength="255">
-                </b-form-input>
-                <template v-for="name in errors.name">
-                    <div class="invalid-feedback">@{{name}}</div>
-                </template>
+                              type="text" placeholder="Enter a name for this auth client"
+                              maxlength="255"></b-form-input>
+                <div class="invalid-feedback" v-if="errors.name">@{{ errors.name[0] }}</div>
             </div>
             <div class="form-group">
                 <label for="authClientRedirect">{{__('Redirect URL')}}</label>
