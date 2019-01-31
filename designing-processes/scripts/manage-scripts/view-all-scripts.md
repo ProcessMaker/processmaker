@@ -39,9 +39,7 @@ Use the [Search](search-for-a-script.md#search-for-a-processmaker-script) field 
 
 ### No ProcessMaker Scripts?
 
-If no ProcessMaker Scripts exist, the following message displays: 
-
-~~**You don't have any scripts. Please click on '+SCRIPT' to get started**~~.
+If no ProcessMaker Scripts exist, the following message displays: **No Data Available**.
 
 ### Edit a ProcessMaker Script
 
@@ -49,6 +47,10 @@ Do one of the following:
 
 * **Edit the ProcessMaker Script:** Click the **Edit** icon![](../../../.gitbook/assets/edit-icon.png). See [Edit a Script](edit-a-script.md).
 * **Edit the Script Configuration:** Click the **Config** icon![](../../../.gitbook/assets/configure-process-icon-processes-page-processes.png). See [Edit Script Configuration](edit-script-configuration.md#edit-configuration-information-about-a-processmaker-script).
+
+### Delete a ProcessMaker Script
+
+Click the **Remove** icon![](../../../.gitbook/assets/trash-icon-process-modeler-processes.png). See [Delete a Script](remove-a-script.md#delete-a-processmaker-script).
 
 ### Display Information the Way You Want It
 

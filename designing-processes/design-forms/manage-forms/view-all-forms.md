@@ -39,7 +39,7 @@ Use the [Search](search-for-a-screen.md#search-for-a-processmaker-screen) field 
 
 ### No ProcessMaker Screens?
 
-If no ProcessMaker Screens exist, the following message displays: ~~**You don't have any screens. Please click on '+SCREEN' to get started**~~.
+If no ProcessMaker Screens exist, the following message displays: **No Data Available**.
 
 ### Edit a ProcessMaker Screen
 
@@ -47,6 +47,10 @@ Do one of the following:
 
 * **Edit the ProcessMaker Screen:** Click the **Open Editor** icon![](../../../.gitbook/assets/edit-icon.png). See [Screens Builder](../screens-builder/) for topics.
 * **Edit the Screen Configuration:** Click the **Config** icon![](../../../.gitbook/assets/configure-process-icon-processes-page-processes.png). See [Edit Screen Configuration](edit-a-screen.md#edit-configuration-information-about-a-processmaker-screen).
+
+### Delete a ProcessMaker Screen
+
+Click the **Remove** icon![](../../../.gitbook/assets/trash-icon-process-modeler-processes.png). See [Delete a Screen](remove-a-screen.md#delete-a-processmaker-screen).
 
 ### Display Information the Way You Want It
 

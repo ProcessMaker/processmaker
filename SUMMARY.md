@@ -91,7 +91,7 @@
     * [View All Environment Variables](designing-processes/environment-variable-management/manage-your-environment-variables/view-all-environment-variables.md)
     * [Search for an Environment Variable](designing-processes/environment-variable-management/manage-your-environment-variables/search-for-an-environment-variable.md)
     * [Edit an Environmental Variable](designing-processes/environment-variable-management/manage-your-environment-variables/edit-an-environmental-variable.md)
-    * [Remove an Environment Variable](designing-processes/environment-variable-management/manage-your-environment-variables/remove-an-environment-variable.md)
+    * [Delete an Environment Variable](designing-processes/environment-variable-management/manage-your-environment-variables/remove-an-environment-variable.md)
   * [Create a New Environment Variable](designing-processes/environment-variable-management/create-a-new-environment-variable.md)
 * [Process Modeling](designing-processes/process-design/README.md)
   * [What is Process Modeling?](designing-processes/process-design/what-is-process-modeling.md)

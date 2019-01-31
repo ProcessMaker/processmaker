@@ -4,11 +4,16 @@ description: Edit the sensitive information that an Environment Variable represe
 
 # Edit an Environmental Variable
 
-{% hint style="info" %}
-To edit a ProcessMaker Environment Variable, you must be a member of the Process Owner group. Otherwise, the **Processes** option is not available from the top menu that allows you to perform Environment Variable management activities.
-{% endhint %}
-
 ## Edit a ProcessMaker Environment Variable
+
+{% hint style="info" %}
+Your user account or group membership must have the following permissions to edit a ProcessMaker Environment Variable:
+
+* Environment Variables: View Environment Variables
+* Environment Variables: Edit Environment Variables
+
+Ask your ProcessMaker Administrator for assistance.
+{% endhint %}
 
 Follow these steps to edit a ProcessMaker Environment Variable:
 
@@ -17,10 +22,11 @@ Follow these steps to edit a ProcessMaker Environment Variable:
 
    ![](../../../.gitbook/assets/edit-environment-variable-page-processes.png)
 
-3. Edit in the **Variable Name** field the name of the ProcessMaker Environment Variable if necessary.
-4. Edit in the **Description** field the description of the ProcessMaker Environment Variable if necessary.
-5. Edit or enter in the **Value** field the ProcessMaker Environment Variable value if necessary. Entering or editing a value is optional since ProcessMaker Environment Variables are secure, abstract proxies for sensitive information you assign to contain a value that can be determined during an in-progress Request.
-6. Click **Update**. Otherwise, click **Cancel** to cancel any changes.
+3. Edit the following information about the ProcessMaker Environment Variable as necessary:
+   * In the **Variable Name** field, edit the name of the ProcessMaker Environment Variable. This is a required field.
+   * In the **Description** field, enter the description of the ProcessMaker Environment Variable. This is a required field.
+   * In the **Value** field, edit or enter the ProcessMaker Environment Variable value. Entering or editing a value is optional since ProcessMaker Environment Variables are secure, abstract proxies for sensitive information you assign to contain a value that can be determined during an in-progress Request.
+4. Click **Update**.
 
 ## Related Topics
 

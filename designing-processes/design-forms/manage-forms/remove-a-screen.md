@@ -24,9 +24,7 @@ Deleting a ProcessMaker Screen from the **Screens** page cannot be undone.
 Follow these steps to delete a ProcessMaker Screen:
 
 1. [View your ProcessMaker Screens.](view-all-forms.md) The **Screens** page displays.
-2. Select the **Delete** icon![](../../../.gitbook/assets/trash-icon-process-modeler-processes.png)for your ProcessMaker Script.
-
-    The **Caution** screen displays to confirm the deletion of the ProcessMaker Screen.
+2. Select the **Delete** icon![](../../../.gitbook/assets/trash-icon-process-modeler-processes.png)for your ProcessMaker Script. The **Caution** screen displays to confirm the deletion of the ProcessMaker Screen.
 
    ![](../../../.gitbook/assets/caution-screen-removal-screen-processes.png)
 

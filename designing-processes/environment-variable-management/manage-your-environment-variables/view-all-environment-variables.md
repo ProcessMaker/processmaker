@@ -6,19 +6,21 @@ description: >-
 
 # View All Environment Variables
 
-ProcessMaker displays all ProcessMaker Environment Variables in one table that Process Owners throughout your organization have created. Any ProcessMaker Environment Variable can be used in any process in your organization. Since ProcessMaker Environment Variables are abstract proxies to securely maintain sensitive information during in-progress [Requests](../../../using-processmaker/requests/what-is-a-request.md), Process Owners who create or use ProcessMaker Environment Variables in their processes do not have access to that sensitive information. This makes it easy to manage ProcessMaker Environment Variables.
-
-{% hint style="info" %}
-To view ProcessMaker Environment Variables, you must be a member of the Process Owner group. Otherwise, the **Processes** option is not available from the top menu that allows you to perform Environment Variable management activities.
-{% endhint %}
+ProcessMaker displays all ProcessMaker Environment Variables in one table that Process Owners throughout your organization have created. Any ProcessMaker Environment Variable can be used in any Process in your organization. Since ProcessMaker Environment Variables are abstract proxies to securely maintain sensitive information during in-progress [Requests](../../../using-processmaker/requests/what-is-a-request.md), Process Owners who create or use ProcessMaker Environment Variables in their Processes do not have access to that sensitive information. This makes it easy to manage ProcessMaker Environment Variables.
 
 ## View All ProcessMaker Environment Variables <a id="view-all-scripts"></a>
+
+{% hint style="info" %}
+Your user account or group membership must have the "Environment Variables: View Environment Variables" permission to view the list of ProcessMaker Environment Variables.
+
+Ask your ProcessMaker Administrator for assistance.
+{% endhint %}
 
 Follow these steps to view all ProcessMaker Environment Variables in your organization:
 
 1. ​[Log in](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/using-processmaker/log-in#log-in) to ProcessMaker.
 2. Click the **Processes** option from the top menu. The **Processes** page displays.
-3. Click the **Screens** icon![](../../../.gitbook/assets/environment-variable-icon-processes.png). The **Environment Variables** page displays all ProcessMaker Environment Variables created by all Process Owners in your organization.
+3. Click the **Environment Variables** icon![](../../../.gitbook/assets/environment-variable-icon-processes.png). The **Environment Variables** page displays all ProcessMaker Environment Variables.
 
 ![Environment Variables page](../../../.gitbook/assets/environment-variables-screen-processes.png)
 
@@ -26,19 +28,29 @@ The **Environment Variables** page displays the following information about Proc
 
 * **Name:** The **Name** column displays the name of the ProcessMaker Environment Variable.
 * **Description:** The **Description** column displays the description about the ProcessMaker Environment Variable. For information how to edit the ProcessMaker Environment Variable description, see [Edit an Environmental Variable](edit-an-environmental-variable.md).
-* **Created At:** The **Created At** column displays the date and time the ProcessMaker Environment Variable was created. ~~Change this label to "Created". Switch the order with "Updated At/Modified" column.~~
-* **Updated At:** The **Updated At** column displays the date and time the ProcessMaker Environment Variable was last modified. ~~Change this column label to "Modified".~~
+* **Modified:** The **Modified** column displays the date and time the ProcessMaker Environment Variable was last modified. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
+* **Created:** The **Created** column displays the date and time the ProcessMaker Environment Variable was created. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
 {% hint style="info" %}
-For information how to search for a ProcessMaker Environment Variable, see [Search for an Environment Variable](search-for-an-environment-variable.md).
-{% endhint %}
+### Search for a ProcessMaker Environment Variable
 
-{% hint style="info" %}
-If no ProcessMaker Environment Variables exist, the following message displays: ~~**You don't have any Environment Variables. Please click on '+ENVIRONMENT VARIABLE' to get started**~~**.**
-{% endhint %}
+Use the [Search](../../scripts/manage-scripts/search-for-a-script.md#search-for-a-processmaker-script) field to filter ProcessMaker Environment Variables that display.
 
-{% hint style="info" %}
-[Control how tabular information displays.](../../../using-processmaker/control-how-requests-display-in-a-tab.md)
+### No ProcessMaker Environment Variables?
+
+If no ProcessMaker Environment Variables exist, the following message displays: **No Data Available**.
+
+### Edit a ProcessMaker Environment Variable
+
+Click the **Edit** icon![](../../../.gitbook/assets/edit-icon.png). See [Edit an Environment Variable](edit-an-environmental-variable.md#edit-a-processmaker-environment-variable).
+
+### Delete a ProcessMaker Environment Variable
+
+Click the **Remove** icon![](../../../.gitbook/assets/trash-icon-process-modeler-processes.png). See [Delete an Environment Variable](remove-an-environment-variable.md#remove-a-processmaker-environment-variable).
+
+### Display Information the Way You Want It
+
+[Control how tabular information displays](../../../using-processmaker/control-how-requests-display-in-a-tab.md), including how to sort columns or how many items display per page.
 {% endhint %}
 
 ## Related Topics
@@ -48,8 +60,6 @@ If no ProcessMaker Environment Variables exist, the following message displays: 
 {% page-ref page="search-for-an-environment-variable.md" %}
 
 {% page-ref page="edit-an-environmental-variable.md" %}
-
-{% page-ref page="view-all-environment-variables.md" %}
 
 {% page-ref page="remove-an-environment-variable.md" %}
 

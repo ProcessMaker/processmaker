@@ -11,7 +11,7 @@ Use the **Search** function to filter all ProcessMaker Scripts from the **Script
 ## Search for a ProcessMaker Script
 
 {% hint style="info" %}
-Your user account or group membership must have the "Scripts: View Scripts" permission to view the list of ProcessMaker Scripts.
+Your user account or group membership must have the "Scripts: View Scripts" permission to search for ProcessMaker Scripts.
 
 Ask your ProcessMaker Administrator for assistance.
 {% endhint %}

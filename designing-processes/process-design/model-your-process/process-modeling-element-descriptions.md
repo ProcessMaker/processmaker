@@ -1,10 +1,10 @@
 ---
-description: These are brief descriptions about commonly used process modeling elements.
+description: These are brief descriptions about commonly used Process modeling elements.
 ---
 
 # Process Modeling Element Descriptions
 
-The following are brief descriptions about each process modeling element. For more information, see the [BPMN specification](https://www.omg.org/spec/BPMN/2.0/About-BPMN/).
+The following are brief descriptions about each Process modeling element. See the [BPMN specification](https://www.omg.org/spec/BPMN/2.0/About-BPMN/) for more information.
 
 ## Events
 

@@ -24,9 +24,7 @@ Deleting a ProcessMaker Script from the **Scripts** page cannot be undone.
 Follow these steps to delete a ProcessMaker Script:
 
 1. [View your ProcessMaker Scripts](view-all-scripts.md). The **Scripts** page displays.
-2. Select the **Delete** icon![](../../../.gitbook/assets/trash-icon-process-modeler-processes.png)for your ProcessMaker Script.
-
-   The **Caution** screen displays to confirm the deletion of the ProcessMaker Script.  
+2. Select the **Delete** icon![](../../../.gitbook/assets/trash-icon-process-modeler-processes.png)for your ProcessMaker Script. The **Caution** screen displays to confirm the deletion of the ProcessMaker Script.  
 
    ![](../../../.gitbook/assets/caution-script-removal-screen-processes.png)
 

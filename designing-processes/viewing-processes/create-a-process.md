@@ -26,7 +26,7 @@ Follow these steps to create a new Process:
 4. In the **Description** field, enter a description of the Process. ~~Character length limitation and/or unsupported characters?~~ This is a required field.
 5. From the **Category** drop-down, select a category to associate with the Process. This is a required field. See [Process Categories](process-categories.md) for more information.
 6. Select the status of the new Process. This is a required field. See [View Active and Inactive Processes](view-the-list-of-processes/view-your-processes.md#view-all-active-and-inactive-processes) for more information.
-7. Click **Save**. Your new Process opens in [Process Modeler](../process-design/model-your-process/).
+7. Click **Save**. Your new Process opens in Process Modeler. See [Process Modeling](../process-design/) for topics.
 
 ## Related Topics
 

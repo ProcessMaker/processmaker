@@ -9,7 +9,7 @@ Use the **Search** function to filter all Processes from the **Processes** page 
 ## Search for a Process
 
 {% hint style="info" %}
-Your user account or group membership must have the "Processes: List" permission to view the list of Processes.
+Your user account or group membership must have the "Processes: List" permission to search for Processes.
 
 Ask your ProcessMaker Administrator for assistance.
 {% endhint %}

@@ -25,8 +25,12 @@ Follow these steps to edit the configuration information about a ProcessMaker Sc
 3. Edit the following information about the ProcessMaker Script as necessary:
    * In the **Name** field, edit the ProcessMaker Script name. This is a required field.
    * From the **Language** drop-down, select one of the following programming languages to specify with which the ProcessMaker Script is written:
+
      * PHP
      * Lua
+
+     This is a required field.
+
    * In the **Description** field, edit the description of the ProcessMaker Script. This is a required field.
 4. Click **Update**.
 
