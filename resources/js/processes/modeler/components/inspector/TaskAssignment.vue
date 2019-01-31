@@ -1,6 +1,12 @@
 <template>
     <div>
         <div class="form-group">
+            <label>Due In</label>
+            <input class="form-control" type="number" placeholder="72 hours" :value="dueInGetter" @input="dueInSetter" min="0" v-on:keydown="dueInValidate">
+            <small class="form-text text-muted">Time when the task will due (hours)</small>
+        </div>
+
+        <div class="form-group">
             <label>Task Assignment</label>
             <select ref="assignmentsDropDownList"
                     class="form-control"
@@ -69,6 +75,11 @@
             process() {
                 return this.$parent.$parent.$parent.process;
             },
+            dueInGetter() {
+                const node = this.$parent.$parent.highlightedNode.definition;
+                const value = _.get(node, 'dueIn');
+                return value;
+            },
             assignedUserGetter() {
                 const node = this.$parent.$parent.highlightedNode.definition;
                 const value = _.get(node, 'assignedUsers');
@@ -95,6 +106,25 @@
             },
         },
         methods: {
+            dueInValidate(event) {
+                if (event.key === "-") {
+                    event.preventDefault();
+                    return;
+                }
+            },
+            /**
+             * Update due in property
+             */
+            dueInSetter(event) {
+                const validValue = Math.abs(event.target.value * 1) || "";
+                if (!validValue) {
+                    this.$delete(this.node, 'dueIn');
+                } else {
+                    this.$set(this.node, 'dueIn', validValue);
+                }
+                this.$emit('input', this.value);
+                String(validValue) !== event.target.value ? event.target.value = validValue : null;
+            },
             /**
              * Update allowReassignment property
              */

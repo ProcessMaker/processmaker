@@ -19,8 +19,8 @@ class UserController extends Controller
      * @var array
      */
     public $doNotSanitize = [
+        'username', // has alpha_dash rule
         'password',
-        'password_confirmation',
     ];
 
     /**
