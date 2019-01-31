@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit backupGlobals="false"
+         backupStaticAttributes="false"
+         bootstrap="tests/dusk.bootstrap.php"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="false">
+    <testsuites>
+        <testsuite name="Browser Test Suite">
+            <directory suffix="Test.php">./tests/Browser</directory>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./app</directory>
+        </whitelist>
+    </filter>
+
+    <php>
+      <env name="APP_DEBUG" value="false" />
+      <env name="APP_ENV" value="dusk" />
+      <env name="APP_URL" value="http://bpm4.dusk.processmaker.com" />
+      <env name="APP_KEY" value="base64:x80I9vQNxwllSuwBkTwfUa5qkgPTRdwqHCPSz7zHi1U=" />
+      <env name="TESTING_VERBOSE" value="false" />
+
+      <!-- Caching config -->
+      <env name="CACHE_DRIVER" value="array" />
+      <env name="QUEUE_DRIVER" value="sync" />
+
+      <!-- Workflow Database -->
+      <env name="DB_DATABASE" value="test" />
+
+      <env name="KEYS_PATH" value="tests/storage/keys" />
+      <env name="MAILTEMPLATES_PATH" value="tests/storage/mailTemplates" />
+      <env name="SKINS_PATH" value="tests/storage/skins" />
+
+      <env name="THEMES_CACHE" value="false" />
+    </php>
+</phpunit>

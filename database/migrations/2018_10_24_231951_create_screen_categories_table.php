@@ -33,9 +33,7 @@ class CreateScreenCategoriesTable extends Migration
     public function down()
     {
         Schema::table('screens', function (Blueprint $table) {
-            if(DB::connection()->getDriverName() != 'sqlite') {
-                $table->dropForeign(['screen_category_id']);
-            }
+            $table->dropForeign(['screen_category_id']);
         });
 
         Schema::dropIfExists('screen_categories');

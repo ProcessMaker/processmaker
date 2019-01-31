@@ -1,6 +1,6 @@
 ip: 192.168.10.10
-memory: 2048
-cpus: 1
+memory: 4096
+cpus: 4
 provider: virtualbox
 authorize: ~/.ssh/id_rsa.pub
 keys:
@@ -24,17 +24,6 @@ sites:
     -
         map: bpm4.local.processmaker.com
         to: /home/vagrant/processmaker/public
-    -
-        map: bpm4.dusk.processmaker.com
-        to: /home/vagrant/processmaker/public
-        params:
-                - key: APP_ENV
-                  value: testing
-                - key: APP_DEBUG
-                  value: "false"
-                - key: APP_URL
-                  value: https://bpm4.dusk.processmaker.com
 databases:
     - workflow
-    - dusk
     - test
