@@ -30,7 +30,7 @@ Follow these steps to delete a ProcessMaker Screen:
 
    ![](../../../.gitbook/assets/caution-screen-removal-screen-processes.png)
 
-3. Click **Confirm** to delete the ProcessMaker Screen. Otherwise, click **Cancel** to not delete the ProcessMaker Screen.
+3. Click **Confirm** to delete the ProcessMaker Screen.
 
 ## Related Topics
 

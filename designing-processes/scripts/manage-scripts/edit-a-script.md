@@ -18,9 +18,7 @@ Ask your ProcessMaker Administrator for assistance.
 Follow these steps to edit a ProcessMaker Script:
 
 1. [View your ProcessMaker Scripts](view-all-scripts.md). The **Scripts** page displays.
-2. Select the **Edit** icon![](../../../.gitbook/assets/edit-icon.png)for your ProcessMaker Script.
-
-    The ProcessMaker Script opens in Script Editor. See [Scripts Editor](../scripts-editor.md).
+2. Select the **Edit** icon![](../../../.gitbook/assets/edit-icon.png)for your ProcessMaker Script. The ProcessMaker Script opens in Script Editor. See [Scripts Editor](../scripts-editor.md).
 
 ## Related Topics
 

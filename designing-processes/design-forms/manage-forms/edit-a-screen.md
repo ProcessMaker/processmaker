@@ -26,7 +26,7 @@ Follow these steps to edit the configuration information about a ProcessMaker Sc
    * In the **Name** field, edit the name of the ProcessMaker Screen. This is a required field.
    * In the **Type** drop-down, select the type of ProcessMaker Screen. This is a required field. See [Screen Types](../screens-builder/types-for-screens.md).
    * In the **Description** field, edit the description of the ProcessMaker Screen. This is a required field.
-4. Click **Update**. Otherwise, click **Cancel** to cancel any changes.
+4. Click **Update**.
 
 ## Related Topics
 

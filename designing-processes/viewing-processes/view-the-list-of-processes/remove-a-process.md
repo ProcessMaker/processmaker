@@ -48,9 +48,7 @@ Follow these steps to archive a Process:
 
    ![](../../../.gitbook/assets/archive-process-confirmation-processes.png)
 
-3. Click **Confirm** to archive the Process. Otherwise, click **Cancel** to not archive the Process.
-
-   If **Confirm** is clicked, the following message displays: **Process Archived**. The Process moves from the **Processes** page to the **Process Archive** page. See [View Archived Processes](remove-a-process.md#view-archived-processes). Also see [Restore an Archived Process](restore-a-process.md#restore-a-process).
+3. Click **Confirm** to archive the Process. The following message displays: **Process Archived**. The Process moves from the **Processes** page to the **Process Archive** page. See [View Archived Processes](remove-a-process.md#view-archived-processes). Also see [Restore an Archived Process](restore-a-process.md#restore-a-process).
 
 ## Related Topics
 

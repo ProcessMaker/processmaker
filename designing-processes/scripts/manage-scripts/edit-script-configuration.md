@@ -28,7 +28,7 @@ Follow these steps to edit the configuration information about a ProcessMaker Sc
      * PHP
      * Lua
    * In the **Description** field, edit the description of the ProcessMaker Script. This is a required field.
-4. Click **Update**. Otherwise, click **Cancel** to cancel any changes.
+4. Click **Update**.
 
 ## Related Topics
 

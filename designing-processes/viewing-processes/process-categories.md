@@ -89,7 +89,7 @@ Follow these steps to edit a Process Category:
 3. Edit the following information about the Category as necessary:
    * In the **Category Name** field, edit the name of the Category if necessary. The Category name must be unique from all other Category names in your organization.
    * From the **Status** drop-down, change the status of the Category if necessary. See [View Process Categories](process-categories.md#view-process-categories).
-4. Click **Update**. Otherwise, click **Cancel** to cancel any changes.
+4. Click **Update**.
 
 ## Delete a Process Category
 
@@ -117,9 +117,7 @@ Follow these steps to delete a Process Category:
 
    ![](../../.gitbook/assets/remove-process-category-screen-processes.png)
 
-3. Click **Confirm** to delete the Category. Otherwise, click **Cancel** to not remove the Category.
-
-   If Confirm is selected, the following message displays: **Category Successfully Deleted**.
+3. Click **Confirm** to delete the Category. The following message displays: **Category Successfully Deleted**.
 
 ## Related Topics
 

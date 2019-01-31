@@ -35,7 +35,7 @@ Follow these steps to edit the configuration information about a Process:
    * From the **Status** drop-down, select the status of the Process. This is a required field. Below is a description of each Process status:
      * **Active:** An active Process is one in which Requests can be started using that Process.
      * **Inactive:** An inactive Process is one in which Requests cannot be started using that Process. ~~However, active Requests using that inactive Process can be completed.~~
-4. Click **Update**. Otherwise, click **Cancel** to cancel any changes.
+4. Click **Update**.
 
 ## Related Topics
 

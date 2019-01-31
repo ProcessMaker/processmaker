@@ -30,7 +30,7 @@ Follow these steps to delete a ProcessMaker Script:
 
    ![](../../../.gitbook/assets/caution-script-removal-screen-processes.png)
 
-3. Click **Confirm** to delete the ProcessMaker Script. Otherwise, click **Cancel** to not delete the ProcessMaker Script.
+3. Click **Confirm** to delete the ProcessMaker Script.
 
 ## Related Topics
 
