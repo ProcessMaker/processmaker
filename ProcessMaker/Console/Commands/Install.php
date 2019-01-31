@@ -116,7 +116,7 @@ class Install extends Command
         $this->env['BROADCASTER_HOST'] = $this->env['APP_URL'] . ':6001';
 
         // Set laravel echo server settings
-        $this->env['LARAVEL_ECHO_SERVER_HOST'] = parse_url($this->env['APP_URL'])['host'];
+        $this->env['LARAVEL_ECHO_SERVER_AUTH_HOST'] = $this->env['APP_URL'];
         $this->env['LARAVEL_ECHO_SERVER_PORT'] = '6001';
         $this->env['LARAVEL_ECHO_SERVER_DEBUG'] = 'false';
 
