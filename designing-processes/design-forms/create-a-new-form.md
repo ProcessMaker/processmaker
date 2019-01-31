@@ -18,7 +18,7 @@ Ask your ProcessMaker Administrator for assistance.
 Follow these steps to create a new ProcessMaker Screen:
 
 1. [View your ProcessMaker Screens.](manage-forms/view-all-forms.md) The **Screens** page displays.
-2. Click the **+SCREEN** button. The **Create New Screen** page displays.  
+2. Click the **+Screen** button. The **Create New Screen** page displays.  
 
    ![](../../.gitbook/assets/create-new-screen-screen-processes.png)
 

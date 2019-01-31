@@ -18,7 +18,7 @@ Ask your ProcessMaker Administrator for assistance.
 Follow these steps to create a new Process:
 
 1. [View your Processes.](view-the-list-of-processes/#view-your-processes) The **Processes** page displays.
-2. Click the **+PROCESS** button. The **Add A Process** screen displays. ~~WATCH FOR WHEN THIS SCREEN IS CHANGED TO "CREATE A PROCESS".~~  
+2. Click the **+Process** button. The **Add A Process** screen displays. ~~WATCH FOR WHEN THIS SCREEN IS CHANGED TO "CREATE A PROCESS".~~  
 
    ![](../../.gitbook/assets/add-a-process-screen-processes.png)
 

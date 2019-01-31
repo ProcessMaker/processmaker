@@ -20,7 +20,7 @@ Ask your ProcessMaker Administrator for assistance.
 Follow these steps to create a new ProcessMaker Script:
 
 1. [View your ProcessMaker Scripts](manage-scripts/view-all-scripts.md). The **Scripts** page displays.
-2. Click the **+SCRIPT** button. The **Add a Script** screen displays.  
+2. Click the **+Script** button. The **Add a Script** screen displays.  
 
    ![](../../.gitbook/assets/add-a-script-screen-processes.png)
 
