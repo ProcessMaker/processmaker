@@ -29,7 +29,9 @@
         <b-modal ref="createEditAuthClient" :title="modalTitle" @ok="save" @hidden="resetValues" ok-title="Save" cancel-title="Close">
         <div class="form-group">
                 <label for="authClientName">{{__('Name')}}</label>
-                <b-form-input id="authClientName" v-bind:class="{'is-invalid':errors.name}" v-model="authClient.name" type="text" placeholder="Enter a name for this auth client"></b-form-input>
+                <b-form-input id="authClientName" v-bind:class="{'is-invalid':errors.name}" v-model="authClient.name"
+                              type="text" placeholder="Enter a name for this auth client"
+                              maxlength="255"></b-form-input>
                 <div class="invalid-feedback" v-if="errors.name">@{{ errors.name[0] }}</div>
             </div>
             <div class="form-group">
