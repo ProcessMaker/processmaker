@@ -51,7 +51,19 @@ APP_DEBUG=TRUE
 
 Optionally, trust the self-signed certificate on your host machine so you don't get the "Not Secure" warnings in chrome and postman.
 
-For macOS: 1. In your-repository-root/storage/ssl, double-click on bpm4.local.processmaker.com.crt 2. Click on "Add" to add it to your login keychain 3. In the Keychain Access window click on the Certificates category on the bottom left. 4. Double-click on the bpm4 certificate 5. Open the Trust section. For "When using this certificate", select "always trust" 6. Close the window. You will be asked for your password. Close and reopen the processmaker tab in chrome.
+For macOS:
+1. In your-repository-root/storage/ssl, double-click on bpm4.local.processmaker.com.crt
+2. Click on "Add" to add it to your login keychain
+3. In the Keychain Access window click on the Certificates category on the bottom left.
+4. Double-click on the bpm4 certificate
+5. Open the Trust section. For "When using this certificate", select "always trust"
+6. Close the window. You will be asked for your password. Close and reopen the processmaker tab in chrome.
+
+If you choose not to install the certificate, you should access the socket.io js file in your browser
+to allow unsafe connections from it. Otherwise, real-time notifications may not work in your development environment.
+
+- https://bpm4.local.processmaker.com:6001/socket.io/socket.io.js
+
 
 #### Customize Logos
 
