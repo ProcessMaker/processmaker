@@ -12,7 +12,6 @@
 			"databasePath": "/database/laravel-echo-server.sqlite"
 		}
 	},
-	"host": null,
 	"protocol": "https",
 	"socketio": {},
 	"sslCertPath": "/etc/nginx/ssl/bpm4.local.processmaker.com.crt",

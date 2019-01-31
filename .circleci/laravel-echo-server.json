@@ -1,5 +1,4 @@
 {
-	"authHost": "%%AUTHHOST%%",
 	"authEndpoint": "/broadcasting/auth",
 	"clients": [],
 	"database": "redis",
@@ -11,9 +10,6 @@
 			"databasePath": "/database/laravel-echo-server.sqlite"
 		}
 	},
-	"devMode": true,
-	"host": null,
-	"port": "%%ECHOPORT%%",
 	"protocol": "http",
 	"socketio": {},
 	"subscribers": {
