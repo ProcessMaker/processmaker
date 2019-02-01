@@ -205,6 +205,9 @@
 
 
         </div>
+        <b-modal v-model="showCancelRequest" ref="cancelRequest" title="{{__('Caution!')}}" @ok="okCancel" ok-title="Confirm" cancel-title="Cancel">
+            <p data-v-27f69fb6="" class=""><span data-v-27f69fb6=""><b>{{__('Are you sure you want cancel this request ?')}}</b></span></p>
+        </b-modal>
     </div>
 
 @endsection
@@ -216,6 +219,7 @@
             el: "#request",
             data() {
                 return {
+                    showCancelRequest: false,
                     //Edit data
                     fieldsToUpdate: [],
                     jsonData: "",
@@ -439,21 +443,17 @@
                         });
                     }
                 },
+                okCancel() {
+                    ProcessMaker.apiClient.put(`requests/${this.requestId}`, {
+                        status: 'CANCELED'
+                    })
+                        .then(response => {
+                            ProcessMaker.alert('Request Canceled Successfully', 'success');
+                            window.location.reload();
+                        });
+                },
                 cancelRequest() {
-                    ProcessMaker.confirmModal(
-                        "Caution!",
-                        "<b>Are you sure you want cancel this request ?</b>",
-                        "",
-                        () => {
-                            ProcessMaker.apiClient.put(`requests/${this.requestId}`, {
-                                status: 'CANCELED'
-                            })
-                                .then(response => {
-                                    ProcessMaker.alert('Request Canceled Successfully', 'success');
-                                    window.location.reload();
-                                });
-                        }
-                    );
+                    this.showCancelRequest = true;
                 }
             },
             mounted() {

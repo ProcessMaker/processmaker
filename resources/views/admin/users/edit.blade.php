@@ -185,12 +185,9 @@
                                                       :input-data="options"></avatar-image>
                                     </div>
                                     <div class="form-group">
-                                        {!! Form::label('username', 'Username') !!}
-                                        {!! Form::text('username', null, ['id' => 'username', 'rows' => 4, 'class'=>
-                                        'form-control', 'v-model'
-                                        => 'formData.username', 'autocomplete' => 'off', 'v-bind:class' =>
-                                        '{\'form-control\':true, \'is-invalid\':errors.username}']) !!}
-                                        <div class="invalid-feedback" v-if="errors.username">@{{errors.username[0]}}</div>
+                                        @include('shared.input',
+                                            ['type' => 'text', 'name' => 'username', 'label' => 'Username']
+                                        )
                                     </div>
 
                                     <div class="form-group">
@@ -527,20 +524,13 @@
             profileUpdate($event) {
                 this.resetErrors();
                 if (!this.validatePassword()) return false;
-                ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
+                ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData, { context: this })
                     .then(response => {
                         ProcessMaker.alert('{{__('User Updated Successfully ')}}', 'success');
                           if($event !== false) {
                               this.onClose();
                           }
                     })
-                    .catch(error => {
-                        if (error.response.status && error.response.status === 422) {
-                        // Validation error
-                        this.errors = error.response.data.errors;
-                    }
-                        ProcessMaker.alert('{{__('An error occurred while saving the Users.')}}', 'danger');
-                    });
             },
             permissionUpdate() {
                 if(this.adminHasChanged){

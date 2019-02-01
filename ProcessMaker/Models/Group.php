@@ -44,7 +44,7 @@ class Group extends Model
         $unique = Rule::unique('groups')->ignore($existing);
 
         return [
-            'name' => ['required', 'string', $unique],
+            'name' => ['required', 'string', 'max:255', $unique],
             'status' => 'in:ACTIVE,INACTIVE'
         ];
     }
