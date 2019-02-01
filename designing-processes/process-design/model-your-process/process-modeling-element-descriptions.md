@@ -8,52 +8,60 @@ The following are brief descriptions about each Process modeling element. See th
 
 ## Events
 
-An Event represents a "milestone" in the process model.
+An Event represents a milestone in the Process model.
 
 ### Start Event
 
-A Start Event indicates where a modeled process starts. A Start Event begins the flow of a Request for that process. Therefore, a Start Event cannot have an incoming [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow). A process can have multiple Start Events.
+A Start Event indicates where a modeled Process starts. A Start Event begins the flow of a Request for that Process. Therefore, a Start Event cannot have an incoming [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow). A Process model can have multiple Start Events.
 
-Below is a Start Event element in Process Modeler.
+In Process Modeler, the Start Event element is located in the **BPMN** panel as highlighted below.
+
+![Start Event element in the BPMN panel of Process Modeler](../../../.gitbook/assets/bpmn-panel-start-event-process-modeler-processes.png)
+
+Below is a Start Event element when it has been placed into a Process model.
 
 ![Start Event element](../../../.gitbook/assets/start-event-element-process-modeler-processes.png)
 
 {% hint style="info" %}
-See [Add and Configure Event Elements](add-and-configure-an-event-element.md#add-a-start-event-element) for more information.
+See [Add and Configure Event Elements](add-and-configure-an-event-element.md#add-a-start-event-element).
 {% endhint %}
 
 ### End Event
 
-An End Event indicates where a modeled process normally ends when abnormal events do not terminate a [Request](../../../using-processmaker/requests/) for that process \(such as a canceled Request\). An End Event terminates the flow of of a Request for that process. Therefore, an End Event cannot have an outgoing [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow). A process can have multiple End Events.
+An End Event indicates where a modeled Process normally ends when abnormal events do not terminate a [Request](../../../using-processmaker/requests/) for that Process \(such as a canceled Request\). An End Event terminates the flow of a Request for that Process. Therefore, an End Event cannot have an outgoing [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow). A Process model can have multiple End Events.
 
-Below is an End Event element in Process Modeler.
+In Process Modeler, the End Event element is located in the **BPMN** panel as highlighted below.
+
+![End Event element in the BPMN panel of Process Modeler](../../../.gitbook/assets/bpmn-panel-end-event-process-modeler-processes.png)
+
+Below is an End Event element when it has been placed into a Process model.
 
 ![End Event element](../../../.gitbook/assets/end-event-element-process-modeler-processes.png)
 
 {% hint style="info" %}
-See [Add and Configure Event Elements](add-and-configure-an-event-element.md#add-an-end-event-element) for more information.
+See [Add and Configure Event Elements](add-and-configure-an-event-element.md#add-an-end-event-element).
 {% endhint %}
 
 ## Tasks
 
-A task represents an activity to be performed either by a person or a script.
+A task represents an activity to be performed either by a [Request](../../../using-processmaker/requests/what-is-a-request.md) participant or a [ProcessMaker Script](../../scripts/).
 
 ### User Task
 
-A User Task is an activity to be performed by a person. The person assigned the perform that task might be assigned or determined by the Request routing. In Process Modeler, a User Task is labeled as "Task."
+A User Task is an activity to be performed by a person participating in a [Request](../../../using-processmaker/requests/what-is-a-request.md). The Request participant assigned that task might be determined by the conditions in a Request's workflow. In Process Modeler, a User Task is labeled as "Task."
 
 People perform User Task activities through ProcessMaker Screens as digital [forms](../../design-forms/screens-builder/types-for-screens.md#forms) and [displays](../../design-forms/screens-builder/types-for-screens.md#display). ProcessMaker Screens are designed in [Screens Builder](../../design-forms/screens-builder/). ProcessMaker Screens are independent of modeled processes: any ProcessMaker Screen can be used in any modeled process in your organization. This architecture allows Process Owners to re-use the same ProcessMaker Screen in multiple processes.
 
-Below is a User Task element in Process Modeler.
+In Process Modeler, the User Task element is located in the **BPMN** panel as highlighted below.
 
-{% hint style="info" %}
 
-{% endhint %}
+
+Below is a User Task element when it has been placed into a Process model.
 
 ![User Task element](../../../.gitbook/assets/task-element-process-modeler-processes.png)
 
 {% hint style="info" %}
-See [Add and Configure Task Elements](add-and-configure-task-elements.md) for more information.
+See [Add and Configure Task Elements](add-and-configure-task-elements.md).
 {% endhint %}
 
 ### Script Task
@@ -67,7 +75,7 @@ Below is a Script Task element in Process Modeler.
 ![Script Task element](../../../.gitbook/assets/script-task-element-process-modeler-processes.png)
 
 {% hint style="info" %}
-See [Add and Configure Script Task Elements](add-and-configure-script-task-elements.md) for more information.
+See [Add and Configure Script Task Elements](add-and-configure-script-task-elements.md).
 {% endhint %}
 
 ## Exclusive Gateway
@@ -79,7 +87,7 @@ Below is an Exclusive Gateway element in Process Modeler.
 ![Exclusive Gateway element](../../../.gitbook/assets/exclusive-gateway-element-process-modeler-processes.png)
 
 {% hint style="info" %}
-See [Add and Configure Exclusive Gateway Elements](add-and-configure-exclusive-gateway-elements.md) for more information.
+See [Add and Configure Exclusive Gateway Elements](add-and-configure-exclusive-gateway-elements.md).
 {% endhint %}
 
 ## Text Annotation
@@ -91,7 +99,7 @@ Below is a Text Annotation element in Process Modeler.
 ![Text Annotation element](../../../.gitbook/assets/text-control-screens-builder-processes%20%281%29.png)
 
 {% hint style="info" %}
-See [Add and Configure Text Annotation Elements](add-and-configure-text-annotation-elements.md) for more information.
+See [Add and Configure Text Annotation Elements](add-and-configure-text-annotation-elements.md).
 {% endhint %}
 
 ## Sequence Flow
@@ -107,7 +115,7 @@ The Sequence Flow indicates how two process elements are connected. Below are tw
 ![Two process elements connected by the Sequence Flow](../../../.gitbook/assets/sequence-flow-connecting-elements-process-modeler-processes.png)
 
 {% hint style="info" %}
-See [Connect and Remove Elements](the-quick-toolbar.md) for more information.
+See [Connect and Remove Elements](the-quick-toolbar.md).
 {% endhint %}
 
 ## Organize Process Participants
