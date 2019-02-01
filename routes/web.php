@@ -15,7 +15,7 @@ Route::group(['middleware' => ['auth', 'sanitize']], function () {
         Route::get('users/create', 'UserController@create')->name('users.create')->middleware('can:create-users');
         Route::get('users/{user}/edit', 'UserController@edit')->name('users.edit')->middleware('can:edit-users,user');
 
-        Route::get('auth-clients', 'AuthClientController@index')->name('auth-clients.index')->middleware('can:view-auth-clients');
+        Route::get('auth-clients', 'AuthClientController@index')->name('auth-clients.index')->middleware('can:view-auth_clients');
     });
 
     Route::get('admin', 'AdminController@index')->name('admin.index');
@@ -88,8 +88,9 @@ $this->get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm
 $this->post('password/reset', 'Auth\ResetPasswordController@reset');
 
 //overwrite laravel passport
-$this->post('oauth/clients', 'Auth\ClientController@store')->name('passport.clients.store')->middleware('auth');
-$this->put('oauth/clients/{client_id}', 'Auth\ClientController@update')->name('passport.clients.update')->middleware('auth');
+$this->post('oauth/clients', 'Auth\ClientController@store')->name('passport.clients.store')->middleware('can:create-auth_clients');
+$this->put('oauth/clients/{client_id}', 'Auth\ClientController@update')->name('passport.clients.update')->middleware('can:edit-auth_clients');
+$this->delete('oauth/clients/{client_id}', 'Auth\ClientController@destroy')->name('passport.clients.update')->middleware('can:delete-auth_clients');
 
 $this->get('password/success', function () {
     return view('auth.passwords.success', ['title' => __('Password Reset')]);

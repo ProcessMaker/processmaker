@@ -34,7 +34,6 @@ class PermissionSeeder extends Seeder
         'edit-scripts',
         'edit-users',
         'view-all_requests',
-        'view-auth-clients',
         'view-categories',
         'view-comments',
         'view-environment_variables',
