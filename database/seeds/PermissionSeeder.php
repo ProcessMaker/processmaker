@@ -33,6 +33,8 @@ class PermissionSeeder extends Seeder
         'edit-screens',
         'edit-scripts',
         'edit-users',
+        'export-processes',
+        'import-processes',
         'view-all_requests',
         'view-auth-clients',
         'view-categories',
