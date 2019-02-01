@@ -56,7 +56,7 @@ class GenerateMenus
                 'id' => 'homeid'
                 ]);
             }
-            if(\Auth::check() && \Auth::user()->can('view-auth-clients')) {
+            if(\Auth::check() && \Auth::user()->can('view-auth_clients')) {
                 $submenu->add(__('menus.sidebar_admin.auth-clients'), [
                     'route' => 'auth-clients.index',
                     'icon' => 'fa-key',
