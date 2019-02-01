@@ -14,7 +14,7 @@ An Event represents a milestone in the Process model.
 
 A Start Event indicates where a modeled Process starts. A Start Event begins the flow of a Request for that Process. Therefore, a Start Event cannot have an incoming [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow). A Process model can have multiple Start Events.
 
-In Process Modeler, the Start Event element is located in the **BPMN** panel as highlighted below.
+In Process Modeler, the Start Event element is labeled as "Start Event" in the **BPMN** panel as highlighted below.
 
 ![Start Event element in the BPMN panel of Process Modeler](../../../.gitbook/assets/bpmn-panel-start-event-process-modeler-processes.png)
 
@@ -30,7 +30,7 @@ See [Add and Configure Event Elements](add-and-configure-an-event-element.md#add
 
 An End Event indicates where a modeled Process normally ends when abnormal events do not terminate a [Request](../../../using-processmaker/requests/) for that Process \(such as a canceled Request\). An End Event terminates the flow of a Request for that Process. Therefore, an End Event cannot have an outgoing [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow). A Process model can have multiple End Events.
 
-In Process Modeler, the End Event element is located in the **BPMN** panel as highlighted below.
+In Process Modeler, the End Event element is labeled as "End Event" in the **BPMN** panel as highlighted below.
 
 ![End Event element in the BPMN panel of Process Modeler](../../../.gitbook/assets/bpmn-panel-end-event-process-modeler-processes.png)
 
@@ -48,17 +48,17 @@ A task represents an activity to be performed either by a [Request](../../../usi
 
 ### User Task
 
-A User Task is an activity to be performed by a person participating in a [Request](../../../using-processmaker/requests/what-is-a-request.md). The Request participant assigned that task might be determined by the conditions in a Request's workflow. In Process Modeler, a User Task is labeled as "Task."
+A Task element represents an activity to be performed by a person participating in a [Request](../../../using-processmaker/requests/what-is-a-request.md). The Request participant assigned that task might be determined by the conditions in a Request's workflow.
 
-People perform User Task activities through ProcessMaker Screens as digital [forms](../../design-forms/screens-builder/types-for-screens.md#forms) and [displays](../../design-forms/screens-builder/types-for-screens.md#display). ProcessMaker Screens are designed in [Screens Builder](../../design-forms/screens-builder/). ProcessMaker Screens are independent of modeled processes: any ProcessMaker Screen can be used in any modeled process in your organization. This architecture allows Process Owners to re-use the same ProcessMaker Screen in multiple processes.
+People perform Task activities through ProcessMaker Screens as digital [forms](../../design-forms/screens-builder/types-for-screens.md#forms) and [displays](../../design-forms/screens-builder/types-for-screens.md#display). ProcessMaker Screens are designed in [Screens Builder](../../design-forms/screens-builder/).
 
-In Process Modeler, the User Task element is located in the **BPMN** panel as highlighted below.
+In Process Modeler, the Task element is labeled as "Task" in the **BPMN** panel as highlighted below.
 
+![Task element in the BPMN panel of Process Modeler](../../../.gitbook/assets/bpmn-panel-task-process-modeler-processes.png)
 
+Below is a Task element when it has been placed into a Process model.
 
-Below is a User Task element when it has been placed into a Process model.
-
-![User Task element](../../../.gitbook/assets/task-element-process-modeler-processes.png)
+![Task element](../../../.gitbook/assets/task-element-process-modeler-processes.png)
 
 {% hint style="info" %}
 See [Add and Configure Task Elements](add-and-configure-task-elements.md).
