@@ -46,6 +46,15 @@
                             </b-btn>
                             <b-btn
                                     variant="link"
+                                    @click="onAction('export-item', props.rowData, props.rowIndex)"
+                                    v-b-tooltip.hover
+                                    title="Export"
+                                    v-if="permission.includes('export-processes')"
+                            >
+                                <i class="fas fa-file-export fa-lg fa-fw"></i>
+                            </b-btn>
+                            <b-btn
+                                    variant="link"
                                     @click="onAction('remove-item', props.rowData, props.rowIndex)"
                                     v-b-tooltip.hover
                                     title="Archive"
@@ -148,6 +157,9 @@
                         break;
                     case "edit-item":
                         this.goToEdit(data.id);
+                        break;
+                    case "export-item":
+                        console.log('Time to export!');
                         break;
                     case "restore-item":
                         ProcessMaker.apiClient
