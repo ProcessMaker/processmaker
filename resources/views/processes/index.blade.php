@@ -16,8 +16,10 @@
 @endsection
 
 @section('content')
+@include('shared.breadcrumbs', ['routes' => [
+    $title => null,
+]])
 <div class="container page-content" id="processIndex">
-	<h1>{{$title}}</h1>
 	<div class="row">
 		<div class="col">
 			<div class="input-group">
@@ -31,102 +33,119 @@
 
 		</div>
 		<div class="col-8" align="right">
-			<a href="#" class="btn btn-secondary" data-toggle="modal" data-target="#addProcess"><i class="fas fa-plus"></i>
-				{{__('Process')}}</a>
+            @can('create-processes')
+    			<a href="#" class="btn btn-secondary" data-toggle="modal" data-target="#addProcess"><i class="fas fa-plus"></i>
+    				{{__('Process')}}</a>
+            @endcan
 		</div>
 	</div>
 	<div class="container-fluid">
-		<processes-listing ref="processListing" :filter="filter" status="{{ $status }}"
-                           v-on:edit="edit" v-on:reload="reload"></processes-listing>
+		<processes-listing
+            ref="processListing"
+            :filter="filter"
+            status="{{ $status }}"
+            v-on:edit="edit"
+            v-on:reload="reload"
+            :permission="{{ \Auth::user()->hasPermissionsFor('processes') }}"
+            ></processes-listing>
 	</div>
 </div>
-<div class="modal" tabindex="-1" role="dialog" id="addProcess">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">{{__('Add A Process')}}</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body" v-if="processCategories">
-        <div class="form-group">
-			{!! Form::label('name', 'Name') !!}
-			{!! Form::text('name', null, ['autocomplete' => 'off', 'class'=> 'form-control', 'v-model'=> 'name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.name}']) !!}
-			<div class="invalid-feedback" v-for="name in addError.name">@{{name}}</div>
+
+@can('create-processes')
+    <div class="modal" tabindex="-1" role="dialog" id="addProcess">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">{{__('Add A Process')}}</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onClose">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" v-if="processCategories">
+            <div class="form-group">
+    			{!! Form::label('name', 'Name') !!}
+    			{!! Form::text('name', null, ['autocomplete' => 'off', 'class'=> 'form-control', 'v-model'=> 'name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.name}']) !!}
+    			<div class="invalid-feedback" v-for="name in addError.name">@{{name}}</div>
+            </div>
+            <div class="form-group">
+    			{!! Form::label('description', 'Description') !!}
+    			{!! Form::textarea('description', null, ['class'=> 'form-control', 'rows' => '3', 'v-model'=> 'description', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.description}']) !!}
+    			<div class="invalid-feedback" v-for="description in addError.description">@{{description}}</div>
+            </div>
+            <div class="form-group">
+    			{!! Form::label('process_category_id', 'Category')!!}
+    			{!! Form::select('process_category_id', [null => 'Category is required'] + $processCategories, null, ['class'=> 'form-control', 'v-model'=> 'process_category_id', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.process_category_id}']) !!}
+    			<div class="invalid-feedback" v-for="category in addError.process_category_id">@{{category}}</div>
+            </div>
+          </div>
+            <div class="modal-body" v-else>
+              <div>Categories are required to create a process</div>
+                <a  href="{{ url('processes/categories') }}" class="btn btn-primary container mt-2">
+                         {{__('Add Category')}}
+                </a>
+            </div>
+        	<div class="modal-footer">
+    			<button type="button" class="btn btn-outline-success" data-dismiss="modal" v-if='processCategories' @click="onClose">Close</button>
+    			<button type="button" class="btn btn-success ml-2" @click="onSubmit" v-if='processCategories'>Save</button>
+            </div>
         </div>
-        <div class="form-group">
-			{!! Form::label('description', 'Description') !!}
-			{!! Form::textarea('description', null, ['class'=> 'form-control', 'rows' => '3', 'v-model'=> 'description', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.description}']) !!}
-			<div class="invalid-feedback" v-for="description in addError.description">@{{description}}</div>
-        </div>
-        <div class="form-group">
-			{!! Form::label('process_category_id', 'Category')!!}
-			{!! Form::select('process_category_id', [null => 'Category is required'] + $processCategories, null, ['class'=> 'form-control', 'v-model'=> 'process_category_id', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.process_category_id}']) !!}
-			<div class="invalid-feedback" v-for="category in addError.process_category_id">@{{category}}</div>
-        </div>
-        <div class="form-group">
-			{!! Form::label('status', 'Status') !!}
-			{!! Form::select('status', [''=>'Select', 'ACTIVE'=> 'Active', 'INACTIVE'=> 'Inactive'], null, ['class'=> 'form-control', 'v-model'=> 'status', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.status}']) !!}
-			<div class="invalid-feedback" v-for="status in addError.status">@{{status}}</div>
-        </div>
-      </div>
-        <div class="modal-body" v-else>
-          <div>Categories are required to create a process</div>
-            <a  href="{{ url('processes/categories') }}" class="btn btn-primary container mt-2">
-                     {{__('Add Category')}}
-            </a>
-        </div>
-    	<div class="modal-footer">
-			<button type="button" class="btn btn-outline-secondary" data-dismiss="modal" v-if='processCategories'>Close</button>
-			<button type="button" class="btn btn-secondary" id="disabledForNow" @click="onSubmit" v-if='processCategories'>Save</button>
         </div>
     </div>
-    </div>
-</div>
+@endcan
 @endsection
 
 @section('js')
-<script>
-	new Vue({
-        el: '#addProcess',
-        data: {
-            name: '',
-            categoryOptions: '',
-            description: '',
-            process_category_id: '',
-            addError: {},
-            status: '',
-            processCategories: @json($processCategories)
-        },
-        methods: {
-            onSubmit() {
-                this.errors = Object.assign({}, {
-                    name: null,
-                    description: null,
-                    status: null
-                });
-                if(this.process_category_id === '') {
-                    // this.addError.process_category_id = "Process Category is required";
-                    ProcessMaker.alert('{{__('Process Category is required')}}', 'danger');
-                }else {
-                ProcessMaker.apiClient.post("/processes", {
-                    name: this.name,
-                    description: this.description,
-                    process_category_id: this.process_category_id,
-                    status: this.status
-                })
-                .then(response => {
-					ProcessMaker.alert('{{__('Process successfully added')}}', 'success')
-                    window.location = "/modeler/" + response.data.id
-                })
-                .catch(error => {
-                    this.errors = error.response.data.errors;
-                })
+
+@can('create-processes')
+    <script>
+        new Vue({
+            el: '#addProcess',
+            data: {
+                name: '',
+                categoryOptions: '',
+                description: '',
+                process_category_id: '',
+                addError: {},
+                status: '',
+                processCategories: @json($processCategories)
+            },
+            methods: {
+                onClose() {
+                    this.name = '';
+                    this.description = '';
+                    this.process_category_id = '';
+                    this.status = '';
+                    this.addError = {};
+                },
+                onSubmit() {
+                    this.errors = Object.assign({}, {
+                        name: null,
+                        description: null,
+                        process_category_id: null,
+                        status: null
+                    });
+                    if (this.process_category_id === '') {
+                        this.addError = {"process_category_id":  ["Process Category is required"]};
+                        ProcessMaker.alert('{{__('Process Category is required')}}', 'danger');
+                    } else {
+                        ProcessMaker.apiClient.post("/processes", {
+                            name: this.name,
+                            description: this.description,
+                            process_category_id: this.process_category_id
+                        })
+                            .then(response => {
+                                ProcessMaker.alert('{{__('Process successfully added')}}', 'success')
+                                window.location = "/modeler/" + response.data.id
+                            })
+                            .catch(error => {
+                                this.addError = error.response.data.errors;
+                            })
+                    }
+                }
             }
-            }
-        }
-	})
-</script>
+        })
+    </script>
+@endcan
+
 <script src="{{mix('js/processes/index.js')}}"></script>
 @endsection

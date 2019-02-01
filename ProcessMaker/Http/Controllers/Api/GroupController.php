@@ -12,6 +12,15 @@ use ProcessMaker\Models\User;
 
 class GroupController extends Controller
 {
+    /**
+     * A whitelist of attributes that should not be
+     * sanitized by our SanitizeInput middleware.
+     *
+     * @var array
+     */
+    public $doNotSanitize = [
+        //
+    ];
 
     /**
      * Display a listing of the resource.
@@ -70,10 +79,14 @@ class GroupController extends Controller
             $filter = '%' . $filter . '%';
             $query->where(function ($query) use ($filter) {
                 $query->Where('name', 'like', $filter)
-                    ->orWhere('description', 'like', $filter)
-                    ->orWhere('status', 'like', $filter);
+                    ->orWhere('description', 'like', $filter);
             });
         }
+        $status = $request->input('status', null);
+        if ($status) {
+            $query->where('status', $status);
+        }
+
         $response =
             $query->orderBy(
                 $request->input('order_by', 'name'),
@@ -235,7 +248,7 @@ class GroupController extends Controller
      *     path="/group_users",
      *     summary="Returns all users of a group",
      *     operationId="getMembers",
-     *     tags={"Group_users"},
+     *     tags={"Group Users"},
      *     @OA\Parameter(ref="#/components/parameters/filter"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),

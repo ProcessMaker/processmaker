@@ -8,6 +8,14 @@
 @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_processes')])
 @endsection
 
+@section('breadcrumbs')
+  @include('shared.breadcrumbs', ['routes' => [
+      __('Processes') => route('processes.index'),
+      __('Scripts') => route('scripts.index'),
+      __('Edit') . " " . $script->title => null,
+  ]])
+@endsection
+
 @section('content')
 <div id="script-container">
     <script-editor :script="{{$script}}"></script-editor>
@@ -26,6 +34,11 @@ div.main {
   height: 100%;
   max-height: 100%;
   overflow: hidden;
+}
+
+ol.breadcrumb {
+  margin-bottom: 0;
+  border-bottom: 0;
 }
 </style>
 @endsection

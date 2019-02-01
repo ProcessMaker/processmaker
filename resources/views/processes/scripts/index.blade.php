@@ -8,8 +8,11 @@
 @endsection
 
 @section('content')
+    @include('shared.breadcrumbs', ['routes' => [
+        __('Processes') => route('processes.index'),
+        __('Scripts') => null,
+    ]])
     <div class="container page-content" id="scriptIndex">
-        <h1>{{__('Scripts')}}</h1>
         <div class="row">
             <div class="col">
                 <div class="input-group">
@@ -23,22 +26,25 @@
             </div>
 
             <div class="col-8" align="right">
-                <a href="#" class="btn btn-secondary" data-toggle="modal" data-target="#addScript"><i
-                            class="fas fa-plus"></i>
-                    {{__('Script')}}</a>
+                @can('create-scripts')
+                    <a href="#" class="btn btn-secondary" data-toggle="modal" data-target="#addScript"><i
+                                class="fas fa-plus"></i>
+                        {{__('Script')}}</a>
+                @endcan
             </div>
         </div>
         <div class="container-fluid">
-            <script-listing :filter="filter" ref="listScript" @delete="deleteScript"></script-listing>
+            <script-listing :filter="filter" :permission="{{ \Auth::user()->hasPermissionsFor('scripts') }}" ref="listScript" @delete="deleteScript"></script-listing>
         </div>
     </div>
 
-    <div class="modal" tabindex="-1" role="dialog" id="addScript">
+    @can('create-scripts')
+        <div class="modal" tabindex="-1" role="dialog" id="addScript">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">{{__('Add A Script')}}</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onClose">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -64,52 +70,63 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary"
-                            data-dismiss="modal">{{__('Close')}}
+                    <button type="button" class="btn btn-outline-success"
+                            data-dismiss="modal" @click="onClose">{{__('Close')}}
                     </button>
-                    <button type="button" class="btn btn-secondary" id="disabledForNow" @click="onSubmit">
+                    <button type="button" class="btn btn-success ml-2" @click="onSubmit">
                         {{__('Save')}}
                     </button>
                 </div>
             </div>
         </div>
     </div>
+    @endcan
 @endsection
 
 @section('js')
     <script src="{{mix('js/processes/scripts/index.js')}}"></script>
-    <script>
-        new Vue({
-            el: '#addScript',
-            data: {
-                title: '',
-                language: '',
-                description: '',
-                code: '',
-                addError: {},
-            },
-            methods: {
-                onSubmit() {
-                    this.errors = Object.assign({}, {
-                        name: null,
-                        description: null,
-                        status: null
-                    });
-                    ProcessMaker.apiClient.post("/scripts", {
-                        title: this.title,
-                        language: this.language,
-                        description: this.description,
-                        code: "[]"
-                    })
-                    .then(response => {
-                        ProcessMaker.alert('{{__('Script successfully added')}}', 'success');
-                        window.location = "/processes/scripts/" + response.data.id + "/builder";
-                    })
-                    .catch(error => {
-                        this.errors = error.response.data.errors;
-                    })
+
+    @can('create-scripts')
+        <script>
+            new Vue({
+                el: '#addScript',
+                data: {
+                    title: '',
+                    language: '',
+                    description: '',
+                    code: '',
+                    addError: {}
+                },
+                methods: {
+                    onClose() {
+                        this.title = '';
+                        this.language = '';
+                        this.description = '';
+                        this.code = '';
+                        this.addError = {};
+                    },
+                    onSubmit() {
+                        this.errors = Object.assign({}, {
+                            name: null,
+                            description: null,
+                            status: null
+                        });
+                        ProcessMaker.apiClient.post("/scripts", {
+                            title: this.title,
+                            language: this.language,
+                            description: this.description,
+                            code: "[]"
+                        })
+                        .then(response => {
+                            ProcessMaker.alert('{{__('Script successfully added')}}', 'success');
+                            window.location = "/processes/scripts/" + response.data.id + "/builder";
+                        })
+                        .catch(error => {
+                            this.addError = error.response.data.errors;
+                        })
+                    }
                 }
-            }
-        })
-    </script>
+            })
+        </script>
+    @endcan
 @endsection

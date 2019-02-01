@@ -9,8 +9,12 @@
 @endsection
 
 @section('content')
+    @include('shared.breadcrumbs', ['routes' => [
+        __('Processes') => route('processes.index'),
+        __('Screens') => route('screens.index'),
+        __('Edit') . " " . $screen->title => null,
+    ]])
     <div class="container" id="editGroup">
-        <h1>{{__('Edit Screen')}}</h1>
         <div class="row">
             <div class="col-8">
                 <div class="card card-body">
@@ -24,9 +28,8 @@
                     </div>
                     <div class="form-group">
                         {!! Form::label('type', 'Type') !!}
-                        {!! Form::select('type', ['DISPLAY' => 'Display', 'FORM' => 'Form', 'EMAIL' => 'Email'], 'null', ['id' => 'type','class'=> 'form-control', 'v-model' => 'formData.type',
-                        'v-bind:class' => '{"form-control":true, "is-invalid":errors.type}']) !!}
-                        <div class="invalid-feedback" v-for="type in errors.type">@{{type}}</div>
+                        {!! Form::select('type', [$screen->type => mb_convert_case($screen->type, MB_CASE_TITLE)], 'null',
+                        ['id' => 'type', 'class'=> 'form-control disabled', 'disabled' => 'disabled']) !!}
                     </div>
                     <div class="form-group">
                         {!! Form::label('description', 'Description') !!}

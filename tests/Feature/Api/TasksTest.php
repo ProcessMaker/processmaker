@@ -98,6 +98,7 @@ class TasksTest extends TestCase
         $request = factory(ProcessRequest::class)->create(['name' => $name]);
         // Create some tokens
         $newEntity = factory(ProcessRequestToken::class)->create([
+            'user_id' => $this->user->id,
             'process_request_id' => $request->id
         ]);
         $route = route('api.' . $this->resource . '.index', ['filter' => $name]);
@@ -152,10 +153,12 @@ class TasksTest extends TestCase
         $request = factory(ProcessRequest::class)->create();
         // Create some tokens
         factory(ProcessRequestToken::class)->create([
+            'user_id' => $this->user->id,
             'completed_at' => null,
             'process_request_id' => $request->id
         ]);
         factory(ProcessRequestToken::class)->create([
+            'user_id' => $this->user->id,
             'completed_at' => Carbon::now(),
             'process_request_id' => $request->id
         ]);
@@ -187,6 +190,7 @@ class TasksTest extends TestCase
 
         // Now we create the specified number of tokens
         factory(ProcessRequestToken::class, $rowsToAdd)->create([
+            'user_id' => $this->user->id,
             'process_request_id' => $request->id
         ]);
 
@@ -259,10 +263,10 @@ class TasksTest extends TestCase
             'user_id' => $this->user->id,
             'status' => 'ACTIVE',
         ]);
-        $params = ['status' => 'COMPLETED', 'foo' => 'bar'];
+        $params = ['status' => 'COMPLETED', 'data' => ['foo' => 'bar']];
         WorkflowManager::shouldReceive('completeTask')
             ->once()
-            ->with(\Mockery::any(), \Mockery::any(), \Mockery::any(), $params);
+            ->with(\Mockery::any(), \Mockery::any(), \Mockery::any(), $params['data']);
         $response = $this->apiCall('PUT', '/tasks/' . $token->id, $params);
         $this->assertStatus(200, $response);
     }

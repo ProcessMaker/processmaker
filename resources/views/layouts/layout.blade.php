@@ -34,6 +34,7 @@
     {{-- <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.min.css"> --}}
     @yield('css')
     <script type="text/javascript">
+    @if(Auth::user())
     window.Processmaker = {
       csrfToken: "{{csrf_token()}}",
       userId: "{{\Auth::user()->id}}",
@@ -44,6 +45,7 @@
         key: "{{config('broadcasting.key')}}"
       }
     }
+    @endif
   </script>
 </head>
 
@@ -55,7 +57,8 @@
 
   <div class="d-flex flex-grow-1 flex-column" style="overflow: hidden;">
     @include('layouts.navbar')
-    <div class="flex-grow-1 d-flex flex-column h-100" id="mainbody">
+    @yield('breadcrumbs')
+    <div class="flex-grow-1 d-flex flex-column h-50" id="mainbody">
       <div class="main flex-grow-1">
         @yield('content')
       </div>

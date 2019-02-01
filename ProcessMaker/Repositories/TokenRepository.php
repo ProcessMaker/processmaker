@@ -2,6 +2,7 @@
 namespace ProcessMaker\Repositories;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\ProcessRequest as Instance;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken as Token;
@@ -13,8 +14,11 @@ use ProcessMaker\Nayra\Contracts\Bpmn\GatewayInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ThrowEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\CollectionInterface;
 use ProcessMaker\Nayra\Contracts\Repositories\TokenRepositoryInterface;
 use ProcessMaker\Repositories\ExecutionInstanceRepository;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Execution Instance Repository.
@@ -24,7 +28,7 @@ use ProcessMaker\Repositories\ExecutionInstanceRepository;
 class TokenRepository implements TokenRepositoryInterface
 {
     /**
-     * @var ExecutionInstanceRepository 
+     * @var ExecutionInstanceRepository
      */
     private $instanceRepository;
 
@@ -52,7 +56,7 @@ class TokenRepository implements TokenRepositoryInterface
 
     public function loadTokenByUid($uid): TokenInterface
     {
-        
+
     }
 
     /**
@@ -75,18 +79,46 @@ class TokenRepository implements TokenRepositoryInterface
         $token->process_request_id = $token->getInstance()->getKey();
         $token->user_id = $user ? $user->getKey() : null;
         //Default 3 days of due date
-        $due = $activity->getProperty('dueDate', '72');
+        $due = $activity->getProperty('dueIn', '72');
         $token->due_at = $due ? Carbon::now()->addHours($due) : null;
         $token->initiated_at = null;
         $token->riskchanges_at = $due ? Carbon::now()->addHours($due * 0.7) : null;
         $token->saveOrFail();
         $token->setId($token->getKey());
     }
-    
+
+    /**
+     * Persists tokens that triggered a Start Event
+     *
+     * @param StartEventInterface $startEvent
+     * @param CollectionInterface $tokens
+     *
+     * @return mixed
+     */
+    public function persistStartEventTriggered(StartEventInterface $startEvent, CollectionInterface $tokens)
+    {
+        $token = $tokens->item(0);
+
+        $this->instanceRepository->persistInstanceUpdated($token->getInstance());
+        $token->status = 'TRIGGERED';
+        $token->element_id = $startEvent->getId();
+        $token->element_type = $startEvent instanceof StartEventInterface? 'startEvent' : 'task';
+        $token->element_name = $startEvent->getName();
+        $token->process_id = $token->getInstance()->process->getKey();
+        $token->process_request_id = $token->getInstance()->getKey();
+        $token->user_id = Auth::user()->id;
+
+        $token->due_at = null;
+        $token->initiated_at = null;
+        $token->riskchanges_at = null;
+        $token->saveOrFail();
+        $token->setId($token->getKey());
+    }
+
     private function assignTaskUser(ActivityInterface $activity, TokenInterface $token, Instance $instance)
     {
-        
-        
+
+
     }
 
     /**
@@ -202,22 +234,22 @@ class TokenRepository implements TokenRepositoryInterface
 
     public function persistCatchEventTokenPassed(CatchEventInterface $intermediateCatchEvent, Collection $consumedTokens)
     {
-        
+
     }
 
     public function persistGatewayTokenArrives(GatewayInterface $exclusiveGateway, TokenInterface $token)
     {
-        
+
     }
 
     public function persistGatewayTokenConsumed(GatewayInterface $exclusiveGateway, TokenInterface $token)
     {
-        
+
     }
 
     public function persistGatewayTokenPassed(GatewayInterface $exclusiveGateway, TokenInterface $token)
     {
-        
+
     }
 
     public function persistThrowEventTokenArrives(ThrowEventInterface $event, TokenInterface $token)
@@ -247,11 +279,11 @@ class TokenRepository implements TokenRepositoryInterface
 
     public function persistThrowEventTokenPassed(ThrowEventInterface $endEvent, TokenInterface $token)
     {
-        
+
     }
 
     public function store(TokenInterface $token, $saveChildElements = false): \this
     {
-        
+
     }
 }

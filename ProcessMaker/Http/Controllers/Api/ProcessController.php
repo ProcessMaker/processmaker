@@ -20,7 +20,15 @@ use ProcessMaker\Models\User;
 
 class ProcessController extends Controller
 {
-    public $skipPermissionCheckFor = ['triggerStartEvent', 'startProcesses'];
+    /**
+     * A whitelist of attributes that should not be
+     * sanitized by our SanitizeInput middleware.
+     *
+     * @var array
+     */
+    public $doNotSanitize = [
+        'bpmn',
+    ];
 
     /**
      * Get list Process
@@ -38,6 +46,7 @@ class ProcessController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
+     *     @OA\Parameter(ref="#/components/parameters/status"),
      *     @OA\Parameter(ref="#/components/parameters/include"),
      *
      *     @OA\Response(
@@ -67,23 +76,18 @@ class ProcessController extends Controller
         $include = $this->getRequestInclude($request);
         $status = $request->input('status');
 
-        $processes = ($status === 'deleted')
-                        ? Process::onlyTrashed()->with($include)
-                        : Process::with($include);
+        $processes = ($status === 'inactive')
+                        ? Process::inactive()->with($include)
+                        : Process::active()->with($include);
 
-        $processes->select('processes.*')
+        $processes = $processes->select('processes.*')
             ->leftJoin('process_categories as category', 'processes.process_category_id', '=', 'category.id')
             ->leftJoin('users as user', 'processes.user_id', '=', 'user.id')
-            ->where($where);
+            ->orderBy(...$orderBy)
+            ->where($where)
+            ->get();
 
-        //Verify what processes the current user can initiate, user Administrator can start everything.
-        if (!Auth::user()->is_administrator) {
-            $processId = Auth::user()->startProcesses();
-            $processes->whereIn('processes.id', $processId);
-        }
-        $processes->orderBy(...$orderBy);
-
-        return new ApiCollection($processes->paginate($perPage));
+        return new ApiCollection($processes);
     }
 
     /**
@@ -147,6 +151,10 @@ class ProcessController extends Controller
     {
         $request->validate(Process::rules());
         $data = $request->json()->all();
+
+        if (! isset($data['status'])) {
+            $data['status'] = 'ACTIVE';
+        }
 
         $process = new Process();
         $process->fill($data);
@@ -213,8 +221,7 @@ class ProcessController extends Controller
                 422);
         }
 
-        //$process->fill($request->except('cancelRequest', 'startRequest')->json()->all());
-        $process->fill($request->except('cancel_request', 'start_request', 'cancel_request_id', 'start_request_id'));
+        $process->fill($request->except('cancel_request', 'start_request', 'cancel_request_id', 'start_request_id', 'edit_data', 'edit_data_id'));
         $process->saveOrFail();
 
         unset(
@@ -223,27 +230,61 @@ class ProcessController extends Controller
         );
         $process->versions()->create($original_attributes);
 
-        ProcessPermission::where('process_id', $process->id)->delete();
-        $cancelId = Permission::byGuardName('requests.cancel')->id;
-        $startId = Permission::byGuardName('requests.create')->id;
-        if ($request->has('cancel_request')) {
-            foreach ($request->input('cancel_request')['users'] as $id) {
-                $this->savePermission($process, User::class, $id, $cancelId);
+        //If we are specifying start assignments...
+        if ($request->has('start_request')) {    
+            //Adding method to users array
+            $startUsers = [];
+            foreach ($request->input('start_request')['users'] as $item) {
+                $startUsers[$item] = ['method' => 'START'];
+            }
+            
+            //Adding method to groups array
+            $startGroups = [];
+            foreach ($request->input('start_request')['groups'] as $item) {
+                $startGroups[$item] = ['method' => 'START'];
             }
 
-            foreach ($request->input('cancel_request')['groups'] as $id) {
-                $this->savePermission($process, Group::class, $id, $cancelId);
-            }
+            //Syncing users and groups that can start this process
+            $process->usersCanStart()->sync($startUsers, ['method' => 'START']);
+            $process->groupsCanStart()->sync($startGroups, ['method' => 'START']);    
         }
 
-        if ($request->has('start_request')) {
-            foreach ($request->input('start_request')['users'] as $id) {
-                $this->savePermission($process, User::class, $id, $startId);
+        //If we are specifying cancel assignments...
+        if ($request->has('cancel_request')) {
+            //Adding method to users array
+            $cancelUsers = [];
+            foreach ($request->input('cancel_request')['users'] as $item) {
+                $cancelUsers[$item] = ['method' => 'CANCEL'];
             }
 
-            foreach ($request->input('start_request')['groups'] as $id) {
-                $this->savePermission($process, Group::class, $id, $startId);
+            //Adding method to groups array            
+            $cancelGroups = [];
+            foreach ($request->input('cancel_request')['groups'] as $item) {
+                $cancelGroups[$item] = ['method' => 'CANCEL'];
             }
+            
+            //Syncing users and groups that can cancel this process            
+            $process->usersCanCancel()->sync($cancelUsers, ['method' => 'CANCEL']);
+            $process->groupsCanCancel()->sync($cancelGroups, ['method' => 'CANCEL']);
+        }
+
+        //If we are specifying cancel assignments...
+        if ($request->has('edit_data')) {
+            //Adding method to users array
+            $editDataUsers = [];
+            foreach ($request->input('edit_data')['users'] as $item) {
+                $editDataUsers[$item] = ['method' => 'EDIT_DATA'];
+            }
+
+            //Adding method to groups array            
+            $editDataGroups = [];
+            foreach ($request->input('edit_data')['groups'] as $item) {
+                $editDataGroups[$item] = ['method' => 'EDIT_DATA'];
+            }
+            
+            //Syncing users and groups that can cancel this process            
+            $process->usersCanEditData()->sync($editDataUsers, ['method' => 'EDIT_DATA']);
+            $process->groupsCanEditData()->sync($editDataGroups, ['method' => 'EDIT_DATA']);
         }
 
         return new Resource($process->refresh());
@@ -296,16 +337,15 @@ class ProcessController extends Controller
             ->leftJoin('process_categories as category', 'processes.process_category_id', '=', 'category.id')
             ->leftJoin('users as user', 'processes.user_id', '=', 'user.id')
             ->where('processes.status', 'ACTIVE')
-            ->where('category.status', 'ACTIVE');
+            ->where('category.status', 'ACTIVE')
+            ->orderBy(...$orderBy)
+            ->get();
 
-        //Verify what processes the current user can initiate, user Administrator can start everything.
-        if (!Auth::user()->is_administrator) {
-            $processId = Auth::user()->startProcesses();
-            $processes->whereIn('processes.id', $processId);
-        }
-        $processes->orderBy(...$orderBy);
+        $processes = $processes->filter(function($process) {
+            return Auth::user()->can('start', $process);
+        });
 
-        return new ApiCollection($processes->paginate($perPage));
+        return new ApiCollection($processes);
     }
 
     /**
@@ -318,7 +358,7 @@ class ProcessController extends Controller
      *
      * @OA\Put(
      *     path="/processes/processId/restore",
-     *     summary="Restore a soft deleted process",
+     *     summary="Restore an inactive process",
      *     operationId="restoreProcess",
      *     tags={"Process"},
      *     @OA\Parameter(
@@ -343,10 +383,9 @@ class ProcessController extends Controller
      */
     public function restore(Request $request, $processId)
     {
-        $process = Process::withTrashed()->find($processId);
+        $process = Process::find($processId);
         $process->status='ACTIVE';
         $process->save();
-        $process->restore();
         return new Resource($process->refresh());
     }
 
@@ -394,22 +433,6 @@ class ProcessController extends Controller
         $process->status='INACTIVE';
         $process->save();
 
-        if ($process->collaborations->count() !== 0) {
-            return response(
-                ['message' => 'The item should not have associated collaboration',
-                    'errors' => ['collaborations' => $process->collaborations->count()]],
-                422);
-        }
-
-        if ($process->requests->count() !== 0) {
-            return response(
-                ['message' => 'The item should not have associated requests',
-                    'errors' => ['requests' => $process->requests->count()]],
-                422);
-        }
-
-
-        $process->delete();
         return response('', 204);
     }
 
@@ -424,13 +447,9 @@ class ProcessController extends Controller
     public function triggerStartEvent(Process $process, Request $request)
     {
         //Get the event BPMN element
-        $id = $request->input('event');
+        $id = $request->query('event');
         if (!$id) {
             return abort(404);
-        }
-
-        if (!\Auth::user()->hasProcessPermission($process, 'requests.create')) {
-            throw new AuthorizationException("Not authorized to start this process");
         }
 
         $definitions = $process->getDefinitions();
@@ -438,7 +457,7 @@ class ProcessController extends Controller
             return abort(404);
         }
         $event = $definitions->getEvent($id);
-        $data = request()->input();
+        $data = request()->post();
         //Trigger the start event
         $processRequest = WorkflowManager::triggerStartEvent($process, $event, $data);
         return new ProcessRequests($processRequest);

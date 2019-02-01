@@ -87,7 +87,7 @@ class ProcessCollaborationTest extends TestCase
         $tasks = $response->json('data');
         //Complete the task
         $route = route('api.tasks.update', [$tasks[0]['id'], 'status' => 'COMPLETED']);
-        $response = $this->apiCall('PUT', $route, $data);
+        $response = $this->apiCall('PUT', $route, ['data' => $data]);
         $task = $response->json();
         //Get the list of tasks
         $route = route('api.tasks.index');
@@ -96,7 +96,7 @@ class ProcessCollaborationTest extends TestCase
         //Complete the task
         $index = $this->findTaskByName($tasks, 'Process Order');
         $route = route('api.tasks.update', [$tasks[$index]['id'], 'status' => 'COMPLETED']);
-        $response = $this->apiCall('PUT', $route, $data);
+        $response = $this->apiCall('PUT', $route, ['data' => $data]);
         $task = $response->json();
         //Get the list of tasks
         $route = route('api.tasks.index');
@@ -105,7 +105,7 @@ class ProcessCollaborationTest extends TestCase
         //Complete the Final task
         $index = $this->findTaskByName($tasks, 'Finish');
         $route = route('api.tasks.update', [$tasks[$index]['id'], 'status' => 'COMPLETED']);
-        $response = $this->apiCall('PUT', $route, $data);
+        $response = $this->apiCall('PUT', $route, ['data' => $data]);
         $task = $response->json();
         //Get the list of tasks
         $route = route('api.tasks.index');

@@ -118,7 +118,7 @@ class Process extends Model implements HasMedia
             'name' => ['required', $unique],
             'description' => 'required',
             'status' => 'in:ACTIVE,INACTIVE',
-            'process_category_id' => 'nullable|exists:process_categories,id',
+            'process_category_id' => 'exists:process_categories,id',
             'bpmn' => 'nullable',
         ];
     }
@@ -131,6 +131,78 @@ class Process extends Model implements HasMedia
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    /**
+     * Get the users who can start this process
+     *
+     */    
+    public function usersCanStart()
+    {
+        return $this->morphedByMany('ProcessMaker\Models\User', 'processable')->wherePivot('method', 'START');
+    }
+
+    /**
+     * Get the groups who can start this process
+     *
+     */    
+    public function groupsCanStart()
+    {
+        return $this->morphedByMany('ProcessMaker\Models\Group', 'processable')->wherePivot('method', 'START');
+    }
+
+    /**
+     * Get the users who can start this process
+     *
+     */    
+    public function usersCanCancel()
+    {
+        return $this->morphedByMany('ProcessMaker\Models\User', 'processable')->wherePivot('method', 'CANCEL');
+    }
+
+    /**
+     * Get the groups who can start this process
+     *
+     */    
+    public function groupsCanCancel()
+    {
+        return $this->morphedByMany('ProcessMaker\Models\Group', 'processable')->wherePivot('method', 'CANCEL');
+    }
+
+    /**
+     * Get the users who can start this process
+     *
+     */    
+    public function usersCanEditData()
+    {
+        return $this->morphedByMany('ProcessMaker\Models\User', 'processable')->wherePivot('method', 'EDIT_DATA');
+    }
+
+    /**
+     * Get the groups who can start this process
+     *
+     */    
+    public function groupsCanEditData()
+    {
+        return $this->morphedByMany('ProcessMaker\Models\Group', 'processable')->wherePivot('method', 'EDIT_DATA');
+    }
+
+    /**
+     * Scope a query to include only active processes
+     *
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('processes.status', 'ACTIVE');
+    }
+
+    /**
+     * Scope a query to include only inactive processes
+     *
+     */    
+    public function scopeInactive($query)
+    {
+        return $query->where('processes.status', 'INACTIVE');
+    }    
 
     /**
      * Get the process definitions from BPMN field.
@@ -211,8 +283,8 @@ class Process extends Model implements HasMedia
         || $activity instanceof ServiceTaskInterface ? 'script' : 'requestor';
         $assignmentType = $activity->getProperty('assignment', $default);
         switch ($assignmentType) {
-            case 'cyclical':
-                $user = $this->getNextUserCyclicalAssignment($activity->getId());
+            case 'group':
+                $user = $this->getNextUserFromGroupAssignment($activity->getId());
                 break;
             case 'user':
                 $user = $this->getNextUserAssignment($activity->getId());
@@ -239,11 +311,12 @@ class Process extends Model implements HasMedia
      * @return binary
      * @throws TaskDoesNotHaveUsersException
      */
-    private function getNextUserCyclicalAssignment($processTaskUuid)
+    private function getNextUserFromGroupAssignment($processTaskUuid)
     {
         $last = ProcessRequestToken::where('process_id', $this->id)
             ->where('element_id', $processTaskUuid)
             ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
             ->first();
         $users = $this->getAssignableUsers($processTaskUuid);
         if (empty($users)) {
@@ -299,7 +372,7 @@ class Process extends Model implements HasMedia
         foreach ($assignments as $assignment) {
             if ($assignment->assignment_type === User::class) {
                 $users[$assignment->assignment_id] = $assignment->assignment_id;
-            } else {
+            } else { // Group::class
                 $this->getConsolidatedUsers($assignment->assignment_id, $users);
             }
         }
@@ -318,6 +391,9 @@ class Process extends Model implements HasMedia
     {
         $groupMembers = GroupMember::where('group_id', $group_id)->get();
         foreach ($groupMembers as $groupMember) {
+            if ($groupMember->member->status !== 'ACTIVE') {
+                continue;
+            }
             if ($groupMember->member_type === User::class) {
                 $users[$groupMember->member_id] = $groupMember->member_id;
             } else {

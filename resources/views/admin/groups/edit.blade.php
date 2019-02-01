@@ -9,26 +9,32 @@
 @endsection
 
 @section('content')
+    @include('shared.breadcrumbs', ['routes' => [
+        __('Admin') => route('admin.index'),
+        __('Groups') => route('groups.index'),
+        __('Edit') . " " . $group->name => null,
+    ]])
     <div class="container" id="editGroup">
-        <h1>{{__('Edit Group')}}</h1>
         <div class="row">
-            <div class="col-8">
+            <div class="col-12">
                 <nav>
                     <div class="nav nav-tabs" id="nav-tab" role="tablist">
                         <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab"
                            aria-controls="nav-home" aria-selected="true">Group Details</a>
                         <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-users" role="tab"
                            aria-controls="nav-profile" aria-selected="false">Group Members</a>
+                        <a class="nav-item nav-link" id="nav-permissions-tab" data-toggle="tab" href="#nav-permissions" role="tab"
+                           aria-controls="nav-permissions" aria-selected="false">Group Permissions</a>
                     </div>
                 </nav>
-
 
                 <div class="tab-content mt-3" id="nav-tabContent">
                     <div class="card card-body tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
                         {!! Form::open() !!}
                         <div class="form-group">
                             {!! Form::label('name', 'Name') !!}
-                            {!! Form::text('name', null, ['id' => 'name','class'=> 'form-control', 'v-model' => 'formData.name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}']) !!}
+                            {!! Form::text('name', null, ['id' => 'name','class'=> 'form-control', 'maxlength' => '255',
+                            'v-model' => 'formData.name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}']) !!}
                             <small class="form-text text-muted">Group name must be distinct</small>
                             <div class="invalid-feedback" v-if="errors.name">@{{errors.name[0]}}</div>
                         </div>
@@ -70,6 +76,18 @@
                         </div>
                         <users-in-group ref="listing" :filter="filter" :group-id="formData.id"></users-in-group>
                     </div>
+                    <div class="tab-pane fade" id="nav-permissions" role="tabpanel" aria-labelledby="nav-permissions">
+                        <div class="card">
+                            <div class="card-body">
+                                <label class="mb-3"><input type="checkbox" v-model="selectAll" @click="select" :disabled="formData.is_administrator">  {{__('Assign all permisssions to this group')}} </label>
+                                @include('admin.shared.permissions')
+                                <div class="text-right mt-2">
+                                    {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose'])!!}
+                                    {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'permissionUpdate'])!!}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -78,7 +96,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">{{__('Add Users')}}</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onCloseAddUser">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
@@ -108,23 +126,11 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-secondary"
-                                    data-dismiss="modal">{{__('Close')}}</button>
-                            <button type="button" class="btn btn-secondary" @click="onSave"
-                                    id="disabledForNow">{{__('Save')}}</button>
+                            <button type="button" class="btn btn-outline-success"
+                                    data-dismiss="modal" @click="onCloseAddUser">{{__('Close')}}</button>
+                            <button type="button" class="btn btn-success ml-2" @click="onSave">{{__('Save')}}</button>
                         </div>
                     </div>
-                </div>
-            </div>
-
-
-            <div class="col-4">
-                <div class="card card-body">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore
-                    et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                    aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-                    culpa qui officia deserunt mollit anim id est laborum.
                 </div>
             </div>
         </div>
@@ -146,13 +152,57 @@
                         'description': null,
                         'status': null
                     },
+                    groupPermissionNames: @json($permissionNames),
+                    permissions: @json($all_permissions),
+                    selectAll: false,
+                    selectedPermissions: [],
                     selectedUsers: [],
                     availableUsers: @json($users)
                 }
             },
+            created() {
+                this.hasPermission()
+            },
+            watch: {
+                selectedPermissions: function () {
+                    if(this.selectedPermissions.length !== this.permissions.length) {
+                        this.selectAll = false;
+                    }
+                }
+            },
             methods: {
+                checkCreate(sibling, $event) {
+                    let self = $event.target.value;
+                    if (this.selectedPermissions.includes(self)) {
+                        this.selectedPermissions.push(sibling);
+                    }
+                },
+                checkEdit(sibling, $event) {
+                    let self = $event.target.value;
+                    if (! this.selectedPermissions.includes(self)) {
+                        this.selectedPermissions = this.selectedPermissions.filter(function(el) {
+                            return el !== sibling;
+                        });
+                    }
+                },
+                select() {
+                    this.selectedPermissions = [];
+                    if (!this.selectAll) {
+                        for (let permission in this.permissions) {
+                            this.selectedPermissions.push(this.permissions[permission].name);
+                        }
+                    }
+                },
                 customLabel(options) {
                     return `${options.fullname}`
+                },
+                hasPermission() {
+                    if (this.groupPermissionNames) {
+                        this.selectedPermissions = this.groupPermissionNames;
+                    }
+                },
+                onCloseAddUser() {
+                    this.selectedUsers = [];
                 },
                 onSave() {
                     let that = this;
@@ -162,10 +212,13 @@
                                 'group_id': that.formData.id,
                                 'member_type': 'ProcessMaker\\Models\\User',
                                 'member_id': user.id
+                            })
+                            .then(response => {
+                                that.$refs['listing'].fetch();
+                                $('#addUser').modal('hide');
+                                that.selectedUsers = [];
                             });
                     })
-                    this.$refs['listing'].fetch();
-                    $('#addUser').modal('hide');
                 },
                 resetErrors() {
                     this.errors = Object.assign({}, {
@@ -191,6 +244,16 @@
                                 this.errors = error.response.data.errors;
                             }
                         });
+                },
+                permissionUpdate() {
+                    ProcessMaker.apiClient.put("/permissions", {
+                            permission_names: this.selectedPermissions,
+                            group_id: this.formData.id
+                        })
+                        .then(response => {
+                            ProcessMaker.alert('{{__('Group Permissions Updated Successfully ')}}', 'success');
+                            this.onClose();
+                        })
                 }
             }
         });

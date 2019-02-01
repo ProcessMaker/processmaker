@@ -228,6 +228,7 @@ class ScreenTest extends TestCase
         $yesterday = \Carbon\Carbon::now()->subDay();
         $screen = factory(Screen::class)->create([
             "created_at" => $yesterday,
+            "type" => 'FORM',
         ]);
         $original_attributes = $screen->getAttributes();
         $url = self::API_TEST_SCREEN . '/' . $screen->id;
@@ -235,7 +236,9 @@ class ScreenTest extends TestCase
             'title' => 'ScreenTitleTest',
             'description' => $faker->sentence(5),
             'config' => '{"foo":"bar"}',
+            'type' => $screen->type,
         ]);
+
         //Validate the answer is correct
         $response->assertStatus(204);
 
@@ -279,11 +282,13 @@ class ScreenTest extends TestCase
         $title = 'Some title';
         $url = self::API_TEST_SCREEN . '/' . factory(Screen::class)->create([
                 'title' => $title,
+                'type' => 'DISPLAY',
             ])->id;
         $response = $this->apiCall('PUT', $url, [
             'title' => $title,
             'description' => $faker->sentence(5),
             'config' => '',
+            'type' => 'DISPLAY',
         ]);
         //Validate the answer is correct
         $response->assertStatus(204);

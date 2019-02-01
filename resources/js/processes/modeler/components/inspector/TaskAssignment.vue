@@ -1,6 +1,12 @@
 <template>
     <div>
         <div class="form-group">
+            <label>Due In</label>
+            <input class="form-control" type="number" placeholder="72 hours" :value="dueInGetter" @input="dueInSetter" min="0" v-on:keydown="dueInValidate">
+            <small class="form-text text-muted">Time when the task will due (hours)</small>
+        </div>
+
+        <div class="form-group">
             <label>Task Assignment</label>
             <select ref="assignmentsDropDownList"
                     class="form-control"
@@ -8,8 +14,8 @@
                     @input="assignmentSetter">
                 <option value=""></option>
                 <option value="requestor">To requestor</option>
-                <option value="cyclical" v-if="false">Cyclical</option>
                 <option value="user">To user</option>
+                <option value="group">To group</option>
             </select>
         </div>
 
@@ -19,41 +25,71 @@
             <select v-else class="form-control" :value="assignedUserGetter"
                     @input="assignedUserSetter">
                 <option></option>
-                <option v-for="(row, index) in activeUsers" v-bind:value="row.id" :selected="row.id == assignedUserGetter">
+                <option v-for="(row, index) in users" v-bind:value="row.id" :selected="row.id == assignedUserGetter">
                     {{row.fullname}}
                 </option>
             </select>
         </div>
+        
+        <div class="form-group" v-if="showAssignGroup">
+            <label>Assigned Group</label>
+            <div v-if="loadingGroups">Loading...</div>
+            <select v-else class="form-control" :value="assignedGroupGetter"
+                    @input="assignedGroupSetter">
+                <option></option>
+                <option v-for="(row, index) in groups" v-bind:value="row.id" :selected="row.id == assignedGroupGetter">
+                    {{row.name}}
+                </option>
+            </select>
+        </div>
 
+        <form-checkbox label="Allow Reassignment" :checked="allowReassignmentGetter" @change="allowReassignmentSetter"></form-checkbox>
     </div>
 </template>
 
 <script>
-    const USER_TYPE = "ProcessMaker\\Models\\User";
-    const GROUP_TYPE = "ProcessMaker\\Models\\Group";
     export default {
         props: ["value", "label", "helper", "property"],
         data() {
             return {
-                usersAndGroups: [],
+                users: [],
+                groups: [],
                 loadingUsers: true,
+                loadingGroups: true,
             };
         },
         computed: {
-            process() {
-                return this.$parent.$parent.$parent.process;
-            },
             /**
              * Get the value of the edited property
              */
+            allowReassignmentGetter() {
+                const node = this.$parent.$parent.highlightedNode.definition;
+                const value = _.get(node, 'allowReassignment');
+                return value;
+            },
+            /**
+             * Get owner process.
+             *
+             * @returns {object}
+             */
+            process() {
+                return this.$parent.$parent.$parent.process;
+            },
+            dueInGetter() {
+                const node = this.$parent.$parent.highlightedNode.definition;
+                const value = _.get(node, 'dueIn');
+                return value;
+            },
             assignedUserGetter() {
                 const node = this.$parent.$parent.highlightedNode.definition;
                 const value = _.get(node, 'assignedUsers');
                 return value;
             },
-            /**
-             * Get the value of the edited property
-             */
+            assignedGroupGetter() {
+                const node = this.$parent.$parent.highlightedNode.definition;
+                const value = _.get(node, 'assignedGroups');
+                return value;
+            },
             assignmentGetter() {
                 const node = this.$parent.$parent.highlightedNode.definition;
                 const value = _.get(node, 'assignment');
@@ -62,30 +98,60 @@
             node() {
                 return this.$parent.$parent.highlightedNode.definition;
             },
-            activeUsers: function () {
-               return this.usersAndGroups.filter(function (u) {
-                  return u.fullname !== undefined;
-               })
-            },
             showAssignOneUser() {
                 return this.assignmentGetter === 'user';
             },
-            showMultiassignment() {
-                return this.assignmentGetter === 'cyclical';
-            }
+            showAssignGroup() {
+                return this.assignmentGetter === 'group';
+            },
         },
         methods: {
+            dueInValidate(event) {
+                if (event.key === "-") {
+                    event.preventDefault();
+                    return;
+                }
+            },
+            /**
+             * Update due in property
+             */
+            dueInSetter(event) {
+                const validValue = Math.abs(event.target.value * 1) || "";
+                if (!validValue) {
+                    this.$delete(this.node, 'dueIn');
+                } else {
+                    this.$set(this.node, 'dueIn', validValue);
+                }
+                this.$emit('input', this.value);
+                String(validValue) !== event.target.value ? event.target.value = validValue : null;
+            },
+            /**
+             * Update allowReassignment property
+             */
+            allowReassignmentSetter(value) {
+                this.$set(this.node, 'allowReassignment', value);
+                this.$emit('input', this.value);
+            },
             /**
              * Load the list of assigned users
              */
             loadUsersAndGroups() {
                 this.loadingUsers = true;
-                this.usersAndGroups.splice(0);
+                this.users = []
                 ProcessMaker.apiClient
                     .get("/users")
                     .then(response => {
-                        this.usersAndGroups.push(...response.data.data);
+                        this.users.push(...response.data.data);
                         this.loadingUsers = false;
+                    });
+                
+                this.loadingGroups = true;
+                this.groups = []
+                ProcessMaker.apiClient
+                    .get("/groups")
+                    .then(response => {
+                        this.groups.push(...response.data.data);
+                        this.loadingGroups = false;
                     });
             },
             /**
@@ -93,6 +159,10 @@
              */
             assignedUserSetter(event) {
                 this.$set(this.node, 'assignedUsers', event.target.value);
+                this.$emit('input', this.value);
+            },
+            assignedGroupSetter(event) {
+                this.$set(this.node, 'assignedGroups', event.target.value);
                 this.$emit('input', this.value);
             },
             /**

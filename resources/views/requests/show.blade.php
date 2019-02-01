@@ -13,8 +13,11 @@
 @endsection
 
 @section('content')
+    @include('shared.breadcrumbs', ['routes' => [
+        __('Requests') => route('requests.index'),
+        $request->name . ' # '. $request->getKey() => null,
+    ]])
     <div id="request" class="container">
-        <h1>{{$request->name}} # {{$request->getKey()}}</h1>
         <div class="row">
             <div class="col-md-8">
 
@@ -38,6 +41,17 @@
                                     {{__('Summary')}}
                                 </a>
                             </li>
+                            @if ($request->status === 'COMPLETED')
+                            @can('editData', $request->process)
+                            <li>
+                                <a id="editdata-tab" data-toggle="tab" href="#editdata" role="tab"
+                                   aria-controls="editdata" aria-selected="false"
+                                   class="nav-link">
+                                    {{__('Data')}}
+                                </a>
+                            </li>
+                            @endcan
+                            @endif
                             <li class="nav-item">
                                 <a class="nav-link" id="completed-tab" data-toggle="tab" href="#completed" role="tab"
                                    aria-controls="completed" aria-selected="false">{{__('Completed')}}</a>
@@ -103,6 +117,13 @@
                                 </div>
                             </template>
                         </div>
+                        @if ($request->status === 'COMPLETED')
+                        @can('editData', $request->process)
+                        <div id="editdata" role="tabpanel" aria-labelledby="editdata" class="tab-pane">
+                            @include('tasks.editdata')
+                        </div>
+                        @endcan
+                        @endif
                         <div class="tab-pane fade" id="completed" role="tabpanel" aria-labelledby="completed-tab">
                             <request-detail ref="completed" :process-request-id="requestId" status="CLOSED">
                             </request-detail>
@@ -133,6 +154,13 @@
                     </div>
                     </div>
                 </div>
+
+                @if($canViewComments === true)
+                <div>
+                    <comments commentable_id="{{ $request->getKey() }}" commentable_type="{{ get_class($request) }}" />
+                </div>
+                @endif
+
             </div>
             <div class="col-md-4">
                 <template v-if="statusLabel">
@@ -164,17 +192,22 @@
                                               :input-data="participants" hide-name="true"></avatar-image>
                             </li>
                             <li class="list-group-item">
+                                <h5>{{__('Completed')}}</h5>
                                 <i class="far fa-calendar-alt"></i>
-                                <small>@{{ labelDate }} @{{ moment(statusDate).fromNow() }}</small>
+                                <small>@{{ moment(statusDate).format() }}</small>
                                 <br>
-                                @{{ moment(statusDate).format() }}
+                                
                             </li>
                         </ul>
                     </div>
                 </template>
             </div>
 
+
         </div>
+        <b-modal v-model="showCancelRequest" ref="cancelRequest" title="{{__('Caution!')}}" @ok="okCancel" ok-title="Confirm" cancel-title="Cancel">
+            <p data-v-27f69fb6="" class=""><span data-v-27f69fb6=""><b>{{__('Are you sure you want cancel this request ?')}}</b></span></p>
+        </b-modal>
     </div>
 
 @endsection
@@ -186,6 +219,16 @@
             el: "#request",
             data() {
                 return {
+                    showCancelRequest: false,
+                    //Edit data
+                    fieldsToUpdate: [],
+                    jsonData: "",
+                    selectedData: '',
+                    monacoLargeOptions: {
+                        automaticLayout: true,
+                    },
+                    showJSONEditor: false,
+                    data: @json($request->data),
                     requestId: @json($request->getKey()),
                     request: @json($request),
                     files: @json($files),
@@ -296,6 +339,50 @@
                 },
             },
             methods: {
+                // Data editor
+                updateRequestData() {
+                    const data = {};
+                    this.fieldsToUpdate.forEach(name=>{
+                        data[name] = this.data[name];
+                    });
+                    ProcessMaker.apiClient
+                        .put("requests/" + this.requestId, {
+                            data: data
+                        })
+                        .then(response => {
+                            this.fieldsToUpdate.splice(0);
+                            ProcessMaker.alert("{{__('Request data successfully updated')}}", "success");
+                        });
+                },
+                updateData(name, value) {
+                    if (name) {
+                        this.$set(this.data, name, value);
+                        this.fieldsToUpdate.indexOf(name) === -1 ? this.fieldsToUpdate.push(name) : null;
+                    }
+                },
+                closeJsonData() {
+                    this.selectedData = '';
+                    this.showJSONEditor = false;
+                },
+                saveJsonData() {
+                    try{
+                        if (this.selectedData) {
+                            const value = JSON.parse(this.jsonData);
+                            this.$set(this.data, this.selectedData, value);
+                            this.showJSONEditor = false;
+                            this.fieldsToUpdate.indexOf(this.selectedData) === -1 ? this.fieldsToUpdate.push(this.selectedData) : null;
+                            this.updateRequestData();
+                        }
+                    } catch (e) {
+                    }
+                },
+                editJsonData(name) {
+                    if (this.data[name] !== undefined) {
+                        this.selectedData = name;
+                        this.jsonData = JSON.stringify(this.data[name], null, 4);
+                        this.showJSONEditor = true;
+                    }
+                },
                 /**
                  * Refresh the Request details.
                  *
@@ -356,21 +443,17 @@
                         });
                     }
                 },
+                okCancel() {
+                    ProcessMaker.apiClient.put(`requests/${this.requestId}`, {
+                        status: 'CANCELED'
+                    })
+                        .then(response => {
+                            ProcessMaker.alert('Request Canceled Successfully', 'success');
+                            window.location.reload();
+                        });
+                },
                 cancelRequest() {
-                    ProcessMaker.confirmModal(
-                        "Caution!",
-                        "<b>Are you sure you want cancel this request ?</b>",
-                        "",
-                        () => {
-                            ProcessMaker.apiClient.put(`requests/${this.requestId}`, {
-                                status: 'CANCELED'
-                            })
-                                .then(response => {
-                                    ProcessMaker.alert('Request Canceled Successfully', 'success');
-                                    window.location.reload();
-                                });
-                        }
-                    );
+                    this.showCancelRequest = true;
                 }
             },
             mounted() {

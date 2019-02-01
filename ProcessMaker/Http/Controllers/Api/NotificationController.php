@@ -14,8 +14,15 @@ use ProcessMaker\Models\User;
 
 class NotificationController extends Controller
 {
-    // No need for further authorization since the ID is a guid
-    public $skipPermissionCheckFor = ['index', 'show', 'updateAsRead', 'updateAsUnread'];
+    /**
+     * A whitelist of attributes that should not be
+     * sanitized by our SanitizeInput middleware.
+     *
+     * @var array
+     */
+    public $doNotSanitize = [
+        'data'
+    ];
 
     /**
      * Display a listing of the resource.

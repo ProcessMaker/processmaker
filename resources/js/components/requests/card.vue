@@ -12,6 +12,19 @@
                 </div>
             </div>
         </div>
+
+        <!-- Temporary until modeler validations are in place -->
+        <div v-if="process.events.length == 0" class="processes">
+            <div class="process-card">
+                <div class="inner">
+                    <div>
+                        <span class="name" v-html="transformedName"></span>
+                    </div>
+                    <div ref="description" class="description warn">This process can not be started because it does not have a start event.</div>
+                </div>
+            </div>
+        </div>
+
     </span>
 </template>
 
@@ -115,6 +128,8 @@ export default {
       color: #788793;
       overflow: hidden;
     }
+
+    .warn { font-style: italic }
   }
 
   &:hover {

@@ -9,8 +9,12 @@
 @endsection
 
 @section('content')
+    @include('shared.breadcrumbs', ['routes' => [
+        __('Admin') => route('admin.index'),
+        __('Users') => null,
+    ]])
+
     <div class="container page-content" id="users-listing">
-        <h1>{{__('Users')}}</h1>
         <div class="row">
             <div class="col">
                 <div class="input-group">
@@ -24,122 +28,138 @@
 
             </div>
             <div class="col-8" align="right">
-                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#addUser">
-                    <i class="fas fa-plus"></i>
-                    {{__('User')}}</button>
+                @can('create-users')
+                <button type="button" class="btn btn-action text-light" data-toggle="modal" data-target="#addUser"
+                        id="addUserBtn">
+                        <i class="fas fa-plus"></i>
+                        {{__('User')}}</button>
+                @endcan
             </div>
         </div>
         <div class="container-fluid">
-            <users-listing ref="listing" :filter="filter" v-on:reload="reload"></users-listing>
+            <users-listing ref="listing" :filter="filter" :permission="{{ \Auth::user()->hasPermissionsFor('users') }}" v-on:reload="reload"></users-listing>
         </div>
     </div>
 
-    <div class="modal" tabindex="-1" role="dialog" id="addUser">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">{{__('Add A User')}}</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        {!!Form::label('username', __('Username'))!!}
-                        {!!Form::text('username', null, ['class'=> 'form-control', 'v-model'=> 'username', 'v-bind:class'
-                        => '{\'form-control\':true, \'is-invalid\':addError.username}', 'autocomplete' => 'off']) !!}
-                        <div class="invalid-feedback" v-for="username in addError.username">@{{username}}</div>
+    @can('create-users')
+        <div class="modal" tabindex="-10" role="dialog" id="addUser">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{__('Add A User')}}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onClose">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                    <div class="form-group">
-                        {!!Form::label('firstname', __('First name'))!!}
-                        {!!Form::text('firstname', null, ['class'=> 'form-control', 'v-model'=> 'firstname', 'v-bind:class'
-                        => '{\'form-control\':true, \'is-invalid\':addError.firstname}'])!!}
-                        <div class="invalid-feedback" v-for="firstname in addError.firstname">@{{firstname}}</div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            {!!Form::label('username', __('Username'))!!}
+                            {!!Form::text('username', null, ['class'=> 'form-control', 'v-model'=> 'username', 'v-bind:class'
+                            => '{\'form-control\':true, \'is-invalid\':addError.username}', 'autocomplete' => 'off']) !!}
+                            <div class="invalid-feedback" v-for="username in addError.username">@{{username}}</div>
+                        </div>
+                        <div class="form-group">
+                            {!!Form::label('firstname', __('First name'))!!}
+                            {!!Form::text('firstname', null, ['class'=> 'form-control', 'v-model'=> 'firstname', 'v-bind:class'
+                            => '{\'form-control\':true, \'is-invalid\':addError.firstname}'])!!}
+                            <div class="invalid-feedback" v-for="firstname in addError.firstname">@{{firstname}}</div>
+                        </div>
+                        <div class="form-group">
+                            {!!Form::label('lastname', __('Last name'))!!}
+                            {!!Form::text('lastname', null, ['class'=> 'form-control', 'v-model'=> 'lastname', 'v-bind:class'
+                            => '{\'form-control\':true, \'is-invalid\':addError.lastname}'])!!}
+                            <div class="invalid-feedback" v-for="lastname in addError.lastname">@{{lastname}}</div>
+                        </div>
+                        <div class="form-group">
+                            {!!Form::label('status', 'Status');!!}
+                            {!!Form::select('size', ['ACTIVE' => 'Active', 'INACTIVE' => 'Inactive'], 'Active', ['class'=> 'form-control', 'v-model'=> 'status',
+                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.status}']);!!}
+                            <div class="invalid-feedback" v-for="status in addError.status">@{{status}}</div>
+                        </div>
+                        <div class="form-group">
+                            {!!Form::label('email', __('Email'))!!}
+                            {!!Form::email('email', null, ['class'=> 'form-control', 'v-model'=> 'email', 'v-bind:class' =>
+                            '{\'form-control\':true, \'is-invalid\':addError.email}', 'autocomplete' => 'off'])!!}
+                            <div class="invalid-feedback" v-for="email in addError.email">@{{email}}</div>
+                        </div>
+                        <div class="form-group">
+                            {!!Form::label('password', __('Password'))!!}
+                            <vue-password v-model="password" :disable-toggle=true ref="passwordStrength">
+                                <div slot="password-input" slot-scope="props">
+                                    {!!Form::password('password', ['class'=> 'form-control', 'v-model'=> 'password',
+                                    '@input' => 'props.updatePassword($event.target.value)', 'autocomplete' => 'new-password',
+                                    'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.password}'])!!}
+                                </div>
+                            </vue-password>
+                        </div>
+                        <div class="form-group">
+                            {!!Form::label('confpassword', __('Confirm Password'))!!}
+                            {!!Form::password('confpassword', ['class'=> 'form-control', 'v-model'=> 'confpassword',
+                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.password}', 'autocomplete' => 'new-password'])!!}
+                            <div class="invalid-feedback" v-for="password in addError.password">@{{password}}</div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        {!!Form::label('lastname', __('Last name'))!!}
-                        {!!Form::text('lastname', null, ['class'=> 'form-control', 'v-model'=> 'lastname', 'v-bind:class'
-                        => '{\'form-control\':true, \'is-invalid\':addError.lastname}'])!!}
-                        <div class="invalid-feedback" v-for="lastname in addError.lastname">@{{lastname}}</div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-success"
+                                data-dismiss="modal" @click="onClose">{{__('Close')}}</button>
+                        <button type="button" class="btn btn-success ml-2" @click="onSubmit">{{__('Save')}}</button>
                     </div>
-                    <div class="form-group">
-                        {!!Form::label('status', 'Status');!!}
-                        {!!Form::select('size', ['ACTIVE' => 'Active', 'INACTIVE' => 'Inactive'], 'Active', ['class'=> 'form-control', 'v-model'=> 'status',
-                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.status}']);!!}
-                        <div class="invalid-feedback" v-for="status in addError.status">@{{status}}</div>
-                    </div>
-                    <div class="form-group">
-                        {!!Form::label('email', __('Email'))!!}
-                        {!!Form::email('email', null, ['class'=> 'form-control', 'v-model'=> 'email', 'v-bind:class' =>
-                        '{\'form-control\':true, \'is-invalid\':addError.email}', 'autocomplete' => 'off'])!!}
-                        <div class="invalid-feedback" v-for="email in addError.email">@{{email}}</div>
-                    </div>
-                    <div class="form-group">
-                        {!!Form::label('password', __('Password'))!!}
-                        <vue-password v-model="password" :disable-toggle=true ref="passwordStrength">
-                            <div slot="password-input" slot-scope="props">
-                                {!!Form::password('password', ['class'=> 'form-control', 'v-model'=> 'password',
-                                '@input' => 'props.updatePassword($event.target.value)', 'autocomplete' => 'new-password',
-                                'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.password}'])!!}
-                            </div>
-                        </vue-password>
-                    </div>
-                    <div class="form-group">
-                        {!!Form::label('confpassword', __('Confirm Password'))!!}
-                        {!!Form::password('confpassword', ['class'=> 'form-control', 'v-model'=> 'confpassword',
-                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.password}', 'autocomplete' => 'new-password'])!!}
-                        <div class="invalid-feedback" v-for="password in addError.password">@{{password}}</div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary"
-                            data-dismiss="modal">{{__('Close')}}</button>
-                    <button type="button" class="btn btn-secondary" @click="onSubmit"
-                            id="disabledForNow">{{__('Save')}}</button>
                 </div>
             </div>
         </div>
-    </div>
+    @endcan
 @endsection
 
 @section('js')
     <script src="{{mix('js/admin/users/index.js')}}"></script>
 
-    <script>
-        new Vue({
-            el: '#addUser',
-            data: {
-                username: '',
-                firstname: '',
-                lastname: '',
-                status: '',
-                email: '',
-                password: '',
-                confpassword: '',
-                addError: {},
-                submitted: false,
-            },
-            methods: {
-                validatePassword() {
-                    if (this.password.trim().length > 0 && this.password.trim().length < 8) {
-                        this.addError.password = ['Password must be at least 8 characters']
-                        this.$refs.passwordStrength.updatePassword('')
-                        this.password = ''
-                        this.confpassword = ''
-                        this.submitted = false
-                        return false
-                    }
-                    if (this.password !== this.confpassword) {
-                        this.addError.password = ['Passwords must match']
-                        this.$refs.passwordStrength.updatePassword('')
-                        this.password = ''
-                        this.confpassword = ''
-                        this.submitted = false
-                        return false
-                    }
-                    return true
+    @can('create-users')
+        <script>
+            new Vue({
+                el: '#addUser',
+                data: {
+                    username: '',
+                    firstname: '',
+                    lastname: '',
+                    status: '',
+                    email: '',
+                    password: '',
+                    confpassword: '',
+                    addError: {},
+                    submitted: false,
                 },
-                onSubmit() {
+                methods: {
+                    onClose () {
+                        this.username = '';
+                        this.firstname = '';
+                        this.lastname = '';
+                        this.status = '';
+                        this.email = '';
+                        this.password = '';
+                        this.confpassword = '';
+                        this.addError = {};
+                        this.submitted = false;
+                    },
+                    validatePassword() {
+                        if (this.password.trim().length > 0 && this.password.trim().length < 8) {
+                            this.addError.password = ['Password must be at least 8 characters']
+                            this.$refs.passwordStrength.updatePassword('')
+                            this.password = ''
+                            this.confpassword = ''
+                            this.submitted = false
+                            return false
+                        }
+                        if (this.password !== this.confpassword) {
+                            this.addError.password = ['Passwords must match']
+                            this.$refs.passwordStrength.updatePassword('')
+                            this.password = ''
+                            this.confpassword = ''
+                            this.submitted = false
+                            return false
+                        }
+                        return true
+                    },
+                    onSubmit() {
                     this.submitted = true;
                     if (this.validatePassword()) {
                         ProcessMaker.apiClient.post("/users", {
@@ -150,16 +170,17 @@
                             email: this.email,
                             password: this.password
                         }).then(function (response) {
-                            window.location = "/admin/users/" + response.data.id + '/edit'
+                            window.location = "/admin/users/" + response.data.id + '/edit?created=true'
                         }).catch(error => {
                            this.addError = error.response.data.errors
-                            
-                        });
+
+                            });
+                        }
                     }
                 }
-            }
-        })
-    </script>
+            })
+        </script>
+    @endcan
 @endsection
 @section('css')
     <style>

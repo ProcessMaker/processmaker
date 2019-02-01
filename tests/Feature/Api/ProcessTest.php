@@ -4,6 +4,7 @@ namespace Tests\Feature\Api;
 
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Permission;
@@ -29,6 +30,8 @@ class ProcessTest extends TestCase
     use WithFaker;
     use RequestHelper;
     use ResourceAssertionsTrait;
+    
+    public $withPermissions = true;
 
     protected $resource = 'processes';
     protected $structure = [
@@ -61,7 +64,7 @@ class ProcessTest extends TestCase
                 'count' => $perPage,
                 'per_page' => $perPage,
                 'current_page' => $page,
-                'total_pages' => ceil(($initialCount + $countProcesses) / $perPage),
+                'total_pages' => (int) ceil(($initialCount + $countProcesses) / $perPage),
             ]
         );
     }
@@ -71,45 +74,21 @@ class ProcessTest extends TestCase
      */
     public function testProcessesListingWithNoAdminUser()
     {
-        // We create an user that isn't administrator
+        // We create a user that isn't administrator
         $this->user = factory(User::class)->create([
-            'password' => 'password',
+            'password' => Hash::make('password'),
             'is_administrator' => false,
         ]);
+        
+        // Add process permission to user
+        $this->user->permissions()->attach(Permission::byName('view-processes'));
 
-        // Create create process permission for the user
-        $userId = $this->user->id;
-        factory(Permission::class)->create(['guard_name' => 'requests.create']);
-        factory(Permission::class)->create(['guard_name' => 'processes.index']);
-
+        // Get the initial count
         $initialCount = Process::count();
+
         // Create some processes
         $process = factory(Process::class)->create();
-
-        factory(ProcessPermission::class)
-            ->create(
-                [
-                    'process_id' => $process->id,
-                    'permission_id' => Permission::byGuardName('requests.create'),
-                    'assignable_type' => User::class,
-                    'assignable_id' => $userId
-                ]);
-
-        factory(PermissionAssignment::class)
-            ->create(
-                [
-                    'permission_id' => Permission::byGuardName('requests.create'),
-                    'assignable_type' => User::class,
-                    'assignable_id' => $userId
-                ]);
-
-        factory(PermissionAssignment::class)
-            ->create(
-                [
-                    'permission_id' => Permission::byGuardName('processes.index'),
-                    'assignable_type' => User::class,
-                    'assignable_id' => $userId
-                ]);
+        $process->usersCanStart()->attach($this->user->id);
 
         //Get a page of processes
         $page = 1;
@@ -131,55 +110,38 @@ class ProcessTest extends TestCase
      */
     public function testProcessesListingWithNoAdminGroup()
     {
-        // We create an user that isn't administrator
+        // We create a user that isn't administrator
         $this->user = factory(User::class)->create([
-            'password' => 'password',
+            'password' => Hash::make('password'),
             'is_administrator' => false,
         ]);
 
         //Create default All Users group
-        $groupId = factory(Group::class)->create([
+        $group = factory(Group::class)->create([
             'name' => 'Test Group',
             'status' => 'ACTIVE'
-        ])->id;
+        ]);
+        $group->save();
+        $group->refresh();
 
+        //Add user to group
         factory(GroupMember::class)->create([
             'member_id' => $this->user->id,
             'member_type' => User::class,
-            'group_id' => $groupId,
+            'group_id' => $group->id,
         ]);
+        $this->user->save();
+        $this->user->refresh();
 
         // Create process permissions for the group
-        factory(Permission::class)->create(['guard_name' => 'requests.create']);
-        factory(Permission::class)->create(['guard_name' => 'processes.index']);
+        $group->permissions()->attach(Permission::byName('view-processes'));
 
+        // Get the initial count
         $initialCount = Process::count();
-        // Create some processes
+
+        // Create a process
         $process = factory(Process::class)->create();
-        factory(ProcessPermission::class)
-            ->create(
-                [
-                    'process_id' => $process->id,
-                    'permission_id' => Permission::byGuardName('requests.create'),
-                    'assignable_type' => Group::class,
-                    'assignable_id' => $groupId
-                ]);
-
-        factory(PermissionAssignment::class)
-            ->create(
-                [
-                    'permission_id' => Permission::byGuardName('requests.create'),
-                    'assignable_type' => User::class,
-                    'assignable_id' => $this->user->id
-                ]);
-
-        factory(PermissionAssignment::class)
-            ->create(
-                [
-                    'permission_id' => Permission::byGuardName('processes.index'),
-                    'assignable_type' => Group::class,
-                    'assignable_id' => $groupId
-                ]);
+        $process->groupsCanStart()->attach($group->id);
 
         //Get a page of processes
         $page = 1;
@@ -203,39 +165,17 @@ class ProcessTest extends TestCase
         ]);
 
         $this->user = factory(User::class)->create([
-            'password' => 'password',
+            'password' => Hash::make('password'),
             'is_administrator' => false,
         ]);
-
-        $permission = factory(Permission::class)
-            ->create(['guard_name' => 'requests.create']);
-
-        factory(PermissionAssignment::class)
-            ->create(
-                [
-                    'permission_id' => $permission->id,
-                    'assignable_type' => User::class,
-                    'assignable_id' => $this->user->id
-                ]);
 
         $route = route('api.process_events.trigger', $process);
 
         $response = $this->apiCall('POST', $route . '?event=StartEventUID');
         $this->assertStatus(403, $response);
-        $this->assertEquals(
-            $response->json()['message'],
-            'Not authorized to start this process'
-        );
 
-        factory(ProcessPermission::class)
-            ->create(
-                [
-                    'process_id' => $process->id,
-                    'permission_id' => $permission->id,
-                    'assignable_type' => User::class,
-                    'assignable_id' => $this->user->id,
-                ]);
-
+        $process->usersCanStart()->attach($this->user->id);
+        
         $response = $this->apiCall('POST', $route . '?event=StartEventUID');
         $this->assertStatus(201, $response);
     }
@@ -267,8 +207,8 @@ class ProcessTest extends TestCase
     public function testFiltering()
     {
         $perPage = 10;
-        $initialActiveCount = Process::where('status', 'ACTIVE')->count();
-        $initialInactiveCount = Process::where('status', 'INACTIVE')->count();
+        $initialActiveCount = Process::active()->count();
+        $initialInactiveCount = Process::inactive()->count();
 
         // Create some processes
         $processActive = [
@@ -284,7 +224,7 @@ class ProcessTest extends TestCase
 
         //Get active processes
         $response = $this->assertCorrectModelListing(
-            '?filter=ACTIVE&include=category&per_page=' . $perPage,
+            '?status=active&include=category&per_page=' . $perPage,
             [
                 'total' => $initialActiveCount + $processActive['num'],
                 'count' => $perPage,
@@ -296,7 +236,7 @@ class ProcessTest extends TestCase
 
         //Get active processes
         $response = $this->assertCorrectModelListing(
-            '?filter=INACTIVE&include=category,user&per_page=' . $perPage,
+            '?status=inactive&include=category,user&per_page=' . $perPage,
             [
                 'total' => $initialInactiveCount + $processInactive['num'],
                 'count' => $perPage,
@@ -368,7 +308,7 @@ class ProcessTest extends TestCase
     public function testProcessCreation()
     {
         //Create a process without category
-        $this->assertCorrectModelCreation(
+        $this->assertModelCreationFails(
             Process::class, [
                 'user_id' => static::$DO_NOT_SEND,
                 'process_category_id' => null,
@@ -490,44 +430,6 @@ class ProcessTest extends TestCase
     }
 
     /**
-     * Process deletion
-     *
-     * Test the process deletion
-     */
-    public function testsProcessDeletion()
-    {
-        //Create a new process
-        $process = factory(Process::class)->create();
-
-        //Delete the process created
-        $this->assertCorrectModelDeletion($process->id);
-
-        //Create a request without collaboration
-        $request = factory(ProcessRequest::class)->create([
-            'process_collaboration_id' => null
-        ]);
-        $process = $request->process;
-
-        //Delete the process created
-        $this->assertModelDeletionFails($process->id, [
-            'requests'
-        ]);
-
-        //Create a request with collaboration
-        $process = factory(Process::class)->create([
-            'process_category_id' => null
-        ]);
-        factory(ProcessCollaboration::class)->create([
-            'process_id' => $process->id
-        ]);
-
-        //Delete the process created
-        $this->assertModelDeletionFails($process->id, [
-            'collaborations'
-        ]);
-    }
-
-    /**
      * Test update process
      */
     public function testUpdateProcess()
@@ -557,7 +459,7 @@ class ProcessTest extends TestCase
         (new \PermissionSeeder())->run($this->user);
 
         //Test update process category to null
-        $this->assertModelUpdate(
+        $this->assertModelUpdateFails(
             Process::class,
             [
                 'user_id' => static::$DO_NOT_SEND,
@@ -680,17 +582,46 @@ class ProcessTest extends TestCase
     }
 
     /**
-     * Tests the deletion and restore of a process
+     * Tests the archiving and restoration of a process
      */
-    public function testDeleteRestore()
+    public function testArchiveRestore()
     {
-        $process = factory(Process::class)->create();
-        $response = $this->apiCall('DELETE', '/processes/' . $process->id . '');
-        $this->assertDatabaseMissing('processes', ['id' => $process->id, 'deleted_at' => null]);
-
-        //now we restore the process
-        $responseRestore = $this->apiCall('PUT', '/processes/' . $process->id . '/restore');
-        $responseRestore->assertStatus(200);
-        $this->assertDatabaseHas('processes', ['id' => $process->id, 'deleted_at' => null]);
+        // Generate an active process and get its ID
+        $process = factory(Process::class)->create([
+            'status' => 'ACTIVE'
+        ]);
+        $id = $process->id;
+        
+        // Assert that the process is listed
+        $response = $this->apiCall('GET', '/processes');
+        $response->assertJsonFragment(['id' => $id]);
+        
+        // Assert that the process is not listed in the archive
+        $response = $this->apiCall('GET', '/processes?status=inactive');
+        $response->assertJsonMissing(['id' => $id]);
+        
+        // Archive the process
+        $response = $this->apiCall('DELETE', "/processes/{$id}");
+        $response->assertStatus(204);
+        
+        // Assert that the process is listed in the archive
+        $response = $this->apiCall('GET', '/processes?status=inactive');
+        $response->assertJsonFragment(['id' => $id]);
+        
+        // Assert that the process is not listed on the main index
+        $response = $this->apiCall('GET', '/processes');
+        $response->assertJsonMissing(['id' => $id]);
+        
+        // Restore the process
+        $response = $this->apiCall('PUT', "/processes/{$id}/restore");
+        $response->assertStatus(200);
+        
+        // Assert that the process is listed
+        $response = $this->apiCall('GET', '/processes');
+        $response->assertJsonFragment(['id' => $id]);
+        
+        // Assert that the process is not listed in the archive
+        $response = $this->apiCall('GET', '/processes?status=inactive');
+        $response->assertJsonMissing(['id' => $id]);
     }
 }

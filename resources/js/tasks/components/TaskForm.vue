@@ -54,7 +54,7 @@ export default {
     submit() {
       var self = this;
       ProcessMaker.apiClient
-        .put("tasks/" + this.tokenId + "?status=COMPLETED", this.formData)
+        .put("tasks/" + this.tokenId, {status:"COMPLETED", data: this.formData})
         .then(function() {
           document.location.href = "/tasks";
         });

@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * @OA\OpenApi(
  *     @OA\Info(
@@ -30,6 +30,12 @@
  *             @OA\Schema(type="string"),
  *         ),
  *         @OA\Parameter(
+ *             parameter="status",
+ *             name="status",
+ *             in="query",
+ *             @OA\Schema(type="string", enum={"active", "inactive"}, default="active"),
+ *         ),
+ *         @OA\Parameter(
  *             parameter="order_direction",
  *             name="order_direction",
  *             in="query",
@@ -46,6 +52,24 @@
  *             name="include",
  *             in="query",
  *             description="Include data from related models in payload. Comma seperated list.",
+ *             @OA\Schema(type="string", default=""),
+ *         ),
+ *         @OA\Parameter(
+ *             parameter="member_id",
+ *             name="member_id",
+ *             in="query",
+ *             @OA\Schema(type="integer"),
+ *         ),
+ *         @OA\Parameter(
+ *             parameter="commentable_id",
+ *             name="commentable_id",
+ *             in="query",
+ *             @OA\Schema(type="integer"),
+ *         ),
+ *         @OA\Parameter(
+ *             parameter="commentable_type",
+ *             name="commentable_type",
+ *             in="query",
  *             @OA\Schema(type="string", default=""),
  *         ),
  *     ),

@@ -2,13 +2,16 @@
 
 namespace Tests\Feature\Api;
 
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Permission;
-use ProcessMaker\Models\PermissionAssignment;
+use ProcessMaker\Models\Process;
 use Tests\Feature\Shared\RequestHelper;
+use ProcessMaker\Providers\AuthServiceProvider;
 use \PermissionSeeder;
 
 class PermissionsTest extends TestCase
@@ -19,124 +22,64 @@ class PermissionsTest extends TestCase
     {
         $this->user->is_administrator = false;
         $this->user->save();
-
-        (new PermissionSeeder)->run($this->user);
-
-        $create_process_perm = Permission::byGuardName('processes.create');
-        $show_process_perm   = Permission::byGuardName('processes.show');
-        $edit_process_perm = Permission::byGuardName('processes.edit');
-
-        $admin_group = $this->admin_group =
-            factory(Group::class)->create(['name' => 'Admin']);
-        $super_admin_group =
-            factory(Group::class)->create(['name' => 'Super Admin']);
-
-        factory(GroupMember::class)->create([
-            'member_id' => $this->user->id,
-            'member_type' => User::class,
-            'group_id'  => $super_admin_group->id,
-        ]);
-
-        factory(GroupMember::class)->create([
-            'member_id' => $super_admin_group->id,
-            'member_type' => Group::class,
-            'group_id'  => $admin_group->id,
-        ]);
-
-        factory(PermissionAssignment::class)->create([
-            'assignable_type' => Group::class,
-            'assignable_id' => $admin_group->id,
-            'permission_id' => $create_process_perm->id,
-        ]);
-
-        factory(PermissionAssignment::class)->create([
-            'assignable_type' => Group::class,
-            'assignable_id' => $super_admin_group->id,
-            'permission_id' => $edit_process_perm->id,
-        ]);
-
-        $this->user->giveDirectPermission($show_process_perm->guard_name);
-
-        $this->process = factory(\ProcessMaker\Models\Process::class)->create([
-            'name' => 'foo',
-        ]);
+    
+        // Seed our tables.
+        Artisan::call('db:seed', ['--class' => 'PermissionSeeder']);
+    
+        // Reboot our AuthServiceProvider. This is necessary so that it can
+        // pick up the new permissions and setup gates for each of them.
+        $asp = new AuthServiceProvider(app());
+        $asp->boot();
     }
 
     public function testApiPermissions()
     {
+        $process = factory(Process::class)->create([
+            'user_id' => $this->user->id,
+            'status' => 'ACTIVE',
+        ]);
+        
         $response = $this->apiCall('GET', '/processes');
         $response->assertStatus(200);
-
-        $response = $this->apiCall('GET', '/processes/' . $this->process->id);
+        
+        $response = $this->apiCall('GET', '/processes/' . $process->id);
         $response->assertStatus(200);
-
-        $destroy_process_perm = Permission::byGuardName('processes.destroy');
-        Group::where('name', 'All Permissions')
-            ->firstOrFail()
-            ->permissionAssignments()
-            ->where('permission_id', $destroy_process_perm->id)
-            ->delete();
-
+        
+        $permission = Permission::byName('archive-processes');
+        $group = Group::where('name', 'All Permissions')->firstOrFail();        
+        $group->permissions()->detach($permission->id);
         $this->user->refresh();
         $this->flushSession();
 
-        $response = $this->apiCall('DELETE', '/processes/' . $this->process->id);
+        $response = $this->apiCall('DELETE', '/processes/' . $process->id);
         $response->assertStatus(403);
-        $response->assertSee('Not authorized');
-
-        factory(PermissionAssignment::class)->create([
-            'assignable_type' => Group::class,
-            'assignable_id' => $this->admin_group->id,
-            'permission_id' => Permission::byGuardName('processes.destroy')->id,
-        ]);
-
+        
+        $this->user->permissions()->attach($permission->id);
         $this->user->refresh();
         $this->flushSession();
-
-        $response = $this->apiCall('DELETE', '/processes/' . $this->process->id);
+        
+        $response = $this->apiCall('DELETE', '/processes/' . $process->id);
         $response->assertStatus(204);
     }
 
     public function testSetPermissionsForUser()
     {
         $this->user = factory(User::class)->create([
-            'password' => 'password',
+            'password' => Hash::make('password'),
             'is_administrator' => true,
         ]);
-
+    
         $testUser = factory(User::class)->create();
         $testPermission = factory(Permission::class)->create();
         $response = $this->apiCall('PUT', '/permissions', [
             'user_id' => $testUser->id,
-            'permission_ids' => [$testPermission->id]
+            'permission_names' => [$testPermission->name]
         ]);
-
+    
         $response->assertStatus(204);
-
-        $updatedAssignments = PermissionAssignment::where('assignable_id', $testUser->id)
-                                ->where('assignable_type', User::class)
-                                ->get();
-
-        //Assert that the permissions has benn set
-        $this->assertEquals($updatedAssignments->count(), 1);
-        $this->assertEquals($updatedAssignments->first()->permission_id, $testPermission->id);
-    }
-
-
-    public function testRoutePermissionAliases()
-    {
-        // update route is an alias for edit permission
-        $response = $this->apiCall('PUT', '/processes/' . $this->process->id, [
-            'name' => 'foo',
-            'description' => 'foo',
-        ]);
-        $response->assertStatus(200);
-        
-        // store route is an alias for create permission
-        $response = $this->apiCall('POST', '/processes', [
-            'name' => 'foo2',
-            'description' => 'foo',
-        ]);
-        $response->assertStatus(201);
+    
+        //Assert that the permissions has been set
+        $this->assertEquals($testUser->permissions->count(), 1);
+        $this->assertEquals($testUser->permissions->first()->id, $testPermission->id);
     }
 }
