@@ -19,7 +19,7 @@
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">{{__('Create Environment Variable')}}</h5>
+                        <h5 class="modal-title">{{__('Create An Auth-Client')}}</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -41,7 +41,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary"
-                                data-dismiss="modal">{{__('Close')}}</button>
+                                data-dismiss="modal">{{__('Cancel')}}</button>
                         <button type="button" class="btn btn-secondary ml-2" @click="save">{{__('Save')}}</button>
                     </div>
                 </div>
@@ -51,7 +51,7 @@
         <div class="container page-content">
             <div class="row">
                 <div class="col" align="right">
-                    <button class="btn btn-secondary" type="button" class="btn btn-secondary" data-toggle="modal" data-target="#createEditAuthClient">
+                    <button class="btn btn-secondary" type="button" data-toggle="modal" data-target="#createEditAuthClient">
                         <i class="fas fa-plus"></i>
                         {{__('Auth Client')}}</a>
                     </button>

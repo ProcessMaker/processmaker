@@ -343,7 +343,7 @@
                 </button>
 
                 <button @click="saveAndEmit" class="btn btn-secondary">
-                    {{__('Continue')}}
+                    {{__('Save')}}
                 </button>
             </div>
         </div>
