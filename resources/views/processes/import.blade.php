@@ -30,7 +30,7 @@
                     </button>
                 </div>
                 <div class="card-footer bg-light" align="right">
-                    <button type="button" class="btn btn-outline-secondary">Cancel</button>
+                    <button type="button" class="btn btn-outline-secondary" @click="onCancel">Cancel</button>
     			    <button type="button" class="btn btn-secondary ml-2" >Import</button>
                 </div>
             </div>
@@ -50,7 +50,10 @@
                 handleFile(e) {
                     console.log(e.target.files[0])
                      this.$emit('input', e.target.files[0])
-                }
+                },
+                onCancel() {
+                    window.location = '{{ route("processes.index") }}';
+                },
             }
         })
     </script>
