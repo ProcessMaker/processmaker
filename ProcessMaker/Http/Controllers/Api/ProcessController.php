@@ -478,6 +478,39 @@ class ProcessController extends Controller
     }
 
     /**
+     * Import the specified process.
+     *
+     * @param $process
+     *
+     * @return Response
+     *
+     * @OA\Get(
+     *     path="/processes/processId",
+     *     summary="Get single process by ID",
+     *     operationId="getProcessById",
+     *     tags={"Process"},
+     *     @OA\Parameter(
+     *         description="ID of process to return",
+     *         in="path",
+     *         name="process_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successfully found the process",
+     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *     ),
+     * )
+     */
+    public function import(Request $request, Process $process)
+    {
+        dd("IMPORTING...");
+    }
+
+    /**
      * Trigger an start event within a process.
      *
      * @param Process $process
