@@ -1,14 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-	@php
-	$title = __('Processes');
-	$status = request()->get('status');
-	if( $status === 'deleted'){
-		$title = __('Process Archive');
-	}
-	@endphp
-{{$title}}
+{{__('Import Process')}}
 @endsection
 
 @section('sidebar')
@@ -16,14 +9,25 @@
 @endsection
 
 @section('content')
-@include('shared.breadcrumbs', ['routes' => [
-    $title => null,
-]])
+    @include('shared.breadcrumbs', ['routes' => [
+        __('Processes') => route('processes.index'),
+        __('Import') => null,
+    ]])
 <div class="container" id="editProcess">
     <div class="row">
         <div class="col">
-            <div class="card card-body">
-                
+            <div class="card text-center">
+                <div class="card-header bg-light" align="left">
+                    <h5>Import Process</h5>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">You are about to import a Process</h5>
+                    <p class="card-text">You will need to fix hecka stuff</p> 
+                </div>
+                <div class="card-footer bg-light" align="right">
+                    <button type="button" class="btn btn-outline-secondary">Close</button>
+    			    <button type="button" class="btn btn-secondary ml-2" >Save</button>
+                </div>
             </div>
         </div>
     </div>
