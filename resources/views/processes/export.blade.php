@@ -13,7 +13,7 @@
         __('Processes') => route('processes.index'),
         __('Export') => null,
     ]])
-<div class="container" id="editProcess">
+<div class="container" id="exportProcess">
     <div class="row">
         <div class="col">
             <div class="card text-center">
@@ -25,11 +25,34 @@
                     <p class="card-text">You will need to fix hecka stuff</p> 
                 </div>
                 <div class="card-footer bg-light" align="right">
-                    <button type="button" class="btn btn-outline-secondary">Close</button>
-    			    <button type="button" class="btn btn-secondary ml-2" >Save</button>
+                    <button type="button" class="btn btn-outline-secondary">Cancel</button>
+    			    <button type="button" class="btn btn-secondary ml-2" @click="onExport">Download</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
+@endsection
+
+@section('js')
+    <script>
+        new Vue({
+            el: '#exportProcess',
+            data: {
+                processId: @json($process->id)
+            },
+            methods: {
+                onExport() {
+                    ProcessMaker.apiClient.post('processes/' + this.processId + '/export')
+                        .then(response => {
+                            window.location = response.data.url;
+                            ProcessMaker.alert('{{__('Process Exported')}}', 'success');
+                        })
+                        .catch(error => {
+                            ProcessMaker.alert('{{__('Unable to Export Process')}}', 'danger');
+                        });
+                }
+            }
+        })
+    </script>
 @endsection
