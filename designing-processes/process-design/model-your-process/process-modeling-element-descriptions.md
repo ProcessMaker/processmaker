@@ -156,9 +156,9 @@ Below is a Pool element when it has been placed into a Process model.
 
 A Lane represents a partition within a [Pool](process-modeling-element-descriptions.md#pool) element. Each Lane indicates individual roles and/or participants that perform tasks within the Pool. Text within the Lane indicates the participant in the Process model. Any elements within the Lane indicate that the participant is the actor or is responsible for performing tasks in the Process. Furthermore, [Sequence Flows](process-modeling-element-descriptions.md#sequence-flow) between elements in other Pools or  Lanes indicate with which other Process participants that Lane interacts.
 
-Below is a Lane element in Process Modeler.
+Below is a Pool element with three Lane elements when it has been placed into a Process model. Each lane indicates roles within the overall organization.
 
-
+![Pool element with three Lane elements that indicate roles within the organization](../../../.gitbook/assets/pool-element-with-lanes-process-modeler-processes.png)
 
 ## Related Topics
 
