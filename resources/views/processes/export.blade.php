@@ -49,7 +49,7 @@
                             ProcessMaker.alert('{{__('Process Exported')}}', 'success');
                         })
                         .catch(error => {
-                            ProcessMaker.alert('{{__('Unable to Export Process')}}', 'danger');
+                            ProcessMaker.alert(error.response.data.error, 'danger');
                         });
                 }
             }
