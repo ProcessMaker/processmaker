@@ -82,7 +82,7 @@ class OAuthTest extends TestCase
                         'DELETE',
                         '/oauth/clients/' . $this->json['id']
                     );
-        $response->assertStatus(204);
+        $response->assertStatus(200);
         
         $response= $this->actingAs($this->user, 'api')
                         ->json('GET', '/oauth/clients');
