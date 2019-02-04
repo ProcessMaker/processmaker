@@ -29,12 +29,23 @@ class ExportProcess implements ShouldQueue
         $this->filePath = $filePath;
     }
     
+    private function packageProcess()
+    {
+        $this->package['process'] = $this->process->toArray();
+        $this->package['process']['bpmn'] = $this->process->bpmn;
+    }
+    
+    private function packageProcessCategory()
+    {
+        $this->package['process_category'] = $this->process->category->toArray();
+    }
+    
     private function packageFile()
     {
         $this->package['type'] = 'process_package';
-        $this->package['version'] = '0.1';
-        $this->package['process'] = $this->process->toArray();
-        $this->package['process']['bpmn'] = $this->process->bpmn;
+        $this->package['version'] = '1';
+        $this->packageProcess();
+        $this->packageProcessCategory();
     }
     
     private function encodeFile()
