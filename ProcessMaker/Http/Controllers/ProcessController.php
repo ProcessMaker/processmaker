@@ -155,6 +155,11 @@ class ProcessController extends Controller
         return redirect()->to(route('modeler'));
     }
 
+    public function export(Process $process)
+    {
+        return view('processes.export');
+    }
+
     public function update(Process $process, Request $request) // update existing process to DB
     {
         $request->validate(Process::rules($request));
