@@ -25,7 +25,7 @@
                     <p class="card-text">You will need to fix hecka stuff</p> 
                 </div>
                 <div class="card-footer bg-light" align="right">
-                    <button type="button" class="btn btn-outline-secondary">Cancel</button>
+                    <button type="button" class="btn btn-outline-secondary" @click="onCancel">Cancel</button>
     			    <button type="button" class="btn btn-secondary ml-2" @click="onExport">Download</button>
                 </div>
             </div>
@@ -42,6 +42,9 @@
                 processId: @json($process->id)
             },
             methods: {
+                onCancel() {
+                    window.location = '{{ route("processes.index") }}';
+                },
                 onExport() {
                     ProcessMaker.apiClient.post('processes/' + this.processId + '/export')
                         .then(response => {
