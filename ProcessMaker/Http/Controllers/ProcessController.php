@@ -160,6 +160,11 @@ class ProcessController extends Controller
         return view('processes.export');
     }
 
+    public function import(Process $process)
+    {
+        return view('processes.import');
+    }
+
     public function update(Process $process, Request $request) // update existing process to DB
     {
         $request->validate(Process::rules($request));

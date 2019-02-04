@@ -34,7 +34,7 @@
 		</div>
 		<div class="col-8" align="right">
 			@can('import-processes')
-    			<a href="#" class="btn btn-outline-secondary" data-toggle="modal" data-target="#importProcess"><i class="fas fa-file-import"></i>
+    			<a href="#" class="btn btn-outline-secondary" @click="goToImport"><i class="fas fa-file-import"></i>
     				{{__('Import')}}</a>
             @endcan
             @can('create-processes')
