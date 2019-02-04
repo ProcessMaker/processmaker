@@ -104,11 +104,11 @@ Text annotation is human-readable text in a modeled process provides description
 
 In Process Modeler, the Text Annotation element is labeled as "Text Annotation" in the **BPMN** panel as highlighted below.
 
-
+![Text Annotation element in the BPMN panel of Process Modeler](../../../.gitbook/assets/bpmn-panel-text-annotation-process-modeler-processes.png)
 
 Below is a Text Annotation element when it has been placed into a Process model.
 
-![Text Annotation element](../../../.gitbook/assets/text-control-screens-builder-processes%20%281%29.png)
+![Text Annotation element](../../../.gitbook/assets/text-annotation-process-modeler-processes.png)
 
 {% hint style="info" %}
 See [Add and Configure Text Annotation Elements](add-and-configure-text-annotation-elements.md).
@@ -116,15 +116,21 @@ See [Add and Configure Text Annotation Elements](add-and-configure-text-annotati
 
 ## Sequence Flow
 
-Sequence Flow represents intended workflow in a modeled process. As a best practice indicate a consistent direction of Sequence Flows, either left to right or top to bottom, to make modeled processes easier to understand.
+Sequence Flow represents intended workflow in a modeled Process. As a best practice indicate a consistent direction of Sequence Flows, either left to right or top to bottom, to make modeled Processes easier to understand.
 
-In Process Modeler, a Sequence Flow indicator displays when you click a process element to the model. Below the arrow icon represents a Sequence Flow indicator in Process Modeler.
+In Process Modeler, a Sequence Flow indicator displays when you click an element in the Process model. Below the arrow icon represents a Sequence Flow indicator in Process Modeler.
 
 ![Sequence Flow indicator on a selected process element](../../../.gitbook/assets/sequence-flow-indicator-process-modeler-processes.png)
 
-The Sequence Flow indicates how two process elements are connected. Below are two process elements connected in Process Modeler.
+{% hint style="info" %}
+Text annotations and Pool elements do not participate in Sequence Flow.
 
-![Two process elements connected by the Sequence Flow](../../../.gitbook/assets/sequence-flow-connecting-elements-process-modeler-processes.png)
+An End Event terminates the flow of a Request for that Process. Therefore, an End Event cannot have an outgoing Sequence Flow.
+{% endhint %}
+
+The Sequence Flow indicates how two Process elements are connected. Below are two Process elements connected in Process Modeler.
+
+![Two Process elements connected by the Sequence Flow](../../../.gitbook/assets/sequence-flow-connecting-elements-process-modeler-processes.png)
 
 {% hint style="info" %}
 See [Connect and Remove Elements](the-quick-toolbar.md).
@@ -132,19 +138,23 @@ See [Connect and Remove Elements](the-quick-toolbar.md).
 
 ## Organize Process Participants
 
-BPMN 2.0 provides graphical representations to organize participants in a modeled process.
+BPMN 2.0 provides graphical representations to organize participants in a modeled Process.
 
 ### Pool
 
-A Pool represents a participant or role in a modeled process. Examples of process participants can be a specific role \("Human Resources"\), entity \(such as a company\) or a general relationship \(such as a buyer, seller, or manufacturer\). A Pool can even reference another modeled process.
+A Pool represents an organization or entity involved in a Process modeled. The pool might apply to a  specific role \("Human Resources"\), entity \(such as a company\) or a general relationship \(such as a buyer, seller, or manufacturer\). A Pool can even reference another modeled Process.
 
-Below is a Pool element in Process Modeler.
+In Process Modeler, the Pool element is labeled as "Pool" in the **BPMN** panel as highlighted below.
 
+![Pool element in the BPMN panel of Process Modeler](../../../.gitbook/assets/bpmn-panel-pool-process-modeler-processes.png)
 
+Below is a Pool element when it has been placed into a Process model.
+
+![Pool element containing a modeled Process](../../../.gitbook/assets/pool-element-process-modeler-processes.png)
 
 ### Lane
 
-A Lane represents a partition within a [Pool](process-modeling-element-descriptions.md#pool) element. Text within the Lane indicates the participant in the process model. Any elements within the Lane indicate that the participant is the actor or is responsible for performing activities in the process. Furthermore, [Sequence Flows](process-modeling-element-descriptions.md#sequence-flow) between elements in other Lanes indicate with which other process participants that Lane interacts.
+A Lane represents a partition within a [Pool](process-modeling-element-descriptions.md#pool) element. Each Lane indicates individual roles and/or participants that perform tasks within the Pool. Text within the Lane indicates the participant in the Process model. Any elements within the Lane indicate that the participant is the actor or is responsible for performing tasks in the Process. Furthermore, [Sequence Flows](process-modeling-element-descriptions.md#sequence-flow) between elements in other Pools or  Lanes indicate with which other Process participants that Lane interacts.
 
 Below is a Lane element in Process Modeler.
 
