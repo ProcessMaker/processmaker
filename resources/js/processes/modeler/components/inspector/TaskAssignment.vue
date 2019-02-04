@@ -17,7 +17,9 @@
                 <option value="user">To user</option>
                 <option value="group">To group</option>
             </select>
+
         </div>
+
 
         <div class="form-group" v-if="showAssignOneUser">
             <label>Assigned User</label>
@@ -44,6 +46,66 @@
         </div>
 
         <form-checkbox label="Allow Reassignment" :checked="allowReassignmentGetter" @change="allowReassignmentSetter"></form-checkbox>
+
+        <div class="form-group">
+            <label>Special Assignments</label>
+            <div v-if="loadingGroups">Loading...</div>
+
+            <button @click="" class="btn-sm float-right">+</button>
+            <button @click="" class="btn-sm float-right">-</button>
+            <label>Expression</label>
+
+            <input class="form-control" type="text">
+
+            <div class="form-group">
+                <label>Task Assignment</label>
+                <select ref="specialAssignmentsDropDownList"
+                        class="form-control"
+                        :value="assignmentGetter"
+                        @input="assignmentSetter">
+                    <option value=""></option>
+                    <option value="requestor">To requestor</option>
+                    <option value="user">To user</option>
+                    <option value="group">To group</option>
+                </select>
+            </div>
+
+            <div class="form-group" v-if="showAssignOneUser">
+                <label>Assigned User</label>
+                <div v-if="loadingUsers">Loading...</div>
+                <select v-else class="form-control" :value="assignedUserGetter"
+                        @input="assignedUserSetter">
+                    <option></option>
+                    <option v-for="(row, index) in users" v-bind:value="row.id" :selected="row.id == assignedUserGetter">
+                        {{row.fullname}}
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group" v-if="showAssignGroup">
+                <label>Assigned Group</label>
+                <div v-if="loadingGroups">Loading...</div>
+                <select v-else class="form-control" :value="assignedGroupGetter"
+                        @input="assignedGroupSetter">
+                    <option></option>
+                    <option v-for="(row, index) in groups" v-bind:value="row.id" :selected="row.id == assignedGroupGetter">
+                        {{row.name}}
+                    </option>
+                </select>
+            </div>
+
+
+            <span v-for="(row, index) in specialAssignments"
+                  class="list-group-item list-group-item-action pt-0 pb-0"
+                  :class="{'bg-primary': selectedAssigneeIndex == index}"
+                  @click="selectAssignee(row, index)">
+                    <template>
+                        <i class="fa fa-users" aria-hidden="true"></i>
+                        <span class="text-center text-capitalize text-nowrap m-1">{{row.assigned.name}}</span>
+                    </template>
+            </span>
+
+        </div>
     </div>
 </template>
 
@@ -54,6 +116,7 @@
             return {
                 users: [],
                 groups: [],
+                specialAssignments: [],
                 loadingUsers: true,
                 loadingGroups: true,
             };
@@ -106,6 +169,9 @@
             },
         },
         methods: {
+            selectAssignee(assignee, index) {
+            },
+
             dueInValidate(event) {
                 if (event.key === "-") {
                     event.preventDefault();
@@ -172,6 +238,7 @@
                 this.$set(this.node, 'assignment', event.target.value);
                 this.$emit('input', this.value);
             },
+
         },
         mounted() {
             this.loadUsersAndGroups();
