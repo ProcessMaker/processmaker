@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Http\Controllers;
 
+use Cache;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
@@ -11,6 +12,7 @@ use ProcessMaker\Models\ProcessPermission;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
+use ProcessMaker\Jobs\ExportProcess;
 
 class ProcessController extends Controller
 {
@@ -157,12 +159,26 @@ class ProcessController extends Controller
 
     public function export(Process $process)
     {
-        return view('processes.export');
+        return view('processes.export', compact('process'));
     }
 
     public function import(Process $process)
     {
         return view('processes.import');
+    }
+    
+    public function download(Process $process, $key)
+    {
+        $fileName = snake_case($process->name) . '.bpm4';
+        $fileContents = Cache::get($key);
+        
+        if (! $fileContents) {
+            return abort(404);
+        } else {
+            return response()->streamDownload(function () use ($fileContents) {
+                echo $fileContents;
+            }, $fileName);
+        }
     }
 
     public function update(Process $process, Request $request) // update existing process to DB

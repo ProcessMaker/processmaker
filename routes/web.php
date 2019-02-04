@@ -38,8 +38,9 @@ Route::group(['middleware' => ['auth', 'sanitize']], function () {
 
     Route::get('processes', 'ProcessController@index')->name('processes.index');
     Route::get('processes/{process}/edit', 'ProcessController@edit')->name('processes.edit')->middleware('can:edit-processes');
-    Route::get('processes/{process}/export', 'ProcessController@export')->name('processes.export')->middleware('can:edit-export');
-    Route::get('processes/import', 'ProcessController@import')->name('processes.import')->middleware('can:edit-import');
+    Route::get('processes/{process}/export', 'ProcessController@export')->name('processes.export')->middleware('can:export-processes');
+    Route::get('processes/import', 'ProcessController@import')->name('processes.import')->middleware('can:import-processes');
+    Route::get('processes/{process}/download/{key}', 'ProcessController@download')->name('processes.download')->middleware('can:export-processes');
     Route::get('processes/create', 'ProcessController@create')->name('processes.create')->middleware('can:create-processes');
     Route::post('processes', 'ProcessController@store')->name('processes.store')->middleware('can:edit-processes');
     Route::get('processes/{process}', 'ProcessController@show')->name('processes.show')->middleware('can:view-processes');
