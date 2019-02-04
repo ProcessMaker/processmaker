@@ -17,9 +17,7 @@
                 <option value="user">To user</option>
                 <option value="group">To group</option>
             </select>
-
         </div>
-
 
         <div class="form-group" v-if="showAssignOneUser">
             <label>Assigned User</label>
@@ -51,18 +49,18 @@
             <label>Special Assignments</label>
             <div v-if="loadingGroups">Loading...</div>
 
-            <button @click="" class="btn-sm float-right">+</button>
+            <button @click="addSpecialAssignment" class="btn-sm float-right">+</button>
             <button @click="" class="btn-sm float-right">-</button>
             <label>Expression</label>
 
-            <input class="form-control" type="text">
+            <input class="form-control" type="text"  :value="expressionGetter" @input="expressionSetter" >
 
             <div class="form-group">
                 <label>Task Assignment</label>
                 <select ref="specialAssignmentsDropDownList"
                         class="form-control"
-                        :value="assignmentGetter"
-                        @input="assignmentSetter">
+                        :value="specialAssignmentGetter"
+                        @input="specialAssignmentSetter">
                     <option value=""></option>
                     <option value="requestor">To requestor</option>
                     <option value="user">To user</option>
@@ -70,25 +68,27 @@
                 </select>
             </div>
 
-            <div class="form-group" v-if="showAssignOneUser">
+            <div class="form-group" v-if="showSpecialAssignOneUser">
                 <label>Assigned User</label>
                 <div v-if="loadingUsers">Loading...</div>
                 <select v-else class="form-control" :value="assignedUserGetter"
-                        @input="assignedUserSetter">
+                        @input="specialAssignedUserSetter">
                     <option></option>
-                    <option v-for="(row, index) in users" v-bind:value="row.id" :selected="row.id == assignedUserGetter">
+                    <option v-for="(row, index) in users" v-bind:value="row.id"
+                            :selected="row.id == specialAssignedUserGetter">
                         {{row.fullname}}
                     </option>
                 </select>
             </div>
 
-            <div class="form-group" v-if="showAssignGroup">
+            <div class="form-group" v-if="showSpecialAssignGroup">
                 <label>Assigned Group</label>
                 <div v-if="loadingGroups">Loading...</div>
                 <select v-else class="form-control" :value="assignedGroupGetter"
-                        @input="assignedGroupSetter">
+                        @input="specialAssignedGroupSetter">
                     <option></option>
-                    <option v-for="(row, index) in groups" v-bind:value="row.id" :selected="row.id == assignedGroupGetter">
+                    <option v-for="(row, index) in groups" v-bind:value="row.id"
+                            :selected="row.id == specialAssignedGroupGetter">
                         {{row.name}}
                     </option>
                 </select>
@@ -97,11 +97,15 @@
 
             <span v-for="(row, index) in specialAssignments"
                   class="list-group-item list-group-item-action pt-0 pb-0"
-                  :class="{'bg-primary': selectedAssigneeIndex == index}"
+                  :class="{'bg-primary': false}"
                   @click="selectAssignee(row, index)">
                     <template>
                         <i class="fa fa-users" aria-hidden="true"></i>
-                        <span class="text-center text-capitalize text-nowrap m-1">{{row.assigned.name}}</span>
+                        <span class="text-center text-capitalize text-nowrap m-1">{{row.type}}</span>
+                        <span class="text-center text-capitalize text-nowrap m-1">{{row.expression}}</span>
+
+                        <i class="fa fa-trash" aria-hidden="true"
+                           @click="removeSpecialAssignment(row.type, row.expression)"></i>
                     </template>
             </span>
 
@@ -167,10 +171,37 @@
             showAssignGroup() {
                 return this.assignmentGetter === 'group';
             },
+
+
+
+            expressionGetter() {
+                const node = this.$parent.$parent.highlightedNode.definition;
+                const value = _.get(node, 'expression');
+                return value;
+            },
+            showSpecialAssignOneUser() {
+                return this.specialAssignmentGetter === 'user';
+            },
+            showSpecialAssignGroup() {
+                return this.specialAssignmentGetter === 'group';
+            },
+            specialAssignedUserGetter() {
+                const node = this.$parent.$parent.highlightedNode.definition;
+                const value = _.get(node, 'specialAssignedUsers');
+                return value;
+            },
+            specialAssignedGroupGetter() {
+                const node = this.$parent.$parent.highlightedNode.definition;
+                const value = _.get(node, 'specialAssignedGroups');
+                return value;
+            },
+            specialAssignmentGetter() {
+                const node = this.$parent.$parent.highlightedNode.definition;
+                const value = _.get(node, 'specialAssignment');
+                return value;
+            },
         },
         methods: {
-            selectAssignee(assignee, index) {
-            },
 
             dueInValidate(event) {
                 if (event.key === "-") {
@@ -237,6 +268,56 @@
             assignmentSetter(event) {
                 this.$set(this.node, 'assignment', event.target.value);
                 this.$emit('input', this.value);
+            },
+
+
+
+
+
+
+
+            /**
+             * Update due in property
+             */
+            expressionSetter(event) {
+                this.$set(this.node, 'expression', event.target.value);
+                this.$emit('input', this.value);
+            },
+
+            /**
+             * Update the event of the editer property
+             */
+            specialAssignedUserSetter(event) {
+                this.$set(this.node, 'specialAssignedUsers', event.target.value);
+                this.$emit('input', this.value);
+            },
+            specialAssignedGroupSetter(event) {
+                this.$set(this.node, 'specialAssignedGroups', event.target.value);
+                this.$emit('input', this.value);
+            },
+            /**
+             * Update the event of the editer property
+             */
+            specialAssignmentSetter(event) {
+                this.$set(this.node, 'specialAssignment', event.target.value);
+                this.$emit('input', this.value);
+            },
+
+            removeSpecialAssignment(assignee, expression) {
+                this.specialAssignments = this.specialAssignments.filter(
+                    function (obj) {
+                       return obj.type !== assignee || obj.expression !== expression;
+                    }
+                );
+            },
+
+            addSpecialAssignment () {
+                this.specialAssignments.push({
+                    type: this.specialAssignmentGetter,
+                    expression: this.expressionGetter,
+                });
+            },
+            selectAssignee(assignee, index) {
             },
 
         },
