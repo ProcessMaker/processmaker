@@ -70,7 +70,11 @@ A Script Task is an activity to be performed by a ProcessMaker Script.
 
 ProcessMaker Scripts are designed in [Scripts Editor](../../scripts/scripts-editor.md). ProcessMaker Scripts are independent of modeled processes: any ProcessMaker Script can be reused in any modeled process in your organization. This architecture allows Process Owners to focus on process modeling in a no-code environment while ProcessMaker Developers develop reusable ProcessMaker Scripts. ProcessMaker Scripts can leverage Request-level variable data as well as variable data designed in ProcessMaker Screens from [Screens Builder](../../design-forms/screens-builder/).
 
-Below is a Script Task element in Process Modeler.
+In Process Modeler, the Script Task element is labeled as "Script Task" in the **BPMN** panel as highlighted below.
+
+![Script Task element in the BPMN panel of Process Modeler](../../../.gitbook/assets/bpmn-panel-script-task-process-modeler-processes.png)
+
+Below is a Script Task element when it has been placed into a Process model.
 
 ![Script Task element](../../../.gitbook/assets/script-task-element-process-modeler-processes.png)
 
@@ -80,9 +84,13 @@ See [Add and Configure Script Task Elements](add-and-configure-script-task-eleme
 
 ## Exclusive Gateway
 
-An Exclusive Gateway represents a decision that creates alternative paths within a [Request's](../../../using-processmaker/requests/) workflow. During a Request's workflow for that process, only one outgoing path from the Exclusive Gateway can be taken. An Exclusive Gateway can have two or more outgoing Sequence Flows.
+An Exclusive Gateway represents a decision that creates alternative paths within a [Request's](../../../using-processmaker/requests/) workflow. During a Request's workflow for that Process, only one outgoing path from the Exclusive Gateway can be taken. An Exclusive Gateway can have two or more outgoing Sequence Flows.
 
-Below is an Exclusive Gateway element in Process Modeler.
+In Process Modeler, the Exclusive Gateway element is labeled as "Exclusive Gateway" in the **BPMN** panel as highlighted below.
+
+![Exclusive Gateway element in the BPMN panel of Process Modeler](../../../.gitbook/assets/bpmn-panel-exclusive-gateway-process-modeler-processes.png)
+
+Below is an Exclusive Gateway element when it has been placed into a Process model.
 
 ![Exclusive Gateway element](../../../.gitbook/assets/exclusive-gateway-element-process-modeler-processes.png)
 
@@ -94,7 +102,11 @@ See [Add and Configure Exclusive Gateway Elements](add-and-configure-exclusive-g
 
 Text annotation is human-readable text in a modeled process provides description regarding the process. Text annotation performs no functional role in process Requests or routing.
 
-Below is a Text Annotation element in Process Modeler.
+In Process Modeler, the Text Annotation element is labeled as "Text Annotation" in the **BPMN** panel as highlighted below.
+
+
+
+Below is a Text Annotation element when it has been placed into a Process model.
 
 ![Text Annotation element](../../../.gitbook/assets/text-control-screens-builder-processes%20%281%29.png)
 
