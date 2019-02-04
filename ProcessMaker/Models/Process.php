@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use ProcessMaker\AssignmentRules\PreviousTaskAssignee;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
@@ -13,10 +14,10 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
+use ProcessMaker\Traits\ProcessTaskAssignmentsTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
-use ProcessMaker\Traits\ProcessTaskAssignmentsTrait;
 
 /**
  * Represents a business process definition.
@@ -291,6 +292,10 @@ class Process extends Model implements HasMedia
                 break;
             case 'requestor':
                 $user = $token->getInstance()->user_id;
+                break;
+            case 'previous_task_assignee':
+                $rule = new PreviousTaskAssignee();
+                $user = $rule->getNextUser($activity, $token, $this, $token->processRequest);
                 break;
             case 'manual':
             case 'self_service':
