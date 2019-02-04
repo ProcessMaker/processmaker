@@ -5,6 +5,7 @@ namespace ProcessMaker\Jobs;
 use Cache;
 use Illuminate\Bus\Queueable;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\Screen;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -40,12 +41,30 @@ class ExportProcess implements ShouldQueue
         $this->package['process_category'] = $this->process->category->toArray();
     }
     
+    private function packageScreens()
+    {
+        $this->package['screens'] = [];
+        
+        $bpmn = $this->package['process']['bpmn'];
+        $doesMatch = preg_match_all('/pm:screenRef="(\d+)"/', $bpmn, $matches);
+        
+        if ($doesMatch) {
+            $screenIds = $matches[1];
+            $screens = Screen::whereIn('id', $screenIds)->get();
+            
+            $screens->each(function($screen) {
+                $this->package['screens'][] = $screen->toArray();
+            });
+        }
+    }
+    
     private function packageFile()
     {
         $this->package['type'] = 'process_package';
         $this->package['version'] = '1';
         $this->packageProcess();
         $this->packageProcessCategory();
+        $this->packageScreens();
     }
     
     private function encodeFile()
