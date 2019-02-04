@@ -295,7 +295,7 @@ class Process extends Model implements HasMedia
                 break;
             case 'previous_task_assignee':
                 $rule = new PreviousTaskAssignee();
-                $user = $rule->getNextUser($activity, $token, $this, $token->processRequest);
+                $user = $rule->getNextUser($activity, $token, $this, $token->getInstance());
                 break;
             case 'manual':
             case 'self_service':
