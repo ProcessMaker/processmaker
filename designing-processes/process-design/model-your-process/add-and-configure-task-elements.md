@@ -1,5 +1,5 @@
 ---
-description: Add and configure Task elements in your process model.
+description: Add and configure Task elements in your Process model.
 ---
 
 # Add and Configure Task Elements
@@ -10,13 +10,13 @@ description: Add and configure Task elements in your process model.
 For a description of the [Task](process-modeling-element-descriptions.md#user-task) element, see [Process Modeling Element Descriptions](process-modeling-element-descriptions.md).
 {% endhint %}
 
-Follow these steps to add a Task element to the process model:
+Follow these steps to add a Task element to the Process model:
 
-1. [View your processes](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/~/drafts/-LRhVZm0ddxDcGGdN5ZN/primary/designing-processes/viewing-processes/view-the-list-of-processes/view-your-processes#view-all-processes). The **Processes** page displays.
-2. [Create a new process](../../viewing-processes/create-a-process.md) or [select the process name of an existing process to open it](../../viewing-processes/view-the-list-of-processes/view-your-processes.md#view-all-processes). Process Modeler displays.
-3. Locate the **Task** element ![](../../../.gitbook/assets/task-bpmn-side-bar-process-modeler-processes.png) in the **BPMN** left side bar. Drag and drop the element to where in the process model you want to place it. The event has been added to the process model.
+1. [View your Processes](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/~/drafts/-LRhVZm0ddxDcGGdN5ZN/primary/designing-processes/viewing-processes/view-the-list-of-processes/view-your-processes#view-all-processes). The **Processes** page displays.
+2. [Create a new Process](../../viewing-processes/create-a-process.md) or click the **Open Modeler** icon![](../../../.gitbook/assets/open-modeler-edit-icon-processes-page-processes.png)to edit the selected Process model. Process Modeler displays.
+3. Locate the **Task** element ![](../../../.gitbook/assets/task-bpmn-side-bar-process-modeler-processes.png) in the **BPMN** left side bar. Drag and drop the element to where in the Process model you want to place it. The event has been added to the Process model.
 
-![Task element](../../../.gitbook/assets/task-process-modeler-processes.png)
+![Task element](../../../.gitbook/assets/task-element-process-modeler-processes.png)
 
 ## Configure a Task Element
 

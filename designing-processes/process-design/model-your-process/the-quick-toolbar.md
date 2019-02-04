@@ -1,5 +1,5 @@
 ---
-description: Connect process model elements by setting the Sequence Flow between them.
+description: Connect Process model elements by setting the Sequence Flow between them.
 ---
 
 # Connect Process Model Elements

@@ -104,6 +104,7 @@
     * [Add and Configure Script Task Elements](designing-processes/process-design/model-your-process/add-and-configure-script-task-elements.md)
     * [Add and Configure Exclusive Gateway Elements](designing-processes/process-design/model-your-process/add-and-configure-exclusive-gateway-elements.md)
     * [Add and Configure Text Annotation Elements](designing-processes/process-design/model-your-process/add-and-configure-text-annotation-elements.md)
+    * [Add and Configure Pool and Lane Elements](designing-processes/process-design/model-your-process/add-and-configure-pool-and-lane-elements.md)
     * [Connect Process Model Elements](designing-processes/process-design/model-your-process/the-quick-toolbar.md)
     * [Remove Process Model Elements](designing-processes/process-design/model-your-process/remove-process-model-elements.md)
     * [Save Your Process Model](designing-processes/process-design/model-your-process/toolboxes.md)

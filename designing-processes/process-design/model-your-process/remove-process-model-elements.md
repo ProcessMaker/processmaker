@@ -1,5 +1,5 @@
 ---
-description: Remove elements from your process model.
+description: Remove elements from your Process model.
 ---
 
 # Remove Process Model Elements

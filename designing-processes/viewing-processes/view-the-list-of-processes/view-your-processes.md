@@ -22,7 +22,7 @@ Follow these steps to view all active and inactive Processes in your organizatio
 2. Click the **Processes** option from the top menu. The **Processes** page displays all active and inactive Processes.
 
 {% hint style="info" %}
-Click the **Processes** icon![](../../../.gitbook/assets/processses-icon-processes.png)in the left sidebar when you are in other Process-related pages to view the **Processes** page.
+Click the **Processes** icon![](../../../.gitbook/assets/processses-icon-processes.png)in the left side bar when you are in other Process-related pages to view the **Processes** page.
 {% endhint %}
 
 ![&quot;Processes&quot; page displays all Processes in your organization](../../../.gitbook/assets/processes.png)

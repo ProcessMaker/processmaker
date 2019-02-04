@@ -1,5 +1,5 @@
 ---
-description: Add and configure Script Task elements in your process model.
+description: Add and configure Script Task elements in your Process model.
 ---
 
 # Add and Configure Script Task Elements

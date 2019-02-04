@@ -43,7 +43,7 @@ The **Unread Notifications** page displays all your unread notifications. To vie
 * Select **All Unread Notifications**. This text displays only if you have two or more notifications.
 
 {% hint style="info" %}
-Click the **Unread Notifications** icon![](../.gitbook/assets/unread-notifications-icon-notifications.png)in the left sidebar when you are viewing the **All Notifications** page.
+Click the **Unread Notifications** icon![](../.gitbook/assets/unread-notifications-icon-notifications.png)in the left side bar when you are viewing the **All Notifications** page.
 {% endhint %}
 
 ![&quot;Unread Notifications&quot; page displays your unread notifications](../.gitbook/assets/all-notifications-page.png)
@@ -71,7 +71,7 @@ To search for a notification in the **Unread Notifications** page, select the **
 Follow these steps to view all your notifications:
 
 1. [View your unread notifications.](notifications.md#view-unread-notifications) The **Unread Notifications** page displays.
-2. Click the **All Notifications** icon![](../.gitbook/assets/archived-processes-icon-processes.png)in the left sidebar. The **All Notifications** page displays.
+2. Click the **All Notifications** icon![](../.gitbook/assets/archived-processes-icon-processes.png)in the left side bar. The **All Notifications** page displays.
 
 ![&quot;All Notifications&quot; page displays your read and unread notifications](../.gitbook/assets/all-notifications-page-notifications.png)
 

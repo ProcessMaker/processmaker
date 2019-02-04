@@ -1,5 +1,5 @@
 ---
-description: Add and configure Text Annotation elements in your process model.
+description: Add and configure Text Annotation elements in your Process model.
 ---
 
 # Add and Configure Text Annotation Elements

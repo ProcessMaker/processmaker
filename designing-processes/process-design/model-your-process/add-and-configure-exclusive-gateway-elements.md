@@ -1,5 +1,5 @@
 ---
-description: Add and configure Exclusive Gateway elements in your process model.
+description: Add and configure Exclusive Gateway elements in your Process model.
 ---
 
 # Add and Configure Exclusive Gateway Elements
