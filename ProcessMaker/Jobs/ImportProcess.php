@@ -10,6 +10,7 @@ use Illuminate\Bus\Queueable;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\Screen;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -98,6 +99,40 @@ class ImportProcess implements ShouldQueue
         }
     }
     
+    private function updateScreenRefs($oldId, $newId)
+    {
+        //Get the BPMN
+        $bpmn = $this->file->process->bpmn;
+        
+        //Set our pattern; replace it with our new ID
+        $pattern = '/(pm:screenRef=")(' . $oldId . ')(")/';
+        $bpmn = preg_replace($pattern, "pm:screenRef=\"{$newId}\"", $bpmn);
+        
+        //Save the new BPMN
+        $this->file->process->bpmn = $bpmn;
+    }
+    
+    private function saveScreens($screens)
+    {
+        $this->new['screens'] = [];
+        
+        foreach ($screens as $screen) {
+            $new = new Screen;
+            $new->title = $this->formatName($screen->title, 'title', Screen::class);
+            $new->description = $screen->description;
+            $new->type = $screen->type;
+            $new->config = $screen->config;
+            $new->computed = $screen->computed;
+            $new->created_at = $this->formatDate($screen->created_at);
+            $new->updated_at = $this->formatDate($screen->updated_at);
+            $new->save();
+            
+            $this->updateScreenRefs($screen->id, $new->id);
+            
+            $this->new['screens'][] = $new;
+        }
+    }
+    
     private function saveProcessCategory($processCategory)
     {
         $existing = ProcessCategory::where('name', $processCategory->name)->first();
@@ -132,6 +167,7 @@ class ImportProcess implements ShouldQueue
     
     private function parseFileV1()
     {
+        $this->saveScreens($this->file->screens);
         $this->saveProcessCategory($this->file->process_category);
         $this->saveProcess($this->file->process);
         return true;
