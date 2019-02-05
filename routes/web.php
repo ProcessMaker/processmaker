@@ -12,7 +12,6 @@ Route::group(['middleware' => ['auth', 'sanitize']], function () {
         Route::get('groups/{group}/edit', 'GroupController@edit')->name('groups.edit')->middleware('can:edit-groups,group');
 
         Route::get('users', 'UserController@index')->name('users.index')->middleware('can:view-users');
-        Route::get('users/create', 'UserController@create')->name('users.create')->middleware('can:create-users');
         Route::get('users/{user}/edit', 'UserController@edit')->name('users.edit')->middleware('can:edit-users,user');
 
         Route::get('auth-clients', 'AuthClientController@index')->name('auth-clients.index')->middleware('can:view-auth_clients');

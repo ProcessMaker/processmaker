@@ -115,6 +115,11 @@ class Install extends Command
         // Set broadcaster url
         $this->env['BROADCASTER_HOST'] = $this->env['APP_URL'] . ':6001';
 
+        // Set laravel echo server settings
+        $this->env['LARAVEL_ECHO_SERVER_AUTH_HOST'] = $this->env['APP_URL'];
+        $this->env['LARAVEL_ECHO_SERVER_PORT'] = '6001';
+        $this->env['LARAVEL_ECHO_SERVER_DEBUG'] = 'false';
+
         // Set it as our url in our config
         config(['app.url' => $this->env['APP_URL']]);
 
@@ -157,10 +162,11 @@ class Install extends Command
 		//Create a symbolic link from "public/storage" to "storage/app/public"
         $this->call('storage:link');
         
-        // Restart queue workers so they get the DB credentials
-        $this->info(__(
-            $this->call('queue:restart')
-        ));
+        // Restart services so they pick up the new settings
+        $this->info(__('Restarting Services...'));
+        $this->info(
+            system('sudo supervisorctl restart all')
+        );
 
         $this->info(__("ProcessMaker installation is complete. Please visit the url in your browser to continue."));
         return true;

@@ -178,6 +178,9 @@ jobs:
             echo "REDIS_PORT=%%REDISPORT%%" >> .env
             echo "BPM_SCRIPTS_HOME=/home/circleci/tmp" >> .env
             echo "HOME=/home/circleci" >> .env
+            echo "LARAVEL_ECHO_SERVER_AUTH_HOST=%%AUTHHOST%%" >> .env
+            echo "LARAVEL_ECHO_SERVER_PORT=%%ECHOPORT%%" >> .env
+            echo "LARAVEL_ECHO_SERVER_DEBUG=true" >> .env
             
             # Generate unique app key
             php artisan key:generate --force
