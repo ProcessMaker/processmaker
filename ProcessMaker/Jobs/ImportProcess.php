@@ -11,6 +11,7 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\Script;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -130,6 +131,39 @@ class ImportProcess implements ShouldQueue
             $this->updateScreenRefs($screen->id, $new->id);
             
             $this->new['screens'][] = $new;
+        }
+    }
+
+    private function updateScriptRefs($oldId, $newId)
+    {
+        //Get the BPMN
+        $bpmn = $this->file->process->bpmn;
+        
+        //Set our pattern; replace it with our new ID
+        $pattern = '/(pm:scriptRef=")(' . $oldId . ')(")/';
+        $bpmn = preg_replace($pattern, "pm:scriptRef=\"{$newId}\"", $bpmn);
+        
+        //Save the new BPMN
+        $this->file->process->bpmn = $bpmn;
+    }
+
+    private function saveScripts($scripts)
+    {
+        $this->new['scripts'] =[];
+
+        foreach($scripts as $script) {
+            $new = new Script;
+            $new->title = $this->formatName($script->title, 'title', Script::class);
+            $new->description = $script->description;
+            $new->language = $script->language;
+            $new->code = $script->code;
+            $new->created_at = $this->formatDate($script->created_at);
+            $new->updated_at = $this->formatDate($script->updated_at);
+            $new->save();
+
+            $this->updateScriptRefs($script->id, $new->id);
+            
+            $this->new['scripts'][] = $new;
         }
     }
     

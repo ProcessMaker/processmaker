@@ -445,8 +445,8 @@ class ProcessController extends Controller
      * @return Response
      *
      * @OA\Get(
-     *     path="/processes/processId",
-     *     summary="Get single process by ID",
+     *     path="/processes/processId/export",
+     *     summary="Export a single process by ID",
      *     operationId="getProcessById",
      *     tags={"Process"},
      *     @OA\Parameter(
@@ -485,8 +485,8 @@ class ProcessController extends Controller
      * @return Response
      *
      * @OA\Get(
-     *     path="/processes/processId",
-     *     summary="Get single process by ID",
+     *     path="/processes/import",
+     *     summary="Import a process",
      *     operationId="getProcessById",
      *     tags={"Process"},
      *     @OA\Parameter(
