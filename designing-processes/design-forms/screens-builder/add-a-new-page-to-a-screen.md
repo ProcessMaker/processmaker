@@ -10,6 +10,15 @@ Each page has its own name. ~~Screen Editor page names must be unique on the sam
 
 ## Add a New Page to a ProcessMaker Screen
 
+{% hint style="info" %}
+Your user account or group membership must have the following permissions to add a new page to a ProcessMaker Screen:
+
+* Screens: View Screens
+* Screens: Edit Screens
+
+Ask your ProcessMaker Administrator for assistance if necessary.
+{% endhint %}
+
 Follow these steps to add a new page to a ProcessMaker Screen:
 
 1. [Create](../create-a-new-form.md) or [open the ProcessMaker Screen from the **Screens** page](../manage-forms/view-all-forms.md) in which to add a new page. The ProcessMaker Screen is in [Editor mode](screens-builder-modes.md#editor-mode).
@@ -26,12 +35,30 @@ Access each page from its tab. The selected page displays in black-colored text.
 
 ## Delete a Page from a ProcessMaker Screen
 
+{% hint style="info" %}
+Your user account or group membership must have the following permissions to delete a new page to a ProcessMaker Screen:
+
+* Screens: View Screens
+* Screens: Edit Screens
+
+Ask your ProcessMaker Administrator for assistance if necessary.
+{% endhint %}
+
 Follow these steps to delete a page from a ProcessMaker Screen:
 
 1. [Open the ProcessMaker Screen from the **Screens** page](../manage-forms/view-all-forms.md) in which to delete a page. The ProcessMaker Screen is in [Editor mode](screens-builder-modes.md#editor-mode).
 2. Locate the name of the page you want to delete and then click the icon![](../../../.gitbook/assets/options-list-delete-option-icon-screens-builder-processes.png)on that page's tab. ~~What happens next?~~
 
 ## Rename a Page
+
+{% hint style="info" %}
+Your user account or group membership must have the following permissions to rename a new page to a ProcessMaker Screen:
+
+* Screens: View Screens
+* Screens: Edit Screens
+
+Ask your ProcessMaker Administrator for assistance if necessary.
+{% endhint %}
 
 Follow these steps to rename a page on a ProcessMaker Screen:
 

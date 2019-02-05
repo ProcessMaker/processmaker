@@ -13,7 +13,7 @@ ProcessMaker displays all ProcessMaker Environment Variables in one table that P
 {% hint style="info" %}
 Your user account or group membership must have the "Environment Variables: View Environment Variables" permission to view the list of ProcessMaker Environment Variables.
 
-Ask your ProcessMaker Administrator for assistance.
+Ask your ProcessMaker Administrator for assistance if necessary.
 {% endhint %}
 
 Follow these steps to view all ProcessMaker Environment Variables in your organization:

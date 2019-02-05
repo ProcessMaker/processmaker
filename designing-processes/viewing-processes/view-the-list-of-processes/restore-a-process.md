@@ -14,7 +14,7 @@ Your user account or group membership must have the following permissions to arc
 * Processes: View Processes
 * Processes: Edit Processes
 
-Ask your ProcessMaker Administrator for assistance.
+Ask your ProcessMaker Administrator for assistance if necessary.
 {% endhint %}
 
 Follow these steps to restore an archived Process:

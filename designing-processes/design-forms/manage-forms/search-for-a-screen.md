@@ -13,7 +13,7 @@ Use the **Search** function to filter all ProcessMaker Screens from the **Screen
 {% hint style="info" %}
 Your user account or group membership must have the "Screens: View Screens" permission to search for ProcessMaker Screens.
 
-Ask your ProcessMaker Administrator for assistance.
+Ask your ProcessMaker Administrator for assistance if necessary.
 {% endhint %}
 
 Follow these steps to search for a ProcessMaker Screen:

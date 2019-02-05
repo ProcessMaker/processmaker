@@ -4,18 +4,20 @@ description: Assign Categories to Processes for better organization.
 
 # Process Categories
 
-Use Categories to organize your organizational Processes for Requesters.
+## Overview
 
-Categories can be active or inactive. ~~What value does that provide?~~
+Processes for which a Request can be started can be grouped into Categories. Use Categories to organize your organizational Processes for Requesters.
 
-A Process can be assigned to only one Category.
+Categories can be active or inactive. Processes that have been assigned to an inactive Category do not display in any Category for Requesters.
+
+A Process can be assigned to only one Category. See [Edit Process Configuration](view-the-list-of-processes/edit-the-name-description-category-or-status-of-a-process.md#edit-configuration-information-about-a-process) for more information.
 
 ## View Process Categories
 
 {% hint style="info" %}
 Your user account or group membership must have the "Categories: View Categories" permission to view the list of Process Categories.
 
-Ask your ProcessMaker Administrator for assistance.
+Ask your ProcessMaker Administrator for assistance if necessary.
 {% endhint %}
 
 Follow these steps to view Process Categories:
@@ -54,7 +56,7 @@ Your user account or group membership must have the following permissions to add
 * Categories: View Categories
 * Categories: Create Categories
 
-Ask your ProcessMaker Administrator for assistance.
+Ask your ProcessMaker Administrator for assistance if necessary.
 {% endhint %}
 
 Follow these steps to add a new Process Category:
@@ -76,7 +78,7 @@ Your user account or group membership must have the following permissions to edi
 * Categories: Create Categories
 * Categories: Edit Categories
 
-Ask your ProcessMaker Administrator for assistance.
+Ask your ProcessMaker Administrator for assistance if necessary.
 {% endhint %}
 
 Follow these steps to edit a Process Category:
@@ -101,7 +103,7 @@ Your user account or group membership must have the following permissions to del
 * Categories: Edit Categories
 * Categories: Delete Categories
 
-Ask your ProcessMaker Administrator for assistance.
+Ask your ProcessMaker Administrator for assistance if necessary.
 {% endhint %}
 
 {% hint style="warning" %}

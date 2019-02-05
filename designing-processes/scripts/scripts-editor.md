@@ -15,7 +15,7 @@ Your user account or group membership must have the following permissions to cre
 * Scripts: Create Scripts
 * Scripts: Edit Scripts
 
-Ask your ProcessMaker Administrator for assistance.
+Ask your ProcessMaker Administrator for assistance if necessary.
 {% endhint %}
 
 Use Scripts Editor to develop and test your ProcessMaker Scripts. Any ProcessMaker Script can be used in any Process in your organization. Scripts Editor supports Lua and PHP languages out-of-the-box.
@@ -40,6 +40,16 @@ ProcessMaker offers many open-source Lua scripts that function as-is with many t
 {% endhint %}
 
 ## Scripts Editor Usage Guidelines
+
+{% hint style="info" %}
+Your user account or group membership must have the following permissions to create or edit a ProcessMaker Script:
+
+* Scripts: View Scripts
+* Scripts: Create Scripts
+* Scripts: Edit Scripts
+
+Ask your ProcessMaker Administrator for assistance if necessary.
+{% endhint %}
 
 Follow these guidelines to develop and test ProcessMaker Scripts in Scripts Editor.
 

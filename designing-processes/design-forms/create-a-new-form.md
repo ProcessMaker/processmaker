@@ -12,7 +12,7 @@ Your user account or group membership must have the following permissions to cre
 * Screens: View Screens
 * Screens: Create Screens
 
-Ask your ProcessMaker Administrator for assistance.
+Ask your ProcessMaker Administrator for assistance if necessary.
 {% endhint %}
 
 Follow these steps to create a new ProcessMaker Screen:

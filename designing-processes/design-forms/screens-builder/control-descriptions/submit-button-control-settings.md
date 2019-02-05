@@ -16,6 +16,15 @@ This control is not available for [Display](../types-for-screens.md#display)-typ
 
 ## Add the Control to a ProcessMaker Screen <a id="add-the-control-to-a-processmaker-screen"></a>
 
+{% hint style="info" %}
+Your user account or group membership must have the following permissions to add a control to a ProcessMaker Screen:
+
+* Screens: View Screens
+* Screens: Edit Screens
+
+Ask your ProcessMaker Administrator for assistance if necessary.
+{% endhint %}
+
 Follow these steps to add this control to the ProcessMaker Screen:
 
 1. View the ProcessMaker Screen page to which to add the control.
@@ -32,7 +41,18 @@ Below is a Submit Button control in Preview mode.
 ## Inspector Settings <a id="inspector-settings"></a>
 
 {% hint style="info" %}
-See [View the Inspector Panel](../view-the-inspector-pane.md) for information how to view the **Inspector** panel.
+### Don't Know What the Inspector Panel Is?
+
+See [View the Inspector Panel](../view-the-inspector-pane.md).
+
+### Permissions Required to View Control Settings
+
+Your user account or group membership must have the following permissions to edit a ProcessMaker Screen control:
+
+* Screens: View Screens
+* Screens: Edit Screens
+
+Ask your ProcessMaker Administrator for assistance if necessary.
 {% endhint %}
 
 Below are Inspector settings for the Submit Button control:

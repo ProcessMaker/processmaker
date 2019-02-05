@@ -13,7 +13,7 @@ ProcessMaker displays all active and inactive Processes in one table that Proces
 {% hint style="info" %}
 Your user account or group membership must have the "Processes: View Processes" permission to view the list of Processes.
 
-Ask your ProcessMaker Administrator for assistance.
+Ask your ProcessMaker Administrator for assistance if necessary.
 {% endhint %}
 
 Follow these steps to view all active and inactive Processes in your organization:
@@ -74,6 +74,8 @@ Your user account or group membership must have the following permissions to edi
 
 * Processes: List
 * Processes: View
+
+Ask your ProcessMaker Administrator for assistance if necessary.
 {% endhint %}
 
 Click the **Open Modeler** icon![](../../../.gitbook/assets/open-modeler-edit-icon-processes-page-processes.png)to edit the selected Process model. See [Process Modeling](../../process-design/) for topics.
@@ -85,6 +87,8 @@ Your user account or group membership must have the following permissions to edi
 
 * Processes: List
 * Processes: Edit
+
+Ask your ProcessMaker Administrator for assistance if necessary.
 {% endhint %}
 
 Click the **Config** icon![](../../../.gitbook/assets/configure-process-icon-processes-page-processes.png)to edit the general information for the selected Process. See [Edit Process Information](edit-the-name-description-category-or-status-of-a-process.md#edit-general-information-about-a-process).
@@ -96,6 +100,8 @@ Your user account or group membership must have the following permissions to arc
 
 * Processes: List
 * Processes: ~~Archive~~
+
+Ask your ProcessMaker Administrator for assistance if necessary.
 {% endhint %}
 
 Click the **Archive** icon![](../../../.gitbook/assets/archive-process-icon-processes-page-processes.png)to archive the selected Process. See [Archive a Process](remove-a-process.md#archive-a-process).
@@ -107,6 +113,8 @@ Your user account or group membership must have the following permissions to res
 
 * Processes: List
 * Processes: ~~Restore~~
+
+Ask your ProcessMaker Administrator for assistance if necessary.
 {% endhint %}
 
 Click the **Restore** icon![](../../../.gitbook/assets/restore-process-icon-processes-page-processes.png)to restore the selected Process. See [Restore a Process](restore-a-process.md#restore-a-process).

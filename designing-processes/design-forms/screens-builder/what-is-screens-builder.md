@@ -12,7 +12,7 @@ Your user account or group membership must have the following permissions to cre
 * Screens: View Screens
 * Screens: Create Screens
 
-Ask your ProcessMaker Administrator for assistance.
+Ask your ProcessMaker Administrator for assistance if necessary.
 {% endhint %}
 
 Screens Builder allows Process Owners to design screens for their Processes. ProcessMaker Screens are independent of Processes: any ProcessMaker Screen can be used in any Process. You can use in your Process a ProcessMaker Screen another person in your organization designed. While Screens Builder has an easy-to-use drag-and-drop design interface to edit and preview ProcessMaker Screens, they are represented as JSON data models. You can view the JSON data model while in [Preview mode](preview-a-screen.md) as well as use it in [ProcessMaker Scripts](../../scripts/scripts-editor.md#enter-json-data-model-variables-from-processmaker-screens).

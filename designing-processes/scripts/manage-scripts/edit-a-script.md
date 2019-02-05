@@ -12,7 +12,7 @@ Your user account or group membership must have the following permissions to edi
 * Scripts: View Scripts
 * Scripts: Edit Scripts
 
-Ask your ProcessMaker Administrator for assistance.
+Ask your ProcessMaker Administrator for assistance if necessary.
 {% endhint %}
 
 Follow these steps to edit a ProcessMaker Script:

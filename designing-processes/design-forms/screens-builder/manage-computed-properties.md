@@ -18,6 +18,15 @@ Computed Properties display as the second key-value pair in the JSON data model 
 
 ## Add a Computed Property
 
+{% hint style="info" %}
+Your user account or group membership must have the following permissions to add a computed Property to a ProcessMaker Screen:
+
+* Screens: View Screens
+* Screens: Edit Screens
+
+Ask your ProcessMaker Administrator for assistance if necessary.
+{% endhint %}
+
 Follow these steps to add a computed Property:
 
 1. [Open](../manage-forms/view-all-forms.md) the ProcessMaker Screen in which to add a computed Property.
@@ -37,6 +46,15 @@ Follow these steps to add a computed Property:
 
 ## View a Computed Property's Details
 
+{% hint style="info" %}
+Your user account or group membership must have the following permissions to view a computed Property's details:
+
+* Screens: View Screens
+* Screens: Edit Screens
+
+Ask your ProcessMaker Administrator for assistance if necessary.
+{% endhint %}
+
 Follow these steps to view a computed Property:
 
 1. [Open](../manage-forms/view-all-forms.md) the ProcessMaker Screen in which to add a computed Property.
@@ -48,6 +66,15 @@ Follow these steps to view a computed Property:
 4. Click the **Hide Details** button to hide the Property's details.
 
 ## Edit a Computed Property
+
+{% hint style="info" %}
+Your user account or group membership must have the following permissions to edit a computed Property:
+
+* Screens: View Screens
+* Screens: Edit Screens
+
+Ask your ProcessMaker Administrator for assistance if necessary.
+{% endhint %}
 
 Follow these steps to edit a computed Property:
 
@@ -63,6 +90,15 @@ Follow these steps to edit a computed Property:
 5. Click **Save Property**.
 
 ## Delete a Computed Property
+
+{% hint style="info" %}
+Your user account or group membership must have the following permissions to delete a computed Property from a ProcessMaker Screen:
+
+* Screens: View Screens
+* Screens: Edit Screens
+
+Ask your ProcessMaker Administrator for assistance if necessary.
+{% endhint %}
 
 Follow these steps to edit a computed Property:
 

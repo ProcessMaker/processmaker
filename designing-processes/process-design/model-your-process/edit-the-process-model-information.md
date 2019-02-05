@@ -6,6 +6,15 @@ description: Edit information regarding the Process model.
 
 ## Edit the Process Model Identifier
 
+{% hint style="info" %}
+Your user account or group membership must have the following permissions to edit the Process model identifier:
+
+* Processes: View Processes
+* Processes: Edit Processes
+
+Ask your ProcessMaker Administrator for assistance if necessary.
+{% endhint %}
+
 Process Modeler assigns an identifier to the Process model. The default Process model identifier value can be changed.
 
 Follow these steps to edit the identifier value for a Process model:
@@ -16,6 +25,15 @@ Follow these steps to edit the identifier value for a Process model:
 4. In the **Identifier** field, edit the Process model's identifier value and then press **Enter**. The identifier value is changed.
 
 ## Edit the Process Model Name
+
+{% hint style="info" %}
+Your user account or group membership must have the following permissions to edit the Process model name:
+
+* Processes: View Processes
+* Processes: Edit Processes
+
+Ask your ProcessMaker Administrator for assistance if necessary.
+{% endhint %}
 
 Process Modeler assigns a name to the Process model that has no association with the Process name. This name has no affect on the Process model or Requests, so its name is not relevant. The default Process model name can be changed.
 

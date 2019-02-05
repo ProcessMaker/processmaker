@@ -6,6 +6,15 @@ description: Filter which BPMN elements display in the BPMN panel.
 
 ## Filter Which BPMN Elements Display in the BPMN Panel
 
+{% hint style="info" %}
+Your user account or group membership must have the following permissions to filter BPMN elements in the **BPMN** panel:
+
+* Processes: View Processes
+* Processes: Edit Processes
+
+Ask your ProcessMaker Administrator for assistance if necessary.
+{% endhint %}
+
 The **BPMN** panel in Process Modeler displays elements that can compose a Process model.
 
 ![BPMN Panel in Process Modeler](../../../.gitbook/assets/bpmn-panel-process-modeler-processes.png)

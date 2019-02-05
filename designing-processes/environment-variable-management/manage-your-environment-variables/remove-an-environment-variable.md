@@ -15,7 +15,7 @@ Your user account or group membership must have the following permissions to del
 * Environment Variables: Edit Environment Variables
 * Environment Variables: Delete Environment Variables
 
-Ask your ProcessMaker Administrator for assistance.
+Ask your ProcessMaker Administrator for assistance if necessary.
 {% endhint %}
 
 {% hint style="warning" %}

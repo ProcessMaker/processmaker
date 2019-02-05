@@ -19,10 +19,19 @@ The JSON data model uses key-value pairs: the key names are those you set when y
 Why is this important? ProcessMaker Developers can use a ProcessMaker Screen's JSON data model as variable input to a ProcessMaker Script. ProcessMaker Screens are independent of Processes. Any ProcessMaker Screen can be used in any Process throughout your organization. The JSON data model within a ProcessMaker Screen becomes the variables used in any Process that uses that Screen. ProcessMaker Developers can use these variables to capture what Request participants enter into a Screen and use this data in a ProcessMaker Script.
 
 {% hint style="info" %}
-Are you a ProcessMaker Developer developing ProcessMaker Scripts? See [Scripts Editor](../../scripts/scripts-editor.md) for more information.
+Are you a ProcessMaker Developer developing ProcessMaker Scripts? See [Scripts Editor](../../scripts/scripts-editor.md).
 {% endhint %}
 
 ## Preview a ProcessMaker Screen and Its JSON Data Model
+
+{% hint style="info" %}
+Your user account or group membership must have the following permissions to preview a ProcessMaker Screen:
+
+* Screens: View Screens
+* Screens: Edit Screens
+
+Ask your ProcessMaker Administrator for assistance if necessary.
+{% endhint %}
 
 Follow these guidelines to preview a ProcessMaker Screen and view its JSON data model:
 

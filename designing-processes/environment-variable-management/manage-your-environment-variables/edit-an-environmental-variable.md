@@ -12,7 +12,7 @@ Your user account or group membership must have the following permissions to edi
 * Environment Variables: View Environment Variables
 * Environment Variables: Edit Environment Variables
 
-Ask your ProcessMaker Administrator for assistance.
+Ask your ProcessMaker Administrator for assistance if necessary.
 {% endhint %}
 
 Follow these steps to edit a ProcessMaker Environment Variable:

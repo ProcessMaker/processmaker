@@ -12,6 +12,15 @@ The **Inspector** panel in Screens Builder displays settings for a selected cont
 
 ## View the Inspector Panel
 
+{% hint style="info" %}
+Your user account or group membership must have the following permissions to view the **Inspector** panel:
+
+* Screens: View Screens
+* Screens: Edit Screens
+
+Ask your ProcessMaker Administrator for assistance if necessary.
+{% endhint %}
+
 Follow these steps to view the **Inspector** panel:
 
 1. Ensure you are in Editor mode in the ProcessMaker Screen page for which you want to view the settings of a control. To be in Editor mode, click the **Editor** option from Screen Builder's top menu. Editor mode is the default mode when a ProcessMaker Screen is edited.
