@@ -6,6 +6,7 @@ use Cache;
 use Illuminate\Bus\Queueable;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\Script;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -57,6 +58,23 @@ class ExportProcess implements ShouldQueue
             });
         }
     }
+
+    private function packageScripts()
+    {
+        $this->package['scripts'] = [];
+
+        $bpmn = $this->package['process']['bpmn'];
+        $doesMatch = preg_match_all('/pm:scriptRef="(\d+)"/', $bpmn, $matches);
+
+        if($doesMatch) {
+            $scriptIds = $matches[1];
+            $scripts = Script::whereIn('id', $scriptIds)->get();
+
+            $scripts->each(function($scripts) {
+                $this->package['scripts'][] = $scripts->toArray();
+            });
+        }
+    }
     
     private function packageFile()
     {
@@ -65,6 +83,7 @@ class ExportProcess implements ShouldQueue
         $this->packageProcess();
         $this->packageProcessCategory();
         $this->packageScreens();
+        $this->packageScripts();
     }
     
     private function encodeFile()
