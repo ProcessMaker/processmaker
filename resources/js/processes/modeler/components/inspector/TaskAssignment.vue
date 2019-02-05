@@ -49,7 +49,7 @@
             <label>Special Assignments</label>
             <div v-if="loadingGroups">Loading...</div>
 
-            <button @click="addSpecialAssignment" class="btn-sm float-right">+</button>
+            <button type="button" @click="addSpecialAssignment" class="float-right btn btn-primary btn-sm">+</button>
             <label>Expression</label>
 
             <input class="form-control" type="text" v-model="assignmentExpression">
@@ -95,11 +95,10 @@
                   class="list-group-item list-group-item-action pt-0 pb-0"
                   :class="{'bg-primary': false}">
                     <template>
-                        <!--<i class="fa fa-users" aria-hidden="true"></i>-->
-                        <span class="text-center text-capitalize text-nowrap m-1">{{row.expression}}</span>
+                        <span class="text-center text-nowrap m-1">{{row.expression}}</span>
                         &nbsp; to &nbsp;
                         <span class="text-center text-capitalize text-nowrap m-1">{{row.type}}</span>
-                        <span class="text-center text-capitalize text-nowrap m-1">
+                        <span class="text-center text-nowrap m-1">
                             {{getAssigneeName(row)}}
                         </span>
                         <i class="fa fa-trash" aria-hidden="true"

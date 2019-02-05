@@ -282,27 +282,25 @@ class Process extends Model implements HasMedia
         $default = $activity instanceof ScriptTaskInterface
         || $activity instanceof ServiceTaskInterface ? 'script' : 'requestor';
         $assignmentType = $activity->getProperty('assignment', $default);
-        $assignedByExpression  = $activity->getProperty('assignedByExpression', $default);
+        $assignmentRules  = $activity->getProperty('assignmentRules', $default);
 
         $instanceData = $token->getInstance()->getDataStore()->getData();
-        if ($assignedByExpression && $instanceData) {
-            $list = explode('|', $assignedByExpression);
+        if ($assignmentRules && $instanceData) {
+            $list = json_decode($assignmentRules);
             foreach ($list as $item) {
-                $parts = explode(',', $item);
-                $expression = explode(':', $parts[2])[1];
                 $formalExp = new FormalExpression();
                 $formalExp->setLanguage('FEEL');
-                $formalExp->setBody($expression);
+                $formalExp->setBody($item->expression);
                 $eval = $formalExp($instanceData);
                 if ($eval) {
-                    $assignmentType = explode(':', $parts[0])[1];
-
-                    switch ($assignmentType) {
+                    switch ($item->type) {
                         case 'group':
-                            $user = $this->getNextUserFromGroupAssignment($activity->getId());
+                            $users = [];
+                            $user = $this->getNextUserFromGroupAssignment($activity->getId(),
+                                        $this->getConsolidatedUsers($item->assignee, $users));
                             break;
                         case 'user':
-                            $user = explode(':', $parts[1])[1];
+                            $user = $item->assignee;
                             break;
                         case 'requestor':
                             $user = $token->getInstance()->user_id;
@@ -349,14 +347,16 @@ class Process extends Model implements HasMedia
      * @return binary
      * @throws TaskDoesNotHaveUsersException
      */
-    private function getNextUserFromGroupAssignment($processTaskUuid)
+    private function getNextUserFromGroupAssignment($processTaskUuid, $users = null)
     {
         $last = ProcessRequestToken::where('process_id', $this->id)
             ->where('element_id', $processTaskUuid)
             ->orderBy('created_at', 'desc')
             ->orderBy('id', 'desc')
             ->first();
-        $users = $this->getAssignableUsers($processTaskUuid);
+        if ($users === null) {
+            $users = $this->getAssignableUsers($processTaskUuid);
+        }
         if (empty($users)) {
             throw new TaskDoesNotHaveUsersException($processTaskUuid);
         }
@@ -380,13 +380,15 @@ class Process extends Model implements HasMedia
      * @return binary
      * @throws TaskDoesNotHaveUsersException
      */
-    private function getNextUserAssignment($processTaskUuid)
+    private function getNextUserAssignment($processTaskUuid, $users = null)
     {
         $last = ProcessRequestToken::where('process_id', $this->id)
             ->where('element_id', $processTaskUuid)
             ->orderBy('created_at', 'desc')
             ->first();
-        $users = $this->getAssignableUsers($processTaskUuid);
+        if ($users === null) {
+            $users = $this->getAssignableUsers($processTaskUuid);
+        }
         if (empty($users)) {
             throw new TaskDoesNotHaveUsersException($processTaskUuid);
         }
