@@ -7,59 +7,85 @@ description: Add and configure Task elements in your Process model.
 ## Add a Task Element
 
 {% hint style="info" %}
-For a description of the [Task](process-modeling-element-descriptions.md#user-task) element, see [Process Modeling Element Descriptions](process-modeling-element-descriptions.md).
+### Don't Know What a Task Element Is?
+
+See [Process Modeling Element Descriptions](process-modeling-element-descriptions.md) for a description of the [Task](process-modeling-element-descriptions.md#user-task) element.
+
+### Permissions Required to Do This Task
+
+Your user account or group membership must have the following permissions to add a Task element to the Process model:
+
+* Processes: View Processes
+* Processes: Edit Processes
+
+Ask your ProcessMaker Administrator for assistance if necessary.
 {% endhint %}
 
 Follow these steps to add a Task element to the Process model:
 
 1. [View your Processes](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/~/drafts/-LRhVZm0ddxDcGGdN5ZN/primary/designing-processes/viewing-processes/view-the-list-of-processes/view-your-processes#view-all-processes). The **Processes** page displays.
 2. [Create a new Process](../../viewing-processes/create-a-process.md) or click the **Open Modeler** icon![](../../../.gitbook/assets/open-modeler-edit-icon-processes-page-processes.png)to edit the selected Process model. Process Modeler displays.
-3. Locate the **Task** element ![](../../../.gitbook/assets/task-bpmn-side-bar-process-modeler-processes.png) in the **BPMN** left side bar. Drag and drop the element to where in the Process model you want to place it. The event has been added to the Process model.
+3. Locate the **Task** element ![](../../../.gitbook/assets/task-bpmn-side-bar-process-modeler-processes.png) in the **BPMN** left side bar. Drag and drop the element to where in the Process model you want to place it. If a Pool element is in your Process model, the Task element cannot be placed outside of the Pool element. The event has been added to the Process model.
 
 ![Task element](../../../.gitbook/assets/task-element-process-modeler-processes.png)
 
+After the element is placed into the Process model, you may move it by selecting it, hold the cursor, and then dragging it to the new location.
+
+{% hint style="warning" %}
+If the element is placed inside of a Pool element, the Task element cannot be moved outside of the Pool element. If you attempt to do so, Process Modeler places the Task Element inside the Pool element closest to where you attempted to move it.
+{% endhint %}
+
 ## Configure a Task Element
+
+{% hint style="info" %}
+Your user account or group membership must have the following permissions to configure a Task element:
+
+* Processes: View Processes
+* Processes: Edit Processes
+
+Ask your ProcessMaker Administrator for assistance if necessary.
+{% endhint %}
 
 ### Edit the Identifier Value
 
-Process Modeler assigns a value to a process model or process element to identify that element. Process Modeler automatically assigns a unique value to each process element added to a process model. However, an element's identifier value can be changed as long as it is unique.
+Process Modeler automatically assigns a unique value to each Process element added to a Process model. However, an element's identifier value can be changed as long as it is unique.
 
-{% hint style="info" %}
-All identifier values for all elements in the process model must be unique.
+{% hint style="warning" %}
+All identifier values for all elements in the Process model must be unique.
 {% endhint %}
 
 Follow these steps to edit the identifier value for a Task element:
 
-1. Place a [Task](add-and-configure-task-elements.md#add-a-task-element) element into your process model.
+1. Place a [Task](add-and-configure-task-elements.md#add-a-task-element) element into your Process model.
 2. Select the Task element in which to edit its identifier value. The current Task identifier value displays in the **Identifier** field in the right side bar.
 3. In the **Identifier** field, edit the selected Task element's identifier value and then press **Enter**. The identifier value is changed.
 
 ### Edit the Element Name
 
-An element name is a human-readable reference for a process element. Process Modeler automatically assigns the name of a process element with its element type. However, an element's name can be changed.
+An element name is a human-readable reference for a Process element. Process Modeler automatically assigns the name of a Process element with its element type. However, an element's name can be changed.
 
 Follow these steps to edit the name for a Task element:
 
-1. Place a [Task](add-and-configure-task-elements.md#add-a-task-element) element into your process model.
+1. Place a [Task](add-and-configure-task-elements.md#add-a-task-element) element into your Process model.
 2. Select the Task element in which to edit its name. The current name displays in the **Name** field in the right side bar.
 3. In the **Name** field, edit the selected Task element's name and then press **Enter**. The element's name is changed.
 
 ### Select the ProcessMaker Screen for a Task Element
 
 {% hint style="info" %}
-For information about ProcessMaker Screens, see [What is a Screen?](../../design-forms/what-is-a-form.md).
+See [What is a Screen?](../../design-forms/what-is-a-form.md) for more information.
 {% endhint %}
 
 Since Task elements are designed to collect or display [Request](../../../using-processmaker/requests/what-is-a-request.md) information, specify which ProcessMaker Screen a selected Task element uses. A ProcessMaker Screen must already exist before it can be selected for use in a Task element.
 
 {% hint style="warning" %}
-Ensure to select a ProcessMaker Screen for each Task element in your process model. If a ProcessMaker Screen is not specified and Requests are started for that process, users who are assigned Tasks with no ProcessMaker Screens have no way of interacting with the Request.
+Ensure to select a ProcessMaker Screen for each Task element in your Process model. If a ProcessMaker Screen is not specified and Requests are started for that Process, users who are assigned Tasks with no ProcessMaker Screens have no way of interacting with the Request.
 {% endhint %}
 
 Follow these steps to select a ProcessMaker Screen for a Task element:
 
-1. Place a [Task](add-and-configure-task-elements.md#add-a-task-element) element into your process model.
-2. Select the Task element in which to specify its ProcessMaker Screen. Options for the Script Task element display in the right side bar.
+1. Place a [Task](add-and-configure-task-elements.md#add-a-task-element) element into your Process model.
+2. Select the Task element in which to specify its ProcessMaker Screen. Options for the Task element display in the right side bar.
 3. In the **Screen For Input** field, select which ProcessMaker Screen that Task element uses. The ProcessMaker Screen is selected.
 
 {% hint style="info" %}
@@ -67,7 +93,7 @@ Click the **Refresh** link below the **Screen For Input** field to refresh the o
 {% endhint %}
 
 {% hint style="warning" %}
-If no ProcessMaker Screens exist, the drop-down contains no options. Ensure to select a ProcessMaker Screen for every Task element in the process model before making the process active.
+If no ProcessMaker Screens exist, the drop-down contains no options. Ensure to select a ProcessMaker Screen for every Task element in the Process model before making the Process active.
 {% endhint %}
 
 ### Specify When the Task is Due
@@ -82,7 +108,7 @@ Specify due time for a Task element in total number of hours. This includes hour
 
 Follow these steps to specify when a Task element is due:
 
-1. Place a [Task](add-and-configure-task-elements.md#add-a-task-element) element into your process model.
+1. Place a [Task](add-and-configure-task-elements.md#add-a-task-element) element into your Process model.
 2. Select the Task element in which to specify how many hours the task is due.
 3. Specify the total number of hours the task is due in one of the following ways:
    * Enter the number in the **Due In** field and then press **Enter**. The number of hours is entered.
@@ -90,18 +116,20 @@ Follow these steps to specify when a Task element is due:
 
 ### Select to Whom to Assign the Task
 
-Select to whom to assign the Task element in a process model:
+Select to whom to assign the Task element in a Process model:
 
 * **Requestor:** Assign the Task element to the Request initiator.
 * **User:** Assign the Task element to a selected person.
+* **Group:** Assign the Task element to a selected group.
 
 Follow these steps to select to whom to assign the Task element:
 
-1. Place a [Task](add-and-configure-task-elements.md#add-a-task-element) element into your process model.
-2. Select the Task element in which to select to whom to assign the Task element. Options for the Script Task element display in the right side bar.
+1. Place a [Task](add-and-configure-task-elements.md#add-a-task-element) element into your Process model.
+2. Select the Task element in which to select the task assignee. Options for the Task element display in the right side bar.
 3. From the **Task Assignment** field, select one of the following options:
    * **To requestor:** Select **To requestor** to assign the Task element to the Request initiator.
    * **To user:** Select **To user** to assign the Task element to a specified person. When this option is selected, the **Assigned User** field displays below the **Task Assignment** field. From the **Assigned User** field, select the person's full name as the Task element's assignee.
+   * **To group:** Select **To group** to assign the Task element to a specified group. When this option is selected, the **Assigned Group** field displays below the **Task Assignment** field. From the **Assigned Group** field, select the group as the Task element's assignee.
 
 ## Related Topics
 

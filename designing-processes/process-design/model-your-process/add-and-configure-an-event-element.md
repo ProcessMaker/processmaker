@@ -56,14 +56,14 @@ Follow these steps to add an End Event element to the Process model:
 
 1. [View your Processes](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/~/drafts/-LRhVZm0ddxDcGGdN5ZN/primary/designing-processes/viewing-processes/view-the-list-of-processes/view-your-processes#view-all-processes). The **Processes** page displays.
 2. [Create a new Process](../../viewing-processes/create-a-process.md) or click the **Open Modeler** icon![](../../../.gitbook/assets/open-modeler-edit-icon-processes-page-processes.png)to edit the selected Process model. Process Modeler displays.
-3. Locate the **End Event** element ![](../../../.gitbook/assets/end-event-bpmn-side-bar-process-modeler-processes.png) in the **BPMN** left side bar. Drag and drop the element to where in the Process model you want to place it. The event has been added to the Process model.
+3. Locate the **End Event** element ![](../../../.gitbook/assets/end-event-bpmn-side-bar-process-modeler-processes.png) in the **BPMN** left side bar. Drag and drop the element to where in the Process model you want to place it. If a Pool element is in your Process model, the End Event element cannot be placed outside of the Pool element. The event has been added to the Process model.
 
 ![End Event element](../../../.gitbook/assets/end-event-process-modeler-processes.png)
 
 After the element is placed into the Process model, you may move it by selecting it, hold the cursor, and then dragging it to the new location.
 
 {% hint style="warning" %}
-If the element is placed inside of a Pool element, the End Event element cannot be moved outside of the Pool element. If you attempt to do so, Process Modeler places the End Element inside the Pool element closest to where you attempted to move it.
+If the element is placed inside of a Pool element, the End Event element cannot be moved outside of the Pool element. If you attempt to do so, Process Modeler places the End Event element inside the Pool element closest to where you attempted to move it.
 {% endhint %}
 
 ## Configure an Event Element
@@ -79,7 +79,7 @@ Ask your ProcessMaker Administrator for assistance if necessary.
 
 ### Edit the Identifier Value
 
-Process Modeler assigns a value to a Process model or Process element to identify that element. Process Modeler automatically assigns a unique value to each Process element added to a Process model. However, an element's identifier value can be changed as long as it is unique.
+Process Modeler automatically assigns a unique value to each Process element added to a Process model. However, an element's identifier value can be changed as long as it is unique.
 
 {% hint style="warning" %}
 All identifier values for all elements in the Process model must be unique.
@@ -87,13 +87,13 @@ All identifier values for all elements in the Process model must be unique.
 
 Follow these steps to edit the identifier value for an Event element:
 
-1. Place a [Start Event](add-and-configure-an-event-element.md#add-a-start-event-element) or [End Event](add-and-configure-an-event-element.md#add-an-end-event-element) element into your process model.
+1. Place a [Start Event](add-and-configure-an-event-element.md#add-a-start-event-element) or [End Event](add-and-configure-an-event-element.md#add-an-end-event-element) element into your Process model.
 2. Select the Event element in which to edit its identifier value. The current Event identifier value displays in the **Identifier** field in the right side bar.
 3. In the **Identifier** field, edit the selected Event element's identifier value and then press **Enter**. The identifier value is changed.
 
 ### Edit the Element Name
 
-An element name is a human-readable reference for a process element. Process Modeler automatically assigns the name of a process element with its element type. However, an element's name can be changed.
+An element name is a human-readable reference for a Process element. Process Modeler automatically assigns the name of a Process element with its element type. However, an element's name can be changed.
 
 Follow these steps to edit the name for an Event element:
 
