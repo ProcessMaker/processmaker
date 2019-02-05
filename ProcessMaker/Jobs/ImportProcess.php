@@ -201,6 +201,7 @@ class ImportProcess implements ShouldQueue
     
     private function parseFileV1()
     {
+        $this->saveScripts($this->file->scripts);
         $this->saveScreens($this->file->screens);
         $this->saveProcessCategory($this->file->process_category);
         $this->saveProcess($this->file->process);
