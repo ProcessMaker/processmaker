@@ -282,6 +282,44 @@ class Process extends Model implements HasMedia
         $default = $activity instanceof ScriptTaskInterface
         || $activity instanceof ServiceTaskInterface ? 'script' : 'requestor';
         $assignmentType = $activity->getProperty('assignment', $default);
+        $assignedByExpression  = $activity->getProperty('assignedByExpression', $default);
+
+        $instanceData = $token->getInstance()->getDataStore()->getData();
+        if ($assignedByExpression && $instanceData) {
+            $list = explode('|', $assignedByExpression);
+            foreach ($list as $item) {
+                $parts = explode(',', $item);
+                $expression = explode(':', $parts[2])[1];
+                $formalExp = new FormalExpression();
+                $formalExp->setLanguage('FEEL');
+                $formalExp->setBody($expression);
+                $eval = $formalExp($instanceData);
+                if ($eval) {
+                    $assignmentType = explode(':', $parts[0])[1];
+
+                    switch ($assignmentType) {
+                        case 'group':
+                            $user = $this->getNextUserFromGroupAssignment($activity->getId());
+                            break;
+                        case 'user':
+                            $user = explode(':', $parts[1])[1];
+                            break;
+                        case 'requestor':
+                            $user = $token->getInstance()->user_id;
+                            break;
+                        case 'manual':
+                        case 'self_service':
+                            $user = null;
+                            break;
+                        case 'script':
+                        default:
+                            $user = null;
+                    }
+                    return $user ? User::where('id', $user)->first() : null;
+                }
+            }
+        }
+
         switch ($assignmentType) {
             case 'group':
                 $user = $this->getNextUserFromGroupAssignment($activity->getId());
