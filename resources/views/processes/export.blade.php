@@ -18,15 +18,15 @@
         <div class="col">
             <div class="card text-center">
                 <div class="card-header bg-light" align="left">
-                    <h5>Export Process</h5>
+                    <h5>{{__('Export Process')}}</h5>
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title">You are about to Export a Process</h5>
-                    <p class="card-text">You will need to fix hecka stuff</p> 
+                    <h5 class="card-title">{{__('You are about to Export a Process')}}</h5>
+                    <p class="card-text">{{__('User assignments and environment varibles will need to be re-done upon import')}}</p> 
                 </div>
                 <div class="card-footer bg-light" align="right">
-                    <button type="button" class="btn btn-outline-secondary" @click="onCancel">Cancel</button>
-    			    <button type="button" class="btn btn-secondary ml-2" @click="onExport">Download</button>
+                    <button type="button" class="btn btn-outline-secondary" @click="onCancel">{{__('Cancel')}}</button>
+    			    <button type="button" class="btn btn-secondary ml-2" @click="onExport">{{__('Download')}}</button>
                 </div>
             </div>
         </div>

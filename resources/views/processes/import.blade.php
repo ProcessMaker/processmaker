@@ -18,20 +18,20 @@
         <div class="col">
             <div class="card text-center">
                 <div class="card-header bg-light" align="left">
-                    <h5>Import Process</h5>
+                    <h5>{{__('Import Process')}}</h5>
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title">You are about to import a Process</h5>
-                    <p class="card-text">You will need to fix hecka stuff</p> 
+                    <h5 class="card-title">{{__('You are about to import a Process')}}</h5>
+                    <p class="card-text">{{__('User assignments and sensitive')}} <a href="environment-variables" >{{__('environment variables')}}</a> {{__('will not be imported.')}}</p> 
                     <input type="file" ref="file" class="d-none" @change="handleFile">
                     <button @click="$refs.file.click()" class="btn btn-secondary ml-2">
                         <i class="fas fa-upload"></i>
-                        Browse
+                        {{__('Browse')}}
                     </button>
                 </div>
                 <div class="card-footer bg-light" align="right">
-                    <button type="button" class="btn btn-outline-secondary" @click="onCancel">Cancel</button>
-    			    <button type="button" class="btn btn-secondary ml-2" >Import</button>
+                    <button type="button" class="btn btn-outline-secondary" @click="onCancel">{{__('Cancel')}}</button>
+    			    <button type="button" class="btn btn-secondary ml-2" >{{__('Import')}}</button>
                 </div>
             </div>
         </div>
