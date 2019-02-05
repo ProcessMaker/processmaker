@@ -50,7 +50,6 @@
             <div v-if="loadingGroups">Loading...</div>
 
             <button @click="addSpecialAssignment" class="btn-sm float-right">+</button>
-            <button @click="" class="btn-sm float-right">-</button>
             <label>Expression</label>
 
             <input class="form-control" type="text"  :value="expressionGetter" @input="expressionSetter" >
@@ -97,8 +96,7 @@
 
             <span v-for="(row, index) in specialAssignments"
                   class="list-group-item list-group-item-action pt-0 pb-0"
-                  :class="{'bg-primary': false}"
-                  @click="selectAssignee(row, index)">
+                  :class="{'bg-primary': false}">
                     <template>
                         <i class="fa fa-users" aria-hidden="true"></i>
                         <span class="text-center text-capitalize text-nowrap m-1">{{row.type}}</span>
@@ -198,6 +196,11 @@
             specialAssignmentGetter() {
                 const node = this.$parent.$parent.highlightedNode.definition;
                 const value = _.get(node, 'specialAssignment');
+                return value;
+            },
+            specialAssignmentsListGetter() {
+                const node = this.$parent.$parent.highlightedNode.definition;
+                const value = _.get(node, 'assignedByExpression');
                 return value;
             },
         },
@@ -312,17 +315,49 @@
             },
 
             addSpecialAssignment () {
-                this.specialAssignments.push({
-                    type: this.specialAssignmentGetter,
-                    expression: this.expressionGetter,
-                });
-            },
-            selectAssignee(assignee, index) {
-            },
+                let selectedAssignee = this.specialAssignedUserGetter
+                    ? this.specialAssignedUserGetter
+                    : this.specialAssignedGroupGetter;
 
+                let byExpression = {
+                    type: this.specialAssignmentGetter,
+                    assignee: selectedAssignee,
+                    expression: this.expressionGetter
+                }
+
+//                const validValue = Math.abs(event.target.value * 1) || "";
+//                if (!validValue) {
+//                    this.$delete(this.node, 'dueIn');
+//                } else {
+                    this.$set(this.node, 'assignedByExpression',
+                        'type:' + byExpression.type +
+                        ',assignee:' + byExpression.assignee +
+                        ',expression:' + byExpression.expression
+                    );
+//                }
+//                this.$emit('input', this.value);
+//                String(validValue) !== event.target.value ? event.target.value = validValue : null;
+
+                this.specialAssignments.push();
+            },
+            loadSpecialAssignments() {
+                console.log(this.specialAssignmentsListGetter);
+                let list = this.specialAssignmentsListGetter.split('|');
+                let that = this;
+                list.forEach(function (elem) {
+                    let parts = elem.split(',');
+                    let byExpression = {
+                        type: parts[0].split(':')[1],
+                        assignee: parts[1].split(':')[1],
+                        expression: parts[2].split(':')[1]
+                    };
+                    that.specialAssignments.push(byExpression)
+                })
+            }
         },
         mounted() {
             this.loadUsersAndGroups();
+            this.loadSpecialAssignments();
         }
     };
 </script>
