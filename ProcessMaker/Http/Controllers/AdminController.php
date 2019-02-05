@@ -16,11 +16,13 @@ class AdminController extends Controller
 {
     public function index()
     {
-        switch (\Auth::user()->canAny('view-users|view-groups')) {
+        switch (\Auth::user()->canAny('view-users|view-groups|view-auth_clients')) {
             case 'view-users':
                 return redirect()->route('users.index');
             case 'view-groups':
                 return redirect()->route('groups.index');
+            case 'view-auth_clients':
+                return redirect()->route('auth-clients.index');
             default:
                 throw new AuthorizationException();
         }

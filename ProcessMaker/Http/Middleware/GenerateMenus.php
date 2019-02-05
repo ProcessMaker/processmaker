@@ -32,7 +32,7 @@ class GenerateMenus
                     $request_items->add(__('menus.topnav.processes'), ['route' => 'processes.index'])->active('processes/*');
                 });
             }
-            if (\Auth::check() && \Auth::user()->canAny('view-users|view-groups')) {
+            if (\Auth::check() && \Auth::user()->canAny('view-users|view-groups|view-auth_clients')) {
                 $menu->group(['prefix' => 'admin'], function($admin_items) {
                     $admin_items->add(__('menus.topnav.admin'), ['route' => 'admin.index'])->active('admin/*');
                 });
@@ -56,7 +56,7 @@ class GenerateMenus
                 'id' => 'homeid'
                 ]);
             }
-            if(\Auth::check() && \Auth::user()->can('view-auth-clients')) {
+            if(\Auth::check() && \Auth::user()->can('view-auth_clients')) {
                 $submenu->add(__('menus.sidebar_admin.auth-clients'), [
                     'route' => 'auth-clients.index',
                     'icon' => 'fa-key',

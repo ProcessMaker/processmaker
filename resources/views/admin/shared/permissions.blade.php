@@ -151,6 +151,23 @@
 <div class="card">
     <div class="card-header">
         <h5 class="mb-0">
+            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#auth_clients">
+                {{__('Auth-Clients')}}
+            </button>
+        </h5>
+    </div>
+    <div id="auth_clients" class="collapse" >
+        <div class="card-body">
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="view-auth_clients" v-model="selectedPermissions">   {{__('View Auth-Clients')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="create-auth_clients" v-model="selectedPermissions" @change="checkCreate('edit-auth_clients', $event)">   {{__('Create Auth-Clients')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="edit-auth_clients" v-model="selectedPermissions" @change="checkEdit('create-auth_clients', $event)">   {{__('Edit Auth-Clients')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="delete-auth_clients" v-model="selectedPermissions">   {{__('Delete Auth-Clients')}}</label>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">
             <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#files">
                 {{__('Files (API)')}}
             </button>
