@@ -75,6 +75,14 @@ class ExportProcess implements ShouldQueue
             });
         }
     }
+
+    private function packageAssignmentTypes()
+    {
+        $this->package['assignments'] = [];
+        $bpmn = $this->package['process']['bpmn'];
+        $doesMatch = preg_replace('/(pm:assignedUsers="\d+")/', '', $bpmn);
+ 
+    }
     
     private function packageFile()
     {
@@ -84,6 +92,7 @@ class ExportProcess implements ShouldQueue
         $this->packageProcessCategory();
         $this->packageScreens();
         $this->packageScripts();
+        $this->packageAssignmentTypes();
     }
     
     private function encodeFile()
