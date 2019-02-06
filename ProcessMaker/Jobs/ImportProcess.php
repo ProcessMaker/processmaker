@@ -23,14 +23,43 @@ class ImportProcess implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private $process, $definitions, $fileContents, $file;
-    
-    private $package = [];
-    
+    /**
+     * The original contents of the imported file.
+     *
+     * @var string
+     */    
+    private $fileContents;
+
+    /**
+     * The decoded object obtained from the file.
+     *
+     * @var object
+     */
+    private $file;
+
+    /**
+     * The process being imported.
+     *
+     * @var object
+     */
+    private $process;
+
+    /**
+     * The BPMN definitions of the process.
+     *
+     * @var object
+     */    
+    private $definitions;
+
+    /**
+     * An array of the new models being created on import.
+     *
+     * @var object[]
+     */    
     private $new = [];
 
     /**
-     * Create a new job instance.
+     * Create a new job instance and set the file contents.
      *
      * @return void
      */
@@ -38,7 +67,13 @@ class ImportProcess implements ShouldQueue
     {
         $this->fileContents = $fileContents;
     }
-    
+
+    /**
+     * Return a valid method name based on the version of the imported file,
+     * or return false if no such method exists.
+     *
+     * @return string|bool
+     */    
     private function getParser()
     {
         $method = "parseFileV{$this->file->version}";
@@ -48,7 +83,13 @@ class ImportProcess implements ShouldQueue
             return false;
         }
     }
-    
+
+    /**
+     * Return either the currently authorized user or, if this happens to be
+     * run in the console, the first user in the database.
+     *
+     * @return object
+     */    
     private function currentUser()
     {
         if (! app()->runningInConsole()) {
@@ -57,7 +98,15 @@ class ImportProcess implements ShouldQueue
             return User::first();
         }
     }
-    
+
+    /**
+     * Pass a date in string format to be parsed and returned as either a
+     * Carbon object, or set to null if null.
+     *
+     * @param string|null $date
+     *
+     * @return resource|null
+     */    
     private function formatDate($date)
     {
         if ($date) {
@@ -67,6 +116,17 @@ class ImportProcess implements ShouldQueue
         }
     }
 
+    /**
+     * Pass the name, field name, and class of an object, then check the
+     * database for duplicate names. If there are duplicates, append
+     * an incremental number to the name.
+     *
+     * @param string $name
+     * @param string $field
+     * @param object $class
+     *
+     * @return string
+     */        
     private function formatName($name, $field, $class)
     {
         //Create a new instance of this model
@@ -101,7 +161,13 @@ class ImportProcess implements ShouldQueue
             return $name;
         }
     }
-    
+
+    /**
+     * Parse the BPMN, looking for any task assignments to users and/or groups,
+     * then remove them along with any referenced users or groups.
+     *
+     * @return void
+     */        
     private function removeAssignedEntities()
     {
         $humanTasks = ['task', 'userTask'];
@@ -117,7 +183,16 @@ class ImportProcess implements ShouldQueue
             }
         }
     }
-    
+
+    /**
+     * Create a new EnvironmentVariable model for each environment variable
+     * object in the imported file, then save it to the database if it
+     * does not match the name of an existing environment variable.
+     *
+     * @param object[] $environmentVariables
+     *
+     * @return void
+     */    
     private function saveEnvironmentVariables($environmentVariables)
     {
         $this->new['environment_variables'] = [];
@@ -137,7 +212,16 @@ class ImportProcess implements ShouldQueue
             }
         }
     }
-    
+
+    /**
+     * Pass an old screen ID and a new screen ID, then replace any references
+     * within the BPMN to the old ID with the new ID.
+     *
+     * @param string|integer $oldId
+     * @param string|integer $newId
+     *
+     * @return void
+     */    
     private function updateScreenRefs($oldId, $newId)
     {
         $humanTasks = ['task', 'userTask'];
@@ -151,7 +235,15 @@ class ImportProcess implements ShouldQueue
             }
         }
     }
-    
+
+    /**
+     * Create a new Screen model for each screen object in the imported file,
+     * then save it to the database.
+     *
+     * @param object[] $screens
+     *
+     * @return void
+     */    
     private function saveScreens($screens)
     {
         $this->new['screens'] = [];
@@ -172,6 +264,15 @@ class ImportProcess implements ShouldQueue
         }
     }
 
+    /**
+     * Pass an old script ID and a new script ID, then replace any references
+     * within the BPMN to the old ID with the new ID.
+     *
+     * @param string|integer $oldId
+     * @param string|integer $newId
+     *
+     * @return void
+     */
     private function updateScriptRefs($oldId, $newId)
     {
         $tasks = $this->definitions->getElementsByTagName('scriptTask');
@@ -183,6 +284,14 @@ class ImportProcess implements ShouldQueue
         }
     }
 
+    /**
+     * Create a new Script model for each script object in the imported file,
+     * then save it to the database.
+     *
+     * @param object[] $scripts
+     *
+     * @return void
+     */
     private function saveScripts($scripts)
     {
         $this->new['scripts'] =[];
@@ -201,7 +310,16 @@ class ImportProcess implements ShouldQueue
             $this->new['scripts'][] = $new;
         }
     }
-    
+
+    /**
+     * If an existing ProcessCategory does not exist with the same name, create
+     * a new ProcessCategory model based on the object from the imported file,
+     * then save it to the database.
+     *
+     * @param object $processCategory
+     *
+     * @return void
+     */    
     private function saveProcessCategory($processCategory)
     {
         $existing = ProcessCategory::where('name', $processCategory->name)->first();
@@ -217,7 +335,15 @@ class ImportProcess implements ShouldQueue
             $this->new['process_category'] = $new;
         }
     }
-    
+
+    /**
+     * Create a new Process model based on the object from the imported file,
+     * then save it to the database.
+     *
+     * @param object $process
+     *
+     * @return void
+     */
     private function saveProcess($process)
     {
         $new = new Process;
@@ -234,13 +360,23 @@ class ImportProcess implements ShouldQueue
         $this->definitions = $new->getDefinitions();       
         $this->new['process'] = $new;
     }
-    
+
+    /**
+     * Save the BPMN with any adjustments that have been made along the way.
+     *
+     * @return void
+     */    
     private function saveBpmn()
     {
         $this->new['process']->bpmn = $this->definitions->saveXML();
         $this->new['process']->save();
     }
-    
+
+    /**
+     * Parse files with version 1
+     *
+     * @return boolean
+     */    
     private function parseFileV1()
     {
         $this->saveEnvironmentVariables($this->file->environment_variables);
@@ -253,6 +389,11 @@ class ImportProcess implements ShouldQueue
         return true;
     }
 
+    /**
+     * Decode the file from base64 and JSON.
+     *
+     * @return void
+     */
     private function decodeFile()
     {
         $this->file = base64_decode($this->fileContents);
@@ -266,14 +407,17 @@ class ImportProcess implements ShouldQueue
      */
     public function handle()
     {
+        //First, decode the file
         $this->decodeFile();
 
+        //Then, process it based on version number
         if ($this->file->type == 'process_package') {
             if ($method = $this->getParser()) {
                 return $this->{$method}();
             }
         }
         
+        //Return false by default
         return false;
     }
 }
