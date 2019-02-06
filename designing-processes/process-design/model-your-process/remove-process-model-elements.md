@@ -1,26 +1,55 @@
 ---
-description: Remove elements from your Process model.
+description: Delete elements from your Process model.
 ---
 
-# Remove Process Model Elements
+# Delete Process Model Elements
 
-## Remove a Process Model Element
-
-Removing a process model element also removes any Sequence Flows incoming to or outgoing from that element. Therefore, if a process element is removed that has both incoming and outgoing Sequence Flows, the disconnected Sequence Flows must be reconnected for the remaining elements.
+## Delete a Process Model Element
 
 {% hint style="info" %}
-For a description of the [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow), see [Process Modeling Element Descriptions](process-modeling-element-descriptions.md).
+Your user account or group membership must have the following permissions to delete elements from the Process model:
+
+* Processes: View Processes
+* Processes: Edit Processes
+
+Ask your ProcessMaker Administrator for assistance if necessary.
 {% endhint %}
 
-Follow these steps to remove a process model element:
+Deleting a Process model element also deletes any Sequence Flows incoming to or outgoing from that element. Therefore, if a Process element is deleted that has both incoming and outgoing Sequence Flows, the disconnected Sequence Flows must be reconnected for the remaining elements.
 
-1. ​[View your processes](../../viewing-processes/view-the-list-of-processes/view-your-processes.md#view-all-processes). The **Processes** page displays.
-2. [Create a new process](../../viewing-processes/create-a-process.md) or [select the process name of an existing process to open it](../../viewing-processes/view-the-list-of-processes/view-your-processes.md#view-all-processes). Process Modeler displays.
-3. Select the process model element to remove. Available options display to the right of the selected element.  
+{% hint style="info" %}
+See [Process Modeling Element Descriptions](process-modeling-element-descriptions.md) for a description of the [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow).
+{% endhint %}
 
-   ![](../../../.gitbook/assets/sequence-flow-indicator-process-modeler-processes.png)
+### Delete a Non-Pool Element
 
-4. Click the **Trash** icon![](../../../.gitbook/assets/trash-icon-process-modeler-processes.png). The process model element is removed.
+Follow these steps to delete a non-Pool element from a Process model:
+
+1. Select the non-Pool element to delete. Available options display to the right of the selected element.  
+
+![](../../../.gitbook/assets/sequence-flow-indicator-process-modeler-processes.png)
+
+1. Click the **Delete** icon![](../../../.gitbook/assets/trash-icon-process-modeler-processes.png). The Process model element is deleted.
+
+{% hint style="warning" %}
+When a Pool element is deleted, all elements within it are also deleted. If you want to keep the elements within a Pool element, you must add those elements outside of the Pool element prior to deleting the Pool element.
+
+If you accidentally delete a Pool element with other elements you want to keep, then select the **Undo** button.
+{% endhint %}
+
+### Delete a Pool Element
+
+Follow these steps to delete a Pool element from a Process model:
+
+1. ​Select the Pool name in the Pool element to delete, thereby selecting the Pool element. Available options display to the right of the selected element.
+2. Click the **Delete** icon![](../../../.gitbook/assets/trash-icon-process-modeler-processes.png). The Pool element is deleted. All non-Pool elements within the Pool are also deleted.
+
+### Delete a Lane Element from a Pool Element
+
+Follow these steps to delete a Lane element from a Pool element:
+
+1. ​Select the Lane element in the Pool element to delete. Available options display to the right of the selected element.
+2. Click the **Delete** icon![](../../../.gitbook/assets/trash-icon-process-modeler-processes.png). The Pool element is deleted. All non-Pool elements that were within the deleted Lane element stay in their current positions within the Pool element.
 
 ## Related Topics
 
