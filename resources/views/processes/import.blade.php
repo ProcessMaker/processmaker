@@ -23,7 +23,7 @@
                 <div class="card-body">
                     <h5 class="card-title">{{__('You are about to import a Process')}}</h5>
                     <p class="card-text">{{__('User assignments and sensitive')}} <a href="environment-variables" >{{__('environment variables')}}</a> {{__('will not be imported.')}}</p> 
-                    <input type="file" ref="file" class="d-none" @change="handleFile">
+                    <input type="file" ref="file" class="d-none" @change="handleFile" accept=".bpm4">
                     <button @click="$refs.file.click()" class="btn btn-secondary ml-2">
                         <i class="fas fa-upload"></i>
                         {{__('Browse')}}
@@ -51,7 +51,6 @@
                 handleFile(e) {
                     this.file = this.$refs.file.files[0];
                     this.uploaded = true
-                    ProcessMaker.alert('{{__('Process successfully added')}}', 'success')
                 },
                 onCancel() {
                     window.location = '{{ route("processes.index") }}';
@@ -67,10 +66,11 @@
                             }
                         }
                         ).then(response => {
-                        console.log('SUCCESS!!', response);
+                            ProcessMaker.alert('{{__('Process successfully imported')}}', 'success')
+                            window.location = '{{ route("processes.index") }}';
                         })
                         .catch(error => {
-                        console.log('FAILURE!!', error);
+                            ProcessMaker.alert('{{__('Unable to import process')}}', 'danger')
                         });
                 }
             }

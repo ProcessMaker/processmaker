@@ -18,6 +18,7 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessPermission;
 use ProcessMaker\Models\User;
 use ProcessMaker\Jobs\ExportProcess;
+use ProcessMaker\Jobs\ImportProcess;
 
 class ProcessController extends Controller
 {
@@ -505,9 +506,10 @@ class ProcessController extends Controller
      *     ),
      * )
      */
-    public function import()
+    public function import(Request $request)
     {
-        dd("IMPORTING...");
+        $success = ImportProcess::dispatchNow($request->file('file')->get());
+        return ['status' => $success];
     }
 
     /**
