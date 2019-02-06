@@ -7,6 +7,30 @@ use Laravel\Dusk\Browser;
 
 class ScreenTest extends DuskTestCase
 {
+
+    /**
+     * Test display List of screens
+     */
+    public function testDisplayListScreens()
+    {
+        $this->browse(function (Browser $browser) {
+
+            //Login
+            $browser->visit(new Login())
+                ->type('@username', 'admin')
+                ->type('@password', 'admin')
+                ->press('@login');
+
+            //display list screens
+            $browser->clickLink('Processes')
+                ->waitForText('PROCESS')
+                ->click('a[title=Screens]')
+                ->waitFor('#screenIndex')
+                ->waitFor('.data-table');
+
+            //todo more validations
+        });
+    }
     /**
      * Screen builder test
      */

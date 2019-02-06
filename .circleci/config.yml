@@ -13,7 +13,7 @@ jobs:
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
-      - image: circleci/mysql:5.7-ram
+      - image: circleci/mysql:5.7
         environment:
           - MYSQL_ROOT_PASSWORD: P4ssW0rd1!
           - MYSQL_DATABASE: circle_test
