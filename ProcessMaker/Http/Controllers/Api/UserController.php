@@ -200,7 +200,7 @@ class UserController extends Controller
      */
     public function update(User $user, Request $request)
     {
-        if (!Auth::user()->can('update', $user)) {
+        if (!Auth::user()->can('edit', $user)) {
             throw new AuthorizationException(__('Not authorized to update this user.'));
         }
 

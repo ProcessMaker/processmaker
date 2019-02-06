@@ -45,12 +45,12 @@ class UserPolicy
      * @param  \ProcessMaker\Models\User  $targetUser
      * @return mixed
      */
-    public function update(User $user, User $targetUser)
+    public function edit(User $user, User $targetUser)
     {
         if ($targetUser->id == $user->id) {
             return true;
         }
-        return $user->can('edit', $targetUser);
+        return $user->hasPermission('edit-users');
     }
 
     /**
