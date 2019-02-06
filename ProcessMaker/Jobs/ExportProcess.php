@@ -4,6 +4,7 @@ namespace ProcessMaker\Jobs;
 
 use Cache;
 use Illuminate\Bus\Queueable;
+use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
@@ -78,10 +79,27 @@ class ExportProcess implements ShouldQueue
 
     private function packageAssignmentTypes()
     {
-        $this->package['assignments'] = [];
         $bpmn = $this->package['process']['bpmn'];
-        $doesMatch = preg_replace('/(pm:assignedUsers="\d+")/', '', $bpmn);
- 
+
+        $bpmn = preg_replace('/(pm:assignedUsers="\d+")/', '', $bpmn);
+        $bpmn = preg_replace('/(pm:assignedGroups="\d+")/', '', $bpmn);
+        
+        $this->package['process']['bpmn'] = $bpmn;
+    }
+    
+    private function packageEnvironmentVariables()
+    {
+        $this->package['environment_variables'] = [];
+        $environmentVariables = EnvironmentVariable::get();
+
+        foreach ($environmentVariables as $environmentVariable) {
+            foreach ($this->package['scripts'] as $script) {
+                $position = strpos($script['code'], $environmentVariable->name);
+                if ($position !== false) {
+                    $this->package['environment_variables'][] = $environmentVariable->toArray();
+                }
+            }
+        }
     }
     
     private function packageFile()
@@ -93,6 +111,7 @@ class ExportProcess implements ShouldQueue
         $this->packageScreens();
         $this->packageScripts();
         $this->packageAssignmentTypes();
+        $this->packageEnvironmentVariables();
     }
     
     private function encodeFile()
