@@ -33,6 +33,24 @@ class ExportProcess implements ShouldQueue
         $this->definitions = $this->process->getDefinitions();
         $this->filePath = $filePath;
     }
+
+    private function removeAssignedEntities()
+    {
+        $humanTasks = ['task', 'userTask'];
+        foreach ($humanTasks as $humanTask) {
+            $tasks = $this->definitions->getElementsByTagName($humanTask);
+            foreach ($tasks as $task) {
+                $assignment = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignment');
+                if ($assignment == 'user' || $assignment == 'group') {
+                    $task->removeAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignment');
+                    $task->removeAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignedUsers');
+                    $task->removeAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignedGroups');
+                }
+            }
+        }
+        
+        $this->process->bpmn = $this->definitions->saveXML();
+    }
     
     private function packageProcess()
     {
@@ -90,16 +108,6 @@ class ExportProcess implements ShouldQueue
         }
     }
 
-    private function packageAssignmentTypes()
-    {
-        $bpmn = $this->package['process']['bpmn'];
-
-        $bpmn = preg_replace('/(pm:assignedUsers="\d+")/', '', $bpmn);
-        $bpmn = preg_replace('/(pm:assignedGroups="\d+")/', '', $bpmn);
-        
-        $this->package['process']['bpmn'] = $bpmn;
-    }
-    
     private function packageEnvironmentVariables()
     {
         $this->package['environment_variables'] = [];
@@ -119,11 +127,11 @@ class ExportProcess implements ShouldQueue
     {
         $this->package['type'] = 'process_package';
         $this->package['version'] = '1';
+        $this->removeAssignedEntities();
         $this->packageProcess();
         $this->packageProcessCategory();
         $this->packageScreens();
         $this->packageScripts();
-        $this->packageAssignmentTypes();
         $this->packageEnvironmentVariables();
     }
     
