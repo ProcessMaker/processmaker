@@ -282,40 +282,10 @@ class Process extends Model implements HasMedia
         $default = $activity instanceof ScriptTaskInterface
         || $activity instanceof ServiceTaskInterface ? 'script' : 'requestor';
         $assignmentType = $activity->getProperty('assignment', $default);
-        $assignmentRules  = $activity->getProperty('assignmentRules', $default);
 
-        $instanceData = $token->getInstance()->getDataStore()->getData();
-        if ($assignmentRules && $instanceData) {
-            $list = json_decode($assignmentRules);
-            foreach ($list as $item) {
-                $formalExp = new FormalExpression();
-                $formalExp->setLanguage('FEEL');
-                $formalExp->setBody($item->expression);
-                $eval = $formalExp($instanceData);
-                if ($eval) {
-                    switch ($item->type) {
-                        case 'group':
-                            $users = [];
-                            $user = $this->getNextUserFromGroupAssignment($activity->getId(),
-                                        $this->getConsolidatedUsers($item->assignee, $users));
-                            break;
-                        case 'user':
-                            $user = $item->assignee;
-                            break;
-                        case 'requestor':
-                            $user = $token->getInstance()->user_id;
-                            break;
-                        case 'manual':
-                        case 'self_service':
-                            $user = null;
-                            break;
-                        case 'script':
-                        default:
-                            $user = null;
-                    }
-                    return $user ? User::where('id', $user)->first() : null;
-                }
-            }
+        $userByRule = $this->getNextUserByRule($activity, $token);
+        if ($userByRule !== null) {
+            return $userByRule;
         }
 
         switch ($assignmentType) {
@@ -393,6 +363,55 @@ class Process extends Model implements HasMedia
             throw new TaskDoesNotHaveUsersException($processTaskUuid);
         }
         return $users[0];
+    }
+
+    /**
+     * Get the next user if some special assignment is true
+     *
+     * @param string $processTaskUuid
+     *
+     * @return binary
+     * @throws TaskDoesNotHaveUsersException
+     */
+    private function getNextUserByRule($activity, $token)
+    {
+        $assignmentRules  = $activity->getProperty('assignmentRules', null);
+
+        $instanceData = $token->getInstance()->getDataStore()->getData();
+        if ($assignmentRules && $instanceData) {
+            $list = json_decode($assignmentRules);
+            $list = ($list === null) ? [] : $list;
+            foreach ($list as $item) {
+                $formalExp = new FormalExpression();
+                $formalExp->setLanguage('FEEL');
+                $formalExp->setBody($item->expression);
+                $eval = $formalExp($instanceData);
+                if ($eval) {
+                    switch ($item->type) {
+                        case 'group':
+                            $users = [];
+                            $user = $this->getNextUserFromGroupAssignment($activity->getId(),
+                                $this->getConsolidatedUsers($item->assignee, $users));
+                            break;
+                        case 'user':
+                            $user = $item->assignee;
+                            break;
+                        case 'requestor':
+                            $user = $token->getInstance()->user_id;
+                            break;
+                        case 'manual':
+                        case 'self_service':
+                            $user = null;
+                            break;
+                        case 'script':
+                        default:
+                            $user = null;
+                    }
+                    return $user ? User::where('id', $user)->first() : null;
+                }
+            }
+        }
+        return null;
     }
 
     /**

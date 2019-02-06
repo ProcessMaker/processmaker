@@ -174,8 +174,6 @@
                 return this.assignmentGetter === 'group';
             },
 
-
-
             showSpecialAssignOneUser() {
                 return this.typeAssignmentExpression === 'user';
             },
@@ -184,7 +182,7 @@
             },
             specialAssignmentsListGetter() {
                 const node = this.$parent.$parent.highlightedNode.definition;
-                const value = _.get(node, 'assignedByExpression');
+                const value = _.get(node, 'assignmentRules');
                 return value;
             },
         },
@@ -266,7 +264,7 @@
                     }
                 );
 
-                this.$set(this.node, 'assignedByExpression',
+                this.$set(this.node, 'assignmentRules',
                     JSON.stringify(this.specialAssignments)
                 );
             },
@@ -282,20 +280,23 @@
                     expression: this.assignmentExpression
                 };
 
-                this.specialAssignments.push(byExpression);
-                    this.$set(this.node, 'assignedByExpression',
-                        JSON.stringify(this.specialAssignments)
-                    );
-                this.assignmentExpression = '';
-                this.typeAssignmentExpression = '';
-                this.userAssignmentExpression = '';
-                this.groupAssignmentExpression = '';
+                if (byExpression.type && byExpression.expression) {
+                    this.specialAssignments.push(byExpression);
+                    this.$set(this.node, 'assignmentRules',
+                        JSON.stringify(this.specialAssignments));
+                    this.assignmentExpression = '';
+                    this.typeAssignmentExpression = '';
+                    this.userAssignmentExpression = '';
+                    this.groupAssignmentExpression = '';
+                }
             },
+
             loadSpecialAssignments() {
                 this.specialAssignments = this.specialAssignmentsListGetter
                                             ? JSON.parse (this.specialAssignmentsListGetter)
                                             : [];
             },
+
             getAssigneeName(assignment) {
                 if (assignment.type === 'requestor') {
                     return '';
