@@ -13,7 +13,7 @@ jobs:
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
-      - image: circleci/mysql:5.7
+      - image: circleci/mysql:5.7-ram
         environment:
           - MYSQL_ROOT_PASSWORD: P4ssW0rd1!
           - MYSQL_DATABASE: circle_test
@@ -181,7 +181,7 @@ jobs:
             echo "LARAVEL_ECHO_SERVER_AUTH_HOST=%%AUTHHOST%%" >> .env
             echo "LARAVEL_ECHO_SERVER_PORT=%%ECHOPORT%%" >> .env
             echo "LARAVEL_ECHO_SERVER_DEBUG=true" >> .env
-            
+
             # Generate unique app key
             php artisan key:generate --force
             # Copy over our test oauth keys. Regular install will create new ones
@@ -217,7 +217,7 @@ jobs:
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "sudo /bin/bash /root/cloudops/containerDeploy.sh $BUILD_NAME"
             # Generate Passport Keys
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "cd ~/builds/$BUILD_NAME && php artisan passport:keys"
-            
+
       - run:
           name: "SauceLabs Browser Tests: Chrome"
           command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"cd ~/builds/$BUILD_NAME && php artisan dusk\""
