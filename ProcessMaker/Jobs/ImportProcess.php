@@ -7,6 +7,7 @@ use Cache;
 use DB;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
+use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
@@ -100,6 +101,34 @@ class ImportProcess implements ShouldQueue
         }
     }
     
+    private function updateAssignmentTypes($bpmn)
+    {
+        // This method is called from saveProcess
+        $bpmn = preg_replace('/(pm:assignedUsers="\d+")/', '', $bpmn);
+        $bpmn = preg_replace('/(pm:assignedGroups="\d+")/', '', $bpmn);    
+        return $bpmn;
+    }
+    
+    private function saveEnvironmentVariables($environmentVariables)
+    {
+        $this->new['environment_variables'] = [];
+                
+        foreach ($environmentVariables as $environmentVariable) {
+            //Find duplicates of the environment variable's name
+            $dupe = EnvironmentVariable::where('name', $environmentVariable->name)->get();        
+
+            //If no duplicate, save it!
+            if (! $dupe->count()) {
+                $new = new EnvironmentVariable;
+                $new->name = $environmentVariable->name;
+                $new->description = $environmentVariable->description;
+                $new->value = '';
+                $new->created_at = $this->formatDate($environmentVariable->created_at);
+                $new->save();
+            }
+        }
+    }
+    
     private function updateScreenRefs($oldId, $newId)
     {
         //Get the BPMN
@@ -125,7 +154,6 @@ class ImportProcess implements ShouldQueue
             $new->config = $screen->config;
             $new->computed = $screen->computed;
             $new->created_at = $this->formatDate($screen->created_at);
-            $new->updated_at = $this->formatDate($screen->updated_at);
             $new->save();
             
             $this->updateScreenRefs($screen->id, $new->id);
@@ -158,7 +186,6 @@ class ImportProcess implements ShouldQueue
             $new->language = $script->language;
             $new->code = $script->code;
             $new->created_at = $this->formatDate($script->created_at);
-            $new->updated_at = $this->formatDate($script->updated_at);
             $new->save();
 
             $this->updateScriptRefs($script->id, $new->id);
@@ -188,7 +215,7 @@ class ImportProcess implements ShouldQueue
         $new = new Process;
         $new->process_category_id = $this->new['process_category']->id;
         $new->user_id = $this->currentUser()->id;
-        $new->bpmn = $process->bpmn;
+        $new->bpmn = $this->updateAssignmentTypes($process->bpmn);
         $new->description = $process->description;
         $new->name = $this->formatName($process->name, 'name', Process::class);
         $new->status = $process->status;
@@ -201,6 +228,7 @@ class ImportProcess implements ShouldQueue
     
     private function parseFileV1()
     {
+        $this->saveEnvironmentVariables($this->file->environment_variables);
         $this->saveScripts($this->file->scripts);
         $this->saveScreens($this->file->screens);
         $this->saveProcessCategory($this->file->process_category);
