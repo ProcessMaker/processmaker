@@ -133,7 +133,7 @@ The Sequence Flow indicates how two Process elements are connected. Below are tw
 ![Two Process elements connected by the Sequence Flow](../../../.gitbook/assets/sequence-flow-connecting-elements-process-modeler-processes.png)
 
 {% hint style="info" %}
-See [Connect and Remove Elements](the-quick-toolbar.md).
+See [Connect Process Model Elements](the-quick-toolbar.md#connect-one-process-model-element-to-another).
 {% endhint %}
 
 ## Organize Process Participants

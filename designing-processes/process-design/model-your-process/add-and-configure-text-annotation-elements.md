@@ -25,7 +25,7 @@ Follow these steps to add a Text Annotation element to the Process model:
 
 1. [View your Processes](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/~/drafts/-LRhVZm0ddxDcGGdN5ZN/primary/designing-processes/viewing-processes/view-the-list-of-processes/view-your-processes#view-all-processes). The **Processes** page displays.
 2. [Create a new Process](../../viewing-processes/create-a-process.md) or click the **Open Modeler** icon![](../../../.gitbook/assets/open-modeler-edit-icon-processes-page-processes.png)to edit the selected Process model. Process Modeler displays.
-3. Locate the **Text Annotation** element ![](../../../.gitbook/assets/text-annotation-bpmn-side-bar-process-modeler-processes.png) in the **BPMN** panel. Drag and drop the element to where in the Process model you want to place it. If a Pool element is in your Process model, the Text Annotation element cannot be placed outside of the Pool element. The event has been added to the Process model.
+3. Locate the **Text Annotation** element ![](../../../.gitbook/assets/text-annotation-bpmn-side-bar-process-modeler-processes.png) in the **BPMN** panel. Drag and drop the element to where in the Process model you want to place it. If a Pool element is in your Process model, the Text Annotation element cannot be placed outside of the Pool element. The element has been added to the Process model.
 
 ![Text Annotation element](../../../.gitbook/assets/text-annotation-process-modeler-processes.png)
 
@@ -56,9 +56,8 @@ All identifier values for all elements in the Process model must be unique.
 
 Follow these steps to edit the identifier value for a Text Annotation element:
 
-1. Place a [Text Annotation](add-and-configure-text-annotation-elements.md#add-a-text-annotation-element) element into your Process model.
-2. Select the Text Annotation element in which to edit its identifier value. The current Text Annotation identifier value displays in the **Identifier** field in the right side bar.
-3. In the **Identifier** field, edit the selected Text Annotation element's identifier value and then press **Enter**. The identifier value is changed.
+1. Select the Text Annotation element in which to edit its identifier value. The current Text Annotation identifier value displays in the **Identifier** field in the right side bar.
+2. In the **Identifier** field, edit the selected Text Annotation element's identifier value and then press **Enter**. The identifier value is changed.
 
 ### Edit the Annotation Description
 
@@ -66,9 +65,8 @@ Process Modeler automatically assigns a default value to a new Text Annotation e
 
 Follow these steps to edit the annotation description for a Text Annotation element:
 
-1. Place a [Text Annotation](add-and-configure-text-annotation-elements.md#add-a-text-annotation-element) element into your Process model.
-2. Select the Text Annotation element in which to edit its annotation description. The current description displays in the **Annotation Description** field in the right side bar.
-3. In the **Annotation Description** field, edit the selected Text Annotation element's description and then press **Enter**. The annotation description is changed.
+1. Select the Text Annotation element in which to edit its annotation description. The current description displays in the **Annotation Description** field in the right side bar.
+2. In the **Annotation Description** field, edit the selected Text Annotation element's description and then press **Enter**. The annotation description is changed.
 
 ## Related Topics
 

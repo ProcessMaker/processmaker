@@ -2,28 +2,64 @@
 description: Connect Process model elements by setting the Sequence Flow between them.
 ---
 
-# Connect Process Model Elements
+# Set and Delete Sequence Flow Between Elements
 
-## Connect One Process Model Element to Another
-
-Connecting a process model element to another sets the Sequence Flow between the connected elements. The direction in which the Sequence Flow points implies how [Request](../../../using-processmaker/requests/what-is-a-request.md) data is conveyed and utilized in the process model.
+## Set the Sequence Flow from One Element to Another
 
 {% hint style="info" %}
-For a description of the [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow), see [Process Modeling Element Descriptions](process-modeling-element-descriptions.md).
+### Don't Know What Sequence Flow Is?
+
+See [Process Modeling Element Descriptions](process-modeling-element-descriptions.md) for a description of [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow).
+
+### Permissions Required to Do This Task
+
+Your user account or group membership must have the following permissions to set Sequence Flow in the Process model:
+
+* Processes: View Processes
+* Processes: Edit Processes
+
+Ask your ProcessMaker Administrator for assistance if necessary.
 {% endhint %}
 
-Follow these steps to connect one process model element to another:
+Connecting a Process model element to another sets the Sequence Flow between the connected elements. The direction in which the Sequence Flow points implies how [Request](../../../using-processmaker/requests/what-is-a-request.md) data is conveyed and utilized in the Process model. As a best practice indicate a consistent direction of Sequence Flows, either left to right or top to bottom, to make modeled Processes easier to understand.
 
-1. ​[View your processes](../../viewing-processes/view-the-list-of-processes/view-your-processes.md#view-all-processes). The **Processes** page displays.
-2. [Create a new process](../../viewing-processes/create-a-process.md) or [select the process name of an existing process to open it](../../viewing-processes/view-the-list-of-processes/view-your-processes.md#view-all-processes). Process Modeler displays.
-3. Select the process model element from which you want to connect to another. Available options display to the right of the selected element.  
+Follow these steps to set the Sequence Flow from one element to another:
+
+1. ​[View your Processes](../../viewing-processes/view-the-list-of-processes/view-your-processes.md#view-all-processes). The **Processes** page displays.
+2. Click the **Open Modeler** icon![](../../../.gitbook/assets/open-modeler-edit-icon-processes-page-processes.png)to edit the selected Process model. Process Modeler displays.
+3. Select the Process model element from which you want to set the Sequence Flow. Available options display to the right of the selected element.  
 
    ![](../../../.gitbook/assets/sequence-flow-indicator-process-modeler-processes.png)
 
 4. Click the **Sequence Flow** icon![](../../../.gitbook/assets/sequence-flow-icon-process-modeler-processes.png).
-5. Click the connecting process model element. The elements are connected.  
+5. Click the Process model element in which to set the Sequence Flow. The Sequence Flow between the elements is established.  
 
    ![](../../../.gitbook/assets/sequence-flow-connecting-elements-process-modeler-processes.png)
+
+{% hint style="info" %}
+Text annotations and Pool elements do not participate in Sequence Flow.
+
+An End Event terminates the flow of a Request for that Process. Therefore, an End Event cannot have an outgoing Sequence Flow.
+{% endhint %}
+
+## Delete the Sequence Flow Between Two Elements
+
+{% hint style="info" %}
+Your user account or group membership must have the following permissions to delete the Sequence Flow between two elements in the Process model:
+
+* Processes: View Processes
+* Processes: Edit Processes
+
+Ask your ProcessMaker Administrator for assistance if necessary.
+{% endhint %}
+
+Follow these steps to delete the Sequence Flow between two elements:
+
+1. Select the Sequence Flow to be deleted between two elements.  
+
+   ![](../../../.gitbook/assets/delete-sequence-flow-process-modeler-processes.png)
+
+2. Click the **Delete** icon![](../../../.gitbook/assets/remove-icon.png). The Sequence Flow between the two elements is deleted.
 
 ## Related Topics
 

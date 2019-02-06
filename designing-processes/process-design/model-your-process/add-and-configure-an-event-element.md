@@ -25,7 +25,7 @@ Follow these steps to add a Start Event element to the Process model:
 
 1. [View your Processes](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/~/drafts/-LRhVZm0ddxDcGGdN5ZN/primary/designing-processes/viewing-processes/view-the-list-of-processes/view-your-processes#view-all-processes). The **Processes** page displays.
 2. [Create a new Process](../../viewing-processes/create-a-process.md) or click the **Open Modeler** icon![](../../../.gitbook/assets/open-modeler-edit-icon-processes-page-processes.png)to edit the selected Process model. Process Modeler displays.
-3. Locate the **Start Event** element ![](../../../.gitbook/assets/start-event-bpmn-side-bar-process-modeler-processes.png) in the **BPMN** panel. Drag and drop the element to where in the Process model you want to place it. If a Pool element is in your Process model, the Start Event element cannot be placed outside of the Pool element. The event has been added to the Process model.
+3. Locate the **Start Event** element ![](../../../.gitbook/assets/start-event-bpmn-side-bar-process-modeler-processes.png) in the **BPMN** panel. Drag and drop the element to where in the Process model you want to place it. If a Pool element is in your Process model, the Start Event element cannot be placed outside of the Pool element. The element has been added to the Process model.
 
 ![Start Event element](../../../.gitbook/assets/start-event-process-modeler-processes.png)
 
@@ -56,7 +56,7 @@ Follow these steps to add an End Event element to the Process model:
 
 1. [View your Processes](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/~/drafts/-LRhVZm0ddxDcGGdN5ZN/primary/designing-processes/viewing-processes/view-the-list-of-processes/view-your-processes#view-all-processes). The **Processes** page displays.
 2. [Create a new Process](../../viewing-processes/create-a-process.md) or click the **Open Modeler** icon![](../../../.gitbook/assets/open-modeler-edit-icon-processes-page-processes.png)to edit the selected Process model. Process Modeler displays.
-3. Locate the **End Event** element ![](../../../.gitbook/assets/end-event-bpmn-side-bar-process-modeler-processes.png) in the **BPMN** panel. Drag and drop the element to where in the Process model you want to place it. If a Pool element is in your Process model, the End Event element cannot be placed outside of the Pool element. The event has been added to the Process model.
+3. Locate the **End Event** element ![](../../../.gitbook/assets/end-event-bpmn-side-bar-process-modeler-processes.png) in the **BPMN** panel. Drag and drop the element to where in the Process model you want to place it. If a Pool element is in your Process model, the End Event element cannot be placed outside of the Pool element. The element has been added to the Process model.
 
 ![End Event element](../../../.gitbook/assets/end-event-process-modeler-processes.png)
 
@@ -87,9 +87,8 @@ All identifier values for all elements in the Process model must be unique.
 
 Follow these steps to edit the identifier value for an Event element:
 
-1. Place a [Start Event](add-and-configure-an-event-element.md#add-a-start-event-element) or [End Event](add-and-configure-an-event-element.md#add-an-end-event-element) element into your Process model.
-2. Select the Event element in which to edit its identifier value. The current Event identifier value displays in the **Identifier** field in the right side bar.
-3. In the **Identifier** field, edit the selected Event element's identifier value and then press **Enter**. The identifier value is changed.
+1. Select the Event element in which to edit its identifier value. The current Event identifier value displays in the **Identifier** field in the right side bar.
+2. In the **Identifier** field, edit the selected Event element's identifier value and then press **Enter**. The identifier value is changed.
 
 ### Edit the Element Name
 
@@ -97,9 +96,8 @@ An element name is a human-readable reference for a Process element. Process Mod
 
 Follow these steps to edit the name for an Event element:
 
-1. Place a [Start Event](add-and-configure-an-event-element.md#add-a-start-event-element) or [End Event](add-and-configure-an-event-element.md#add-an-end-event-element) element into your Process model.
-2. Select the Event element in which to edit its name. The current name displays in the **Name** field in the right side bar.
-3. In the **Name** field, edit the selected Event element's name and then press **Enter**. The element's name is changed.
+1. Select the Event element in which to edit its name. The current name displays in the **Name** field in the right side bar.
+2. In the **Name** field, edit the selected Event element's name and then press **Enter**. The element's name is changed.
 
 ## Related Topics
 

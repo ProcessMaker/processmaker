@@ -25,7 +25,7 @@ Follow these steps to add a Task element to the Process model:
 
 1. [View your Processes](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/~/drafts/-LRhVZm0ddxDcGGdN5ZN/primary/designing-processes/viewing-processes/view-the-list-of-processes/view-your-processes#view-all-processes). The **Processes** page displays.
 2. [Create a new Process](../../viewing-processes/create-a-process.md) or click the **Open Modeler** icon![](../../../.gitbook/assets/open-modeler-edit-icon-processes-page-processes.png)to edit the selected Process model. Process Modeler displays.
-3. Locate the **Task** element ![](../../../.gitbook/assets/task-bpmn-side-bar-process-modeler-processes.png) in the **BPMN** panel. Drag and drop the element to where in the Process model you want to place it. If a Pool element is in your Process model, the Task element cannot be placed outside of the Pool element. The event has been added to the Process model.
+3. Locate the **Task** element ![](../../../.gitbook/assets/task-bpmn-side-bar-process-modeler-processes.png) in the **BPMN** panel. Drag and drop the element to where in the Process model you want to place it. If a Pool element is in your Process model, the Task element cannot be placed outside of the Pool element. The element has been added to the Process model.
 
 ![Task element](../../../.gitbook/assets/task-element-process-modeler-processes.png)
 
@@ -56,9 +56,8 @@ All identifier values for all elements in the Process model must be unique.
 
 Follow these steps to edit the identifier value for a Task element:
 
-1. Place a [Task](add-and-configure-task-elements.md#add-a-task-element) element into your Process model.
-2. Select the Task element in which to edit its identifier value. The current Task identifier value displays in the **Identifier** field in the right side bar.
-3. In the **Identifier** field, edit the selected Task element's identifier value and then press **Enter**. The identifier value is changed.
+1. Select the Task element in which to edit its identifier value. The current Task identifier value displays in the **Identifier** field in the right side bar.
+2. In the **Identifier** field, edit the selected Task element's identifier value and then press **Enter**. The identifier value is changed.
 
 ### Edit the Element Name
 
@@ -66,9 +65,8 @@ An element name is a human-readable reference for a Process element. Process Mod
 
 Follow these steps to edit the name for a Task element:
 
-1. Place a [Task](add-and-configure-task-elements.md#add-a-task-element) element into your Process model.
-2. Select the Task element in which to edit its name. The current name displays in the **Name** field in the right side bar.
-3. In the **Name** field, edit the selected Task element's name and then press **Enter**. The element's name is changed.
+1. Select the Task element in which to edit its name. The current name displays in the **Name** field in the right side bar.
+2. In the **Name** field, edit the selected Task element's name and then press **Enter**. The element's name is changed.
 
 ### Select the ProcessMaker Screen for a Task Element
 
@@ -84,9 +82,8 @@ Ensure to select a ProcessMaker Screen for each Task element in your Process mod
 
 Follow these steps to select a ProcessMaker Screen for a Task element:
 
-1. Place a [Task](add-and-configure-task-elements.md#add-a-task-element) element into your Process model.
-2. Select the Task element in which to specify its ProcessMaker Screen. Options for the Task element display in the right side bar.
-3. In the **Screen For Input** field, select which ProcessMaker Screen that Task element uses. The ProcessMaker Screen is selected.
+1. Select the Task element in which to specify its ProcessMaker Screen. Options for the Task element display in the right side bar.
+2. In the **Screen For Input** field, select which ProcessMaker Screen that Task element uses. The ProcessMaker Screen is selected.
 
 {% hint style="info" %}
 Click the **Refresh** link below the **Screen For Input** field to refresh the options in the drop-down.
@@ -108,9 +105,8 @@ Specify due time for a Task element in total number of hours. This includes hour
 
 Follow these steps to specify when a Task element is due:
 
-1. Place a [Task](add-and-configure-task-elements.md#add-a-task-element) element into your Process model.
-2. Select the Task element in which to specify how many hours the task is due.
-3. Specify the total number of hours the task is due in one of the following ways:
+1. Select the Task element in which to specify how many hours the task is due.
+2. Specify the total number of hours the task is due in one of the following ways:
    * Enter the number in the **Due In** field and then press **Enter**. The number of hours is entered.
    * Hover your cursor over the **Due In** field, and then use the spin arrows to increase or decrease the total number of hours by one.
 
@@ -124,9 +120,8 @@ Select to whom to assign the Task element in a Process model:
 
 Follow these steps to select to whom to assign the Task element:
 
-1. Place a [Task](add-and-configure-task-elements.md#add-a-task-element) element into your Process model.
-2. Select the Task element in which to select the task assignee. Options for the Task element display in the right side bar.
-3. From the **Task Assignment** field, select one of the following options:
+1. Select the Task element in which to select the task assignee. Options for the Task element display in the right side bar.
+2. From the **Task Assignment** field, select one of the following options:
    * **To requestor:** Select **To requestor** to assign the Task element to the Request initiator.
    * **To user:** Select **To user** to assign the Task element to a specified person. When this option is selected, the **Assigned User** field displays below the **Task Assignment** field. From the **Assigned User** field, select the person's full name as the Task element's assignee.
    * **To group:** Select **To group** to assign the Task element to a specified group. When this option is selected, the **Assigned Group** field displays below the **Task Assignment** field. From the **Assigned Group** field, select the group as the Task element's assignee.

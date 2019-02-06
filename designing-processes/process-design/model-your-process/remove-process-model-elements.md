@@ -25,11 +25,11 @@ See [Process Modeling Element Descriptions](process-modeling-element-description
 
 Follow these steps to delete a non-Pool element from a Process model:
 
-1. Select the non-Pool element to delete. Available options display to the right of the selected element.  
+1. Select the non-Pool element to delete. Available options display to the right of the selected element.   
 
-![](../../../.gitbook/assets/sequence-flow-indicator-process-modeler-processes.png)
+   ![](../../../.gitbook/assets/sequence-flow-indicator-process-modeler-processes.png)
 
-1. Click the **Delete** icon![](../../../.gitbook/assets/trash-icon-process-modeler-processes.png). The Process model element is deleted.
+2. Click the **Delete** icon![](../../../.gitbook/assets/remove-icon.png). The Process model element is deleted.
 
 {% hint style="warning" %}
 When a Pool element is deleted, all elements within it are also deleted. If you want to keep the elements within a Pool element, you must add those elements outside of the Pool element prior to deleting the Pool element.
@@ -42,14 +42,14 @@ If you accidentally delete a Pool element with other elements you want to keep, 
 Follow these steps to delete a Pool element from a Process model:
 
 1. ​Select the Pool name in the Pool element to delete, thereby selecting the Pool element. Available options display to the right of the selected element.
-2. Click the **Delete** icon![](../../../.gitbook/assets/trash-icon-process-modeler-processes.png). The Pool element is deleted. All non-Pool elements within the Pool are also deleted.
+2. Click the **Delete** icon![](../../../.gitbook/assets/remove-icon.png). The Pool element is deleted. All non-Pool elements within the Pool are also deleted.
 
 ### Delete a Lane Element from a Pool Element
 
 Follow these steps to delete a Lane element from a Pool element:
 
 1. ​Select the Lane element in the Pool element to delete. Available options display to the right of the selected element.
-2. Click the **Delete** icon![](../../../.gitbook/assets/trash-icon-process-modeler-processes.png). The Pool element is deleted. All non-Pool elements that were within the deleted Lane element stay in their current positions within the Pool element.
+2. Click the **Delete** icon![](../../../.gitbook/assets/remove-icon.png). The Pool element is deleted. All non-Pool elements that were within the deleted Lane element stay in their current positions within the Pool element.
 
 ## Related Topics
 
