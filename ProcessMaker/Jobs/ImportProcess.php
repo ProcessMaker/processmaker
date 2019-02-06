@@ -403,7 +403,7 @@ class ImportProcess implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @return void
+     * @return boolean
      */
     public function handle()
     {

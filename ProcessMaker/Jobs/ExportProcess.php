@@ -18,12 +18,44 @@ class ExportProcess implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private $process, $definitions, $filePath, $file;
-    
+    /**
+     * The process we will export.
+     *
+     * @var object
+     */
+    private $process;
+
+    /**
+     * The BPMN definitions of the process.
+     *
+     * @var object
+     */
+    private $definitions;
+
+    /**
+     * The path where our final file should be stored, if any.
+     *
+     * @var string|null
+     */
+    private $filePath;
+
+    /**
+     * The final contents of our file.
+     *
+     * @var string
+     */
+    private $fileContents;
+
+    /**
+     * The array which will contain all of our packaged objects in array form.
+     *
+     * @var array[]
+     */    
     private $package = [];
 
     /**
-     * Create a new job instance.
+     * Create a new job instance, set the process, get BPMN definitions, and
+     * set the file path.
      *
      * @return void
      */
@@ -34,6 +66,12 @@ class ExportProcess implements ShouldQueue
         $this->filePath = $filePath;
     }
 
+    /**
+     * Parse the BPMN, looking for any task assignments to users and/or groups,
+     * then remove them along with any referenced users or groups.
+     *
+     * @return void
+     */        
     private function removeAssignedEntities()
     {
         $humanTasks = ['task', 'userTask'];
@@ -51,18 +89,34 @@ class ExportProcess implements ShouldQueue
         
         $this->process->bpmn = $this->definitions->saveXML();
     }
-    
+
+    /**
+     * Package the process itself. Note that we must save BPMN separately
+     * since it is hidden from our toArray method. 
+     *
+     * @return void
+     */    
     private function packageProcess()
     {
         $this->package['process'] = $this->process->toArray();
         $this->package['process']['bpmn'] = $this->process->bpmn;    
     }
-    
+
+    /**
+     * Package the process category associated with our process. 
+     *
+     * @return void
+     */    
     private function packageProcessCategory()
     {
         $this->package['process_category'] = $this->process->category->toArray();
     }
-    
+
+    /**
+     * Package any screens referred to in our BPMN. 
+     *
+     * @return void
+     */    
     private function packageScreens()
     {
         $this->package['screens'] = [];
@@ -87,6 +141,11 @@ class ExportProcess implements ShouldQueue
         }
     }
 
+    /**
+     * Package any scripts referred to in our BPMN. 
+     *
+     * @return void
+     */
     private function packageScripts()
     {
         $this->package['scripts'] = [];
@@ -108,6 +167,12 @@ class ExportProcess implements ShouldQueue
         }
     }
 
+    /**
+     * Package the metadata (NOT THE VALUE) of any environment variables
+     * referred to in our scripts.
+     *
+     * @return void
+     */
     private function packageEnvironmentVariables()
     {
         $this->package['environment_variables'] = [];
@@ -122,7 +187,13 @@ class ExportProcess implements ShouldQueue
             }
         }
     }
-    
+
+    /**
+     * Run through each step of the packaging process. We specify a file type
+     * and a file version in case of future changes to the file format.
+     *
+     * @return void
+     */    
     private function packageFile()
     {
         $this->package['type'] = 'process_package';
@@ -134,30 +205,41 @@ class ExportProcess implements ShouldQueue
         $this->packageScripts();
         $this->packageEnvironmentVariables();
     }
-    
+
+    /**
+     * Encode the file to JSON and base64.
+     *
+     * @return void
+     */    
     private function encodeFile()
     {
-        $this->file = json_encode($this->package);
-        $this->file = base64_encode($this->file);
+        $this->fileContents = json_encode($this->package);
+        $this->fileContents = base64_encode($this->fileContents);
     }
 
     /**
-     * Save the file .
+     * Save the file to the specified path, then return true on success or
+     * false upon failure.
      *
-     * @return void
+     * @return boolean
      */
     private function saveFile()
     {
-        $bytes = file_put_contents($this->filePath, $this->file);
+        $bytes = file_put_contents($this->filePath, $this->fileContents);
         if ($bytes !== false) {
             return true;
         }
     }
-    
+
+    /**
+     * Save the file to the cache, then return the cache key.
+     *
+     * @return string
+     */    
     private function cacheFile()
     {
-        $key = sha1($this->file);
-        $value = $this->file;
+        $key = sha1($this->fileContents);
+        $value = $this->fileContents;
         $expiresAt = now()->addHours(1);
         Cache::put($key, $value, $expiresAt);
         
@@ -167,13 +249,19 @@ class ExportProcess implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @return void
+     * @return boolean|string
      */
     public function handle()
     {
+        // Package up our process
         $this->packageFile();
+        
+        // Encode the file
         $this->encodeFile();
         
+        // If a specific file path is specified,
+        // export to it and return true. Otherwise,
+        // save to our cache and return the saved key.
         if ($this->filePath) {
             return $this->saveFile();
         } else {
