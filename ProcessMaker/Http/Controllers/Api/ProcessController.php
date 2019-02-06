@@ -505,7 +505,7 @@ class ProcessController extends Controller
      *     ),
      * )
      */
-    public function import(Request $request, Process $process)
+    public function import()
     {
         dd("IMPORTING...");
     }

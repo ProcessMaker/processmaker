@@ -31,7 +31,7 @@
                 </div>
                 <div class="card-footer bg-light" align="right">
                     <button type="button" class="btn btn-outline-secondary" @click="onCancel">{{__('Cancel')}}</button>
-    			    <button type="button" class="btn btn-secondary ml-2" >{{__('Import')}}</button>
+    			    <button type="button" class="btn btn-secondary ml-2" @click="importFile" :disabled="uploaded == false">{{__('Import')}}</button>
                 </div>
             </div>
         </div>
@@ -44,16 +44,35 @@
         new Vue({
             el: '#importProcess',
             data: {
-                
+                file: '',
+                uploaded: false
             },
             methods: {
                 handleFile(e) {
-                    console.log(e.target.files[0])
-                     this.$emit('input', e.target.files[0])
+                    this.file = this.$refs.file.files[0];
+                    this.uploaded = true
+                    ProcessMaker.alert('{{__('Process successfully added')}}', 'success')
                 },
                 onCancel() {
                     window.location = '{{ route("processes.index") }}';
                 },
+                importFile() {
+                    let formData = new FormData();
+                    formData.append('file', this.file);
+                    ProcessMaker.apiClient.post( '/process/import',
+                        formData,
+                        {
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            }
+                        }
+                        ).then(function(){
+                        console.log('SUCCESS!!');
+                        })
+                        .catch(function(){
+                        console.log('FAILURE!!');
+                        });
+                }
             }
         })
     </script>
