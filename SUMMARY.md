@@ -107,6 +107,7 @@
     * [Add and Configure Pool and Lane Elements](designing-processes/process-design/model-your-process/add-and-configure-pool-and-lane-elements.md)
     * [Set and Delete Sequence Flow Between Elements](designing-processes/process-design/model-your-process/the-quick-toolbar.md)
     * [Delete Process Model Elements](designing-processes/process-design/model-your-process/remove-process-model-elements.md)
+    * [Navigate Around Your Process Model](designing-processes/process-design/model-your-process/navigate-around-your-process-model.md)
     * [Save Your Process Model](designing-processes/process-design/model-your-process/toolboxes.md)
 
 ## ProcessMaker Administration
