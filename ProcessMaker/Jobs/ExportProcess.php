@@ -18,7 +18,7 @@ class ExportProcess implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private $process, $filePath, $file;
+    private $process, $definitions, $filePath, $file;
     
     private $package = [];
 
@@ -30,13 +30,14 @@ class ExportProcess implements ShouldQueue
     public function __construct(Process $process, $filePath = null)
     {
         $this->process = $process;
+        $this->definitions = $this->process->getDefinitions();
         $this->filePath = $filePath;
     }
     
     private function packageProcess()
     {
         $this->package['process'] = $this->process->toArray();
-        $this->package['process']['bpmn'] = $this->process->bpmn;
+        $this->package['process']['bpmn'] = $this->process->bpmn;    
     }
     
     private function packageProcessCategory()
@@ -50,11 +51,9 @@ class ExportProcess implements ShouldQueue
         
         $screenIds = [];
         
-        $definitions = $this->process->getDefinitions();
-        $humanTasks = ['task', 'userTask'];
-        
+        $humanTasks = ['task', 'userTask'];        
         foreach($humanTasks as $humanTask) {
-            $tasks = $definitions->getElementsByTagName($humanTask);
+            $tasks = $this->definitions->getElementsByTagName($humanTask);
             foreach ($tasks as $task) {
                 $screenRef = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef');
                 $screenIds[] = $screenRef;
@@ -74,11 +73,15 @@ class ExportProcess implements ShouldQueue
     {
         $this->package['scripts'] = [];
 
-        $bpmn = $this->package['process']['bpmn'];
-        $doesMatch = preg_match_all('/pm:scriptRef="(\d+)"/', $bpmn, $matches);
+        $scriptIds = [];
+        
+        $tasks = $this->definitions->getElementsByTagName('scriptTask');
+        foreach ($tasks as $task) {
+            $scriptRef = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptRef');
+            $scriptIds[] = $scriptRef;
+        }
 
-        if($doesMatch) {
-            $scriptIds = $matches[1];
+        if(count($scriptIds)) {
             $scripts = Script::whereIn('id', $scriptIds)->get();
 
             $scripts->each(function($scripts) {
