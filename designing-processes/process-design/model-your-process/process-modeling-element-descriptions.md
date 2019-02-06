@@ -95,7 +95,10 @@ Below is an Exclusive Gateway element when it has been placed into a Process mod
 ![Exclusive Gateway element](../../../.gitbook/assets/exclusive-gateway-element-process-modeler-processes.png)
 
 {% hint style="info" %}
-See [Add and Configure Exclusive Gateway Elements](add-and-configure-exclusive-gateway-elements.md).
+See the following topics about Exclusive Gateway elements:
+
+* [Add and Configure Exclusive Gateway Elements](add-and-configure-exclusive-gateway-elements.md#add-an-exclusive-gateway-element)
+* [Configure the Sequence Flow for Exclusive Gateway Elements](the-quick-toolbar.md#configure-the-sequence-flow-for-exclusive-gateway-elements)
 {% endhint %}
 
 ## Text Annotation
@@ -124,6 +127,8 @@ In Process Modeler, a Sequence Flow indicator displays when you click an element
 
 {% hint style="info" %}
 Text annotations and Pool elements do not participate in Sequence Flow.
+
+Sequence Flows from Exclusive Gateway elements can be configured to specify under which condition a Request routes through that Sequence Flow. See [Set and Delete Sequence Flow Between Elements](the-quick-toolbar.md#configure-the-sequence-flow-for-exclusive-gateway-elements).
 
 An End Event terminates the flow of a Request for that Process. Therefore, an End Event cannot have an outgoing Sequence Flow.
 {% endhint %}

@@ -39,8 +39,14 @@ Follow these steps to set the Sequence Flow from one element to another:
 {% hint style="info" %}
 Text annotations and Pool elements do not participate in Sequence Flow.
 
+Sequence Flows from Exclusive Gateway elements can be configured to specify under which condition a Request routes through that Sequence Flow. See [Set and Delete Sequence Flow Between Elements](the-quick-toolbar.md#configure-the-sequence-flow-for-exclusive-gateway-elements).
+
 An End Event terminates the flow of a Request for that Process. Therefore, an End Event cannot have an outgoing Sequence Flow.
 {% endhint %}
+
+### Configure the Sequence Flow for Exclusive Gateway Elements
+
+
 
 ## Delete the Sequence Flow Between Two Elements
 

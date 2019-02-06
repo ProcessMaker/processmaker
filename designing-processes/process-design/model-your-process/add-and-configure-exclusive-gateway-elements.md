@@ -38,6 +38,12 @@ If the element is placed inside of a Pool element, the Exclusive Gateway element
 ## Configure an Exclusive Gateway Element
 
 {% hint style="info" %}
+### Looking for Information How to Configure Exclusive Gateway Conditions?
+
+See [Configure the Sequence Flow for Exclusive Gateway Elements](the-quick-toolbar.md#configure-the-sequence-flow-for-exclusive-gateway-elements).
+
+### Permissions Required to Do This Task
+
 Your user account or group membership must have the following permissions to configure an Exclusive Gateway element:
 
 * Processes: View Processes
