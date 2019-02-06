@@ -17,12 +17,13 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use ProcessMaker\Providers\WorkflowServiceProvider;
 
 class ImportProcess implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private $process, $fileContents, $file;
+    private $process, $definitions, $fileContents, $file;
     
     private $package = [];
     
@@ -101,12 +102,20 @@ class ImportProcess implements ShouldQueue
         }
     }
     
-    private function updateAssignmentTypes($bpmn)
+    private function removeAssignedEntities()
     {
-        // This method is called from saveProcess
-        $bpmn = preg_replace('/(pm:assignedUsers="\d+")/', '', $bpmn);
-        $bpmn = preg_replace('/(pm:assignedGroups="\d+")/', '', $bpmn);    
-        return $bpmn;
+        $humanTasks = ['task', 'userTask'];
+        foreach ($humanTasks as $humanTask) {
+            $tasks = $this->definitions->getElementsByTagName($humanTask);
+            foreach ($tasks as $task) {
+                $assignment = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignment');
+                if ($assignment == 'user' || $assignment == 'group') {
+                    $task->removeAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignment');
+                    $task->removeAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignedUsers');
+                    $task->removeAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignedGroups');
+                }
+            }
+        }
     }
     
     private function saveEnvironmentVariables($environmentVariables)
@@ -131,15 +140,16 @@ class ImportProcess implements ShouldQueue
     
     private function updateScreenRefs($oldId, $newId)
     {
-        //Get the BPMN
-        $bpmn = $this->file->process->bpmn;
-        
-        //Set our pattern; replace it with our new ID
-        $pattern = '/(pm:screenRef=")(' . $oldId . ')(")/';
-        $bpmn = preg_replace($pattern, "pm:screenRef=\"{$newId}\"", $bpmn);
-        
-        //Save the new BPMN
-        $this->file->process->bpmn = $bpmn;
+        $humanTasks = ['task', 'userTask'];
+        foreach ($humanTasks as $humanTask) {
+            $tasks = $this->definitions->getElementsByTagName($humanTask);
+            foreach ($tasks as $task) {
+                $screenRef = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef');
+                if ($screenRef == $oldId) {
+                    $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef', $newId);
+                }
+            }
+        }
     }
     
     private function saveScreens($screens)
@@ -164,15 +174,13 @@ class ImportProcess implements ShouldQueue
 
     private function updateScriptRefs($oldId, $newId)
     {
-        //Get the BPMN
-        $bpmn = $this->file->process->bpmn;
-        
-        //Set our pattern; replace it with our new ID
-        $pattern = '/(pm:scriptRef=")(' . $oldId . ')(")/';
-        $bpmn = preg_replace($pattern, "pm:scriptRef=\"{$newId}\"", $bpmn);
-        
-        //Save the new BPMN
-        $this->file->process->bpmn = $bpmn;
+        $tasks = $this->definitions->getElementsByTagName('scriptTask');
+        foreach ($tasks as $task) {
+            $scriptRef = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptRef');        
+            if ($scriptRef == $oldId) {
+                $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptRef', $newId);
+            }
+        }
     }
 
     private function saveScripts($scripts)
@@ -215,24 +223,33 @@ class ImportProcess implements ShouldQueue
         $new = new Process;
         $new->process_category_id = $this->new['process_category']->id;
         $new->user_id = $this->currentUser()->id;
-        $new->bpmn = $this->updateAssignmentTypes($process->bpmn);
+        $new->bpmn = $process->bpmn;
         $new->description = $process->description;
         $new->name = $this->formatName($process->name, 'name', Process::class);
         $new->status = $process->status;
         $new->created_at = $this->formatDate($process->created_at);
         $new->deleted_at = $this->formatDate($process->deleted_at);
         $new->save();
-        
+
+        $this->definitions = $new->getDefinitions();       
         $this->new['process'] = $new;
+    }
+    
+    private function saveBpmn()
+    {
+        $this->new['process']->bpmn = $this->definitions->saveXML();
+        $this->new['process']->save();
     }
     
     private function parseFileV1()
     {
         $this->saveEnvironmentVariables($this->file->environment_variables);
-        $this->saveScripts($this->file->scripts);
-        $this->saveScreens($this->file->screens);
         $this->saveProcessCategory($this->file->process_category);
         $this->saveProcess($this->file->process);
+        $this->saveScripts($this->file->scripts);
+        $this->saveScreens($this->file->screens);
+        $this->removeAssignedEntities();
+        $this->saveBpmn();
         return true;
     }
 
