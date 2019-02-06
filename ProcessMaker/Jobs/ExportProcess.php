@@ -12,6 +12,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use ProcessMaker\Providers\WorkflowServiceProvider;
 
 class ExportProcess implements ShouldQueue
 {
@@ -47,11 +48,20 @@ class ExportProcess implements ShouldQueue
     {
         $this->package['screens'] = [];
         
-        $bpmn = $this->package['process']['bpmn'];
-        $doesMatch = preg_match_all('/pm:screenRef="(\d+)"/', $bpmn, $matches);
+        $screenIds = [];
         
-        if ($doesMatch) {
-            $screenIds = $matches[1];
+        $definitions = $this->process->getDefinitions();
+        $humanTasks = ['task', 'userTask'];
+        
+        foreach($humanTasks as $humanTask) {
+            $tasks = $definitions->getElementsByTagName($humanTask);
+            foreach ($tasks as $task) {
+                $screenRef = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef');
+                $screenIds[] = $screenRef;
+            }
+        }
+        
+        if (count($screenIds)) {
             $screens = Screen::whereIn('id', $screenIds)->get();
             
             $screens->each(function($screen) {
