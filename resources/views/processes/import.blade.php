@@ -59,18 +59,18 @@
                 importFile() {
                     let formData = new FormData();
                     formData.append('file', this.file);
-                    ProcessMaker.apiClient.post( '/process/import',
+                    ProcessMaker.apiClient.post( '/processes/import',
                         formData,
                         {
                             headers: {
                                 'Content-Type': 'multipart/form-data'
                             }
                         }
-                        ).then(function(){
-                        console.log('SUCCESS!!');
+                        ).then(response => {
+                        console.log('SUCCESS!!', response);
                         })
-                        .catch(function(){
-                        console.log('FAILURE!!');
+                        .catch(error => {
+                        console.log('FAILURE!!', error);
                         });
                 }
             }
