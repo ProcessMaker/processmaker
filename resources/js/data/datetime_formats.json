@@ -17,7 +17,7 @@
   {
     "format": "d/m/Y",
     "momentFormat": "DD/MM/YYYY",
-    "title": "d/m/Y H:i (31/12/2017)"
+    "title": "d/m/Y (31/12/2017)"
   },
   {
     "format": "d/m/Y H:i",
@@ -27,7 +27,7 @@
   {
     "format": "Y/m/d",
     "momentFormat": "YYYY/MM/DD",
-    "title": "Y/m/d H:i (2017/12/31)"
+    "title": "Y/m/d (2017/12/31)"
   },
   {
     "format": "Y/m/d H:i",
