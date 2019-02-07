@@ -35,7 +35,7 @@ class UserPolicy
         if ($targetUser->id == $user->id) {
             return true;
         }
-        return $user->can('view', $targetUser);
+        return $user->hasPermission('view-users');
     }
 
     /**
