@@ -40,7 +40,7 @@ If the element is placed inside of a Pool element, the Exclusive Gateway element
 {% hint style="info" %}
 ### Looking for Information How to Configure Exclusive Gateway Conditions?
 
-See [Configure the Sequence Flow for Exclusive Gateway Elements](the-quick-toolbar.md#configure-the-sequence-flow-for-exclusive-gateway-elements).
+See [Configure a Sequence Flow from an Exclusive Gateway Element](the-quick-toolbar.md#configure-a-sequence-flow-from-an-exclusive-gateway-element).
 
 ### Permissions Required to Do This Task
 

@@ -98,7 +98,7 @@ Below is an Exclusive Gateway element when it has been placed into a Process mod
 See the following topics about Exclusive Gateway elements:
 
 * [Add and Configure Exclusive Gateway Elements](add-and-configure-exclusive-gateway-elements.md#add-an-exclusive-gateway-element)
-* [Configure the Sequence Flow for Exclusive Gateway Elements](the-quick-toolbar.md#configure-the-sequence-flow-for-exclusive-gateway-elements)
+* [Configure a Sequence Flow from an Exclusive Gateway Element](the-quick-toolbar.md#configure-a-sequence-flow-from-an-exclusive-gateway-element)
 {% endhint %}
 
 ## Text Annotation
