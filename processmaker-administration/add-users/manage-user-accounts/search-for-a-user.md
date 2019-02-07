@@ -8,11 +8,13 @@ description: >-
 
 Use the **Search** function to filter all ProcessMaker user accounts from the **Users** page based on your entered text.
 
-{% hint style="info" %}
-To search for a ProcessMaker user account, you must be a member of the ProcessMaker Administrator group. Otherwise, the **Admin** option is not available from the top menu that allows you to perform user account management activities.
-{% endhint %}
-
 ## Search for a ProcessMaker User Account
+
+{% hint style="info" %}
+Your user account or group membership must have the "Users: View Users" permission to search for ProcessMaker user accounts.
+
+Ask your ProcessMaker Administrator for assistance if necessary.
+{% endhint %}
 
 Follow these steps to search for a ProcessMaker user account:
 

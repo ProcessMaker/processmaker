@@ -4,16 +4,21 @@ description: Edit a ProcessMaker user account.
 
 # Edit a User Account
 
-{% hint style="info" %}
-To edit a ProcessMaker user account, you must be a member of the ProcessMaker Administrator group. Otherwise, the **Admin** option is not available from the top menu that allows you to perform user account management activities.
-{% endhint %}
-
 ## Edit a ProcessMaker User Account
+
+{% hint style="info" %}
+Your user account or group membership must have the following permissions to edit a ProcessMaker user account:
+
+* Users: View Users
+* Users: Edit Users
+
+Ask your ProcessMaker Administrator for assistance if necessary.
+{% endhint %}
 
 Follow these steps to edit a ProcessMaker user account:
 
 1. [View all ProcessMaker user accounts.](view-all-users.md) The **Users** page displays.
-2. Hover your cursor over the ProcessMaker use account to edit and then click the **Edit** icon![](../../../.gitbook/assets/edit-icon.png). The **Edit User** page displays.  
+2. Select the **Edit** icon![](../../../.gitbook/assets/edit-icon.png). The **Edit User** page displays.  
 
    ![](../../../.gitbook/assets/edit-user-page-admin.png)
 

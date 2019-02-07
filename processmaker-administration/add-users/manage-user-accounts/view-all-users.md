@@ -6,43 +6,50 @@ description: View all ProcessMaker user accounts.
 
 ProcessMaker displays all ProcessMaker user accounts in one table that Process Administrators throughout your organization have created. This makes it easy to manage ProcessMaker user accounts.
 
-{% hint style="info" %}
-To view ProcessMaker user accounts, you must be a member of the ProcessMaker Administrator group. Otherwise, the **Admin** option is not available from the top menu that allows you to perform user account management activities.
-{% endhint %}
-
 ## View All ProcessMaker User Accounts <a id="view-all-scripts"></a>
+
+{% hint style="info" %}
+Your user account or group membership must have the "Users: View Users" permission to view the list of users.
+
+Ask your ProcessMaker Administrator for assistance if necessary.
+{% endhint %}
 
 Follow these steps to view all ProcessMaker user accounts in your organization:
 
 1. [Log in](../../../using-processmaker/log-in.md#log-in) to ProcessMaker.
-2. Click the **Admin** option from the top menu. The **Users** page displays all ProcessMaker user accounts created by all ProcessMaker Administrators in your organization.
+2. Click the **Admin** option from the top menu. The **Users** page displays all ProcessMaker user accounts.
 
 {% hint style="info" %}
 Click the **Users** ![](../../../.gitbook/assets/users-icon-admin.png) icon when you are in other administrative-related pages to view the **Users** page.
 {% endhint %}
 
-![Users page](../../../.gitbook/assets/users-page-admin%20%281%29.png)
+![&quot;Users&quot; page displays all users in your organization](../../../.gitbook/assets/users-page-admin%20%281%29.png)
 
 The **Users** page displays the following information about ProcessMaker user accounts:
 
 * **Username:** The **Username** column displays the username associated with the ProcessMaker user account.
 * **Full Name:** The **Full Name** column displays the full name associated with ProcessMaker user account.
-* **Status:** The **Status** column displays the status of the ProcessMaker user account. For a description of possible status types, see [Edit a User Account](edit-a-user-account.md).
-* **Email:** The **Email** column displays the email address associated with the ProcessMaker user account.
-* **Login:** The **Login** column displays the last date and time the ProcessMaker user account logged in to ProcessMaker.
-* **Created At:** The **Created At** column displays the date and time the ProcessMaker user account was created. ~~This column might change to "Created" and switch order with "Updated At/Modified" column.~~
-* **Updated At:** The **Updated At** column displays the date and time the ProcessMaker user account was last modified. ~~This column might change to "Modified" and switch order with the "Created At/Created" column~~.
+* **Status:** The **Status** column displays the status of the ProcessMaker user account. See [Edit a User Account](edit-a-user-account.md).
+* **Modified:** The **Modified** column displays the date and time the ProcessMaker user account was last modified. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
+* **Created:** The **Created** column displays the date and time the ProcessMaker user account was created. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
+* **Last login:** The **Last login** column displays the date and time the ProcessMaker user last logged in to ProcessMaker. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
 {% hint style="info" %}
-For information how to search for a ProcessMaker user, see [Search for a User Account](search-for-a-user.md).
-{% endhint %}
+### Search for a ProcessMaker User Account
 
-{% hint style="info" %}
-If no ProcessMaker user accounts exist, the following message displays: ~~**You don't have any users. Please click on '+USER' to get started.**~~
-{% endhint %}
+Use the [Search](search-for-a-user.md#search-for-a-processmaker-user-account) field to filter ProcessMaker user accounts that display.
 
-{% hint style="info" %}
-[Control how tabular information displays.](../../../using-processmaker/control-how-requests-display-in-a-tab.md)
+### No ProcessMaker User Accounts?
+
+If no ProcessMaker user accounts exist, the following message displays: **No Data Available**.
+
+### Edit a ProcessMaker User Account
+
+Click the **Edit** icon![](../../../.gitbook/assets/edit-icon.png). See [Edit a User Account](edit-a-user-account.md#edit-a-processmaker-user-account).
+
+### Display Information the Way You Want It
+
+[Control how tabular information displays](../../../using-processmaker/control-how-requests-display-in-a-tab.md), including how to sort columns or how many items display per page.
 {% endhint %}
 
 ## Related Topics

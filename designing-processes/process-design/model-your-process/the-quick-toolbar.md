@@ -86,7 +86,16 @@ Sequence Flows from Exclusive Gateway elements have the following settings as fo
 * [Identifier value](the-quick-toolbar.md#edit-the-identifier-value)
 * [Element name](the-quick-toolbar.md#edit-the-element-name)
 
-Sequence Flows from Exclusive Gateway elements have an addition setting to indicate the condition under which a Request should follow that Sequence Flow to its connected element. Only one condition can be specified in a Sequence Flow. Specify this condition using an expression syntax described in [Expression Syntax Components](the-quick-toolbar.md#expression-syntax-components).
+Sequence Flows from Exclusive Gateway elements have an addition setting to indicate the condition under which a Request should follow that Sequence Flow to its connected element. Specify this condition using an expression syntax described in [Expression Syntax Components](the-quick-toolbar.md#expression-syntax-components). Each Sequence Flow can only have one expression, but by using logical operators multiple conditions can be specified in that expression.
+
+Each Sequence Flow from an Exclusive Gateway element is evaluated using the following protocol:
+
+* **The Sequence Flow does not have an expression:** If a Sequence Flow does not have an expression, there are no conditions to evaluate if that Sequence Flow should be followed.
+* **The Sequence Flow has an expression:** The condition\(s\) in the Request is evaluated to determine if the condition\(s\) is met. If so, workflow can follow that Sequence Flow to its connected element. If not, then workflow cannot follow that Sequence Flow.
+
+{% hint style="warning" %}
+When specifying the condition\(s\) for Sequence Flows from an Exclusive Gateway element, ensure that the condition\(s\) for at least one Sequence Flow can evaluate to meet possible Request conditions. Otherwise, no Sequence Flows can be followed and the Request will stall at the Exclusive Gateway element.
+{% endhint %}
 
 Follow these steps to set the condition under which a Request follows a Sequence Flow element:
 
