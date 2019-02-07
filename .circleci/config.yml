@@ -158,6 +158,7 @@ jobs:
           command: |
             echo "APP_KEY=" >> .env
             echo "APP_DEBUG=FALSE" >> .env
+            echo "DEBUGBAR_ENABLED=FALSE" >> .env
             echo "APP_NAME=ProcessMaker" >> .env
             echo "APP_ENV=staging" >> .env
             echo "DB_HOST=${QA_RDS_HOST}" >> .env
