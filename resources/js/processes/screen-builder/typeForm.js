@@ -1,9 +1,12 @@
+import Vue from 'vue';
 import initialControls from "@processmaker/vue-form-builder/src/form-builder-controls";
 import globalProperties from "@processmaker/vue-form-builder/src/global-properties";
 import FormText from "@processmaker/vue-form-builder/src/components/renderer/form-text";
 import FileDownload from "./components/file-download"
-
 import FileUpload from "./components/form/file-upload"
+
+Vue.component('FileUpload', FileUpload);
+Vue.component('FileDownload', FileDownload);2
 
 initialControls.push({
     rendererComponent: FileUpload,
