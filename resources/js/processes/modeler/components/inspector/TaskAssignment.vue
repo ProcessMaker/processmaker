@@ -12,7 +12,6 @@
                     class="form-control"
                     :value="assignmentGetter"
                     @input="assignmentSetter">
-                <option value=""></option>
                 <option value="requestor">To requestor</option>
                 <option value="user">To user</option>
                 <option value="group">To group</option>
