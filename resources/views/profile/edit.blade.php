@@ -135,8 +135,8 @@
                         </div>
                     </div>
                     <div class="text-right">
-                        {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose']) !!}
-                        {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'onUpdate']) !!}
+                        {!! Form::button('Cancel', ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
+                        {!! Form::button('Save', ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
                     </div>
                 </div>
             </div>
@@ -183,7 +183,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Upload Avatar</h5>
+                    <h5 class="modal-title">{{__('Upload Avatar')}}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -191,7 +191,12 @@
 
                 <div class="modal-body">
                     <div>
-                        <div v-if="!image" class="no-avatar">Click the browse button below to get started</div>
+                        <div v-if="!image" class="no-avatar" align="center">{{__('Click the browse button below to get started')}}</div>
+                        <div align="center">
+                            <button @click="browse" class="btn btn-secondary mt-5 mb-2" ><i class="fas fa-upload"></i>
+                                {{__('Browse')}}
+                            </button>
+                        </div>
                         <vue-croppie :style="{display: (image) ? 'block' : 'none' }" ref="croppie"
                                      :viewport="{ width: 380, height: 380, type: 'circle' }"
                                      :boundary="{ width: 400, height: 400 }"
@@ -202,20 +207,13 @@
                 </div>
 
                 <div class="modal-footer">
-                    <div style="width:50%">
-                        <button @click="browse" class="btn btn-success ml-2" style="margin-left: 0px !important;">
-                            <i class="fas fa-upload"></i>
-                            Browse
-                        </button>
-                    </div>
-
                     <div>
-                        <button @click="hideModal" class="btn btn-outline-success">
-                            Cancel
+                        <button @click="hideModal" class="btn btn-outline-secondary">
+                            {{__('Cancel')}}
                         </button>
 
-                        <button @click="saveAndEmit" class="btn btn-success ml-2">
-                            Continue
+                        <button @click="saveAndEmit" class="btn btn-secondary ml-2">
+                            {{__('Continue')}}
                         </button>
                     </div>
                 </div>

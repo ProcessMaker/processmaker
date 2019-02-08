@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\Access\AuthorizationException;
+use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
@@ -222,7 +223,17 @@ class ProcessController extends Controller
         }
 
         $process->fill($request->except('cancel_request', 'start_request', 'cancel_request_id', 'start_request_id', 'edit_data', 'edit_data_id'));
-        $process->saveOrFail();
+
+        // Catch errors to send more specific status
+        try {
+            $process->saveOrFail();
+        }
+        catch (TaskDoesNotHaveUsersException $e) {
+            return response(
+                ['message' => $e->getMessage(),
+                    'errors' => ['bpmn' => $e->getMessage()]],
+                422);
+        }
 
         unset(
             $original_attributes['id'],

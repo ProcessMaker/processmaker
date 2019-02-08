@@ -43,7 +43,7 @@
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h1>{{__('Create New Group')}}</h1>
+                        <h5>{{__('Create New Group')}}</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onClose">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -51,9 +51,9 @@
                     <div class="modal-body">
                         <div class="form-group">
                             {!! Form::label('name', 'Name') !!}
-                            {!! Form::text('name', null, ['id' => 'name','class'=> 'form-control', 'maxlength' => '255',
-                            'v-model' => 'formData.name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}']) !!}
-                            <small id="emailHelp" class="form-text text-muted">Group name must be distinct</small>
+                            {!! Form::text('name', null, ['id' => 'name','class'=> 'form-control', 'v-model' =>
+                            'formData.name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}']) !!}
+                            <small id="emailHelp" class="form-text text-muted">{{__('Group name must be distinct')}}</small>
                             <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
                         </div>
                         <div class="form-group">
@@ -65,8 +65,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-success" data-dismiss="modal" @click="onClose">{{__('Close')}}</button>
-                        <button type="button" @click="onSubmit" class="btn btn-success ml-2">{{__('Save')}}</button>
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" @click="onClose">{{__('Cancel')}}</button>
+                        <button type="button" @click="onSubmit" class="btn btn-secondary ml-2">{{__('Save')}}</button>
                     </div>
                 </div>
             </div>
