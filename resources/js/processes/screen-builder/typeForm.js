@@ -6,7 +6,7 @@ import FileDownload from "./components/file-download"
 import FileUpload from "./components/form/file-upload"
 
 Vue.component('FileUpload', FileUpload);
-Vue.component('FileDownload', FileDownload);2
+Vue.component('FileDownload', FileDownload);
 
 initialControls.push({
     rendererComponent: FileUpload,
