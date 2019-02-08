@@ -96,7 +96,7 @@ export default {
         });
     },
     edit(row) {
-      this.$emit('edit', row);
+      this.$emit('edit', Object.assign({}, row));
     },
     copySecret(secret) {
       this.$refs.copytext.value = secret

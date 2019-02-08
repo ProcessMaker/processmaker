@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use ProcessMaker\AssignmentRules\PreviousTaskAssignee;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
@@ -13,10 +14,10 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
+use ProcessMaker\Traits\ProcessTaskAssignmentsTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
-use ProcessMaker\Traits\ProcessTaskAssignmentsTrait;
 
 /**
  * Represents a business process definition.
@@ -282,6 +283,12 @@ class Process extends Model implements HasMedia
         $default = $activity instanceof ScriptTaskInterface
         || $activity instanceof ServiceTaskInterface ? 'script' : 'requestor';
         $assignmentType = $activity->getProperty('assignment', $default);
+
+        $userByRule = $this->getNextUserByRule($activity, $token);
+        if ($userByRule !== null) {
+            return $userByRule;
+        }
+
         switch ($assignmentType) {
             case 'group':
                 $user = $this->getNextUserFromGroupAssignment($activity->getId());
@@ -291,6 +298,10 @@ class Process extends Model implements HasMedia
                 break;
             case 'requestor':
                 $user = $token->getInstance()->user_id;
+                break;
+            case 'previous_task_assignee':
+                $rule = new PreviousTaskAssignee();
+                $user = $rule->getNextUser($activity, $token, $this, $token->getInstance());
                 break;
             case 'manual':
             case 'self_service':
@@ -311,14 +322,16 @@ class Process extends Model implements HasMedia
      * @return binary
      * @throws TaskDoesNotHaveUsersException
      */
-    private function getNextUserFromGroupAssignment($processTaskUuid)
+    private function getNextUserFromGroupAssignment($processTaskUuid, $users = null)
     {
         $last = ProcessRequestToken::where('process_id', $this->id)
             ->where('element_id', $processTaskUuid)
             ->orderBy('created_at', 'desc')
             ->orderBy('id', 'desc')
             ->first();
-        $users = $this->getAssignableUsers($processTaskUuid);
+        if ($users === null) {
+            $users = $this->getAssignableUsers($processTaskUuid);
+        }
         if (empty($users)) {
             throw new TaskDoesNotHaveUsersException($processTaskUuid);
         }
@@ -342,17 +355,68 @@ class Process extends Model implements HasMedia
      * @return binary
      * @throws TaskDoesNotHaveUsersException
      */
-    private function getNextUserAssignment($processTaskUuid)
+    private function getNextUserAssignment($processTaskUuid, $users = null)
     {
         $last = ProcessRequestToken::where('process_id', $this->id)
             ->where('element_id', $processTaskUuid)
             ->orderBy('created_at', 'desc')
             ->first();
-        $users = $this->getAssignableUsers($processTaskUuid);
+        if ($users === null) {
+            $users = $this->getAssignableUsers($processTaskUuid);
+        }
         if (empty($users)) {
             throw new TaskDoesNotHaveUsersException($processTaskUuid);
         }
         return $users[0];
+    }
+
+    /**
+     * Get the next user if some special assignment is true
+     *
+     * @param string $processTaskUuid
+     *
+     * @return binary
+     * @throws TaskDoesNotHaveUsersException
+     */
+    private function getNextUserByRule($activity, $token)
+    {
+        $assignmentRules  = $activity->getProperty('assignmentRules', null);
+
+        $instanceData = $token->getInstance()->getDataStore()->getData();
+        if ($assignmentRules && $instanceData) {
+            $list = json_decode($assignmentRules);
+            $list = ($list === null) ? [] : $list;
+            foreach ($list as $item) {
+                $formalExp = new FormalExpression();
+                $formalExp->setLanguage('FEEL');
+                $formalExp->setBody($item->expression);
+                $eval = $formalExp($instanceData);
+                if ($eval) {
+                    switch ($item->type) {
+                        case 'group':
+                            $users = [];
+                            $user = $this->getNextUserFromGroupAssignment($activity->getId(),
+                                $this->getConsolidatedUsers($item->assignee, $users));
+                            break;
+                        case 'user':
+                            $user = $item->assignee;
+                            break;
+                        case 'requestor':
+                            $user = $token->getInstance()->user_id;
+                            break;
+                        case 'manual':
+                        case 'self_service':
+                            $user = null;
+                            break;
+                        case 'script':
+                        default:
+                            $user = null;
+                    }
+                    return $user ? User::where('id', $user)->first() : null;
+                }
+            }
+        }
+        return null;
     }
 
     /**
