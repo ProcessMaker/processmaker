@@ -35,9 +35,5 @@ Follow these steps to remove a ProcessMaker group:
 
 {% page-ref page="edit-a-group.md" %}
 
-{% page-ref page="activate-or-deactivate-a-group.md" %}
-
-{% page-ref page="assign-user-accounts-to-a-group.md" %}
-
 {% page-ref page="../create-a-group.md" %}
 

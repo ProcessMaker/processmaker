@@ -33,10 +33,6 @@ If there are no search results, the following message displays: **No data availa
 
 {% page-ref page="edit-a-group.md" %}
 
-{% page-ref page="activate-or-deactivate-a-group.md" %}
-
-{% page-ref page="assign-user-accounts-to-a-group.md" %}
-
 {% page-ref page="remove-a-group.md" %}
 
 {% page-ref page="../create-a-group.md" %}

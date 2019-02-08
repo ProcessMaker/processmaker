@@ -31,9 +31,5 @@ Follow these steps to create a ProcessMaker group:
 
 {% page-ref page="manage-groups/edit-a-group.md" %}
 
-{% page-ref page="manage-groups/activate-or-deactivate-a-group.md" %}
-
-{% page-ref page="manage-groups/assign-user-accounts-to-a-group.md" %}
-
 {% page-ref page="manage-groups/remove-a-group.md" %}
 

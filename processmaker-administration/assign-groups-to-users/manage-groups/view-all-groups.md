@@ -49,10 +49,6 @@ If no ProcessMaker groups exist, the following message displays: ~~**You don't h
 
 {% page-ref page="edit-a-group.md" %}
 
-{% page-ref page="activate-or-deactivate-a-group.md" %}
-
-{% page-ref page="assign-user-accounts-to-a-group.md" %}
-
 {% page-ref page="remove-a-group.md" %}
 
 {% page-ref page="../create-a-group.md" %}

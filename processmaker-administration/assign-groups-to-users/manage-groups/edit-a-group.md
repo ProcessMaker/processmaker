@@ -32,10 +32,6 @@ Follow these steps to edit a ProcessMaker group:
 
 {% page-ref page="search-for-a-group.md" %}
 
-{% page-ref page="activate-or-deactivate-a-group.md" %}
-
-{% page-ref page="assign-user-accounts-to-a-group.md" %}
-
 {% page-ref page="remove-a-group.md" %}
 
 {% page-ref page="../create-a-group.md" %}

@@ -48,7 +48,7 @@ Follow these steps to edit a ProcessMaker user account:
      * **Inactive:** An Inactive ProcessMaker user account is one in which a person cannot use it to log in to ProcessMaker.
    * In the **New Password** field, edit the password to log in with the ProcessMaker user account. Leave the **New Password** field blank to keep the current password.
    * In the **Confirm Password** field, confirm that the password matches that entered into the **New Password** field if a new password was entered.
-4. Click the **Groups** tab. The **Groups** tab displays the ProcessMaker [groups](../../assign-groups-to-users/what-is-a-group.md) of which that ProcessMaker user is a member.  
+4. Click the **Groups** tab. The **Groups** tab displays the ProcessMaker [groups](../../assign-groups-to-users/what-is-a-group.md) of which that ProcessMaker user is a member. If no groups have been created, the following message displays: **No Data Available**. See [Create a Group](../../assign-groups-to-users/create-a-group.md#create-a-processmaker-group).  
 
    ![](../../../.gitbook/assets/groups-tab-edit-user-admin.png)
 
@@ -57,31 +57,21 @@ Follow these steps to edit a ProcessMaker user account:
    * **Group:** The **Group** column displays the name of the group of which the ProcessMaker user is a member.
    * **Description:** The **Description** column displays the description of the group.
 
-5. Change which ProcessMaker groups of which that ProcessMaker user in the **Groups** tab if necessary:
-   * **Remove the ProcessMaker user from a ProcessMaker group:** Click the **Remove** icon![](../../../.gitbook/assets/trash-icon-process-modeler-processes.png)for that ProcessMaker group.
-   * **Add the ProcessMaker user to a ProcessMaker group:** Click the **+Add User to Group** button. The **Add User To Group** screen displays. From the **Select a group** drop-down, select the ProcessMaker group to which the ProcessMaker user is a member, and then click **OK**. The ProcessMaker group displays in the **Groups** tab.  
+5. In the **Groups** tab, change which ProcessMaker groups of which that ProcessMaker user is a member if necessary:
+   * **Remove the ProcessMaker user from a ProcessMaker group:** Click the **Remove** icon![](../../../.gitbook/assets/trash-icon-process-modeler-processes.png)to remove the ProcessMaker user from the selected ProcessMaker group.
+   * **Add the ProcessMaker user to a ProcessMaker group:** Click the **+Add User to Group** button. The **Add User To Group** screen displays. From the **Select a group** drop-down, select the ProcessMaker group to add the ProcessMaker user as a member, and then click **OK**. The ProcessMaker group displays in the **Groups** tab.  
 
      ![](../../../.gitbook/assets/add-user-to-group-screen-edit-user-groups-tab-admin.png)
-6. Edit in the **Last name** field the last name for the person associated with the ProcessMaker user account if necessary.
-7. Change from the **Status** drop-down the status of the ProcessMaker user account if necessary. Select one of the following options:
-   * **Active:** An Active ProcessMaker user account is one in which a person can use it to log in to ProcessMaker.
-   * **Inactive:** An Inactive ProcessMaker user account is one in which a person cannot use it to log in to ProcessMaker.
-8. Edit in the **Email** field the email address associated with the ProcessMaker user account if necessary.
-9. Change from the **Date format** drop-down the format for how dates are displayed for the person using the ProcessMaker user account if necessary. Select one of the following options:
-   * mm/dd/yyyy
-   * mm/dd/yyyy hh:mm \(12-hour clock\)
-   * mm/dd/yyyy hh:mm \(24-hour clock\)
-10. Change from the **Time zone** drop-down the time zone associated with the person using the ProcessMaker user account if necessary.
-11. Edit in the **Password** field the password associated with the ProcessMaker user account if necessary.
-12. Confirm in the **Confirm Password** field that its value matches that of the **Password** field.
-13. Change from the **Groups** drop-down the ProcessMaker group to which the ProcessMaker user account belongs if necessary. At least one ProcessMaker group must be created to assign a ProcessMaker group to any ProcessMaker user account. For information about ProcessMaker groups, see [Group Management](../../assign-groups-to-users/).
+6. Click the **Permissions** tab. The **Permissions** tab displays permissions assigned to that ProcessMaker user account.  
 
-    To change the ProcessMaker group for that user account, follow these guidelines:
+   ![](../../../.gitbook/assets/permissions-tab-edit-user-admin.png)
 
-    1. Click the icon![](../../../.gitbook/assets/remove-group-icon-admin.png)for the existing ProcessMaker group to no longer assign it to the ProcessMaker user account.
-    2. Select the new ProcessMaker group from the **Groups** drop-down.
-
-14. Click **Update**.
+7. In the **Permissions** tab, change which permissions from each permission category to assign that ProcessMaker user account if necessary. Follow these guidelines to change permission assignments:
+   * Select the **Make this user an admin** checkbox to assign all ProcessMaker Administrator related permissions to the ProcessMaker user account.
+   * Select the **Assign all permissions to this user** checkbox to assign all permissions to the ProcessMaker user account.
+   * Click on a permission category to expand the view of individual permissions within that category. Click on an expanded permission category to collapse that category. See [Permission Descriptions for Users and Groups](../../permission-descriptions-for-users-and-groups.md).
+8. Click the **API Tokens** tab. The **API Tokens** tab displays API tokens granted to that ProcessMaker user account.
+9. Click **Update**.
 
 ## Related Topics
 
@@ -95,5 +85,9 @@ Follow these steps to edit a ProcessMaker user account:
 
 {% page-ref page="../create-a-user-account.md" %}
 
+{% page-ref page="../../assign-groups-to-users/what-is-a-group.md" %}
 
+{% page-ref page="../../assign-groups-to-users/create-a-group.md" %}
+
+{% page-ref page="../../permission-descriptions-for-users-and-groups.md" %}
 
