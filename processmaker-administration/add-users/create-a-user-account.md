@@ -4,36 +4,34 @@ description: Create a new ProcessMaker user account.
 
 # Create a User Account
 
-{% hint style="info" %}
-To create a ProcessMaker user account, you must be a member of the ProcessMaker Administrator group. Otherwise, the **Admin** option is not available from the top menu that allows you to perform user account management activities.
-{% endhint %}
-
 ## Create a ProcessMaker User Account
+
+{% hint style="info" %}
+Your user account or group membership must have the following permissions to create a ProcessMaker user account:
+
+* Users: View Users
+* Users: Create Users
+
+Ask your ProcessMaker Administrator for assistance if necessary.
+{% endhint %}
 
 Follow these steps to create a ProcessMaker user account:
 
 1. [View all ProcessMaker user accounts.](manage-user-accounts/view-all-users.md) The **Users** page displays.
-2. Click the **+USER** button. The **Add A User** screen displays.  
+2. Click the **+User** button. The **Add A User** screen displays.  
 
    ![](../../.gitbook/assets/add-a-user-screen-admin.png)
 
-3. Enter in the **Username** field the username associated with the ProcessMaker user account. This is a required field.
-4. Enter in the **First name** field the first name of the person associated with the ProcessMaker user account.
-5. Enter in the **Last name** field the last name of the person associated with the ProcessMaker user account.
-6. Select from the **Status** drop-down the status of the ProcessMaker user account using one of the following options:
+3. In the **Username** field, enter the username associated with the ProcessMaker user account. This is a required field.
+4. In the **First name** field, enter the first name of the person associated with the ProcessMaker user account.
+5. In the **Last name** field, enter the last name of the person associated with the ProcessMaker user account.
+6. From the **Status** drop-down, select the status of the ProcessMaker user account using one of the following options:
    * **Active:** An Active ProcessMaker user account is one in which a person can use it to log in to ProcessMaker.
    * **Inactive:** An Inactive ProcessMaker user account is one in which a person cannot use it to log in to ProcessMaker.
-7. Enter in the **Email** field the email address associated with the ProcessMaker user account. This is a required field.
-8. Enter in the **Password** field the password associated with the ProcessMaker user account.
-9. Confirm in the **Confirm Password** field that its value matches that of the **Password** field.
-10. Select from the **Groups** drop-down the ProcessMaker group to which the ProcessMaker user account belongs if necessary. At least one ProcessMaker group must be created to assign a ProcessMaker group to any ProcessMaker user account. For information about ProcessMaker groups, see [Group Management](../assign-groups-to-users/).
-
-    To change the ProcessMaker group, follow these guidelines:
-
-    1. Click the icon![](../../.gitbook/assets/remove-group-icon-admin.png)for the existing ProcessMaker group to no longer assign it to the ProcessMaker user account.
-    2. Select the new ProcessMaker group from the **Groups** drop-down.
-
-11. Click **Save**.
+7. In the **Email** field, enter the email address associated with the ProcessMaker user account. This is a required field.
+8. In the **Password** field, enter the password associated with the ProcessMaker user account. Passwords must be at least eight \(8\) characters long. [Password special characters](https://www.owasp.org/index.php/Password_special_characters) are recommended. Password validation indicates how strong your password is if you enter a new password.
+9. In the **Confirm Password** field, confirm that the password matches that entered into the **New Password** field. Password validation indicates if the **New Password** and **Confirm Password** values do not match.
+10. Click **Save**. The following message displays: **The user was successfully created**. Furthermore, the **Information** tab displays for the new ProcessMaker user account to specify which groups and/or permissions to assign the new user account. See [Edit a User Account](manage-user-accounts/edit-a-user-account.md#edit-a-processmaker-user-account).
 
 ## Related Topics
 

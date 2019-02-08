@@ -30,27 +30,35 @@ Follow these steps to change your profile settings:
 
    ![](../.gitbook/assets/profile-page.png)
 
-2. The ProcessMaker Administrator may have entered some profile settings when your user account was created. Follow these guidelines to change your profile information:
-   * Change the following information in the **Name** section if necessary:
-     * Enter your first name in the **First Name** field.
-     * Enter your last name in the **Last Name** field.
-   * Change the following information in the **Contact Information** section if necessary:
-     * Enter your email address in the **Email** field.
-     * Enter your phone number in the **Phone** field.
-   * Change the following information in the **Address** section if necessary:
-     * Enter your physical address in the **Address** field.
-     * Enter the city in which you work in the **City** field.
-     * Select the state, region, or territory in which you work in the **State or Region** drop-down menu.
-     * Enter the Postal code in which you work in the **Postal code** field.
-     * Select the country where you work from the **Country** drop-down menu.
-   * Change the following information in the **Localization** section if necessary:
-     * Select in which time zone you work from the **Time zone** drop-down menu.
-     * Select in which language to display ProcessMaker field labels from the **Language** drop-down menu.
-3. Change your username in the **Username** field if necessary.
-4. Follow these guidelines to change your password if necessary:
-   * Enter your new password in the **New Password** field. Password validation indicates how strong your password is.
-   * Confirm your new password in the **Confirm Password** field by duplicating what you entered in the **New Password** field. Password validation indicates if the **New Password** and **Confirm Password** values do not match.
-5. Click **Update** to save changes to your profile. Otherwise, click **Cancel** to not make changes.
+2. The ProcessMaker Administrator may have entered some profile settings when your user account was created. Follow these guidelines to change your profile information if necessary:
+   * In the **Name** section, change the following information:
+     * In the **First Name** field, enter your first name.
+     * In the **Last Name** field, enter your last name.
+   * In the **Contact Information** section, change the following information:
+     * In the **Email** field, enter your business email address. This is a required field.
+     * In the **Phone** field, enter your business telephone or cell phone number.
+   * In the **Address** section, change the following information:
+     * In the **Address** field, enter your business address.
+     * In the **City** field, enter the city for your business address.
+     * From the **State or Region** drop-down, select the state, region, or province for the person's business address.
+     * In the **Postal code** field, enter your business postal code.
+     * From the **Country** drop-down menu, select the country for your business address.
+   * In the **Localization** section, change the following information:
+     * In the **Date format** drop-down, select the format for how dates are displayed from the following options:
+       * m/d/Y \(12/31/2017\)
+       * m/d/Y h:i A \(12/31/2017 11:30 pm\)
+       * m/d/Y H:i \(12/31/2017 23:30\)
+     * From the **Time zone** drop-down, select the time zone in which to display times.
+     * From the **Language** drop-down, select in which language to display ProcessMaker labels.
+3. Select the avatar image to change the avatar for the ProcessMaker user account if necessary. If there is no avatar image, the initials of your full name display. When the avatar image is selected, the **Upload Avatar** screen displays to select a new avatar image. Click the **Browse** button to locate the new avatar image. After selecting the new image click **Continue** from the **Upload Avatar** screen.  
+
+   ![](../.gitbook/assets/browse-avatar-edit-user-information-tab-admin.png)
+
+4. In the **Username** field, change your username if necessary. This is a required field.
+5. Follow these guidelines to change your password if necessary:
+   * In the **New Password** field, enter your new password. Leave the **New Password** field blank to keep the current password. Password validation indicates how strong your password is if you enter a new password.
+   * In the **Confirm Password** field, confirm that the password matches that entered into the New Password field if a new password is entered. If you entered a new password, password validation indicates if the **New Password** and **Confirm Password** values do not match.
+6. Click **Update**.
 
 ## View Another User's Profile Information
 

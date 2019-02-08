@@ -1,29 +1,34 @@
 ---
-description: Remove a ProcessMaker user account.
+description: Delete a ProcessMaker user account.
 ---
 
-# Remove a User Account
+# Delete a User Account
+
+## Delete a ProcessMaker User Account
 
 {% hint style="info" %}
-To remove a ProcessMaker user account, you must be a member of the ProcessMaker Administrator group. Otherwise, the **Admin** option is not available from the top menu that allows you to perform user account management activities.
-{% endhint %}
+Your user account or group membership must have the following permissions to delete a ProcessMaker user account:
 
-## Remove a ProcessMaker User Account
+* Users: View Users
+* Users: Delete Users
+
+Ask your ProcessMaker Administrator for assistance if necessary.
+{% endhint %}
 
 {% hint style="warning" %}
-When a ProcessMaker user account is removed, the person assigned to that account can no longer log in to ProcessMaker.
+When a ProcessMaker user account is deleted, the person assigned to that account can no longer log in to ProcessMaker.
 
-Removing a ProcessMaker user account from the **Users** page cannot be undone.
+Deleting a ProcessMaker user account from the **Users** page cannot be undone.
 {% endhint %}
 
-Follow these steps to remove a ProcessMaker user account:
+Follow these steps to delete a ProcessMaker user account:
 
 1. [View all ProcessMaker user accounts.](view-all-users.md) The **Users** page displays.
-2. Hover your cursor over the ProcessMaker user account to remove and then click the **Remove** icon![](../../../.gitbook/assets/remove-icon.png). The **Caution** screen displays to confirm the removal of the ProcessMaker user account.  
+2. Select the **Delete** icon![](../../../.gitbook/assets/trash-icon-process-modeler-processes.png)for the ProcessMaker user account. The **Caution** screen displays to confirm the deletion of the ProcessMaker user account.  
 
    ![](../../../.gitbook/assets/caution-user-removal-screen-admin.png)
 
-3. Click **Confirm** to remove the ProcessMaker user account. Otherwise, click **Cancel** to not remove the ProcessMaker user account.
+3. Click **Confirm**.
 
 ## Related Topics
 

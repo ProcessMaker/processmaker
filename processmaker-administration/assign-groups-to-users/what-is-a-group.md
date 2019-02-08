@@ -8,12 +8,12 @@ In ProcessMaker 4, a group is a set of permissions that collectively allow Proce
 
 ProcessMaker recommends creating the following ProcessMaker groups based on how each type of ProcessMaker user interacts with ProcessMaker:
 
-* ProcessMaker user
-* Process Owner
-* ProcessMaker Developer
-* ProcessMaker Administrator
+* **ProcessMaker user:** Most ProcessMaker users start or participate in Requests and perform Tasks. Their permission assignments may be limited to Requests.
+* **Process Owner:** Process Owners create Process models. Their permission assignments may be limited to Requests, Processes, Process Categories Screens, and Environment Variables.
+* **ProcessMaker Developer:** ProcessMaker Developers create ProcessMaker Scripts. Their permission assignments may be limited to Requests, Scripts, and API related permissions.
+* **ProcessMaker Administrator:** ProcessMaker Administrators administer the ProcessMaker environment and its users. Their permission assignments may be limited to Requests, Users, Groups, and Comment permissions.
 
-[This document is organized](../../start-here/how-to-use-this-document.md) for these types of groups.
+The ProcessMaker 4 product documentation is [organized](../../start-here/how-to-use-this-document.md) for these types of groups.
 
 ## Related Topics
 

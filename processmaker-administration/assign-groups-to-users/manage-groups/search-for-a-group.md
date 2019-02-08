@@ -8,11 +8,13 @@ description: >-
 
 Use the **Search** function to filter all ProcessMaker groups from the **Groups** page based on your entered text.
 
-{% hint style="info" %}
-To search for a ProcessMaker group, you must be a member of the ProcessMaker Administrator group. Otherwise, the **Admin** option is not available from the top menu that allows you to perform group management activities.
-{% endhint %}
-
 ## Search for a ProcessMaker Group
+
+{% hint style="info" %}
+Your user account or group membership must have the "Groups: View Groups" permission to view the list of groups.
+
+Ask your ProcessMaker Administrator for assistance if necessary.
+{% endhint %}
 
 Follow these steps to search for a ProcessMaker group:
 
