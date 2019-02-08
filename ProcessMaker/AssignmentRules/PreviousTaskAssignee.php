@@ -28,7 +28,9 @@ class PreviousTaskAssignee implements AssignmentRuleInterface
      */
     public function getNextUser(ActivityInterface $task, TokenInterface $token, Process $process, ProcessRequest $request)
     {
-        $previous = $request->tokens()->orderBy('id', 'desc')->first();
+        $previous = $request->tokens()
+            ->where('element_type', 'task')
+            ->orderBy('id', 'desc')->first();
         return $previous->user_id;
     }
 }
