@@ -70,6 +70,7 @@
     "popper.js": "^1.14.4",
     "pusher-js": "^4.2.2",
     "snapsvg": "^0.5.1",
+    "source-map": "^0.7.3",
     "timezones.json": "^1.4.4",
     "tinymce": "^4.8.1",
     "tooltip.js": "^1.2.0",

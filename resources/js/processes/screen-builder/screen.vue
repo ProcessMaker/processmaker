@@ -29,7 +29,7 @@
         </div>
 
         <computed-properties v-model="computed" ref="computedProperties"></computed-properties>
-        <custom-CSS v-model="customCSS" ref="customCSS" />
+        <custom-CSS v-model="customCSS" ref="customCSS" :css-errors="cssErrors" />
         <vue-form-builder :class="{invisible: mode != 'editor'}" @change="updateConfig" ref="screenBuilder"
             v-show="mode === 'editor'" config="config" computed="computed"/>
             <div id="preview" :class="{invisible: mode != 'preview'}">
@@ -50,7 +50,7 @@
                         <div class="row">
                             <div class="col-sm">
                                 <vue-form-renderer ref="renderer" @submit="previewSubmit" v-model="previewData"
-                                                   :config="config" :computed="computed"  :custom-css="customCSS" />
+                                                   :config="config" :computed="computed"  :custom-css="customCSS" v-on:css-errors="cssErrors = $event" />
                             </div>
                         </div>
                     </div>
@@ -79,6 +79,7 @@
                 mode: "editor",
                 computed: [],
                 customCSS: "",
+                cssErrors: "",
                 config: [
                     {
                         name: "Default",
