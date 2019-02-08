@@ -53,7 +53,7 @@
                             {!! Form::label('title', 'Name') !!}
                             {!! Form::text('title', null, ['id' => 'title','class'=> 'form-control', 'v-model' => 'formData.title',
                             'v-bind:class' => '{"form-control":true, "is-invalid":errors.title}']) !!}
-                            <small id="emailHelp" class="form-text text-muted">Screen title must be distinct</small>
+                            <small id="emailHelp" class="form-text text-muted">{{__('Screen title must be distinct')}}</small>
                             <div class="invalid-feedback" v-for="title in errors.title">@{{title}}</div>
                         </div>
                         <div class="form-group">
@@ -70,8 +70,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-success" data-dismiss="modal" @click="onClose">{{__('Close')}}</button>
-                        <button type="button" @click="onSubmit" class="btn btn-success ml-2">{{__('Save')}}</button>
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" @click="onClose">{{__('Close')}}</button>
+                        <button type="button" @click="onSubmit" class="btn btn-secondary ml-2">{{__('Save')}}</button>
                     </div>
                 </div>
             </div>

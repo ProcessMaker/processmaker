@@ -83,14 +83,14 @@
             </div>
           </div>
             <div class="modal-body" v-else>
-              <div>Categories are required to create a process</div>
+              <div>{{__('Categories are required to create a process')}}</div>
                 <a  href="{{ url('processes/categories') }}" class="btn btn-primary container mt-2">
                          {{__('Add Category')}}
                 </a>
             </div>
         	<div class="modal-footer">
-    			<button type="button" class="btn btn-outline-success" data-dismiss="modal" v-if='processCategories' @click="onClose">Close</button>
-    			<button type="button" class="btn btn-success ml-2" @click="onSubmit" v-if='processCategories'>Save</button>
+    			<button type="button" class="btn btn-outline-secondary" data-dismiss="modal" v-if='processCategories' @click="onClose">{{__('Close')}}</button>
+    			<button type="button" class="btn btn-secondary ml-2" @click="onSubmit" v-if='processCategories'>{{__('Save')}}</button>
             </div>
         </div>
         </div>

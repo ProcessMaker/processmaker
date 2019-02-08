@@ -42,6 +42,14 @@ let nodeTypes = [
 ]
 ProcessMaker.nodeTypes.push(...nodeTypes);
 
+// Set default properties for task
+task.definition = function definition(moddle) {
+    return moddle.create('bpmn:Task', {
+        name: 'New Task',
+        assignment: 'requestor',
+    });
+};
+
 ProcessMaker.EventBus.$on('modeler-init', ({registerNode, registerBpmnExtension, registerInspectorExtension}) => {
     /* Register basic node types */
     for (const node of nodeTypes) {
