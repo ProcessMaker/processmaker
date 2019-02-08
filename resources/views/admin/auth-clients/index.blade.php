@@ -9,68 +9,120 @@
 @endsection
 
 @section('content')
-@include('shared.breadcrumbs', ['routes' => [
+    @include('shared.breadcrumbs', ['routes' => [
         __('Admin') => route('admin.index'),
         __('Auth Clients') => null,
     ]])
-<div class="container page-content" id="listAuthClients">
-    <div class="row align-items-center">
-        <div class="col-8">
+    <div id="authClients">
 
+        <div class="modal" role="dialog" ref="createEditAuthClient" id="createEditAuthClient">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{__('Create An Auth-Client')}}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            {!!Form::label('name', __('Name'))!!}
+                            {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'authClient.name',
+                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'])!!}
+                            <small class="form-text text-muted">{{ __('Name must be distinct') }}</small>
+                            <div class="invalid-feedback" v-if="errors.name">@{{ errors.name[0] }}</div>
+                        </div>
+                        <div class="form-group">
+                            {!!Form::label('redirect', __('Redirect URL'))!!}
+                            {!!Form::text('redirect', null, ['class'=> 'form-control', 'v-model'=> 'authClient.redirect',
+                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.redirect}','rows'=>3])!!}
+                            <div class="invalid-feedback" v-if="errors.redirect">@{{ errors.redirect[0] }}</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary"
+                                data-dismiss="modal">{{__('Cancel')}}</button>
+                        <button type="button" class="btn btn-secondary ml-2" @click="save">{{__('Save')}}</button>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="col-4" align="right">
-            <b-button @click="create">
-                <i class="fas fa-plus"></i>
-                {{__('Auth Client')}}</a>
-            </b-button>
+
+        <div class="container page-content">
+            <div class="row">
+                <div class="col" align="right">
+                    <button class="btn btn-secondary" type="button" data-toggle="modal" data-target="#createEditAuthClient">
+                        <i class="fas fa-plus"></i>
+                        {{__('Auth Client')}}</a>
+                    </button>
+                </div>
+            </div>
+            <auth-clients-listing ref="authClientList" @edit="edit"/>
         </div>
+
     </div>
-    <div>
-        <b-modal ref="createEditAuthClient" :title="modalTitle" @ok="save" @hidden="resetValues" ok-title="Save"
-                 cancel-title="Close">
-            <div class="form-group">
-                <label for="authClientName">{{__('Name')}}</label>
-                <b-form-input id="authClientName" v-bind:class="{'is-invalid':errors.name}" v-model="authClient.name"
-                              type="text" placeholder="Enter a name for this auth client"
-                              maxlength="255"></b-form-input>
-                <div class="invalid-feedback" v-if="errors.name">@{{ errors.name[0] }}</div>
-            </div>
-            <div class="form-group">
-                <label for="authClientRedirect">{{__('Redirect URL')}}</label>
-                <b-form-input id="authClientRedirect" v-bind:class="{'is-invalid':errors.redirect}"
-                              v-model="authClient.redirect" type="text" placeholder="Enter the URL to redirect to"
-                              maxlength="2000">
-                </b-form-input>
-                <template v-for="redirect in errors.redirect">
-                    <div class="invalid-feedback">@{{redirect}}</div>
-                </template>
-            </div>
-            <div v-if="authClient.secret" class="form-group">
-                <label for="authClientSecret">{{__('Client Secret')}}</label>
-                @{{ authClient.secret }}
-            </div>
-        </b-modal>
-        <auth-clients-listing ref="authClientList" @edit="edit" />
-    </div>
-</div>
 @endsection
 
 @section('js')
-<script src="{{mix('js/admin/auth-clients/index.js')}}"></script>
-@endsection
+    <script src="{{mix('js/admin/auth-clients/index.js')}}"></script>
 
-@section('css')
-<style>
-    .btn-primary {
-        color: #fff !important;
-        background-color: #00bf9c !important;
-        border-color: #00bf9c !important;
-    }
-
-    .modal-footer > .btn-secondary {
-        color: #00bf9c !important;
-        background-color: transparent !important;
-        border-color: #00bf9c !important;
-    }
-</style>
+    <script>
+        new Vue({
+            el: '#authClients',
+            data: {
+                authClient: null,
+                errors: null,
+            },
+            beforeMount() {
+                this.resetValues();
+            },
+            mounted() {
+                $('#createEditAuthClient').on('hidden.bs.modal', () => {
+                    this.resetValues();
+                });
+            },
+            methods: {
+                save() {
+                    event.preventDefault()
+                    this.loading = true
+                    let method = 'POST'
+                    let url = '/oauth/clients'
+                    if (this.authClient.id) {
+                        // Do an update
+                        method = 'PUT',
+                        url = url + '/' + this.authClient.id
+                    }
+                    ProcessMaker.apiClient({
+                        method,
+                        url,
+                        baseURL: '/',
+                        data: this.authClient,
+                    }).then(response => {
+                        $('#createEditAuthClient').modal('hide')
+                        this.$refs.authClientList.fetch()
+                        this.loading = false
+                        ProcessMaker.alert("Auth Client Updated", "success")
+                    }).catch(error => {
+                        this.errors = error.response.data.errors;
+                    });
+                },
+                resetValues() {
+                    this.authClient = {
+                        id: null,
+                        name: "",
+                        redirect: "",
+                        secret: ""
+                    };
+                    this.errors = {
+                        name: null,
+                        redirect: null
+                    }
+                },
+                edit(item) {
+                    this.authClient = item
+                    $('#createEditAuthClient').modal('show');
+                }
+            },
+        })
+    </script>
 @endsection
