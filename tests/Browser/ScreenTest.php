@@ -34,8 +34,7 @@ class ScreenTest extends DuskTestCase
                 ->assertSee('Description')
                 ->assertSee('Type')
                 ->assertSee('Modified')
-                ->assertSee('Created')
-                ->pause(5000);
+                ->assertSee('Created');
         });
     }
 
@@ -89,6 +88,22 @@ class ScreenTest extends DuskTestCase
                 ->assertSee('Data Input')
                 //Check all fields are displayed
                 ->assertSee('Field 1')
+                //by default fields are hidden
+                ->assertDontSee('New Text')
+                ->assertDontSee('New Input')
+                ->assertDontSee('New Select')
+                ->assertDontSee('New Checkbox')
+                ->assertDontSee('New TextArea')
+                ->assertDontSee('New Radio Button Group')
+                ->assertDontSee('New Option')
+                ->assertDontSee('New Date Picker')
+                ->assertDontSee('NEW PAGE NAVIGATION')
+                ->assertDontSee('NEW SUBMIT')
+                ->assertDontSee('New File Upload')
+                //->assertDontSee('New File Download')
+                //change the value to evaluate to "field1 == 'test'" and all fields must be visible
+                ->type('#renderer-container input[name=field1]', 'test')
+                ->assertSee('Field 1')
                 ->assertSee('New Text')
                 ->assertSee('New Input')
                 ->assertSee('New Select')
@@ -99,19 +114,9 @@ class ScreenTest extends DuskTestCase
                 ->assertSee('New Date Picker')
                 ->assertSee('NEW PAGE NAVIGATION')
                 ->assertSee('NEW SUBMIT')
-                //change the value to evaluate to "field1 == 'test'" and all fields must be hidden
-                ->type('#renderer-container input[name=field1]', 'test')
-                ->assertSee('Field 1')
-                ->assertDontSee('New Text')
-                ->assertDontSee('New Input')
-                ->assertDontSee('New Select')
-                ->assertDontSee('New Checkbox')
-                ->assertDontSee('New TextArea')
-                ->assertDontSee('New Radio Button Group')
-                ->assertDontSee('New Option')
-                ->assertDontSee('New Date Picker')
-                ->assertDontSee('NEW PAGE NAVIGATION')
-                ->assertDontSee('NEW SUBMIT');
+                ->assertSee('New File Upload')
+                //->assertSee('New File Download')
+                ;
         });
     }
 }
