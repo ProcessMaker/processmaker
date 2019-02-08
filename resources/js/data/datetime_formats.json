@@ -13,5 +13,25 @@
     "format": "m/d/Y H:i",
     "momentFormat": "MM/DD/YYYY HH:mm",
     "title": "m/d/Y H:i (12/31/2017 23:30)"
+  },
+  {
+    "format": "d/m/Y",
+    "momentFormat": "DD/MM/YYYY",
+    "title": "d/m/Y (31/12/2017)"
+  },
+  {
+    "format": "d/m/Y H:i",
+    "momentFormat": "DD/MM/YYYY HH:mm",
+    "title": "d/m/Y H:i (31/12/2017 23:30)"
+  },
+  {
+    "format": "Y/m/d",
+    "momentFormat": "YYYY/MM/DD",
+    "title": "Y/m/d (2017/12/31)"
+  },
+  {
+    "format": "Y/m/d H:i",
+    "momentFormat": "YYYY/MM/DD HH:mm",
+    "title": "Y/m/d H:i (2017/12/31 23:30)"
   }
 ]
