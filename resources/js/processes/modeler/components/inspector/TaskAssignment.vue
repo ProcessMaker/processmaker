@@ -15,6 +15,7 @@
                 <option value="requestor">To requestor</option>
                 <option value="user">To user</option>
                 <option value="group">To group</option>
+                <option value="previous_task_assignee">Previous task assignee</option>
             </select>
         </div>
 
