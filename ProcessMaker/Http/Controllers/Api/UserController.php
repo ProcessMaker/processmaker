@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -157,6 +158,10 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
+        if (!Auth::user()->can('view', $user)) {
+            throw new AuthorizationException(__('Not authorized to update this user.'));
+        }
+
         return new UserResource($user);
     }
 
@@ -195,6 +200,10 @@ class UserController extends Controller
      */
     public function update(User $user, Request $request)
     {
+        if (!Auth::user()->can('edit', $user)) {
+            throw new AuthorizationException(__('Not authorized to update this user.'));
+        }
+
         $request->validate(User::rules($user));
         $fields = $request->json()->all();
         if (isset($fields['password'])) {

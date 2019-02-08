@@ -3,6 +3,7 @@
 namespace ProcessMaker\Providers;
 
 use ProcessMaker\Models\Notification;
+use ProcessMaker\Models\User;
 use ProcessMaker\Policies\NotificationPolicy;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Policies\ProcessPolicy;
@@ -18,6 +19,7 @@ use Illuminate\Support\Facades\Gate;
 use Laravel\Passport\Passport;
 use ProcessMaker\Models\Script;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Policies\UserPolicy;
 
 
 /**
@@ -37,6 +39,7 @@ class AuthServiceProvider extends ServiceProvider
         Process::class => ProcessPolicy::class,
         ProcessRequest::class => ProcessRequestPolicy::class,
         ProcessRequestToken::class => ProcessRequestTokenPolicy::class,
+        User::class => UserPolicy::class,
     ];
 
     /**
