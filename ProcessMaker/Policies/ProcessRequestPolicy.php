@@ -67,4 +67,26 @@ class ProcessRequestPolicy
             return true;
         }
     }
+    
+    /**
+     * Determine whether the user can edit request data.
+     *
+     * @param  \ProcessMaker\Models\User  $user
+     * @param  \ProcessMaker\Process  $process
+     * @return boolean
+     */    
+    public function editData(User $user, ProcessRequest $request)
+    {
+        if ($request->status === 'ACTIVE') {
+            $permission = 'edit-task_data';
+        } else {
+            $permission = 'edit-request_data';
+        }
+        
+        if ($user->can($permission)) {
+            return true;
+        }
+        
+        return $user->can('editData', $request->process);
+    }
 }
