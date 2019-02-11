@@ -54,7 +54,7 @@ class ScreenTest extends DuskTestCase
                 ->type('title', 'New Screen Test')
                 ->select('type', 'FORM')
                 ->type('description', 'Screen created for test')
-                ->click('.modal-footer .btn.btn-success.ml-2')
+                ->click('#createScreen .modal-footer .btn.btn-secondary')
                 //save successfully and redirect
                 ->waitFor('#screen-container')
                 ->assertSee('Controls')

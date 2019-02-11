@@ -39,7 +39,7 @@ initialControls.push({
             }
         ]
     }
-})
+});
 initialControls.push({
     rendererComponent: FormText,
     rendererBinding: 'FormText',
