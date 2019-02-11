@@ -57,7 +57,9 @@ class PermissionSeeder extends Seeder
         'create-auth_clients',
         'view-auth_clients',
         'edit-auth_clients',
-        'delete-auth_clients'
+        'delete-auth_clients',
+        'edit-request_data',
+        'edit-task_data',
     ];
     
     public function run($seedUser = null)
