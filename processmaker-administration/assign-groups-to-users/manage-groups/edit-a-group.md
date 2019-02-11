@@ -57,7 +57,7 @@ Follow these steps to edit a ProcessMaker group:
         ![](../../../.gitbook/assets/caution-remove-user-edit-group-admin.png)
 
      2. Click **Confirm**.
-7. Click the **Group Permissions** tab. The **Group Permissions** tab displays permissions assigned to all members of that ProcessMaker group. Permissions assigned to the ProcessMaker group take precedence over permissions assigned to any ProcessMaker user account that is a member of this group.
+7. Click the **Group Permissions** tab. The **Group Permissions** tab displays permissions assigned to all members of that ProcessMaker group. Permissions assigned to the ProcessMaker group take apply to all ProcessMaker user account members of this group.
 8. In the **Group Permissions** tab, change which permissions from each permission category that are assigned to all group members if necessary. Follow these guidelines to change permission assignments:
    * Select the **Assign all permissions to this group** checkbox to assign all permissions to the members of this ProcessMaker group.
    * Click on a permission category to expand the view of individual permissions within that category. Click on an expanded permission category to collapse that category. Assign permissions for all members of this ProcessMaker Group. See [Permission Descriptions for Users and Groups](../../permission-descriptions-for-users-and-groups.md).

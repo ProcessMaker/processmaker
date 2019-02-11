@@ -27,6 +27,8 @@ The **Tasks** tab displays the following information in tabular format:
 * **Assigned:** The **Assigned** column displays the avatar for the username to whom the Task is assigned.
 * **Due Date:** The **Due Date** column displays the date the Task is due. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
+Below the table, the history of the Request displays all Request actions. [See Request History](request-details.md#request-history).
+
 {% hint style="info" %}
 ### No Tasks?
 
@@ -63,10 +65,12 @@ The **Summary** tab displays a summary of all information entered into the compl
 
 ![&quot;Summary&quot; tab in a completed Request&apos;s information](../../.gitbook/assets/summary-tab-request-information-request.png)
 
-Process Owners can specify how information displays in the **Summary** tab. By default, the **Summary** tab displays the JSON-formatted key/value pairs that represents ProcessMaker Screens. Information is displayed in tabular format:
+~~Process Owners can specify how information displays in the **Summary** tab. By default,~~ the **Summary** tab displays the JSON-formatted key/value pairs that represent ProcessMaker Screens. Information is displayed in tabular format:
 
-* **KEY:** The **KEY** column displays the JSON key name that represents the ProcessMaker Screen control name the Request participant entered data or specified through the ProcessMaker 4 [REST API](https://develop.bpm4.qa.processmaker.net/api/documentation).
-* **VALUE:** The **VALUE** column displays that key's value as entered by a person manually interacting with a form or specified through the ProcessMaker 4 [REST API](https://develop.bpm4.qa.processmaker.net/api/documentation).
+* **KEY:** The **KEY** column displays the JSON key name that represents the ProcessMaker Screen control name the Request participant entered data or specified through the ProcessMaker 4 [REST API](https://develop.bpm4.qa.processmaker.net/api/documentation). For example, a Text control to enter your name could be named `Full Name` which would be displayed in the **Key** column here.
+* **VALUE:** The **VALUE** column displays that key's value as entered by a person manually interacting with a form or specified through the ProcessMaker 4 [REST API](https://develop.bpm4.qa.processmaker.net/api/documentation). For example, a Text control to enter your name could have the value `John Doe` which would be displayed in the **Value** column here.
+
+Below the table, the history of the Request displays all Request actions. [See Request History](request-details.md#request-history).
 
 {% hint style="info" %}
 ### Summary Tab Displays Information for Completed Requests
@@ -80,6 +84,20 @@ The **Summary** tab only displays information for completed Requests. If you sel
 [Control how tabular information displays](../control-how-requests-display-in-a-tab.md), including how to sort columns or how many items display per page.
 {% endhint %}
 
+### Data
+
+The **Data** tab displays the summary of values from a completed Request similarly to the [**Summary**](request-details.md#summary) tab.  However, values in the **Data** tab are editable and be saved to change them from the values submitted in the Request. The **Data** column only displays when that Request is completed.
+
+![&quot;Data&quot; tab displays editable values for a completed Request](../../.gitbook/assets/data-tab-completed-request-information-requests.png)
+
+Follow these steps to revise and save the values in the completed Request from those values that were submitted in the Request:
+
+1. View the **Data** tab. Note that the Data tab does not display until the Request is completed.
+2. From the editable fields in the **Values** column, change the values that were submitted during the Request to those that you want.
+3. Click **Save**. The following message displays when the Request values are changed: **Request data successfully updated**.
+
+Below the table, the history of the Request displays all Request actions. [See Request History](request-details.md#request-history).
+
 ### Summary of Tasks for the Completed Request
 
 The **Completed** tab displays a summary of all tasks for the selected completed Request.
@@ -91,6 +109,8 @@ The **Completed** tab displays the following information:
 * **Task:** The **Task** column displays the name of each completed Task in the selected Request. 
 * **Assigned:** The **Assigned** column displays the avatar for the username to whom the Task was assigned.
 * **Due Date:** The **Due Date** column displays the date the Task is due. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
+
+Below the table, the history of the Request displays all Request actions. [See Request History](request-details.md#request-history).
 
 {% hint style="info" %}
 ### Not a Completed Request?
@@ -114,6 +134,8 @@ The following information displays about participants in a selected completed Re
 * **Participants:** The **Participants** field displays the avatars of all participants in the selected Request.
 * **Request completion date:** The date and time the Request was completed displays below the **Participants** field. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
+Below the table, the history of the Request displays all Request actions. [See Request History](request-details.md#request-history).
+
 ## Error Information for a Request
 
 ### Summary of the Error
@@ -128,6 +150,8 @@ The **Errors** tab displays the following information:
 * **Time:** The **Time** column displays how long ago the error occurred.
 * **Element:** The **Element** column displays to which element the error occurred within the Process associated with the Request.
 
+Below the table, the history of the Request displays all Request actions. [See Request History](request-details.md#request-history).
+
 ### Request Participants
 
 Requests in which an error occurs display information about the participants for that Request.
@@ -139,6 +163,16 @@ The following information displays about participants in a selected Request in w
 * **Requested By:** The **Requested By** field displays the avatar and full name of the person who started the selected Request. The Request may have been started from a person manually interacting with a form or as an authenticated user to the ProcessMaker 4 [REST API](https://develop.bpm4.qa.processmaker.net/api/documentation).
 * **Participants:** The **Participants** field displays the avatars of all participants in the selected Request.
 * **Request error date:** The date and time in which the Request error occurred displays below the **Participants** field. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
+
+## Request History
+
+Below the **Error**/**Task**/**Summary**/**Data**/**Completed** tables, the history of the Request displays all Request actions: what each Request participant and ProcessMaker Script performed for this Request. The oldest Request actions display at the top of the Request history.
+
+![Request history displays all actions in a Request, with the oldest actions at the top](../../.gitbook/assets/request-history-requests.png)
+
+The following information displays about each event in the Request history:
+
+
 
 ## Related Topics
 
