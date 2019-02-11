@@ -38,65 +38,42 @@ use ProcessMaker\Traits\SerializeToIso8601;
  * )
  *
  */
-class Comment extends Model
+class ScheduledTask extends Model
 {
     use SerializeToIso8601;
 
     protected $fillable = [
-        'user_id', 'commentable_id', 'commentable_type', 'subject', 'body', 'hidden', 'type'
+        'process_id', 'process_request_id', 'configuration'
     ];
 
     public static function rules()
     {
         return [
-            'user_id' => 'required',
-            'commentable_id' => 'required',
-            'commentable_type' => 'required|in:' . ProcessRequestToken::class . ',' . ProcessRequest::class,
-            'subject' => 'required',
-            'body' => 'required',
-            'hidden' => 'required|boolean',
-            'type' => 'required|in:LOG,MESSAGE',
+            'process_id' => 'required'
         ];
-
-    }
-
-    /**
-     * Scope comments hidden
-     *
-     * @param $query
-     * @param $parameter hidden, visible, all
-     *
-     * @return mixed
-     */
-    public function scopeHidden($query, $parameter)
-    {
-        switch ($parameter) {
-            case 'visible':
-                return $query->where('hidden', false);
-                break;
-            case 'hidden':
-                return $query->where('hidden', true);
-                break;
-            case 'ALL':
-                return $query;
-                break;
-        }
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
-     */
-    public function commentable()
-    {
-        return $this->morphTo(null, null, 'commentable_id');
     }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function user()
+    public function process()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Process::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function processRequest()
+    {
+        return $this->belongsTo(ProcessRequest::class);
+    }
+
+    public function fillStartEvents()
+    {
+        $processes = Process::all();
+        foreach($processes as $process) {
+
+        }
+    }
 }
