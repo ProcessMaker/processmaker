@@ -81,6 +81,31 @@
                     </multiselect>
                 </div>
                 <div class="form-group p-0">
+                    {!! Form::label('cancelScreen', __('Cancel Screen')) !!}
+                    {!! Form::select('screens', $screens, null,
+                        ['id' => 'screens',
+                            'class' => 'form-control',
+                            'v-model' => 'formData.cancel_screen_id',
+                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.screens}'
+                        ])
+                    !!}
+                    <div class="invalid-feedback" v-if="errors.screens">@{{errors.screens[0]}}</div>
+                </div>
+                <div class="form-group p-0">
+                    {!! Form::label('cancelRequest', __('Cancel Request')) !!}
+                    <multiselect
+                        v-model="canCancel"
+                        :options="activeUsersAndGroups"
+                        :multiple="true"
+                        placeholder="Type to search"
+                        track-by="fullname"
+                        label="fullname"
+                        group-values="items"
+                        group-label="label">
+                            <span slot="noResult">Oops! No elements found. Consider changing the search query.</span>
+                    </multiselect>
+                </div>
+                <div class="form-group p-0">
                     {!! Form::label('editData', __('Edit Data')) !!}
                     <multiselect
                         v-model="canEditData"
@@ -132,6 +157,7 @@
                         status: null,
                         screen: null
                     },
+                    screens: @json($screens),
                     canStart: @json($canStart),
                     canCancel: @json($canCancel),
                     canEditData: @json($canEditData),
@@ -174,7 +200,7 @@
                     this.formData.start_request = this.formatAssigneePermissions(this.canStart);
                     this.formData.cancel_request = this.formatAssigneePermissions(this.canCancel);
                     this.formData.edit_data = this.formatAssigneePermissions(this.canEditData);
-
+                    this.formData.cancel_screen_id = this.screens
                     ProcessMaker.apiClient.put('processes/' + that.formData.id, that.formData)
                         .then(response => {
                             ProcessMaker.alert('{{__('Process Updated Successfully')}}', 'success');
