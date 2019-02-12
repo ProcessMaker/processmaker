@@ -11,10 +11,12 @@ class ProcessWebhook extends ApiResource
      */
     public function toArray($request)
     {
-        $array = parent::toArray($request);
-        if (!empty($array)) {
-            $array['url'] = $this->url();
+        $array = ['webhook' => parent::toArray($request)];
+        if (empty($array['webhook'])) {
+            $array['webhook'] = null;
+            return $array;
         }
+        $array['webhook']['url'] = $this->url();
         return $array;
     }
 }

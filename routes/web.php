@@ -96,4 +96,4 @@ $this->get('password/success', function () {
 })->name('password-success');
 
 // Public webhook entry (verified by token in controller)
-$this->post('webhook/start_event', 'WebhookController@start_event')->name('webhook.start_event');
+$this->post('webhook/start_event', 'WebhookController@startEvent')->name('webhook.start_event');
