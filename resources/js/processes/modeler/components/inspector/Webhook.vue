@@ -8,12 +8,8 @@
         <div v-if="enabled">
             <div v-if="loading">Loading...</div>
             <div v-else>
-                <input class="form-control" disabled="true" v-model="url" />
-                <a href="#" @click="createNew">Create New</a>
-                &bull;
-                <a href="#" @click="revoke" :disabled="url != null">Revoke</a>
-                &bull;
-                <a href="#" @click="copy">Copy</a>
+                <input class="form-control" :readonly="fieldDisabled" v-model="url" ref="webhookUrlInput" />
+                <a href="#" @click="copy">Copy To Clipboard</a>
             </div>
         </div>
     </div>
@@ -28,12 +24,10 @@
                 content: "",
                 loading: true,
                 url: null,
+                fieldDisabled: true,
             };
         },
         computed: {
-            // node() {
-            //     return this.$parent.$parent.highlightedNode.definition;
-            // }
             enabled() {
                 return this.url !== null
             }
@@ -42,50 +36,77 @@
             this.load();
         },
         methods: {
+            node() {
+                return this.$parent.$parent.highlightedNode.definition.id;
+            },
+            processId() {
+                return window.ProcessMaker.modeler.process.id;
+            },
             enable() {
                 this.createNewApiCall();
             },
             disable() {
-                this.revokeApiCall();
+                this.revoke();
+            },
+            endpoint() {
+                return "/processes/" + this.processId() + '/webhooks/?node=' + this.node();
             },
             load() {
                 this.loading = true;
-                let params = Object.assign({type:'FORM'}, this.params);
                 ProcessMaker.apiClient
-                        .get("/screens", {
-                            params: params
-                        })
+                        .get(this.endpoint())
                         .then(response => {
-                            this.screens = response.data.data;
-                            this.loading = false;
+                            if (response.data.webhook === null) {
+                                this.url = null;
+                            } else {
+                                this.url = response.data.webhook.url;
+                            }
                         })
                         .catch(err => {
+                        })
+                        .finally(() => {
                             this.loading = false;
                         });
-            },
-            createNew() {
-                if (this.url != null) {
-                    ProcessMaker.confirmModal(
-                        "Caution!",
-                        "<b>Are you sure to re-create this webhook? The current one will no longer work.</b>",
-                        "",
-                        () => { this.createNewApiCall() }
-                    );
-                }
             },
             revoke() {
                 ProcessMaker.confirmModal(
                     "Caution!",
-                    "<b>Are you sure to revoke this webhook? It will not longer work.</b>",
+                    "<b>Are you sure to disable this webhook? The URL will no longer work. If you re-enable later, it will have a different url.</b>",
                     "",
                     () => { this.revokeApiCall() }
                 );
             },
             copy() {
+                this.fieldDisabled = false;
+                this.$refs.webhookUrlInput.select()
+                document.execCommand('copy')
+                this.fieldDisabled = true;
             },
             revokeApiCall() {
+                this.loading = true;
+                ProcessMaker.apiClient
+                        .delete(this.endpoint())
+                        .then(response => {
+                            this.url = null;
+                        })
+                        .catch(err => {
+                        })
+                        .finally(() => {
+                            this.loading = false;
+                        });
             },
             createNewApiCall() {
+                this.loading = true;
+                ProcessMaker.apiClient
+                        .post(this.endpoint())
+                        .then(response => {
+                            this.url = response.data.webhook.url;
+                        })
+                        .catch(err => {
+                        })
+                        .finally(() => {
+                            this.loading = false;
+                        });
             },
         }
     };
