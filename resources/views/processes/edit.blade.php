@@ -200,7 +200,7 @@
                     this.formData.start_request = this.formatAssigneePermissions(this.canStart);
                     this.formData.cancel_request = this.formatAssigneePermissions(this.canCancel);
                     this.formData.edit_data = this.formatAssigneePermissions(this.canEditData);
-                    this.formData.cancel_screen_id = this.screens
+                    this.formData.cancel_screen_id = this.formData.cancel_screen_id
                     ProcessMaker.apiClient.put('processes/' + that.formData.id, that.formData)
                         .then(response => {
                             ProcessMaker.alert('{{__('Process Updated Successfully')}}', 'success');
