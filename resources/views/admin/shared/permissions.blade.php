@@ -128,6 +128,8 @@
             <label><input type="checkbox" :disabled="formData.is_administrator" value="create-processes" v-model="selectedPermissions" @change="checkCreate('edit-processes', $event)">   {{__('Create Processes')}}</label>
             <label><input type="checkbox" :disabled="formData.is_administrator" value="edit-processes" v-model="selectedPermissions" @change="checkEdit('create-processes', $event)">   {{__('Edit Processes')}}</label>
             <label><input type="checkbox" :disabled="formData.is_administrator" value="archive-processes" v-model="selectedPermissions">   {{__('Archive Processes')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="import-processes" v-model="selectedPermissions">   {{__('Import Processes')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="export-processes" v-model="selectedPermissions">   {{__('Export Processes')}}</label>
         </div>
     </div>
 </div>
