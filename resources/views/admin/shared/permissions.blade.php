@@ -9,6 +9,8 @@
     <div id="requests" class="collapse" >
         <div class="card-body">
             <label><input type="checkbox" :disabled="formData.is_administrator" value="view-all_requests" v-model="selectedPermissions">   {{__('View All Requests')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="edit-request_data" v-model="selectedPermissions">   {{__('Edit Request Data')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="edit-task_data" v-model="selectedPermissions">   {{__('Edit Task Data')}}</label>
         </div>
     </div>
 </div>
