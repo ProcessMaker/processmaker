@@ -23,5 +23,5 @@ In ProcessMaker 4, a user is any person for which a ProcessMaker account is crea
 
 {% page-ref page="create-a-user-account.md" %}
 
-
+{% page-ref page="../../using-processmaker/profile-settings.md" %}
 

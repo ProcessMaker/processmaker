@@ -78,7 +78,7 @@ Follow these steps to edit a ProcessMaker user account:
    * Click **Update** if you made any changes in the **Information** or **Permissions** tabs.
 
 {% hint style="info" %}
-The **API Tokens** tab displays API tokens granted to that ProcessMaker user account. Only after the ProcessMaker user logs in can that person create API tokens.
+The **API Tokens** tab displays the API token that ProcessMaker user generated to access the [ProcessMaker 4 API](https://develop.bpm4.qa.processmaker.net/api/documentation). It is not editable.
 {% endhint %}
 
 ## Related Topics

@@ -4,11 +4,11 @@ description: View all Requests that you've started or in which you're a particip
 
 # View All Requests
 
-The **All Requests** page displays all Requests that you started or in which you are a participant. Request information display in tabular format.
+The **All Requests** page displays all Requests in the organization. This includes Requests that you may not have participated in as well as in-progress and completed Requests. Request information displays in tabular format.
 
 ## View All Requests You Started or in Which You Are a Participant
 
-Follow these steps to view all Requests you started or in which you are a participant:
+Follow these steps to view the **All Requests** page:
 
 1. Do one of the following:
    * [Log in](../log-in.md#log-in) to ProcessMaker. The **My Requests** page displays.

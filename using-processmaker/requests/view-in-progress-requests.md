@@ -4,7 +4,7 @@ description: View Requests that are in progress in which you are participating.
 
 # View Requests That Are In Progress
 
-The **In Progress** page displays all in-progress Requests in which you are participating. Request information display in tabular format.
+The **In Progress** page displays all in-progress Requests in which you are participating. Request information displays in tabular format.
 
 ## View In-Progress Requests in Which You are a Participant
 

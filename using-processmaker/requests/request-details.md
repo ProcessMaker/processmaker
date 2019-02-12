@@ -172,7 +172,9 @@ Below the **Error**/**Task**/**Summary**/**Data**/**Completed** tables, the hist
 
 The following information displays about each event in the Request history:
 
-
+* **Request participant:** The Request participant who performed the action is represented by his or her user avatar. If the ProcessMaker system performed an action by running a ProcessMaker Script or other automatic function, that action is represented by "S" avatar.
+* **Date and time the action occurred:** To the right of the Request participant displays the date and time the Request action occurred. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
+* **Description of the action:** To the right of the when the Request action occurred displays a description of that action. The ProcessMaker system generates this action description.
 
 ## Related Topics
 
