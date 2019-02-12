@@ -41,6 +41,13 @@ ProcessMaker recommends [creating ProcessMaker groups](assign-groups-to-users/cr
 
 Permissions are organized into categories. Permission are described below by category and how each permission affects ProcessMaker functionality. These permissions function identically in ProcessMaker user accounts and groups.
 
+Most permission categories have four permission types:
+
+* View permission type: View the resource, but no change functionality.
+* Create permission type: Create a resource. When 
+* Edit: 
+* Delete: 
+
 ### Requests
 
 The **Requests** category contains the following permission:
@@ -51,20 +58,27 @@ The **Requests** category contains the following permission:
 
 The **Scripts** category contains the following permissions:
 
-* **View Scripts:** View the **Scripts** page that displays the list of ProcessMaker Scripts. See [View All Scripts](../designing-processes/scripts/manage-scripts/view-all-scripts.md).
-* **Create Scripts:** Create a ProcessMaker Script from the **Scripts** page. See [Create a New Script](../designing-processes/scripts/create-a-new-script.md).
+* **View Scripts:** View the list of ProcessMaker Scripts that displays on the **Scripts** page. See [View All Scripts](../designing-processes/scripts/manage-scripts/view-all-scripts.md).
+* **Create Scripts:** Create a ProcessMaker Script from the **Scripts** page. Selecting this permission also selects the **Edit Scripts** permission. See [Create a New Script](../designing-processes/scripts/create-a-new-script.md).
 * **Edit Scripts:** Edit a ProcessMaker Script and/or its configuration from the **Scripts** page. See [Edit Script Configuration](../designing-processes/scripts/manage-scripts/edit-script-configuration.md) and [Edit a Script](../designing-processes/scripts/manage-scripts/edit-a-script.md).
 * **Delete Scripts:** Delete a ProcessMaker Script from the **Scripts** page. See [Delete a Script](../designing-processes/scripts/manage-scripts/remove-a-script.md).
 
 {% hint style="info" %}
-Select the View Scripts permission to use any of the other permissions in this category.
+Select the **View Scripts** permission to use any of the other permissions in this category.
 {% endhint %}
 
 ### Categories
 
 The **Categories** category contains the following permissions:
 
+* **View Categories:** View the list of Process Categories that displays on the **Categories** page. See [View Process Categories](../designing-processes/viewing-processes/process-categories.md#view-process-categories).
+* **Create Categories:** Create a Process Category from the **Categories** page. Selecting this permission also selects the **Edit Categories** permission. See [Add a New Process Category](../designing-processes/viewing-processes/process-categories.md#add-a-new-process-category).
+* **Edit Categories:** Edit a Process Category from the **Categories** page. See [Edit a Process Category](../designing-processes/viewing-processes/process-categories.md#edit-a-process-category).
+* **Delete Categories:** Delete a Process Category from the Categories page. See [Delete a Process Category](../designing-processes/viewing-processes/process-categories.md#delete-a-process-category).
 
+{% hint style="info" %}
+Select the **View Categories** permission to use any of the other permissions in this category.
+{% endhint %}
 
 ### Screens
 
