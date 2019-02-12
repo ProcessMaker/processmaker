@@ -11,7 +11,8 @@ class ProcessWebhook extends Model
 {
     protected $fillable = [
         'process_id',
-        'node'
+        'node',
+        'token',
     ];
 
     public static function rules($existing = null)
@@ -19,11 +20,17 @@ class ProcessWebhook extends Model
         return [
             'process_id' => 'exists:processes,id',
             'node' => 'required|string',
+            'token' => 'required|string|unique',
         ];
     }
 
     public function process()
     {
         return $this->belongsTo(Process::class);
+    }
+
+    public function url()
+    {
+        return route('webhook.start_event', ['token' => $this->token]);
     }
 }

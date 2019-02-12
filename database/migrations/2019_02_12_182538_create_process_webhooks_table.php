@@ -17,8 +17,10 @@ class CreateProcessWebhooksTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('process_id');
             $table->string('node');
-            $table->string('token');
+            $table->string('token')->unique();
             $table->timestamps();
+            
+            $table->foreign('process_id')->references('id')->on('processes')->onDelete('cascade');
         });
     }
 

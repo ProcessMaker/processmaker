@@ -68,7 +68,7 @@ Route::group(
     
     Route::get('processes/{process}/webhooks', 'ProcessWebhookController@show')->name('process_webhooks.show')->middleware('can:view-processes');
     Route::post('processes/{process}/webhooks', 'ProcessWebhookController@store')->name('process_webhooks.store')->middleware('can:edit-processes');
-    Route::delete('processes/{process}/webhooks/{webhook}', 'ProcessWebhookController@destroy')->name('process_webhooks.destroy')->middleware('can:edit-processes');
+    Route::delete('processes/{process}/webhooks', 'ProcessWebhookController@destroy')->name('process_webhooks.destroy')->middleware('can:edit-processes');
     
     // List of Processes that the user can start
     Route::get('start_processes', 'ProcessController@startProcesses')->name('processes.start'); //Filtered in controller
