@@ -32,11 +32,11 @@ class ProcessWebhookTest extends TestCase
 
         $response = $this->apiCall('GET', $route);
         $json = $response->json();
-        $response->assertJson([
+        $response->assertJson(['webhook' => [
             'process_id' => $process->id,
             'node' => 'node_1',
             'url' => route('webhook.start_event', ['token' => 'abc123'])
-        ]);
+        ]]);
     }
 
     public function testCreateWebhook()
@@ -55,11 +55,11 @@ class ProcessWebhookTest extends TestCase
         $this->assertEquals('node_1', $webhook->node);
         $this->assertRegExp('/[a-zA-Z0-9-]{36}/', $webhook->token);
         
-        $response->assertJson([
+        $response->assertJson(['webhook' => [
             'process_id' => $process->id,
             'node' => 'node_1',
             'url' => route('webhook.start_event', ['token' => $webhook->token])
-        ]);
+        ]]);
     }
 
     public function testDeleteWebhook()
