@@ -16,89 +16,186 @@
 <div class="container" id="editProcess">
     <div class="row">
         <div class="col-8">
-            <div class="card card-body">
 
-                <div class="form-group">
-                    {!!Form::label('processTitle', __('Process title'))!!}
-                    {!!Form::text('processTitle', null,
-                        [ 'id'=> 'name',
-                            'class'=> 'form-control',
-                            'v-model'=> 'formData.name',
-                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'
-                        ])
-                    !!}
-                    <div class="invalid-feedback" v-if="errors.processTitle">@{{errors.name[0]}}</div>
+            <nav>
+                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-config" role="tab"
+                        aria-controls="nav-config" aria-selected="true">Configuration</a>
+                        <a class="nav-item nav-link" id="nav-groups-tab" data-toggle="tab" href="#nav-notifications" role="tab"
+                           aria-controls="nav-notifications" aria-selected="true">Notifications</a>
                 </div>
-                <div class="form-group">
-                    {!! Form::label('description', __('Description')) !!}
-                    {!! Form::textarea('description', null,
-                        ['id' => 'description',
-                            'rows' => 4,
-                            'class'=> 'form-control',
-                            'v-model' => 'formData.description',
-                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.description}'
-                        ])
-                    !!}
-                    <div class="invalid-feedback" v-if="errors.description">@{{errors.description[0]}}</div>
-                </div>
-                <div class="form-group p-0">
-                    {!! Form::label('category', __('Category')) !!}
-                    {!! Form::select('category', $categories, null,
-                        ['id' => 'process_category_id',
-                            'class' => 'form-control',
-                            'v-model' => 'formData.process_category_id',
-                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.category}'
-                        ])
-                    !!}
-                    <div class="invalid-feedback" v-if="errors.category">@{{errors.category[0]}}</div>
-                </div>
-                <div class="form-group p-0">
-                    {!! Form::label('startRequest', __('Start Request')) !!}
-                    <multiselect
-                        v-model="canStart"
-                        :options="activeUsersAndGroups"
-                        :multiple="true"
-                        placeholder="Type to search"
-                        track-by="fullname"
-                        label="fullname"
-                        group-values="items"
-                        group-label="label">
-                            <span slot="noResult">Oops! No elements found. Consider changing the search query.</span>
-                    </multiselect>
-                </div>
-                <div class="form-group p-0">
-                    {!! Form::label('cancelRequest', __('Cancel Request')) !!}
-                    <multiselect
-                        v-model="canCancel"
-                        :options="activeUsersAndGroups"
-                        :multiple="true"
-                        placeholder="Type to search"
-                        track-by="fullname"
-                        label="fullname"
-                        group-values="items"
-                        group-label="label">
-                            <span slot="noResult">Oops! No elements found. Consider changing the search query.</span>
-                    </multiselect>
-                </div>
-                <div class="form-group p-0">
-                    {!! Form::label('editData', __('Edit Data')) !!}
-                    <multiselect
-                        v-model="canEditData"
-                        :options="activeUsersAndGroups"
-                        :multiple="true"
-                        placeholder="Type to search"
-                        track-by="fullname"
-                        label="fullname"
-                        group-values="items"
-                        group-label="label">
-                            <span slot="noResult">Oops! No elements found. Consider changing the search query.</span>
-                    </multiselect>
+            </nav>
+            <div class="card card-body card-body-nav-tabs">
+                <div class="tab-content" id="nav-tabContent">
+                    <div class="tab-pane fade show active" id="nav-config" role="tabpanel" aria-labelledby="nav-config-tab">
+                        <div class="form-group">
+                            {!!Form::label('processTitle', __('Process title'))!!}
+                            {!!Form::text('processTitle', null,
+                                [ 'id'=> 'name',
+                                    'class'=> 'form-control',
+                                    'v-model'=> 'formData.name',
+                                    'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'
+                                ])
+                            !!}
+                            <div class="invalid-feedback" v-if="errors.processTitle">@{{errors.name[0]}}</div>
+                        </div>
+                        <div class="form-group">
+                            {!! Form::label('description', __('Description')) !!}
+                            {!! Form::textarea('description', null,
+                                ['id' => 'description',
+                                    'rows' => 4,
+                                    'class'=> 'form-control',
+                                    'v-model' => 'formData.description',
+                                    'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.description}'
+                                ])
+                            !!}
+                            <div class="invalid-feedback" v-if="errors.description">@{{errors.description[0]}}</div>
+                        </div>
+                        <div class="form-group p-0">
+                            {!! Form::label('category', __('Category')) !!}
+                            {!! Form::select('category', $categories, null,
+                                ['id' => 'process_category_id',
+                                    'class' => 'form-control',
+                                    'v-model' => 'formData.process_category_id',
+                                    'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.category}'
+                                ])
+                            !!}
+                            <div class="invalid-feedback" v-if="errors.category">@{{errors.category[0]}}</div>
+                        </div>
+                        <div class="form-group p-0">
+                            {!! Form::label('startRequest', __('Start Request')) !!}
+                            <multiselect
+                                v-model="canStart"
+                                :options="activeUsersAndGroups"
+                                :multiple="true"
+                                placeholder="Type to search"
+                                track-by="fullname"
+                                label="fullname"
+                                group-values="items"
+                                group-label="label">
+                                    <span slot="noResult">Oops! No elements found. Consider changing the search query.</span>
+                            </multiselect>
+                        </div>
+                        <div class="form-group p-0">
+                            {!! Form::label('cancelRequest', __('Cancel Request')) !!}
+                            <multiselect
+                                v-model="canCancel"
+                                :options="activeUsersAndGroups"
+                                :multiple="true"
+                                placeholder="Type to search"
+                                track-by="fullname"
+                                label="fullname"
+                                group-values="items"
+                                group-label="label">
+                                    <span slot="noResult">Oops! No elements found. Consider changing the search query.</span>
+                            </multiselect>
+                        </div>
+                        <div class="form-group p-0">
+                            {!! Form::label('editData', __('Edit Data')) !!}
+                            <multiselect
+                                v-model="canEditData"
+                                :options="activeUsersAndGroups"
+                                :multiple="true"
+                                placeholder="Type to search"
+                                track-by="fullname"
+                                label="fullname"
+                                group-values="items"
+                                group-label="label">
+                                    <span slot="noResult">Oops! No elements found. Consider changing the search query.</span>
+                            </multiselect>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-2">
+                            {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose']) !!}
+                            {!! Form::button('Save', ['class'=>'btn btn-success ml-2', '@click' => 'onUpdate']) !!}
+                        </div>
+                    </div>
+                    <div class="tab-pane fade show" id="nav-notifications" role="tabpanel" aria-labelledby="nav-notifications-tab">
+                        <div class="form-group p-0">
+
+                            <table id="table-notifications" class="table">
+                                <thead>
+                                    <tr>
+                                        <th class="notify"></th>
+                                        <th class="action">Process Started</th>
+                                        <th class="action">Process Canceled</th>
+                                        <th class="action">Process Completed</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="notify">Notify Requester</td>
+                                        <td class="action">
+                                            <div class="custom-control custom-switch">
+                                                <input type="checkbox" class="custom-control-input" id="notify-requester-started">
+                                                <label class="custom-control-label" for="notify-requester-started"></label>
+                                            </div>
+                                        </td>
+                                        <td class="action">
+                                            <div class="custom-control custom-switch">
+                                                <input type="checkbox" class="custom-control-input" id="notify-requester-canceled">
+                                                <label class="custom-control-label" for="notify-requester-canceled"></label>
+                                            </div>
+                                        </td>
+                                        <td class="action">
+                                            <div class="custom-control custom-switch">
+                                                <input type="checkbox" class="custom-control-input" id="notify-requester-completed">
+                                                <label class="custom-control-label" for="notify-requester-completed"></label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="notify">Notify Assignee</td>
+                                        <td class="action">
+                                            <div class="custom-control custom-switch">
+                                                <input type="checkbox" class="custom-control-input" id="notify-assignee-started">
+                                                <label class="custom-control-label" for="notify-assignee-started"></label>
+                                            </div>
+                                        </td>
+                                        <td class="action">
+                                            <div class="custom-control custom-switch">
+                                                <input type="checkbox" class="custom-control-input" id="notify-assignee-canceled">
+                                                <label class="custom-control-label" for="notify-assignee-canceled"></label>
+                                            </div>
+                                        </td>
+                                        <td class="action">
+                                            <div class="custom-control custom-switch">
+                                                <input type="checkbox" class="custom-control-input" id="notify-assignee-completed">
+                                                <label class="custom-control-label" for="notify-assignee-completed"></label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="notify">Notify Participants</td>
+                                        <td class="action">
+                                            <div class="custom-control custom-switch">
+                                                <input type="checkbox" class="custom-control-input" id="notify-participants-started">
+                                                <label class="custom-control-label" for="notify-participants-started"></label>
+                                            </div>
+                                        </td>
+                                        <td class="action">
+                                            <div class="custom-control custom-switch">
+                                                <input type="checkbox" class="custom-control-input" id="notify-participants-canceled">
+                                                <label class="custom-control-label" for="notify-participants-canceled"></label>
+                                            </div>
+                                        </td>
+                                        <td class="action">
+                                            <div class="custom-control custom-switch">
+                                                <input type="checkbox" class="custom-control-input" id="notify-participants-completed">
+                                                <label class="custom-control-label" for="notify-participants-completed"></label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="d-flex justify-content-end mt-2">
+                            {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose']) !!}
+                            {!! Form::button('Save', ['class'=>'btn btn-success ml-2', '@click' => 'onUpdate']) !!}
+                        </div>
+                    </div>
                 </div>
 
-                <div class="d-flex justify-content-end mt-2">
-                    {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose']) !!}
-                    {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'onUpdate']) !!}
-                </div>
             </div>
 
         </div>
@@ -195,6 +292,27 @@
 
 @section('css')
     <style>
+        .card-body-nav-tabs {
+            border-top: 0;
+        }
+        
+        .nav-tabs .nav-link.active {
+            background: white;
+            border-bottom: 0;
+        }
+        
+        #table-notifications th {
+            border-top: 0;
+        }
+
+        #table-notifications td.notify {
+            width: 40%;
+        }
+
+        #table-notifications td.action {
+            width: 20%;
+        }
+    
         .inline-input {
             margin-right: 6px;
         }
