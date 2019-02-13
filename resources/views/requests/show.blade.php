@@ -264,7 +264,7 @@
                  * If the screen summary is configured.
                  **/
                 showScreenSummary() {
-                    return this.request.summary_screen !== null || this.request.cancel_screen !== null
+                    return this.request.summary_screen !== null
                 },
                 /**
                  * Get the summary of the Request.
@@ -277,11 +277,7 @@
                  * Get Screen summary
                  * */
                 screenSummary() {
-                    if(this.request.status === 'CANCELED') {
-                        return this.request.cancel_screen.config;
-                    }else {
-                        return this.request.summary_screen.config;
-                    }
+                    return this.request.summary_screen.config;
                 },
                 /**
                  * prepare data screen
