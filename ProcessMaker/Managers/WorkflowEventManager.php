@@ -73,5 +73,39 @@ class WorkflowEventManager
        }
    }
 
+   public function nextDate($currentDate, $nayraInterval, $firstOccurrenceDate = null)
+   {
+       $parts = explode('/', $nayraInterval);
+       $repetitions = $parts[0];
 
+       //if the user doesn't send a first day of occurrence, we'll use the one in the interval
+       $firstDate = $firstOccurrenceDate === null
+                    ? $parts[1]
+                    : $firstOccurrenceDate->format('Y-m-d H:i:s:z');
+
+       if ($firstOccurrenceDate === null) {
+           $firstDate = $parts[1];
+       }
+
+       $interval = $parts[2];
+       if ($repetitions === 'R') {
+           $period = new \DatePeriod('R1000000/'. $firstDate . '/' . $interval);
+       }
+       else {
+           $period = new \DatePeriod($repetitions. '/'. $firstDate . '/' . $interval);
+       }
+
+       $recurrences = $period->recurrences;
+       $cont = 1;
+       $nextDate = new \DateTime($firstDate);
+       while ($cont < $recurrences || $repetitions === 'R') {
+           $nextDate->add($period->getDateInterval());
+           if ($nextDate >= $currentDate) {
+               break;
+           }
+           $cont ++;
+       }
+
+       return $nextDate;
+   }
 }

@@ -1,7 +1,9 @@
 <?php
 namespace Tests\Feature\Api;
 
+use Faker\Provider\DateTime;
 use Illuminate\Foundation\Testing\WithFaker;
+use ProcessMaker\Managers\WorkflowEventManager;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -59,7 +61,7 @@ class TimerStartEventTest extends TestCase
     /**
      * Execute a process
      */
-    public function testExecuteAProcess()
+    public function ExecuteAProcess()
     {
         if (!file_exists(config('app.bpm_scripts_home')) || !file_exists(config('app.bpm_scripts_docker'))) {
             $this->markTestSkipped(
@@ -90,5 +92,47 @@ class TimerStartEventTest extends TestCase
         $this->assertInternalType('int', $processInstance->data['random']);
         $this->assertInternalType('int', $processInstance->data['double']);
         $this->assertEquals(2 * $processInstance->data['random'], $processInstance->data['double']);
+    }
+
+    public function executeTimerStartEvent()
+    {
+        $this->process->getDefinitions();
+    }
+
+    public function testNextDateNayraInterval()
+    {
+        $manager = new WorkflowEventManager();
+
+
+        $cases = [
+            [
+                'currentDate' => '2019-02-11T00:00:00Z',
+                'interval' => 'R4/2019-02-15T00:00:00Z/P1M',
+                'expectedNextDate' => '2019-03-15T00:00:00Z'
+            ],
+            [
+                'currentDate' => '2019-05-11T00:00:00Z',
+                'interval' => 'R4/2019-02-15T00:00:00Z/P1M',
+                'expectedNextDate' => '2019-05-15T00:00:00Z'
+            ],
+            [
+                'currentDate' => '2019-05-11T00:00:00Z',
+                'interval' => 'R/2019-02-15T00:00:00Z/P1M',
+                'expectedNextDate' => '2019-05-15T00:00:00Z'
+            ],
+//            [
+//                'currentDate' => '2019-05-11T00:00:00Z',
+//                'interval' => 'R/2019-02-19T00:00-04:00/P1W',
+//                'expectedNextDate' => '2019-05-15T00:00:00Z'
+//            ],
+        ];
+
+        foreach($cases as $case) {
+            $currentDate = new \DateTime($case['currentDate']);
+            $nayraInterval = $case['interval'];
+            $expectedNextDate = new \DateTime($case['expectedNextDate']);
+            $nextDate = $manager->nextDate($currentDate, $nayraInterval);
+            $this->assertEquals($expectedNextDate, $nextDate);
+        }
     }
 }
