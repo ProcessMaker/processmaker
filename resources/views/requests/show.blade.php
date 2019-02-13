@@ -42,7 +42,7 @@
                                 </a>
                             </li>
                             @if ($request->status === 'COMPLETED')
-                            @can('editData', $request->process)
+                            @can('editData', $request)
                             <li>
                                 <a id="editdata-tab" data-toggle="tab" href="#editdata" role="tab"
                                    aria-controls="editdata" aria-selected="false"
@@ -118,7 +118,7 @@
                             </template>
                         </div>
                         @if ($request->status === 'COMPLETED')
-                        @can('editData', $request->process)
+                        @can('editData', $request)
                         <div id="editdata" role="tabpanel" aria-labelledby="editdata" class="tab-pane">
                             @include('tasks.editdata')
                         </div>

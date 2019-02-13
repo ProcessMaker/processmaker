@@ -31,14 +31,14 @@
             <div class="col-md-8">
                 <div class="container-fluid">
 
-                    <ul id="tabHeader" role="tablist" class="nav nav-tabs">
-                        <li class="nav-item"><a id="pending-tab" data-toggle="tab" href="#tab-form" role="tab" aria-controls="tab-form" aria-selected="true" class="nav-link active">{{__('Form')}}</a></li>
-                        @if ($task->processRequest->status === 'ACTIVE')
-                        @can('editData', $task->processRequest->process)
-                        <li class="nav-item"><a id="summary-tab" data-toggle="tab" href="#tab-data" role="tab" aria-controls="tab-data" aria-selected="false" class="nav-link">{{__('Data')}}</a></li>
+                    @if ($task->processRequest->status === 'ACTIVE')
+                        @can('editData', $task->processRequest)
+                            <ul id="tabHeader" role="tablist" class="nav nav-tabs">
+                                <li class="nav-item"><a id="pending-tab" data-toggle="tab" href="#tab-form" role="tab" aria-controls="tab-form" aria-selected="true" class="nav-link active">{{__('Form')}}</a></li>
+                                <li class="nav-item"><a id="summary-tab" data-toggle="tab" href="#tab-data" role="tab" aria-controls="tab-data" aria-selected="false" class="nav-link">{{__('Data')}}</a></li>
+                            </ul>
                         @endcan
-                        @endif
-                    </ul>
+                    @endif
                     <div id="tabContent" class="tab-content">
                         <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show">
                             @if ($task->getScreen() && ($task->advanceStatus==='open' || $task->advanceStatus==='overdue'))
@@ -58,7 +58,7 @@
                             @endif
                         </div>
                         @if ($task->processRequest->status === 'ACTIVE')
-                        @can('editData', $task->processRequest->process)
+                        @can('editData', $task->processRequest)
                         <div id="tab-data" role="tabpanel" aria-labelledby="tab-data" class="tab-pane">
                             @include('tasks.editdata')
                         </div>

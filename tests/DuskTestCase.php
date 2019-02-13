@@ -2,21 +2,21 @@
 
 namespace Tests;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\TestCase as BaseTestCase;
 use Facebook\WebDriver\Chrome\ChromeOptions;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 
 /**
- * The base of our dusk tests. Note it uses database migrations followed 
- * by database seeding.  This is slow but ensures clean execution between 
+ * The base of our dusk tests. Note it uses database migrations followed
+ * by database seeding.  This is slow but ensures clean execution between
  * tests.
  */
 abstract class DuskTestCase extends BaseTestCase
 {
     use CreatesApplication;
-    use RefreshDatabase;
+    use DatabaseMigrations;
 
     public function setUp()
     {
@@ -47,7 +47,8 @@ abstract class DuskTestCase extends BaseTestCase
         if(!env('SAUCELABS_BROWSER_TESTING', false)) {
             $options = (new ChromeOptions)->addArguments([
                 '--disable-gpu',
-                '--headless'
+                '--headless',
+                '--window-size=1920,1080',
             ]);
 
             return RemoteWebDriver::create(
@@ -61,8 +62,8 @@ abstract class DuskTestCase extends BaseTestCase
             return RemoteWebDriver::create(
                 "https://" . env('SAUCELABS_USERNAME') . ":" . env('SAUCELABS_ACCESS_KEY') . "@ondemand.saucelabs.com:443/wd/hub",
                 [
-                    "platform" => env('SAUCELABS_PLATFORM', "Windows 7"), 
-                    "browserName" => env('SAUCELABS_BROWSER', "chrome"), 
+                    "platform" => env('SAUCELABS_PLATFORM', "Windows 7"),
+                    "browserName" => env('SAUCELABS_BROWSER', "chrome"),
                     "version"=> env('SAUCELABS_BROWSER_VERSION', "67")
                 ]
             );
