@@ -2,7 +2,7 @@
 description: Create a new ProcessMaker user account.
 ---
 
-# Create a User Account
+# Create a New User Account
 
 ## Create a ProcessMaker User Account
 

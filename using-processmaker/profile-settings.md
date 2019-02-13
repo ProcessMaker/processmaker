@@ -13,7 +13,7 @@ Follow these steps to access your profile settings:
 
    ![](../.gitbook/assets/profile-option.png)
 
-   The **Profile** page displays.
+   The **Profile** page displays. See [Change Your Profile Settings](profile-settings.md#change-your-profile-settings).  
 
 ## Change Your Profile Settings
 

@@ -4,7 +4,7 @@ description: >-
   organization.
 ---
 
-# View Active and Inactive Processes
+# View All Processes
 
 ProcessMaker displays all active and inactive Processes in one table that Process Owners have created throughout your organization. This makes it easy to manage Processes.
 

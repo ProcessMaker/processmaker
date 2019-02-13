@@ -12,6 +12,8 @@
 
 * [Log In to ProcessMaker](using-processmaker/log-in.md)
 * [Profile Settings](using-processmaker/profile-settings.md)
+* [View ProcessMaker Version Information](using-processmaker/application-version-details.md)
+* [Log Out of ProcessMaker](using-processmaker/log-out.md)
 * [Requests](using-processmaker/requests/README.md)
   * [What is a Request?](using-processmaker/requests/what-is-a-request.md)
   * [Start a Request](using-processmaker/requests/make-a-request.md)
@@ -28,14 +30,13 @@
   * [View Completed Tasks](using-processmaker/task-management/view-completed-tasks.md)
 * [Notifications](using-processmaker/notifications.md)
 * [Control How Tabular Information Displays](using-processmaker/control-how-requests-display-in-a-tab.md)
-* [Log Out of ProcessMaker](using-processmaker/log-out.md)
 
 ## Manage and Model Processes
 
 * [Process Management](designing-processes/viewing-processes/README.md)
   * [What is a Process?](designing-processes/viewing-processes/what-is-a-process.md)
   * [Manage Processes](designing-processes/viewing-processes/view-the-list-of-processes/README.md)
-    * [View Active and Inactive Processes](designing-processes/viewing-processes/view-the-list-of-processes/view-your-processes.md)
+    * [View All Processes](designing-processes/viewing-processes/view-the-list-of-processes/view-your-processes.md)
     * [Search for a Process](designing-processes/viewing-processes/view-the-list-of-processes/search-for-a-process.md)
     * [Edit Process Configuration](designing-processes/viewing-processes/view-the-list-of-processes/edit-the-name-description-category-or-status-of-a-process.md)
     * [Archive a Process](designing-processes/viewing-processes/view-the-list-of-processes/remove-a-process.md)
@@ -119,7 +120,7 @@
     * [Search for a User Account](processmaker-administration/add-users/manage-user-accounts/search-for-a-user.md)
     * [Edit a User Account](processmaker-administration/add-users/manage-user-accounts/edit-a-user-account.md)
     * [Delete a User Account](processmaker-administration/add-users/manage-user-accounts/remove-a-user-account.md)
-  * [Create a User Account](processmaker-administration/add-users/create-a-user-account.md)
+  * [Create a New User Account](processmaker-administration/add-users/create-a-user-account.md)
 * [Group Management](processmaker-administration/assign-groups-to-users/README.md)
   * [What is a Group?](processmaker-administration/assign-groups-to-users/what-is-a-group.md)
   * [Manage Groups](processmaker-administration/assign-groups-to-users/manage-groups/README.md)
@@ -127,10 +128,8 @@
     * [Search for a Group](processmaker-administration/assign-groups-to-users/manage-groups/search-for-a-group.md)
     * [Edit a Group](processmaker-administration/assign-groups-to-users/manage-groups/edit-a-group.md)
     * [Delete a Group](processmaker-administration/assign-groups-to-users/manage-groups/remove-a-group.md)
-  * [Create a Group](processmaker-administration/assign-groups-to-users/create-a-group.md)
+  * [Create a New Group](processmaker-administration/assign-groups-to-users/create-a-group.md)
 * [Permission Descriptions for Users and Groups](processmaker-administration/permission-descriptions-for-users-and-groups.md)
-* [ProcessMaker Preferences](processmaker-administration/processmaker-preferences.md)
-* [View ProcessMaker Version Information](processmaker-administration/application-version-details.md)
 * [Queue Management](processmaker-administration/queue-management.md)
 
 ## Install ProcessMaker

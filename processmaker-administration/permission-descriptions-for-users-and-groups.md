@@ -15,7 +15,7 @@ In ProcessMaker 4, a permission allows a ProcessMaker user member to view a type
 * Edit Processes
 * Edit ProcessMaker Screens
 * Create Environment Variables
-* View Task Assignments through the [ProcessMaker 4 API](https://develop.bpm4.qa.processmaker.net/api/documentation)
+* View Task Assignments through the [ProcessMaker 4 API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation)
 
 ### Assign Permissions to Users and Groups
 
@@ -103,43 +103,138 @@ Select the **View Environment Variables** permission to use any of the other per
 
 The **Users** category contains the following permissions:
 
+* **View Users:** View the table of ProcessMaker user accounts on the **Users** page. See [View All Users Accounts](add-users/manage-user-accounts/view-all-users.md).
+* **Create Users:** Create a ProcessMaker user account from the **Users** page. Selecting this permission also selects the **Edit Users** permission. See [Create a New User Account](add-users/create-a-user-account.md).
+* **Edit Users:** Edit a ProcessMaker user account from the **Users** page. See [Edit a User Account](add-users/manage-user-accounts/edit-a-user-account.md).
+* **Delete Users:** Delete a ProcessMaker user account from the **Users** page. See [Delete a User Account](add-users/manage-user-accounts/remove-a-user-account.md).
 
+{% hint style="info" %}
+Select the **View Users** permission to use any of the other permissions in this category.
+{% endhint %}
 
 ### Groups
 
 The **Groups** category contains the following permissions:
 
+* **View Groups:** View the table of ProcessMaker groups on the **Groups** page. See [View All Groups](assign-groups-to-users/manage-groups/view-all-groups.md).
+* **Create Groups:** View a ProcessMaker group from the **Groups** page. Selecting this permission also selects the **Edit Groups** permission. See [Create a New Group](assign-groups-to-users/create-a-group.md).
+* **Edit Groups:** Edit a ProcessMaker group from the **Groups** page. See [Edit a Group](assign-groups-to-users/manage-groups/edit-a-group.md).
+* **Delete Groups:** Delete a ProcessMaker group from the **Groups** page. See [Delete a Group](assign-groups-to-users/manage-groups/remove-a-group.md).
 
+{% hint style="info" %}
+Select the **View Groups** permission to use any of the other permissions in this category.
+{% endhint %}
 
 ### Processes
 
 The **Processes** category contains the following permissions:
 
+* **View Processes:** View the table of Processes on the **Processes** page. See [View All Processes](../designing-processes/viewing-processes/view-the-list-of-processes/view-your-processes.md).
+* **Create Processes:** Create a Process from the **Processes** page. Selecting this permission also selects the **Edit Processes** permission. See [Create a New Process](../designing-processes/viewing-processes/create-a-process.md).
+* **Edit Processes:** Edit a Process model and/or its configuration from the **Processes** page. See [Edit a Process Model](../designing-processes/viewing-processes/view-the-list-of-processes/view-your-processes.md#edit-the-process-model) and [Edit Process Configuration](../designing-processes/viewing-processes/view-the-list-of-processes/edit-the-name-description-category-or-status-of-a-process.md).
+* **Archive Processes:** Archive a Process from the **Processes** page. See [Archive a Process](../designing-processes/viewing-processes/view-the-list-of-processes/remove-a-process.md).
 
+{% hint style="info" %}
+Select the **View Processes** permission to use any of the other permissions in this category.
+{% endhint %}
 
 ### Comments
 
 The **Comments** category contains the following permissions:
 
+* **View Comments:** View comments on a Request information page. See ~~LINK~~.
+* **Create Comments:** Create a comment from a Request information page. Selecting this permission also selects the **Edit Comments** permission. See ~~LINK~~.
+* **Edit Comments:** Edit a comment from a Request information page. See ~~LINK~~.
+* **Delete Comments:** Delete a comment from a Request information page. See ~~LINK~~.
 
+{% hint style="info" %}
+Select the **View Comments** permission to use any of the other permissions in this category.
+{% endhint %}
 
 ### Files \(API\)
 
 The **Files \(API\)** category contains the following permissions:
 
-
+* **View Files:** Returns the list of files associated to an API request. See "Files &gt; Get" endpoint in the [ProcessMaker 4 API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
+* **Create Files:** Saves a new file specified in an API request. Selecting this permission also selects the **Edit Files** permission. See "Files &gt; Post" endpoint in the [ProcessMaker 4 API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
+* **Edit Files:** Update a file specified in an API request. See "Files &gt; Update" endpoint in the [ProcessMaker 4 API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
+* **Delete Files:** Deletes a specified file in an API request. See "Files &gt; Delete" endpoint in the [ProcessMaker 4 API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
 
 ### Notifications \(API\)
 
 The **Notifications \(API\)** category contains the following permissions:
 
-
+* **View Notifications:**  Returns all notifications to which the user has access. See "Notifications &gt; Get" endpoint in the [ProcessMaker 4 API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
+* **Create Notifications:**  Save a new notification through an API request. Selecting this permission also selects the **Edit Notifications** permission. See "Notifications &gt; Post" endpoint in the [ProcessMaker 4 API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
+* **Edit Notifications:** Updates a notification through an API request. See "Notifications &gt; Update" endpoint in the [ProcessMaker 4 API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
+* **Delete Notifications:** Deletes a specified notification through an API request. See "Notifications &gt; Delete" endpoint in the [ProcessMaker 4 API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
 
 ### Task Assignments \(API\)
 
-The **Task Assignments \(AI\)** category contains the following permissions:
+The **Task Assignments \(API\)** category contains the following permissions:
+
+* **View Task Assignments:** Returns all assignments assigned to the user. See ~~WHAT?~~ endpoint in the [ProcessMaker 4 API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
+* **Create Task Assignments:** Saves a new task assignment to a specified user in an API request. Selecting this permission also selects the **Edit Task Assignments** permission. See "Task Assignments &gt; Post" endpoint in the [ProcessMaker 4 API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
+* **Edit Task Assignments:** Updates a task assignment through an API request. See "Task Assignments &gt; Update" endpoint in the [ProcessMaker 4 API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
+* **Delete Task Assignments:** Deletes a specified task assignment through an API request. See ~~WHAT?~~ endpoint in the [ProcessMaker 4 API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
 
 ## Related Topics
 
+{% page-ref page="../using-processmaker/requests/what-is-a-request.md" %}
+
+{% page-ref page="../using-processmaker/requests/view-all-requests.md" %}
+
+{% page-ref page="../using-processmaker/requests/request-details.md" %}
+
+{% page-ref page="../designing-processes/scripts/manage-scripts/view-all-scripts.md" %}
+
+{% page-ref page="../designing-processes/scripts/create-a-new-script.md" %}
+
+{% page-ref page="../designing-processes/scripts/manage-scripts/edit-script-configuration.md" %}
+
+{% page-ref page="../designing-processes/scripts/manage-scripts/edit-a-script.md" %}
+
+{% page-ref page="../designing-processes/scripts/manage-scripts/remove-a-script.md" %}
+
+{% page-ref page="../designing-processes/viewing-processes/process-categories.md" %}
+
+{% page-ref page="../designing-processes/design-forms/manage-forms/view-all-forms.md" %}
+
+{% page-ref page="../designing-processes/design-forms/create-a-new-form.md" %}
+
+{% page-ref page="../designing-processes/design-forms/manage-forms/edit-a-screen.md" %}
+
+{% page-ref page="../designing-processes/design-forms/screens-builder/control-descriptions/" %}
+
+{% page-ref page="../designing-processes/design-forms/manage-forms/remove-a-screen.md" %}
+
+{% page-ref page="../designing-processes/environment-variable-management/manage-your-environment-variables/view-all-environment-variables.md" %}
+
+{% page-ref page="../designing-processes/environment-variable-management/create-a-new-environment-variable.md" %}
+
+{% page-ref page="../designing-processes/environment-variable-management/manage-your-environment-variables/edit-an-environmental-variable.md" %}
+
+{% page-ref page="../designing-processes/environment-variable-management/manage-your-environment-variables/remove-an-environment-variable.md" %}
+
+{% page-ref page="add-users/manage-user-accounts/view-all-users.md" %}
+
+{% page-ref page="add-users/create-a-user-account.md" %}
+
+{% page-ref page="add-users/manage-user-accounts/edit-a-user-account.md" %}
+
+{% page-ref page="add-users/manage-user-accounts/remove-a-user-account.md" %}
+
+{% page-ref page="assign-groups-to-users/manage-groups/view-all-groups.md" %}
+
 {% page-ref page="assign-groups-to-users/create-a-group.md" %}
+
+{% page-ref page="assign-groups-to-users/manage-groups/edit-a-group.md" %}
+
+{% page-ref page="assign-groups-to-users/manage-groups/remove-a-group.md" %}
+
+{% page-ref page="../designing-processes/viewing-processes/view-the-list-of-processes/view-your-processes.md" %}
+
+{% page-ref page="../designing-processes/viewing-processes/create-a-process.md" %}
+
+{% page-ref page="../designing-processes/viewing-processes/view-the-list-of-processes/edit-the-name-description-category-or-status-of-a-process.md" %}
 
