@@ -301,6 +301,10 @@
             border-bottom: 0;
         }
         
+        #table-notifications {
+            margin-bottom: 20px;
+        }
+        
         #table-notifications th {
             border-top: 0;
         }
