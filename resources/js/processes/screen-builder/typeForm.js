@@ -1,8 +1,12 @@
+import Vue from 'vue';
 import initialControls from "@processmaker/vue-form-builder/src/form-builder-controls";
+import globalProperties from "@processmaker/vue-form-builder/src/global-properties";
 import FormText from "@processmaker/vue-form-builder/src/components/renderer/form-text";
 import FileDownload from "./components/file-download"
-
 import FileUpload from "./components/form/file-upload"
+
+Vue.component('FileUpload', FileUpload);
+Vue.component('FileDownload', FileDownload);
 
 initialControls.push({
     rendererComponent: FileUpload,
@@ -35,7 +39,7 @@ initialControls.push({
             }
         ]
     }
-})
+});
 initialControls.push({
     rendererComponent: FormText,
     rendererBinding: 'FormText',
@@ -67,10 +71,13 @@ initialControls.push({
             }
         ]
     }
-})
+});
 
 ProcessMaker.EventBus.$on('screen-builder-init', (manager) => {
-    for (var i = 0; i < initialControls.length; i++) {
+
+    for (let i = 0; i < initialControls.length; i++) {
+        //Load of additional properties for inspector
+        Array.prototype.push.apply(initialControls[i].control.inspector, globalProperties[0].inspector);
         manager.addControl(
             initialControls[i].control,
             initialControls[i].rendererComponent,

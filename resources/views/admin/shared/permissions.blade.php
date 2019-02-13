@@ -9,6 +9,8 @@
     <div id="requests" class="collapse" >
         <div class="card-body">
             <label><input type="checkbox" :disabled="formData.is_administrator" value="view-all_requests" v-model="selectedPermissions">   {{__('View All Requests')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="edit-request_data" v-model="selectedPermissions">   {{__('Edit Request Data')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="edit-task_data" v-model="selectedPermissions">   {{__('Edit Task Data')}}</label>
         </div>
     </div>
 </div>
@@ -128,6 +130,8 @@
             <label><input type="checkbox" :disabled="formData.is_administrator" value="create-processes" v-model="selectedPermissions" @change="checkCreate('edit-processes', $event)">   {{__('Create Processes')}}</label>
             <label><input type="checkbox" :disabled="formData.is_administrator" value="edit-processes" v-model="selectedPermissions" @change="checkEdit('create-processes', $event)">   {{__('Edit Processes')}}</label>
             <label><input type="checkbox" :disabled="formData.is_administrator" value="archive-processes" v-model="selectedPermissions">   {{__('Archive Processes')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="import-processes" v-model="selectedPermissions">   {{__('Import Processes')}}</label>
+            <label><input type="checkbox" :disabled="formData.is_administrator" value="export-processes" v-model="selectedPermissions">   {{__('Export Processes')}}</label>
         </div>
     </div>
 </div>

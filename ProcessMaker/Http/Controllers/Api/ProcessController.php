@@ -18,6 +18,8 @@ use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessPermission;
 use ProcessMaker\Models\User;
+use ProcessMaker\Jobs\ExportProcess;
+use ProcessMaker\Jobs\ImportProcess;
 
 class ProcessController extends Controller
 {
@@ -445,6 +447,80 @@ class ProcessController extends Controller
         $process->save();
 
         return response('', 204);
+    }
+
+    /**
+     * Export the specified process.
+     *
+     * @param $process
+     *
+     * @return Response
+     *
+     * @OA\Get(
+     *     path="/processes/processId/export",
+     *     summary="Export a single process by ID",
+     *     operationId="getProcessById",
+     *     tags={"Process"},
+     *     @OA\Parameter(
+     *         description="ID of process to return",
+     *         in="path",
+     *         name="process_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successfully found the process",
+     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *     ),
+     * )
+     */
+    public function export(Request $request, Process $process)
+    {
+        $fileKey = ExportProcess::dispatchNow($process);
+
+        if ($fileKey) {
+            $url = url("/processes/{$process->id}/download/{$fileKey}");
+            return ['url' => $url];
+        } else {
+            return response(['error' => __('Unable to Export Process')], 500) ;
+        }
+    }
+
+    /**
+     * Import the specified process.
+     *
+     * @param $process
+     *
+     * @return Response
+     *
+     * @OA\Get(
+     *     path="/processes/import",
+     *     summary="Import a process",
+     *     operationId="getProcessById",
+     *     tags={"Process"},
+     *     @OA\Parameter(
+     *         description="ID of process to return",
+     *         in="path",
+     *         name="process_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successfully found the process",
+     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *     ),
+     * )
+     */
+    public function import(Request $request)
+    {
+        $success = ImportProcess::dispatchNow($request->file('file')->get());
+        return ['status' => $success];
     }
 
     /**
