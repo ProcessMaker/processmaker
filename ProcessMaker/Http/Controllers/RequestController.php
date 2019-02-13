@@ -86,10 +86,10 @@ class RequestController extends Controller
         $request->participants;
         $request->user;
         $request->summary = $request->summary();
-        $request->summary_screen = $request->getSummaryScreenId();
+        $request->summary_screen = $request->getSummaryScreen();
 
         if ($request->status === 'CANCELED' && $request->process->cancel_screen_id) {
-            $request->cancel_screen = $request->process->cancelScreen;
+            $request->summary_screen = $request->process->cancelScreen;
         }
 
         $canCancel = Auth::user()->can('cancel', $request->process);
