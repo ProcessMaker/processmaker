@@ -117,9 +117,9 @@
                                 <thead>
                                     <tr>
                                         <th class="notify"></th>
-                                        <th class="action">Process Started</th>
-                                        <th class="action">Process Canceled</th>
-                                        <th class="action">Process Completed</th>
+                                        <th class="action">Request Started</th>
+                                        <th class="action">Request Canceled</th>
+                                        <th class="action">Request Completed</th>
                                     </tr>
                                 </thead>
                                 <tbody>
