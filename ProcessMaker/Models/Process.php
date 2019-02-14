@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use ProcessMaker\AssignmentRules\PreviousTaskAssignee;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
+use ProcessMaker\Managers\TaskSchedulerManager;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
@@ -100,24 +101,8 @@ class Process extends Model implements HasMedia
         parent::boot();
 
         Process::saved(function ($model) {
-            Log::error('lalaalal');
-
-//            $interval = (new \DatePeriod("R40/2019-02-12T19:00:00Z/P01"))->getDateInterval();
-//            $fecha = new \DateTime("2019-02-12T19:00:00Z");
-//            $fecha->add($interval);
-
-            $cycle = new \DatePeriod("R40/2019-02-12T19:00:00Z/P01M");
-            $fecha = new \DateTime("2019-01-30T19:00:00Z");
-            for ($i = 0; $i < 3; $i++) {
-                $nextDate = $model->nextDate($fecha, $cycle->getDateInterval());
-                Log::error($nextDate->format('Y-m-d H:i:s:z'));
-            }
-
-            //delete all timer start events of the process
-            ScheduledTask::where('process_id', $model->id)->delete();
-
-            // we get the timer event definitions of all start events
-
+            $manager = new TaskSchedulerManager();
+            $manager->registerTimerEvents($model);
         });
     }
 
