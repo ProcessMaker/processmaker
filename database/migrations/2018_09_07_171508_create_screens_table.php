@@ -40,6 +40,9 @@ class CreateScreensTable extends Migration
      */
     public function down()
     {
+        Schema::table('processes', function($table) {
+            $table->dropForeign(['cancel_screen_id']);
+        });
         Schema::dropIfExists('screens');
     }
 }
