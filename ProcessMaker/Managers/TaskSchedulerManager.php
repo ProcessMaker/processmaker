@@ -26,7 +26,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      */
     public function registerTimerEvents(Process $process)
     {
-        ScheduledTask::where('process_id', $process)->delete();
+        ScheduledTask::where('process_id', $process->id)->delete();
 
         foreach ($process->getStartEvents() as $startEvent) {
             if (key_exists('eventDefinitions', $startEvent) && count($startEvent) > 0) {
