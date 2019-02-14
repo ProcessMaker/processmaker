@@ -12,7 +12,7 @@ use Symfony\Component\ExpressionLanguage\SyntaxError;
 use Throwable;
 
 /**
- * FormalExpression
+ * FormalExpression to handel time events
  *
  * @package ProcessMaker\Model
  */
@@ -25,7 +25,7 @@ class TimerExpression implements FormalExpressionInterface
      * Languages supported for expressions
      */
     const languages = [
-        'Timer' => ['feelExpression', 'feelEncode'],
+        'Timer' => [],
     ];
 
     const defaultLanguage = 'Timer';
@@ -36,8 +36,6 @@ class TimerExpression implements FormalExpressionInterface
      */
     private function initFormalExpression()
     {
-//        //$this->feelExpression = new ExpressionLanguage();
-//        $this->test = 'lalala';
     }
 
     /**

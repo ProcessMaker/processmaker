@@ -1,7 +1,6 @@
 <?php
 namespace ProcessMaker\Managers;
 
-use Cake\Chronos\Date;
 use DateTimeZone;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Schema;

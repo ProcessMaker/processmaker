@@ -104,26 +104,6 @@ class WorkflowServiceProvider extends ServiceProvider
                 ]
             );
 
-
-//            'timerEventDefinition' => [
-//                TimerEventDefinitionInterface::class,
-//                [
-//                    TimerEventDefinitionInterface::BPMN_PROPERTY_TIME_DATE => ['1', [BpmnDocument::BPMN_MODEL, TimerEventDefinitionInterface::BPMN_PROPERTY_TIME_DATE]],
-//                    TimerEventDefinitionInterface::BPMN_PROPERTY_TIME_CYCLE => ['1', [BpmnDocument::BPMN_MODEL, TimerEventDefinitionInterface::BPMN_PROPERTY_TIME_CYCLE]],
-//                    TimerEventDefinitionInterface::BPMN_PROPERTY_TIME_DURATION => ['1', [BpmnDocument::BPMN_MODEL, TimerEventDefinitionInterface::BPMN_PROPERTY_TIME_DURATION]],
-//                ]
-//            ],
-
-
-//            $bpmnRepository->setBpmnElementMapping(BpmnDocument::BPMN_MODEL, TimerEventDefinitionInterface::class, TimerExpression::class);
-
-//            $bpmnRepository->setBpmnElementMapping(BpmnDocument::BPMN_MODEL, TimerEventDefinitionInterface::class, [
-//                TimerExpression::class,
-//                [
-//                    TimerExpressionInterface::BPMN_PROPERTY_BODY => ['1', self::DOM_ELEMENT_BODY],
-//                ]
-//            ]);
-
             return $bpmnRepository;
         });
     }
