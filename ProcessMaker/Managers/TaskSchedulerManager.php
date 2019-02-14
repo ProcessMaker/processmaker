@@ -6,13 +6,15 @@ use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ScheduledTask;
 use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Nayra\Contracts\Bpmn\EntityInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\TimerEventDefinitionInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
+use ProcessMaker\Nayra\Contracts\Engine\JobManagerInterface;
+use ProcessMaker\Nayra\Contracts\EventBusInterface;
 
-class WorkflowEventManager
+class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 {
-//    public function __construct()
-//    {
-//    }
-
     /**
      *
      * Register in the database any Start Event that a process has
@@ -156,4 +158,150 @@ class WorkflowEventManager
 
        return $nextDate;
    }
+
+    /**
+     * Schedule a job for a specific date and time for the given BPMN element,
+     * event definition and an optional Token object
+     *
+     * @param string $datetime in ISO-8601 format
+     * @param TimerEventDefinitionInterface $eventDefinition
+     * @param EntityInterface $element
+     * @param TokenInterface $token
+     *
+     * @return $this
+     */
+    public function scheduleDate($datetime, TimerEventDefinitionInterface $eventDefinition,
+                                 FlowElementInterface $element, TokenInterface $token = null)
+    {
+    }
+
+    /**
+     * Schedule a job for a specific cycle for the given BPMN element, event definition
+     * and an optional Token object
+     *
+     * @param string $cycle in ISO-8601 format
+     * @param TimerEventDefinitionInterface $eventDefinition
+     * @param EntityInterface $element
+     * @param TokenInterface $token
+     */
+    public function scheduleCycle($cycle, TimerEventDefinitionInterface $eventDefinition, FlowElementInterface $element,
+                                  TokenInterface $token = null)
+    {
+    }
+
+    /**
+     * Schedule a job execution after a time duration for the given BPMN element,
+     * event definition and an optional Token object
+     *
+     * @param string $duration in ISO-8601 format
+     * @param TimerEventDefinitionInterface $eventDefinition
+     * @param EntityInterface $element
+     * @param TokenInterface $token
+     */
+    public function scheduleDuration($duration, TimerEventDefinitionInterface $eventDefinition,
+                                     FlowElementInterface $element, TokenInterface $token = null)
+    {
+    }
+
+    /**
+     * Register an event listener with the dispatcher.
+     *
+     * @param  string|array $events
+     * @param  mixed $listener
+     *
+     * @return void
+     */
+    public function listen($events, $listener)
+    {
+    }
+
+    /**
+     * Determine if a given event has listeners.
+     *
+     * @param  string $eventName
+     *
+     * @return bool
+     */
+    public function hasListeners($eventName)
+    {
+    }
+
+    /**
+     * Register an event subscriber with the dispatcher.
+     *
+     * @param  object|string $subscriber
+     *
+     * @return void
+     */
+    public function subscribe($subscriber)
+    {
+    }
+
+    /**
+     * Dispatch an event until the first non-null response is returned.
+     *
+     * @param  string|object $event
+     * @param  mixed $payload
+     *
+     * @return array|null
+     */
+    public function until($event, $payload = [])
+    {
+    }
+
+    /**
+     * Dispatch an event and call the listeners.
+     *
+     * @param  string|object $event
+     * @param  mixed $payload
+     * @param  bool $halt
+     *
+     * @return array|null
+     */
+    public function dispatch($event, $payload = [], $halt = false)
+    {
+    }
+
+    /**
+     * Register an event and payload to be fired later.
+     *
+     * @param  string $event
+     * @param  array $payload
+     *
+     * @return void
+     */
+    public function push($event, $payload = [])
+    {
+    }
+
+    /**
+     * Flush a set of pushed events.
+     *
+     * @param  string $event
+     *
+     * @return void
+     */
+    public function flush($event)
+    {
+    }
+
+    /**
+     * Remove a set of listeners from the dispatcher.
+     *
+     * @param  string $event
+     *
+     * @return void
+     */
+    public function forget($event)
+    {
+    }
+
+    /**
+     * Forget all of the queued listeners.
+     *
+     * @return void
+     */
+    public function forgetPushed()
+    {
+    }
 }
