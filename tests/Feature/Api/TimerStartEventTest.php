@@ -3,10 +3,12 @@ namespace Tests\Feature\Api;
 
 use Faker\Provider\DateTime;
 use Illuminate\Foundation\Testing\WithFaker;
+use ProcessMaker\Managers\TaskSchedulerManager;
 use ProcessMaker\Managers\WorkflowEventManager;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\ScheduledTask;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
@@ -101,7 +103,7 @@ class TimerStartEventTest extends TestCase
 
     public function testNextDateNayraInterval()
     {
-        $manager = new WorkflowEventManager();
+        $manager = new TaskSchedulerManager();
 
 
         $cases = [
@@ -120,11 +122,11 @@ class TimerStartEventTest extends TestCase
                 'interval' => 'R/2019-02-15T00:00:00Z/P1M',
                 'expectedNextDate' => '2019-05-15T00:00:00Z'
             ],
-//            [
-//                'currentDate' => '2019-05-11T00:00:00Z',
-//                'interval' => 'R/2019-02-19T00:00-04:00/P1W',
-//                'expectedNextDate' => '2019-05-15T00:00:00Z'
-//            ],
+            [
+                'currentDate' => '2019-02-14T02:01:00Z',
+                'interval' => 'R/2019-02-14T11:02:00Z/PT1M',
+                'expectedNextDate' => '2019-02-14T02:03:00Z'
+            ],
         ];
 
         foreach($cases as $case) {
@@ -134,5 +136,19 @@ class TimerStartEventTest extends TestCase
             $nextDate = $manager->nextDate($currentDate, $nayraInterval);
             $this->assertEquals($expectedNextDate, $nextDate);
         }
+    }
+
+    public function testScheduleStartEvent()
+    {
+        $data = [];
+        $data['bpmn'] = Process::getProcessTemplate('TimerStartEvent.bpmn');
+        $process = factory(Process::class)->create($data);
+
+        $manager = new TaskSchedulerManager();
+        $task = new ScheduledTask();
+        $task->process_id = $process->id;
+        $task->configuration = '{"type":"TimeCycle","interval":"R4\/2019-02-13T13:08:00Z\/PT1M", "element_id" : "_9"}';
+        $task->type= 'TIMER_START_EVENT';
+        $manager->executeTimerStartEvent($task, json_decode($task->configuration));
     }
 }

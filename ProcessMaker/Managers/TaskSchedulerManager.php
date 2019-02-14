@@ -1,8 +1,9 @@
 <?php
 namespace ProcessMaker\Managers;
 
+use Cake\Chronos\Date;
+use DateTimeZone;
 use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Process;
@@ -49,7 +50,6 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                         $timeEventType = 'TimeCycle';
                         $period = $eventDefinition->getTimeCycle()->getBody();
                         $intervals = explode('|', $period);
-
                     }
 
                     if ($timeDuration && empty($timeEventType)) {
@@ -58,15 +58,20 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                     }
 
                     for ($i = 1; $i < count($intervals); $i++) {
+                        $parts = $this->getIntervalParts($intervals[$i]);
                         $configuration = [
                             'type' => $timeEventType,
-                            'interval' => $intervals[$i]
+                            'interval' => $parts['repetitions']. '/'. $parts['firstDate'] . '/' . $parts['interval'],
+                            'element_id' => $startEvent['id']
                         ];
 
                         $scheduledTask = new ScheduledTask();
                         $scheduledTask->process_id = $process->id;
                         $scheduledTask->configuration = json_encode($configuration);
                         $scheduledTask->type = 'TIMER_START_EVENT';
+                        $scheduledTask->last_execution = (new \DateTime())
+                                                            ->setTimezone(new DateTimeZone('UTC'))
+                                                            ->format('Y-m-d H:i:s');
                         $scheduledTask->save();
                     }
                 }
@@ -76,23 +81,25 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 
    public function scheduleTasks(Schedule $schedule)
    {
-       if (!Schema::hasTable('scheduled_task')) {
+       if (!Schema::hasTable('scheduled_tasks')) {
            return;
        }
-       Log::info('Inicio de scheduleTasks');
        $tasks = ScheduledTask::all();
 
        foreach($tasks as $task) {
            $config = json_decode($task->configuration);
-           $today = new \DateTime();
-           $nextDate = $this->nextDate($today, $config->interval);
+           $today = (new \DateTime())->setTimezone(new DateTimeZone('UTC'));
 
-           Log::info($nextDate->format('Y-m-d H:i:s:z'));
+           $lastExecution = new \DateTime($task->last_execution);
+           $nextDate = $this->nextDate($lastExecution, $config->interval);
 
            $schedule->call(function() use($task, $config) {
                switch ($task->type) {
                    case 'TIMER_START_EVENT':
                        $this->executeTimerStartEvent($task, $config);
+                       $today = (new \DateTime())->setTimezone(new DateTimeZone('UTC'));
+                       $task->last_execution = $today->format('Y-m-d H:i:s');
+                       $task->save();
                        break;
                }
            })->when(function() use($nextDate, $today) {
@@ -103,30 +110,20 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 
    public function executeTimerStartEvent($task, $config)
    {
-       Log::info('inicio de exectute timer start event');
-
        //Get the event BPMN element
        $id = $task->process_id;
        if (!$id) {
-           Log::error('The process '. $id.' does not exist in the database');
            return;
        }
-
-       Log::info('Proceso: '.$id);
 
        $process = Process::find($id);
 
        $definitions = $process->getDefinitions();
        if (!$definitions->findElementById($config->element_id)) {
-           Log::error('The timer start event '. $config->event_id.' does not exist in the database');
            return;
        }
        $event = $definitions->getEvent($config->element_id);
        $data = [];
-
-       $archivo = fopen('/tmp/archivo_'.time().'.txt', 'w');
-       fwrite($archivo, 'Iniciando... '. $id);
-       fclose($archivo);
 
        //Trigger the start event
        $processRequest = WorkflowManager::triggerStartEvent($process, $event, $data);
@@ -141,12 +138,17 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 
        $cont = 1;
        $nextDate = new \DateTime($firstDate);
-       while ($cont < $parts['recurrences'] || $parts['repetitions'] === 'R') {
-           $nextDate->add($parts['period']->getDateInterval());
-           if ($nextDate >= $currentDate) {
-               break;
+       $dateToWork = empty($currentDate) ? new \DateTime() : $currentDate;
+
+       // if the interval's first date has passed, we calculate the next date of the interval
+       if ((new \DateTime($firstDate)) < $dateToWork) {
+           while ($cont < $parts['recurrences'] || $parts['repetitions'] === 'R') {
+               $nextDate->add($parts['period']->getDateInterval());
+               if ($nextDate >= $dateToWork) {
+                   break;
+               }
+               $cont ++;
            }
-           $cont ++;
        }
 
        return $nextDate;
@@ -158,8 +160,10 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
        $parts = explode('/', $nayraInterval);
 
        $result['repetitions'] = $parts[0];
-       $result['firstDate'] = $parts[1];
        $result['interval'] = $parts[2];
+
+       $date = new \DateTime($parts[1]);
+       $result['firstDate'] = $date->setTimezone(new DateTimeZone('UTC'))->format('Y-m-d\TH:i:s').'Z';
 
        if ($result['repetitions'] === 'R') {
            $result['period'] = new \DatePeriod('R1000000/'. $result['firstDate'] . '/' . $result['interval']);

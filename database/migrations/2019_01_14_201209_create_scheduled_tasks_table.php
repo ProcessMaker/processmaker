@@ -18,6 +18,7 @@ class CreateScheduledTasksTable extends Migration
             $table->unsignedInteger('process_id')->nullable(); // could be a system-generated comment
             $table->unsignedInteger('process_request_id')->nullable(); // could be a system-generated comment
             $table->string('type', 255);
+            $table->dateTime('last_execution')->nullable();
             $table->text('configuration');
             $table->timestamps();
 
