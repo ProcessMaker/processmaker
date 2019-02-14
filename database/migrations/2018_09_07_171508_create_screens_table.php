@@ -29,7 +29,7 @@ class CreateScreensTable extends Migration
 
         });
         Schema::table('processes', function($table) {
-            $table->foreign('cancel_screen_id')->references('id')->on('screens')->onDelete('cascade');
+            $table->foreign('cancel_screen_id')->references('id')->on('screens');
         });
     }
 
