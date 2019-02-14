@@ -17,6 +17,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Traits\ProcessTaskAssignmentsTrait;
+use ProcessMaker\Traits\ProcessTimerEventsTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
@@ -56,6 +57,7 @@ class Process extends Model implements HasMedia
     use SerializeToIso8601;
     use SoftDeletes;
     use ProcessTaskAssignmentsTrait;
+    use ProcessTimerEventsTrait;
 
     /**
      * The attributes that aren't mass assignable.
@@ -95,20 +97,6 @@ class Process extends Model implements HasMedia
      * @var \ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface
      */
     private $bpmnDefinitions;
-
-    public static function boot()
-    {
-        parent::boot();
-
-        Process::saved(function ($model) {
-            $manager = new TaskSchedulerManager();
-            $manager->registerTimerEvents($model);
-        });
-    }
-
-    public function nextDate($startDate,$interval){
-        return $startDate->add($interval);
-    }
 
     /**
      * Category of the process.
@@ -528,10 +516,4 @@ class Process extends Model implements HasMedia
     {
         return $this->hasMany(ProcessTaskAssignment::class);
     }
-
-//    public function save(array $options)
-//    {
-//        parent::save();
-//
-//    }
 }
