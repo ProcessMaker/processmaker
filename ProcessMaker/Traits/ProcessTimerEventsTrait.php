@@ -26,7 +26,6 @@ trait ProcessTimerEventsTrait
 
     public static function saveStartEvents(Process $process)
     {
-        Log::info('pepepepepep');
         $manager = new TaskSchedulerManager();
         $manager->registerTimerEvents($process);
     }

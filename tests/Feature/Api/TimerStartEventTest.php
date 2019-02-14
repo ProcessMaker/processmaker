@@ -60,47 +60,30 @@ class TimerStartEventTest extends TestCase
         return $process;
     }
 
-    /**
-     * Execute a process
-     */
-    public function ExecuteAProcess()
-    {
-        if (!file_exists(config('app.bpm_scripts_home')) || !file_exists(config('app.bpm_scripts_docker'))) {
-            $this->markTestSkipped(
-                'This test requires docker'
-            );
-        }
-        //Start a process request
-        $route = route('api.process_events.trigger', [$this->process->id, 'event' => '_2']);
-        $data = [];
-        $response = $this->apiCall('POST', $route, $data);
-        //Verify status
-        $this->assertStatus(201, $response);
-        //Verify the structure
-        $response->assertJsonStructure($this->requestStructure);
-
-        //Get the closed tasks of the request
-        $tasks = ProcessRequestToken::where('process_id', '=', $this->process->id)
-            ->where('element_type', '=', 'scriptTask')
-            ->where('status', '=', 'CLOSED')
-            ->get();
-        $this->assertEquals(count($tasks), 2);
-
-        //Get process instance
-        $processInstance = ProcessRequest::where('id', $tasks[0]['process_request_id'])->firstOrFail();
-        //Check the data
-        $this->assertArrayHasKey('random', $processInstance->data);
-        $this->assertArrayHasKey('double', $processInstance->data);
-        $this->assertInternalType('int', $processInstance->data['random']);
-        $this->assertInternalType('int', $processInstance->data['double']);
-        $this->assertEquals(2 * $processInstance->data['random'], $processInstance->data['double']);
-    }
 
     public function executeTimerStartEvent()
     {
         $this->process->getDefinitions();
     }
 
+    public function testRegisterTimerEvents()
+    {
+        ScheduledTask::get()->each->delete();
+
+        $data = [];
+        $data['bpmn'] = Process::getProcessTemplate('TimerStartEvent.bpmn');
+        $process = factory(Process::class)->create($data);
+
+        // at this point the save method should have created 4 rows in the
+        // scheduled tasks table
+
+        $tasks = ScheduledTask::all();
+        $this->assertCount(4, $tasks->toArray());
+    }
+
+    /**
+     * Tests that the next date of a interval is calculated correctly
+     */
     public function testNextDateNayraInterval()
     {
         $manager = new TaskSchedulerManager();
@@ -110,7 +93,7 @@ class TimerStartEventTest extends TestCase
             [
                 'currentDate' => '2019-02-11T00:00:00Z',
                 'interval' => 'R4/2019-02-15T00:00:00Z/P1M',
-                'expectedNextDate' => '2019-03-15T00:00:00Z'
+                'expectedNextDate' => '2019-02-15T00:00:00Z'
             ],
             [
                 'currentDate' => '2019-05-11T00:00:00Z',
@@ -125,7 +108,7 @@ class TimerStartEventTest extends TestCase
             [
                 'currentDate' => '2019-02-14T02:01:00Z',
                 'interval' => 'R/2019-02-14T11:02:00Z/PT1M',
-                'expectedNextDate' => '2019-02-14T02:03:00Z'
+                'expectedNextDate' => '2019-02-14T11:02:00Z'
             ],
         ];
 
@@ -150,5 +133,8 @@ class TimerStartEventTest extends TestCase
         $task->configuration = '{"type":"TimeCycle","interval":"R4\/2019-02-13T13:08:00Z\/PT1M", "element_id" : "_9"}';
         $task->type= 'TIMER_START_EVENT';
         $manager->executeTimerStartEvent($task, json_decode($task->configuration));
+
+        // If no exception has been thrown, this assertion will be executed
+        $this->assertTrue(true);
     }
 }
