@@ -5,7 +5,14 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
 use ProcessMaker\BpmnEngine;
 use ProcessMaker\Listeners\BpmnSubscriber;
 use ProcessMaker\Listeners\CommentsSubscriber;
+use ProcessMaker\Managers\TaskSchedulerManager;
 use ProcessMaker\Managers\WorkflowManager;
+use ProcessMaker\Models\TimerExpression;
+use ProcessMaker\Nayra\Contracts\Bpmn\EventDefinitionInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\FlowNodeInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\FormalExpressionInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\TimerEventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Repositories\DefinitionsRepository;
@@ -50,6 +57,9 @@ class WorkflowServiceProvider extends ServiceProvider
             //Initialize the BpmnEngine
             $engine = new BpmnEngine($repository, $eventBus);
 
+            $engine->setJobManager(new TaskSchedulerManager());
+            $engine->setDispatcher(new TaskSchedulerManager());
+
             //Initialize BpmnDocument repository (REQUIRES $engine $factory)
             $bpmnRepository = new BpmnDocument();
             $bpmnRepository->setEngine($engine);
@@ -63,6 +73,56 @@ class WorkflowServiceProvider extends ServiceProvider
             $bpmnRepository->setBpmnElementMapping(BpmnDocument::BPMN_MODEL, 'userTask', $mapping[BpmnDocument::BPMN_MODEL]['task']);
             $bpmnRepository->setBpmnElementMapping(BpmnDocument::BPMN_MODEL, 'association', BpmnDocument::SKIP_ELEMENT);
             $bpmnRepository->setBpmnElementMapping(BpmnDocument::BPMN_MODEL, 'textAnnotation', BpmnDocument::SKIP_ELEMENT);
+
+            $bpmnRepository->setBpmnElementMapping(BpmnDocument::BPMN_MODEL, 'startEvent',
+                [
+                    StartEventInterface::class,
+                    [
+                        FlowNodeInterface::BPMN_PROPERTY_INCOMING => ['n', [BpmnDocument::BPMN_MODEL, FlowNodeInterface::BPMN_PROPERTY_INCOMING]],
+                        FlowNodeInterface::BPMN_PROPERTY_OUTGOING  => ['n', [BpmnDocument::BPMN_MODEL, FlowNodeInterface::BPMN_PROPERTY_OUTGOING]],
+                        StartEventInterface::BPMN_PROPERTY_EVENT_DEFINITIONS  => ['n', EventDefinitionInterface::class],
+                    ]
+                ]
+            );
+
+            $bpmnRepository->setBpmnElementMapping(BpmnDocument::BPMN_MODEL, 'timerEventDefinition',
+                [TimerEventDefinitionInterface::class,
+                [
+                    TimerEventDefinitionInterface::BPMN_PROPERTY_TIME_DATE => ['1', [BpmnDocument::BPMN_MODEL, TimerEventDefinitionInterface::BPMN_PROPERTY_TIME_DATE]],
+                    TimerEventDefinitionInterface::BPMN_PROPERTY_TIME_CYCLE => ['1', [BpmnDocument::BPMN_MODEL, TimerEventDefinitionInterface::BPMN_PROPERTY_TIME_CYCLE]],
+                    TimerEventDefinitionInterface::BPMN_PROPERTY_TIME_DURATION => ['1', [BpmnDocument::BPMN_MODEL, TimerEventDefinitionInterface::BPMN_PROPERTY_TIME_DURATION]],
+                ]
+                ]
+            );
+
+            $bpmnRepository->setBpmnElementMapping(BpmnDocument::BPMN_MODEL, TimerEventDefinitionInterface::BPMN_PROPERTY_TIME_CYCLE ,
+                [
+                    TimerExpressionInterface::class,
+                    [
+                        FormalExpressionInterface::BPMN_PROPERTY_BODY => ['1', BpmnDocument::DOM_ELEMENT_BODY],
+                    ]
+                ]
+            );
+
+
+//            'timerEventDefinition' => [
+//                TimerEventDefinitionInterface::class,
+//                [
+//                    TimerEventDefinitionInterface::BPMN_PROPERTY_TIME_DATE => ['1', [BpmnDocument::BPMN_MODEL, TimerEventDefinitionInterface::BPMN_PROPERTY_TIME_DATE]],
+//                    TimerEventDefinitionInterface::BPMN_PROPERTY_TIME_CYCLE => ['1', [BpmnDocument::BPMN_MODEL, TimerEventDefinitionInterface::BPMN_PROPERTY_TIME_CYCLE]],
+//                    TimerEventDefinitionInterface::BPMN_PROPERTY_TIME_DURATION => ['1', [BpmnDocument::BPMN_MODEL, TimerEventDefinitionInterface::BPMN_PROPERTY_TIME_DURATION]],
+//                ]
+//            ],
+
+
+//            $bpmnRepository->setBpmnElementMapping(BpmnDocument::BPMN_MODEL, TimerEventDefinitionInterface::class, TimerExpression::class);
+
+//            $bpmnRepository->setBpmnElementMapping(BpmnDocument::BPMN_MODEL, TimerEventDefinitionInterface::class, [
+//                TimerExpression::class,
+//                [
+//                    TimerExpressionInterface::BPMN_PROPERTY_BODY => ['1', self::DOM_ELEMENT_BODY],
+//                ]
+//            ]);
 
             return $bpmnRepository;
         });

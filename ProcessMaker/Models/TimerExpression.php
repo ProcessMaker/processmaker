@@ -16,7 +16,7 @@ use Throwable;
  *
  * @package ProcessMaker\Model
  */
-class FormalExpression implements FormalExpressionInterface
+class TimerExpression implements FormalExpressionInterface
 {
 
     use BaseTrait;
@@ -25,63 +25,19 @@ class FormalExpression implements FormalExpressionInterface
      * Languages supported for expressions
      */
     const languages = [
-        'FEEL' => ['feelExpression', 'feelEncode'],
+        'Timer' => ['feelExpression', 'feelEncode'],
     ];
 
-    const defaultLanguage = 'FEEL';
+    const defaultLanguage = 'Timer';
 
-    /**
-     * @var \Symfony\Component\ExpressionLanguage\ExpressionLanguage $expressionLanguage
-     */
-    private $feelExpression;
 
     /**
      * Initialize the expression language evaluator
      */
     private function initFormalExpression()
     {
-        $this->feelExpression = new ExpressionLanguage();
-    }
-
-    /**
-     * Evaluate the format expression.
-     *
-     * @param array $data
-     *
-     * @return string
-     */
-    private function evaluate(array $data)
-    {
-        if (!trim($this->getBody())) {
-            return true;
-        }
-
-        $language = $this->getLanguage() ?: self::defaultLanguage;
-        if (!isset(self::languages[$language])) {
-            throw new ScriptLanguageNotSupported($language);
-        }
-        $evaluator = self::languages[$language][0];
-        $encoder = isset(self::languages[$language][1]) ? self::languages[$language][1] : null;
-        try {
-            $values = $encoder ? $this->$encoder($data) : $data;
-            return $this->$evaluator->evaluate($this->getBody(), $values);
-        } catch (SyntaxError $syntaxError) {
-            throw new SyntaxErrorException($syntaxError);
-        } catch (Throwable $error) {
-            throw new ExpressionFailedException($error);
-        }
-    }
-
-    /**
-     * Prepare the data for the FEEL evaluator
-     * 
-     * @param array $data
-     * 
-     * @return array
-     */
-    private function feelEncode(array $data)
-    {
-        return (array) json_decode(json_encode($data));
+//        //$this->feelExpression = new ExpressionLanguage();
+//        $this->test = 'lalala';
     }
 
     /**
@@ -92,19 +48,6 @@ class FormalExpression implements FormalExpressionInterface
     public function getBody()
     {
         return $this->getProperty(FormalExpressionInterface::BPMN_PROPERTY_BODY);
-    }
-
-    /**
-     * Get the body of the Expression.
-     *
-     * @param string $body
-     *
-     * @return $this
-     */
-    public function setBody($body)
-    {
-        $this->setProperty(FormalExpressionInterface::BPMN_PROPERTY_BODY, $body);
-        return $this;
     }
 
     /**
@@ -128,19 +71,6 @@ class FormalExpression implements FormalExpressionInterface
     }
 
     /**
-     * Get the expression language.
-     *
-     * @param string $language
-     *
-     * @return $this
-     */
-    public function setLanguage($language)
-    {
-        $this->setProperty(FormalExpressionInterface::BPMN_PROPERTY_LANGUAGE, $language);
-        return $this;
-    }
-
-    /**
      * Invoke the format expression.
      *
      * @param mixed $data
@@ -149,6 +79,66 @@ class FormalExpression implements FormalExpressionInterface
      */
     public function __invoke($data)
     {
-        return $this->evaluate($data);
+        $expression = $this->getProperty(FormalExpressionInterface::BPMN_PROPERTY_BODY);
+        return $this->getDateExpression()
+            ?: $this->getCycleExpression()
+                ?: $this->getDurationExpression();
+    }
+
+    /**
+     * Get a DateTime if the expression is a date.
+     *
+     * @return \DateTime
+     */
+    protected function getDateExpression()
+    {
+        $expression = $this->getProperty(FormalExpressionInterface::BPMN_PROPERTY_BODY);
+        try {
+            $date = new \DateTime($expression);
+        } catch (\Exception $e) {
+            $date = false;
+        }
+        return $date;
+    }
+
+    /**
+     * Get a DatePeriod if the expression is a cycle.
+     *
+     * Ex. R4/2018-05-01T00:00:00Z/PT1M
+     *     R/2018-05-01T00:00:00Z/PT1M/2025-10-02T00:00:00Z
+     *
+     * @return \DatePeriod
+     */
+    protected function getCycleExpression()
+    {
+        $expression = $this->getProperty(FormalExpressionInterface::BPMN_PROPERTY_BODY);
+        try {
+            //Improve Repeating intervals (R/start/interval/end) configuration
+            if (preg_match('/^R\/([^\/]+)\/([^\/]+)\/([^\/]+)$/', $expression, $repeating)) {
+                $cycle = new \DatePeriod(new \DateTime($repeating[1]), new \DateInterval($repeating[2]), new \DateTime
+                ($repeating[3]));
+            } else {
+                $cycle = new \DatePeriod($expression);
+            }
+        } catch (\Exception $e) {
+            $cycle = false;
+        }
+        return $cycle;
+    }
+
+    /**
+     * Get a DateInterval if the expression is a duration.
+     *
+     * @return \DateInterval
+     */
+    protected function getDurationExpression()
+    {
+        $expression = $this->getProperty(FormalExpressionInterface::BPMN_PROPERTY_BODY);
+        try {
+            $duration = new \DateInterval($expression);
+        } catch (\Exception $e) {
+            $duration = false;
+        }
+        return $duration;
     }
 }

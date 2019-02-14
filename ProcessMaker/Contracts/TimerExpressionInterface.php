@@ -2,23 +2,9 @@
 
 namespace ProcessMaker\Contracts;
 
-use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\FormalExpressionInterface;
 
-interface AssignmentRuleInterface
+interface TimerExpressionInterface extends FormalExpressionInterface
 {
 
-    /**
-     * Return the user id to which a task must be assigned.
-     *
-     * @param ActivityInterface $activity
-     * @param TokenInterface $token
-     * @param Process $process
-     * @param ProcessRequest $request
-     *
-     * @return string User id
-     */
-    public function getNextUser(ActivityInterface $activity, TokenInterface $token, Process $process, ProcessRequest $request);
 }
