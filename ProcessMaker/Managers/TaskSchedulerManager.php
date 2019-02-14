@@ -3,9 +3,10 @@ namespace ProcessMaker\Managers;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
+use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ScheduledTask;
-use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Nayra\Contracts\Bpmn\EntityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TimerEventDefinitionInterface;
@@ -69,7 +70,9 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 
    public function scheduleTasks(Schedule $schedule)
    {
-
+       if (!Schema::hasTable('scheduled_task')) {
+           return;
+       }
        Log::info('Inicio de scheduleTasks');
        $tasks = ScheduledTask::all();
 
