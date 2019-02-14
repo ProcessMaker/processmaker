@@ -106,7 +106,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->element_name = $startEvent->getName();
         $token->process_id = $token->getInstance()->process->getKey();
         $token->process_request_id = $token->getInstance()->getKey();
-        $token->user_id = Auth::user()->id;
+        $token->user_id = empty(Auth::user()) ? null : Auth::user()->id;
 
         $token->due_at = null;
         $token->initiated_at = null;
