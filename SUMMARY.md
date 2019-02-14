@@ -130,6 +130,7 @@
     * [Delete a Group](processmaker-administration/assign-groups-to-users/manage-groups/remove-a-group.md)
   * [Create a New Group](processmaker-administration/assign-groups-to-users/create-a-group.md)
 * [Permission Descriptions for Users and Groups](processmaker-administration/permission-descriptions-for-users-and-groups.md)
+* [Auth Client Management](processmaker-administration/auth-client-management.md)
 * [Queue Management](processmaker-administration/queue-management.md)
 
 ## Install ProcessMaker
