@@ -229,8 +229,8 @@
                             </div>
                         </div>
                         <div class="text-right">
-                            {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose']) !!}
-                            {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'profileUpdate']) !!}
+                            {!! Form::button('Cancel', ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
+                            {!! Form::button('Save', ['class'=>'btn btn-secondary ml-2', '@click' => 'profileUpdate']) !!}
                         </div>
                     </div>
                     <div class="tab-pane fade show" id="nav-groups" role="tabpanel" aria-labelledby="nav-groups-tab">
@@ -260,8 +260,8 @@
                             @include('admin.shared.permissions')
                         </div>
                         <div class="text-right mt-2">
-                            {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose'])!!}
-                            {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'permissionUpdate'])!!}
+                            {!! Form::button('Cancel', ['class'=>'btn btn-outline-secondary', '@click' => 'onClose'])!!}
+                            {!! Form::button('Save', ['class'=>'btn btn-secondary ml-2', '@click' => 'permissionUpdate'])!!}
                         </div>
                     </div>
                     <div class="tab-pane fade" id="nav-tokens" role="tabpanel" aria-labelledby="nav-tokens-tab">
