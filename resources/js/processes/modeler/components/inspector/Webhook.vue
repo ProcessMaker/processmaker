@@ -71,7 +71,7 @@
             revoke() {
                 ProcessMaker.confirmModal(
                     "Caution!",
-                    "<b>Are you sure to disable this webhook? The URL will no longer work. If you re-enable later, it will have a different url.</b>",
+                    "<p>Are you sure you want to disable this webhook? If you re-enable the webhook later, it will have a different URL.</p>",
                     "",
                     () => { this.revokeApiCall() }
                 );
