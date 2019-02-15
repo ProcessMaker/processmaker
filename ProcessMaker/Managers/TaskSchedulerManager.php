@@ -3,6 +3,7 @@ namespace ProcessMaker\Managers;
 
 use DateTimeZone;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Process;
@@ -86,30 +87,36 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 
    public function scheduleTasks(Schedule $schedule)
    {
-       if (!Schema::hasTable('scheduled_tasks')) {
-           return;
+       try {
+           if (!Schema::hasTable('scheduled_tasks')) {
+               return;
+           }
+
+           $tasks = ScheduledTask::all();
+
+           foreach($tasks as $task) {
+               $config = json_decode($task->configuration);
+               $today = (new \DateTime())->setTimezone(new DateTimeZone('UTC'));
+
+               $lastExecution = new \DateTime($task->last_execution);
+               $nextDate = $this->nextDate($lastExecution, $config->interval);
+
+               $schedule->call(function() use($task, $config) {
+                   switch ($task->type) {
+                       case 'TIMER_START_EVENT':
+                           $this->executeTimerStartEvent($task, $config);
+                           $today = (new \DateTime())->setTimezone(new DateTimeZone('UTC'));
+                           $task->last_execution = $today->format('Y-m-d H:i:s');
+                           $task->save();
+                           break;
+                   }
+               })->when(function() use($nextDate, $today) {
+                   return $nextDate < $today;
+               });
+           }
        }
-       $tasks = ScheduledTask::all();
-
-       foreach($tasks as $task) {
-           $config = json_decode($task->configuration);
-           $today = (new \DateTime())->setTimezone(new DateTimeZone('UTC'));
-
-           $lastExecution = new \DateTime($task->last_execution);
-           $nextDate = $this->nextDate($lastExecution, $config->interval);
-
-           $schedule->call(function() use($task, $config) {
-               switch ($task->type) {
-                   case 'TIMER_START_EVENT':
-                       $this->executeTimerStartEvent($task, $config);
-                       $today = (new \DateTime())->setTimezone(new DateTimeZone('UTC'));
-                       $task->last_execution = $today->format('Y-m-d H:i:s');
-                       $task->save();
-                       break;
-               }
-           })->when(function() use($nextDate, $today) {
-               return $nextDate < $today;
-           });
+       catch (\PDOException $e) {
+           Log::error('The connection to the database had problems');
        }
    }
 
