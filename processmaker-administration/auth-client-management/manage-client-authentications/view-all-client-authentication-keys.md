@@ -26,7 +26,7 @@ The **Auth Clients** page displays the following information about client authen
 
 * **Client ID:** The **Client ID** column displays the Client ID for the key. ProcessMaker 4 automatically generates the Client ID value when the key is created and represents a sequential number of how many keys have been created at that time.
 * **Name:** The **Name** column displays the name of the key. See [Create a New Client Authentication Key](../create-a-new-client-authentication-key.md).
-* **Redirect:** The **Redirect** column displays the redirect URL when they key is used. See [Create a New Client Authentication Key](../create-a-new-client-authentication-key.md).
+* **Redirect:** The **Redirect** column displays the URL that redirects the authenticated client back to the ProcessMaker 4 application. See [Create a New Client Authentication Key](../create-a-new-client-authentication-key.md).
 * **Client Secret:** The **Client Secret** column displays the Client Secret for the key. ProcessMaker 4 automatically generates the Client Secret value when the key is created. Click the **Copy Client Secret to Clipboard** icon![](../../../.gitbook/assets/copy-icon-admin.png)to copy the Client Secret. Paste the Client Secret into your application to access the ProcessMaker 4 REST API.
 
 {% hint style="info" %}
@@ -51,5 +51,5 @@ Click the **Edit** icon![](../../../.gitbook/assets/edit-icon.png). See [Edit a 
 
 {% page-ref page="delete-a-client-authentication-key.md" %}
 
-{% page-ref page="delete-a-client-authentication-key.md" %}
+{% page-ref page="../create-a-new-client-authentication-key.md" %}
 
