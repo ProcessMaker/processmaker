@@ -487,6 +487,13 @@ class Process extends Model implements HasMedia
         return $response;
     }
 
+
+    public function setBpmnAttribute($value)
+    {
+        $this->bpmnDefinitions  = null;
+        $this->attributes['bpmn'] = $value;
+    }
+
     /**
      * Process events relationship.
      *
