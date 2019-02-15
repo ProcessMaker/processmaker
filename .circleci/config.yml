@@ -141,9 +141,6 @@ jobs:
             MSSQL_PASSWORD: "P4ssW0rd1!"
             BPM_SCRIPTS_HOME: "/opt/executor"
             BPM_SCRIPTS_DOCKER_MODE: "copying"
-      - run:
-          name: "Jest"
-          command: "npm run test"
 
       - store_artifacts:
           path: coverage
