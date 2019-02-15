@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ScheduledTask;
+use ProcessMaker\Nayra\Bpmn\Models\TimerEventDefinition;
 use ProcessMaker\Nayra\Contracts\Bpmn\EntityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TimerEventDefinitionInterface;
@@ -29,9 +30,13 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         ScheduledTask::where('process_id', $process->id)->delete();
 
         foreach ($process->getStartEvents() as $startEvent) {
-            if (key_exists('eventDefinitions', $startEvent) && count($startEvent) > 0) {
-                $eventDefinitions = $startEvent['eventDefinitions']->item(0)->getTimeCycle()->getBody();
+            if (key_exists('eventDefinitions', $startEvent) && $startEvent['eventDefinitions']->count() > 0) {
                 foreach($startEvent['eventDefinitions'] as $eventDefinition) {
+                    // here we just register Timer Events
+                    if (get_class($eventDefinition) !== TimerEventDefinition::class) {
+                        continue;
+                    }
+
                     $timeDate = $eventDefinition->getTimeDate();
                     $timeCycle = $eventDefinition->getTimeCycle();
                     $timeDuration = $eventDefinition->getTimeDuration();
