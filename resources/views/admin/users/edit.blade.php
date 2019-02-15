@@ -255,7 +255,7 @@
                     </div>
                     <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
                         <div class="accordion" id="accordionExample">
-                            <label><input type="checkbox" v-model="formData.is_administrator" @input="adminHasChanged = true">  {{__('Make this user an admin')}} </label>
+                            <label><input type="checkbox" v-model="formData.is_administrator" @input="adminHasChanged = true">  {{__('Make this user a Super Admin')}} </label>
                             <label class="mb-3"><input type="checkbox" v-model="selectAll" @click="select" :disabled="formData.is_administrator">  {{__('Assign all permisssions to this user')}} </label>
                             @include('admin.shared.permissions')
                         </div>
