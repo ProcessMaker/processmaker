@@ -130,7 +130,7 @@
     * [Delete a Group](processmaker-administration/assign-groups-to-users/manage-groups/remove-a-group.md)
   * [Create a New Group](processmaker-administration/assign-groups-to-users/create-a-group.md)
 * [Permission Descriptions for Users and Groups](processmaker-administration/permission-descriptions-for-users-and-groups.md)
-* [Management Client Authentications](processmaker-administration/auth-client-management/README.md)
+* [Client Authentication Management](processmaker-administration/auth-client-management/README.md)
   * [What is Client Authentication?](processmaker-administration/auth-client-management/what-is-client-authentication.md)
   * [Manage Client Authentications](processmaker-administration/auth-client-management/manage-client-authentications/README.md)
     * [View All Client Authentication Keys](processmaker-administration/auth-client-management/manage-client-authentications/view-all-client-authentication-keys.md)
