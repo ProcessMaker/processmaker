@@ -58,7 +58,6 @@ class WorkflowServiceProvider extends ServiceProvider
             $engine = new BpmnEngine($repository, $eventBus);
 
             $engine->setJobManager(new TaskSchedulerManager());
-            $engine->setDispatcher(new TaskSchedulerManager());
 
             //Initialize BpmnDocument repository (REQUIRES $engine $factory)
             $bpmnRepository = new BpmnDocument();

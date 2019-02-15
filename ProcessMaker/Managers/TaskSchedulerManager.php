@@ -61,7 +61,8 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                         $period = $eventDefinition->getTimeDuration()->getBody();
                     }
 
-                    for ($i = 1; $i < count($intervals); $i++) {
+                    $init = $period[0] === 'R' ? 0 : 1;
+                    for ($i = 0; $i < count($intervals); $i++) {
                         $parts = $this->getIntervalParts($intervals[$i]);
                         $configuration = [
                             'type' => $timeEventType,
