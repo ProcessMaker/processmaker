@@ -31,14 +31,14 @@
             <div class="col-md-8">
                 <div class="container-fluid">
 
-                    <ul id="tabHeader" role="tablist" class="nav nav-tabs">
-                        <li class="nav-item"><a id="pending-tab" data-toggle="tab" href="#tab-form" role="tab" aria-controls="tab-form" aria-selected="true" class="nav-link active">{{__('Form')}}</a></li>
-                        @if ($task->processRequest->status === 'ACTIVE')
-                        @can('editData', $task->processRequest->process)
-                        <li class="nav-item"><a id="summary-tab" data-toggle="tab" href="#tab-data" role="tab" aria-controls="tab-data" aria-selected="false" class="nav-link">{{__('Data')}}</a></li>
+                    @if ($task->processRequest->status === 'ACTIVE')
+                        @can('editData', $task->processRequest)
+                            <ul id="tabHeader" role="tablist" class="nav nav-tabs">
+                                <li class="nav-item"><a id="pending-tab" data-toggle="tab" href="#tab-form" role="tab" aria-controls="tab-form" aria-selected="true" class="nav-link active">{{__('Form')}}</a></li>
+                                <li class="nav-item"><a id="summary-tab" data-toggle="tab" href="#tab-data" role="tab" aria-controls="tab-data" aria-selected="false" class="nav-link">{{__('Data')}}</a></li>
+                            </ul>
                         @endcan
-                        @endif
-                    </ul>
+                    @endif
                     <div id="tabContent" class="tab-content">
                         <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show">
                             @if ($task->getScreen() && ($task->advanceStatus==='open' || $task->advanceStatus==='overdue'))
@@ -48,6 +48,7 @@
                                            token-id="{{$task->getKey()}}"
                                            :screen="{{json_encode($task->getScreen()->config)}}"
                                            :computed="{{json_encode($task->getScreen()->computed)}}"
+                                           :custom-css="{{json_encode(strval($task->getScreen()->custom_css))}}"
                                            :data="{{json_encode($task->processRequest->data, JSON_FORCE_OBJECT)}}"/>
                             </div>
                             @elseif ($task->advanceStatus==='completed')
@@ -57,7 +58,7 @@
                             @endif
                         </div>
                         @if ($task->processRequest->status === 'ACTIVE')
-                        @can('editData', $task->processRequest->process)
+                        @can('editData', $task->processRequest)
                         <div id="tab-data" role="tabpanel" aria-labelledby="tab-data" class="tab-pane">
                             @include('tasks.editdata')
                         </div>
@@ -149,7 +150,6 @@
                 //Edit data
                 fieldsToUpdate: [],
                 jsonData: "",
-                selectedData: '',
                 monacoLargeOptions: {
                     automaticLayout: true,
                 },
@@ -186,10 +186,7 @@
             methods: {
                 // Data editor
                 updateRequestData() {
-                    const data = {};
-                    this.fieldsToUpdate.forEach(name=>{
-                        data[name] = this.data[name];
-                    });
+                    const data = JSON.parse(this.jsonData);
                     ProcessMaker.apiClient
                         .put("requests/" + this.task.process_request_id, {
                             data: data
@@ -199,34 +196,16 @@
                             ProcessMaker.alert("{{__('Request data successfully updated')}}", "success");
                         });
                 },
-                updateData(name, value) {
-                    if (name) {
-                        this.$set(this.data, name, value);
-                        this.fieldsToUpdate.indexOf(name) === -1 ? this.fieldsToUpdate.push(name) : null;
-                    }
-                },
-                closeJsonData() {
-                    this.selectedData = '';
-                    this.showJSONEditor = false;
-                },
                 saveJsonData() {
                     try{
-                        if (this.selectedData) {
-                            const value = JSON.parse(this.jsonData);
-                            this.$set(this.data, this.selectedData, value);
-                            this.showJSONEditor = false;
-                            this.fieldsToUpdate.indexOf(this.selectedData) === -1 ? this.fieldsToUpdate.push(this.selectedData) : null;
-                            this.updateRequestData();
-                        }
+                        const value = JSON.parse(this.jsonData);
+                        this.updateRequestData();
                     } catch (e) {
+                        // Invalid data
                     }
                 },
-                editJsonData(name) {
-                    if (this.data[name] !== undefined) {
-                        this.selectedData = name;
-                        this.jsonData = JSON.stringify(this.data[name], null, 4);
-                        this.showJSONEditor = true;
-                    }
+                editJsonData() {
+                    this.jsonData = JSON.stringify(this.data, null, 4);
                 },
 
                 // Reassign methods
@@ -289,6 +268,7 @@
                 this.userAssigned = this.assigned
                 this.userRequested = this.requested
                 this.updateRequestData = debounce(this.updateRequestData, 1000);
+                this.editJsonData();
             }
         });
     </script>

@@ -23,6 +23,7 @@ class CreateProcessVersionsTable extends Migration
             $table->text('bpmn');
             $table->text('description');
             $table->string('name');
+            $table->unsignedInteger('cancel_screen_id')->nullable();
             $table->enum('status', ['ACTIVE', 'INACTIVE']);
             $table->softDeletes();
             $table->timestamps();

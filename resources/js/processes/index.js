@@ -12,15 +12,18 @@ new Vue({
         ProcessesListing
     },
     methods: {
-        show () {
+        show() {
             this.processId = null;
             this.processModal = true;
         },
-        edit (id) {
+        edit(id) {
             this.processId = id;
             this.processModal = true;
         },
-        reload () {
+        goToImport() {
+            window.location = "processes/import"
+        },
+        reload() {
             this.$refs.processListing.dataManager([{
                 field: "updated_at",
                 direction: "desc"

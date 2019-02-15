@@ -50,8 +50,8 @@
                         </div>
                         <br>
                         <div class="text-right">
-                            {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose']) !!}
-                            {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'onUpdate']) !!}
+                            {!! Form::button('Cancel', ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
+                            {!! Form::button('Save', ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
                         </div>
                         {!! Form::close() !!}
                     </div>
@@ -82,8 +82,8 @@
                                 <label class="mb-3"><input type="checkbox" v-model="selectAll" @click="select" :disabled="formData.is_administrator">  {{__('Assign all permisssions to this group')}} </label>
                                 @include('admin.shared.permissions')
                                 <div class="text-right mt-2">
-                                    {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose'])!!}
-                                    {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'permissionUpdate'])!!}
+                                    {!! Form::button('Cancel', ['class'=>'btn btn-outline-secondary', '@click' => 'onClose'])!!}
+                                    {!! Form::button('Save', ['class'=>'btn btn-secondary ml-2', '@click' => 'permissionUpdate'])!!}
                                 </div>
                             </div>
                         </div>
@@ -126,9 +126,9 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-success"
+                            <button type="button" class="btn btn-outline-secondary"
                                     data-dismiss="modal" @click="onCloseAddUser">{{__('Close')}}</button>
-                            <button type="button" class="btn btn-success ml-2" @click="onSave">{{__('Save')}}</button>
+                            <button type="button" class="btn btn-secondary ml-2" @click="onSave">{{__('Save')}}</button>
                         </div>
                     </div>
                 </div>

@@ -199,7 +199,7 @@ class ProcessRequestController extends Controller
         }
         $fields = $httpRequest->json()->all();
         if (array_keys($fields) === ['data']) {
-            if (! Auth::user()->can('editData', $request->process)) {
+            if (! Auth::user()->can('editData', $request)) {
                 throw new AuthorizationException(__('Not authorized to edit request data.'));
             }
             // Update data edited
