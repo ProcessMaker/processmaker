@@ -21,7 +21,7 @@ The **In Progress** page displays the following information in tabular format:
 
 * **Name:** The **Name** column displays the name of the Process associated with the Request. Click the Process name to [view information](request-details.md#information-for-in-progress-requests) about that Request.
 * **Status:** The **Status** column displays the **In Progress** status.
-* **Participants:** The **Participants** column displays avatars of each participant in the Request. Participants might be users interacting with a form or as an authenticated user to the ProcessMaker 4 [REST API](https://develop.bpm4.qa.processmaker.net/api/documentation).
+* **Participants:** The **Participants** column displays avatars of each participant in the Request. Participants might be users interacting with a form or as an authenticated user to the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
 * **Started:** The **Started** column displays the date and time you made the Request. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 * **Completed:** The **Completed** column displays the date and time the Request was completed. Since Requests in this tab are in-progress, this column is empty.
 

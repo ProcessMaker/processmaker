@@ -136,7 +136,7 @@
     * [View All Client Authentication Keys](processmaker-administration/auth-client-management/manage-client-authentications/view-all-client-authentication-keys.md)
     * [Edit a Client Authentication Key](processmaker-administration/auth-client-management/manage-client-authentications/edit-a-client-authentication-key.md)
     * [Delete a Client Authentication Key](processmaker-administration/auth-client-management/manage-client-authentications/delete-a-client-authentication-key.md)
-* [Create a New Client Authentication Key](processmaker-administration/create-a-new-client-authentication-key.md)
+  * [Create a New Client Authentication Key](processmaker-administration/auth-client-management/create-a-new-client-authentication-key.md)
 * [Queue Management](processmaker-administration/queue-management.md)
 
 ## Install ProcessMaker

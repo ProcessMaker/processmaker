@@ -18,5 +18,5 @@ Client authentication keys are required to access the [ProcessMaker 4 REST API](
 
 {% page-ref page="manage-client-authentications/delete-a-client-authentication-key.md" %}
 
-{% page-ref page="../create-a-new-client-authentication-key.md" %}
+{% page-ref page="create-a-new-client-authentication-key.md" %}
 

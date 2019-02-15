@@ -12,7 +12,7 @@ Below are a few examples of Tasks that your organization might use:
 
 * Enter information into a digital form, called ProcessMaker Screens, as part of a Request.
 * Approve or reject a Request based on entered information.
-* Run an automated script either through a ProcessMaker Script or as an authenticated user in the [REST API](https://develop.bpm4.qa.processmaker.net/api/documentation).
+* Run an automated script either through a ProcessMaker Script or as an authenticated user in the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
 
 ## Related Topics
 
