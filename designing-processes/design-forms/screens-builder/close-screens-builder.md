@@ -4,6 +4,8 @@ description: Close Screens Builder.
 
 # Close Screens Builder
 
+## Close Screens Builder
+
 {% hint style="info" %}
 Your user account or group membership must have the following permissions to close a ProcessMaker Screen:
 
@@ -14,4 +16,10 @@ Ask your ProcessMaker Administrator for assistance if necessary.
 {% endhint %}
 
 Click the **Close** icon![](../../../.gitbook/assets/close-icon-processes.png)to close the ProcessMaker Screen.
+
+## Related Topics
+
+{% page-ref page="../what-is-a-form.md" %}
+
+{% page-ref page="what-is-screens-builder.md" %}
 

@@ -4,9 +4,9 @@ description: Filter all Processes in your organization to find that one you need
 
 # Search for a Process
 
-Use the **Search** function to filter all Processes from the **Processes** page based on your entered text.
-
 ## Search for a Process
+
+Use the **Search** function to filter all Processes from the **Processes** page based on your entered text.
 
 {% hint style="info" %}
 Your user account or group membership must have the "Processes: List" permission to search for Processes.

@@ -4,6 +4,8 @@ description: Cancel a Request in which you have permission to do so.
 
 # Cancel a Request
 
+## Overview
+
 Request participants can cancel a Request in the following circumstances:
 
 * A Process Owner for the Process associated with a Request [selects which permission\(s\) are allowed to cancel a Request for that process](../../designing-processes/viewing-processes/view-the-list-of-processes/edit-the-name-description-category-or-status-of-a-process.md#edit-general-information-about-a-process). If a Request participant's user account has that permission, then that Request participant can cancel a Request for that Process.

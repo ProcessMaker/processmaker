@@ -4,6 +4,8 @@ description: Understand what Processes are in ProcessMaker 4.
 
 # What is a Process?
 
+## Overview
+
 In ProcessMaker 4, a Process is a graphical representation of a business process for your organization. A Process may involve people in your organization or might be completely automated through scripting.
 
 Any Process designed in ~~or exported from~~ ProcessMaker 4 is BPMN 2.0 compliant. ~~Furthermore, any process to be imported to ProcessMaker 4 must be BPMN 2.0 compliant.~~

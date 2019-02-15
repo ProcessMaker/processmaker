@@ -4,6 +4,8 @@ description: Understand what Tasks are in ProcessMaker 4.
 
 # What is a Task?
 
+## Overview
+
 In ProcessMaker 4, a "Task" represents information that must be acted upon in some way. Tasks are the steps in a Process.
 
 Below are a few examples of Tasks that your organization might use:

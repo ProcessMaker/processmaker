@@ -4,9 +4,9 @@ description: View all Requests that you've started or in which you're a particip
 
 # View All Requests
 
-The **All Requests** page displays all Requests in the organization. This includes Requests that you may not have participated in as well as in-progress and completed Requests. Request information displays in tabular format.
-
 ## View All Requests You Started or in Which You Are a Participant
+
+The **All Requests** page displays all Requests in the organization. This includes Requests that you may not have participated in as well as in-progress and completed Requests. Request information displays in tabular format.
 
 Follow these steps to view the **All Requests** page:
 

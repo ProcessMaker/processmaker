@@ -4,9 +4,9 @@ description: View complebusiness ped Requests in which you started or participat
 
 # View Completed Requests
 
-The **Completed** page displays all Requests that have completed in which you participated. Request information displays in tabular format.
-
 ## View Completed Requests in Which You Are a Participant
+
+The **Completed** page displays all Requests that have completed in which you participated. Request information displays in tabular format.
 
 Follow these steps to view completed Requests: ~~UPDATE SCREENSHOT AFTER "COMPLETED" COUNT INDICATOR BUG IS FIXED~~
 

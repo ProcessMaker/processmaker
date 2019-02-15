@@ -15,7 +15,7 @@ In ProcessMaker 4, a permission allows a ProcessMaker user member to view a type
 * Edit Processes
 * Edit ProcessMaker Screens
 * Create Environment Variables
-* View Task Assignments through the [ProcessMaker 4 API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation)
+* View Task Assignments through the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation)
 
 ### Assign Permissions to Users and Groups
 
@@ -155,28 +155,28 @@ Select the **View Comments** permission to use any of the other permissions in t
 
 The **Files \(API\)** category contains the following permissions:
 
-* **View Files:** Returns the list of files associated to an API request. See "Files &gt; Get" endpoint in the [ProcessMaker 4 API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
-* **Create Files:** Saves a new file specified in an API request. Selecting this permission also selects the **Edit Files** permission. See "Files &gt; Post" endpoint in the [ProcessMaker 4 API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
-* **Edit Files:** Update a file specified in an API request. See "Files &gt; Update" endpoint in the [ProcessMaker 4 API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
-* **Delete Files:** Deletes a specified file in an API request. See "Files &gt; Delete" endpoint in the [ProcessMaker 4 API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
+* **View Files:** Returns the list of files associated to an API request. See "Files &gt; Get" endpoint in the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
+* **Create Files:** Saves a new file specified in an API request. Selecting this permission also selects the **Edit Files** permission. See "Files &gt; Post" endpoint in the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
+* **Edit Files:** Update a file specified in an API request. See "Files &gt; Update" endpoint in the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
+* **Delete Files:** Deletes a specified file in an API request. See "Files &gt; Delete" endpoint in the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
 
 ### Notifications \(API\)
 
 The **Notifications \(API\)** category contains the following permissions:
 
-* **View Notifications:**  Returns all notifications to which the user has access. See "Notifications &gt; Get" endpoint in the [ProcessMaker 4 API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
-* **Create Notifications:**  Save a new notification through an API request. Selecting this permission also selects the **Edit Notifications** permission. See "Notifications &gt; Post" endpoint in the [ProcessMaker 4 API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
-* **Edit Notifications:** Updates a notification through an API request. See "Notifications &gt; Update" endpoint in the [ProcessMaker 4 API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
-* **Delete Notifications:** Deletes a specified notification through an API request. See "Notifications &gt; Delete" endpoint in the [ProcessMaker 4 API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
+* **View Notifications:**  Returns all notifications to which the user has access. See "Notifications &gt; Get" endpoint in the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
+* **Create Notifications:**  Save a new notification through an API request. Selecting this permission also selects the **Edit Notifications** permission. See "Notifications &gt; Post" endpoint in the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
+* **Edit Notifications:** Updates a notification through an API request. See "Notifications &gt; Update" endpoint in the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
+* **Delete Notifications:** Deletes a specified notification through an API request. See "Notifications &gt; Delete" endpoint in the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
 
 ### Task Assignments \(API\)
 
 The **Task Assignments \(API\)** category contains the following permissions:
 
-* **View Task Assignments:** Returns all assignments assigned to the user. See ~~WHAT?~~ endpoint in the [ProcessMaker 4 API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
-* **Create Task Assignments:** Saves a new task assignment to a specified user in an API request. Selecting this permission also selects the **Edit Task Assignments** permission. See "Task Assignments &gt; Post" endpoint in the [ProcessMaker 4 API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
-* **Edit Task Assignments:** Updates a task assignment through an API request. See "Task Assignments &gt; Update" endpoint in the [ProcessMaker 4 API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
-* **Delete Task Assignments:** Deletes a specified task assignment through an API request. See ~~WHAT?~~ endpoint in the [ProcessMaker 4 API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
+* **View Task Assignments:** Returns all assignments assigned to the user. See ~~WHAT?~~ endpoint in the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
+* **Create Task Assignments:** Saves a new task assignment to a specified user in an API request. Selecting this permission also selects the **Edit Task Assignments** permission. See "Task Assignments &gt; Post" endpoint in the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
+* **Edit Task Assignments:** Updates a task assignment through an API request. See "Task Assignments &gt; Update" endpoint in the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
+* **Delete Task Assignments:** Deletes a specified task assignment through an API request. See ~~WHAT?~~ endpoint in the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
 
 ## Related Topics
 

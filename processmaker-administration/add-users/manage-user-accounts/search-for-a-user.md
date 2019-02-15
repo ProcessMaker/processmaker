@@ -6,9 +6,9 @@ description: >-
 
 # Search for a User Account
 
-Use the **Search** function to filter all ProcessMaker user accounts from the **Users** page based on your entered text.
-
 ## Search for a ProcessMaker User Account
+
+Use the **Search** function to filter all ProcessMaker user accounts from the **Users** page based on your entered text.
 
 {% hint style="info" %}
 Your user account or group membership must have the "Users: View Users" permission to search for ProcessMaker user accounts.

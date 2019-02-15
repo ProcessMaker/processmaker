@@ -4,21 +4,23 @@ description: Delete elements from your Process model.
 
 # Delete Process Model Elements
 
-## Delete a Process Model Element
+## Delete Process Model Elements
+
+Deleting a Process model element also deletes any Sequence Flows incoming to or outgoing from that element. Therefore, if a Process element is deleted that has both incoming and outgoing Sequence Flows, the disconnected Sequence Flows must be reconnected for the remaining elements.
 
 {% hint style="info" %}
+### Don't Know What Process Model Element Is?
+
+See [Process Modeling Element Descriptions](process-modeling-element-descriptions.md).
+
+### Permissions Required to Do This Task
+
 Your user account or group membership must have the following permissions to delete elements from the Process model:
 
 * Processes: View Processes
 * Processes: Edit Processes
 
 Ask your ProcessMaker Administrator for assistance if necessary.
-{% endhint %}
-
-Deleting a Process model element also deletes any Sequence Flows incoming to or outgoing from that element. Therefore, if a Process element is deleted that has both incoming and outgoing Sequence Flows, the disconnected Sequence Flows must be reconnected for the remaining elements.
-
-{% hint style="info" %}
-See [Process Modeling Element Descriptions](process-modeling-element-descriptions.md) for a description of the [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow).
 {% endhint %}
 
 ### Delete a Non-Pool Element

@@ -4,11 +4,11 @@ description: 'Learn how to add, delete, or rename a ProcessMaker Screen page.'
 
 # Add, Delete or Rename a Page
 
+## Add a New Page to a ProcessMaker Screen
+
 Process Owners can create multi-page [Form-type](types-for-screens.md) ProcessMaker Screens. By default, a ProcessMaker Screen contains one page that has the same name as the ProcessMaker Screen.
 
 Each page has its own name. ~~Screen Editor page names must be unique on the same ProcessMaker Screen.~~
-
-## Add a New Page to a ProcessMaker Screen
 
 {% hint style="info" %}
 Your user account or group membership must have the following permissions to add a new page to a ProcessMaker Screen:

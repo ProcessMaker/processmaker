@@ -4,7 +4,7 @@ description: Receive updates about Requests and your assigned Tasks.
 
 # Notifications
 
-## Notifications to Request Participants
+## Overview
 
 Request participants receive notifications when the following events occur:
 

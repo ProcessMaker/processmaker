@@ -4,7 +4,7 @@ description: Archive a Process that is no longer needed in your organization.
 
 # Archive a Process
 
-## What is an Archived Process?
+## Overview
 
 An archived Process has the following attributes:
 

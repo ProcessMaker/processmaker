@@ -6,9 +6,9 @@ description: >-
 
 # Search for a Script
 
-Use the **Search** function to filter all ProcessMaker Scripts from the **Scripts** page based on your entered text.
-
 ## Search for a ProcessMaker Script
+
+Use the **Search** function to filter all ProcessMaker Scripts from the **Scripts** page based on your entered text.
 
 {% hint style="info" %}
 Your user account or group membership must have the "Scripts: View Scripts" permission to search for ProcessMaker Scripts.

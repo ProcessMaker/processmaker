@@ -6,9 +6,9 @@ description: >-
 
 # Search for an Environment Variable
 
-Use the **Search** function to filter all ProcessMaker Environment Variables from the **Environment Variables** page based on your entered text.
-
 ## Search for a ProcessMaker Environment Variable
+
+Use the **Search** function to filter all ProcessMaker Environment Variables from the **Environment Variables** page based on your entered text.
 
 {% hint style="info" %}
 Your user account or group membership must have the "Environment Variables: View Environment Variables" permission to search for ProcessMaker Environment Variables.

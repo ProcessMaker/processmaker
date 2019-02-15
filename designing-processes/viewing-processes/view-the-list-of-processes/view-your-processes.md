@@ -6,9 +6,9 @@ description: >-
 
 # View All Processes
 
-ProcessMaker displays all active and inactive Processes in one table that Process Owners have created throughout your organization. This makes it easy to manage Processes.
-
 ## View All Active and Inactive Processes
+
+ProcessMaker displays all active and inactive Processes in one table that Process Owners have created throughout your organization. This makes it easy to manage Processes.
 
 {% hint style="info" %}
 Your user account or group membership must have the "Processes: View Processes" permission to view the list of Processes.

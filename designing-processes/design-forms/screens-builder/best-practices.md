@@ -15,5 +15,9 @@ Follow these best practices when designing ProcessMaker Screens:
   To avoid this issue, establish a naming convention with all Process Owners in your organization for **Field Name** settings. For example, use a naming convention such as `<ScreenName>_<FieldName>`. This naming convention minimizes two controls of the same type in different ProcessMaker Screens to have identical names.
 
 * 
+## Related Topics
 
+{% page-ref page="../what-is-a-form.md" %}
+
+{% page-ref page="what-is-screens-builder.md" %}
 

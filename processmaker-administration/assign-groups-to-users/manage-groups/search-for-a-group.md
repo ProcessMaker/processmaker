@@ -6,9 +6,9 @@ description: >-
 
 # Search for a Group
 
-Use the **Search** function to filter all ProcessMaker groups from the **Groups** page based on your entered text.
-
 ## Search for a ProcessMaker Group
+
+Use the **Search** function to filter all ProcessMaker groups from the **Groups** page based on your entered text.
 
 {% hint style="info" %}
 Your user account or group membership must have the "Groups: View Groups" permission to view the list of groups.

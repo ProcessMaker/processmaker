@@ -6,9 +6,9 @@ description: >-
 
 # Search for a Screen
 
-Use the **Search** function to filter all ProcessMaker Screens from the **Screens** page based on your entered text.
-
 ## Search for a ProcessMaker Screen
+
+Use the **Search** function to filter all ProcessMaker Screens from the **Screens** page based on your entered text.
 
 {% hint style="info" %}
 Your user account or group membership must have the "Screens: View Screens" permission to search for ProcessMaker Screens.

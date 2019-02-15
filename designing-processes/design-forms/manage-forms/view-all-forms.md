@@ -6,9 +6,9 @@ description: >-
 
 # View All Screens
 
-ProcessMaker displays all Screens in one location. Any ProcessMaker Screen developed by any Process Owner can be used in any Process model. This makes it easy to manage ProcessMaker Screens.
-
 ## View All ProcessMaker Screens <a id="view-all-scripts"></a>
+
+ProcessMaker displays all Screens in one location. Any ProcessMaker Screen developed by any Process Owner can be used in any Process model. This makes it easy to manage ProcessMaker Screens.
 
 {% hint style="info" %}
 Your user account or group membership must have the "Screens: View Screens" permission to view the list of ProcessMaker Screens.

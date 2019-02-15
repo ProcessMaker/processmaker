@@ -6,7 +6,7 @@ description: >-
 
 # Screen Types
 
-## Screen Types
+## Overview
 
 Use Screens Builder to design different types of ProcessMaker Screens. Savvy developers can design custom ProcessMaker Screen types in [packages](../../../package-development-distribution/first-topic.md). However, ProcessMaker 4 Community edition provides the following ProcessMaker Screen types by default.
 

@@ -4,6 +4,8 @@ description: Understand what groups are in ProcessMaker 4.
 
 # What is a Group?
 
+## Overview
+
 In ProcessMaker 4, a ProcessMaker group is a set of ProcessMaker users that have the following attributes:
 
 * All members of the same ProcessMaker group are assigned the same set of permissions. See [Permission Descriptions for Users and Groups](../permission-descriptions-for-users-and-groups.md).

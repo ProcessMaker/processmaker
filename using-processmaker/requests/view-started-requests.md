@@ -4,9 +4,9 @@ description: View the status of Requests you've started.
 
 # View Requests You Started
 
-The **My Requests** page displays all Requests you started. Request information displays in tabular format.
-
 ## View Requests You Started
+
+The **My Requests** page displays all Requests you started. Request information displays in tabular format.
 
 Do one of the following to view Requests that you started:
 

@@ -130,7 +130,13 @@
     * [Delete a Group](processmaker-administration/assign-groups-to-users/manage-groups/remove-a-group.md)
   * [Create a New Group](processmaker-administration/assign-groups-to-users/create-a-group.md)
 * [Permission Descriptions for Users and Groups](processmaker-administration/permission-descriptions-for-users-and-groups.md)
-* [Auth Client Management](processmaker-administration/auth-client-management.md)
+* [Management Client Authentications](processmaker-administration/auth-client-management/README.md)
+  * [What is Client Authentication?](processmaker-administration/auth-client-management/what-is-client-authentication.md)
+  * [Manage Client Authentications](processmaker-administration/auth-client-management/manage-client-authentications/README.md)
+    * [View All Client Authentication Keys](processmaker-administration/auth-client-management/manage-client-authentications/view-all-client-authentication-keys.md)
+    * [Edit a Client Authentication Key](processmaker-administration/auth-client-management/manage-client-authentications/edit-a-client-authentication-key.md)
+    * [Delete a Client Authentication Key](processmaker-administration/auth-client-management/manage-client-authentications/delete-a-client-authentication-key.md)
+* [Create a New Client Authentication Key](processmaker-administration/create-a-new-client-authentication-key.md)
 * [Queue Management](processmaker-administration/queue-management.md)
 
 ## Install ProcessMaker

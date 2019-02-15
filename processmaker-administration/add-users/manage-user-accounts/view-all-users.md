@@ -4,9 +4,9 @@ description: View all ProcessMaker user accounts.
 
 # View All Users Accounts
 
-ProcessMaker displays all ProcessMaker user accounts in one table that Process Administrators throughout your organization have created. This makes it easy to manage ProcessMaker user accounts.
-
 ## View All ProcessMaker User Accounts <a id="view-all-scripts"></a>
+
+ProcessMaker displays all ProcessMaker user accounts in one table that ProcessMaker Administrators throughout your organization have created. This makes it easy to manage ProcessMaker user accounts.
 
 {% hint style="info" %}
 Your user account or group membership must have the "Users: View Users" permission to view the list of users.

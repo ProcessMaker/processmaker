@@ -4,6 +4,8 @@ description: Understand how to use Environment Variables in ProcessMaker 4.
 
 # What is an Environment Variable?
 
+## Overview
+
 In ProcessMaker 4, an Environment Variable is a secure, abstract proxy for any sensitive information that you need to use in a Process. Any ProcessMaker Environment Variable can be re-used in any Process to abstract information securely throughout your organization.
 
 You do not need to know the sensitive information that the Environment Value represents. The Process Owner creates the placeholder for that sensitive information, and then the value for the ProcessMaker Environment Value is entered by a person or ProcessMaker Script when the Request is in progress.
