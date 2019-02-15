@@ -169,7 +169,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      *
      * @return null
      */
-    public function getSummaryScreenId()
+    public function getSummaryScreen()
     {
         $endEvents = $this->tokens()->where('element_type', 'end_event')->get();
 
@@ -180,9 +180,9 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
 
         //get the first token that is and end event to get the summary screen
         $definition = $endEvents->first()->getDefinition();
-        $screenId = empty($definition['screenRef']) ? null : Screen::find($definition['screenRef']);
+        $screen = empty($definition['screenRef']) ? null : Screen::find($definition['screenRef']);
 
-        return $screenId;
+        return $screen;
     }
 
     /**

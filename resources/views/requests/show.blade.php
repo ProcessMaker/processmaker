@@ -342,10 +342,7 @@
             methods: {
                 // Data editor
                 updateRequestData() {
-                    const data = {};
-                    this.fieldsToUpdate.forEach(name=>{
-                        data[name] = this.data[name];
-                    });
+                    const data = JSON.parse(this.jsonData);
                     ProcessMaker.apiClient
                         .put("requests/" + this.requestId, {
                             data: data
@@ -355,34 +352,16 @@
                             ProcessMaker.alert("{{__('Request data successfully updated')}}", "success");
                         });
                 },
-                updateData(name, value) {
-                    if (name) {
-                        this.$set(this.data, name, value);
-                        this.fieldsToUpdate.indexOf(name) === -1 ? this.fieldsToUpdate.push(name) : null;
-                    }
-                },
-                closeJsonData() {
-                    this.selectedData = '';
-                    this.showJSONEditor = false;
-                },
                 saveJsonData() {
                     try{
-                        if (this.selectedData) {
-                            const value = JSON.parse(this.jsonData);
-                            this.$set(this.data, this.selectedData, value);
-                            this.showJSONEditor = false;
-                            this.fieldsToUpdate.indexOf(this.selectedData) === -1 ? this.fieldsToUpdate.push(this.selectedData) : null;
-                            this.updateRequestData();
-                        }
+                        const value = JSON.parse(this.jsonData);
+                        this.updateRequestData();
                     } catch (e) {
+                        // Invalid data
                     }
                 },
-                editJsonData(name) {
-                    if (this.data[name] !== undefined) {
-                        this.selectedData = name;
-                        this.jsonData = JSON.stringify(this.data[name], null, 4);
-                        this.showJSONEditor = true;
-                    }
+                editJsonData() {
+                    this.jsonData = JSON.stringify(this.data, null, 4);
                 },
                 /**
                  * Refresh the Request details.
@@ -460,6 +439,7 @@
             mounted() {
                 this.listenRequestUpdates();
                 this.cleanScreenButtons();
+                this.editJsonData();
             },
         });
     </script>

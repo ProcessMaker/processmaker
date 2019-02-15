@@ -1,5 +1,5 @@
 <template>
-  <vue-form-renderer @submit="submit" v-model="formData" :config="screen" :computed="computed"/>
+  <vue-form-renderer @submit="submit" v-model="formData" :config="screen" :computed="computed" :custom-css="customCss" />
 </template>
 
 <script>
@@ -43,7 +43,7 @@ export default {
   components: {
     VueFormRenderer
   },
-  props: ["processId", "instanceId", "tokenId", "screen", "data", "computed"],
+  props: ["processId", "instanceId", "tokenId", "screen", "data", "computed", "customCss"],
   data() {
     return {
       formData: this.data

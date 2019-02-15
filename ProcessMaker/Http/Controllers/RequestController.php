@@ -86,7 +86,13 @@ class RequestController extends Controller
         $request->participants;
         $request->user;
         $request->summary = $request->summary();
-        $request->summary_screen = $request->getSummaryScreenId();
+        
+        if ($request->status === 'CANCELED' && $request->process->cancel_screen_id) {
+            $request->summary_screen = $request->process->cancelScreen;
+        } else {
+            $request->summary_screen = $request->getSummaryScreen();
+        }
+
         $canCancel = Auth::user()->can('cancel', $request->process);
         $canViewComments = Auth::user()->hasPermissionsFor('comments')->count() > 0;
 

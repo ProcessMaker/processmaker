@@ -12,6 +12,9 @@
                     <li class="nav-item">
                         <a class="nav-link" @click="openComputedProperties" href="#">Computed Properties</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" @click="openCustomCSS" href="#">Custom CSS</a>
+                    </li>
                 </ul>
 
                 <ul class="navbar-nav  pull-right">
@@ -26,43 +29,45 @@
         </div>
 
         <computed-properties v-model="computed" ref="computedProperties"></computed-properties>
+        <custom-CSS v-model="customCSS" ref="customCSS" :css-errors="cssErrors" />
         <vue-form-builder :class="{invisible: mode != 'editor'}" @change="updateConfig" ref="screenBuilder"
-                          v-show="mode === 'editor'" config="config" computed="computed"/>
-        <div id="preview" :class="{invisible: mode != 'preview'}">
-            <div id="data-input">
-                <div class="card-header">
-                    Data Input
-                </div>
-                <div class="alert" :class="{'alert-success': previewInputValid, 'alert-danger': !previewInputValid}">
-                    <span v-if="previewInputValid">Valid JSON Data Object</span>
-                    <span v-else>Invalid JSON Data Object</span>
-                </div>
-                <form-text-area rows="20" v-model="previewInput"></form-text-area>
+            v-show="mode === 'editor'" config="config" computed="computed"/>
+            <div id="preview" :class="{invisible: mode != 'preview'}">
+             <div id="data-input">
+                    <div class="card-header">
+                        Data Input
+                    </div>
+                    <div class="alert" :class="{'alert-success': previewInputValid, 'alert-danger': !previewInputValid}">
+                         <span v-if="previewInputValid">Valid JSON Data Object</span>
+                        <span v-else>Invalid JSON Data Object</span>
+                    </div>
+                    <form-text-area rows="20" v-model="previewInput"></form-text-area>
 
-            </div>
+                </div>
 
-            <div id="renderer-container">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-sm">
-                            <vue-form-renderer ref="renderer" @submit="previewSubmit" v-model="previewData"
-                                               :config="config" :computed="computed"/>
+                <div id="renderer-container">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm">
+                                <vue-form-renderer ref="renderer" @submit="previewSubmit" v-model="previewData"
+                                                   :config="config" :computed="computed"  :custom-css="customCSS" v-on:css-errors="cssErrors = $event" />
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div id="data-preview">
-                <div class="card-header">
-                    Data Preview
+                <div id="data-preview">
+                    <div class="card-header">
+                        Data Preview
+                    </div>
+                    <vue-json-pretty :data="previewData"></vue-json-pretty>
                 </div>
-                <vue-json-pretty :data="previewData"></vue-json-pretty>
             </div>
-        </div>
     </div>
 </template>
 
 <script>
     import ComputedProperties from "@processmaker/vue-form-builder/src/components/computed-properties";
+    import CustomCSS from "@processmaker/vue-form-builder/src/components/custom-css.vue";
     import VueFormBuilder from "@processmaker/vue-form-builder/src/components/vue-form-builder";
     import VueFormRenderer from "@processmaker/vue-form-builder/src/components/vue-form-renderer";
     import VueJsonPretty from "vue-json-pretty";
@@ -73,6 +78,8 @@
             return {
                 mode: "editor",
                 computed: [],
+                customCSS: "",
+                cssErrors: "",
                 config: [
                     {
                         name: "Default",
@@ -85,6 +92,7 @@
             };
         },
         components: {
+            CustomCSS,
             ComputedProperties,
             VueFormRenderer,
             VueFormBuilder,
@@ -124,19 +132,20 @@
             // Call our init lifecycle event
             ProcessMaker.EventBus.$emit('screen-builder-init', this);
             this.$refs.screenBuilder.config = this.screen.config
-                ? this.screen.config
-                : [
-                    {
-                        name: "Default",
-                        items: []
-                    }
-                ];
+                    ? this.screen.config
+                    : [
+                        {
+                            name: "Default",
+                            items: []
+                        }
+                    ];
 
             this.computed = this.screen.computed ? this.screen.computed : [];
+            this.customCSS = this.screen.custom_css ? this.screen.custom_css : '';
 
             this.$refs.screenBuilder.computed = this.screen.computed
-                ? this.screen.computed
-                : [];
+                    ? this.screen.computed
+                    : [];
 
 
             if (this.screen.title) {
@@ -150,22 +159,25 @@
             openComputedProperties() {
                 this.$refs.computedProperties.show();
             },
+            openCustomCSS() {
+                this.$refs.customCSS.show();
+            },
             addControl(
-                control,
-                rendererComponent,
-                rendererBinding,
-                builderComponent,
-                builderBinding
-            ) {
+                    control,
+                    rendererComponent,
+                    rendererBinding,
+                    builderComponent,
+                    builderBinding
+                    ) {
                 // Add it to the renderer
                 this.$refs.renderer.$options.components[
-                    rendererBinding
-                    ] = rendererComponent;
+                        rendererBinding
+                ] = rendererComponent;
                 // Add it to the screen builder
                 this.$refs.screenBuilder.addControl(control);
                 this.$refs.screenBuilder.$options.components[
-                    builderBinding
-                    ] = builderComponent;
+                        builderBinding
+                ] = builderComponent;
             },
             updateConfig(newConfig) {
                 this.config = newConfig;
@@ -182,16 +194,17 @@
             },
             saveScreen() {
                 ProcessMaker.apiClient
-                    .put("screens/" + this.screen.id, {
-                        title: this.screen.title,
-                        description: this.screen.description,
-                        type: this.screen.type,
-                        config: this.config,
-                        computed: this.computed
-                    })
-                    .then(response => {
-                        ProcessMaker.alert(" Successfully saved", "success");
-                    });
+                        .put("screens/" + this.screen.id, {
+                            title: this.screen.title,
+                            description: this.screen.description,
+                            type: this.screen.type,
+                            config: this.config,
+                            computed: this.computed,
+                            custom_css: this.customCSS,
+                        })
+                        .then(response => {
+                            ProcessMaker.alert(" Successfully saved", "success");
+                        });
             }
         }
     };

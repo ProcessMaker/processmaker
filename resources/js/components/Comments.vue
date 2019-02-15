@@ -52,7 +52,6 @@ export default {
           }
         })
         .then(response => {
-          console.log(response);
           this.comments = response.data.data;
         });
     },
