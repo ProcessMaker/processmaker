@@ -48,6 +48,7 @@
                                            token-id="{{$task->getKey()}}"
                                            :screen="{{json_encode($task->getScreen()->config)}}"
                                            :computed="{{json_encode($task->getScreen()->computed)}}"
+                                           :custom-css="{{json_encode(strval($task->getScreen()->custom_css))}}"
                                            :data="{{json_encode($task->processRequest->data, JSON_FORCE_OBJECT)}}"/>
                             </div>
                             @elseif ($task->advanceStatus==='completed')
