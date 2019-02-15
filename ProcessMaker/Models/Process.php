@@ -105,6 +105,16 @@ class Process extends Model implements HasMedia
     }
 
     /**
+     *  Cancel Screen of the process.
+     *
+     * @return BelongsTo
+     */
+    public function cancelScreen()
+    {
+        return $this->belongsTo(Screen::class, 'cancel_screen_id');
+    }
+
+    /**
      * Validation rules.
      *
      * @param null $existing
