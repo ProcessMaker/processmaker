@@ -14,7 +14,7 @@ Follow these steps to create a client authentication key that grants access to t
    ![](../../.gitbook/assets/create-auth-client-screen-admin.png)
 
 3. In the **Name** field, enter the name of the client authentication key. ~~This is a required field.~~
-4. In the **Redirect URL** field, enter the URL that redirects the authenticated client back to the ProcessMaker 4 application. ~~This is a required field.~~
+4. In the **Redirect URL** field, enter the URL that redirects the authenticated client to your ProcessMaker 4 application server. ~~This is a required field.~~
 5. Click **Save**. The new client authentication key displays in the **Auth Clients** page.
 
 ## Related Topics

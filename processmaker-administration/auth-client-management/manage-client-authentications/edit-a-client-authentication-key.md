@@ -15,9 +15,12 @@ Follow these steps to edit a client authentication key that grants access to the
 
 3. Edit the following information about the client authentication key as necessary:
    * In the **Name** field, edit the name of the client authentication key. ~~This is a required field.~~
-   * In the **Redirect URL** field, edit the URL that redirects the authenticated client back to the ProcessMaker 4 application. ~~This is a required field.~~
-   * In the **Client Secret** field, edit the unique Client Secret for the client authentication key. ~~This is a required field.~~
+   * In the **Redirect URL** field, edit the URL that redirects the authenticated client to your ProcessMaker 4 application server. ~~This is a required field.~~
 4. Click **Save**.
+
+{% hint style="info" %}
+The **Client Secret** value cannot be changed.
+{% endhint %}
 
 ## Related Topics
 
