@@ -1,0 +1,95 @@
+<?php
+namespace Tests\Feature\Api;
+
+use Faker\Provider\DateTime;
+use Illuminate\Foundation\Testing\WithFaker;
+use ProcessMaker\Managers\TaskSchedulerManager;
+use ProcessMaker\Managers\WorkflowEventManager;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\ScheduledTask;
+use ProcessMaker\Models\User;
+use Tests\Feature\Shared\ResourceAssertionsTrait;
+use Tests\TestCase;
+use Tests\Feature\Shared\RequestHelper;
+
+/**
+ * Test the process execution with requests
+ *
+ * @group process_tests
+ */
+class IntermediateTimerEventTest extends TestCase
+{
+
+    use ResourceAssertionsTrait;
+    use WithFaker;
+    use RequestHelper;
+
+    /**
+     * @var Process $process
+     */
+    protected $process;
+    private $requestStructure = [
+        'id',
+        'process_id',
+        'user_id',
+        'status',
+        'name',
+        'initiated_at',
+        'created_at',
+        'updated_at'
+    ];
+
+    /**
+     * Initialize the controller tests
+     *
+     */
+    protected function withUserSetup()
+    {
+        $this->process = $this->createTestProcess();
+    }
+
+    /**
+     * Create a single task process assigned to $this->user
+     */
+    private function createTestProcess(array $data = [])
+    {
+        $data['bpmn'] = Process::getProcessTemplate('IntermediateTimerEvent.bpmn');
+        $process = factory(Process::class)->create($data);
+        return $process;
+    }
+
+    public function testRegisterTimerEvents()
+    {
+        ScheduledTask::get()->each->delete();
+
+        $data = [];
+        $data['bpmn'] = Process::getProcessTemplate('IntermediateTimerEvent.bpmn');
+        $process = factory(Process::class)->create($data);
+
+        // at this point the save method should have created 4 rows in the
+        // scheduled tasks table
+
+        $tasks = ScheduledTask::all();
+        $this->assertCount(4, $tasks->toArray());
+    }
+
+
+    public function testScheduleIntermediateTimerEvent()
+    {
+        $data = [];
+        $data['bpmn'] = Process::getProcessTemplate('IntermediateTimerEvent.bpmn');
+        $process = factory(Process::class)->create($data);
+
+        $manager = new TaskSchedulerManager();
+        $task = new ScheduledTask();
+        $task->process_id = $process->id;
+        $task->configuration = '{"type":"TimeCycle","interval":"R4\/2019-02-13T13:08:00Z\/PT1M", "element_id" : "_9"}';
+        $task->type= 'INTERMEDIATE_TIMER_EVENT';
+        $manager->executeTimerStartEvent($task, json_decode($task->configuration));
+
+        // If no exception has been thrown, this assertion will be executed
+        $this->assertTrue(true);
+    }
+}
