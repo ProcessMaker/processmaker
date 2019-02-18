@@ -140,7 +140,7 @@
 * [Queue Management](processmaker-administration/queue-management/README.md)
   * [What is Queue Management?](processmaker-administration/queue-management/what-is-queue-management.md)
   * [Dashboard](processmaker-administration/queue-management/dashboard.md)
-  * [Assign Monitor Tags](processmaker-administration/queue-management/monitor-tags.md)
+  * [Assign Monitoring Tags](processmaker-administration/queue-management/monitor-tags.md)
   * [View Metrics](processmaker-administration/queue-management/view-metrics.md)
   * [View Recent Jobs](processmaker-administration/queue-management/view-recent-jobs.md)
   * [View Recently Failed Jobs](processmaker-administration/queue-management/view-recently-failed-jobs.md)
