@@ -6,7 +6,7 @@ description: Learn more about OAuth 2.0 authentication from third-party resource
 
 ## Overview
 
-ProcessMaker requires ProcessMaker Developers who want to access the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation) to follow OAuth 2.0 authentication protocols. OAuth 2.0 authentication is a published specification outside the scope of ProcessMaker. Refer to [https://oauth.net/2/](https://oauth.net/2/) to learn more about this specification.
+ProcessMaker requires ProcessMaker Developers who want to access the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation) to follow OAuth 2.0 authentication protocols. OAuth 2.0 authentication is a published specification outside the scope of ProcessMaker. Refer to [OAuth.net](https://oauth.net/2/) to learn more about this specification.
 
 Client authentication keys are required to access the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
 

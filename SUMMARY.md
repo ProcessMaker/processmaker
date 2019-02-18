@@ -137,7 +137,13 @@
     * [Edit a Client Authentication Key](processmaker-administration/auth-client-management/manage-client-authentications/edit-a-client-authentication-key.md)
     * [Delete a Client Authentication Key](processmaker-administration/auth-client-management/manage-client-authentications/delete-a-client-authentication-key.md)
   * [Create a New Client Authentication Key](processmaker-administration/auth-client-management/create-a-new-client-authentication-key.md)
-* [Queue Management](processmaker-administration/queue-management.md)
+* [Queue Management](processmaker-administration/queue-management/README.md)
+  * [What is Queue Management?](processmaker-administration/queue-management/what-is-queue-management.md)
+  * [Dashboard](processmaker-administration/queue-management/dashboard.md)
+  * [Assign Monitor Tags](processmaker-administration/queue-management/monitor-tags.md)
+  * [View Metrics](processmaker-administration/queue-management/view-metrics.md)
+  * [View Recent Jobs](processmaker-administration/queue-management/view-recent-jobs.md)
+  * [View Recently Failed Jobs](processmaker-administration/queue-management/view-recently-failed-jobs.md)
 
 ## Install ProcessMaker
 

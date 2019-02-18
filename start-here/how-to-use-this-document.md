@@ -32,7 +32,7 @@ Refer to the **ProcessMaker Administration** section that includes the following
 * [Group Management](../processmaker-administration/assign-groups-to-users/)
 * [ProcessMaker Preferences]()
 * [View ProcessMaker Version Information](../using-processmaker/application-version-details.md)
-* [Queue Management](../processmaker-administration/queue-management.md)
+* [Queue Management](../processmaker-administration/queue-management/)
 
 ### Process Owner
 
