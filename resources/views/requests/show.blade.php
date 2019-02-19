@@ -206,7 +206,7 @@
 
 
         </div>
-        <b-modal v-model="showCancelRequest" ref="cancelRequest" title="{{__('Caution!')}}" @ok="okCancel" ok-title="Confirm" cancel-title="Cancel">
+        <b-modal v-show="showCancelRequest == true" v-model="showCancelRequest" ref="cancelRequest" title="{{__('Caution!')}}" @ok="okCancel" ok-title="Confirm" cancel-title="Cancel">
             <p data-v-27f69fb6="" class=""><span data-v-27f69fb6=""><b>{{__('Are you sure you want cancel this request ?')}}</b></span></p>
         </b-modal>
     </div>
