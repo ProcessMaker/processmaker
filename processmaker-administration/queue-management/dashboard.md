@@ -6,6 +6,8 @@ description: >-
 
 # Dashboard
 
+## Overview
+
 The Queue Management Dashboard displays an overview of your ProcessMaker 4 server's status. The Dashboard displays by default in Queue Management.
 
 Follow these steps to view the Queue Management Dashboard:
@@ -18,7 +20,7 @@ Follow these steps to view the Queue Management Dashboard:
 Click **Dashboard** to view the Dashboard from another Queue Management page.
 {% endhint %}
 
-![Queue Management Dashboard](../../.gitbook/assets/laravel-horizon-queue-management-dashboard-overview-admin.png)
+![Queue Management Dashboard displays an overview of ProcessMaker job and queue metrics](../../.gitbook/assets/laravel-horizon-queue-management-dashboard-overview-admin.png)
 
 The Dashboard displays in the **Overview** panel the following metrics about your ProcessMaker server:
 
@@ -29,17 +31,24 @@ The Dashboard displays in the **Overview** panel the following metrics about you
   * **Active:** The ProcessMaker 4 server is active.
   * **Inactive:** The ProcessMaker 4 server is inactive.
   * **Error:** The ProcessMaker 4 server has an error.
-* **Total Processes:** The **Total Processes** metric displays how many computer server processes ProcessMaker 4's server is using.
+* **Total Processes:** The **Total Processes** metric displays how many computer server processes the job queue is using.
 * **Max Wait Time:** The **Max Wait Time** metric displays the maximum wait time ~~\(in what units of time?\)~~ the queue has required to run a recent job. ~~If the wait time is negligible, then this metric displays the following: **-**.~~
-* **Max Runtime:** The **Max Runtime** metric displays the maximum runtime to run a queued job ~~\(in what units of time?\)~~. ~~If the maximum runtime is negligible, then this metric displays the following: **default**.~~
-* **Max Throughput:** The **Max Throughput** metric displays the maximum queue throughput \(in what units?\). ~~If the maximum throughput is negligible, then this metric displays the following: **default**.~~
+* **Max Runtime:** The **Max Runtime** metric displays the ~~name of the job queue that has the maximum runtime~~.
+* **Max Throughput:** The **Max Throughput** metric displays the ~~name of the job queue that has the maximum throughput~~.
 
-The Dashboard displays in the **Current Workload** panel the following information about your ProcessMaker server:
+The Dashboard displays in the **Current Workload** panel the following information about the jobs queue:
 
-* Queue: 
-* Processes: 
-* Jobs: 
-* Wait: 
+* **Queue:** The **Queue** column displays the name of the jobs queue.
+* **Processes:** The **Processes** column displays how many computer server processes the job queue is using.
+* **Jobs:** The **Jobs** column displays how many jobs are active presently.
+* **Wait:** The **Wait** column displays an indicator of how much time is required to run all jobs in the queue.
+
+The Dashboard displays a panel labeled with the name of the ProcessMaker 4 server that contains the following information:
+
+* **Supervisor:** The **Supervisor** column displays ~~the computer server username that manages the ProcessMaker 4 server~~.
+* **Processes:** The **Processes** column displays how many computer server processes the job queue is using.
+* **Queues:** The **Queues** column displays the name\(s\) of the job queue\(s\).
+* **Balancing:** The **Balancing** column displays the balancing strategy to manage jobs in the queue\(s\). The  Simple strategy splits incoming jobs evenly between computer server processes.
 
 ## Related Topics
 
