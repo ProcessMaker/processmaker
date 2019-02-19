@@ -74,3 +74,9 @@ After that user's avatar is selected, that person's profile information displays
 Hover your mouse over a user's avatar to view that person's full name.
 {% endhint %}
 
+## Related Topics
+
+{% page-ref page="application-version-details.md" %}
+
+{% page-ref page="log-out.md" %}
+

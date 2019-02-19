@@ -23,5 +23,9 @@ Click **Report an issue** to [report a ProcessMaker issue](https://github.com/Pr
 Click **Get Help** to display the [ProcessMaker's **bpm** GitHub repository page](https://github.com/ProcessMaker/bpm).
 {% endhint %}
 
+## Related Topics
 
+{% page-ref page="profile-settings.md" %}
+
+{% page-ref page="log-out.md" %}
 

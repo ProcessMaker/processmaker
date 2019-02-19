@@ -54,3 +54,11 @@ Follow these steps to log in to ProcessMaker:
 6. After you click the link in that email to reset your password, click the **Back to Login link** to return to the log in page.
 7. Log in to ProcessMaker as described in [Log In](log-in.md#log-in).
 
+## Related Topics
+
+{% page-ref page="profile-settings.md" %}
+
+{% page-ref page="application-version-details.md" %}
+
+{% page-ref page="log-out.md" %}
+

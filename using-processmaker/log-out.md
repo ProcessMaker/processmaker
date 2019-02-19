@@ -10,3 +10,9 @@ Click your user avatar, and then select **Log Out**.
 
 You are logged out of ProcessMaker.
 
+## Related Topics
+
+{% page-ref page="profile-settings.md" %}
+
+{% page-ref page="application-version-details.md" %}
+
