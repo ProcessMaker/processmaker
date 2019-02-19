@@ -22,10 +22,15 @@ class CreateScreensTable extends Migration
             $table->string('type', 20)->default('FORM');
             $table->json('config')->nullable();
             $table->json('computed')->nullable();
+            $table->text('custom_css')->nullable();
             $table->timestamps();
 
             // Indexes
             $table->index('screen_category_id');
+
+        });
+        Schema::table('processes', function($table) {
+            $table->foreign('cancel_screen_id')->references('id')->on('screens');
         });
     }
 
@@ -36,6 +41,9 @@ class CreateScreensTable extends Migration
      */
     public function down()
     {
+        Schema::table('processes', function($table) {
+            $table->dropForeign(['cancel_screen_id']);
+        });
         Schema::dropIfExists('screens');
     }
 }

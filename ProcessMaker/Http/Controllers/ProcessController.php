@@ -60,8 +60,8 @@ class ProcessController extends Controller
             ->get()
             ->pluck('name', 'id')
             ->toArray();
-        
         $screens = Screen::orderBy('title')
+            ->where('type', 'DISPLAY')
             ->get()
             ->pluck('title', 'id')
             ->toArray();

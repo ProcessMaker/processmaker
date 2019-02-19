@@ -22,6 +22,7 @@ class CreateScreenVersionsTable extends Migration
             $table->string('type', 20)->default('FORM');
             $table->json('config')->nullable();
             $table->json('computed')->nullable();
+            $table->text('custom_css')->nullable();
             $table->timestamps();
 
             $table->foreign('screen_id')->references('id')->on('screens')->onDelete('cascade');
