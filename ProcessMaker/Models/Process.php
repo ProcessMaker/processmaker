@@ -497,6 +497,17 @@ class Process extends Model implements HasMedia
         return $response;
     }
 
+    public function getIntermediateCatchEvents()
+    {
+        $definitions = $this->getDefinitions();
+        $response = [];
+        $catchEvents = $definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'intermediateCatchEvent');
+        foreach ($catchEvents as $catchEvent) {
+            $response[] = $catchEvent->getBpmnElementInstance()->getProperties();
+        }
+        return $response;
+    }
+
 
     public function setBpmnAttribute($value)
     {

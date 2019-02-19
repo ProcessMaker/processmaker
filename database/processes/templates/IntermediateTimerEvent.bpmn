@@ -18,7 +18,10 @@
       <incoming>_9</incoming>
       <outgoing>_10</outgoing>
       <outputSet/>
-      <timerEventDefinition id="_5_ED_1"/>
+      <timerEventDefinition id="_5_ED_1">
+          <timeCycle>2019-02-14T14:00-04:00|R/2019-02-18T14:00-04:00/P1W|R/2019-02-19T14:00-04:00/P1W|R/2019-02-20T14:00
+       -04:00/P1W|R/2019-02-14T14:00-04:00/P1W</timeCycle>
+      </timerEventDefinition>
     </intermediateCatchEvent>
     <task completionQuantity="1" id="_6" isForCompensation="false" name="Task2" startQuantity="1">
       <incoming>_10</incoming>
