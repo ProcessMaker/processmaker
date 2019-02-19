@@ -4,6 +4,7 @@ namespace ProcessMaker\Managers;
 
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Jobs\CallProcess;
+use ProcessMaker\Jobs\CatchEvent;
 use ProcessMaker\Jobs\CompleteActivity;
 use ProcessMaker\Jobs\RunScriptTask;
 use ProcessMaker\Jobs\RunServiceTask;
@@ -31,6 +32,12 @@ class WorkflowManager
     public function completeTask(Definitions $definitions, ExecutionInstanceInterface $instance, TokenInterface $token, array $data)
     {
         CompleteActivity::dispatchNow($definitions, $instance, $token, $data);
+    }
+
+    public function completeCatchEvent(Definitions $definitions, ExecutionInstanceInterface $instance, TokenInterface
+    $token, array $data)
+    {
+        CatchEvent::dispatchNow($definitions, $instance, $token, $data);
     }
 
     /**
