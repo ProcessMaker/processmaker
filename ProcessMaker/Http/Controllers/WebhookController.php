@@ -30,6 +30,12 @@ class WebhookController extends Controller
 
         //Trigger the start event
         $processRequest = WorkflowManager::triggerStartEvent($webhook->process, $event, $data);
-        return new ProcessRequestsResource($processRequest);
+
+        if ($request->header('accept') !== null && strcasecmp($request->header('accept'), 'application/json') === 0) {
+            return new ProcessRequestsResource($processRequest);
+        }
+        else {
+            return view('webhook.success');
+        }
     }
 }

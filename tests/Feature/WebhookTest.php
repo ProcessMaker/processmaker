@@ -20,7 +20,7 @@ class WebhookTest extends TestCase
             'token' => 'abc123',
         ]);
 
-        $response = $this->post($webhook->url(), ['someData' => 'something']); 
+        $response = $this->post($webhook->url(), ['someData' => 'something'], ['Accept' => 'application/json']);
         $response->assertStatus(201);
         
         $request = $process->requests->first();
