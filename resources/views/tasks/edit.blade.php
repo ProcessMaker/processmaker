@@ -129,8 +129,9 @@
                             </a>
                             <br><br>
                             <h5>{{__('Requested By')}}</h5>
-                            <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
+                            <avatar-image v-if="userRequested" size="32" class="d-inline-flex pull-left align-items-center"
                                       :input-data="userRequested"></avatar-image>
+                            <p v-if="!userRequested">{{__('Webhook')}}</p>
                         </li>
                     </ul>
                 </div>
