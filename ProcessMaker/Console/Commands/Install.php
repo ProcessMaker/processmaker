@@ -122,9 +122,12 @@ class Install extends Command
 
         // Set it as our url in our config
         config(['app.url' => $this->env['APP_URL']]);
+        
+        // Confirm whether the user would like to seed default groups
+        $seedDefaultGroups = $this->confirm(__('Would you like default user groups to be set up?'), true);
 
         //Confirm the user would like to setup their email
-        if ($this->confirm('Would you like to setup email options?')) {
+        if ($this->confirm(__('Would you like to setup email options?'))) {
             //Fetch from name & email from the user
             $this->fetchEmailFromInfo();
             
@@ -153,6 +156,13 @@ class Install extends Command
         $this->call('migrate:fresh', [
             '--seed' => true,
         ]);
+        
+        // Seed default user groups if desired
+        if ($seedDefaultGroups) {
+            $this->call('db:seed', [
+                '--class' => 'DefaultGroupSeeder',
+            ]);        
+        }
 
         // Generate passport secure keys and personal token oauth client
         $this->call('passport:install', [
