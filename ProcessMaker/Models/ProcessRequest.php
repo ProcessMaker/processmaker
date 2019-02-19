@@ -5,7 +5,9 @@ namespace ProcessMaker\Models;
 use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
+use ProcessMaker\Managers\TaskSchedulerManager;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
@@ -125,6 +127,17 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     {
         parent::__construct($argument);
         $this->bootElement([]);
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saved(function ($model) {
+            $manager = new TaskSchedulerManager();
+            Log::info ('ProcessRequest Token savedddddd....');
+            $manager->registerIntermediateTimerEvents($model);
+        });
     }
 
     /**

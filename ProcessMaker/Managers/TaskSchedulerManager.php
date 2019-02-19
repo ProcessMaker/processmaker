@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ScheduledTask;
 use ProcessMaker\Nayra\Bpmn\Models\TimerEventDefinition;
 use ProcessMaker\Nayra\Contracts\Bpmn\EntityInterface;
@@ -28,7 +30,9 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      */
     public function registerTimerEvents(Process $process)
     {
-        ScheduledTask::where('process_id', $process->id)->delete();
+        ScheduledTask::where('process_id', $process->id)
+                        ->where('type', 'TIMER_START_EVENT')
+                        ->delete();
 
         foreach ($process->getStartEvents() as $startEvent) {
             if (key_exists('eventDefinitions', $startEvent) && $startEvent['eventDefinitions']->count() > 0) {
@@ -85,8 +89,74 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         }
     }
 
-   public function scheduleTasks(Schedule $schedule)
-   {
+
+    public function registerIntermediateTimerEvents(ProcessRequest $request)
+    {
+
+        $process = $request->process;
+
+        ScheduledTask::where('process_id', $process->id)
+                        ->where('type', 'INTERMEDIATE_TIMER_EVENT')
+                        ->delete();
+
+        foreach ($process->getIntermediateCatchEvents() as $timerEvent) {
+            if (key_exists('eventDefinitions', $timerEvent) && $timerEvent['eventDefinitions']->count() > 0) {
+                foreach($timerEvent['eventDefinitions'] as $eventDefinition) {
+                    // here we just register Timer Events
+                    if (get_class($eventDefinition) !== TimerEventDefinition::class) {
+                        continue;
+                    }
+
+                    $timeDate = $eventDefinition->getTimeDate();
+                    $timeCycle = $eventDefinition->getTimeCycle();
+                    $timeDuration = $eventDefinition->getTimeDuration();
+
+                    $timeEventType = '';
+                    $period = null;
+                    $intervals = [];
+
+                    if ($timeDate && empty($timeEventType)) {
+                        $timeEventType = 'TimeDate';
+                        $period = $eventDefinition->getTimeDate()->getBody();
+                    }
+
+                    if ($timeCycle && empty($timeEventType)) {
+                        $timeEventType = 'TimeCycle';
+                        $period = $eventDefinition->getTimeCycle()->getBody();
+                        $intervals = explode('|', $period);
+                    }
+
+                    if ($timeDuration && empty($timeEventType)) {
+                        $timeEventType = 'TimeDuration';
+                        $period = $eventDefinition->getTimeDuration()->getBody();
+                    }
+
+                    $init = $period[0] === 'R' ? 0 : 1;
+                    for ($i = $init; $i < count($intervals); $i++) {
+                        $parts = $this->getIntervalParts($intervals[$i]);
+                        $configuration = [
+                            'type' => $timeEventType,
+                            'interval' => $parts['repetitions']. '/'. $parts['firstDate'] . '/' . $parts['interval'],
+                            'element_id' => $timerEvent['id']
+                        ];
+
+                        $scheduledTask = new ScheduledTask();
+                        $scheduledTask->process_id = $process->id;
+                        $scheduledTask->process_request_id = $request->id;
+                        $scheduledTask->configuration = json_encode($configuration);
+                        $scheduledTask->type = 'INTERMEDIATE_TIMER_EVENT';
+                        $scheduledTask->last_execution = (new \DateTime())
+                                                            ->setTimezone(new DateTimeZone('UTC'))
+                                                            ->format('Y-m-d H:i:s');
+                        $scheduledTask->save();
+                    }
+                }
+            }
+        }
+    }
+
+    public function scheduleTasks(Schedule $schedule)
+    {
        try {
            if (!Schema::hasTable('scheduled_tasks')) {
                return;
