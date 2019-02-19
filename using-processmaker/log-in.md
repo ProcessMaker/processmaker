@@ -1,10 +1,10 @@
 ---
-description: Log in to ProcessMaker using your ProcessMaker credentials.
+description: Log in to ProcessMaker 4 using your ProcessMaker credentials.
 ---
 
 # Log In to ProcessMaker
 
-
+## Log In
 
 {% hint style="info" %}
 Please contact your ProcessMaker Administrator if you do not know either of the following:
@@ -15,9 +15,7 @@ Please contact your ProcessMaker Administrator if you do not know either of the 
 Did you forget your password? See [Reset Your Password](log-in.md#reset-your-password).
 {% endhint %}
 
-## Log In
-
-Follow these steps to log in to ProcessMaker:
+Follow these steps to log in to ProcessMaker 4:
 
 1. Enter the IP address \(or domain name\) and port number for the server or instance hosting ProcessMaker in a [supported web browser](../install-processmaker/prerequisites.md#supported-browsers). Follow these guidelines:
 

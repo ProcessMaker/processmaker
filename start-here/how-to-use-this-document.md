@@ -1,16 +1,12 @@
 ---
-description: >-
-  Learn how information is organized in this document to help you get started
-  faster.
+description: Welcome to ProcessMaker 4 documentation. This is a good place to start.
 ---
 
 # How to Use This Document
 
-Welcome to ProcessMaker 4 documentation. This is a good place to start.
-
 ## Use This Document Based on How You Use ProcessMaker
 
-Refer to the topics throughout this document based on how you use ProcessMaker:
+This document is organized based on how different roles use ProcessMaker 4. Refer to the following roles:
 
 * [ProcessMaker Administrator](how-to-use-this-document.md#processmaker-administrator)
 * [Process Owner](how-to-use-this-document.md#process-owner)
@@ -24,21 +20,21 @@ A ProcessMaker Administrator installs ProcessMaker on-premises and performs admi
 Refer to the **Install ProcessMaker** section that includes the following topics:
 
 * [Requirements](../install-processmaker/prerequisites.md)
-* [Install ProcessMaker]()
+* [Install Required Software and ProcessMaker 4](../install-processmaker/install-required-software.md)
 
 Refer to the **ProcessMaker Administration** section that includes the following topics:
 
 * [User Management](../processmaker-administration/add-users/)
 * [Group Management](../processmaker-administration/assign-groups-to-users/)
-* [ProcessMaker Preferences]()
-* [View ProcessMaker Version Information](../using-processmaker/application-version-details.md)
+* [Permission Descriptions for Users and Groups](../processmaker-administration/permission-descriptions-for-users-and-groups.md)
+* [Client Authentication Management](../processmaker-administration/auth-client-management/)
 * [Queue Management](../processmaker-administration/queue-management/)
 
 ### Process Owner
 
 A Process Owner creates and maintains ProcessMaker processes that both people and ProcessMaker Scripts use to make Requests.
 
-~~Refer to the~~ [~~Getting Started Guide~~](getting-started-guide.md) ~~for help in developing your first process. This is not available for the internal beta~~.
+~~Refer to the~~ [~~Getting Started Guide~~](getting-started-guide.md) ~~for help in developing your first process. This is not available for internal Beta releases~~.
 
 Refer to the **Manage and Model Processes** section that includes the following topics:
 
@@ -52,7 +48,7 @@ Refer to the **Manage and Model Processes** section that includes the following 
 
 A ProcessMaker Developer extends out-of-the-box ProcessMaker functionality in the following ways:
 
-* Develop ProcessMaker Scripts that Process Owners use in business processes.
+* Develop ProcessMaker Scripts that Process Owners use in Processes.
 * Develop Connectors that perform custom functions, and then package those Connectors for distribution.
 
 Refer to the [Script Management](../designing-processes/scripts/) section, especially the [Scripts Editor](../designing-processes/scripts/scripts-editor.md) topic.
@@ -68,15 +64,17 @@ A ProcessMaker user is a person whose only interaction with ProcessMaker is to s
 Refer to the **Using ProcessMaker** section that includes the following topics:
 
 * [Log In to ProcessMaker](../using-processmaker/log-in.md)
+* [Profile Settings](../using-processmaker/profile-settings.md)
+* [View ProcessMaker Version Information](../using-processmaker/application-version-details.md)
+* [Log Out of ProcessMaker](../using-processmaker/log-out.md)
 * [Requests](../using-processmaker/requests/)
 * [Task Management](../using-processmaker/task-management/)
 * [Notifications](../using-processmaker/notifications.md)
 * [Control How Tabular Information Displays](../using-processmaker/control-how-requests-display-in-a-tab.md)
-* [Log Out of ProcessMaker](../using-processmaker/log-out.md)
 
 ## Document Conventions
 
-This document uses different font styles, types, and weights to represent categories of information. These conventions are used in paragraphs and do not represent style variations in document titles or headers, nor standard document conventions such as for hyperlinks.
+This document uses different font styles, types, and weights to represent types of information. These conventions are used in paragraphs and do not represent style variations in document titles or headers, nor standard document conventions such as for hyperlinks.
 
 The table below describes these document conventions.
 
