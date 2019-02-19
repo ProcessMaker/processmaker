@@ -19,12 +19,14 @@ import ExpressionEditor from './components/inspector/ExpressionEditor';
 import TaskAssignment from './components/inspector/TaskAssignment';
 import ConfigEditor from './components/inspector/ConfigEditor';
 import ScriptSelect from './components/inspector/ScriptSelect';
+import Webhook from './components/inspector/Webhook';
 
 Vue.component('ModelerScreenSelect', ModelerScreenSelect);
 Vue.component('ExpressionEditor', ExpressionEditor);
 Vue.component('TaskAssignment', TaskAssignment);
 Vue.component('ConfigEditor', ConfigEditor);
 Vue.component('ScriptSelect', ScriptSelect);
+Vue.component('Webhook', Webhook);
 
 let nodeTypes = [
     startEvent,
@@ -58,6 +60,16 @@ ProcessMaker.EventBus.$on('modeler-init', ({registerNode, registerBpmnExtension,
 
     /* Add a BPMN extension */
     registerBpmnExtension('pm', bpmnExtension);
+    
+    /* Register extension for webhooks */
+    registerInspectorExtension(startEvent, {
+        component: 'Webhook',
+        config: {
+            label: 'Webhook',
+            helper: '',
+            name: ''
+        }
+    });
 
     /* Register the inspector extensions for tasks */
     registerInspectorExtension(task, {

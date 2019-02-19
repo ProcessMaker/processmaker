@@ -171,8 +171,9 @@
                         <ul class="list-group list-group-flush w-100">
                             <li class="list-group-item">
                                 <h5>{{__('Requested By')}}</h5>
-                                <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
+                                <avatar-image v-if="userRequested" size="32" class="d-inline-flex pull-left align-items-center"
                                               :input-data="requestBy" display-name="true"></avatar-image>
+                                <span v-if="!userRequested">{{__('Webhook')}}</span>
                             </li>
                             
                             @if($canCancel == true)
