@@ -226,6 +226,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
        }
 
        $process = Process::find($id);
+       $request = ProcessRequest::find($task->process_request_id);
 
        $definitions = $process->getDefinitions();
        if (!$definitions->findElementById($config->element_id)) {
@@ -236,6 +237,9 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 
 //       WorkflowManager::triggerStartEvent($process, $event, $data);
        //WorkflowManager::completeTask($event, );
+
+        $catch = $request->tokens()->where('element_id', '_5')->first();
+        WorkflowManager::completeCatchEvent($process, $request, $catch, []);
    }
 
    public function nextDate($currentDate, $nayraInterval, $firstOccurrenceDate = null)

@@ -91,17 +91,18 @@ class IntermediateTimerEventTest extends TestCase
         $request = WorkflowManager::triggerStartEvent($process, $startEvent, []);
         $task1 = $request->tokens()->where('element_id', '_3')->first();
         WorkflowManager::completeTask($process, $request, $task1, []);
-        $catch = $request->tokens()->where('element_id', '_5')->first();
-        WorkflowManager::completeCatchEvent($process, $request, $catch, []);
+//        $catch = $request->tokens()->where('element_id', '_5')->first();
+//        WorkflowManager::completeCatchEvent($process, $request, $catch, []);
 
 
-//        $manager = new TaskSchedulerManager();
+        $manager = new TaskSchedulerManager();
 //
-//        $task = new ScheduledTask();
-//        $task->process_id = $process->id;
-//        $task->configuration = '{"type":"TimeCycle","interval":"R4\/2019-02-13T13:08:00Z\/PT1M", "element_id" : "_9"}';
-//        $task->type= 'INTERMEDIATE_TIMER_EVENT';
-//        $manager->executeTimerStartEvent($task, json_decode($task->configuration));
+        $task = new ScheduledTask();
+        $task->process_id = $process->id;
+        $task->process_request_id = $request->id;
+        $task->configuration = '{"type":"TimeCycle","interval":"R4\/2019-02-13T13:08:00Z\/PT1M", "element_id" : "_9"}';
+        $task->type= 'INTERMEDIATE_TIMER_EVENT';
+        $manager->executeIntermediateTimerEvent($task, json_decode($task->configuration));
 
         // If no exception has been thrown, this assertion will be executed
         $this->assertTrue(true);
