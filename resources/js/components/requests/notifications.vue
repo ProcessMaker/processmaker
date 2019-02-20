@@ -96,12 +96,13 @@
                 return moment(iso8601).format("MM/DD/YY HH:mm");
             },
             removeAll() {
-                let notifications = [];
-                ProcessMaker.notifications.forEach(item => {
-                    notifications.push(item.id)
+              let that = this;
+              //Remove all notification of current user
+              ProcessMaker.apiClient.put('/read_all_notifications', {id: ProcessMaker.user.id, type: 'ProcessMaker\\Models\\User'})
+                .then(() => {
+                  ProcessMaker.notifications.splice(0, ProcessMaker.notifications.length);
+                  that.totalMessages = 0;
                 });
-                ProcessMaker.removeNotifications(notifications);
-                this.totalMessages = 0;
             }
         },
         mounted() {

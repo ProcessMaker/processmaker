@@ -326,4 +326,50 @@ class NotificationController extends Controller
             ->update(['read_at' => null]);
         return response($updated, 201);
     }
+
+
+    /**
+     * Update all notification as read.
+     *
+     * @param Request $request
+     *
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     *
+     * @OA\Put(
+     *     path="/read_all_notifications",
+     *     summary="Mark notifications as read by id and type",
+     *     tags={"Notifications"},
+     *
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(
+     *          @OA\Property(
+     *              property="id",
+     *              type="integer",
+     *              description="Polymorphic relation id",
+     *              @OA\Items (type="integer")),
+     *          @OA\Property(
+     *              property="type",
+     *              type="string",
+     *              description="Polymorphic relation type",
+     *              @OA\Items (type="string"))
+     *       ),
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="success",
+     *     ),
+     * )
+     */
+    public function updateAsReadAll(Request $request)
+    {
+        $id = $request->input('id');
+        $type = $request->input('type');
+
+        DB::table('notifications')
+            ->where('notifiable_id', $id)
+            ->where('notifiable_type', $type)
+            ->update(['read_at' => Carbon::now()]);
+        return response([], 201);
+    }
 }
