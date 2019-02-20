@@ -12,7 +12,7 @@
                     class="form-control"
                     :value="assignmentGetter"
                     @input="assignmentSetter">
-                <option value="requestor">To requestor</option>
+                <option value="requester">To requester</option>
                 <option value="user">To user</option>
                 <option value="group">To group</option>
                 <option value="previous_task_assignee">Previous task assignee</option>
@@ -61,7 +61,7 @@
                         v-model="typeAssignmentExpression"
                 >
                     <option value=""></option>
-                    <option value="requestor">To requestor</option>
+                    <option value="requester">To requester</option>
                     <option value="user">To user</option>
                     <option value="group">To group</option>
                 </select>
@@ -298,7 +298,7 @@
             },
 
             getAssigneeName(assignment) {
-                if (assignment.type === 'requestor') {
+                if (assignment.type === 'requester') {
                     return '';
                 }
 
