@@ -40,6 +40,7 @@ Route::group(
     Route::get('screens/{screen}', 'ScreenController@show')->name('screens.show')->middleware('can:view-screens');
     Route::post('screens', 'ScreenController@store')->name('screens.store')->middleware('can:create-screens');
     Route::put('screens/{screen}', 'ScreenController@update')->name('screens.update')->middleware('can:edit-screens');
+    Route::put('screens/{screen}/duplicate', 'ScreenController@duplicate')->name('screens.duplicate')->middleware('can:create-screens');
     Route::delete('screens/{screen}', 'ScreenController@destroy')->name('screens.destroy')->middleware('can:delete-screens');
     
     // Screen Categories

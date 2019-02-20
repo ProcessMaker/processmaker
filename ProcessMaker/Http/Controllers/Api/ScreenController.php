@@ -198,6 +198,44 @@ class ScreenController extends Controller
     }
 
     /**
+     * duplicate a Screen.
+     *
+     * @param Screen $screen
+     * @param Request $request
+     *
+     * @return ResponseFactory|Response
+     *
+     *     @OA\Put(
+     *     path="/screens/screensId",
+     *     summary="duplicate a screen",
+     *     operationId="updateScreen",
+     *     tags={"Screens"},
+     *     @OA\Parameter(
+     *         description="ID of screen to return",
+     *         in="path",
+     *         name="screens_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(ref="#/components/schemas/screensEditable")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/screens")
+     *     ),
+     * )
+     */
+    public function duplicate(Screen $screen, Request $request)
+    {
+        dd('HERE');
+    }
+
+    /**
      * Delete a Screen.
      *
      * @param Screen $screen
