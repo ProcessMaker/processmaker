@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-    {{__('Edit Screens')}}
+    {{__('Configure Screen')}}
 @endsection
 
 @section('sidebar')
@@ -12,7 +12,7 @@
     @include('shared.breadcrumbs', ['routes' => [
         __('Processes') => route('processes.index'),
         __('Screens') => route('screens.index'),
-        __('Edit') . " " . $screen->title => null,
+        __('Configure') . " " . $screen->title => null,
     ]])
     <div class="container" id="editGroup">
         <div class="row">

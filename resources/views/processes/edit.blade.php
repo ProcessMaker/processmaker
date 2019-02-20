@@ -1,7 +1,7 @@
 @extends('layouts.layout', ['title' => __('Processes Management')])
 
 @section('title')
-{{__('Edit Process')}}
+{{__('Configure Process')}}
 @endsection
 
 @section('sidebar')
@@ -11,7 +11,7 @@
 @section('content')
 @include('shared.breadcrumbs', ['routes' => [
     __('Processes') => route('processes.index'),
-    __('Edit') . " " . $process->name => null,
+    __('Configure') . " " . $process->name => null,
 ]])
 <div class="container" id="editProcess">
     <div class="row">

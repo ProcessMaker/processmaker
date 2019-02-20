@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-    {{__('Edit Environment Variables')}}
+    {{__('Edit Environment Variable')}}
 @endsection
 
 @section('sidebar')

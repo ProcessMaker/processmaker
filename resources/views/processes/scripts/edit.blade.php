@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-    {{__('Edit Scripts')}}
+    {{__('Configure Script')}}
 @endsection
 
 @section('sidebar')
@@ -12,7 +12,7 @@
     @include('shared.breadcrumbs', ['routes' => [
         __('Processes') => route('processes.index'),
         __('Scripts') => route('scripts.index'),
-        __('Edit') . " " . $script->title => null,
+        __('Configure') . " " . $script->title => null,
     ]])
     <div class="container" id="editScript">
         <div class="row">
