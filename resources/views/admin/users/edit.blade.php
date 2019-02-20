@@ -241,8 +241,8 @@
                                 Loading groups...
                             </div>
                             <div slot="modal-footer" class="w-100">
-                                <button class="float-right btn btn-secondary ml-2" variant="primary" @click="saveUserToGroup">Save</button>
-                                <button class="float-right btn btn-outline-secondary ml-2" variant="primary" @click="hideGroupsModal">Close</button>
+                                <button class="float-right btn btn-secondary ml-2" @click="saveUserToGroup">Save</button>
+                                <button class="float-right btn btn-outline-secondary ml-2" @click="hideGroupsModal">Close</button>
                             </div>
                         </b-modal>
 
