@@ -135,7 +135,7 @@
                                     <thead>
                                         <tr>
                                             <th>{{__('File Name')}}</th>
-                                            <th>{{__('Mime Type')}}</th>
+                                            <th>{{__('MIME Type')}}</th>
                                             <th>{{__('Created At')}}</th>
                                         </tr>
                                     </thead>
