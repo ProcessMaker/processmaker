@@ -98,3 +98,5 @@ $this->get('password/success', function () {
     return view('auth.passwords.success', ['title' => __('Password Reset')]);
 })->name('password-success');
 
+// Public webhook entry (verified by token in controller)
+$this->post('webhook/start_event', 'WebhookController@startEvent')->name('webhook.start_event');
