@@ -21,8 +21,8 @@
                     <h5>{{__('Import Process')}}</h5>
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title">{{__('You are about to import a Process')}}</h5>
-                    <p class="card-text">{{__('User assignments and sensitive')}} <a href="environment-variables" >{{__('environment variables')}}</a> {{__('will not be imported.')}}</p> 
+                    <h5 class="card-title">{{__('You are about to import a Process.')}}</h5>
+                    <p class="card-text">{{__('User assignments and sensitive environment variables will not be imported.')}}</p> 
                     <input type="file" ref="file" class="d-none" @change="handleFile" accept=".bpm4">
                     <button @click="$refs.file.click()" class="btn btn-secondary ml-2">
                         <i class="fas fa-upload"></i>

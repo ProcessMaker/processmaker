@@ -21,8 +21,8 @@
                     <h5>{{__('Export Process')}}</h5>
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title">{{__('You are about to Export a Process')}}</h5>
-                    <p class="card-text">{{__('Your sensitive user or environment data will not be included in the export.')}}</p> 
+                    <h5 class="card-title">{{__('You are about to export a Process.')}}</h5>
+                    <p class="card-text">{{__('User assignments and sensitive environment variables will not be exported.')}}</p> 
                 </div>
                 <div class="card-footer bg-light" align="right">
                     <button type="button" class="btn btn-outline-secondary" @click="onCancel">{{__('Cancel')}}</button>
