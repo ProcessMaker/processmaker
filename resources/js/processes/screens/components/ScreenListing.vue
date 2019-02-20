@@ -27,7 +27,7 @@
                 variant="link"
                 @click="onAction('edit-screen', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Open Editor"
+                title="Edit"
                 v-if="permission.includes('edit-screens')"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
@@ -36,7 +36,7 @@
                 variant="link"
                 @click="onAction('edit-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Config"
+                title="Configure"
                 v-if="permission.includes('edit-screens')"
               >
                 <i class="fas fa-cog fa-lg fa-fw"></i>
