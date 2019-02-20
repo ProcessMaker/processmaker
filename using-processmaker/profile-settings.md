@@ -30,7 +30,7 @@ Follow these steps to change your profile settings:
 
    ![](../.gitbook/assets/profile-page.png)
 
-2. The ProcessMaker Administrator may have entered some profile settings when your user account was created. Follow these guidelines to change your profile information if necessary:
+2. The ProcessMaker Administrator may have entered some profile settings when your [user account was created](../processmaker-administration/add-users/create-a-user-account.md#create-a-processmaker-user-account). Follow these guidelines to change your profile information as necessary:
    * In the **Name** section, change the following information:
      * In the **First Name** field, enter your first name.
      * In the **Last Name** field, enter your last name.

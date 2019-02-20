@@ -23,20 +23,20 @@ Follow these steps to log in to ProcessMaker 4:
 
    For example, if running ProcessMaker at the IP address 192.168.1.110 from the port 3018, then enter: `http://192.168.1.110:3018`.
 
-   The ProcessMaker log in page displays.  
+   If the web address is correct, the ProcessMaker log in page displays.  
 
    ![](../.gitbook/assets/pm4-log-in-screen.png)
 
-2. Enter your ProcessMaker username in the **Username** field.
-3. Enter your ProcessMaker password in the **Password** field.
-4. Click the **Remember me** check box to not enter your log in credentials in the future.
-5. Click **LOG IN**.
+2. In the **Username** field, enter your ProcessMaker username.
+3. In the **Password** field, enter your ProcessMaker password.
+4. Optionally, select the **Remember me** check box to not enter your log in credentials in the future.
+5. Click **Log In**. If the log in credentials are correct, the [**My Requests**](requests/view-started-requests.md#view-requests-you-started) page displays.
 
 ## Reset Your Password
 
-Follow these steps to log in to ProcessMaker:
+Follow these steps to reset your ProcessMaker 4 password:
 
-1. Access the ProcessMaker log in page as described in [Log In](log-in.md#log-in).
+1. Access the ProcessMaker log in page as described in [Log In](log-in.md#log-in). If you do not know the web address to access the ProcessMaker log in page, ask your ProcessMaker Administrator for assistance.
 2. Click the **Forgot Password?** link as highlighted below.  
 
    ![](../.gitbook/assets/forgot-password-link.png)
@@ -45,14 +45,14 @@ Follow these steps to log in to ProcessMaker:
 
    ![](../.gitbook/assets/forgot-password-screen.png)
 
-3. Enter the email address to which to send a reset link in the **Email Address** field.
+3. In the **Email Address** field, enter the email address to which to send a reset link.
 
    If you enter an email address which your ProcessMaker instance does not recognize, the following message displays in red-colored text below the **Email Address** field: **We can't find a user with that email address**.
 
 4. Click **Request Reset Link**.
 5. Check your email for the instructions to reset your password.
-6. After you click the link in that email to reset your password, click the **Back to Login link** to return to the log in page.
-7. Log in to ProcessMaker as described in [Log In](log-in.md#log-in).
+6. After you select the link in that email to reset your password, click the **Back to Login** link to return to the log in page.
+7. Log in to ProcessMaker 4 as described in [Log In](log-in.md#log-in).
 
 ## Related Topics
 
