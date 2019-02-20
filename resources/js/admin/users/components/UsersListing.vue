@@ -28,7 +28,7 @@
                 variant="link"
                 @click="onAction('remove-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Remove"
+                title="Delete"
                 v-if="permission.includes('delete-users')"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
@@ -137,13 +137,13 @@ export default {
         case "remove-item":
           ProcessMaker.confirmModal(
             "Caution!",
-            "<b>Are you sure to inactive the user </b>" + data.fullname + "?",
+            "<b>Are you sure you want to delete the user </b>" + data.fullname + "?",
             "",
             () => {
               ProcessMaker.apiClient
                 .delete("users/" + data.id)
                 .then(response => {
-                  ProcessMaker.alert("User Marked As Deleted", "warning");
+                  ProcessMaker.alert("The user was deleted.", "warning");
                   this.$emit("reload");
                 });
             }

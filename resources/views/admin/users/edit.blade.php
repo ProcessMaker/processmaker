@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-{{__('Edit Users')}}
+{{__('Edit User')}}
 @endsection
 
 @section('sidebar')
@@ -235,17 +235,21 @@
                     </div>
                     <div class="tab-pane fade show" id="nav-groups" role="tabpanel" aria-labelledby="nav-groups-tab">
 
-                        <b-modal size="md" id="modal2" ref="addUserToGroup" title="{{ __('Add User To Group') }}" @ok="saveUserToGroup" {{'@'}}show="loadGroups">
+                        <b-modal size="md" id="modal2" ref="addUserToGroup" title="{{ __('Add User to Group') }}" @ok="saveUserToGroup" {{'@'}}show="loadGroups">
                             <b-form-select v-if="groups.length > 0" v-model="selectedGroup" :options="groups" class="mb-3"></b-form-select>
                             <div v-if="groups.length == 0">
                                 Loading groups...
+                            </div>
+                            <div slot="modal-footer" class="w-100">
+                                <button class="float-right btn btn-secondary ml-2" variant="primary" @click="saveUserToGroup">Save</button>
+                                <button class="float-right btn btn-outline-secondary ml-2" variant="primary" @click="hideGroupsModal">Close</button>
                             </div>
                         </b-modal>
 
                         <div class="col-12" align="right">
                             <b-btn v-b-modal.modal2>
-                                <i class="fas fa-plus"></i>
-                                {{ __('Add User To Group') }}
+                                <i class="fas fa-plus-circle"></i>
+                                {{ __('Add User to Group') }}
                             </b-btn>
                         </div>
 
@@ -295,9 +299,10 @@
                                 </tbody>
                             </table>
                             <div class="form-group" v-if="newToken != null">
-                                <div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i> Make
-                                    sure
-                                    you copy your access token now. You won't be able to see it again.</div>
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    Make sure to copy your access token now. You won't be able to see it again.
+                                </div>
                                 <button @click="copyTextArea" class="btn btn-secondary"><i class="fas fa-paste"></i>
                                     Copy Token To Clipboard</button>
                                 <textarea ref="text" style="height: 400px" class="form-control">@{{ newToken.accessToken }}</textarea>
@@ -457,7 +462,7 @@
         mounted() {
                 let created = (new URLSearchParams(window.location.search)).get('created');
                 if (created) {
-                    ProcessMaker.alert('{{__('The user was successfully created')}}', 'success');
+                    ProcessMaker.alert('{{__('The user was created.')}}', 'success');
                 }
             this.loadTokens();
         },
@@ -526,7 +531,7 @@
                 if (!this.validatePassword()) return false;
                 ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData, { context: this })
                     .then(response => {
-                        ProcessMaker.alert('{{__('User Updated Successfully ')}}', 'success');
+                        ProcessMaker.alert('{{__('The user was saved.')}}', 'success');
                           if($event !== false) {
                               this.onClose();
                           }
@@ -541,7 +546,7 @@
                     user_id: this.formData.id
                 })
                 .then(response => {
-                    ProcessMaker.alert('{{__('User Permissions Updated Successfully ')}}', 'success');
+                    ProcessMaker.alert('{{__('The user permissions were saved.')}}', 'success');
                     this.onClose();
                 })
             },
@@ -581,7 +586,7 @@
                     .then((result) => {
                         this.newToken = result.data;
                         this.loadTokens();
-                        ProcessMaker.alert("Access token generated successfully", "success");
+                        ProcessMaker.alert("{{__('The access token was generated.')}}", "success");
                     })
             },
             deleteToken(tokenId) {
@@ -613,6 +618,9 @@
                             });
                         })
                 },
+                hideGroupsModal() {
+                    this.$refs.addUserToGroup.hide();
+                },
                 saveUserToGroup(event) {
                     if (!this.selectedGroup) { event.preventDefault(); return; }
                     // ProcessMaker.apiClient({method: 'POST', url: '/group_members'}, {
@@ -621,9 +629,10 @@
                         member_id: this.formData.id,
                         group_id: this.selectedGroup,
                     }).then((result) => {
-                        ProcessMaker.alert("User successfully added to group", "success");
+                        ProcessMaker.alert("{{__('The user was added to the group.')}}", "success");
                         this.$refs.groupsListing.fetch();
                     })
+                    this.hideGroupsModal();
             }
         }
     });

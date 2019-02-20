@@ -28,7 +28,7 @@
                 variant="link"
                 @click="onDelete( props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Remove"
+                title="Delete"
                 v-if="permission.includes('delete-groups')"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
@@ -132,11 +132,11 @@ export default {
       let that = this;
       ProcessMaker.confirmModal(
         "Caution!",
-        "<b>Are you sure to delete the group </b>" + data.name + "?",
+        "<b>Are you sure you want to delete the group </b>" + data.name + "?",
         "",
         function() {
           ProcessMaker.apiClient.delete("groups/" + data.id).then(response => {
-            ProcessMaker.alert("Group successfully eliminated", "success");
+            ProcessMaker.alert("The group was deleted.", "success");
             that.fetch();
           });
         }
