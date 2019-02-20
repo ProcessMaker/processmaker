@@ -49,7 +49,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            {!!Form::label('name', __('Variable Name'))!!}
+                            {!!Form::label('name', __('Name'))!!}
                             {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'name',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'])!!}
                             <small class="form-text text-muted">{{ __('Variable Name must be distinct') }}</small>
