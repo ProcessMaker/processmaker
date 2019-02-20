@@ -32,8 +32,8 @@ Follow these steps to change your profile settings:
 
 2. The ProcessMaker Administrator may have entered some profile settings when your [user account was created](../processmaker-administration/add-users/create-a-user-account.md#create-a-processmaker-user-account). Follow these guidelines to change your profile information as necessary:
    * In the **Name** section, change the following information:
-     * In the **First Name** field, enter your first name.
-     * In the **Last Name** field, enter your last name.
+     * In the **First Name** field, enter your first name. ~~This is a required field.~~
+     * In the **Last Name** field, enter your last name. ~~This is a required field.~~
    * In the **Contact Information** section, change the following information:
      * In the **Email** field, enter your business email address. This is a required field.
      * In the **Phone** field, enter your business telephone or cell phone number.
@@ -50,23 +50,23 @@ Follow these steps to change your profile settings:
        * m/d/Y H:i \(12/31/2017 23:30\)
      * From the **Time zone** drop-down, select the time zone in which to display times.
      * From the **Language** drop-down, select in which language to display ProcessMaker labels.
-3. Select the avatar image to change the avatar for the ProcessMaker user account if necessary. If there is no avatar image, the initials of your full name display. When the avatar image is selected, the **Upload Avatar** screen displays to select a new avatar image. Click the **Browse** button to locate the new avatar image. After selecting the new image click **Continue** from the **Upload Avatar** screen.  
+3. Click the avatar image to change the avatar for the ProcessMaker user account if necessary. If there is no avatar image, the initials of your full name display. When the avatar image is selected, the **Upload Avatar** screen displays to select a new avatar image. Click the **Browse** button to locate the new avatar image. After selecting the new image click **Continue** from the **Upload Avatar** screen.  
 
    ![](../.gitbook/assets/browse-avatar-edit-user-information-tab-admin.png)
 
 4. In the **Username** field, change your username if necessary. This is a required field.
 5. Follow these guidelines to change your password if necessary:
    * In the **New Password** field, enter your new password. Leave the **New Password** field blank to keep the current password. Password validation indicates how strong your password is if you enter a new password.
-   * In the **Confirm Password** field, confirm that the password matches that entered into the New Password field if a new password is entered. If you entered a new password, password validation indicates if the **New Password** and **Confirm Password** values do not match.
-6. Click **Update**.
+   * In the **Confirm Password** field, confirm that the password matches that entered into the **New Password** field if a new password is entered. If you entered a new password, password validation indicates if the **New Password** and **Confirm Password** values do not match.
+6. Click **Update**. The following message displays: **Save profile success**.
 
 ## View Another User's Profile Information
 
-To view another user's profile information, select that person's avatar.
+To view another user's profile information, click that person's avatar.
 
-![Select a user&apos;s avatar to view that person&apos;s user profile information](../.gitbook/assets/hover-over-a-user-avatar-for-profile-full-name.png)
+![Click a user&apos;s avatar to view that person&apos;s user profile information](../.gitbook/assets/hover-over-a-user-avatar-for-profile-full-name.png)
 
-After that user's avatar is selected, that person's profile information displays. Each user is responsible for profile content.
+After clicking the avatar, that person's profile information displays. Each user is responsible for profile content.
 
 ![Viewing a user&apos;s profile information](../.gitbook/assets/profile-displayed-after-clicking-avatar.png)
 
