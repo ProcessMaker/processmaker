@@ -50,7 +50,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        {!!Form::label('title', __('Title'))!!}
+                        {!!Form::label('title', __('Name'))!!}
                         {!!Form::text('title', null, ['class'=> 'form-control', 'v-model'=> 'title', 'v-bind:class' =>
                         '{\'form-control\':true, \'is-invalid\':addError.title}'])!!}
                         <div class="invalid-feedback" v-for="title in addError.title">@{{title}}</div>
