@@ -4,8 +4,8 @@
 	@php
 	$title = __('Processes');
 	$status = request()->get('status');
-	if( $status === 'deleted'){
-		$title = __('Process Archive');
+	if( $status === 'inactive'){
+		$title = __('Archived Processes');
 	}
 	@endphp
 {{$title}}
