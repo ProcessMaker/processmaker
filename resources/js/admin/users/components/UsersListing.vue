@@ -97,7 +97,7 @@ export default {
           callback: "formatDate"
         },
         {
-          title: "Last login",
+          title: "Last Login",
           name: "loggedin_at",
           sortField: "loggedin_at",
           callback: "formatDate"

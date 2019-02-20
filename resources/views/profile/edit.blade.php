@@ -97,7 +97,7 @@
                     <h2 class="mt-2">{{__('Localization')}}</h2>
                     <div class="row">
                         <div class="form-group col">
-                            {!!Form::label('datetime_format', 'Date format');!!}
+                            {!!Form::label('datetime_format', 'Date Format');!!}
                             {!!Form::select('datetime_format',
                                 $datetimeFormats,
                                 'formData.datetime_format',
@@ -112,7 +112,7 @@
                     </div>
                     <div class="row">
                         <div class="form-group col">
-                            {!!Form::label('timezone', 'Time zone');!!}
+                            {!!Form::label('timezone', 'Time Zone');!!}
                             {!!Form::select('timezone',
                                 $timezones,
                                 'formData.timezone',

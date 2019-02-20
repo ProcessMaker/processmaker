@@ -84,7 +84,7 @@ export default {
           callback: this.formatStatus
         },
         {
-          title: "# users",
+          title: "# Users",
           name: "group_members_count",
           sortField: "group_members_count"
         },
