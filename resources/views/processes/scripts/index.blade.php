@@ -53,6 +53,7 @@
                         {!!Form::label('title', __('Name'))!!}
                         {!!Form::text('title', null, ['class'=> 'form-control', 'v-model'=> 'title', 'v-bind:class' =>
                         '{\'form-control\':true, \'is-invalid\':addError.title}'])!!}
+                        <small class="form-text text-muted" v-if="! addError.title">{{ __('The script name must be distinct.') }}</small>
                         <div class="invalid-feedback" v-for="title in addError.title">@{{title}}</div>
                     </div>
                     <div class="form-group">

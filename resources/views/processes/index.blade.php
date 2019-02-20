@@ -69,6 +69,7 @@
             <div class="form-group">
     			{!! Form::label('name', 'Name') !!}
     			{!! Form::text('name', null, ['autocomplete' => 'off', 'class'=> 'form-control', 'v-model'=> 'name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.name}']) !!}
+				<small class="form-text text-muted" v-if="! addError.name">{{ __('The process name must be distinct.') }}</small>
     			<div class="invalid-feedback" v-for="name in addError.name">@{{name}}</div>
             </div>
             <div class="form-group">

@@ -27,7 +27,8 @@
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'
                         ])
                     !!}
-                    <div class="invalid-feedback" v-if="errors.processTitle">@{{errors.name[0]}}</div>
+                    <small class="form-text text-muted" v-if="! errors.name">{{ __('The process name must be distinct.') }}</small>
+                    <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
                 </div>
                 <div class="form-group">
                     {!! Form::label('description', __('Description')) !!}
