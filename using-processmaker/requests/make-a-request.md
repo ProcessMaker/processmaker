@@ -1,5 +1,5 @@
 ---
-description: Start a Request by starting a process.
+description: Start a Request by starting a Process.
 ---
 
 # Start a Request
@@ -9,13 +9,11 @@ description: Start a Request by starting a process.
 Follow these steps to start a Request:
 
 1. [Log in](../log-in.md#log-in) to ProcessMaker.
-2. Click **+ Request** from the top options bar, as highlighted below.  This button is always available.
+2. Click **+Request** from the top options bar. This button is always available.
 
    ![](../../.gitbook/assets/+-request-button-highlighted.png)
 
-   The **New Request** screen displays. This screen displays Processes for which you are authorized to start a new Request.
-
-   Below is the **New Request** screen with a Process from which a Request can be started. Processes can be organized into Categories within your organization to make it easier to locate from which Process to start a Request.  
+   The **New Request** screen displays. This screen displays Processes for which you are authorized to start a new Request. Below is the **New Request** screen with a Process from which a Request can be started. Processes can be organized into Categories within your organization to make it easier for people in your organization to locate from which Process to start a Request.  
 
    ![](../../.gitbook/assets/new-request-screen-requests.png)
 
@@ -27,10 +25,10 @@ Follow these steps to start a Request:
    The Process you selected starts a Request.
 
 {% hint style="info" %}
-If there are no active Processes or you do not have authorization to start a Request for a Process, the following message displays: **At this time there are no Requests available**.
+If there are no active Processes or you are not authorized to start a Request for a Process, the following message displays: **At this time there are no Requests available**.
 {% endhint %}
 
-After the Request starts, the new Request displays in the **My Requests** page.
+After the Request starts, the new Request displays in the [**My Requests** page](view-started-requests.md#view-requests-you-started).
 
 ## Related Topics
 

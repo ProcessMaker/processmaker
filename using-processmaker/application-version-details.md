@@ -1,26 +1,26 @@
 ---
-description: View ProcessMaker version information.
+description: View ProcessMaker 4 version information.
 ---
 
 # View ProcessMaker Version Information
 
 ## View ProcessMaker Version Information
 
-Follow these steps to view ProcessMaker version information:
+Follow these steps to view ProcessMaker 4 version information:
 
 1. [Log in](log-in.md#log-in) to ProcessMaker.
-2. Click your user avatar, and then select **About**.  
+2. Click your user avatar and then select **About**.  
 
    ![](../.gitbook/assets/about-option.png)
 
-   The **About ProcessMaker 4** page displays.  
+   ProcessMaker 4 version information displays.  
 
-![&quot;About ProcessMaker 4&quot; page displays ProcessMaker version information](../.gitbook/assets/about-processmaker-page-admin.png)
+![ProcessMaker 4 version information](../.gitbook/assets/about-processmaker-page-admin.png)
 
 {% hint style="info" %}
-Click **Report an issue** to [report a ProcessMaker issue](https://github.com/ProcessMaker/bpm/issues).
+Click **Report an issue** to [report a ProcessMaker 4 issue](https://docs.google.com/forms/d/e/1FAIpQLScnYje8uTACYwp3VxdRoA26OFkbfFs6kuXofqY-QXXsG-h9xA/viewform).
 
-Click **Get Help** to display the [ProcessMaker's **bpm** GitHub repository page](https://github.com/ProcessMaker/bpm).
+Click **Get Help** to display the [ProcessMaker **bpm** GitHub repository](https://github.com/ProcessMaker/bpm).
 {% endhint %}
 
 ## Related Topics

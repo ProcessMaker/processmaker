@@ -1,5 +1,5 @@
 ---
-description: Cancel a Request in which you have permission to do so.
+description: Cancel a Request when you have permission to do so.
 ---
 
 # Cancel a Request
