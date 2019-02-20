@@ -19,7 +19,7 @@
             <div class="card card-body">
 
                 <div class="form-group">
-                    {!!Form::label('processTitle', __('Process title'))!!}
+                    {!!Form::label('processTitle', __('Name'))!!}
                     {!!Form::text('processTitle', null,
                         [ 'id'=> 'name',
                             'class'=> 'form-control',
