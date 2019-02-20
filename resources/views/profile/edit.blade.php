@@ -321,7 +321,7 @@
                     }
                     ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
                         .then((response) => {
-                            ProcessMaker.alert('Save profile success', 'success')
+                            ProcessMaker.alert('Your profile was saved.', 'success')
                             window.ProcessMaker.events.$emit('update-profile-avatar');
                         })
                         .catch(error => {

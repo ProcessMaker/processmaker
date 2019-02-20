@@ -80,7 +80,7 @@
                     this.resetErrors();
                     ProcessMaker.apiClient.put('screens/' + this.formData.id, this.formData)
                         .then(response => {
-                            ProcessMaker.alert('Updated Screen Successfully', 'success');
+                            ProcessMaker.alert('The screen was saved.', 'success');
                             this.onClose();
                         })
                         .catch(error => {

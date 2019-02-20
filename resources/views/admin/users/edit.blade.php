@@ -592,7 +592,7 @@
             deleteToken(tokenId) {
                 ProcessMaker.confirmModal(
                     "Caution!",
-                    "Are you sure to delete the token " + tokenId.substr(0, 7) +
+                    "Are you sure you want to delete the token " + tokenId.substr(0, 7) +
                     "? Any services using it will no longer have access.",
                     "",
                     () => {

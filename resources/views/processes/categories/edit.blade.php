@@ -72,7 +72,7 @@
                     this.resetErrors();
                     ProcessMaker.apiClient.put('process_categories/' + this.formData.id, this.formData)
                         .then(response => {
-                            ProcessMaker.alert('Update Process Category Successfully', 'success');
+                            ProcessMaker.alert('The category was saved.', 'success');
                             this.onClose();
                         })
                         .catch(error => {

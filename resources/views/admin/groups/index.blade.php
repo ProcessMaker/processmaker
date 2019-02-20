@@ -118,7 +118,7 @@
                         this.resetErrors();
                         ProcessMaker.apiClient.post('groups', this.formData)
                             .then(response => {
-                                ProcessMaker.alert('{{__('Create Group Successfully')}}', 'success');
+                                ProcessMaker.alert('{{__('The group was created.')}}', 'success');
                                 //redirect show group
                                 window.location = "/admin/groups/" + response.data.id + "/edit"
                             })

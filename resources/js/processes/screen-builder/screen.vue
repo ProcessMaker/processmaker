@@ -187,7 +187,7 @@
                 this.previewData = data;
             },
             previewSubmit() {
-                alert("Preview Screen was Submitted");
+                alert("The preview screen was submitted.");
             },
             onClose() {
                 window.location.href = "/processes/screens";
@@ -203,7 +203,7 @@
                             custom_css: this.customCSS,
                         })
                         .then(response => {
-                            ProcessMaker.alert(" Successfully saved", "success");
+                            ProcessMaker.alert("The screen was saved.", "success");
                         });
             }
         }

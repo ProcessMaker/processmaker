@@ -101,7 +101,7 @@
                         $('#createEditAuthClient').modal('hide')
                         this.$refs.authClientList.fetch()
                         this.loading = false
-                        ProcessMaker.alert("Auth Client Updated", "success")
+                        ProcessMaker.alert("The auth client was updated.", "success")
                     }).catch(error => {
                         this.errors = error.response.data.errors;
                     });

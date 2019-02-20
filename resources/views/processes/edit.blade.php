@@ -204,7 +204,7 @@
                     this.formData.cancel_screen_id = this.formData.cancel_screen_id
                     ProcessMaker.apiClient.put('processes/' + that.formData.id, that.formData)
                         .then(response => {
-                            ProcessMaker.alert('{{__('Process Updated Successfully')}}', 'success');
+                            ProcessMaker.alert('{{__('The process was saved.')}}', 'success');
                             that.onClose();
                         })
                         .catch(error => {

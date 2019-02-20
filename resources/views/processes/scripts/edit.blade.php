@@ -85,7 +85,7 @@
                         description: this.formData.description,
                     })
                         .then(response => {
-                            ProcessMaker.alert('Updated Script Successfully', 'success');
+                            ProcessMaker.alert('The script was saved.', 'success');
                             this.onClose();
                         })
                         .catch(error => {

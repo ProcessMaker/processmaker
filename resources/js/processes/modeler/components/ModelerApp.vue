@@ -74,7 +74,7 @@ export default {
           .then((response) => {
             this.process.updated_at = response.data.updated_at;
             // Now show alert
-            ProcessMaker.alert('Process Successfully Updated', 'success');
+            ProcessMaker.alert('The process was saved.', 'success');
           })
           .catch((err) => {
             const message = err.response.data.message;

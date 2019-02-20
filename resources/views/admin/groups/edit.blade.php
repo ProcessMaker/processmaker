@@ -234,7 +234,7 @@
                     this.resetErrors();
                     ProcessMaker.apiClient.put('groups/' + this.formData.id, this.formData)
                         .then(response => {
-                            ProcessMaker.alert('{{__('Update Group Successfully')}}', 'success');
+                            ProcessMaker.alert('{{__('The group was saved.')}}', 'success');
                             this.onClose();
                         })
                         .catch(error => {
@@ -251,7 +251,7 @@
                             group_id: this.formData.id
                         })
                         .then(response => {
-                            ProcessMaker.alert('{{__('Group Permissions Updated Successfully ')}}', 'success');
+                            ProcessMaker.alert('{{__('The group permissions were saved.')}}', 'success');
                             this.onClose();
                         })
                 }

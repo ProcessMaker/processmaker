@@ -349,7 +349,7 @@
                         })
                         .then(response => {
                             this.fieldsToUpdate.splice(0);
-                            ProcessMaker.alert("{{__('Request data successfully updated')}}", "success");
+                            ProcessMaker.alert("{{__('The request data was saved.')}}", "success");
                         });
                 },
                 saveJsonData() {
@@ -428,7 +428,7 @@
                         status: 'CANCELED'
                     })
                         .then(response => {
-                            ProcessMaker.alert('Request Canceled Successfully', 'success');
+                            ProcessMaker.alert('The request was canceled.', 'success');
                             window.location.reload();
                         });
                 },

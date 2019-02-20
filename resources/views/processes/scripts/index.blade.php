@@ -119,7 +119,7 @@
                             code: "[]"
                         })
                         .then(response => {
-                            ProcessMaker.alert('{{__('Script successfully added')}}', 'success');
+                            ProcessMaker.alert('{{__('The script was created.')}}', 'success');
                             window.location = "/processes/scripts/" + response.data.id + "/builder";
                         })
                         .catch(error => {

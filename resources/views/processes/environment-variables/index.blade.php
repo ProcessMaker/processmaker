@@ -109,7 +109,7 @@
                             value: this.value
                         })
                             .then(response => {
-                                ProcessMaker.alert('{{__('Variable successfully added ')}}', 'success');
+                                ProcessMaker.alert('{{__('The environment variable was created.')}}', 'success');
                                 window.location = '/processes/environment-variables';
                             })
                             .catch(error => {

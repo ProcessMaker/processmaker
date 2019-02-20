@@ -79,7 +79,7 @@
             </div>
             <div class="form-group">
     			{!! Form::label('process_category_id', 'Category')!!}
-    			{!! Form::select('process_category_id', [null => 'Category is required'] + $processCategories, null, ['class'=> 'form-control', 'v-model'=> 'process_category_id', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.process_category_id}']) !!}
+    			{!! Form::select('process_category_id', [null => ''] + $processCategories, null, ['class'=> 'form-control', 'v-model'=> 'process_category_id', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.process_category_id}']) !!}
     			<div class="invalid-feedback" v-for="category in addError.process_category_id">@{{category}}</div>
             </div>
           </div>
@@ -130,8 +130,7 @@
                         status: null
                     });
                     if (this.process_category_id === '') {
-                        this.addError = {"process_category_id":  ["Process Category is required"]};
-                        ProcessMaker.alert('{{__('Process Category is required')}}', 'danger');
+                        this.addError = {"process_category_id":  ["{{__('The category field is required.')}}"]};
                     } else {
                         ProcessMaker.apiClient.post("/processes", {
                             name: this.name,
@@ -139,7 +138,7 @@
                             process_category_id: this.process_category_id
                         })
                             .then(response => {
-                                ProcessMaker.alert('{{__('Process successfully added')}}', 'success')
+                                ProcessMaker.alert('{{__('The process was created.')}}', 'success')
                                 window.location = "/modeler/" + response.data.id
                             })
                             .catch(error => {

@@ -66,11 +66,11 @@
                             }
                         }
                         ).then(response => {
-                            ProcessMaker.alert('{{__('Process successfully imported')}}', 'success')
+                            ProcessMaker.alert('{{__('The process was imported.')}}', 'success')
                             window.location = '{{ route("processes.index") }}';
                         })
                         .catch(error => {
-                            ProcessMaker.alert('{{__('Unable to import process')}}', 'danger')
+                            ProcessMaker.alert('{{__('Unable to import the process.')}}', 'danger')
                         });
                 }
             }

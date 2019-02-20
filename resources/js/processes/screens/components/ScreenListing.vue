@@ -135,13 +135,13 @@ export default {
           let that = this;
           ProcessMaker.confirmModal(
             "Caution!",
-            "<b>Are you sure to delete the Screen </b>" + data.title + "?",
+            "<b>Are you sure you want to delete the screen </b>" + data.title + "?",
             "",
             function() {
               ProcessMaker.apiClient
                 .delete("screens/" + data.id)
                 .then(response => {
-                  ProcessMaker.alert("Screen successfully deleted", "success");
+                  ProcessMaker.alert("The screen was deleted.", "success");
                   that.fetch();
                 });
             }
