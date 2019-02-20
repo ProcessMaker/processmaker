@@ -264,6 +264,11 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
            }
        }
 
+       // if the number of occurrences is reached, no nextDate exists
+       if ($cont == $parts['recurrences'] && $parts['repetitions'] !== 'R') {
+            $nextDate = null;
+       }
+
        return $nextDate;
    }
 

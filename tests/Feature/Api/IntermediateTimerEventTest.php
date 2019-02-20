@@ -66,14 +66,6 @@ class IntermediateTimerEventTest extends TestCase
         $definitions = $process->getDefinitions();
         $startEvent = $definitions->getEvent('_2');
         $request = WorkflowManager::triggerStartEvent($process, $startEvent, []);
-//        $task1 = $request->tokens()->where('element_id', '_3')->first();
-//
-//        WorkflowManager::completeTask($process, $request, $task1, []);
-//
-//        $catch = $request->tokens()->where('element_id', '_5')->first();
-//
-//        WorkflowManager::completeCatchEvent($process, $request, $catch, []);
-
         // at this point the save method should have created 4 rows in the
         // scheduled tasks table
         $tasks = ScheduledTask::all();

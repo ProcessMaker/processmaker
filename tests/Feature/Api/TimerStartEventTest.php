@@ -91,31 +91,46 @@ class TimerStartEventTest extends TestCase
 
         $cases = [
             [
-                'currentDate' => '2019-02-11T00:00:00Z',
-                'interval' => 'R4/2019-02-15T00:00:00Z/P1M',
-                'expectedNextDate' => '2019-02-15T00:00:00Z'
+                'currentDate' => '2019-02-15T10:00:00Z',
+                'interval' => 'R4/2019-02-15T01:00:00Z/P1D',
+                'expectedNextDate' => '2019-02-16T01:00:00Z'
             ],
             [
-                'currentDate' => '2019-05-11T00:00:00Z',
-                'interval' => 'R4/2019-02-15T00:00:00Z/P1M',
-                'expectedNextDate' => '2019-05-15T00:00:00Z'
+                'currentDate' => '2019-02-20T10:00:00Z',
+                'interval' => 'R4/2019-02-15T01:00:00Z/P1D',
+                'expectedNextDate' => null
             ],
             [
-                'currentDate' => '2019-05-11T00:00:00Z',
-                'interval' => 'R/2019-02-15T00:00:00Z/P1M',
-                'expectedNextDate' => '2019-05-15T00:00:00Z'
+                'currentDate' => '2019-02-20T10:00:00Z',
+                'interval' => '2019-02-15T01:00:00Z',
+                'expectedNextDate' => null
             ],
-            [
-                'currentDate' => '2019-02-14T02:01:00Z',
-                'interval' => 'R/2019-02-14T11:02:00Z/PT1M',
-                'expectedNextDate' => '2019-02-14T11:02:00Z'
-            ],
+//            [
+//                'currentDate' => '2019-02-11T00:00:00Z',
+//                'interval' => 'R4/2019-02-15T00:00:00Z/P1M',
+//                'expectedNextDate' => '2019-02-15T00:00:00Z'
+//            ],
+//            [
+//                'currentDate' => '2019-05-11T00:00:00Z',
+//                'interval' => 'R4/2019-02-15T00:00:00Z/P1M',
+//                'expectedNextDate' => '2019-05-15T00:00:00Z'
+//            ],
+//            [
+//                'currentDate' => '2019-05-11T00:00:00Z',
+//                'interval' => 'R/2019-02-15T00:00:00Z/P1M',
+//                'expectedNextDate' => '2019-05-15T00:00:00Z'
+//            ],
+//            [
+//                'currentDate' => '2019-02-14T02:01:00Z',
+//                'interval' => 'R/2019-02-14T11:02:00Z/PT1M',
+//                'expectedNextDate' => '2019-02-14T11:02:00Z'
+//            ],
         ];
 
         foreach($cases as $case) {
             $currentDate = new \DateTime($case['currentDate']);
             $nayraInterval = $case['interval'];
-            $expectedNextDate = new \DateTime($case['expectedNextDate']);
+            $expectedNextDate = $case['expectedNextDate'] === null ? null : new \DateTime($case['expectedNextDate']);
             $nextDate = $manager->nextDate($currentDate, $nayraInterval);
             $this->assertEquals($expectedNextDate, $nextDate);
         }
