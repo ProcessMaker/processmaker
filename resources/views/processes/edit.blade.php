@@ -131,8 +131,8 @@
                         </div>
 
                         <div class="d-flex justify-content-end mt-2">
-                    {!! Form::button('Cancel', ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                            {!! Form::button('Save', ['class'=>'btn btn-success ml-2', '@click' => 'onUpdate']) !!}
+                            {!! Form::button('Cancel', ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
+                            {!! Form::button('Save', ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
                         </div>
                     </div>
                     <div class="tab-pane fade show" id="nav-notifications" role="tabpanel" aria-labelledby="nav-notifications-tab">
@@ -215,8 +215,8 @@
                             </table>
                         </div>
                         <div class="d-flex justify-content-end mt-2">
-                            {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose']) !!}
-                    {!! Form::button('Save', ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
+                            {!! Form::button('Cancel', ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
+                            {!! Form::button('Save', ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
                         </div>
                     </div>
                 </div>
