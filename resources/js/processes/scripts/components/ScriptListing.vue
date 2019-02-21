@@ -80,19 +80,19 @@
             type="text"
             class="form-control"
             id="title"
-            v-model="dupScreen.title"
+            v-model="dupScript.title"
             v-bind:class="{ 'is-invalid': errors.title }"
           >
           <div class="invalid-feedback" v-if="errors.title">{{errors.title[0]}}</div>
         </div>
         <div class="form-group">
           <label for="description">Description</label>
-          <textarea class="form-control" id="description" rows="3" v-model="dupScreen.description"></textarea>
+          <textarea class="form-control" id="description" rows="3" v-model="dupScript.description"></textarea>
         </div>
         <div class="form-group">
           <label for="type">Language</label>
           <select class="form-control" id="type" disabled>
-            <option>{{dupScreen.language}}</option>
+            <option>{{dupScript.language}}</option>
           </select>
         </div>
       </form>
@@ -112,7 +112,7 @@ export default {
   props: ["filter", "id", "permission"],
   data() {
     return {
-      dupScreen: {
+      dupScript: {
         title: "",
         type: "",
         description: ""
@@ -177,7 +177,18 @@ export default {
       this.$refs.myModalRef.hide();
     },
     onSubmit() {
-      console.log("HAy");
+      ProcessMaker.apiClient
+        .put("scripts/" + this.dupScript.id + "/duplicate", this.dupScript)
+        .then(response => {
+          ProcessMaker.alert("The script was duplicated.", "success");
+          this.hideModal();
+          this.fetch();
+        })
+        .catch(error => {
+          if (error.response.status && error.response.status === 422) {
+            this.errors = error.response.data.errors;
+          }
+        });
     },
     onAction(action, data, index) {
       switch (action) {
@@ -188,11 +199,11 @@ export default {
           this.goToEdit(data.id);
           break;
         case "duplicate-item":
-          this.dupScreen.title = data.title + " Copy";
-          this.dupScreen.language = data.language;
-          this.dupScreen.code = data.code;
-          this.dupScreen.description = data.description;
-          this.dupScreen.id = data.id;
+          this.dupScript.title = data.title + " Copy";
+          this.dupScript.language = data.language;
+          this.dupScript.code = data.code;
+          this.dupScript.description = data.description;
+          this.dupScript.id = data.id;
           this.showModal();
           break;
         case "remove-item":

@@ -55,6 +55,7 @@ Route::group(
     Route::get('scripts/{script}', 'ScriptController@show')->name('scripts.show')->middleware('can:view-scripts');
     Route::post('scripts', 'ScriptController@store')->name('scripts.store')->middleware('can:create-scripts');
     Route::put('scripts/{script}', 'ScriptController@update')->name('scripts.update')->middleware('can:edit-scripts');
+    Route::put('scripts/{script}/duplicate', 'ScriptController@duplicate')->name('scripts.duplicate')->middleware('can:create-scripts');
     Route::delete('scripts/{script}', 'ScriptController@destroy')->name('scripts.destroy')->middleware('can:delete-scripts');
     Route::post('scripts/preview', 'ScriptController@preview')->name('script.preview')->middleware('can:view-scripts');
     
