@@ -102,9 +102,10 @@ export default {
     },
     onDelete(data, index) {
       let that = this;
+      console.log(data);
       ProcessMaker.confirmModal(
         "Caution!",
-        "<b>Are you sure to delete the group </b>" + data.name + "?",
+        "<b>Are you sure to delete the group </b>" + data.fullname + "?",
         "",
         function() {
           ProcessMaker.apiClient

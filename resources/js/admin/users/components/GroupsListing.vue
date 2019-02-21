@@ -97,7 +97,7 @@ export default {
     deleteMembership(item) {
       ProcessMaker.confirmModal(
         "Caution!",
-        "<b>Are you sure to remove the user from the group </b>" + item.name + "?",
+        "<b>Are you sure you want to remove the user from the group</b> " + item.name + "?",
         "",
         () => {
           ProcessMaker.apiClient.delete("group_members/" + item.id).then(response => {
