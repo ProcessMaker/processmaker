@@ -244,23 +244,23 @@ class ProcessController extends Controller
         $process->versions()->create($original_attributes);
 
         //If we are specifying start assignments...
-        if ($request->has('start_request')) {    
-            //Adding method to users array
-            $startUsers = [];
-            foreach ($request->input('start_request')['users'] as $item) {
-                $startUsers[$item] = ['method' => 'START'];
-            }
+        // if ($request->has('start_request')) {    
+        //     //Adding method to users array
+        //     $startUsers = [];
+        //     foreach ($request->input('start_request')['users'] as $item) {
+        //         $startUsers[$item] = ['method' => 'START'];
+        //     }
             
-            //Adding method to groups array
-            $startGroups = [];
-            foreach ($request->input('start_request')['groups'] as $item) {
-                $startGroups[$item] = ['method' => 'START'];
-            }
+        //     //Adding method to groups array
+        //     $startGroups = [];
+        //     foreach ($request->input('start_request')['groups'] as $item) {
+        //         $startGroups[$item] = ['method' => 'START'];
+        //     }
 
-            //Syncing users and groups that can start this process
-            $process->usersCanStart()->sync($startUsers, ['method' => 'START']);
-            $process->groupsCanStart()->sync($startGroups, ['method' => 'START']);    
-        }
+        //     //Syncing users and groups that can start this process
+        //     $process->usersCanStart()->sync($startUsers, ['method' => 'START']);
+        //     $process->groupsCanStart()->sync($startGroups, ['method' => 'START']);    
+        // }
 
         //If we are specifying cancel assignments...
         if ($request->has('cancel_request')) {
@@ -301,6 +301,63 @@ class ProcessController extends Controller
         }
 
         return new Resource($process->refresh());
+    }
+
+     /**
+     * Updates a processes start node permissions
+     *
+     * @param Request $request
+     * @param Process $process
+     * @return ResponseFactory|Response
+     * @throws \Throwable
+     *
+     * @OA\Put(
+     *     path="/processes/processId",
+     *     summary="Update a nodes start permission",
+     *     operationId="updateStartPermissions",
+     *     tags={"Process"},
+     *     @OA\Parameter(
+     *         description="ID of process to update",
+     *         in="path",
+     *         name="process_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(ref="#/components/schemas/ProcessEditable")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *     ),
+     * )
+     */
+    public function updateStartPermissions(Request $request, Process $process)
+    {
+        $node = $request->input('start_request_node');
+        
+        $definitions = $process->getDefinitions();
+        if (!$definitions->findElementById($node)) {
+            return abort(404);
+        }
+
+        $startUsers = [];
+        foreach ($request->input('start_request')['users'] as $item) {
+            $startUsers[$item] = ['method' => 'START', 'node' => $node];
+        }
+        
+        $startGroups = [];
+        foreach ($request->input('start_request')['groups'] as $item) {
+            $startGroups[$item] = ['method' => 'START', 'node' => $node];
+        }
+
+        //Syncing users and groups that can start this process
+        $process->usersCanStart($node)->sync($startUsers);
+        $process->groupsCanStart($node)->sync($startGroups); 
     }
 
     /**
