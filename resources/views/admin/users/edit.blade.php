@@ -229,8 +229,8 @@
                             </div>
                         </div>
                         <div class="text-right">
-                            {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose']) !!}
-                            {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'profileUpdate']) !!}
+                            {!! Form::button('Cancel', ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
+                            {!! Form::button('Save', ['class'=>'btn btn-secondary ml-2', '@click' => 'profileUpdate']) !!}
                         </div>
                     </div>
                     <div class="tab-pane fade show" id="nav-groups" role="tabpanel" aria-labelledby="nav-groups-tab">
@@ -255,13 +255,13 @@
                     </div>
                     <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
                         <div class="accordion" id="accordionExample">
-                            <label><input type="checkbox" v-model="formData.is_administrator" @input="adminHasChanged = true">  {{__('Make this user an admin')}} </label>
-                            <label class="mb-3"><input type="checkbox" v-model="selectAll" @click="select" :disabled="formData.is_administrator">  {{__('Assign all permisssions to this user')}} </label>
+                            <label><input type="checkbox" v-model="formData.is_administrator" @input="adminHasChanged = true">  {{__('Make this user a Super Admin')}} </label>
+                            <label class="mb-3"><input type="checkbox" v-model="selectAll" @click="select" :disabled="formData.is_administrator">  {{__('Assign all permissions to this user')}} </label>
                             @include('admin.shared.permissions')
                         </div>
                         <div class="text-right mt-2">
-                            {!! Form::button('Cancel', ['class'=>'btn btn-outline-success', '@click' => 'onClose'])!!}
-                            {!! Form::button('Update', ['class'=>'btn btn-success ml-2', '@click' => 'permissionUpdate'])!!}
+                            {!! Form::button('Cancel', ['class'=>'btn btn-outline-secondary', '@click' => 'onClose'])!!}
+                            {!! Form::button('Save', ['class'=>'btn btn-secondary ml-2', '@click' => 'permissionUpdate'])!!}
                         </div>
                     </div>
                     <div class="tab-pane fade" id="nav-tokens" role="tabpanel" aria-labelledby="nav-tokens-tab">

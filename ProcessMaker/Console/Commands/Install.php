@@ -161,6 +161,10 @@ class Install extends Command
 		
 		//Create a symbolic link from "public/storage" to "storage/app/public"
         $this->call('storage:link');
+
+        // Install cron job for Laravel scheduled tasks
+        $this->info(__('Installing scheduled tasks...'));
+        $this->installCronJob();
         
         // Restart services so they pick up the new settings
         $this->info(__('Restarting Services...'));
@@ -270,6 +274,21 @@ class Install extends Command
         $this->env['MAIL_USERNAME'] = $this->ask(__("Enter your Mailtrap inbox username"));
         $this->env['MAIL_PASSWORD'] = $this->secret(__("Enter your Mailtrap inbox password (input hidden)"));    
     }    
+
+    private function installCronJob()
+    {
+        $crontab = shell_exec('crontab -l');
+        $exists = stripos($crontab, 'php artisan schedule:run');
+        
+        if ($exists === false) {
+            $this->info(
+                system('echo "$(echo \'* * * * * cd /home/vagrant/processmaker && php artisan schedule:run >> /dev/null 2>&1\' ; crontab -l)" | crontab -')
+            );
+            $this->info(__('Scheduled tasks installed.'));
+        } else {
+            $this->line(__('Scheduled tasks already installed.'));
+        }
+    }
 
     private function testDatabaseConnection()
     {
