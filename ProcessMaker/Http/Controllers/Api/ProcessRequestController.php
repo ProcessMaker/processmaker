@@ -209,13 +209,20 @@ class ProcessRequestController extends Controller
             // Log the data edition
             $user_id   = Auth::id();
             $user_name = $user_id ? Auth::user()->fullname : 'The System';
+            
+            if ($request->status == 'ACTIVE') {
+                $text = __('has edited the task data');
+            } else {
+                $text = __('has edited the request data');
+            }
+
             Comment::create([
                 'type' => 'LOG',
                 'user_id' => $user_id,
                 'commentable_type' => ProcessRequest::class,
                 'commentable_id' => $request->id,
                 'subject' => 'Data edited',
-                'body' => $user_name . " " . __('has edited the request data'),
+                'body' => $user_name . " " . $text,
             ]);
         } else {
             $httpRequest->validate(ProcessRequest::rules($request));
