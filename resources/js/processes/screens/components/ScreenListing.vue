@@ -176,6 +176,7 @@ export default {
         .put("screens/" + this.dupScreen.id + "/duplicate", this.dupScreen)
         .then(response => {
           ProcessMaker.alert("The screen was duplicated.", "success");
+          this.hideModal();
           this.fetch();
         })
         .catch(error => {
