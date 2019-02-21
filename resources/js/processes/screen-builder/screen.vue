@@ -226,7 +226,7 @@ export default {
     saveScreen() {
       this.checkForErrors();
       if (this.errors == true) {
-        ProcessMaker.alert("There was an error saving this screen.", "danger");
+        ProcessMaker.alert("This screen has validation errors.", "danger");
       } else {
         ProcessMaker.apiClient
           .put("screens/" + this.screen.id, {
