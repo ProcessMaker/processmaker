@@ -171,8 +171,9 @@
                         <ul class="list-group list-group-flush w-100">
                             <li class="list-group-item">
                                 <h5>{{__('Requested By')}}</h5>
-                                <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
+                                <avatar-image v-if="userRequested" size="32" class="d-inline-flex pull-left align-items-center"
                                               :input-data="requestBy" display-name="true"></avatar-image>
+                                <span v-if="!userRequested">{{__('Webhook')}}</span>
                             </li>
                             
                             @if($canCancel == true)
@@ -180,7 +181,7 @@
                             <li class="list-group-item">
                                 <h5>{{__('Cancel Request')}}</h5>
                                 <button type="button" class="btn btn-outline-danger btn-block"
-                                        @click="cancelRequest">
+                                        data-toggle="modal" data-target="#cancelModal">
                                     <i class="fas fa-stop-circle"></i> {{__('Cancel')}}
                                 </button>
                             </li>
@@ -202,12 +203,26 @@
                     </div>
                 </template>
             </div>
-
-
+            <div class="modal" tabindex="-1" role="dialog" id="cancelModal">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{__('Caution!')}}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p data-v-27f69fb6="" class=""><span data-v-27f69fb6=""><b>{{__('Are you sure you want cancel this request ?')}}</b></span></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">{{__('Cancel')}}</button>
+                        <button type="button" class="btn btn-secondary" @click="okCancel">{{__('Confirm')}}</button>
+                    </div>
+                    </div>
+                </div>
+                </div>
         </div>
-        <b-modal v-model="showCancelRequest" ref="cancelRequest" title="{{__('Caution!')}}" @ok="okCancel" ok-title="Confirm" cancel-title="Cancel">
-            <p data-v-27f69fb6="" class=""><span data-v-27f69fb6=""><b>{{__('Are you sure you want cancel this request ?')}}</b></span></p>
-        </b-modal>
     </div>
 
 @endsection
@@ -235,6 +250,7 @@
                     refreshTasks: 0,
                     canCancel: @json($canCancel),
                     status: 'ACTIVE',
+                    userRequested: [],
                     errorLogs: @json(['data'=>$request->errors]),
                 };
             },

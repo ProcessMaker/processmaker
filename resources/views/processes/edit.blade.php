@@ -279,12 +279,12 @@
 
                     response['users'] = [];
                     response['groups'] = [];
-                    
+
                     data.forEach(item => {
                         if (item.type == 'user') {
                             response['users'].push(parseInt(item.id));
                         }
-                        
+
                         if (item.type == 'group') {
                             response['groups'].push(parseInt(item.id));
                         }

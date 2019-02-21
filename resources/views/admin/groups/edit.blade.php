@@ -79,7 +79,7 @@
                     <div class="tab-pane fade" id="nav-permissions" role="tabpanel" aria-labelledby="nav-permissions">
                         <div class="card">
                             <div class="card-body">
-                                <label class="mb-3"><input type="checkbox" v-model="selectAll" @click="select" :disabled="formData.is_administrator">  {{__('Assign all permisssions to this group')}} </label>
+                                <label class="mb-3"><input type="checkbox" v-model="selectAll" @click="select" :disabled="formData.is_administrator">  {{__('Assign all permissions to this group')}} </label>
                                 @include('admin.shared.permissions')
                                 <div class="text-right mt-2">
                                     {!! Form::button('Cancel', ['class'=>'btn btn-outline-secondary', '@click' => 'onClose'])!!}

@@ -44,12 +44,13 @@
     "webpack-cli": "^3.2.3"
   },
   "dependencies": {
+    "@babel/runtime": "^7.3.1",
     "@fortawesome/fontawesome-free": "^5.6.1",
     "@fortawesome/free-brands-svg-icons": "^5.6.1",
     "@fortawesome/free-solid-svg-icons": "^5.6.1",
     "@processmaker/modeler": "^0.2.6",
     "@processmaker/processmaker-bpmn-moddle": "^0.1.7",
-    "@processmaker/vue-form-builder": "git://github.com/ProcessMaker/vue-form-builder.git#feature/55",
+    "@processmaker/vue-form-builder": "^0.8.0",
     "@tinymce/tinymce-vue": "^1.0.8",
     "babel-eslint": "^10.0.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",

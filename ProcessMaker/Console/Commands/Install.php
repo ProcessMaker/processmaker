@@ -122,9 +122,12 @@ class Install extends Command
 
         // Set it as our url in our config
         config(['app.url' => $this->env['APP_URL']]);
+        
+        // Confirm whether the user would like to seed default groups
+        $seedDefaultGroups = $this->confirm(__('Would you like default user groups to be set up?'), true);
 
         //Confirm the user would like to setup their email
-        if ($this->confirm('Would you like to setup email options?')) {
+        if ($this->confirm(__('Would you like to setup email options?'))) {
             //Fetch from name & email from the user
             $this->fetchEmailFromInfo();
             
@@ -153,6 +156,13 @@ class Install extends Command
         $this->call('migrate:fresh', [
             '--seed' => true,
         ]);
+        
+        // Seed default user groups if desired
+        if ($seedDefaultGroups) {
+            $this->call('db:seed', [
+                '--class' => 'DefaultGroupSeeder',
+            ]);        
+        }
 
         // Generate passport secure keys and personal token oauth client
         $this->call('passport:install', [
@@ -161,6 +171,10 @@ class Install extends Command
 		
 		//Create a symbolic link from "public/storage" to "storage/app/public"
         $this->call('storage:link');
+
+        // Install cron job for Laravel scheduled tasks
+        $this->info(__('Installing scheduled tasks...'));
+        $this->installCronJob();
         
         // Restart services so they pick up the new settings
         $this->info(__('Restarting Services...'));
@@ -270,6 +284,21 @@ class Install extends Command
         $this->env['MAIL_USERNAME'] = $this->ask(__("Enter your Mailtrap inbox username"));
         $this->env['MAIL_PASSWORD'] = $this->secret(__("Enter your Mailtrap inbox password (input hidden)"));    
     }    
+
+    private function installCronJob()
+    {
+        $crontab = shell_exec('crontab -l');
+        $exists = stripos($crontab, 'php artisan schedule:run');
+        
+        if ($exists === false) {
+            $this->info(
+                system('echo "$(echo \'* * * * * cd /home/vagrant/processmaker && php artisan schedule:run >> /dev/null 2>&1\' ; crontab -l)" | crontab -')
+            );
+            $this->info(__('Scheduled tasks installed.'));
+        } else {
+            $this->line(__('Scheduled tasks already installed.'));
+        }
+    }
 
     private function testDatabaseConnection()
     {

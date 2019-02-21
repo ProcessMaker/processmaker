@@ -48,10 +48,6 @@
                 }
                 $items = json_encode($items);
                 $user = Auth::user();
-                $user->avatar = null;
-                if (Auth::user()->getAvatar()) {
-                    $user->avatar  = Auth::user()->getAvatar();
-                }
             @endphp
             <navbar-profile :info="{{$user}}"  :items="{{$items}}"></navbar-profile>
         </li>
