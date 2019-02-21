@@ -251,12 +251,22 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 
        $cont = 1;
        $nextDate = new \DateTime($firstDate);
+       $endDate = new \DateTime($parts['endDate']);
+
        $dateToWork = empty($currentDate) ? new \DateTime() : $currentDate;
 
        // if the interval's first date has passed, we calculate the next date of the interval
        if ((new \DateTime($firstDate)) < $dateToWork) {
            while ($cont < $parts['recurrences'] || $parts['repetitions'] === 'R') {
-               $nextDate->add($parts['period']->getDateInterval());
+
+               if ($nextDate >= $endDate) {
+                   return null;
+               }
+
+               if($parts['period']) {
+                   $nextDate->add($parts['period']->getDateInterval());
+               }
+
                if ($nextDate >= $dateToWork) {
                    break;
                }
@@ -276,6 +286,27 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
    {
        $result = [];
        $parts = explode('/', $nayraInterval);
+
+       $result['endDate'] = (count($parts) === 4)
+           ? (new \DateTime($parts[3]))
+               ->setTimezone(new DateTimeZone('UTC'))
+               ->format('Y-m-d\TH:i:s').'Z'
+           : (new \DateTime())
+               ->add(new \DateInterval('P10Y'))
+               ->setTimezone(new DateTimeZone('UTC'))
+               ->format('Y-m-d\TH:i:s').'Z';
+
+       //if it is a specific date
+       if (count($parts) === 1) {
+           $result['repetitions'] = '1';
+           $result['interval'] = null ;
+           $result['firstDate'] = (new \DateTime($parts[0]))
+                   ->setTimezone(new DateTimeZone('UTC'))
+                   ->format('Y-m-d\TH:i:s').'Z';
+           $result['period'] = null;
+           $result['recurrences'] = 2;
+           return $result;
+       }
 
        $result['repetitions'] = $parts[0];
        $result['interval'] = $parts[2];
