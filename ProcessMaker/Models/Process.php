@@ -147,18 +147,22 @@ class Process extends Model implements HasMedia
      * Get the users who can start this process
      *
      */    
-    public function usersCanStart()
+    public function usersCanStart($node)
     {
-        return $this->morphedByMany('ProcessMaker\Models\User', 'processable')->wherePivot('method', 'START');
+        return $this->morphedByMany('ProcessMaker\Models\User', 'processable')
+                    ->wherePivot('method', 'START')
+                    ->wherePivot('node', $node);
     }
 
     /**
      * Get the groups who can start this process
      *
      */    
-    public function groupsCanStart()
+    public function groupsCanStart($node)
     {
-        return $this->morphedByMany('ProcessMaker\Models\Group', 'processable')->wherePivot('method', 'START');
+        return $this->morphedByMany('ProcessMaker\Models\Group', 'processable')
+                    ->wherePivot('method', 'START')
+                    ->wherePivot('node', $node);
     }
 
     /**

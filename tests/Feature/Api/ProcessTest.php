@@ -624,4 +624,44 @@ class ProcessTest extends TestCase
         $response = $this->apiCall('GET', '/processes?status=inactive');
         $response->assertJsonMissing(['id' => $id]);
     }
+
+    /**
+     * Tests updating a start permission for a node
+     */
+    public function testStartPermissionForNode()
+    {
+        $user = factory(User::class)->create();
+        $bpmn = trim(Process::getProcessTemplate('SingleTask.bpmn'));
+        $node = 'StartEventUID';
+        $process = factory(Process::class)->create([
+            'status' => 'ACTIVE',
+            'bpmn' => $bpmn,
+        ]);
+        
+        $this->assertEquals(0, $process->usersCanStart($node)->count());
+
+        $route = route('api.' . $this->resource . '.update_start_permissions', [$process->id]);
+        $response = $this->apiCall('PUT', $route, [
+            'start_request_node' => $node,
+            'start_request' => ['users' => [$user->id], 'groups' => []],
+        ]);
+        $response->assertStatus(200);
+        $process->refresh();
+
+        $this->assertEquals(1, $process->usersCanStart($node)->count());
+        $this->assertEquals(
+            $user->id,
+            $process->usersCanStart($node)->first()->id
+        );
+        
+        // test that they are removed
+        $response = $this->apiCall('PUT', $route, [
+            'start_request_node' => $node,
+            'start_request' => ['users' => [], 'groups' => []],
+        ]);
+        $response->assertStatus(200);
+        $process->refresh();
+        
+        $this->assertEquals(0, $process->usersCanStart($node)->count());
+    }
 }
