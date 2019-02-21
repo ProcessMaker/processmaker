@@ -2,7 +2,7 @@
     <div class="card-header">
         <h5 class="mb-0">
             <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#requests">
-                {{__('Requests')}}
+             <i class="fas fa-caret-down mr-2"></i>   {{__('Requests')}} 
             </button>
         </h5>
     </div>
@@ -18,7 +18,7 @@
     <div class="card-header">
         <h5 class="mb-0">
             <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#scripts">
-                {{__('Scripts')}}
+             <i class="fas fa-caret-down mr-2"></i>    {{__('Scripts')}}
             </button>
         </h5>
     </div>
@@ -35,7 +35,7 @@
     <div class="card-header">
         <h5 class="mb-0">
             <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#categories">
-                {{__('Categories')}}
+               <i class="fas fa-caret-down mr-2"></i>  {{__('Categories')}}
             </button>
         </h5>
     </div>
@@ -52,7 +52,7 @@
     <div class="card-header">
         <h5 class="mb-0">
             <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#screens">
-                {{__('Screens')}}
+              <i class="fas fa-caret-down mr-2"></i>   {{__('Screens')}}
             </button>
         </h5>
     </div>
@@ -69,7 +69,7 @@
     <div class="card-header">
         <h5 class="mb-0">
             <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#environment_variables">
-                {{__('Environment Variables')}}
+              <i class="fas fa-caret-down mr-2"></i>   {{__('Environment Variables')}}
             </button>
         </h5>
     </div>
@@ -86,7 +86,7 @@
     <div class="card-header">
         <h5 class="mb-0">
             <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#users">
-                {{__('Users')}}
+              <i class="fas fa-caret-down mr-2"></i>   {{__('Users')}}
             </button>
         </h5>
     </div>
@@ -103,7 +103,7 @@
     <div class="card-header">
         <h5 class="mb-0">
             <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#groups">
-                {{__('Groups')}}
+             <i class="fas fa-caret-down mr-2"></i>    {{__('Groups')}}
             </button>
         </h5>
     </div>
@@ -120,7 +120,7 @@
     <div class="card-header">
         <h5 class="mb-0">
             <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#processes">
-                {{__('Processes')}}
+               <i class="fas fa-caret-down mr-2"></i>  {{__('Processes')}}
             </button>
         </h5>
     </div>
@@ -139,7 +139,7 @@
     <div class="card-header">
         <h5 class="mb-0">
             <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#comments">
-                {{__('Comments')}}
+              <i class="fas fa-caret-down mr-2"></i>   {{__('Comments')}}
             </button>
         </h5>
     </div>
@@ -156,7 +156,7 @@
     <div class="card-header">
         <h5 class="mb-0">
             <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#auth_clients">
-                {{__('Auth-Clients')}}
+              <i class="fas fa-caret-down mr-2"></i>   {{__('Auth-Clients')}}
             </button>
         </h5>
     </div>
@@ -173,7 +173,7 @@
     <div class="card-header">
         <h5 class="mb-0">
             <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#files">
-                {{__('Files (API)')}}
+               <i class="fas fa-caret-down mr-2"></i>  {{__('Files (API)')}}
             </button>
         </h5>
     </div>
@@ -190,7 +190,7 @@
     <div class="card-header">
         <h5 class="mb-0">
             <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#notifications">
-                {{__('Notifications (API)')}}
+              <i class="fas fa-caret-down mr-2"></i>   {{__('Notifications (API)')}}
             </button>
         </h5>
     </div>
@@ -207,7 +207,7 @@
     <div class="card-header">
         <h5 class="mb-0">
             <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#task_assignments">
-                {{__('Task Assignments (API)')}}
+              <i class="fas fa-caret-down mr-2"></i>   {{__('Task Assignments (API)')}}
             </button>
         </h5>
     </div>
