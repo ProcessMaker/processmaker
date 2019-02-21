@@ -232,7 +232,26 @@ class ScreenController extends Controller
      */
     public function duplicate(Screen $screen, Request $request)
     {
-        dd('HERE');
+        $request->validate(Screen::rules());
+        $newScreen = new Screen();
+        
+        $exclude = ['id', 'created_at', 'updated_at'];
+        foreach ($screen->getAttributes() as $attribute => $value) {
+            if (! in_array($attribute, $exclude)) {
+                $newScreen->{$attribute} = $screen->{$attribute};   
+            } 
+        }
+
+        if ($request->has('title')) {
+            $newScreen->title = $request->input('title');
+        }
+
+        if ($request->has('description')) {
+            $newScreen->description = $request->input('description');
+        }
+
+        $newScreen->saveOrFail();
+        return new ApiResource($newScreen);
     }
 
     /**
