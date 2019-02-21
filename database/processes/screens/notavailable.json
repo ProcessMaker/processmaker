@@ -1,174 +1,348 @@
 [
     {
-        "name": "Not available",
-        "items": [{
-                "config": {
-                    "label": "You don't have available days",
-                    "fontSize": "1em",
-                    "fontWeight": "normal"
+        "name":"Not available",
+        "items":[
+            {
+                "label":"Text Box",
+                "config":{
+                    "name":"title",
+                    "label":"You don't have available days",
+                    "value":"You don't have available days"
                 },
-                "inspector": [{
-                        "type": "FormInput",
-                        "field": "label",
-                        "config": {
-                            "label": "Text Label",
-                            "helper": "The text to display"
+                "component":"FormText",
+                "inspector":[
+                    {
+                        "type":"FormInput",
+                        "field":"name",
+                        "config":{
+                            "name":"Field Name",
+                            "label":"Field Name",
+                            "helper":"The data name for this field",
+                            "validation":"required"
                         }
-                    }, {
-                        "type": "FormSelect",
-                        "field": "fontWeight",
-                        "config": {
-                            "label": "Font Weight",
-                            "helper": "The weight of the text",
-                            "options": [{
-                                    "value": "normal",
-                                    "content": "Normal"
-                                }, {
-                                    "value": "bold",
-                                    "content": "Bold"
-                                }]
+                    },
+                    {
+                        "type":"FormTextArea",
+                        "field":"label",
+                        "config":{
+                            "rows":5,
+                            "label":"Text Content",
+                            "helper":"The text to display"
                         }
-                    }, {
-                        "type": "FormSelect",
-                        "field": "fontSize",
-                        "config": {
-                            "label": "Font Size",
-                            "helper": "The size of the text in em",
-                            "options": [{
-                                    "value": "0.5em",
-                                    "content": "0.5"
-                                }, {
-                                    "value": "1em",
-                                    "content": "1"
-                                }, {
-                                    "value": "1.5em",
-                                    "content": "1.5"
-                                }, {
-                                    "value": "2em",
-                                    "content": "2"
-                                }]
+                    },
+                    {
+                        "type":"ColorSelect",
+                        "field":"bgcolor",
+                        "config":{
+                            "label":"Background color",
+                            "helper":"Set the element's background color",
+                            "options":[
+                                {
+                                    "value":"alert alert-primary",
+                                    "content":"primary"
+                                },
+                                {
+                                    "value":"alert alert-secondary",
+                                    "content":"secondary"
+                                },
+                                {
+                                    "value":"alert alert-success",
+                                    "content":"success"
+                                },
+                                {
+                                    "value":"alert alert-danger",
+                                    "content":"danger"
+                                },
+                                {
+                                    "value":"alert alert-warning",
+                                    "content":"warning"
+                                },
+                                {
+                                    "value":"alert alert-info",
+                                    "content":"info"
+                                },
+                                {
+                                    "value":"alert alert-light",
+                                    "content":"light"
+                                },
+                                {
+                                    "value":"alert alert-dark",
+                                    "content":"dark"
+                                }
+                            ]
                         }
-                    }],
-                "component": "FormText",
-                "editor-component": "FormText",
-                "label": "Text"
-            }, {
-                "config": {
-                    "label": "Available days",
-                    "name": "availableDays",
-                    "placeholder": "",
-                    "validation": "",
-                    "helper": null,
-                    "type": "text"
+                    },
+                    {
+                        "type":"FormInput",
+                        "field":"conditionalHide",
+                        "config":{
+                            "label":"Show If:",
+                            "helper":"Hide this control unless the following expression is true"
+                        }
+                    }
+                ],
+                "editor-component":"FormText"
+            },
+            {
+                "label":"Line Input",
+                "config":{
+                    "name":"availableDays",
+                    "type":"text",
+                    "label":"Available days",
+                    "helper":null,
+                    "validation":null,
+                    "placeholder":null
                 },
-                "inspector": [{
-                        "type": "FormInput",
-                        "field": "name",
-                        "config": {
-                            "label": "Field Name",
-                            "name": "Field Name",
-                            "validation": "required",
-                            "helper": "The data name for this field"
+                "component":"FormInput",
+                "inspector":[
+                    {
+                        "type":"FormInput",
+                        "field":"name",
+                        "config":{
+                            "name":"Field Name",
+                            "label":"Field Name",
+                            "helper":"The data name for this field",
+                            "validation":"required"
                         }
-                    }, {
-                        "type": "FormSelect",
-                        "field": "type",
-                        "config": {
-                            "label": "Field Type",
-                            "name": "Field Type",
-                            "helper": "The type for this field",
-                            "options": [{
-                                    "value": "text",
-                                    "content": "Text"
-                                }, {
-                                    "value": "password",
-                                    "content": "Password"
-                                }]
+                    },
+                    {
+                        "type":"FormMultiselect",
+                        "field":"type",
+                        "config":{
+                            "name":"Field Type",
+                            "label":"Field Type",
+                            "helper":"The type for this field",
+                            "options":[
+                                {
+                                    "value":"text",
+                                    "content":"Text"
+                                },
+                                {
+                                    "value":"password",
+                                    "content":"Password"
+                                }
+                            ]
                         }
-                    }, {
-                        "type": "FormInput",
-                        "field": "label",
-                        "config": {
-                            "label": "Field Label",
-                            "helper": "The label describes the fields name"
+                    },
+                    {
+                        "type":"FormInput",
+                        "field":"label",
+                        "config":{
+                            "label":"Field Label",
+                            "helper":"The label describes the fields name"
                         }
-                    }, {
-                        "type": "FormInput",
-                        "field": "validation",
-                        "config": {
-                            "label": "Validation",
-                            "helper": "The validation rules needed for this field"
+                    },
+                    {
+                        "type":"FormInput",
+                        "field":"validation",
+                        "config":{
+                            "label":"Validation",
+                            "helper":"The validation rules needed for this field"
                         }
-                    }, {
-                        "type": "FormInput",
-                        "field": "placeholder",
-                        "config": {
-                            "label": "Placeholder",
-                            "helper": "The placeholder is what is shown in the field when no value is provided yet"
+                    },
+                    {
+                        "type":"FormInput",
+                        "field":"placeholder",
+                        "config":{
+                            "label":"Placeholder",
+                            "helper":"The placeholder is what is shown in the field when no value is provided yet"
                         }
-                    }, {
-                        "type": "FormInput",
-                        "field": "helper",
-                        "config": {
-                            "label": "Help Text",
-                            "helper": "Help text is meant to provide additional guidance on the field's value"
+                    },
+                    {
+                        "type":"FormInput",
+                        "field":"helper",
+                        "config":{
+                            "label":"Help Text",
+                            "helper":"Help text is meant to provide additional guidance on the field's value"
                         }
-                    }],
-                "component": "FormInput",
-                "editor-component": "FormInput",
-                "label": "Line Input"
-            }, {
-                "config": {
-                    "label": "Finish",
-                    "variant": "primary",
-                    "event": "submit"
+                    },
+                    {
+                        "type":"ColorSelect",
+                        "field":"bgcolor",
+                        "config":{
+                            "label":"Background color",
+                            "helper":"Set the element's background color",
+                            "options":[
+                                {
+                                    "value":"alert alert-primary",
+                                    "content":"primary"
+                                },
+                                {
+                                    "value":"alert alert-secondary",
+                                    "content":"secondary"
+                                },
+                                {
+                                    "value":"alert alert-success",
+                                    "content":"success"
+                                },
+                                {
+                                    "value":"alert alert-danger",
+                                    "content":"danger"
+                                },
+                                {
+                                    "value":"alert alert-warning",
+                                    "content":"warning"
+                                },
+                                {
+                                    "value":"alert alert-info",
+                                    "content":"info"
+                                },
+                                {
+                                    "value":"alert alert-light",
+                                    "content":"light"
+                                },
+                                {
+                                    "value":"alert alert-dark",
+                                    "content":"dark"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "type":"ColorSelect",
+                        "field":"color",
+                        "config":{
+                            "label":"Text color",
+                            "helper":"Set the element's text color",
+                            "options":[
+                                {
+                                    "value":"text-primary",
+                                    "content":"primary"
+                                },
+                                {
+                                    "value":"text-secondary",
+                                    "content":"secondary"
+                                },
+                                {
+                                    "value":"text-success",
+                                    "content":"success"
+                                },
+                                {
+                                    "value":"text-danger",
+                                    "content":"danger"
+                                },
+                                {
+                                    "value":"text-warning",
+                                    "content":"warning"
+                                },
+                                {
+                                    "value":"text-info",
+                                    "content":"info"
+                                },
+                                {
+                                    "value":"text-light",
+                                    "content":"light"
+                                },
+                                {
+                                    "value":"text-dark",
+                                    "content":"dark"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "type":"FormInput",
+                        "field":"conditionalHide",
+                        "config":{
+                            "label":"Show If:",
+                            "helper":"Hide this control unless the following expression is true"
+                        }
+                    }
+                ],
+                "editor-component":"FormInput"
+            },
+            {
+                "label":"Submit Button",
+                "config":{
+                    "name":null,
+                    "event":"submit",
+                    "label":"Finish",
+                    "value":null,
+                    "variant":"primary"
                 },
-                "inspector": [{
-                        "type": "FormInput",
-                        "field": "label",
-                        "config": {
-                            "label": "Field Label",
-                            "helper": "The label describes the button's text"
+                "component":"FormButton",
+                "inspector":[
+                    {
+                        "type":"FormInput",
+                        "field":"label",
+                        "config":{
+                            "label":"Field Label",
+                            "helper":"The label describes the button's text"
                         }
-                    }, {
-                        "type": "FormSelect",
-                        "field": "variant",
-                        "config": {
-                            "label": "Variant",
-                            "helper": "The variant determines the appearance of the button",
-                            "options": [{
-                                    "value": "primary",
-                                    "content": "Primary"
-                                }, {
-                                    "value": "secondary",
-                                    "content": "Secondary"
-                                }, {
-                                    "value": "success",
-                                    "content": "Success"
-                                }, {
-                                    "value": "danger",
-                                    "content": "Danger"
-                                }, {
-                                    "value": "warning",
-                                    "content": "Warning"
-                                }, {
-                                    "value": "info",
-                                    "content": "Info"
-                                }, {
-                                    "value": "light",
-                                    "content": "Light"
-                                }, {
-                                    "value": "dark",
-                                    "content": "Dark"
-                                }, {
-                                    "value": "link",
-                                    "content": "Link"
-                                }]
+                    },
+                    {
+                        "type":"FormInput",
+                        "field":"name",
+                        "config":{
+                            "label":"Field Name",
+                            "helper":"The name of the button"
                         }
-                    }],
-                "component": "FormButton",
-                "editor-component": "FormButton",
-                "label": "Submit Button"
-            }]
+                    },
+                    {
+                        "type":"FormInput",
+                        "field":"value",
+                        "config":{
+                            "label":"Field Value",
+                            "helper":"The value being submitted"
+                        }
+                    },
+                    {
+                        "type":"FormMultiselect",
+                        "field":"variant",
+                        "config":{
+                            "label":"Variant",
+                            "helper":"The variant determines the appearance of the button",
+                            "options":[
+                                {
+                                    "value":"primary",
+                                    "content":"Primary"
+                                },
+                                {
+                                    "value":"secondary",
+                                    "content":"Secondary"
+                                },
+                                {
+                                    "value":"success",
+                                    "content":"Success"
+                                },
+                                {
+                                    "value":"danger",
+                                    "content":"Danger"
+                                },
+                                {
+                                    "value":"warning",
+                                    "content":"Warning"
+                                },
+                                {
+                                    "value":"info",
+                                    "content":"Info"
+                                },
+                                {
+                                    "value":"light",
+                                    "content":"Light"
+                                },
+                                {
+                                    "value":"dark",
+                                    "content":"Dark"
+                                },
+                                {
+                                    "value":"link",
+                                    "content":"Link"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "type":"FormInput",
+                        "field":"conditionalHide",
+                        "config":{
+                            "label":"Show If:",
+                            "helper":"Hide this control unless the following expression is true"
+                        }
+                    }
+                ],
+                "editor-component":"FormButton"
+            }
+        ]
     }
 ]
