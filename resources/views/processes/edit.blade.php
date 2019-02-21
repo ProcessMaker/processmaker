@@ -28,7 +28,7 @@
                         ])
                     !!}
                     <small class="form-text text-muted" v-if="! errors.name">{{ __('The process name must be distinct.') }}</small>
-                    <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
+                    <div class="invalid-feedback" v-if="errors.name">@{{errors.name[0]}}</div>
                 </div>
                 <div class="form-group">
                     {!! Form::label('description', __('Description')) !!}
@@ -183,12 +183,12 @@
 
                     response['users'] = [];
                     response['groups'] = [];
-                    
+
                     data.forEach(item => {
                         if (item.type == 'user') {
                             response['users'].push(parseInt(item.id));
                         }
-                        
+
                         if (item.type == 'group') {
                             response['groups'].push(parseInt(item.id));
                         }
