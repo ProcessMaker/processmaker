@@ -34,6 +34,22 @@ class PermissionsTest extends TestCase
 
     public function testApiPermissions()
     {
+        $group = factory(Group::class)->create([
+            'name' => 'All Permissions',
+        ]);
+        $permissions = Permission::all()->pluck('id');
+        $group->permissions()->attach($permissions);
+        $group->save();
+        
+        factory(GroupMember::class)->create([
+            'group_id' => $group->id,
+            'member_type' => User::class,
+            'member_id' => $this->user->id,
+        ]);
+        
+        $this->user->refresh();
+        $this->flushSession();        
+        
         $process = factory(Process::class)->create([
             'user_id' => $this->user->id,
             'status' => 'ACTIVE',
