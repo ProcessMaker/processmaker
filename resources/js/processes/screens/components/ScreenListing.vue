@@ -76,11 +76,18 @@
       <form>
         <div class="form-group">
           <label for="title">Name</label>
-          <input type="text" class="form-control" id="title" v-model="dupScreen.title">
+          <input
+            type="text"
+            class="form-control"
+            id="title"
+            v-model="dupScreen.title"
+            v-bind:class="{ 'is-invalid': errors.title }"
+          >
+          <div class="invalid-feedback" v-if="errors.title">{{errors.title[0]}}</div>
         </div>
         <div class="form-group">
           <label for="type">Type</label>
-          <select class="form-control" id="type">
+          <select class="form-control" id="type" disabled>
             <option>{{dupScreen.type}}</option>
           </select>
         </div>
@@ -106,7 +113,12 @@ export default {
   data() {
     return {
       orderBy: "title",
-      dupScreen: {},
+      dupScreen: {
+        title: "",
+        type: "",
+        description: ""
+      },
+      errors: [],
       sortOrder: [
         {
           field: "title",
@@ -161,10 +173,15 @@ export default {
     },
     onSubmit() {
       ProcessMaker.apiClient
-        .put("screens/" + this.dupScreen.id + "/duplicate")
+        .put("screens/" + this.dupScreen.id + "/duplicate", this.dupScreen)
         .then(response => {
           ProcessMaker.alert("The screen was duplicated.", "success");
           this.fetch();
+        })
+        .catch(error => {
+          if (error.response.status && error.response.status === 422) {
+            this.errors = error.response.data.errors;
+          }
         });
     },
     onAction(actionType, data, index) {
@@ -177,7 +194,10 @@ export default {
           window.location.href = "/processes/screens/" + data.id + "/edit";
           break;
         case "duplicate-item":
-          this.dupScreen = data;
+          this.dupScreen.title = data.title + " Copy";
+          this.dupScreen.type = data.type;
+          this.dupScreen.description = data.description;
+          this.dupScreen.id = data.id;
           this.showModal();
           break;
         case "remove-item":
