@@ -135,9 +135,9 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
 
         static::saved(function ($model) {
             $manager = new TaskSchedulerManager();
-            Log::info ('ProcessRequest Token savedddddd....');
             $manager->registerIntermediateTimerEvents($model);
         });
+
     }
 
     /**

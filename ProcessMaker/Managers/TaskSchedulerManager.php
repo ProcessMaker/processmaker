@@ -118,6 +118,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                     if ($timeDate && empty($timeEventType)) {
                         $timeEventType = 'TimeDate';
                         $period = $eventDefinition->getTimeDate()->getBody();
+                        $intervals = explode('|', $period);
                     }
 
                     if ($timeCycle && empty($timeEventType)) {
@@ -131,7 +132,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                         $period = $eventDefinition->getTimeDuration()->getBody();
                     }
 
-                    $init = $period[0] === 'R' ? 0 : 1;
+                    $init = ($period[0] === 'R' || $timeDate) ? 0 : 1;
                     for ($i = $init; $i < count($intervals); $i++) {
                         $parts = $this->getIntervalParts($intervals[$i]);
                         $configuration = [
@@ -198,13 +199,18 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 
    public function executeTimerStartEvent($task, $config)
    {
-       //Get the event BPMN element
+       // Get the event BPMN element
        $id = $task->process_id;
        if (!$id) {
            return;
        }
 
        $process = Process::find($id);
+
+       // If a process is configured to pause timer start events we do nothing
+       if ($process->pause_timer_start === 1) {
+           return;
+       }
 
        $definitions = $process->getDefinitions();
        if (!$definitions->findElementById($config->element_id)) {
