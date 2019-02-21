@@ -88,43 +88,55 @@ class TimerStartEventTest extends TestCase
     {
         $manager = new TaskSchedulerManager();
 
-
         $cases = [
             [
-                'currentDate' => '2019-02-15T10:00:00Z',
-                'interval' => 'R4/2019-02-15T01:00:00Z/P1D',
-                'expectedNextDate' => '2019-02-16T01:00:00Z'
+                'currentDate' => '2019-02-19T00:00:00Z',
+                'interval' => 'R/2019-02-15T00:00:00Z/P1D/2019-02-20T00:00:00Z',
+                'expectedNextDate' => '2019-02-19T00:00:00Z',
+                'title' => '1 day recurrence, currentDate < endDate'
             ],
             [
-                'currentDate' => '2019-02-20T10:00:00Z',
-                'interval' => 'R4/2019-02-15T01:00:00Z/P1D',
-                'expectedNextDate' => null
+                'currentDate' => '2019-02-21T00:00:00Z',
+                'interval' => 'R/2019-02-15T00:00:00Z/P1D/2019-02-20T00:00:00Z',
+                'expectedNextDate' => null,
+                'title' => '1 day recurrence, currentDate > endDate'
             ],
             [
                 'currentDate' => '2019-02-20T10:00:00Z',
                 'interval' => '2019-02-15T01:00:00Z',
-                'expectedNextDate' => null
+                'expectedNextDate' => null,
+                'title' => 'Specific date'
             ],
-//            [
-//                'currentDate' => '2019-02-11T00:00:00Z',
-//                'interval' => 'R4/2019-02-15T00:00:00Z/P1M',
-//                'expectedNextDate' => '2019-02-15T00:00:00Z'
-//            ],
-//            [
-//                'currentDate' => '2019-05-11T00:00:00Z',
-//                'interval' => 'R4/2019-02-15T00:00:00Z/P1M',
-//                'expectedNextDate' => '2019-05-15T00:00:00Z'
-//            ],
-//            [
-//                'currentDate' => '2019-05-11T00:00:00Z',
-//                'interval' => 'R/2019-02-15T00:00:00Z/P1M',
-//                'expectedNextDate' => '2019-05-15T00:00:00Z'
-//            ],
-//            [
-//                'currentDate' => '2019-02-14T02:01:00Z',
-//                'interval' => 'R/2019-02-14T11:02:00Z/PT1M',
-//                'expectedNextDate' => '2019-02-14T11:02:00Z'
-//            ],
+            [
+                'currentDate' => '2019-02-15T10:00:00Z',
+                'interval' => 'R4/2019-02-15T01:00:00Z/P1D',
+                'expectedNextDate' => '2019-02-16T01:00:00Z',
+                'title' => '1 day recurrence currentDate > startDate'
+            ],
+            [
+                'currentDate' => '2019-02-20T10:00:00Z',
+                'interval' => 'R4/2019-02-15T01:00:00Z/P1D',
+                'expectedNextDate' => null,
+                'title' => '1 day recurrence currentDate has passed the number of recurrences '
+            ],
+            [
+                'currentDate' => '2019-02-11T00:00:00Z',
+                'interval' => 'R4/2019-02-15T00:00:00Z/P1M',
+                'expectedNextDate' => '2019-02-15T00:00:00Z',
+                'title' => '1 day recurrence currentDate < startDate '
+            ],
+            [
+                'currentDate' => '2019-05-11T00:00:00Z',
+                'interval' => 'R/2019-02-15T00:00:00Z/P1M',
+                'expectedNextDate' => '2019-05-15T00:00:00Z',
+                'title' => '1 month recurrence currentDate < startDate '
+            ],
+            [
+                'currentDate' => '2019-02-14T02:01:00Z',
+                'interval' => 'R/2019-02-14T11:02:00Z/PT1M',
+                'expectedNextDate' => '2019-02-14T11:02:00Z',
+                'title' => '1 month recurrence currentDate < startDate by hours'
+            ],
         ];
 
         foreach($cases as $case) {
@@ -132,7 +144,7 @@ class TimerStartEventTest extends TestCase
             $nayraInterval = $case['interval'];
             $expectedNextDate = $case['expectedNextDate'] === null ? null : new \DateTime($case['expectedNextDate']);
             $nextDate = $manager->nextDate($currentDate, $nayraInterval);
-            $this->assertEquals($expectedNextDate, $nextDate);
+            $this->assertEquals($expectedNextDate, $nextDate, 'Assertion failed in "'. $case['title']. '""');
         }
     }
 
