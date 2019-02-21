@@ -206,7 +206,7 @@ class ScreenController extends Controller
      * @return ResponseFactory|Response
      *
      *     @OA\Put(
-     *     path="/screens/screensId",
+     *     path="/screens/screensId/duplicate",
      *     summary="duplicate a screen",
      *     operationId="updateScreen",
      *     tags={"Screens"},
