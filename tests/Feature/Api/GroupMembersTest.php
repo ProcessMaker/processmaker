@@ -45,7 +45,7 @@ class GroupMembersTest extends TestCase
          'member_id' => $this->user->id,
          'group_id' => $group1->id
      ]);
-     
+
      factory(GroupMember::class)->create([
          'member_type' => User::class,
          'member_id' => $other_user->id,
@@ -170,5 +170,50 @@ class GroupMembersTest extends TestCase
       //Validate the header status code
       $response->assertStatus(405);
   }
+
+    /**
+     * List group available to assigned
+     */
+
+    public function testMembersGroupAvailable()
+    {
+        factory(Group::class, 15)->create(['status' => 'ACTIVE']);
+        $response = $this->apiCall('GET', '/group_members_available',[
+            'member_id' => 0,
+            'member_type' => User::class,
+        ]);
+        $this->assertCount(15, $response->json());
+        $response->assertStatus(200);
+
+        /*$group1 = factory(Group::class)->create(['name' => 'Group that admin belongs to']);
+        $group2 = factory(Group::class)->create(['name' => 'Group that other user belongs to']);
+
+        $other_user = factory(User::class)->create(['status' => 'ACTIVE']);
+
+        factory(GroupMember::class)->create([
+            'member_type' => User::class,
+            'member_id' => $this->user->id,
+            'group_id' => $group1->id
+        ]);
+
+        factory(GroupMember::class)->create([
+            'member_type' => User::class,
+            'member_id' => $other_user->id,
+            'group_id' => $group2->id
+        ]);
+
+        $response = $this->apiCall('GET', self::API_TEST_URL);
+        $json = $response->json('data');
+        $this->assertCount(2, $json);
+        $this->assertEquals('Group that admin belongs to', $json[0]['name']);
+        $this->assertEquals('Group that other user belongs to', $json[1]['name']);
+
+        //when user is regular user they can only get the groups that they belong to
+        $this->user = $other_user;
+        $response = $this->apiCall('GET', self::API_TEST_URL);
+        $json = $response->json('data');
+        $this->assertCount(1, $json);
+        $this->assertEquals('Group that other user belongs to', $json[0]['name']);*/
+    }
 
 }

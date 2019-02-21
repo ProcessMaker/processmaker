@@ -21,14 +21,14 @@
                     <div class="nav nav-tabs" id="nav-tab" role="tablist">
                         <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home"
                            role="tab"
-                           aria-controls="nav-home" aria-selected="true">Information</a>
+                           aria-controls="nav-home" aria-selected="true">{{__('Information')}}</a>
                         <a class="nav-item nav-link" id="nav-groups-tab" data-toggle="tab" href="#nav-groups" role="tab"
-                           aria-controls="nav-groups" aria-selected="true">Groups</a>
+                           aria-controls="nav-groups" aria-selected="true">{{__('Groups')}}</a>
                         <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile"
                            role="tab"
-                           aria-controls="nav-profile" aria-selected="false">Permissions</a>
+                           aria-controls="nav-profile" aria-selected="false">{{__('Permissions')}}</a>
                         <a class="nav-item nav-link" id="nav-tokens-tab" data-toggle="tab" href="#nav-tokens" role="tab"
-                           aria-controls="nav-tokens" aria-selected="false">API Tokens</a>
+                           aria-controls="nav-tokens" aria-selected="false">{{__('API Tokens')}}</a>
 
                     </div>
                 </nav>
@@ -262,7 +262,7 @@
                                 </div>
                                 <div class="col-8" align="right">
                                     <button type="button" class="btn btn-action text-light" data-toggle="modal"
-                                            data-target="#addUserToGroup">
+                                            data-target="#addUserToGroup" @click="loadGroups">
                                         <i class="fas fa-plus"></i>
                                         {{__('Add User To Group')}}
                                     </button>
@@ -543,7 +543,7 @@
         },
         mounted() {
           console.log('mounted');
-          this.loadGroups();
+          //this.loadGroups();
           let created = (new URLSearchParams(window.location.search)).get('created');
           if (created) {
             ProcessMaker.alert('{{__('The user was successfully created')}}', 'success');
@@ -696,9 +696,31 @@
             return `${options.name}`
           },
           loadGroups() {
-            ProcessMaker.apiClient({method: 'GET', url: '/groups'})
-              .then((result) => {
-                this.groups = result.data.data;
+            console.log('load groups');
+
+            ProcessMaker.apiClient
+              .get("group_members?member_id=" +
+                this.formData.id +
+                "&per_page=1000"
+              )
+              .then(response => {
+                let assigned = [];
+                response.data.data.forEach(item => {
+                  assigned.push(item.group_id);
+                });
+                console.log(assigned);
+                ProcessMaker.apiClient
+                  .get('groups?per_page=1000')
+                  .then((result) => {
+                    this.groups = [];
+                    result.data.data.forEach(item => {
+                      console.log(assigned.indexOf(item.id));
+                        if (assigned.indexOf(item.id) === -1) {
+                          this.groups.push(item);
+                        }
+                    });
+                    console.log(this.groups)
+                  });
               });
           },
           onCloseAddUserToGroup() {

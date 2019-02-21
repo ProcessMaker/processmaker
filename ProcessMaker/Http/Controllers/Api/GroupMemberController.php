@@ -22,7 +22,7 @@ class GroupMemberController extends Controller
      * @var array
      */
     public $doNotSanitize = [
-        //        
+        //
     ];
 
     /**
@@ -195,5 +195,79 @@ class GroupMemberController extends Controller
     {
         $group_member->delete();
         return response([], 204);
+    }
+
+    /**
+     * Display a listing of members available
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return ApiCollection
+     *
+     *     @OA\Get(
+     *     path="/group_members",
+     *     summary="Returns all groups for a given member",
+     *     operationId="getGroupMembers",
+     *     tags={"Group Members"},
+     *     @OA\Parameter(ref="#/components/parameters/member_id"),
+     *     @OA\Parameter(ref="#/components/parameters/order_by"),
+     *     @OA\Parameter(ref="#/components/parameters/order_direction"),
+     *     @OA\Parameter(ref="#/components/parameters/per_page"),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="list of users or groups available to be assigned as member",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/group_members"),
+     *             ),
+     *             @OA\Property(
+     *                 property="meta",
+     *                 type="object",
+     *                 allOf={@OA\Schema(ref="#/components/schemas/metadata")},
+     *             ),
+     *         ),
+     *     ),
+     * )
+     */
+    public function groupsAvailable(Request $request)
+    {
+        $member_id = $request->input('member_id', null);
+        $member_type = $request->input('member_type', null);
+
+
+        $members = [];
+        if ($member_id && $member_type) {
+            $members = GroupMember::where('member_type', $request->input('member_type'))
+                ->where('member_id', $request->input('member_id'))
+                ->get([id]);
+        }
+
+        $response = Group::all(['id', 'name'])
+            ->whereNotIn('id', $members);
+
+
+        /*$query = GroupMember::query()
+            ->join('groups', 'groups.id', '=', 'group_members.group_id')
+            ->select('group_members.*', 'groups.name', 'groups.description');
+
+        if (\Auth::user()->is_administrator) {
+            $member_id = $request->input('member_id', null);
+            if ($member_id) {
+                $query->where('member_id', $member_id);
+            }
+        } else {
+            $query->where('member_id', Auth::user()->id);
+        }
+
+        $response =
+            $query->orderBy(
+                $request->input('order_by', 'created_at'),
+                $request->input('order_direction', 'ASC')
+            )->paginate($request->input('per_page', 10));*/
+
+        return response(GroupMemberResource($response));
     }
 }
