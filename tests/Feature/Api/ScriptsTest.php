@@ -278,6 +278,25 @@ class ScriptsTest extends TestCase
     }
 
     /**
+     * Duplicate Script 
+     */
+    public function testDuplicateScript()
+    {
+        $faker = Faker::create();
+        $code = '{"foo":"bar"}';
+        $url = self::API_TEST_SCRIPT . '/' . factory(Script::class)->create([
+                'code' => $code
+            ])->id;
+        $response = $this->apiCall('PUT', $url . '/duplicate', [
+            'title' => "TITLE",
+            'language' => 'php',
+            'description' => $faker->sentence(5),
+        ]);
+        $new_script = Script::find($response->json()['id']);
+        $this->assertEquals($code, $new_script->code);
+    }
+
+    /**
      * Test the preview function
      */
     public function testPreviewScript()
