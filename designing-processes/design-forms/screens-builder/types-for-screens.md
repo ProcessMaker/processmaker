@@ -10,7 +10,7 @@ description: >-
 
 Use Screens Builder to design different types of ProcessMaker Screens. Savvy developers can design custom ProcessMaker Screen types in [packages](../../../package-development-distribution/first-topic.md). However, ProcessMaker 4 Community edition provides the following ProcessMaker Screen types by default.
 
-### Forms
+### Form
 
 The Form type allows people to interact with a Request in which those ProcessMaker Screens are used. Below are only a few of the ways that people may interact with a digital form:
 

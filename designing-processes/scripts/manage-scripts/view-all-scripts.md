@@ -24,7 +24,7 @@ Follow these steps to view all ProcessMaker Scripts in your organization:
 
 ![&quot;Scripts&quot; page displays all ProcessMaker Scripts in your organization](../../../.gitbook/assets/chrome_2019-01-17_14-38-34.png)
 
-The **Scripts** page displays the following information about ProcessMaker Scripts:
+The **Scripts** page displays the following information about ProcessMaker Scripts in tabular format:
 
 * **Name:** The **Name** column displays the name of the ProcessMaker Script. Click the name to edit the ProcessMaker Screen in [Scripts Editor](../scripts-editor.md).
 * **Description:** The **Description** column displays the description of the ProcessMaker Script. See [Edit Script Configuration](edit-script-configuration.md#edit-configuration-information-about-a-processmaker-script) for more information.

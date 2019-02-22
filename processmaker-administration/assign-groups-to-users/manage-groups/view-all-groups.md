@@ -22,7 +22,7 @@ Follow these steps to view all ProcessMaker groups in your organization:
 
 ![&quot;Groups&quot; page displays all groups in your organization](../../../.gitbook/assets/groups-page-admin.png)
 
-The **Groups** page displays the following information about ProcessMaker groups:
+The **Groups** page displays the following information about ProcessMaker groups in tabular format:
 
 * **Name:** The **Name** column displays the name of the ProcessMaker group.
 * **Description:** The **Description** column displays the description for the ProcessMaker group.
@@ -43,6 +43,10 @@ If no ProcessMaker groups exist, the following message displays: **No Data Avail
 ### Edit a ProcessMaker Group
 
 Click the **Edit** icon![](../../../.gitbook/assets/edit-icon.png). See [Edit a Group](edit-a-group.md#edit-a-processmaker-group).
+
+### Delete a ProcessMaker Group
+
+Click the **Delete** icon![](../../../.gitbook/assets/trash-icon-process-modeler-processes.png). See [Delete a Group](remove-a-group.md#delete-a-processmaker-group).
 
 ### Display Information the Way You Want It
 

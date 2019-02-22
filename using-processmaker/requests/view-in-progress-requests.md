@@ -17,7 +17,7 @@ Follow these steps to view in-progress Requests:
 
 ![&quot;In Progress&quot; page displays in-progress Requests in which you participated](../../.gitbook/assets/in-progress-request.png)
 
-The **In Progress** page displays the following information in tabular format:
+The **In Progress** page displays the following information about in-progress Requests in tabular format:
 
 * **Name:** The **Name** column displays the name of the Process associated with the Request. Click the Process name to [view information](request-details.md#information-for-in-progress-requests) about that Request.
 * **Status:** The **Status** column displays the **In Progress** status.

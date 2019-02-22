@@ -22,7 +22,7 @@ Follow these steps to view all client authentication keys granted access to the 
 
 ![&quot;Auth Clients&quot; page displays all client authentication keys that can access the ProcessMaker 4 REST API](../../../.gitbook/assets/auth-client-page-admin.png)
 
-The **Auth Clients** page displays the following information about client authentication keys that can access the ProcessMaker 4 REST API:
+The **Auth Clients** page displays the following information about client authentication keys that can access the ProcessMaker 4 REST API in tabular format:
 
 * **Client ID:** The **Client ID** column displays the Client ID for the key. ProcessMaker 4 automatically generates the Client ID value when the key is created and represents a sequential number of how many keys have been created at that time.
 * **Name:** The **Name** column displays the name of the key. See [Create a New Client Authentication Key](../create-a-new-client-authentication-key.md).
@@ -37,6 +37,10 @@ If no Client authentication keys have been created, the following message displa
 ### Edit a Client Authentication Key
 
 Click the **Edit** icon![](../../../.gitbook/assets/edit-icon.png). See [Edit a Client Authentication Key](edit-a-client-authentication-key.md).
+
+### Delete a Client Authentication Key
+
+Click the **Delete** icon![](../../../.gitbook/assets/trash-icon-process-modeler-processes.png). See [Delete a Client Authentication Key](delete-a-client-authentication-key.md#delete-a-client-authentication-key).
 
 ### Display Information the Way You Want It
 

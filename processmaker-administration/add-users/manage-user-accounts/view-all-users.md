@@ -25,7 +25,7 @@ Click the **Users** ![](../../../.gitbook/assets/users-icon-admin.png) icon when
 
 ![&quot;Users&quot; page displays all users in your organization](../../../.gitbook/assets/users-page-admin%20%281%29.png)
 
-The **Users** page displays the following information about ProcessMaker user accounts:
+The **Users** page displays the following information about ProcessMaker user accounts in tabular format:
 
 * **Username:** The **Username** column displays the username associated with the ProcessMaker user account.
 * **Full Name:** The **Full Name** column displays the full name associated with ProcessMaker user account.
@@ -46,6 +46,10 @@ If no ProcessMaker user accounts exist, the following message displays: **No Dat
 ### Edit a ProcessMaker User Account
 
 Click the **Edit** icon![](../../../.gitbook/assets/edit-icon.png). See [Edit a User Account](edit-a-user-account.md#edit-a-processmaker-user-account).
+
+### Delete a ProcessMaker User Account
+
+Click the **Delete** icon![](../../../.gitbook/assets/trash-icon-process-modeler-processes.png). See [Delete a User Account](remove-a-user-account.md#delete-a-processmaker-user-account).
 
 ### Display Information the Way You Want It
 

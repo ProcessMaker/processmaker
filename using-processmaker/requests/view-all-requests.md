@@ -17,7 +17,7 @@ Follow these steps to view the **All Requests** page:
 
 ![&quot;All Requests&quot; page displays all Requests in which you are a participant](../../.gitbook/assets/canceled-request-in-all-requests-tab-requests.png)
 
-The **All Requests** page displays the following information in tabular format:
+The **All Requests** page displays the following information about all Requests in tabular format:
 
 * **Name:** The **Name** column displays the name of the Process associated with the Request. Click the Process name to [view information](request-details.md) about that Request.
 * **Status:** The **Status** column displays the status of the Process associated with the Request. The following are possible statuses:

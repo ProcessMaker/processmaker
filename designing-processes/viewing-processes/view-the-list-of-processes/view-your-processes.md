@@ -27,7 +27,7 @@ Click the **Processes** icon![](../../../.gitbook/assets/processses-icon-process
 
 ![&quot;Processes&quot; page displays all Processes in your organization](../../../.gitbook/assets/processes.png)
 
-The **Processes** page displays the following information about active and inactive Processes:
+The **Processes** page displays the following information about active and inactive Processes in tabular format:
 
 * **Name:** The **Name** column displays the Process name.
 * **Category:** The **Category** column displays in which Process Category the Process is assigned. See [Process Categories](../process-categories.md).

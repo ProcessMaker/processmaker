@@ -28,12 +28,12 @@ Follow these steps to view Process Categories:
 
 ![&quot;Process Categories&quot; page displays categories by which to organize Processes for Requesters](../../.gitbook/assets/process-categories-page-processes.png)
 
-The **Categories** page displays the following information about Process Categories:
+The **Categories** page displays the following information about Process Categories in tabular format:
 
 * **Name:** The **Name** column displays the name of the Process Category.
 * **Status:** The **Status** column displays the status of the Process Category. Below is a description of each status:
   * **Active:** An active Process Category can have Processes assigned to it.
-  * **Inactive:** An inactive Process Category can no longer be selected when [assigning a Process to a Process Category](create-a-process.md#create-a-new-process). Furthermore, Processes assigned to an inactive Category [no longer display to Process Requesters](../../using-processmaker/requests/make-a-request.md#start-a-request) even though such Processes may be active.
+  * **Inactive:** An inactive Process Category can no longer be selected when [assigning a Process to a Process Category](create-a-process.md#create-a-new-process). Furthermore, Processes assigned to an inactive Category [no longer display to Process requesters](../../using-processmaker/requests/make-a-request.md#start-a-request) even though such Processes may be active.
 * **Processes:** The **\# Processes** column displays how many Processes in your organization have been assigned to that Process Category.
 * **Modified:** The **Modified** column displays the date and time the Process Category was last modified. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 * **Created:** The **Created** column displays the date and time the Process Category was created. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.

@@ -32,6 +32,25 @@ Click the **Archived Processes** icon![](../../../.gitbook/assets/archived-proce
 
 ![&quot;Process Archive&quot; page contains all archived Processes in your organization](../../../.gitbook/assets/process-archive-page-processes.png)
 
+The **Process Archive** page displays the following information about archived Processes in tabular format:
+
+* **Name:** The **Name** column displays the Process name.
+* **Category:** The **Category** column displays in which Process Category the Process is assigned. See [Process Categories](../process-categories.md).
+* **Status:** The **Status** column displays that the Process is inactive and is represented by the![](../../../.gitbook/assets/inactive-status-icon-processes.png)icon.
+* **Owner:** The **Owner** column displays the Process Owner who maintains the Process. See [Profile Settings](../../../using-processmaker/profile-settings.md#view-another-users-profile-information) for information how to view the Process Owner's profile information.
+* **Modified:** The **Modified** column displays the date and time the Process was last modified. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
+* **Created:** The **Created** column displays the date and time the Process was created. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
+
+{% hint style="info" %}
+### Need to Restore an Archived Process?
+
+Click the **Restore** icon![](../../../.gitbook/assets/restore-process-icon-processes-page-processes.png). See [Restore a Process](restore-a-process.md#restore-an-archived-process).
+
+### No Archived Processes?
+
+If no archived Processes exist, the following message displays: **No Data Available**.
+{% endhint %}
+
 ## Archive a Process
 
 {% hint style="info" %}
