@@ -22,8 +22,9 @@
 
 
 <script>
-import {Modeler, StatusBar} from "@processmaker/modeler";
+import { Modeler } from "@processmaker/modeler";
 import { library } from "@fortawesome/fontawesome-svg-core";
+import StatusBar from "@processmaker/modeler/src/components/statusbar";
 
 import {
   faCheckCircle,

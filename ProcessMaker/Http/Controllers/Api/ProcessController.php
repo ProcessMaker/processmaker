@@ -401,7 +401,7 @@ class ProcessController extends Controller
                 }
             }
             return !empty($canStartNodes);
-        });
+        };
 
         return new ApiCollection($processes);
     }

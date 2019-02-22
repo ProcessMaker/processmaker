@@ -79,7 +79,7 @@ ProcessMaker.EventBus.$on('modeler-init', ({registerNode, registerBpmnExtension,
         config: {
             label: 'Permission To Start',
             helper: '',
-            name: ''
+            name: 'id',
         }
     });
 
