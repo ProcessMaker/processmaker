@@ -33,7 +33,6 @@ trait ProcessStartEventAssignmentsTrait
         $definitions = $process->getDefinitions(true);
         if ($definitions) {
             foreach ($definitions->getElementsByTagName('startEvent') as $node) {
-                \Illuminate\Support\Facades\Log::info('Llego a: ' . $node->getAttribute('id'));
                 static::setStartEventPermission($process, $node);
             }
         }

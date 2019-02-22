@@ -80,6 +80,11 @@ export default {
     },
     assignmentSetter(event) {
       this.$set(this.node, "assignment", event.target.value);
+      if(event.target.value === 'user') {
+        this.$set(this.node, 'assignedGroups', '');
+      } else {
+        this.$set(this.node, 'assignedUsers', '');
+      }
       this.$emit("input", this.value);
     },
     loadUsersAndGroups() {
