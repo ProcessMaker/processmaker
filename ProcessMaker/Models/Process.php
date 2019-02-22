@@ -500,6 +500,17 @@ class Process extends Model implements HasMedia
     }
 
     /**
+     * Update BPMN content and reset bpmnDefinitions
+     *
+     * @param string $value
+     */
+    public function setBpmnAttribute($value)
+    {
+        $this->bpmnDefinitions  = null;
+        $this->attributes['bpmn'] = $value;
+    }
+
+    /**
      * Process events relationship.
      *
      * @return \ProcessMaker\Models\ProcessEvents
