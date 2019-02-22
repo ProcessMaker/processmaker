@@ -122,6 +122,7 @@ Route::group(
     // Mark Notifications as Read & Unread
     Route::put('read_notifications', 'NotificationController@updateAsRead')->name('notifications.update_as_read'); //No permissions necessary
     Route::put('unread_notifications', 'NotificationController@updateAsUnread')->name('notifications.update_as_unread'); //No permissions necessary
+    Route::put('read_all_notifications', 'NotificationController@updateAsReadAll')->name('notifications.update_as_read'); //No permissions necessary
 
     // Task Assignments
     Route::get('task_assignments', 'TaskAssignmentController@index')->name('task_assignments.index')->middleware('can:view-task_assignments');

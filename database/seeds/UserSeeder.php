@@ -20,11 +20,6 @@ class UserSeeder extends Seeder
         if (User::count() !== 0) {
             return;
         }
-        //Create default All Users group
-        $group_id = factory(Group::class)->create([
-                'name' => 'Users',
-                'status' => 'ACTIVE'
-            ])->id;
 
         //Create admin user
         $user = factory(User::class)->create([
@@ -36,13 +31,6 @@ class UserSeeder extends Seeder
             'datetime_format' => null,
             'status' => 'ACTIVE',
             'is_administrator' => true,
-        ]);
-
-
-        factory(GroupMember::class)->create([
-            'member_id' => $user->id,
-            'member_type' => User::class,
-            'group_id' => $group_id,
         ]);
 
         // Create personal access token
