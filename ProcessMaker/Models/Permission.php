@@ -73,7 +73,11 @@ class Permission extends Model
     static public function byName($name)
     {
         try {
-            return self::where('name', $name)->firstOrFail();
+            if (is_array($name)) {
+                return self::whereIn('name', $name)->get();                
+            } else {
+                return self::where('name', $name)->firstOrFail();
+            }
         } catch(ModelNotFoundException $e) {
             throw new ModelNotFoundException($name . " permission does not exist");
         }
