@@ -43,6 +43,15 @@
               </b-btn>
               <b-btn
                 variant="link"
+                @click="onAction('duplicate-item', props.rowData, props.rowIndex)"
+                v-b-tooltip.hover
+                title="Duplicate"
+                v-if="permission.includes('create-screens')"
+              >
+                <i class="fas fa-copy fa-lg fa-fw"></i>
+              </b-btn>
+              <b-btn
+                variant="link"
                 @click="onAction('remove-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
                 title="Delete"
@@ -63,6 +72,35 @@
         ref="pagination"
       ></pagination>
     </div>
+    <b-modal ref="myModalRef" title="Duplicate Screen" centered>
+      <form>
+        <div class="form-group">
+          <label for="title">Name</label>
+          <input
+            type="text"
+            class="form-control"
+            id="title"
+            v-model="dupScreen.title"
+            v-bind:class="{ 'is-invalid': errors.title }"
+          >
+          <div class="invalid-feedback" v-if="errors.title">{{errors.title[0]}}</div>
+        </div>
+        <div class="form-group">
+          <label for="type">Type</label>
+          <select class="form-control" id="type" disabled>
+            <option>{{dupScreen.type}}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea class="form-control" id="description" rows="3" v-model="dupScreen.description"></textarea>
+        </div>
+      </form>
+      <div slot="modal-footer" class="w-100" align="right">
+        <button type="button" class="btn btn-outline-secondary" @click="hideModal">Close</button>
+        <button type="button" @click="onSubmit" class="btn btn-secondary ml-2">Save</button>
+      </div>
+    </b-modal>
   </div>
 </template>
 
@@ -75,7 +113,12 @@ export default {
   data() {
     return {
       orderBy: "title",
-
+      dupScreen: {
+        title: "",
+        type: "",
+        description: ""
+      },
+      errors: [],
       sortOrder: [
         {
           field: "title",
@@ -122,6 +165,26 @@ export default {
   },
 
   methods: {
+    showModal() {
+      this.$refs.myModalRef.show();
+    },
+    hideModal() {
+      this.$refs.myModalRef.hide();
+    },
+    onSubmit() {
+      ProcessMaker.apiClient
+        .put("screens/" + this.dupScreen.id + "/duplicate", this.dupScreen)
+        .then(response => {
+          ProcessMaker.alert("The screen was duplicated.", "success");
+          this.hideModal();
+          this.fetch();
+        })
+        .catch(error => {
+          if (error.response.status && error.response.status === 422) {
+            this.errors = error.response.data.errors;
+          }
+        });
+    },
     onAction(actionType, data, index) {
       switch (actionType) {
         case "edit-screen":
@@ -130,6 +193,13 @@ export default {
           break;
         case "edit-item":
           window.location.href = "/processes/screens/" + data.id + "/edit";
+          break;
+        case "duplicate-item":
+          this.dupScreen.title = data.title + " Copy";
+          this.dupScreen.type = data.type;
+          this.dupScreen.description = data.description;
+          this.dupScreen.id = data.id;
+          this.showModal();
           break;
         case "remove-item":
           let that = this;
