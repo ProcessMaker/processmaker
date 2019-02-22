@@ -27,7 +27,7 @@ class Task extends ApiResource
         }
         if (in_array('assignableUsers', $include)) {
             $definition = $this->getDefinition();
-            $assignment = isset($definition['assignment']) ? $definition['assignment'] : 'requestor';
+            $assignment = isset($definition['assignment']) ? $definition['assignment'] : 'requester';
             switch ($assignment) {
                 case 'cyclical':
                 case 'group':
@@ -35,7 +35,7 @@ class Task extends ApiResource
                     $users = User::where('status', 'ACTIVE')->whereIn('id', $ids)->get();
                     break;
                 case 'user':
-                case 'requestor':
+                case 'requester':
                     $users = User::where('status', 'ACTIVE')->get();
                     break;
                 default:

@@ -112,7 +112,7 @@
                         language: this.script.language
                     })
                     .then(response => {
-                        ProcessMaker.alert(" Successfully saved", "success");
+                        ProcessMaker.alert("The script was saved.", "success");
                     });
             }
         }

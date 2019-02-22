@@ -22,12 +22,12 @@
         :value="assignmentGetter"
         @input="assignmentSetter"
       >
-        <option value="requestor">To requestor</option>
-        <option value="user">To user</option>
-        <option value="group">To group</option>
-        <option value="previous_task_assignee">Previous task assignee</option>
-      </select>
-    </div>
+                <option value="requester">To requester</option>
+                <option value="user">To user</option>
+                <option value="group">To group</option>
+                <option value="previous_task_assignee">Previous task assignee</option>
+            </select>
+        </div>
 
     <div class="form-group" v-if="showAssignOneUser">
       <label>Assigned User</label>
@@ -77,16 +77,16 @@
       <div class="form-group">
         <label>Task Assignment</label>
         <select
-          ref="specialAssignmentsDropDownList"
-          class="form-control"
-          v-model="typeAssignmentExpression"
-        >
-          <option value></option>
-          <option value="requestor">To requestor</option>
-          <option value="user">To user</option>
-          <option value="group">To group</option>
-        </select>
-      </div>
+                <select ref="specialAssignmentsDropDownList"
+                        class="form-control"
+                        v-model="typeAssignmentExpression"
+                >
+                    <option value=""></option>
+                    <option value="requester">To requester</option>
+                    <option value="user">To user</option>
+                    <option value="group">To group</option>
+                </select>
+            </div>
 
       <div class="form-group" v-if="showSpecialAssignOneUser">
         <label>Assigned User</label>
@@ -331,10 +331,10 @@ export default {
         : [];
     },
 
-    getAssigneeName(assignment) {
-      if (assignment.type === "requestor") {
-        return "";
-      }
+            getAssigneeName(assignment) {
+                if (assignment.type === 'requester') {
+                    return '';
+                }
 
       if (assignment.type === "group") {
         let group = this.groups.find(obj => {

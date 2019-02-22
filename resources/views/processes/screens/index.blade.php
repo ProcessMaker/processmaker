@@ -43,7 +43,7 @@
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h1>{{__('Create New Screen')}}</h1>
+                        <h5 class="modal-title">{{__('Create Screen')}}</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onClose">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -53,7 +53,7 @@
                             {!! Form::label('title', 'Name') !!}
                             {!! Form::text('title', null, ['id' => 'title','class'=> 'form-control', 'v-model' => 'formData.title',
                             'v-bind:class' => '{"form-control":true, "is-invalid":errors.title}']) !!}
-                            <small id="emailHelp" class="form-text text-muted">{{__('Screen title must be distinct')}}</small>
+                            <small class="form-text text-muted" v-if="! errors.title">{{ __('The screen name must be distinct.') }}</small>
                             <div class="invalid-feedback" v-for="title in errors.title">@{{title}}</div>
                         </div>
                         <div class="form-group">
@@ -123,7 +123,7 @@
                         this.resetErrors();
                         ProcessMaker.apiClient.post('screens', this.formData)
                             .then(response => {
-                                ProcessMaker.alert('{{__('Created Screen Successfully')}}', 'success');
+                                ProcessMaker.alert('{{__('The screen was created.')}}', 'success');
                                 window.location = '/processes/screen-builder/' + response.data.id + '/edit';
                             })
                             .catch(error => {

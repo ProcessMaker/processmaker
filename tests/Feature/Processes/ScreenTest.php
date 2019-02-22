@@ -40,6 +40,6 @@ class ScreenTest extends TestCase
         $response->assertStatus(200);
         // check the correct view is called
         $response->assertViewIs('processes.screens.edit');
-        $response->assertSee('Edit Screen');
+        $response->assertSee('Configure Screen');
     }
 }

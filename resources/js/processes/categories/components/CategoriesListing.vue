@@ -139,7 +139,7 @@ export default {
         case "remove-item":
           ProcessMaker.confirmModal(
             "Caution!",
-            "<b>Are you sure to delete the process </b>" + data.name + "?",
+            "<b>Are you sure you want to delete the process </b>" + data.name + "?",
             "",
             () => {
               this.$emit("delete", data);
