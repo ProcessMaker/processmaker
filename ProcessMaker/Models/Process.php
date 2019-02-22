@@ -498,11 +498,12 @@ class Process extends Model implements HasMedia
         $user = Auth::user();
         $isAdmin = $user ? $user->is_administrator : false;
         $permissions = $filterWithPermissions && !$isAdmin ? $this->getStartEventPermissions() : [];
+        $nofilter = $isAdmin || !$filterWithPermissions;
         $definitions = $this->getDefinitions();
         $response = [];
         $startEvents = $definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'startEvent');
         foreach ($startEvents as $startEvent) {
-            if ($isAdmin || ($user && in_array($user->id, $permissions[$startEvent->getAttribute('id')]))) {
+            if ($nofilter || ($user && in_array($user->id, $permissions[$startEvent->getAttribute('id')]))) {
                 $response[] = $startEvent->getBpmnElementInstance()->getProperties();
             }
         }
