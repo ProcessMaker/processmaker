@@ -276,11 +276,13 @@
                         <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
                             <div class="accordion" id="accordionExample">
                                 <label>
-                                    <input type="checkbox" v-model="formData.is_administrator" @input="adminHasChanged = true">
+                                    <input type="checkbox" v-model="formData.is_administrator"
+                                           @input="adminHasChanged = true">
                                     {{__('Make this user a Super Admin')}}
                                 </label>
                                 <label class="mb-3">
-                                    <input type="checkbox" v-model="selectAll" @click="select" :disabled="formData.is_administrator">
+                                    <input type="checkbox" v-model="selectAll" @click="select"
+                                           :disabled="formData.is_administrator">
                                     {{__('Assign all permissions to this user')}}
                                 </label>
                                 @include('admin.shared.permissions')
@@ -354,10 +356,15 @@
                     <div class="modal-body">
                         <div class="form-user">
                             {!!Form::label('groups', __('Groups'))!!}
-                            <multiselect v-model="selectedGroup" :options="groups"
+                            <multiselect v-model="selectedGroup"
+                                         :options="groups"
                                          :multiple="true"
                                          track-by="name"
-                                         :custom-label="customLabel" :show-labels="false"
+                                         :custom-label="customLabel"
+                                         :show-labels="false"
+                                         :searchable="true"
+                                         :internal-search="false"
+                                         @search-change="loadGroups"
                                          label="name">
 
                                 <template slot="tag" slot-scope="props">
@@ -542,8 +549,6 @@
           },
         },
         mounted() {
-          console.log('mounted');
-          //this.loadGroups();
           let created = (new URLSearchParams(window.location.search)).get('created');
           if (created) {
             ProcessMaker.alert('{{__('The user was successfully created')}}', 'success');
@@ -695,32 +700,16 @@
           customLabel(options) {
             return `${options.name}`
           },
-          loadGroups() {
-            console.log('load groups');
-
+          loadGroups(filter) {
+            filter = typeof filter === 'string' ? '?filter=' + filter + '&' : '?';
             ProcessMaker.apiClient
-              .get("group_members?member_id=" +
-                this.formData.id +
-                "&per_page=1000"
+              .get(
+                "group_members_available" + filter +
+                "member_id=" + this.formData.id +
+                "&member_type=ProcessMaker\\Models\\User"
               )
               .then(response => {
-                let assigned = [];
-                response.data.data.forEach(item => {
-                  assigned.push(item.group_id);
-                });
-                console.log(assigned);
-                ProcessMaker.apiClient
-                  .get('groups?per_page=1000')
-                  .then((result) => {
-                    this.groups = [];
-                    result.data.data.forEach(item => {
-                      console.log(assigned.indexOf(item.id));
-                        if (assigned.indexOf(item.id) === -1) {
-                          this.groups.push(item);
-                        }
-                    });
-                    console.log(this.groups)
-                  });
+                this.groups = response.data.data
               });
           },
           onCloseAddUserToGroup() {
@@ -729,7 +718,6 @@
           saveUserToGroup() {
             let that = this;
             that.selectedGroup.forEach(function (group) {
-              console.log(group);
               ProcessMaker.apiClient
                 .post('group_members', {
                   'group_id': group.id,

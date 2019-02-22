@@ -203,12 +203,30 @@ class GroupMemberController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return ApiCollection
      *
-     *     @OA\Get(
-     *     path="/group_members",
-     *     summary="Returns all groups for a given member",
-     *     operationId="getGroupMembers",
+     * @OA\Get(
+     *     path="/group_members_available",
+     *     summary="Returns all groups available for a given member",
+     *     operationId="getGroupMembersAvailable",
      *     tags={"Group Members"},
-     *     @OA\Parameter(ref="#/components/parameters/member_id"),
+     *     @OA\Parameter(
+     *         description="ID of group_members to return",
+     *         in="path",
+     *         name="member_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         description="type of group_members to return",
+     *         in="path",
+     *         name="member_type",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Parameter(ref="#/components/parameters/filter"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
@@ -237,37 +255,34 @@ class GroupMemberController extends Controller
         $member_id = $request->input('member_id', null);
         $member_type = $request->input('member_type', null);
 
-
         $members = [];
         if ($member_id && $member_type) {
-            $members = GroupMember::where('member_type', $request->input('member_type'))
-                ->where('member_id', $request->input('member_id'))
-                ->get([id]);
+            //Load groups already assigned.
+            $data = GroupMember::where('member_type', $member_type)
+                ->where('member_id', $member_id)
+                ->get();
+            foreach ($data as $item) {
+                array_push($members, $item->group_id);
+            }
         }
 
-        $response = Group::all(['id', 'name'])
+        $query = Group::where('status', 'ACTIVE')
             ->whereNotIn('id', $members);
 
-
-        /*$query = GroupMember::query()
-            ->join('groups', 'groups.id', '=', 'group_members.group_id')
-            ->select('group_members.*', 'groups.name', 'groups.description');
-
-        if (\Auth::user()->is_administrator) {
-            $member_id = $request->input('member_id', null);
-            if ($member_id) {
-                $query->where('member_id', $member_id);
-            }
-        } else {
-            $query->where('member_id', Auth::user()->id);
+        $filter = $request->input('filter', '');
+        if (!empty($filter)) {
+            //filter by name group
+            $filter = '%' . $filter . '%';
+            $query->where(function ($query) use ($filter) {
+                $query->Where('name', 'like', $filter);
+            });
         }
-
         $response =
             $query->orderBy(
-                $request->input('order_by', 'created_at'),
+                $request->input('order_by', 'name'),
                 $request->input('order_direction', 'ASC')
-            )->paginate($request->input('per_page', 10));*/
+            )->paginate($request->input('per_page', 10));
 
-        return response(GroupMemberResource($response));
+        return new ApiCollection($response);
     }
 }
