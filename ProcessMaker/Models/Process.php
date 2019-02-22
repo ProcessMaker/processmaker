@@ -503,7 +503,7 @@ class Process extends Model implements HasMedia
         $response = [];
         $startEvents = $definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'startEvent');
         foreach ($startEvents as $startEvent) {
-            if ($nofilter || ($user && in_array($user->id, $permissions[$startEvent->getAttribute('id')]))) {
+            if ($nofilter || ($user && isset($permissions[$startEvent->getAttribute('id')]) && in_array($user->id, $permissions[$startEvent->getAttribute('id')]))) {
                 $response[] = $startEvent->getBpmnElementInstance()->getProperties();
             }
         }
@@ -522,9 +522,10 @@ class Process extends Model implements HasMedia
             $permissions[$user->pivot->node][$user->id] = $user->id;
         }
         foreach($this->groupsCanStart()->withPivot('node')->get() as $group) {
-            $users = $this->getConsolidatedUsers($group->id, $users);
+            $users = [];
+            $this->getConsolidatedUsers($group->id, $users);
             isset($permissions[$group->pivot->node]) ?: $permissions[$group->pivot->node] = [];
-            $permissions[$group->pivot->node] = $permissions[$group->pivot->node] + $user->id;
+            $permissions[$group->pivot->node] = $permissions[$group->pivot->node] + $users;
         }
         return $permissions;
     }

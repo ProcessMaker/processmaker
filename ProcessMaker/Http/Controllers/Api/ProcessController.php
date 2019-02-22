@@ -335,15 +335,10 @@ class ProcessController extends Controller
             ->orderBy(...$orderBy)
             ->get();
 
-
-        foreach($processes as $process) {
-            foreach($process->events as $startEvent) {
-                // TODO: Can "can" take a 3rd argument?
-                if (Auth::user()->can('start', $process, $node)) {
-                    $canStartNodes[] = $node;
-                }
+        foreach($processes as $key => $process) {
+            if (count($process->events) === 0) {
+                $processes->forget($key);
             }
-            return !empty($canStartNodes);
         };
 
         return new ApiCollection($processes);
