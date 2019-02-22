@@ -693,7 +693,7 @@ class ProcessTest extends TestCase
         ]);
 
         $route = route('api.' . $this->resource . '.index', ['include' => 'events']);
-        $response = $this->apiCall('GET', $route);
+        $response = $this->actingAs($this->user)->apiCall('GET', $route);
         $response->assertStatus(200);
 
         $json = $response->json();
