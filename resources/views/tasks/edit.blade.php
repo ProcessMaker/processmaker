@@ -26,7 +26,6 @@
     ]])
 
     <div id="task" class="container">
-        
         <div class="row">
             <div class="col-md-8">
                 <div class="container-fluid">
@@ -190,7 +189,8 @@
                     const data = JSON.parse(this.jsonData);
                     ProcessMaker.apiClient
                         .put("requests/" + this.task.process_request_id, {
-                            data: data
+                            data: data,
+                            task_element_id: this.task.element_id,
                         })
                         .then(response => {
                             this.fieldsToUpdate.splice(0);

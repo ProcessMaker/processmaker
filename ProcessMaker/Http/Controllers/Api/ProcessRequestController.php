@@ -13,6 +13,7 @@ use ProcessMaker\Http\Resources\ProcessRequests as ProcessRequestResource;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Notifications\ProcessCanceledNotification;
+use ProcessMaker\Models\ProcessRequestToken;
 
 class ProcessRequestController extends Controller
 {
@@ -198,10 +199,13 @@ class ProcessRequestController extends Controller
             return response([], 204);
         }
         $fields = $httpRequest->json()->all();
-        if (array_keys($fields) === ['data']) {
+        if (array_keys($fields) === ['data'] || array_keys($fields) === ['data', 'task_element_id']) {
             if (! Auth::user()->can('editData', $request)) {
                 throw new AuthorizationException(__('Not authorized to edit request data.'));
             }
+
+            $task_name = $this->getTaskName($fields, $request);
+
             // Update data edited
             $data = array_merge($request->data, $fields['data']);
             $request->data = $data;
@@ -210,8 +214,8 @@ class ProcessRequestController extends Controller
             $user_id   = Auth::id();
             $user_name = $user_id ? Auth::user()->fullname : 'The System';
             
-            if ($request->status == 'ACTIVE') {
-                $text = __('has edited the task data');
+            if ($task_name) {
+                $text = __('has edited the data for ') . $task_name;
             } else {
                 $text = __('has edited the request data');
             }
@@ -283,5 +287,16 @@ class ProcessRequestController extends Controller
 
         //Closed tokens
         $request->tokens()->update(['status' => 'CLOSED']);
+    }
+
+    private function getTaskName($fields, $request) {
+        if (!array_key_exists('task_element_id', $fields)) {
+            return null;
+        }
+        $task_element_id = $fields['task_element_id'];
+        $token = ProcessRequestToken::where(
+            ['element_id' => $task_element_id, 'process_request_id' => $request->id]
+        )->firstOrFail();
+        return $token->element_name;
     }
 }
