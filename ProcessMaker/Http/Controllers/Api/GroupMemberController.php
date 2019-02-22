@@ -198,7 +198,7 @@ class GroupMemberController extends Controller
     }
 
     /**
-     * Display a listing of members available
+     * Display a listing of groups available
      *
      * @param  \Illuminate\Http\Request  $request
      * @return ApiCollection
@@ -233,7 +233,7 @@ class GroupMemberController extends Controller
      *
      *     @OA\Response(
      *         response=200,
-     *         description="list of users or groups available to be assigned as member",
+     *         description="list of groups available to be assigned as member",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(
@@ -280,6 +280,86 @@ class GroupMemberController extends Controller
         $response =
             $query->orderBy(
                 $request->input('order_by', 'name'),
+                $request->input('order_direction', 'ASC')
+            )->paginate($request->input('per_page', 10));
+
+        return new ApiCollection($response);
+    }
+
+    /**
+     * Display a listing of users available
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return ApiCollection
+     *
+     * @OA\Get(
+     *     path="/user_members_available",
+     *     summary="Returns all users available for a given member",
+     *     operationId="getUserMembersAvailable",
+     *     tags={"Group Members"},
+     *     @OA\Parameter(
+     *         description="ID of group to return",
+     *         in="path",
+     *         name="group_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Parameter(ref="#/components/parameters/filter"),
+     *     @OA\Parameter(ref="#/components/parameters/order_by"),
+     *     @OA\Parameter(ref="#/components/parameters/order_direction"),
+     *     @OA\Parameter(ref="#/components/parameters/per_page"),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="list of users available to be assigned as member",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/group_members"),
+     *             ),
+     *             @OA\Property(
+     *                 property="meta",
+     *                 type="object",
+     *                 allOf={@OA\Schema(ref="#/components/schemas/metadata")},
+     *             ),
+     *         ),
+     *     ),
+     * )
+     */
+    public function usersAvailable(Request $request)
+    {
+        $groupId = $request->input('group_id', null);
+
+        $members = [];
+        if ($groupId) {
+            //Load user members already assigned.
+            $data = GroupMember::where('member_type', User::class)
+                ->where('group_id', $groupId)
+                ->get();
+            foreach ($data as $item) {
+                array_push($members, $item->member_id);
+            }
+        }
+
+        $query = User::where('status', 'ACTIVE')
+            ->whereNotIn('id', $members);
+
+        $filter = $request->input('filter', '');
+        if (!empty($filter)) {
+            //filter by name group
+            $filter = '%' . $filter . '%';
+            $query->where(function ($query) use ($filter) {
+                $query->Where('firstname', 'like', $filter)
+                    ->orWhere('lastname', 'like', $filter);
+            });
+        }
+        $response =
+            $query->orderBy(
+                $request->input('order_by', 'firstname'),
                 $request->input('order_direction', 'ASC')
             )->paginate($request->input('per_page', 10));
 

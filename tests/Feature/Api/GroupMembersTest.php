@@ -203,4 +203,43 @@ class GroupMembersTest extends TestCase
         $response->assertStatus(200);
     }
 
+    /**
+     * List group available to assigned
+     */
+    public function testMembersAllUsersAvailable()
+    {
+        //The new group does not have groups assigned.
+        factory(User::class, 15)->create(['status' => 'ACTIVE']);
+        $group = factory(Group::class)->create(['status' => 'ACTIVE']);
+        $count = User::where('status', 'ACTIVE')->count();
+        $response = $this->apiCall('GET', '/user_members_available', [
+            'group_id' => $group->id
+        ]);
+        $this->assertEquals($count, $response->json('meta')['total']);
+        $response->assertStatus(200);
+    }
+
+    /**
+     * List group available to assigned
+     */
+    public function testMembersOnlyUsersAvailable()
+    {
+        //The new group does not have groups assigned.
+        $group = factory(Group::class)->create(['status' => 'ACTIVE']);
+        factory(GroupMember::class)->create([
+            'group_id' => $group->id,
+            'member_id' => factory(User::class)->create(['status' => 'ACTIVE'])->getKey(),
+            'member_type' => User::class
+        ]);
+        factory(User::class, 15)->create(['status' => 'ACTIVE']);
+
+
+        $count = User::where('status', 'ACTIVE')->count() - 1;
+        $response = $this->apiCall('GET', '/user_members_available', [
+            'group_id' => $group->id
+        ]);
+        $this->assertEquals($count, $response->json('meta')['total']);
+        $response->assertStatus(200);
+    }
+
 }
