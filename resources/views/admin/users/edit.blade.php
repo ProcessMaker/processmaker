@@ -368,14 +368,14 @@
                                          label="name">
 
                                 <template slot="tag" slot-scope="props">
-                            <span class="multiselect__tag  d-flex align-items-center"
-                                  style="width:max-content;">
-                                <span class="option__desc mr-1">
-                                    <span class="option__title">@{{ props.option.name }}</span>
-                                </span>
-                                <i aria-hidden="true" tabindex="1" @click="props.remove(props.option)"
-                                   class="multiselect__tag-icon"></i>
-                            </span>
+                                    <span class="multiselect__tag  d-flex align-items-center"
+                                          style="width:max-content;">
+                                        <span class="option__desc mr-1">
+                                            <span class="option__title">@{{ props.option.name }}</span>
+                                        </span>
+                                        <i aria-hidden="true" tabindex="1" @click="props.remove(props.option)"
+                                           class="multiselect__tag-icon"></i>
+                                    </span>
                                 </template>
 
                                 <template slot="option" slot-scope="props">
