@@ -4,6 +4,7 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use ProcessMaker\AssignmentRules\PreviousTaskAssignee;
@@ -148,23 +149,27 @@ class Process extends Model implements HasMedia
     /**
      * Get the users who can start this process
      *
+     * @param string|null $node If null get START from any node
      */    
-    public function usersCanStart($node)
+    public function usersCanStart($node = null)
     {
-        return $this->morphedByMany('ProcessMaker\Models\User', 'processable')
-                    ->wherePivot('method', 'START')
-                    ->wherePivot('node', $node);
+        $relationship = $this->morphedByMany('ProcessMaker\Models\User', 'processable')
+                    ->wherePivot('method', 'START');
+        $relationship = $node === null ? $relationship : $relationship->wherePivot('node', $node);
+        return $relationship;
     }
 
     /**
      * Get the groups who can start this process
      *
+     * @param string|null $node If null get START from any node
      */    
-    public function groupsCanStart($node)
+    public function groupsCanStart($node = null)
     {
-        return $this->morphedByMany('ProcessMaker\Models\Group', 'processable')
-                    ->wherePivot('method', 'START')
-                    ->wherePivot('node', $node);
+        $relationship = $this->morphedByMany('ProcessMaker\Models\Group', 'processable')
+                    ->wherePivot('method', 'START');
+        $relationship = $node === null ? $relationship : $relationship->wherePivot('node', $node);
+        return $relationship;
     }
 
     /**
@@ -488,15 +493,39 @@ class Process extends Model implements HasMedia
      *
      * @return array
      */
-    public function getStartEvents()
+    public function getStartEvents($filterWithPermissions = false)
     {
+        $user = Auth::user();
+        $isAdmin = $user ? $user->is_administrator : false;
+        $permissions = $filterWithPermissions && !$isAdmin ? $this->getStartEventPermissions() : [];
         $definitions = $this->getDefinitions();
         $response = [];
         $startEvents = $definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'startEvent');
         foreach ($startEvents as $startEvent) {
-            $response[] = $startEvent->getBpmnElementInstance()->getProperties();
+            if ($isAdmin || ($user && in_array($user->id, $permissions[$startEvent->getAttribute('id')]))) {
+                $response[] = $startEvent->getBpmnElementInstance()->getProperties();
+            }
         }
         return $response;
+    }
+
+    /**
+     * Get permissions by start event.
+     *
+     * @return array
+     */
+    private function getStartEventPermissions()
+    {
+        $permissions = [];
+        foreach($this->usersCanStart()->withPivot('node')->get() as $user) {
+            $permissions[$user->pivot->node][$user->id] = $user->id;
+        }
+        foreach($this->groupsCanStart()->withPivot('node')->get() as $group) {
+            $users = $this->getConsolidatedUsers($group->id, $users);
+            isset($permissions[$group->pivot->node]) ?: $permissions[$group->pivot->node] = [];
+            $permissions[$group->pivot->node] = $permissions[$group->pivot->node] + $user->id;
+        }
+        return $permissions;
     }
 
     /**
