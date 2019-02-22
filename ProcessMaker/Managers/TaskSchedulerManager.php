@@ -69,9 +69,10 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                     $init = $period[0] === 'R' ? 0 : 1;
                     for ($i = $init; $i < count($intervals); $i++) {
                         $parts = $this->getIntervalParts($intervals[$i]);
+
                         $configuration = [
                             'type' => $timeEventType,
-                            'interval' => $parts['repetitions']. '/'. $parts['firstDate'] . '/' . $parts['interval'],
+                            'interval' => $this->buildInterval($parts, $timeEventType),
                             'element_id' => $startEvent['id']
                         ];
 
@@ -89,6 +90,22 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         }
     }
 
+    private function buildInterval($parts, $timeEventType)
+    {
+        $result = null;
+        switch ($timeEventType) {
+            case 'TimeDate':
+                $result = $parts['firstDate'];
+                break;
+            case 'TimeCycle':
+                $result = $parts['repetitions']. '/'. $parts['firstDate'] . '/' . $parts['interval'];
+                break;
+            case 'TimeDuration':
+                $result = $parts['interval'];
+                break;
+        }
+        return $result;
+    }
 
     public function registerIntermediateTimerEvents(ProcessRequest $request)
     {
@@ -137,7 +154,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                         $parts = $this->getIntervalParts($intervals[$i]);
                         $configuration = [
                             'type' => $timeEventType,
-                            'interval' => $parts['repetitions']. '/'. $parts['firstDate'] . '/' . $parts['interval'],
+                            'interval' => $this->buildInterval($parts, $timeEventType),
                             'element_id' => $timerEvent['id']
                         ];
 
@@ -170,7 +187,12 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                $today = (new \DateTime())->setTimezone(new DateTimeZone('UTC'));
 
                $lastExecution = new \DateTime($task->last_execution);
-               $nextDate = $this->nextDate($lastExecution, $config->interval);
+               $nextDate = $this->nextDate($lastExecution, $config);
+
+               // if no execution date exists we go to the next task
+               if (empty($nextDate)) {
+                   continue;
+               }
 
                $schedule->call(function() use($task, $config) {
                    switch ($task->type) {
@@ -241,14 +263,32 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
        $event = $definitions->getEvent($config->element_id);
        $data = [];
 
-//       WorkflowManager::triggerStartEvent($process, $event, $data);
-       //WorkflowManager::completeTask($event, );
-
         $catch = $request->tokens()->where('element_id', '_5')->first();
         WorkflowManager::completeCatchEvent($process, $request, $catch, []);
    }
 
-   public function nextDate($currentDate, $nayraInterval, $firstOccurrenceDate = null)
+   public function nextDate($currentDate, $intervalConfig, $firstOccurrenceDate = null)
+   {
+       $result = null;
+       switch ($intervalConfig->type) {
+           case 'TimeDate':
+               $result = $this->nextDateForOneDate($currentDate, $intervalConfig->interval, $firstOccurrenceDate =
+                   null);
+               break;
+           case 'TimeCycle':
+               $result = $this->nextDateForCyclical($currentDate, $intervalConfig->interval, $firstOccurrenceDate =
+                   null);
+               break;
+           case 'TimeDuration':
+               $result = $this->nextDateForDuration($currentDate, $intervalConfig->interval, $firstOccurrenceDate =
+                   null);
+               break;
+       }
+
+       return $result;
+   }
+
+   public function nextDateForCyclical($currentDate, $nayraInterval, $firstOccurrenceDate = null)
    {
        $parts = $this->getIntervalParts($nayraInterval);
        $firstDate = $firstOccurrenceDate === null
@@ -288,10 +328,40 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
        return $nextDate;
    }
 
+    public function nextDateForOneDate($currentDate, $nayraInterval, $firstOccurrenceDate = null)
+    {
+        $parts = $this->getIntervalParts($nayraInterval);
+        $firstDate = $firstOccurrenceDate === null
+            ? $parts['firstDate']
+            : $firstOccurrenceDate->format('Y-m-d H:i:s:z');
+
+        $diff = date_diff(new \DateTime($firstDate), $currentDate);
+        if ($diff->days * 24*60 + $diff->h * 60 + $diff->i < 2) {
+            return new \DateTime($firstDate);
+        }
+
+        return null;
+    }
+
+    public function nextDateForDuration($currentDate, $nayraInterval, $firstOccurrenceDate = null)
+    {
+        $parts = $this->getIntervalParts($nayraInterval);
+        return $currentDate->add($parts['period']);
+    }
+
    private function getIntervalParts($nayraInterval)
    {
        $result = [];
        $parts = explode('/', $nayraInterval);
+
+       if (count($parts) === 1 && $nayraInterval[0] === 'P') {
+           $result['repetitions'] = '1';
+           $result['interval'] = $parts[0] ;
+           $result['firstDate'] = null;
+           $result['period'] = new \DateInterval($nayraInterval);
+           $result['recurrences'] = 1;
+           return $result;
+       }
 
        $result['endDate'] = (count($parts) === 4)
            ? (new \DateTime($parts[3]))
