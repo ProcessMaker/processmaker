@@ -126,6 +126,7 @@
                             <div class="form-user">
                                 {!!Form::label('users', __('Users'))!!}
                                 <multiselect v-model="selectedUsers"
+                                             placeholder="{{__('Select user or type here to search users')}}"
                                              :options="availableUsers"
                                              :multiple="true"
                                              track-by="fullname"

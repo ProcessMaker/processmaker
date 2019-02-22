@@ -358,6 +358,7 @@
                         <div class="form-user">
                             {!!Form::label('groups', __('Groups'))!!}
                             <multiselect v-model="selectedGroup"
+                                         placeholder="{{__('Select group or type here to search groups')}}"
                                          :options="groups"
                                          :multiple="true"
                                          track-by="name"
