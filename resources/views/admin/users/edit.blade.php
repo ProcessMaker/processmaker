@@ -323,18 +323,19 @@
                                     </tbody>
                                 </table>
                                 <div class="form-group" v-if="newToken != null">
-                                    <div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i> Make
-                                        sure
-                                        you copy your access token now. You won't be able to see it again.
+                                    <div class="alert alert-warning">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        Make sure you copy your access token now. You won't be able to see it again.
                                     </div>
-                                    <button @click="copyTextArea" class="btn btn-secondary"><i class="fas fa-paste"></i>
+                                    <button @click="copyTextArea" class="btn btn-secondary">
+                                        <i class="fas fa-paste"></i>
                                         Copy Token To Clipboard
                                     </button>
                                     <textarea ref="text" style="height: 400px" class="form-control">@{{ newToken.accessToken }}</textarea>
                                 </div>
                                 <hr class="mt-0">
-                                <button class="btn btn-secondary float-right" @click="generateToken">Generate New
-                                    Token
+                                <button class="btn btn-secondary float-right" @click="generateToken">
+                                    Generate New Token
                                 </button>
                             </div>
                         </div>

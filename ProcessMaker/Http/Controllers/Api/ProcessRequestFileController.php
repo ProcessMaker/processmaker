@@ -101,7 +101,7 @@ class ProcessRequestFileController extends Controller
                     ->withCustomProperties(['data_name' => $data_name]) // photo_1
                     ->toMediaCollection();
                 // $identifier = ['_type' => 'file', 'id' => $file->id];
-                return new JsonResponse(['message' => 'file successfully uploaded','fileUploadId' => $file->id], 200);
+                return new JsonResponse(['message' => 'The file was uploaded.','fileUploadId' => $file->id], 200);
             }
             // we are in chunk mode, lets send the current progress
             /** @var AbstractHandler $handler */

@@ -97,7 +97,7 @@
                     <h2 class="mt-2">{{__('Localization')}}</h2>
                     <div class="row">
                         <div class="form-group col">
-                            {!!Form::label('datetime_format', 'Date format');!!}
+                            {!!Form::label('datetime_format', 'Date Format');!!}
                             {!!Form::select('datetime_format',
                                 $datetimeFormats,
                                 'formData.datetime_format',
@@ -112,7 +112,7 @@
                     </div>
                     <div class="row">
                         <div class="form-group col">
-                            {!!Form::label('timezone', 'Time zone');!!}
+                            {!!Form::label('timezone', 'Time Zone');!!}
                             {!!Form::select('timezone',
                                 $timezones,
                                 'formData.timezone',
@@ -321,7 +321,7 @@
                     }
                     ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
                         .then((response) => {
-                            ProcessMaker.alert('Save profile success', 'success')
+                            ProcessMaker.alert('Your profile was saved.', 'success')
                             window.ProcessMaker.events.$emit('update-profile-avatar');
                         })
                         .catch(error => {

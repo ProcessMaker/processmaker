@@ -24,7 +24,8 @@
                         <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-users" role="tab"
                            aria-controls="nav-profile" aria-selected="false">{{__('Group Members')}}</a>
                         <a class="nav-item nav-link" id="nav-permissions-tab" data-toggle="tab" href="#nav-permissions"
-                           role="tab" aria-controls="nav-permissions" aria-selected="false">{{__('Group Permissions')}}</a>
+                           role="tab" aria-controls="nav-permissions"
+                           aria-selected="false">{{__('Group Permissions')}}</a>
                     </div>
                 </nav>
 
@@ -34,19 +35,32 @@
                         {!! Form::open() !!}
                         <div class="form-group">
                             {!! Form::label('name', 'Name') !!}
-                            {!! Form::text('name', null, ['id' => 'name','class'=> 'form-control', 'maxlength' => '255',
-                            'v-model' => 'formData.name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}']) !!}
+                            {!! Form::text('name', null, [
+                            'id' => 'name',
+                            'class'=> 'form-control',
+                            'maxlength' => '255',
+                            'v-model' => 'formData.name',
+                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}']) !!}
                             <small class="form-text text-muted">Group name must be distinct</small>
                             <div class="invalid-feedback" v-if="errors.name">@{{errors.name[0]}}</div>
                         </div>
                         <div class="form-group">
                             {!! Form::label('description', 'Description') !!}
-                            {!! Form::textarea('description', null, ['id' => 'description', 'rows' => 4, 'class'=> 'form-control', 'v-model' => 'formData.description', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.description}']) !!}
+                            {!! Form::textarea('description', null, [
+                            'id' => 'description',
+                            'rows' => 4,
+                            'class'=> 'form-control',
+                            'v-model' => 'formData.description',
+                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.description}']) !!}
                             <div class="invalid-feedback" v-if="errors.description">@{{errors.description[0]}}</div>
                         </div>
                         <div class="form-group">
                             {!! Form::label('status', 'Status') !!}
-                            {!! Form::select('status', ['ACTIVE' => 'Active', 'INACTIVE' => 'Inactive'], null, ['id' => 'status', 'class' => 'form-control', 'v-model' => 'formData.status', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.status}']) !!}
+                            {!! Form::select('status', ['ACTIVE' => 'Active', 'INACTIVE' => 'Inactive'], null, [
+                            'id' => 'status',
+                            'class' => 'form-control',
+                            'v-model' => 'formData.status',
+                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.status}']) !!}
                             <div class="invalid-feedback" v-if="errors.status">@{{errors.status[0]}}</div>
                         </div>
                         <br>
@@ -73,7 +87,8 @@
                                 <button type="button" class="btn btn-action text-light" data-toggle="modal"
                                         data-target="#addUser" @click="loadUsers">
                                     <i class="fas fa-plus"></i>
-                                    {{__('User')}}</button>
+                                    {{__('User')}}
+                                </button>
                             </div>
                         </div>
                         <users-in-group ref="listing" :filter="filter" :group-id="formData.id"></users-in-group>
@@ -82,7 +97,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <label class="mb-3">
-                                    <input type="checkbox" v-model="selectAll" @click="select" :disabled="formData.is_administrator">
+                                    <input type="checkbox" v-model="selectAll" @click="select"
+                                           :disabled="formData.is_administrator">
                                     {{__('Assign all permissions to this group')}}
                                 </label>
                                 @include('admin.shared.permissions')

@@ -273,6 +273,25 @@ class ScreenTest extends TestCase
     }
 
     /**
+     * Duplicate Screen 
+     */
+    public function testDuplicateScreen()
+    {
+        $faker = Faker::create();
+        $config = '{"foo":"bar"}';
+        $url = self::API_TEST_SCREEN . '/' . factory(Screen::class)->create([
+                'config' => $config
+            ])->id . '/duplicate';
+        $response = $this->apiCall('PUT', $url, [
+            'title' => "TITLE",
+            'type' => 'FORM',
+            'description' => $faker->sentence(5),
+        ]);
+        $new_screen = Screen::find($response->json()['id']);
+        $this->assertEquals($config, $new_screen->config);
+    }
+
+    /**
      * Update Screen with same title
      */
     public function testUpdateSameTitleScreen()
