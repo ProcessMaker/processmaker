@@ -25,6 +25,7 @@ The **My Requests** page displays the following information about Requests you s
 * **Status:** The **Status** column displays the status of the Process associated with the Request. The following are possible statuses:
   * **In Progress:** The Request is in-progress and is represented by the![](../../.gitbook/assets/in-progress-status-icon-requests.png)icon.
   * **Completed:** The Request is completed and is represented by the![](../../.gitbook/assets/completed-status-icon-requests.png)icon.
+  * **Canceled:** The Request has been canceled and is represented by the![](../../.gitbook/assets/error-status-icon-requests.png)icon. See [Cancel a Request](delete-a-request.md).
   * **Error:** An error occurred with the Request and is represented by the![](../../.gitbook/assets/error-status-icon-requests.png)icon. [View the Request](request-details.md#error-information-for-a-request) to see the error.
 * **Participants:** The **Participants** column displays avatars of each participant in the Request.
 * **Started:** The **Started** column displays the date and time you made the Request. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
