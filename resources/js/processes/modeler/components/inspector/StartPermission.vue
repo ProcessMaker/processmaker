@@ -4,27 +4,28 @@
       <label>Start Permission</label>
       <select
         class="form-control"
-        v-model="selectedType"
+        :value="assignmentGetter"
+        @input="assignmentSetter"
       >
-        <option value="null"></option>
+        <option value=""></option>
         <option value="user">User</option>
         <option value="group">Group</option>
       </select>
     </div>
 
-    <div class="form-group" v-if="selectedType == 'user'">
+    <div class="form-group" v-if="assignmentGetter === 'user'">
       <label>User</label>
       <div v-if="loadingUsers">Loading...</div>
-      <select v-else class="form-control" v-model="selectedUser">
+      <select v-else class="form-control" :value="assignedUserGetter" @input="assignedUserSetter">
         <option></option>
         <option v-for="(row, index) in users" :key="index">{{row.fullname}}</option>
       </select>
     </div>
 
-    <div class="form-group" v-if="selectedType == 'group'">
+    <div class="form-group" v-if="assignmentGetter === 'group'">
       <label>Group</label>
       <div v-if="loadingGroups">Loading...</div>
-      <select v-else class="form-control" v-model="selectedGroup">
+      <select v-else class="form-control" :value="assignedGroupGetter" @input="assignedGroupSetter">
         <option></option>
         <option v-for="(row, index) in groups" :key="index">{{row.name}}</option>
       </select>
@@ -43,22 +44,43 @@ export default {
       loadingGroups: true,
       selectedUser: null,
       selectedGroup: null,
-      selectedType: null,
     };
   },
   computed: {
-    // allowReassignmentGetter() {
-    //   const node = this.$parent.$parent.highlightedNode.definition;
-    //   const value = _.get(node, "allowReassignment");
-    //   return value;
-    // },
-  },
-  methods: {
-    node() {
-      return this.$parent.$parent.highlightedNode.definition.id;
+    assignedUserGetter() {
+      const node = this.$parent.$parent.highlightedNode.definition;
+      const value = _.get(node, "assignedUsers");
+      return value;
+    },
+    assignedGroupGetter() {
+      const node = this.$parent.$parent.highlightedNode.definition;
+      const value = _.get(node, "assignedGroups");
+      return value;
+    },
+    assignmentGetter() {
+      const node = this.$parent.$parent.highlightedNode.definition;
+      const value = _.get(node, "assignment");
+      return value;
     },
     processId() {
       return window.ProcessMaker.modeler.process.id;
+    },
+    node() {
+      return this.$parent.$parent.highlightedNode.definition;
+    },
+  },
+  methods: {
+    assignedUserSetter(event) {
+      this.$set(this.node, "assignedUsers", event.target.value);
+      this.$emit("input", this.value);
+    },
+    assignedGroupSetter(event) {
+      this.$set(this.node, "assignedGroups", event.target.value);
+      this.$emit("input", this.value);
+    },
+    assignmentSetter(event) {
+      this.$set(this.node, "assignment", event.target.value);
+      this.$emit("input", this.value);
     },
     loadUsersAndGroups() {
       this.loadingUsers = true;
@@ -84,28 +106,10 @@ export default {
           this.loadingGroups = false;
         });
     },
-    update() {
-      ProcessMaker.apiClient
-        .put("/processes/" + , {
-          params: params
-        })
-        .then(response => {
-          this.users.push(...response.data.data);
-          this.loadingUsers = false;
-        });
-    }
   },
   mounted() {
     this.loadUsersAndGroups();
   },
-  watch: {
-    selectedUser() {
-      this.update();
-    },
-    selectedGroup() {
-      this.update();
-    }
-  }
 };
 </script>
 
