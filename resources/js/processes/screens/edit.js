@@ -15,7 +15,7 @@ new Vue({
             this.$refs.screenEdit.onSave();
         },
         afterUpdate() {
-            ProcessMaker.alert('Updated Screen Successfully', 'success');
+            ProcessMaker.alert('The screen was saved.', 'success');
             this.onClose();
         }
     }

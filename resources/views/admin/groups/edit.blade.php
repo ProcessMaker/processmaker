@@ -70,8 +70,8 @@
                             </div>
                             <div class="col-8" align="right">
                                 <button type="button" class="btn btn-action text-light" data-toggle="modal" data-target="#addUser">
-                                    <i class="fas fa-plus"></i>
-                                    {{__('User')}}</button>
+                                    <i class="fas fa-plus-circle"></i>
+                                    {{__('Add Users to Group')}}</button>
                             </div>
                         </div>
                         <users-in-group ref="listing" :filter="filter" :group-id="formData.id"></users-in-group>
@@ -95,7 +95,7 @@
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title">{{__('Add Users')}}</h5>
+                            <h5 class="modal-title">{{__('Add Users to Group')}}</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onCloseAddUser">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -234,7 +234,7 @@
                     this.resetErrors();
                     ProcessMaker.apiClient.put('groups/' + this.formData.id, this.formData)
                         .then(response => {
-                            ProcessMaker.alert('{{__('Update Group Successfully')}}', 'success');
+                            ProcessMaker.alert('{{__('The group was saved.')}}', 'success');
                             this.onClose();
                         })
                         .catch(error => {
@@ -251,7 +251,7 @@
                             group_id: this.formData.id
                         })
                         .then(response => {
-                            ProcessMaker.alert('{{__('Group Permissions Updated Successfully ')}}', 'success');
+                            ProcessMaker.alert('{{__('The group permissions were saved.')}}', 'success');
                             this.onClose();
                         })
                 }

@@ -48,7 +48,7 @@ ProcessMaker.nodeTypes.push(...nodeTypes);
 task.definition = function definition(moddle) {
     return moddle.create('bpmn:Task', {
         name: 'New Task',
-        assignment: 'requestor',
+        assignment: 'requester',
     });
 };
 

@@ -33,7 +33,7 @@
                 variant="link"
                 @click="onAction('edit-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Config"
+                title="Configure"
                 v-if="permission.includes('edit-scripts')"
               >
                 <i class="fas fa-cog fa-lg fa-fw"></i>
@@ -42,7 +42,7 @@
                 variant="link"
                 @click="onAction('remove-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Remove"
+                title="Delete"
                 v-if="permission.includes('delete-scripts')"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
@@ -134,7 +134,7 @@ export default {
         case "remove-item":
           ProcessMaker.confirmModal(
             "Caution!",
-            "<b>Are you sure to delete the Script </b>" + data.title + "?",
+            "<b>Are you sure you want to delete the script </b>" + data.title + "?",
             "",
             () => {
               this.$emit("delete", data);

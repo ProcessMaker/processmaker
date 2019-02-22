@@ -106,7 +106,7 @@ export default {
     doDelete(item) {
       ProcessMaker.confirmModal(
         "Caution!",
-        "<b>Are you sure to delete the client </b>" + item.name + "?",
+        "<b>Are you sure you want to delete the auth client </b>" + item.name + "?",
         "",
         () => {
           ProcessMaker.apiClient.delete('/oauth/clients/' + item.id, {baseURL: '/'})

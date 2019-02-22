@@ -27,7 +27,7 @@
                 variant="link"
                 @click="onAction('edit-screen', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Open Editor"
+                title="Edit"
                 v-if="permission.includes('edit-screens')"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
@@ -36,7 +36,7 @@
                 variant="link"
                 @click="onAction('edit-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Config"
+                title="Configure"
                 v-if="permission.includes('edit-screens')"
               >
                 <i class="fas fa-cog fa-lg fa-fw"></i>
@@ -45,7 +45,7 @@
                 variant="link"
                 @click="onAction('remove-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Remove"
+                title="Delete"
                 v-if="permission.includes('delete-screens')"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
@@ -135,13 +135,13 @@ export default {
           let that = this;
           ProcessMaker.confirmModal(
             "Caution!",
-            "<b>Are you sure to delete the Screen </b>" + data.title + "?",
+            "<b>Are you sure you want to delete the screen </b>" + data.title + "?",
             "",
             function() {
               ProcessMaker.apiClient
                 .delete("screens/" + data.id)
                 .then(response => {
-                  ProcessMaker.alert("Screen successfully deleted", "success");
+                  ProcessMaker.alert("The screen was deleted.", "success");
                   that.fetch();
                 });
             }

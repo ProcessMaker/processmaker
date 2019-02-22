@@ -73,7 +73,7 @@ class ScriptsTest extends TestCase
             'code' => $faker->sentence($faker->randomDigitNotNull)
         ]);
         $response->assertStatus(422);
-        $response->assertSeeText('The title has already been taken');
+        $response->assertSeeText('The name has already been taken');
     }
 
     /**
@@ -274,7 +274,7 @@ class ScriptsTest extends TestCase
         ]);
         //Validate the answer is correct
         $response->assertStatus(422);
-        $response->assertSeeText('The title has already been taken');
+        $response->assertSeeText('The name has already been taken');
     }
 
     /**

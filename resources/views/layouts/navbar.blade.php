@@ -28,7 +28,7 @@
     </b-navbar-nav>
     <b-navbar-nav class="ml-auto" id="mobileRight">
         <li class="nav-item">
-            <component id="navbar-request-button" v-bind:is="'request-modal'"></component>
+            <component id="navbar-request-button" v-bind:is="'request-modal'" v-bind:permission="{{ \Auth::user()->hasPermissionsFor('processes') }}"></component>
         </li>
 
         <li class="nav-notification d-none d-lg-block">

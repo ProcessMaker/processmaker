@@ -46,7 +46,7 @@
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">{{__('Add A User')}}</h5>
+                        <h5 class="modal-title">{{__('Create User')}}</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onClose">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -59,13 +59,13 @@
                             <div class="invalid-feedback" v-for="username in addError.username">@{{username}}</div>
                         </div>
                         <div class="form-group">
-                            {!!Form::label('firstname', __('First name'))!!}
+                            {!!Form::label('firstname', __('First Name'))!!}
                             {!!Form::text('firstname', null, ['class'=> 'form-control', 'v-model'=> 'firstname', 'v-bind:class'
                             => '{\'form-control\':true, \'is-invalid\':addError.firstname}'])!!}
                             <div class="invalid-feedback" v-for="firstname in addError.firstname">@{{firstname}}</div>
                         </div>
                         <div class="form-group">
-                            {!!Form::label('lastname', __('Last name'))!!}
+                            {!!Form::label('lastname', __('Last Name'))!!}
                             {!!Form::text('lastname', null, ['class'=> 'form-control', 'v-model'=> 'lastname', 'v-bind:class'
                             => '{\'form-control\':true, \'is-invalid\':addError.lastname}'])!!}
                             <div class="invalid-feedback" v-for="lastname in addError.lastname">@{{lastname}}</div>
