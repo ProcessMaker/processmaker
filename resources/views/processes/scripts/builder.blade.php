@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-  {{__('Scripts Editor')}}
+  {{__('Edit Script')}}
 @endsection
 
 @section('sidebar')

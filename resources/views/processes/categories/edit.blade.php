@@ -23,7 +23,7 @@
                         {!! Form::label('name', 'Category Name') !!}
                         {!! Form::text('name', null, ['id' => 'name','class'=> 'form-control', 'v-model' => 'formData.name',
                         'v-bind:class' => '{"form-control":true, "is-invalid":errors.name}']) !!}
-                        <small class="form-text text-muted">{{ __('Category Name must be distinct') }}</small>
+                        <small class="form-text text-muted" v-if="! errors.name">{{ __('The category name must be distinct.') }}</small>
                         <div class="invalid-feedback" v-if="errors.name">@{{errors.name[0]}}</div>
                     </div>
                     <div class="form-group">
@@ -72,7 +72,7 @@
                     this.resetErrors();
                     ProcessMaker.apiClient.put('process_categories/' + this.formData.id, this.formData)
                         .then(response => {
-                            ProcessMaker.alert('Update Process Category Successfully', 'success');
+                            ProcessMaker.alert('The category was saved.', 'success');
                             this.onClose();
                         })
                         .catch(error => {
