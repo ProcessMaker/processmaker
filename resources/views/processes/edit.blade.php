@@ -1,7 +1,7 @@
 @extends('layouts.layout', ['title' => __('Processes Management')])
 
 @section('title')
-{{__('Edit Process')}}
+{{__('Configure Process')}}
 @endsection
 
 @section('sidebar')
@@ -11,7 +11,7 @@
 @section('content')
 @include('shared.breadcrumbs', ['routes' => [
     __('Processes') => route('processes.index'),
-    __('Edit') . " " . $process->name => null,
+    __('Configure') . " " . $process->name => null,
 ]])
 <div class="container" id="editProcess">
     <div class="row">
@@ -19,7 +19,7 @@
             <div class="card card-body">
 
                 <div class="form-group">
-                    {!!Form::label('processTitle', __('Process title'))!!}
+                    {!!Form::label('processTitle', __('Name'))!!}
                     {!!Form::text('processTitle', null,
                         [ 'id'=> 'name',
                             'class'=> 'form-control',
@@ -27,7 +27,8 @@
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'
                         ])
                     !!}
-                    <div class="invalid-feedback" v-if="errors.processTitle">@{{errors.name[0]}}</div>
+                    <small class="form-text text-muted" v-if="! errors.name">{{ __('The process name must be distinct.') }}</small>
+                    <div class="invalid-feedback" v-if="errors.name">@{{errors.name[0]}}</div>
                 </div>
                 <div class="form-group">
                     {!! Form::label('description', __('Description')) !!}
@@ -182,12 +183,12 @@
 
                     response['users'] = [];
                     response['groups'] = [];
-                    
+
                     data.forEach(item => {
                         if (item.type == 'user') {
                             response['users'].push(parseInt(item.id));
                         }
-                        
+
                         if (item.type == 'group') {
                             response['groups'].push(parseInt(item.id));
                         }
@@ -203,7 +204,7 @@
                     this.formData.cancel_screen_id = this.formData.cancel_screen_id
                     ProcessMaker.apiClient.put('processes/' + that.formData.id, that.formData)
                         .then(response => {
-                            ProcessMaker.alert('{{__('Process Updated Successfully')}}', 'success');
+                            ProcessMaker.alert('{{__('The process was saved.')}}', 'success');
                             that.onClose();
                         })
                         .catch(error => {

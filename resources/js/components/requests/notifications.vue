@@ -34,6 +34,9 @@
                     </a>
                 </li>
             </ul>
+            <button v-if="messages.length != 0" class="btn btn-sm btn-secondary  float-right m-2 p-1" @click="removeAll">
+                Dismiss All
+            </button>
         </b-popover>
     </div>
 </template>
@@ -41,6 +44,7 @@
 <script>
     import moment from "moment";
     import {Popover} from 'bootstrap-vue/es/components';
+
     Vue.use(Popover);
     export default {
         props: {
@@ -68,16 +72,16 @@
             };
         },
         methods: {
-            updateTotalMessages(){
+            updateTotalMessages() {
                 this.incrementTotalMessages = false;
                 ProcessMaker.apiClient.get('/notifications?per_page=5&filter=unread')
-                    .then( response => {
+                    .then(response => {
                         ProcessMaker.notifications.splice(0);
                         response.data.data.forEach(function (element) {
                             ProcessMaker.pushNotification(element);
                         });
                         this.totalMessages = response.data.meta.total;
-                        this.$nextTick(()=>{
+                        this.$nextTick(() => {
                             this.incrementTotalMessages = true;
                         });
                     });
@@ -90,6 +94,15 @@
             },
             formatDateTime(iso8601) {
                 return moment(iso8601).format("MM/DD/YY HH:mm");
+            },
+            removeAll() {
+              let that = this;
+              //Remove all notification of current user
+              ProcessMaker.apiClient.put('/read_all_notifications', {id: ProcessMaker.user.id, type: 'ProcessMaker\\Models\\User'})
+                .then(() => {
+                  ProcessMaker.notifications.splice(0, ProcessMaker.notifications.length);
+                  that.totalMessages = 0;
+                });
             }
         },
         mounted() {
@@ -125,13 +138,16 @@
         font-size: 12px;
         width: 250px;
         margin-bottom: 6px;
+
         h3 {
             font-size: 14px;
             color: #3397e1;
         }
+
         .muted {
             color: #7b8792
         }
+
         .footer {
             font-size: 14px;
             font-weight: normal;

@@ -18,9 +18,9 @@
                 variant="link"
                 @click="deleteMembership(props.rowData)"
                 v-b-tooltip.hover
-                title="Remove"
+                title="Remove from Group"
               >
-                <i class="fas fa-trash-alt fa-lg fa-fw"></i>
+                <i class="fas fa-minus-circle fa-lg fa-fw"></i>
               </b-btn>
             </div>
           </div>
@@ -57,7 +57,7 @@ export default {
       ],
       fields: [
         {
-          title: "Group",
+          title: "Name",
           name: "name",
           sortField: "name"
         },
@@ -97,11 +97,11 @@ export default {
     deleteMembership(item) {
       ProcessMaker.confirmModal(
         "Caution!",
-        "<b>Are you sure to remove the user from the group </b>" + item.name + "?",
+        "<b>Are you sure you want to remove the user from the group </b>" + item.name + "?",
         "",
         () => {
           ProcessMaker.apiClient.delete("group_members/" + item.id).then(response => {
-            ProcessMaker.alert("User successfully removed from group", "success");
+            ProcessMaker.alert("The user was removed from the group.", "success");
             this.fetch();
           });
         }

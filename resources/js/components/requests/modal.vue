@@ -1,33 +1,46 @@
 <template>
-    <div>
-        <button id="navbar-request-button" class="btn btn-success btn-sm" @click="showRequestModal"><i class="fas fa-plus"></i> Request</button>
-        <b-modal size="lg" id="requests-modal" class="requests-modal" ref="requestModalAdd" title="New Request" hide-footer>
-          <span class="float-right">
-                <div class="input-group">
-                  <div class="input-group-prepend">
-                      <div class="input-group-text"><i class="fas fa-search"></i></div>
-                  </div>
-                  <input class="form-control form-control-sm" v-model="filter" placeholder="Search...">
-                </div>
-          </span>
-            <p>We've made it easy for you to make the following Requests.</p>
-            <div v-if="Object.keys(processes).length && !loading" class="process-list">
-                <div class="category" v-for="(category, index) in processes">
-                    <h3 class="name">{{index}}</h3>
-                    <process-card v-for="(process,index) in category" :filter="filter" :key="index"
-                                  :process="process">
-                    </process-card>
-                </div>
+  <div>
+    <button id="navbar-request-button" class="btn btn-success btn-sm" @click="showRequestModal">
+      <i class="fas fa-plus"></i> Request
+    </button>
+    <b-modal
+      size="lg"
+      id="requests-modal"
+      class="requests-modal modal-dialog-scrollable"
+      ref="requestModalAdd"
+      title="New Request"
+      hide-footer
+    >
+      <span class="float-right">
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <div class="input-group-text">
+              <i class="fas fa-search"></i>
             </div>
+          </div>
+          <input class="form-control form-control-sm" v-model="filter" placeholder="Search...">
+        </div>
+      </span>
+      <p>We've made it easy for you to make the following Requests.</p>
+      <div v-if="Object.keys(processes).length && !loading" class="process-list">
+        <div class="category" v-for="(category, index) in processes">
+          <h3 class="name">{{index}}</h3>
+          <process-card
+            v-for="(process,index) in category"
+            :filter="filter"
+            :key="index"
+            :process="process"
+          ></process-card>
+        </div>
+      </div>
             <div class="no-requests" v-if="!Object.keys(processes).length && !loading">
                 <h4>You don't have any Processes.</h4>
-                <a href="/processes">Please visit the Processes page</a> and click on +Process to get started.
+                <span v-if="permission.includes('create-processes')"><a href="/processes">Please visit the Processes page</a> and click on +Process to get started.</span>
+                <span v-else>Please contact your administrator to get started.</span>
             </div>
-            <div v-if="loading" class="loading">
-                Finding Requests available to you
-            </div>
-        </b-modal>
-    </div>
+      <div v-if="loading" class="loading">Finding Requests available to you...</div>
+    </b-modal>
+  </div>
 </template>
 
 <script>
@@ -35,6 +48,9 @@ import card from "./card";
 import _ from "lodash";
 
 export default {
+  props: {
+    permission: Array
+  },
   components: {
     "process-card": card
   },
@@ -89,7 +105,9 @@ export default {
       // We need to pull out the category name, and if it's available in our processes, append it there
       // if not, create the category in our processes array and then append it
       for (let process of data) {
-        let category = process.category ? process.category.name : "Uncategorized";
+        let category = process.category
+          ? process.category.name
+          : "Uncategorized";
         // Now determine if we have it defined in our processes list
         if (typeof this.processes[category] == "undefined") {
           // Create it
@@ -105,7 +123,6 @@ export default {
 
 <style lang="scss" scoped>
 .requests-modal {
-
   .loading,
   .no-requests {
     padding: 32px 60px;
@@ -116,7 +133,6 @@ export default {
   .process-list {
     //flex-grow: 1;
     overflow: auto;
-    
 
     .category {
       padding-bottom: 32px;

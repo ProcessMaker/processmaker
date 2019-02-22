@@ -198,6 +198,63 @@ class ScreenController extends Controller
     }
 
     /**
+     * duplicate a Screen.
+     *
+     * @param Screen $screen
+     * @param Request $request
+     *
+     * @return ResponseFactory|Response
+     *
+     *     @OA\Put(
+     *     path="/screens/screensId/duplicate",
+     *     summary="duplicate a screen",
+     *     operationId="updateScreen",
+     *     tags={"Screens"},
+     *     @OA\Parameter(
+     *         description="ID of screen to return",
+     *         in="path",
+     *         name="screens_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(ref="#/components/schemas/screensEditable")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/screens")
+     *     ),
+     * )
+     */
+    public function duplicate(Screen $screen, Request $request)
+    {
+        $request->validate(Screen::rules());
+        $newScreen = new Screen();
+        
+        $exclude = ['id', 'created_at', 'updated_at'];
+        foreach ($screen->getAttributes() as $attribute => $value) {
+            if (! in_array($attribute, $exclude)) {
+                $newScreen->{$attribute} = $screen->{$attribute};   
+            } 
+        }
+
+        if ($request->has('title')) {
+            $newScreen->title = $request->input('title');
+        }
+
+        if ($request->has('description')) {
+            $newScreen->description = $request->input('description');
+        }
+
+        $newScreen->saveOrFail();
+        return new ApiResource($newScreen);
+    }
+
+    /**
      * Delete a Screen.
      *
      * @param Screen $screen

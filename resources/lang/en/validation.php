@@ -110,5 +110,9 @@ return [
                 'category_does_not_have_processes' => 'The category cannot be deleted while it is still assigned to processes.',
             ]
         ]
-    ]
+    ],
+    
+    'attributes' => [
+        'title' => 'name',
+    ],
 ];
