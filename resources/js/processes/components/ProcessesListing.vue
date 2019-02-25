@@ -30,7 +30,7 @@
                 variant="link"
                 @click="onAction('edit-designer', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Open Modeler"
+                title="Edit"
                 v-if="permission.includes('edit-processes') && props.rowData.status === 'ACTIVE'"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
@@ -39,7 +39,7 @@
                 variant="link"
                 @click="onAction('edit-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Config"
+                title="Configure"
                 v-if="permission.includes('edit-processes') && props.rowData.status === 'ACTIVE'"
               >
                 <i class="fas fa-cog fa-lg fa-fw"></i>
@@ -168,7 +168,7 @@ export default {
             .put("processes/" + data.id + "/restore")
             .then(response => {
               ProcessMaker.alert(
-                "The process was restored successfully",
+                "The process was restored.",
                 "success"
               );
               this.$emit("reload");
@@ -177,7 +177,7 @@ export default {
         case "remove-item":
           ProcessMaker.confirmModal(
             "Caution!",
-            "<b>Are you sure you want to archive the process: </b>'" +
+            "<b>Are you sure you want to archive the process </b>'" +
               data.name +
               "'?",
             "",
@@ -185,7 +185,7 @@ export default {
               ProcessMaker.apiClient
                 .delete("processes/" + data.id)
                 .then(response => {
-                  ProcessMaker.alert("Process Archived", "warning");
+                  ProcessMaker.alert("The process was archived.", "warning");
                   this.$emit("reload");
                 });
             }

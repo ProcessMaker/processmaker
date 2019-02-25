@@ -13,7 +13,10 @@
         pagination-path="meta"
       >
         <template slot="title" slot-scope="props">
-          <b-link v-if="permission.includes('edit-scripts')" @click="onAction('edit-script', props.rowData, props.rowIndex)">{{props.rowData.title}}</b-link>
+          <b-link
+            v-if="permission.includes('edit-scripts')"
+            @click="onAction('edit-script', props.rowData, props.rowIndex)"
+          >{{props.rowData.title}}</b-link>
           <span v-else="permission.includes('edit-scripts')">{{props.rowData.title}}</span>
         </template>
 
@@ -33,16 +36,25 @@
                 variant="link"
                 @click="onAction('edit-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Config"
+                title="Configure"
                 v-if="permission.includes('edit-scripts')"
               >
                 <i class="fas fa-cog fa-lg fa-fw"></i>
               </b-btn>
               <b-btn
                 variant="link"
+                @click="onAction('duplicate-item', props.rowData, props.rowIndex)"
+                v-b-tooltip.hover
+                title="Duplicate"
+                v-if="permission.includes('create-scripts')"
+              >
+                <i class="fas fa-copy fa-lg fa-fw"></i>
+              </b-btn>
+              <b-btn
+                variant="link"
                 @click="onAction('remove-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Remove"
+                title="Delete"
                 v-if="permission.includes('delete-scripts')"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
@@ -60,6 +72,35 @@
         ref="pagination"
       ></pagination>
     </div>
+    <b-modal ref="myModalRef" title="Duplicate Screen" centered>
+      <form>
+        <div class="form-group">
+          <label for="title">Name</label>
+          <input
+            type="text"
+            class="form-control"
+            id="title"
+            v-model="dupScript.title"
+            v-bind:class="{ 'is-invalid': errors.title }"
+          >
+          <div class="invalid-feedback" v-if="errors.title">{{errors.title[0]}}</div>
+        </div>
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea class="form-control" id="description" rows="3" v-model="dupScript.description"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="type">Language</label>
+          <select class="form-control" id="type" disabled>
+            <option>{{dupScript.language}}</option>
+          </select>
+        </div>
+      </form>
+      <div slot="modal-footer" class="w-100" align="right">
+        <button type="button" class="btn btn-outline-secondary" @click="hideModal">Close</button>
+        <button type="button" @click="onSubmit" class="btn btn-secondary ml-2">Save</button>
+      </div>
+    </b-modal>
   </div>
 </template>
 
@@ -71,6 +112,12 @@ export default {
   props: ["filter", "id", "permission"],
   data() {
     return {
+      dupScript: {
+        title: "",
+        type: "",
+        description: ""
+      },
+      errors: [],
       orderBy: "title",
 
       sortOrder: [
@@ -123,6 +170,26 @@ export default {
     goToEdit(data) {
       window.location = "/processes/scripts/" + data + "/edit";
     },
+    showModal() {
+      this.$refs.myModalRef.show();
+    },
+    hideModal() {
+      this.$refs.myModalRef.hide();
+    },
+    onSubmit() {
+      ProcessMaker.apiClient
+        .put("scripts/" + this.dupScript.id + "/duplicate", this.dupScript)
+        .then(response => {
+          ProcessMaker.alert("The script was duplicated.", "success");
+          this.hideModal();
+          this.fetch();
+        })
+        .catch(error => {
+          if (error.response.status && error.response.status === 422) {
+            this.errors = error.response.data.errors;
+          }
+        });
+    },
     onAction(action, data, index) {
       switch (action) {
         case "edit-script":
@@ -131,10 +198,18 @@ export default {
         case "edit-item":
           this.goToEdit(data.id);
           break;
+        case "duplicate-item":
+          this.dupScript.title = data.title + " Copy";
+          this.dupScript.language = data.language;
+          this.dupScript.code = data.code;
+          this.dupScript.description = data.description;
+          this.dupScript.id = data.id;
+          this.showModal();
+          break;
         case "remove-item":
           ProcessMaker.confirmModal(
             "Caution!",
-            "<b>Are you sure to delete the Script </b>" + data.title + "?",
+            "<b>Are you sure you want to delete the script </b>" + data.title + "?",
             "",
             () => {
               this.$emit("delete", data);

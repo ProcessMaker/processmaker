@@ -248,6 +248,62 @@ class ScriptController extends Controller
 
         return response($request, 204);
     }
+    /**
+     * duplicate a Script.
+     *
+     * @param Script $script
+     * @param Request $request
+     *
+     * @return ResponseFactory|Response
+     *
+     *     @OA\Put(
+     *     path="/scripts/scriptsId/duplicate",
+     *     summary="duplicate a script",
+     *     operationId="updateScreen",
+     *     tags={"scripts"},
+     *     @OA\Parameter(
+     *         description="ID of script to return",
+     *         in="path",
+     *         name="screens_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(ref="#/components/schemas/screensEditable")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/scripts")
+     *     ),
+     * )
+     */
+    public function duplicate(Script $script, Request $request)
+    {
+        $request->validate(Script::rules());
+        $newScript = new Script();
+        
+        $exclude = ['id', 'created_at', 'updated_at'];
+        foreach ($script->getAttributes() as $attribute => $value) {
+            if (! in_array($attribute, $exclude)) {
+                $newScript->{$attribute} = $script->{$attribute};   
+            } 
+        }
+
+        if ($request->has('title')) {
+            $newScript->title = $request->input('title');
+        }
+
+        if ($request->has('description')) {
+            $newScript->description = $request->input('description');
+        }
+
+        $newScript->saveOrFail();
+        return new ScriptResource($newScript);
+    }
 
     /**
      * Delete a script in a process.

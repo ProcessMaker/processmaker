@@ -87,10 +87,12 @@
                     this.loading = true
                     let method = 'POST'
                     let url = '/oauth/clients'
+                    let verb = 'created'
                     if (this.authClient.id) {
                         // Do an update
                         method = 'PUT',
                         url = url + '/' + this.authClient.id
+                        verb = 'saved'
                     }
                     ProcessMaker.apiClient({
                         method,
@@ -101,7 +103,7 @@
                         $('#createEditAuthClient').modal('hide')
                         this.$refs.authClientList.fetch()
                         this.loading = false
-                        ProcessMaker.alert("Auth Client Updated", "success")
+                        ProcessMaker.alert("The auth client was " + verb + ".", "success")
                     }).catch(error => {
                         this.errors = error.response.data.errors;
                     });

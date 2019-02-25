@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-    {{__('Edit Scripts')}}
+    {{__('Configure Script')}}
 @endsection
 
 @section('sidebar')
@@ -12,7 +12,7 @@
     @include('shared.breadcrumbs', ['routes' => [
         __('Processes') => route('processes.index'),
         __('Scripts') => route('scripts.index'),
-        __('Edit') . " " . $script->title => null,
+        __('Configure') . " " . $script->title => null,
     ]])
     <div class="container" id="editScript">
         <div class="row">
@@ -23,7 +23,7 @@
                         {!! Form::label('title', 'Name') !!}
                         {!! Form::text('title', null, ['id' => 'title','class'=> 'form-control', 'v-model' => 'formData.title',
                         'v-bind:class' => '{"form-control":true, "is-invalid":errors.title}']) !!}
-                        <small class="form-text text-muted">Form title must be distinct</small>
+                        <small class="form-text text-muted" v-if="! errors.title">{{ __('The script name must be distinct.') }}</small>
                         <div class="invalid-feedback" v-if="errors.title">@{{errors.title[0]}}</div>
                     </div>
                     <div class="form-group">
@@ -85,7 +85,7 @@
                         description: this.formData.description,
                     })
                         .then(response => {
-                            ProcessMaker.alert('Updated Script Successfully', 'success');
+                            ProcessMaker.alert('The script was saved.', 'success');
                             this.onClose();
                         })
                         .catch(error => {

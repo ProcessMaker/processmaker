@@ -3,7 +3,7 @@ import {
     association,
     endEvent,
     exclusiveGateway,
-    inclusiveGateway,
+    // inclusiveGateway,
     parallelGateway,
     sequenceFlow,
     startEvent,
@@ -11,7 +11,11 @@ import {
     scriptTask,
     pool,
     poolLane,
-    textAnnotation
+    textAnnotation,
+    messageFlow,
+    serviceTask,
+    startTimerEvent,
+    intermediateTimerEvent
 } from '@processmaker/modeler';
 import bpmnExtension from '@processmaker/processmaker-bpmn-moddle/resources/processmaker.json';
 import ModelerScreenSelect from './components/inspector/ScreenSelect';
@@ -35,12 +39,14 @@ let nodeTypes = [
     scriptTask,
     exclusiveGateway,
     //inclusiveGateway,
-    //parallelGateway,
+    parallelGateway,
     sequenceFlow,
     textAnnotation,
     association,
     pool,
     poolLane,
+    messageFlow,
+    serviceTask
 ]
 ProcessMaker.nodeTypes.push(...nodeTypes);
 
@@ -48,7 +54,7 @@ ProcessMaker.nodeTypes.push(...nodeTypes);
 task.definition = function definition(moddle) {
     return moddle.create('bpmn:Task', {
         name: 'New Task',
-        assignment: 'requestor',
+        assignment: 'requester',
     });
 };
 
@@ -57,6 +63,19 @@ ProcessMaker.EventBus.$on('modeler-init', ({registerNode, registerBpmnExtension,
     for (const node of nodeTypes) {
         registerNode(node);
     }
+
+    registerNode(startTimerEvent, definition => {
+        const eventDefinitions = definition.get('eventDefinitions');
+        if (definition.$type === 'bpmn:StartEvent' && eventDefinitions && eventDefinitions.length && eventDefinitions[0].$type === 'bpmn:TimerEventDefinition') {
+          return 'processmaker-modeler-start-timer-event';
+        }
+      });
+      registerNode(intermediateTimerEvent, definition => {
+        const eventDefinitions = definition.get('eventDefinitions');
+        if (definition.$type === 'bpmn:IntermediateCatchEvent' && eventDefinitions && eventDefinitions.length && eventDefinitions[0].$type === 'bpmn:TimerEventDefinition') {
+          return 'processmaker-modeler-intermediate-catch-timer-event';
+        }
+      });
 
     /* Add a BPMN extension */
     registerBpmnExtension('pm', bpmnExtension);

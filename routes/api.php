@@ -40,6 +40,7 @@ Route::group(
     Route::get('screens/{screen}', 'ScreenController@show')->name('screens.show')->middleware('can:view-screens');
     Route::post('screens', 'ScreenController@store')->name('screens.store')->middleware('can:create-screens');
     Route::put('screens/{screen}', 'ScreenController@update')->name('screens.update')->middleware('can:edit-screens');
+    Route::put('screens/{screen}/duplicate', 'ScreenController@duplicate')->name('screens.duplicate')->middleware('can:create-screens');
     Route::delete('screens/{screen}', 'ScreenController@destroy')->name('screens.destroy')->middleware('can:delete-screens');
 
     // Screen Categories
@@ -54,6 +55,7 @@ Route::group(
     Route::get('scripts/{script}', 'ScriptController@show')->name('scripts.show')->middleware('can:view-scripts');
     Route::post('scripts', 'ScriptController@store')->name('scripts.store')->middleware('can:create-scripts');
     Route::put('scripts/{script}', 'ScriptController@update')->name('scripts.update')->middleware('can:edit-scripts');
+    Route::put('scripts/{script}/duplicate', 'ScriptController@duplicate')->name('scripts.duplicate')->middleware('can:create-scripts');
     Route::delete('scripts/{script}', 'ScriptController@destroy')->name('scripts.destroy')->middleware('can:delete-scripts');
     Route::post('scripts/preview', 'ScriptController@preview')->name('script.preview')->middleware('can:view-scripts');
 

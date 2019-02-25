@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-    {{__('Edit Environment Variables')}}
+    {{__('Edit Environment Variable')}}
 @endsection
 
 @section('sidebar')
@@ -20,10 +20,10 @@
                 <div class="card card-body">
                     {!! Form::open() !!}
                     <div class="form-group">
-                        {!!Form::label('name', __('Variable Name'))!!}
+                        {!!Form::label('name', __('Name'))!!}
                         {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'formData.name',
                         'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'])!!}
-                        <small class="form-text text-muted">{{ __('Variable Name must be distinct') }}</small>
+                        <small class="form-text text-muted" v-if="! errors.name">{{ __('The environment variable name must be distinct.') }}</small>
                         <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
                     </div>
                     <div class="form-group">
@@ -85,7 +85,7 @@
                     this.resetErrors();
                     ProcessMaker.apiClient.put('environment_variables/' + this.formData.id, this.formData)
                         .then(response => {
-                            ProcessMaker.alert('Update Environment Variable Successfully', 'success');
+                            ProcessMaker.alert('The environment variable was saved.', 'success');
                             this.onClose();
                         })
                         .catch(error => {
