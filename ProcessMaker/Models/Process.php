@@ -87,11 +87,6 @@ class Process extends Model implements HasMedia
         'bpmn'
     ];
 
-    protected $appends = [
-        'notifications',
-        'task_notifications',
-    ];
-
     /**
      * Parsed process BPMN definitions.
      *
