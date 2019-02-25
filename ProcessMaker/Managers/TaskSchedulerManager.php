@@ -114,6 +114,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 
         ScheduledTask::where('process_id', $process->id)
                         ->where('type', 'INTERMEDIATE_TIMER_EVENT')
+                        ->where('process_request_id', $request->id)
                         ->delete();
 
         foreach ($process->getIntermediateCatchEvents() as $timerEvent) {
@@ -147,9 +148,10 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                     if ($timeDuration && empty($timeEventType)) {
                         $timeEventType = 'TimeDuration';
                         $period = $eventDefinition->getTimeDuration()->getBody();
+                        $intervals = explode('|', $period);
                     }
 
-                    $init = ($period[0] === 'R' || $timeDate) ? 0 : 1;
+                    $init = ($period[0] === 'R' || $timeDate || $timeDuration) ? 0 : 1;
                     for ($i = $init; $i < count($intervals); $i++) {
                         $parts = $this->getIntervalParts($intervals[$i]);
                         $configuration = [
@@ -203,7 +205,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                            $task->save();
                            break;
                        case 'INTERMEDIATE_TIMER_EVENT':
-                           $this->executeIntermediateTimerEvent();
+                           $this->executeIntermediateTimerEvent($task, $config);
                            $today = (new \DateTime())->setTimezone(new DateTimeZone('UTC'));
                            $task->last_execution = $today->format('Y-m-d H:i:s');
                            $task->save();
@@ -247,23 +249,23 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 
    public function executeIntermediateTimerEvent($task, $config)
    {
-       //Get the event BPMN element
-       $id = $task->process_id;
-       if (!$id) {
+        //Get the event BPMN element
+        $id = $task->process_id;
+        if (!$id) {
            return;
-       }
+        }
 
-       $process = Process::find($id);
-       $request = ProcessRequest::find($task->process_request_id);
+        $process = Process::find($id);
+        $request = ProcessRequest::find($task->process_request_id);
 
-       $definitions = $process->getDefinitions();
-       if (!$definitions->findElementById($config->element_id)) {
+
+        $definitions = $process->getDefinitions();
+        if (!$definitions->findElementById($config->element_id)) {
            return;
-       }
-       $event = $definitions->getEvent($config->element_id);
-       $data = [];
+        }
 
-        $catch = $request->tokens()->where('element_id', '_5')->first();
+        $catch = $request->tokens()->where('element_id', $config->element_id)->first();
+
         WorkflowManager::completeCatchEvent($process, $request, $catch, []);
    }
 

@@ -146,7 +146,7 @@ class TimerStartEventTest extends TestCase
                 'title' => 'Specific date off'
             ],
             [
-                'currentDate' => '2019-02-15T01:01:00Z',
+                'currentDate' => '2019-02-15T00:59:00Z',
                 'interval' => '2019-02-15T01:00:00Z',
                 'type' => 'TimeDate',
                 'expectedNextDate' => '2019-02-15T01:00:00Z',

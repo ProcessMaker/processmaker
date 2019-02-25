@@ -3,6 +3,7 @@ namespace ProcessMaker\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use ProcessMaker\BpmnEngine;
+use ProcessMaker\Contracts\TimerExpressionInterface;
 use ProcessMaker\Listeners\BpmnSubscriber;
 use ProcessMaker\Listeners\CommentsSubscriber;
 use ProcessMaker\Managers\TaskSchedulerManager;
@@ -103,6 +104,22 @@ class WorkflowServiceProvider extends ServiceProvider
                 ]
             );
 
+            $bpmnRepository->setBpmnElementMapping(BpmnDocument::BPMN_MODEL, TimerEventDefinitionInterface::BPMN_PROPERTY_TIME_DATE ,
+                [
+                    TimerExpressionInterface::class,
+                    [
+                        FormalExpressionInterface::BPMN_PROPERTY_BODY => ['1', BpmnDocument::DOM_ELEMENT_BODY],
+                    ]
+                ]
+            );
+            $bpmnRepository->setBpmnElementMapping(BpmnDocument::BPMN_MODEL, TimerEventDefinitionInterface::BPMN_PROPERTY_TIME_DURATION ,
+                [
+                    TimerExpressionInterface::class,
+                    [
+                        FormalExpressionInterface::BPMN_PROPERTY_BODY => ['1', BpmnDocument::DOM_ELEMENT_BODY],
+                    ]
+                ]
+            );
             return $bpmnRepository;
         });
     }
