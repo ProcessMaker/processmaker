@@ -2,7 +2,9 @@
 
 namespace ProcessMaker\Models;
 
+use Log;
 use Carbon\Carbon;
+use ProcessMaker\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
@@ -149,6 +151,52 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     }
 
     /**
+     * Notification settings of the process.
+     *
+     * @param string $entity
+     * @param string $notificationType
+     * 
+     * @return array
+     */    
+    public function getNotifiables($notificationType)
+    {
+        $userIds = collect([]);
+        
+        $process = $this->process()->first();
+        
+        $notifiableTypes = $process->notification_settings()
+                                   ->where('notification_type', $notificationType)
+                                   ->whereNull('element_id')
+                                   ->get()->pluck('notifiable_type');
+
+        foreach ($notifiableTypes as $notifiableType) {
+            $userIds = $userIds->merge($this->getNotifiableUserIds($notifiableType));
+        }
+        
+        $userIds = $userIds->unique();
+        
+        $notifiables = $notifiableTypes->implode(', ');
+        $users = $userIds->implode(', ');
+        Log::debug("Sending request $notificationType notification to $notifiables (users: $users)");
+        
+        return User::whereIn('id', $userIds)->get();
+    }
+
+    public function getNotifiableUserIds($notifiableType)
+    {
+        switch ($notifiableType) {
+            case 'requester':
+                return collect([$this->user_id]);
+                break;
+            case 'participants':
+                return $this->participants()->get()->pluck('id');
+                break;
+            default:
+                return collect([]);
+        }
+    }
+
+    /**
      * Determines if a user has participated in this application.  This is done by checking if any delegations
      * match this application and passed in user.
      *
@@ -219,7 +267,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      */
     public function process()
     {
-        return $this->belongsTo(Process::class);
+        return $this->belongsTo(Process::class, 'process_id');
     }
 
     /**
