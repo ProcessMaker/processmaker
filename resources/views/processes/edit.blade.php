@@ -153,41 +153,20 @@
                                         <td class="notify">Notify Requester</td>
                                         <td class="action">
                                             <div class="custom-control custom-switch">
-                                                <input type="checkbox" class="custom-control-input" id="notify-requester-started">
+                                                <input v-model="formData.notifications.requester.started" type="checkbox" class="custom-control-input" id="notify-requester-started">
                                                 <label class="custom-control-label" for="notify-requester-started"></label>
                                             </div>
                                         </td>
                                         <td class="action">
                                             <div class="custom-control custom-switch">
-                                                <input type="checkbox" class="custom-control-input" id="notify-requester-canceled">
+                                                <input v-model="formData.notifications.requester.canceled" type="checkbox" class="custom-control-input" id="notify-requester-canceled">
                                                 <label class="custom-control-label" for="notify-requester-canceled"></label>
                                             </div>
                                         </td>
                                         <td class="action">
                                             <div class="custom-control custom-switch">
-                                                <input type="checkbox" class="custom-control-input" id="notify-requester-completed">
+                                                <input v-model="formData.notifications.requester.completed" type="checkbox" class="custom-control-input" id="notify-requester-completed">
                                                 <label class="custom-control-label" for="notify-requester-completed"></label>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="notify">Notify Assignee</td>
-                                        <td class="action">
-                                            <div class="custom-control custom-switch">
-                                                <input type="checkbox" class="custom-control-input" id="notify-assignee-started">
-                                                <label class="custom-control-label" for="notify-assignee-started"></label>
-                                            </div>
-                                        </td>
-                                        <td class="action">
-                                            <div class="custom-control custom-switch">
-                                                <input type="checkbox" class="custom-control-input" id="notify-assignee-canceled">
-                                                <label class="custom-control-label" for="notify-assignee-canceled"></label>
-                                            </div>
-                                        </td>
-                                        <td class="action">
-                                            <div class="custom-control custom-switch">
-                                                <input type="checkbox" class="custom-control-input" id="notify-assignee-completed">
-                                                <label class="custom-control-label" for="notify-assignee-completed"></label>
                                             </div>
                                         </td>
                                     </tr>
@@ -195,19 +174,19 @@
                                         <td class="notify">Notify Participants</td>
                                         <td class="action">
                                             <div class="custom-control custom-switch">
-                                                <input type="checkbox" class="custom-control-input" id="notify-participants-started">
+                                                <input v-model="formData.notifications.participants.started" type="checkbox" class="custom-control-input" id="notify-participants-started">
                                                 <label class="custom-control-label" for="notify-participants-started"></label>
                                             </div>
                                         </td>
                                         <td class="action">
                                             <div class="custom-control custom-switch">
-                                                <input type="checkbox" class="custom-control-input" id="notify-participants-canceled">
+                                                <input v-model="formData.notifications.participants.canceled" type="checkbox" class="custom-control-input" id="notify-participants-canceled">
                                                 <label class="custom-control-label" for="notify-participants-canceled"></label>
                                             </div>
                                         </td>
                                         <td class="action">
                                             <div class="custom-control custom-switch">
-                                                <input type="checkbox" class="custom-control-input" id="notify-participants-completed">
+                                                <input v-model="formData.notifications.participants.completed" type="checkbox" class="custom-control-input" id="notify-participants-completed">
                                                 <label class="custom-control-label" for="notify-participants-completed"></label>
                                             </div>
                                         </td>
