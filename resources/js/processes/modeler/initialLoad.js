@@ -19,6 +19,7 @@ import {
 } from '@processmaker/modeler';
 import bpmnExtension from '@processmaker/processmaker-bpmn-moddle/resources/processmaker.json';
 import ModelerScreenSelect from './components/inspector/ScreenSelect';
+import TaskNotifications from './components/inspector/TaskNotifications';
 import ExpressionEditor from './components/inspector/ExpressionEditor';
 import TaskAssignment from './components/inspector/TaskAssignment';
 import ConfigEditor from './components/inspector/ConfigEditor';
@@ -26,6 +27,7 @@ import ScriptSelect from './components/inspector/ScriptSelect';
 import Webhook from './components/inspector/Webhook';
 
 Vue.component('ModelerScreenSelect', ModelerScreenSelect);
+Vue.component('TaskNotifications', TaskNotifications);
 Vue.component('ExpressionEditor', ExpressionEditor);
 Vue.component('TaskAssignment', TaskAssignment);
 Vue.component('ConfigEditor', ConfigEditor);
@@ -98,6 +100,13 @@ ProcessMaker.EventBus.$on('modeler-init', ({registerNode, registerBpmnExtension,
             helper: 'What Screen Should Be Used For Rendering This Task',
             name: 'screenRef',
             type: 'FORM'
+        }
+    });
+    registerInspectorExtension(task, {
+        component: "TaskNotifications",
+        config: {
+            label: "Task Notifications",
+            helper: "Users that should be notified about task events",
         }
     });
     registerInspectorExtension(task, {
